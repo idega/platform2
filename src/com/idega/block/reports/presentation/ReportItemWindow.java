@@ -21,7 +21,7 @@ import com.idega.core.data.ICObject;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityFinder;
 import java.util.List;
 
@@ -120,7 +120,7 @@ public class ReportItemWindow extends IWAdminWindow{
       iwc.setSessionAttribute(prefix+"id",new Integer(id));
       if(id != 0){
         try {
-          ReportCategory RC = new ReportCategory(id);
+          ReportCategory RC = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(id);
           sName = RC.getName();
           sInfo = RC.getDescription();
         }
@@ -258,7 +258,7 @@ public class ReportItemWindow extends IWAdminWindow{
       int repItemId = Integer.parseInt(sRepItemId);
       if(repItemId > 0){
         try {
-          ReportItem ri = new ReportItem(repItemId );
+          ReportItem ri = ((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).findByPrimaryKeyLegacy(repItemId );
           name.setContent(ri.getName());
           field.setContent(ri.getField());
           table.setContent(ri.getMainTable());
@@ -351,7 +351,7 @@ public class ReportItemWindow extends IWAdminWindow{
 
   private PresentationObject getEntityTable(ReportEntity RE){
     try{
-    GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
     T.add(formatText("Display"),1,1);
@@ -372,7 +372,7 @@ public class ReportItemWindow extends IWAdminWindow{
 
   private PresentationObject getEntityForm(String dataClassName,int iCategoryId){
     try{
-    GenericEntity ent = (GenericEntity)Class.forName(dataClassName).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(dataClassName).newInstance();
     Table T = new Table();
 
     T.add(formatText("Display"),1,1);
@@ -409,7 +409,7 @@ public class ReportItemWindow extends IWAdminWindow{
       String dataClassName = iwc.getParameter("re_dataclass");
 			System.err.println(dataClassName);
 			if(dataClassName!=null){
-				GenericEntity ent = (GenericEntity)Class.forName(dataClassName).newInstance();
+				IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(dataClassName).newInstance();
 				String[] s = iwc.getParameterValues("box");
 				int len = s.length;
 				String[] columns  = ent.getVisibleColumnNames();
@@ -441,7 +441,7 @@ public class ReportItemWindow extends IWAdminWindow{
   private List getReportEntities(){
     List L = null;
     try{
-      L = EntityFinder.findAll(new ReportEntity());
+      L = EntityFinder.findAll(((com.idega.block.reports.data.ReportEntityHome)com.idega.data.IDOLookup.getHomeLegacy(ReportEntity.class)).createLegacy());
     }
     catch(SQLException sql){
       sql.printStackTrace();

@@ -50,10 +50,10 @@ public class EmailProgramSideTable extends Block {
   SubmitButton newLetterButton = new SubmitButton(newLetterButtonName, "New Letter");
   SubmitButton mailinglistSettingsButton = new SubmitButton(mailinglistSettingsButtonName, "Edit Mailinglist");
   SubmitButton newLetterOnMailinglistButton = new SubmitButton(newLetterOnMailinglistButtonName, "Write to Selected");
-  Mailinglist mailinglist = new Mailinglist();
+  Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
   DropdownMenu mailinglistMenu = new DropdownMenu( mailinglistDropDownMenuName);
   Table sideTable = new Table(2,9);
-  EmailLetterData letters = new EmailLetterData();
+  EmailLetterData letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
   //InboxData inboxLetters = new InboxData();
 
   public EmailProgramSideTable(){
@@ -68,8 +68,8 @@ public class EmailProgramSideTable extends Block {
     EmailLetterData[] unSentLetters;
     EmailLetterData[] sentLetters;
 
-    sentLetters = (EmailLetterData[]) letters.findAllByColumn(EmailLetterData.EMAIL_LETTER_DATA_SENT, "Y");
-    unSentLetters = (EmailLetterData[]) letters.findAllByColumn(EmailLetterData.EMAIL_LETTER_DATA_SENT, "N");
+    sentLetters = (EmailLetterData[]) letters.findAllByColumn(com.idega.block.mailinglist.data.EmailLetterDataBMPBean.EMAIL_LETTER_DATA_SENT, "Y");
+    unSentLetters = (EmailLetterData[]) letters.findAllByColumn(com.idega.block.mailinglist.data.EmailLetterDataBMPBean.EMAIL_LETTER_DATA_SENT, "N");
 
     try {
       sideTable.add(String.valueOf(EmailServiceHandler.countMessages(iwc)), 2, 1);
@@ -86,10 +86,10 @@ public class EmailProgramSideTable extends Block {
 
     Mailinglist chosenMailinglist;
     chosenMailinglist = getChosenMailinglist(modinfo);
-    MailAccount email = new MailAccount();
+    MailAccount email = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
     List emailList;
-    emailList = (List) EntityFinder.findRelatedOrdered(chosenMailinglist, email, Mailinglist.EMAIL, true);
-    emailSelectionBox.addMenuElements(emailList, MailAccount.EMAIL);
+    emailList = (List) EntityFinder.findRelatedOrdered(chosenMailinglist, email, com.idega.block.mailinglist.data.MailinglistBMPBean.EMAIL, true);
+    emailSelectionBox.addMenuElements(emailList, com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL);
     if (emailList != null){
       Iterator emailIterator = emailList.iterator();
       while (emailIterator.hasNext()) {
@@ -102,13 +102,13 @@ public class EmailProgramSideTable extends Block {
   public Mailinglist getChosenMailinglist(IWContext modinfo) throws SQLException{
     chosen = modinfo.getParameter(mailinglistDropDownMenuName);
     System.err.println("Jamm þetta sem ven fær gildi!!! chosen = "+chosen);
-    Mailinglist chosenMailinglist = new Mailinglist();
+    Mailinglist chosenMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     if((chosen != null) && !("".equalsIgnoreCase(chosen))){
-      return( new Mailinglist(Integer.parseInt(chosen)));
+      return( ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy(Integer.parseInt(chosen)));
     }
     else{
-      //return( new Mailinglist(1));  SETJA AFTUR INN!!!! LAGA
-        return ( new Mailinglist());
+      //return( ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy(1));  SETJA AFTUR INN!!!! LAGA
+        return ( ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy());
     }
   }
 
@@ -116,7 +116,7 @@ public class EmailProgramSideTable extends Block {
 
     mailinglistMenu.keepStatusOnAction();
 //    mailinglistMenu.addSeparator();
-    mailinglistMenu.addMenuElements(EntityFinder.findAllOrdered(mailinglist,Mailinglist.MAILINGLIST_NAME));
+    mailinglistMenu.addMenuElements(EntityFinder.findAllOrdered(mailinglist,com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME));
     mailinglistMenu.setToSubmit();
     System.err.println("modinfo.getParameter(mailinglistDropDownMenuName = "+modinfo.getParameter(mailinglistDropDownMenuName));
     Parameter sumitParameter = new Parameter(submitParameterName, submitParameterValue);

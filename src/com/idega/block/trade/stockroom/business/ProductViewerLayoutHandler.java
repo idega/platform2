@@ -1,5 +1,5 @@
 /*
- * $Id: ProductViewerLayoutHandler.java,v 1.3 2002/03/10 10:35:39 gimmi Exp $
+ * $Id: ProductViewerLayoutHandler.java,v 1.4 2002/04/06 19:07:37 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

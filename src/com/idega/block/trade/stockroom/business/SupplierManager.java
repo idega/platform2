@@ -35,7 +35,7 @@ public class SupplierManager {
 
 
   public void deleteSupplier(int id)throws Exception{
-    invalidateSupplier(new Supplier(id));
+    invalidateSupplier(((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(id));
   }
 
   public static Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
@@ -52,22 +52,22 @@ public class SupplierManager {
     if (supplierId != -1) isUpdate = true;
 
     if (isUpdate) {
-      Supplier supp = new Supplier(supplierId);
+      Supplier supp = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
         supp.setName(name);
         supp.setDescription(description);
       supp.update();
 
-      supp.removeFrom(Address.getStaticInstance(Address.class));
+      supp.removeFrom(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
         supp.addTo(Address.class, addressIds[i]);
       }
 
-      supp.removeFrom(Phone.getStaticInstance(Phone.class));
+      supp.removeFrom(com.idega.core.data.PhoneBMPBean.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
         supp.addTo(Phone.class, phoneIds[i]);
       }
 
-      supp.removeFrom(Email.getStaticInstance(Email.class));
+      supp.removeFrom(com.idega.core.data.EmailBMPBean.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
         supp.addTo(Email.class, emailIds[i]);
       }
@@ -75,7 +75,7 @@ public class SupplierManager {
       return supp;
 
     }else {
-      Supplier supp = new Supplier();
+      Supplier supp = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).createLegacy();
       supp.setName(name);
       supp.setDescription(description);
       supp.setIsValid(true);
@@ -83,7 +83,7 @@ public class SupplierManager {
 
       String sName = name+"_"+supp.getID();
 
-      SupplierStaffGroup sGroup = new SupplierStaffGroup();
+      SupplierStaffGroup sGroup = ((com.idega.block.trade.stockroom.data.SupplierStaffGroupHome)com.idega.data.IDOLookup.getHomeLegacy(SupplierStaffGroup.class)).createLegacy();
       sGroup.setName(sName);
       sGroup.insert();
 
@@ -121,9 +121,9 @@ public class SupplierManager {
         }
       }
 
-      PriceCategory pCategory = new PriceCategory();
+      PriceCategory pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
         pCategory.setSupplierId(supp.getID());
-        pCategory.setType(PriceCategory.PRICETYPE_PRICE);
+        pCategory.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
         pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
         pCategory.setName("Price");
         pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
@@ -171,7 +171,7 @@ public class SupplierManager {
     String description = SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION ;
 
     PermissionGroup pGroup = null;
-    List listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), name, PermissionGroup.getGroupDescriptionColumnName(), description);
+    List listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), name, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
     if (listi != null) {
       if (listi.size() > 0) {
         pGroup = (PermissionGroup) listi.get(listi.size()-1);
@@ -179,7 +179,7 @@ public class SupplierManager {
     }
 
     if (listi == null) {
-      listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), supplier.getName()+permissionGroupNameExtention, PermissionGroup.getGroupDescriptionColumnName(), description);
+      listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), supplier.getName()+permissionGroupNameExtention, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
       if (listi != null)
       if (listi.size() > 0) {
         pGroup = (PermissionGroup) listi.get(listi.size()-1);
@@ -193,7 +193,7 @@ public class SupplierManager {
     String name = supplier.getName()+"_"+supplier.getID();
     SupplierStaffGroup sGroup = null;
     System.err.println("trying ... "+name);
-    List listi = EntityFinder.findAllByColumn((SupplierStaffGroup) SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class), SupplierStaffGroup.getNameColumnName(), name);
+    List listi = EntityFinder.findAllByColumn((SupplierStaffGroup) com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class), com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getNameColumnName(), name);
     if (listi != null) {
       if (listi.size() > 0) {
         sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
@@ -201,7 +201,7 @@ public class SupplierManager {
     }
     if (listi == null) {
       System.err.println("trying ... "+supplier.getName());
-      listi = EntityFinder.findAllByColumn((SupplierStaffGroup) SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class), SupplierStaffGroup.getNameColumnName(), supplier.getName());
+      listi = EntityFinder.findAllByColumn((SupplierStaffGroup) com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class), com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getNameColumnName(), supplier.getName());
       if (listi != null)
       if (listi.size() > 0) {
         sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
@@ -270,7 +270,7 @@ public class SupplierManager {
     List users = getUsers(supplier);
     List temp;
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
-    Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
+    Iterator resellers = ResellerManager.getResellers(supplier, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     while (resellers.hasNext()) {
       temp = ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next(), objBetweenResellers);
       if (temp != null)
@@ -286,7 +286,7 @@ public class SupplierManager {
     }
     List temp;
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
-    Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
+    Iterator resellers = ResellerManager.getResellers(supplier, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     while (resellers.hasNext()) {
       temp = ResellerManager.getUsers((Reseller)resellers.next());
 //      temp = ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next());
@@ -307,7 +307,7 @@ public class SupplierManager {
     for (int i = 0; i < groups.size(); i++) {
       group = (GenericGroup) groups.get(i);
       type = group.getGroupType();
-      if (type != null && type.equals(SupplierStaffGroup.GROUP_TYPE_VALUE)) {
+      if (type != null && type.equals(com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE)) {
         isSupplier = true;
         number= i;
         break;
@@ -315,7 +315,7 @@ public class SupplierManager {
     }
 
     if (isSupplier) {
-      Supplier[] supps = Supplier.getValidSuppliers();
+      Supplier[] supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
       SupplierStaffGroup sGroup = (SupplierStaffGroup) groups.get(number);
       for (int i = 0; i < supps.length; i++) {
         if ((supps[i].getName()+"_"+supps[i].getID()).indexOf(sGroup.getName()) != -1) {
@@ -329,7 +329,7 @@ public class SupplierManager {
 
 
   public static User getMainUser(Supplier supplier) throws SQLException  {
-    List users = UserGroupBusiness.getUsersContained(new GenericGroup(supplier.getGroupId()));
+    List users = UserGroupBusiness.getUsersContained(((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(supplier.getGroupId()));
     if (users != null && users.size() > 0) {
       return (User) users.get(0);
     }else {

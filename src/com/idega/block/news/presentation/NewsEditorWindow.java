@@ -319,7 +319,7 @@ private IWResourceBundle iwrb;
       if(iImageId > 0){
         try {
           /** @todo  use finder */
-          F = new ICFile(iImageId);
+          F = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iImageId);
           V = new Vector(1);
           V.add(F);
         }
@@ -356,7 +356,7 @@ private IWResourceBundle iwrb;
   public String getColumnString(NewsCategoryAttribute[] attribs){
     String values = "";
     for (int i = 0 ; i < attribs.length ; i++) {
-      values += NewsCategory.getColumnName()+"_id = '"+attribs[i].getNewsCategoryId()+"'" ;
+      values += com.idega.block.news.data.NewsCategoryBMPBean.getColumnName()+"_id = '"+attribs[i].getNewsCategoryId()+"'" ;
       if( i!= (attribs.length-1) ) values += " OR ";
     }
     return values;

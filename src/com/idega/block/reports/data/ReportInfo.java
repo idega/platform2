@@ -1,118 +1,24 @@
 package com.idega.block.reports.data;
 
-import com.idega.data.CategoryEntity;
-import java.sql.SQLException;
-/**
- *
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * @version 1.0
- */
+import javax.ejb.*;
 
-public class ReportInfo extends CategoryEntity {
-
-  public static String getEntityTableName() {return "rep_report_info";}
-  public static String getColumnName(){return "name";}
-  public static String getColumnType(){return "info_type";}
-  public static String getColumnWidth(){return "width";}
-  public static String getColumnHeight(){return "height";}
-  public static String getColumnLandscape(){return "landscape";}
-  public static String getColumnColumns(){return "columns";}
-  public static String getColumnPagesize(){return "pagesize";}
-  public static String getColumnBorder(){return "border";}
-
-  public ReportInfo() {
-    super();
-  }
-  public ReportInfo(int id) throws SQLException{
-    super(id);
-  }
-
-  public void initializeAttributes(){
-    addAttribute(getIDColumnName());
-    addAttribute(getColumnName(),"Name",true,true,String.class);
-    addAttribute(getColumnType(),"Type",true,true,String.class);
-    addAttribute(getColumnWidth(),"Width",true,true,Float.class);
-    addAttribute(getColumnHeight(),"Height",true,true,Float.class);
-    addAttribute(getColumnLandscape(),"Landscape",true,true,Boolean.class);
-    addAttribute(getColumnColumns(),"Columns",true,true,Integer.class);
-    addAttribute(getColumnPagesize(),"Pagesize",true,true,String.class,10);
-    addAttribute(getColumnBorder(),"Border",true,true,Integer.class);
-  }
-
-  public String getEntityName(){
-    return getEntityTableName();
-  }
-
-
-  public void setName(String name){
-    setColumn(getColumnName(),name);
-  }
-
-   public String getName(){
-    return getStringColumnValue(getColumnName());
-  }
-
-  public void setType(String type){
-    setColumn(getColumnType(),type);
-  }
-
-   public String getType(){
-    return getStringColumnValue(getColumnType());
-  }
-
-   public void setPagesize(String type){
-    setColumn(getColumnPagesize(),type);
-  }
-
-   public String getPagesize(){
-    return getStringColumnValue(getColumnPagesize());
-  }
-
-  public void setWidth(float width){
-    setColumn(getColumnWidth(),width);
-  }
-
-  public float getWidth(){
-    return getFloatColumnValue(getColumnWidth());
-  }
-
-  public void setHeight(float height){
-    setColumn(getColumnHeight(),height);
-  }
-
-  public float getHeight(){
-    return getFloatColumnValue(getColumnHeight());
-  }
-
-  public void setColumns(int columns){
-    setColumn(getColumnColumns(),columns);
-  }
-
-  public int getColumns(){
-    return getIntColumnValue(getColumnColumns());
-  }
-
-  public void setBorder(int border){
-    setColumn(getColumnBorder(),border);
-  }
-
-  public int getBorder(){
-    return getIntColumnValue(getColumnBorder());
-  }
-  public void setLandscape(boolean landscape){
-    setColumn(getColumnLandscape(),landscape);
-  }
-  public boolean getLandscape(){
-    return getBooleanColumnValue(getColumnLandscape());
-  }
-  public String getDescription(){
-    if(getType().equals("sticker"))
-      return getWidth()+" x "+getHeight()+" "+getPagesize();
-    else
-      return getColumnColumns()+" "+getPagesize();
-  }
+public interface ReportInfo extends com.idega.data.CategoryEntity
+{
+ public int getBorder();
+ public int getColumns();
+ public java.lang.String getDescription();
+ public float getHeight();
+ public boolean getLandscape();
+ public java.lang.String getName();
+ public java.lang.String getPagesize();
+ public java.lang.String getType();
+ public float getWidth();
+ public void setBorder(int p0);
+ public void setColumns(int p0);
+ public void setHeight(float p0);
+ public void setLandscape(boolean p0);
+ public void setName(java.lang.String p0);
+ public void setPagesize(java.lang.String p0);
+ public void setType(java.lang.String p0);
+ public void setWidth(float p0);
 }

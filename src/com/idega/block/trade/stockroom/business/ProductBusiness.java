@@ -77,7 +77,7 @@ public class ProductBusiness {
   static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId, int localeId) throws Exception{
     Product product= null;
     if (productId == -1) {
-      product = new Product();
+      product = ((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).createLegacy();
     }else {
       product = ProductBusiness.getProduct(productId);// Product(productId);
     }
@@ -126,7 +126,7 @@ public class ProductBusiness {
   public static Product getProduct(int productId) throws SQLException{
     Object obj = products.get(Integer.toString(productId));
     if (obj == null) {
-      Product prod = new Product(productId);
+      Product prod = ((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(productId);
       products.put(Integer.toString(productId), prod);
       //System.err.println("ProductBusiness : creating product : "+productId);
       return prod;
@@ -149,7 +149,7 @@ public class ProductBusiness {
 
   public static ProductCategory getProductCategory(int categoryID) {
     try {
-      return new ProductCategory(categoryID);
+      return ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(categoryID);
     }
     catch (SQLException e) {
       return null;
@@ -259,7 +259,7 @@ public class ProductBusiness {
     LocalizedText locText = TextFinder.getLocalizedText(product,localeId);
     boolean newLocText = false;
     if ( locText == null ) {
-      locText = new LocalizedText();
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       newLocText = true;
     }
 
@@ -299,7 +299,7 @@ public class ProductBusiness {
     LocalizedText locText = TextFinder.getLocalizedText(product,localeId);
     boolean newLocText = false;
     if ( locText == null ) {
-      locText = new LocalizedText();
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       newLocText = true;
     }
 
@@ -329,7 +329,7 @@ public class ProductBusiness {
     LocalizedText locText = TextFinder.getLocalizedText(product,localeId);
     boolean newLocText = false;
     if ( locText == null ) {
-      locText = new LocalizedText();
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       newLocText = true;
     }
 
@@ -404,15 +404,15 @@ public class ProductBusiness {
       List products = new Vector();;
 
       try {
-	String pTable = Product.getProductEntityName();
+	String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
 
 	StringBuffer sqlQuery = new StringBuffer();
 	  sqlQuery.append("SELECT * FROM ").append(pTable);
 	  sqlQuery.append(" WHERE ");
-	  sqlQuery.append(pTable).append(".").append(Product.getColumnNameIsValid()).append(" = 'Y'");
+	  sqlQuery.append(pTable).append(".").append(com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 	  if (supplierId != -1)
-	  sqlQuery.append(" AND ").append(pTable).append(".").append(Product.getColumnNameSupplierId()).append(" = ").append(supplierId);
-	  sqlQuery.append(" order by ").append(Product.getColumnNameNumber());
+	  sqlQuery.append(" AND ").append(pTable).append(".").append(com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()).append(" = ").append(supplierId);
+	  sqlQuery.append(" order by ").append(com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameNumber());
 
 	products = EntityFinder.getInstance().findAll(Product.class,sqlQuery.toString());
       }catch(IDOFinderException sql) {
@@ -485,15 +485,15 @@ public class ProductBusiness {
 	   * @todo Oracle support...
 	   */
 
-	  Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
-	  Product product = (Product) Product.getStaticInstance(Product.class);
-	  ProductCategory pCat = (ProductCategory) ProductCategory.getStaticInstance(ProductCategory.class);
+	  Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
+	  Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+	  ProductCategory pCat = (ProductCategory) com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getStaticInstance(ProductCategory.class);
 	  Product prod = null;
-	  //Service tService = (Service) Service.getStaticInstance(Service.class);
+	  //Service tService = (Service) is.idega.idegaweb.travel.data.ServiceBMPBean.getStaticInstance(Service.class);
 
 	  String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
-	  String Ttable = Timeframe.getTimeframeTableName();
-	  String Ptable = Product.getProductEntityName();
+	  String Ttable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
+	  String Ptable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
 	  String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
 
 	  StringBuffer timeframeSQL = new StringBuffer();
@@ -505,7 +505,7 @@ public class ProductBusiness {
 	      timeframeSQL.append(", "+catMiddle);
 	    }
 	    timeframeSQL.append(" WHERE ");
-	    timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
+	    timeframeSQL.append(Ptable+"."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()+" = 'Y'");
 	    if (from != null && to != null) {
 	      timeframeSQL.append(" AND ");
 	      timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
@@ -540,16 +540,16 @@ public class ProductBusiness {
 	  if (from != null && to != null) {
 	    timeframeSQL.append(" AND ");
 	    timeframeSQL.append("(");
-	    timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
+	    timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
 	    timeframeSQL.append(" OR ");
-	    timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
+	    timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
 	    timeframeSQL.append(" OR ");
-	    timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
+	    timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
 	    timeframeSQL.append(")");
 	  }
 
 	  if (from != null && to != null) {
-	    timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+	    timeframeSQL.append(" ORDER BY "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName());
 	  }
 
 	  //System.err.println(timeframeSQL.toString());
@@ -585,13 +585,13 @@ public class ProductBusiness {
  }
 
   public static idegaTimestamp getDepartureTime(int productId) throws SQLException {
-    Service service = new Service(productId);
+    Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(productId);
     idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
     return tempStamp;
   }
 
   public static Address[] getDepartureAddressesOld(Product product) throws SQLException {
-    return (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueDepartureAddressType))));
+    return (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(com.idega.core.data.AddressTypeBMPBean.getId(uniqueDepartureAddressType))));
   }
 
   /**
@@ -607,7 +607,7 @@ public class ProductBusiness {
   }
 
   public static List getDepartureAddresses(Product product, boolean ordered) throws IDOFinderException  {
-    List list = EntityFinder.getInstance().findRelated(product, TravelAddress.class, TravelAddress.getColumnNameAddressTypeId(), Integer.toString(TravelAddress.ADDRESS_TYPE_DEPARTURE) );
+    List list = EntityFinder.getInstance().findRelated(product, TravelAddress.class, com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE) );
     if (ordered) {
       Collections.sort(list, new TravelAddressComparator(TravelAddressComparator.TIME));
     }
@@ -617,20 +617,20 @@ public class ProductBusiness {
   public static TravelAddress getDepartureAddress(Product product) throws SQLException{
       TravelAddress[] tempAddresses = getDepartureAddresses(product);
       if (tempAddresses.length > 0) {
-	return new TravelAddress(tempAddresses[0].getID());
+	return ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
       }else {
 	return null;
       }
   }
 
   public static Address[] getArrivalAddresses(Product product) throws SQLException {
-    return (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueArrivalAddressType))));
+    return (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(com.idega.core.data.AddressTypeBMPBean.getId(uniqueArrivalAddressType))));
   }
 
   public static Address getArrivalAddress(Product product) throws SQLException{
     Address[] tempAddresses = getArrivalAddresses(product);
     if (tempAddresses.length > 0) {
-      return new Address(tempAddresses[0].getID());
+      return ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
     }else {
       return null;
     }
@@ -639,7 +639,7 @@ public class ProductBusiness {
 
   public static DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId) {
     List list = getProducts(iwc, supplierId);
-    DropdownMenu menu = new DropdownMenu(((Product)Product.getStaticInstance(Product.class)).getEntityName());
+    DropdownMenu menu = new DropdownMenu(((Product)com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class)).getEntityName());
     Product product;
     if (list != null && list.size() > 0) {
       for (int i = 0; i < list.size(); i++) {
@@ -654,7 +654,7 @@ public class ProductBusiness {
    * @deprecated
    */
   public static List getProductCategories() throws IDOFinderException{
-    return EntityFinder.getInstance().findAllOrdered(ProductCategory.class, ProductCategory.getColumnName());
+    return EntityFinder.getInstance().findAllOrdered(ProductCategory.class, com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getColumnName());
   }
 
   public static List getProductCategories(Product product) throws IDOFinderException{

@@ -133,7 +133,7 @@ public class ProductCatalog extends CategoryBlock{
       Link createLink = ProductEditorWindow.getEditorLink(-1);
 	createLink.setImage(iCreate);
 	createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
-      Link detachLink = getCategoryLink(ProductCategory.CATEGORY_TYPE_PRODUCT);
+      Link detachLink = getCategoryLink(com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT);
 	detachLink.setImage(iDetach);
 
       if (hasEditPermission()) {
@@ -256,7 +256,7 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   public String getCategoryType(){
-    return ProductCategory.CATEGORY_TYPE_PRODUCT;
+    return com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT;
   }
 
   public void setShowCategoryName(boolean showName) {

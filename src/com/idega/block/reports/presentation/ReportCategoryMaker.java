@@ -59,7 +59,7 @@ public class ReportCategoryMaker extends Block{
       id = Integer.parseInt(sIndex);
       if(id != 0){
         try {
-          ReportCategory RC = new ReportCategory(id);
+          ReportCategory RC = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(id);
           sName = RC.getName();
           sInfo = RC.getDescription();
         }
@@ -122,7 +122,7 @@ public class ReportCategoryMaker extends Block{
 
   private boolean saveCategory(String name,String info){
     try {
-      ReportCategory rc = new ReportCategory();
+      ReportCategory rc = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy();
       rc.setName(name);
       rc.setDescription(info);
       rc.insert();
@@ -135,7 +135,7 @@ public class ReportCategoryMaker extends Block{
   private boolean updateCategory(int id,String name,String info){
      try {
       if(id != -1){
-      ReportCategory rc = new ReportCategory(id);
+      ReportCategory rc = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(id);
       rc.setName(name);
       rc.setDescription(info);
       rc.update();
@@ -150,7 +150,7 @@ public class ReportCategoryMaker extends Block{
   }
   private boolean deleteCategory(int id){
     try {
-      ReportCategory rc = new ReportCategory(id);
+      ReportCategory rc = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(id);
       rc.delete();
       return true;
     }
@@ -162,7 +162,7 @@ public class ReportCategoryMaker extends Block{
   private DropdownMenu drpCategories(String sPrm,String selected) {
     ReportCategory[] cat = new ReportCategory[0];
     try{
-      cat = (ReportCategory[]) (new ReportCategory()).findAll();
+      cat = (ReportCategory[]) (((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy()).findAll();
     }
     catch(SQLException sql){}
     DropdownMenu drp = new DropdownMenu(sPrm);

@@ -158,7 +158,7 @@ public PollResult() {
     PollQuestion question = null;
     LocalizedText questionLocText = null;
     try {
-      question = new PollQuestion(pollQuestionID);
+      question = ((com.idega.block.poll.data.PollQuestionHome)com.idega.data.IDOLookup.getHomeLegacy(PollQuestion.class)).findByPrimaryKeyLegacy(pollQuestionID);
       questionLocText = TextFinder.getLocalizedText(question,_iLocaleID);
     }
     catch (SQLException e) {

@@ -120,7 +120,7 @@ public class StaffImageTab extends UserTab{
   public void initFieldContents(){
 
     try{
-      StaffInfo staffInfo = new StaffInfo(getUserId());
+      StaffInfo staffInfo = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).findByPrimaryKeyLegacy(getUserId());
 
       fieldValues.put(this.imageFieldName,(staffInfo.getImageID() != -1) ? Integer.toString(staffInfo.getImageID()):"" );
       this.updateFieldsDisplayStatus();

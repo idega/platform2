@@ -373,7 +373,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
       Vector files = null;
 
       try {
-        ICFile file = new ICFile(iImageId);
+        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iImageId);
         files = new Vector();
         files.add(file);
       }

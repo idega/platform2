@@ -188,7 +188,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 	values = CurrencyFinder.getCurrencyValue(currency.getID());
 	if ( values == null ) {
 	  update = false;
-	  values = new CurrencyValues();
+	  values = ((com.idega.block.trade.data.CurrencyValuesHome)com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).createLegacy();
 	  values.setID(currency.getID());
 	}
 	values.setBuyValue(holder.getBuyValue());
@@ -223,7 +223,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     while (iter.hasNext()) {
       CurrencyHolder holder = (CurrencyHolder) currencyMap.get((String)iter.next());
       if ( holder != null && !map.containsKey(holder.getCurrencyName()) ) {
-	currency = new Currency();
+	currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
 	currency.setCurrencyAbbreviation(holder.getCurrencyName());
 	currency.setCurrencyName(holder.getCurrencyName());
 	bulk.add(currency,bulk.insert);

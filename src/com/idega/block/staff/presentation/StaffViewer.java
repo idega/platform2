@@ -180,7 +180,7 @@ private Table _myTable;
 	if ( _showListTitle )
 	  staffInfo = StaffFinder.getStaffInfo(user.getID());
 	if ( _showListWorkPhone )
-	  phone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
+	  phone = UserBusiness.getUserPhone(user.getID(),com.idega.core.data.PhoneTypeBMPBean.WORK_PHONE_ID);
 
 	userLink = getStaffLink(user);
 	emailLink = getEmailLink(email);
@@ -243,8 +243,8 @@ private Table _myTable;
     User user = StaffFinder.getUser(_userID);
     StaffInfo staffInfo = StaffFinder.getStaffInfo(_userID);
     StaffMetaData[] staffMeta = StaffFinder.getMetaData(_userID);
-    Phone workphone = UserBusiness.getUserPhone(_userID,PhoneType.WORK_PHONE_ID);
-    Phone mobilephone = UserBusiness.getUserPhone(_userID,PhoneType.MOBILE_PHONE_ID);
+    Phone workphone = UserBusiness.getUserPhone(_userID,com.idega.core.data.PhoneTypeBMPBean.WORK_PHONE_ID);
+    Phone mobilephone = UserBusiness.getUserPhone(_userID,com.idega.core.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
 
     Table userTable = new Table();
       userTable.setWidth("100%");

@@ -1,5 +1,5 @@
 /*
- * $Id: StaffLayoutHandler.java,v 1.1 2002/01/06 14:09:07 laddi Exp $
+ * $Id: StaffLayoutHandler.java,v 1.2 2002/04/06 19:07:35 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

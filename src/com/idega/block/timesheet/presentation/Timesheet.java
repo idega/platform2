@@ -424,7 +424,7 @@ public class Timesheet extends Block{
           if (temp_member_id != null) {
               try {
                   if (isAdmin ) {
-                      user = new User(Integer.parseInt(temp_user_id));
+                      user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(temp_user_id));
                       this.user_id = user.getID();
                   }
               }
@@ -703,12 +703,12 @@ public class Timesheet extends Block{
                 DropdownMenu resources = new DropdownMenu();
                   resources.setName("resource");
 
-                  resources.addMenuElement(-1,(new User(this.user_id)).getName() );
+                  resources.addMenuElement(-1,(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(this.user_id)).getName() );
 
                 Resource[] res;
                   res = (Resource[]) iwc.getServletContext().getAttribute("all_resource_array");
                 if (res == null ) {
-                    res = (Resource[])(new Resource()).findAllByColumnOrdered("is_closed","N","resource_name");
+                    res = (Resource[])(((com.idega.block.timesheet.data.ResourceHome)com.idega.data.IDOLookup.getHomeLegacy(Resource.class)).createLegacy()).findAllByColumnOrdered("is_closed","N","resource_name");
                     iwc.getServletContext().setAttribute("all_resource_array",res);
                 }
 
@@ -733,7 +733,7 @@ public class Timesheet extends Block{
                       projects.setName("projects");
 
 //                    com.idega.data.genericentity.Member memberja = com.idega.jmodule.login.business.AccessControl.getMember(iwc);
-                    TimesheetProject[] pro = (TimesheetProject[]) user.findRelated(new TimesheetProject());
+                    TimesheetProject[] pro = (TimesheetProject[]) user.findRelated(((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).createLegacy());
 
                     if (pro != null) {
                       String the_name;
@@ -774,7 +774,7 @@ public class Timesheet extends Block{
 
 
 /////////////////////////
-                User user = new User(user_id);
+                User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(user_id);
 
 
 
@@ -859,7 +859,7 @@ public class Timesheet extends Block{
                         //dags = (dagur-u+"."+manudur+"."+ar);
 
 //                        entry = (com.idega.jmodule.timesheet.data.TimesheetEntry[]) (new com.idega.jmodule.timesheet.data.TimesheetEntry()).findAllByColumn("timesheet_entry_date",dags+"%");
-                        entry = (com.idega.block.timesheet.data.TimesheetEntry[]) (new com.idega.block.timesheet.data.TimesheetEntry()).findAllByColumnOrdered("timesheet_entry_date",dags+"%","user_id",""+user_id,"timesheet_entry_id");
+                        entry = (com.idega.block.timesheet.data.TimesheetEntry[]) (((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.block.timesheet.data.TimesheetEntry.class)).createLegacy()).findAllByColumnOrdered("timesheet_entry_date",dags+"%","user_id",""+user_id,"timesheet_entry_id");
 //myTable.add(" "+entry.length,1,(current_row+1));
 
                         if (entry != null)
@@ -910,7 +910,7 @@ public class Timesheet extends Block{
 
                                 if (!resource_id_null)
                                   if ( (resource_id != -1) && (resource_id != 0) ){
-                                    resource = new Resource(resource_id);
+                                    resource = ((com.idega.block.timesheet.data.ResourceHome)com.idega.data.IDOLookup.getHomeLegacy(Resource.class)).findByPrimaryKeyLegacy(resource_id);
                                     myTable.add(resource.getName(),2,current_row);
 
                                     if (resource.getUnitName() != null ) {
@@ -1016,7 +1016,7 @@ public class Timesheet extends Block{
 		  				    myTable.add(projects,3,current_row);
                                                 }
                                                 else {
-                                                    TimesheetProject userProject = new TimesheetProject(userDefinedProjectId);
+                                                    TimesheetProject userProject = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(userDefinedProjectId);
                                                     myTable.add(userProject.getName(),3,current_row);
                                                     myTable.add(new HiddenInput("projects",""+userDefinedProjectId),3,current_row);
                                                 }
@@ -1187,8 +1187,8 @@ public class Timesheet extends Block{
                 }
 
 
-                TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' order by project_id,timesheet_entry_date");
-                TimesheetEntry[] entry_count_projects = (TimesheetEntry[])(new TimesheetEntry()).findAll("select distinct project_id from timesheet_entry where user_id="+user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"'");
+                TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' order by project_id,timesheet_entry_date");
+                TimesheetEntry[] entry_count_projects = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select distinct project_id from timesheet_entry where user_id="+user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"'");
 
                 int rows = 0;
                 if (entry_count_projects!= null) {
@@ -1227,7 +1227,7 @@ public class Timesheet extends Block{
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
 
-                        Text memberName = new Text( (new User(this.user_id)).getName());
+                        Text memberName = new Text( (((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(this.user_id)).getName());
                             memberName.setFontSize(3);
                             memberName.setBold();
                             memberName.setFontColor(this.header_text_color);
@@ -1302,7 +1302,7 @@ public class Timesheet extends Block{
 
                         project_id = entry_count_projects[i].getProjectId();
 
-                        project = new TimesheetProject(project_id);
+                        project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(project_id);
 
                         String project_name = project.getName();
                           if (project_name != null)
@@ -1328,7 +1328,7 @@ public class Timesheet extends Block{
 
                             myTable.setColumnAttribute(j+2,"align","center");
 
-                            inside_entry = (TimesheetEntry[]) (new TimesheetEntry()).findAll("select * from timesheet_entry where project_id="+project_id+" AND timesheet_entry_date = '"+today+"' AND user_id = "+this.user_id+"");
+                            inside_entry = (TimesheetEntry[]) (((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where project_id="+project_id+" AND timesheet_entry_date = '"+today+"' AND user_id = "+this.user_id+"");
                             myTable.setVerticalAlignment(2+j,currentrow,"top");
                             if (inside_entry != null) {
                                 how_many_today = 0;
@@ -1473,8 +1473,8 @@ public class Timesheet extends Block{
              dags2 = (ar+"-0"+manudur+"-"+(dagariman));
           }
 
-          User user = new User(this.user_id);
-          TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date");
+          User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(this.user_id);
+          TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date");
 
           movementVerk(iwc, entry, project_id, false);
 
@@ -1498,7 +1498,7 @@ public class Timesheet extends Block{
                  dags2 = (ar+"-0"+manudur+"-"+(dagariman));
               }
 
-              TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date");
+              TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date");
 
               movementVerk(iwc, entry, project_id, true);
 
@@ -1520,7 +1520,7 @@ public class Timesheet extends Block{
               hour_report_string = "hour_pr_project_all";
           }
 
-          TimesheetProject project = new TimesheetProject(Integer.parseInt(project_id));
+          TimesheetProject project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(Integer.parseInt(project_id));
 
 	  double vinnaSamtals = 0;
           double aksturSamtals = 0;
@@ -1597,7 +1597,7 @@ public class Timesheet extends Block{
                     resource_name = null;
                     resource_unit_name = null;
                     if (entry[i].getResource() != null) {
-                        Resource resource = new Resource(entry[i].getResourceId());
+                        Resource resource = ((com.idega.block.timesheet.data.ResourceHome)com.idega.data.IDOLookup.getHomeLegacy(Resource.class)).findByPrimaryKeyLegacy(entry[i].getResourceId());
                         resource_id = Integer.toString(resource.getID());
                         resource_name = resource.getName();
                         resource_unit_name = resource.getUnitName();
@@ -1720,10 +1720,10 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
 
 
-                TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' order by timesheet_entry_date,project_id");
-                com.idega.data.genericentity.Member member = new com.idega.data.genericentity.Member();
+                TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' order by timesheet_entry_date,project_id");
+                com.idega.data.genericentity.Member member = ((com.idega.data.genericentity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.data.genericentity.Member.class)).createLegacy();
                 TimesheetProject project;
-                //TimesheetEntry[] entry_count_projects = (TimesheetEntry[])(new TimesheetEntry()).findAll("select distinct project_id from timesheet_entry where member_id="+member_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"'");
+                //TimesheetEntry[] entry_count_projects = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select distinct project_id from timesheet_entry where member_id="+member_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"'");
 
 
 		int rows=0;
@@ -1743,7 +1743,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
 
-                        Text memberName = new Text("Starfsmannaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (new User(this.user_id)).getName());
+                        Text memberName = new Text("Starfsmannaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(this.user_id)).getName());
                             memberName.setFontSize(3);
                             memberName.setBold();
                             memberName.setFontColor(this.header_text_color);
@@ -1797,12 +1797,12 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
               int fontSize = 1;
 
               for (int i = 0; i < entry.length; i++) {
-                    project = new TimesheetProject(entry[i].getProjectId());
+                    project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                     resource_id = null;
                     resource_name = null;
                     resource_unit_name = null;
                     if (entry[i].getResource() != null) {
-                        Resource resource = new Resource(entry[i].getResourceId());
+                        Resource resource = ((com.idega.block.timesheet.data.ResourceHome)com.idega.data.IDOLookup.getHomeLegacy(Resource.class)).findByPrimaryKeyLegacy(entry[i].getResourceId());
                         resource_id = Integer.toString(resource.getID());
                         resource_name = resource.getName();
                         resource_unit_name = resource.getUnitName();
@@ -1902,13 +1902,13 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
           int member_id_int = Integer.parseInt(member_id);
 
 
-          TimesheetEntry[] entry = (TimesheetEntry[]) (new TimesheetEntry()).findAllByColumn("timesheet_entry_id",entry_id);
+          TimesheetEntry[] entry = (TimesheetEntry[]) (((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAllByColumn("timesheet_entry_id",entry_id);
           CalendarEntry[] calEntry;
 
           if (entry != null) {
             for (int i = 0 ; i < entry.length ; i++) {
               if ( (entry[i].getUserId() == member_id_int) || (!entry[i].isBooked()) ) {
-                  calEntry = (CalendarEntry[]) entry[i].findReverseRelated(new CalendarEntry());
+                  calEntry = (CalendarEntry[]) entry[i].findReverseRelated(((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy());
                   for (int j = 0; j < calEntry.length; j++) {
                       calEntry[j].removeFrom(entry[i]);
                       calEntry[j].delete();
@@ -1943,7 +1943,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 				if ( entry_id[telja].equals("null") ){
                                      if (!timar[telja].equals("null")) {
 
-                                        TimesheetEntry entry = new TimesheetEntry();
+                                        TimesheetEntry entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy();
 
                                         stamp = new idegaTimestamp(date[telja]);
 
@@ -1975,7 +1975,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
 			        }
 /*				else {
-                                        TimesheetEntry entry = new TimesheetEntry(Integer.parseInt(entry_id[telja]));
+                                        TimesheetEntry entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).findByPrimaryKeyLegacy(Integer.parseInt(entry_id[telja]));
 
                                         stamp = new idegaTimestamp(date[telja]);
 
@@ -2039,7 +2039,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                         nafnPaMoned.setBold();
                         nafnPaMoned.setFontColor(this.header_text_color);
 
-                    Text memberName = new Text( (new User(this.user_id)).getName());
+                    Text memberName = new Text( (((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(this.user_id)).getName());
                         memberName.setFontSize(3);
                         memberName.setBold();
                         memberName.setFontColor(this.header_text_color);
@@ -2098,7 +2098,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
             for (int i = 1; i < dagariman+1; i++) {
                 ++row;
 
-                entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date = '"+ar+"-"+manudur+"-"+i+"'  order by timesheet_entry_date,project_id");
+                entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date = '"+ar+"-"+manudur+"-"+i+"'  order by timesheet_entry_date,project_id");
 
                 day_of_week = cal.getDayOfWeek(ar,manudur,i);
 
@@ -2217,8 +2217,8 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
 
 /*
-            TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where member_id="+this.member_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' order by timesheet_entry_date,project_id");
-//            com.idega.data.genericentity.Member member = new com.idega.data.genericentity.Member();
+            TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where member_id="+this.member_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' order by timesheet_entry_date,project_id");
+//            com.idega.data.genericentity.Member member = ((com.idega.data.genericentity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.data.genericentity.Member.class)).createLegacy();
             com.idega.jmodule.timesheet.data.TimesheetProject project;
             Days[] days = (Days[])(new Days()).findAllOrdered("days_id");
             double totalHours = 0;
@@ -2237,7 +2237,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
 
-                        Text memberName = new Text( (new com.idega.data.genericentity.Member(this.member_id)).getName());
+                        Text memberName = new Text( (((com.idega.data.genericentity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.data.genericentity.Member.class)).findByPrimaryKeyLegacy(this.member_id)).getName());
                             memberName.setFontSize(3);
                             memberName.setBold();
                             memberName.setFontColor(this.header_text_color);
@@ -2291,7 +2291,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                       ++row;
                       stamp = entry[i].getDate();
                       i_stamp = new idegaTimestamp(stamp);
-                      project = new TimesheetProject(entry[i].getProjectId());
+                      project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                       day_of_week = cal.getDayOfWeek(i_stamp.getYear(),i_stamp.getMonth(),i_stamp.getDate());
                       total_hour = 0;
                       day_hour = 0;
@@ -2381,7 +2381,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                 }
 
 
-          TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date,project_id");
+          TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date,project_id");
 
           projectReportHour(iwc, entry, project_id, false);
 
@@ -2400,7 +2400,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                     }
 
 
-              TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date,project_id");
+              TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date,project_id");
 
               projectReportHour(iwc, entry, project_id, true);
 
@@ -2436,7 +2436,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
 
-                        Text memberName = new Text( (new TimesheetProject(Integer.parseInt(project_id))).getName());
+                        Text memberName = new Text( (((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(Integer.parseInt(project_id))).getName());
                             memberName.setFontSize(3);
                             memberName.setBold();
                             memberName.setFontColor(this.header_text_color);
@@ -2492,7 +2492,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                       ++row;
                       stamp = entry[i].getDate();
                       i_stamp = new idegaTimestamp(stamp);
-                      project = new TimesheetProject(entry[i].getProjectId());
+                      project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                       day_of_week = cal.getDayOfWeek(i_stamp.getYear(),i_stamp.getMonth(),i_stamp.getDate());
                       if (viewAll) {
                           current_user = entry[i].getUser();
@@ -2592,13 +2592,13 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
                 TimesheetEntry[] entry = null;
                 if (viewPrevious) {
-                    entry = TimesheetEntry.getPreviousEntries(1,manudur,ar,this.user_id);
+                    entry = com.idega.block.timesheet.data.TimesheetEntryBMPBean.getPreviousEntries(1,manudur,ar,this.user_id);
                 }
                 else {
-                    entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' AND booked='N' AND registered='N' order by timesheet_entry_date,project_id");
-                    arePreviousEntries = TimesheetEntry.arePreviousEntries(1,manudur,ar,this.user_id);
+                    entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' AND booked='N' AND registered='N' order by timesheet_entry_date,project_id");
+                    arePreviousEntries = com.idega.block.timesheet.data.TimesheetEntryBMPBean.arePreviousEntries(1,manudur,ar,this.user_id);
                 }
-                User user = new User(this.user_id);
+                User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(this.user_id);
                 TimesheetProject project;
 
 
@@ -2685,14 +2685,14 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
               int fontSize = 1;
 
               for (int i = 0; i < entry.length; i++) {
-                    project = new TimesheetProject(entry[i].getProjectId());
+                    project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                     resource_id = null;
                     resource_name = null;
                     resource_unit_name = null;
                     project_name = null;
                     project_number = null;
                     if (entry[i].getResource() != null) {
-                        Resource resource = new Resource(entry[i].getResourceId());
+                        Resource resource = ((com.idega.block.timesheet.data.ResourceHome)com.idega.data.IDOLookup.getHomeLegacy(Resource.class)).findByPrimaryKeyLegacy(entry[i].getResourceId());
                         resource_id = Integer.toString(resource.getID());
                         resource_name = resource.getName();
                         resource_unit_name = resource.getUnitName();
@@ -2836,8 +2836,8 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                 double vinnaSamtals = 0;
                 double aksturSamtals = 0;
 
-                TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' AND booked='Y' AND registered='N' order by timesheet_entry_date,project_id");
-                com.idega.data.genericentity.Member member = new com.idega.data.genericentity.Member(this.user_id);
+                TimesheetEntry[] entry = (TimesheetEntry[])(((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' AND booked='Y' AND registered='N' order by timesheet_entry_date,project_id");
+                com.idega.data.genericentity.Member member = ((com.idega.data.genericentity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.data.genericentity.Member.class)).findByPrimaryKeyLegacy(this.user_id);
                 TimesheetProject project;
 
 
@@ -2917,14 +2917,14 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
               int fontSize = 1;
 
               for (int i = 0; i < entry.length; i++) {
-                    project = new TimesheetProject(entry[i].getProjectId());
+                    project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                     resource_id = null;
                     resource_name = null;
                     resource_unit_name = null;
                     project_name = null;
                     project_number = null;
                     if (entry[i].getResource() != null) {
-                        Resource resource = new Resource(entry[i].getResourceId());
+                        Resource resource = ((com.idega.block.timesheet.data.ResourceHome)com.idega.data.IDOLookup.getHomeLegacy(Resource.class)).findByPrimaryKeyLegacy(entry[i].getResourceId());
                         resource_id = Integer.toString(resource.getID());
                         resource_name = resource.getName();
                         resource_unit_name = resource.getUnitName();
@@ -3038,7 +3038,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
               if (entry_id != null) {
                   for (int i = 0; i < entry_id.length; i++) {
                       if (this.bookAllAtOnce) {
-                          entry = new TimesheetEntry(Integer.parseInt(entry_id[i]));
+                          entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).findByPrimaryKeyLegacy(Integer.parseInt(entry_id[i]));
                           entry.setBooked(true);
                           entry.update();
                       }
@@ -3047,7 +3047,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                           active = iwc.getParameter("idega_timesheet_Book"+entry_id[i]);
                           if (active != null){
                             if (!active.equals("")) {
-                                entry = new TimesheetEntry(Integer.parseInt(entry_id[i]));
+                                entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).findByPrimaryKeyLegacy(Integer.parseInt(entry_id[i]));
                                 entry.setBooked(true);
                                 entry.update();
                             }
@@ -3070,7 +3070,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                       active = iwc.getParameter("idega_timesheet_Register"+entry_id[i]);
                       if (active != null){
                         if (!active.equals("")) {
-                            entry = new TimesheetEntry(Integer.parseInt(entry_id[i]));
+                            entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).findByPrimaryKeyLegacy(Integer.parseInt(entry_id[i]));
                             entry.setRegistered(true);
                             entry.update();
                         }
@@ -3093,13 +3093,13 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                 TimesheetProject project;
                 if (where_to.equals("<=")) {
                     for (int i = 0; i < project_id.length; i++) {
-                        project = new TimesheetProject(Integer.parseInt(project_id[i]));
+                        project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(Integer.parseInt(project_id[i]));
                         user.addTo(project);
                     }
                 }
                 else if (where_to.equals("=>")) {
                     for (int i = 0; i < project_id.length; i++) {
-                        project = new TimesheetProject(Integer.parseInt(project_id[i]));
+                        project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(Integer.parseInt(project_id[i]));
                         user.reverseRemoveFrom(project);
                     }
                 }
@@ -3118,7 +3118,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
         private void myProjects(IWContext iwc) throws SQLException{
             TimesheetProject[] allProjects = TimesheetService.getAllProjectsOrderByProjectNumber(iwc);
 
-            TimesheetProject[] usedProjects = (TimesheetProject[]) user.findRelated(new TimesheetProject());
+            TimesheetProject[] usedProjects = (TimesheetProject[]) user.findRelated(((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).createLegacy());
 
             Vector projects_left = new Vector();
                 if (allProjects.length > 0) {

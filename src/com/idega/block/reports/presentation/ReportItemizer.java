@@ -13,7 +13,7 @@ import com.idega.presentation.Editor;
 import com.idega.block.reports.presentation.ReportObjectHandler;
 import com.idega.block.reports.business.ReportEntityHandler;
 import com.idega.presentation.PresentationObject;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityFinder;
 import java.util.List;
 import com.idega.util.text.Edit;
@@ -121,7 +121,7 @@ public class ReportItemizer extends Block implements Reports{
       iwc.setSessionAttribute(prefix+"id",new Integer(id));
       if(id != 0){
         try {
-          ReportCategory RC = new ReportCategory(id);
+          ReportCategory RC = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(id);
           sName = RC.getName();
           sInfo = RC.getDescription();
         }
@@ -142,7 +142,7 @@ public class ReportItemizer extends Block implements Reports{
   private PresentationObject doView(IWContext iwc){
     List L = null;
     try{
-      L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnCategoryId(),iCategoryId);
+      L = EntityFinder.findAllByColumn(((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy(),com.idega.block.reports.data.ReportItemBMPBean.getColumnCategoryId(),iCategoryId);
     }
     catch(Exception e){L = null;}
     Table T = new Table();
@@ -241,7 +241,7 @@ T.add(Edit.formatText("Display order"),1,a++);
       int repItemId = Integer.parseInt(sRepItemId);
       if(repItemId > 0){
         try {
-          ReportItem ri = new ReportItem(repItemId );
+          ReportItem ri = ((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).findByPrimaryKeyLegacy(repItemId );
           name.setContent(ri.getName());
           field.setContent(ri.getField());
           table.setContent(ri.getMainTable());
@@ -325,7 +325,7 @@ T.add(Edit.formatText("Display order"),1,a++);
     T.add(drp,1,1);
     if(iEntId > 0){
       try{
-        ReportEntity RE = new ReportEntity(iEntId);
+        ReportEntity RE = ((com.idega.block.reports.data.ReportEntityHome)com.idega.data.IDOLookup.getHomeLegacy(ReportEntity.class)).findByPrimaryKeyLegacy(iEntId);
         T.add(getEntityForm(RE),1,2);
       }
       catch(SQLException sql){sql.printStackTrace();}
@@ -338,7 +338,7 @@ T.add(Edit.formatText("Display order"),1,a++);
 
   private PresentationObject getEntityTable(ReportEntity RE){
     try{
-    GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
     T.add(Edit.formatText("Display"),1,1);
@@ -359,7 +359,7 @@ T.add(Edit.formatText("Display order"),1,a++);
 
   private PresentationObject getEntityForm(ReportEntity RE){
     try{
-    GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
+    IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
     T.add(Edit.formatText("Display"),1,1);
@@ -393,8 +393,8 @@ T.add(Edit.formatText("Display order"),1,a++);
     System.err.println("doUpdateEntityForm");
     try{
       int re_id = Integer.parseInt(iwc.getParameter("re_id"));
-      ReportEntity RE = new ReportEntity(re_id);
-      GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
+      ReportEntity RE = ((com.idega.block.reports.data.ReportEntityHome)com.idega.data.IDOLookup.getHomeLegacy(ReportEntity.class)).findByPrimaryKeyLegacy(re_id);
+      IDOLegacyEntity ent = (IDOLegacyEntity)Class.forName(RE.getEntity()).newInstance();
       String[] s = iwc.getParameterValues("box");
       int len = s.length;
       String[] columns  = ent.getVisibleColumnNames();
@@ -423,7 +423,7 @@ T.add(Edit.formatText("Display order"),1,a++);
   private List getReportEntities(){
     List L = null;
     try{
-      L = EntityFinder.findAll(new ReportEntity());
+      L = EntityFinder.findAll(((com.idega.block.reports.data.ReportEntityHome)com.idega.data.IDOLookup.getHomeLegacy(ReportEntity.class)).createLegacy());
     }
     catch(SQLException sql){
       sql.printStackTrace();

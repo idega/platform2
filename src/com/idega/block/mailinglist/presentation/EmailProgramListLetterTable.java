@@ -50,9 +50,9 @@ public class EmailProgramListLetterTable extends Block {
   }
 
   private Vector getDraftsContentVector() throws SQLException{
-    EmailLetterData letters = new EmailLetterData();
+    EmailLetterData letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
     EmailLetterData[] unSentLetters;
-    unSentLetters = (EmailLetterData[]) letters.findAllByColumn(EmailLetterData.EMAIL_LETTER_DATA_SENT, "N");
+    unSentLetters = (EmailLetterData[]) letters.findAllByColumn(com.idega.block.mailinglist.data.EmailLetterDataBMPBean.EMAIL_LETTER_DATA_SENT, "N");
 
     Vector draftContentVector = new Vector();
     Object[] contents;
@@ -114,9 +114,9 @@ public class EmailProgramListLetterTable extends Block {
   }
 
   private Vector getSentContentVector() throws SQLException{
-    EmailLetterData letters = new EmailLetterData();
+    EmailLetterData letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
     EmailLetterData[] sentLetters;
-    sentLetters = (EmailLetterData[]) letters.findAllByColumn(EmailLetterData.EMAIL_LETTER_DATA_SENT, "Y");
+    sentLetters = (EmailLetterData[]) letters.findAllByColumn(com.idega.block.mailinglist.data.EmailLetterDataBMPBean.EMAIL_LETTER_DATA_SENT, "Y");
 
     Vector sentContentVector = new Vector();
     Object[] sentContents;

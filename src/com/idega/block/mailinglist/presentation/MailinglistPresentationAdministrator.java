@@ -88,7 +88,7 @@ public class MailinglistPresentationAdministrator extends Block {
 
     checkBoxForm.add(addAndRemovecontrol);
 
-    Mailinglist postList = new Mailinglist();
+    Mailinglist postList = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     Mailinglist[] postListArray = null;
 
     postListArray = (Mailinglist[]) postList.findAll();
@@ -153,7 +153,7 @@ public class MailinglistPresentationAdministrator extends Block {
 
   public Form mailinglistChooserForm(IWContext modinfo) throws SQLException{
     String chosen;
-    Mailinglist mailinglist = new Mailinglist();
+    Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     Form postListChooserForm = new Form();
     postListChooserForm.maintainAllParameters();
     Table mailinglistChooserTable = new Table(3,1);
@@ -168,12 +168,12 @@ public class MailinglistPresentationAdministrator extends Block {
     mailinglistChooserTable.add(dropDownMenu, 2, 1);
     System.err.println("dropdownMenuName = "+modinfo.getParameter(dropdownMenuName));
     if((chosen != null) && (!"".equals(chosen))){
-      Mailinglist chosenMailinglist = new Mailinglist( Integer.parseInt(chosen));
+      Mailinglist chosenMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy( Integer.parseInt(chosen));
       mailinglistChooserTable.add( chosenMailinglist.getName(), 1, 1);
       mailinglistChooserTable.add(this.emailSelectionBox(chosenMailinglist), 3, 1);
     }
 /*    else{
-      Mailinglist chosenMailinglist = new Mailinglist( Integer.parseInt(oldChosen));
+      Mailinglist chosenMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy( Integer.parseInt(oldChosen));
       mailinglistChooserTable.add( chosenMailinglist.getName(), 1, 1);
       mailinglistChooserTable.add(this.emailSelectionBox(chosenMailinglist), 3, 1);
     }*/
@@ -221,14 +221,14 @@ public class MailinglistPresentationAdministrator extends Block {
   public SelectionBox emailSelectionBox(Mailinglist chosenMailinglist) throws SQLException{
 
     SelectionBox emailSelectionBox = new SelectionBox();
-    MailAccount emailList = new MailAccount();
+    MailAccount emailList = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
     MailAccount[] emailListArray;
-    emailListArray = (MailAccount[]) emailList.findAllOrdered(MailAccount.EMAIL);
+    emailListArray = (MailAccount[]) emailList.findAllOrdered(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL);
     if (!((emailListArray == null) || (emailListArray.length == 0))) {
       System.out.println("LENGD Á emailListArray = "+emailListArray.length);
       emailListArray = (MailAccount[]) EntityFinder.findRelated(chosenMailinglist, emailList).toArray( new MailAccount[0]);
       if (!((emailListArray == null) || (emailListArray.length == 0))) {
-        emailSelectionBox.addMenuElements(emailListArray, MailAccount.EMAIL);
+        emailSelectionBox.addMenuElements(emailListArray, com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL);
       }
     }
     emailSelectionBox.setHeight(3);

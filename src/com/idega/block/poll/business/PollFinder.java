@@ -26,7 +26,7 @@ public class PollFinder {
   public static PollEntity getPoll(String sAttribute){
     PollEntity poll = null;
     try {
-      List L = EntityFinder.findAllByColumn(new PollEntity(),PollEntity.getColumnNameAttribute(),sAttribute);
+      List L = EntityFinder.findAllByColumn(((com.idega.block.poll.data.PollEntityHome)com.idega.data.IDOLookup.getHomeLegacy(PollEntity.class)).createLegacy(),com.idega.block.poll.data.PollEntityBMPBean.getColumnNameAttribute(),sAttribute);
       if(L!= null)
         poll =  (PollEntity) L.get(0);
     }

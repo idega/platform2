@@ -18,7 +18,7 @@ public class CurrencyFinder {
 
   public static Currency getCurrency(int currencyID) {
     try {
-      return new Currency(currencyID);
+      return ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(currencyID);
     }
     catch (SQLException e) {
       return null;
@@ -27,7 +27,7 @@ public class CurrencyFinder {
 
   public static CurrencyValues getCurrencyValue(int currencyID) {
     try {
-      return new CurrencyValues(currencyID);
+      return ((com.idega.block.trade.data.CurrencyValuesHome)com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).findByPrimaryKeyLegacy(currencyID);
     }
     catch (SQLException e) {
       return null;
@@ -36,7 +36,7 @@ public class CurrencyFinder {
 
   public static Currency[] getCurrencies() {
     try {
-      return (Currency[]) Currency.getStaticInstance(Currency.class).findAll();
+      return (Currency[]) com.idega.block.trade.data.CurrencyBMPBean.getStaticInstance(Currency.class).findAll();
     }
     catch (SQLException e) {
       return null;
@@ -45,7 +45,7 @@ public class CurrencyFinder {
 
   public static CurrencyValues[] getCurrencyValues() {
     try {
-      return (CurrencyValues[]) CurrencyValues.getStaticInstance(CurrencyValues.class).findAll();
+      return (CurrencyValues[]) com.idega.block.trade.data.CurrencyValuesBMPBean.getStaticInstance(CurrencyValues.class).findAll();
     }
     catch (SQLException e) {
       return null;

@@ -205,7 +205,7 @@ public class ReportEditor extends Block implements Reports{
     boolean b = false;
     if(iReportId >0 ){
       try {
-        R = new Report(iReportId);
+        R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(iReportId);
         b = true;
       }
       catch (SQLException ex) {
@@ -261,7 +261,7 @@ public class ReportEditor extends Block implements Reports{
         String[] he = str2array(sHeaders,",:;");
         try{
           if(sReportId==null){
-            Report R = new Report();
+            Report R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy();
             R.setCategoryId(iSaveCategory);
             R.setName(sName);
             R.setInfo(sInfo);
@@ -271,7 +271,7 @@ public class ReportEditor extends Block implements Reports{
             msg = "Report was saved";
           }
           else{
-            Report R = new Report(Integer.parseInt(sReportId));
+            Report R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(Integer.parseInt(sReportId));
             //R.setCategory(iSaveCategory);
             R.setName(sName);
             R.setInfo(sInfo);
@@ -340,7 +340,7 @@ public class ReportEditor extends Block implements Reports{
       try{ id = Integer.parseInt(sUnionId);}
       catch(NumberFormatException e){}
       if(id > 1){
-        ReportItem RIx = new ReportItem();
+        ReportItem RIx = ((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy();
         RIx.setMainTable("union_member_info");
         RIx.setJoinTables("member");
         RIx.setJoin("union_member_info.member_id = member.member_id,union_member_info.union_id = "+sUnionId);
@@ -353,7 +353,7 @@ public class ReportEditor extends Block implements Reports{
     //////////////////////////////////////////////////////////////////
 
     String sql = rm.makeSQL(vRC);
-    Report R = new Report();
+    Report R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy();
     R.setCategoryId(iSaveCategory);
     R.setName(name);
     R.setInfo(info);

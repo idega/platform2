@@ -114,11 +114,11 @@ private int _layout = RADIO_BUTTON_VIEW;
     }
 
     if ( _newObjInst ) {
-      _pollID = PollFinder.getRelatedEntityId(new ICObjectInstance(getICObjectInstanceID()));
+      _pollID = PollFinder.getRelatedEntityId(((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
     }
 
     if(_pollID > 0) {
-      poll = new PollEntity(_pollID);
+      poll = ((com.idega.block.poll.data.PollEntityHome)com.idega.data.IDOLookup.getHomeLegacy(PollEntity.class)).findByPrimaryKeyLegacy(_pollID);
     }
     else if ( _sAttribute != null ){
       poll = PollFinder.getPoll(_sAttribute);

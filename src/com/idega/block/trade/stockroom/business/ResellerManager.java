@@ -43,7 +43,7 @@ public class ResellerManager {
    */
   public boolean deleteReseller(int id) {
     try {
-      return deleteReseller(new Reseller(id));
+      return deleteReseller(((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(id));
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
       return false;
@@ -98,35 +98,35 @@ public class ResellerManager {
 
 
     if (isUpdate) {
-      Reseller res = new Reseller(resellerId);
+      Reseller res = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
         res.setName(name);
         res.setDescription(description);
       res.update();
 
-      res.removeFrom(Address.getStaticInstance(Address.class));
+      res.removeFrom(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
         res.addTo(Address.class, addressIds[i]);
       }
 
-      res.removeFrom(Phone.getStaticInstance(Phone.class));
+      res.removeFrom(com.idega.core.data.PhoneBMPBean.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
         res.addTo(Phone.class, phoneIds[i]);
       }
 
-      res.removeFrom(Email.getStaticInstance(Email.class));
+      res.removeFrom(com.idega.core.data.EmailBMPBean.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
         res.addTo(Email.class, emailIds[i]);
       }
       return res;
     }
     else {
-      Reseller reseller = new Reseller();
+      Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).createLegacy();
       CypherText cyph = new CypherText();
       String key = cyph.getKey(10);
-      String[] check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
+      String[] check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" where "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameReferenceNumber()+" = '"+key+"'");
       while (check.length > 0) {
         cyph.getKey(10);
-        check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
+        check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" where "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameReferenceNumber()+" = '"+key+"'");
       }
       reseller.setName(name);
       reseller.setDescription(description);
@@ -134,7 +134,7 @@ public class ResellerManager {
       reseller.setReferenceNumber(key);
       reseller.insert();
 
-      ResellerStaffGroup sGroup = new ResellerStaffGroup();
+      ResellerStaffGroup sGroup = ((com.idega.block.trade.stockroom.data.ResellerStaffGroupHome)com.idega.data.IDOLookup.getHomeLegacy(ResellerStaffGroup.class)).createLegacy();
       sGroup.setName(name+"_"+reseller.getID());
       sGroup.insert();
 
@@ -203,7 +203,7 @@ public class ResellerManager {
      * implementa
      */
 /*
-    supplier.reverseRemoveFrom(Address.getStaticInstance(Address.class));
+    supplier.reverseRemoveFrom(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
 
     if(addressIds != null){
       for (int i = 0; i < addressIds.length; i++) {
@@ -213,13 +213,13 @@ public class ResellerManager {
 
     if(phoneIds != null){
       if (phoneIds.length == 0) {
-        supplier.reverseRemoveFrom(Phone.getStaticInstance(Phone.class));
+        supplier.reverseRemoveFrom(com.idega.core.data.PhoneBMPBean.getStaticInstance(Phone.class));
       }
     }
 
     if(emailIds != null){
       if (emailIds.length == 0) {
-        supplier.reverseRemoveFrom(Phone.getStaticInstance(Email.class));
+        supplier.reverseRemoveFrom(com.idega.core.data.PhoneBMPBean.getStaticInstance(Email.class));
       }
     }
 */
@@ -229,19 +229,19 @@ public class ResellerManager {
   public static Reseller[] getResellers(int serviceId, idegaTimestamp stamp) {
     Reseller[] returner = {};
     try {
-        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
+        Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
 
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select r.* from "+Contract.getContractTableName()+" c, "+Reseller.getResellerTableName()+" r");
+            sql.append("Select r.* from "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName()+" c, "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r");
             sql.append(" where ");
-            sql.append(" c."+Contract.getColumnNameServiceId()+"="+serviceId);
+            sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+"="+serviceId);
             sql.append(" and ");
-            sql.append(" c."+Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
+            sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
             sql.append(" and ");
-            sql.append(" c."+Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
+            sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
             sql.append(" and ");
-            sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
+            sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
 
         returner = (Reseller[]) reseller.findAll(sql.toString());
 
@@ -256,7 +256,7 @@ public class ResellerManager {
   public static DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int resellerId) {
     try {
       Product[] list = getProductsForReseller(iwc, resellerId);
-      DropdownMenu menu = new DropdownMenu(((Product)Product.getStaticInstance(Product.class)).getEntityName());
+      DropdownMenu menu = new DropdownMenu(((Product)com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class)).getEntityName());
       Product product;
       if (list != null && list.length > 0) {
         for (int i = 0; i < list.length; i++) {
@@ -266,7 +266,7 @@ public class ResellerManager {
       return menu;
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
-      return new DropdownMenu(Product.getProductEntityName());
+      return new DropdownMenu(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
     }
   }
 
@@ -278,20 +278,20 @@ public class ResellerManager {
      */
 
     try {
-        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
-        Product product = (Product) (Product.getStaticInstance(Product.class));
+        Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
+        Product product = (Product) (com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class));
 
         StringBuffer sql = new StringBuffer();
-          sql.append("SELECT p.* FROM "+Reseller.getResellerTableName()+" r, "+Product.getProductEntityName()+" p, "+Contract.getContractTableName()+" c");
+          sql.append("SELECT p.* FROM "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName()+" p, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName()+" c");
           sql.append(" WHERE ");
-          sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
+          sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
           sql.append(" AND ");
-          sql.append(" c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+          sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+product.getIDColumnName());
           sql.append(" AND ");
           sql.append(" r."+reseller.getIDColumnName() +" = "+resellerId);
           sql.append(" AND ");
-          sql.append(" p."+Product.getColumnNameIsValid()+" = 'Y'");
-//          sql.append(" ORDER BY p."+Product.getColumnNameProductName());
+          sql.append(" p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()+" = 'Y'");
+//          sql.append(" ORDER BY p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
 
         products = (Product[]) product.findAll(sql.toString());
 
@@ -300,7 +300,7 @@ public class ResellerManager {
     }
 
     return products;
-    //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
+    //(Product[]) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
   }
 
   public static Supplier[] getSuppliers(int resellerId) {
@@ -310,11 +310,11 @@ public class ResellerManager {
   public static Supplier[] getSuppliers(int resellerId, String orderBy) {
     Supplier[] suppliers = {};
     try {
-        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
-        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+        Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
+        Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
 
         StringBuffer sql = new StringBuffer();
-          sql.append("Select s.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
+          sql.append("Select s.* from "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, ");
           sql.append(EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
           sql.append(" WHERE ");
           sql.append(" r."+reseller.getIDColumnName()+" = "+resellerId);
@@ -323,12 +323,12 @@ public class ResellerManager {
           sql.append(" AND ");
           sql.append(" r."+reseller.getIDColumnName()+" = rs."+reseller.getIDColumnName());
           sql.append(" AND ");
-          sql.append("s."+Supplier.getColumnNameIsValid()+" = 'Y'");
+          sql.append("s."+com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameIsValid()+" = 'Y'");
           if (!orderBy.equals("")) {
             sql.append(" ORDER BY s."+orderBy);
           }
 
-        suppliers = (Supplier[]) (Supplier.getStaticInstance(Supplier.class)).findAll(sql.toString());
+        suppliers = (Supplier[]) (com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class)).findAll(sql.toString());
 
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -374,9 +374,9 @@ public class ResellerManager {
       }
 
       StringBuffer buff = new StringBuffer();
-        buff.append("SELECT * FROM "+Reseller.getResellerTableName());
+        buff.append("SELECT * FROM "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName());
         buff.append(" WHERE ");
-        buff.append(Reseller.getColumnNameIsValid()+" = 'Y'");
+        buff.append(com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameIsValid()+" = 'Y'");
         if (exclude.length > 0) {
           buff.append(" AND ");
           buff.append(reseller.getIDColumnName()+" not in (");
@@ -403,12 +403,12 @@ public class ResellerManager {
   public static Iterator getResellers(Supplier supplier, String orderBy) {
     Iterator iter = null;
     try {
-        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
-//        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+        Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
+//        Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
         int supplierId = supplier.getID();
 
         StringBuffer sql = new StringBuffer();
-          sql.append("Select r.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
+          sql.append("Select r.* from "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, ");
           sql.append(EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
           sql.append(" WHERE ");
           sql.append(" s."+supplier.getIDColumnName()+" = "+supplierId);
@@ -417,13 +417,13 @@ public class ResellerManager {
           sql.append(" AND ");
           sql.append(" r."+reseller.getIDColumnName()+" = rs."+reseller.getIDColumnName());
           sql.append(" AND ");
-          sql.append("r."+Reseller.getColumnNameIsValid()+" = 'Y'");
+          sql.append("r."+com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameIsValid()+" = 'Y'");
           if (!orderBy.equals("")) {
             sql.append(" ORDER BY r."+orderBy);
           }
 
-        List list = EntityFinder.findAll(Reseller.getStaticInstance(Reseller.class), sql.toString());
-//        resellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAll(sql.toString());
+        List list = EntityFinder.findAll(com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class), sql.toString());
+//        resellers = (Reseller[]) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class)).findAll(sql.toString());
         if (list != null) {
           iter = list.iterator();
         }else {
@@ -443,18 +443,18 @@ public class ResellerManager {
   public static Supplier[] getSuppliersWithContracts(int resellerId, String orderBy) {
     Supplier[] suppliers =  {};
     try {
-      Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
-      Product product = (Product) Product.getStaticInstance(Product.class);
-      Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
+      Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
+      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+      Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(s.*) FROM "+Supplier.getSupplierTableName()+" s, "+Contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append("SELECT distinct(s.*) FROM "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c, "+product.getEntityName()+" p");
         buffer.append(" WHERE ");
-        buffer.append("c."+Contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
-        buffer.append("c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+product.getIDColumnName());
         buffer.append(" AND ");
-        buffer.append("p."+Product.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
+        buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
         if (orderBy != null && !orderBy.equals("")) {
         buffer.append(" ORDER BY s."+orderBy);
         }
@@ -498,23 +498,23 @@ public class ResellerManager {
   private static Product[] getProductsWithContracts(int ownerResellerId, int contractedResellerId, int supplierId, String orderBy) {
     Product[] products =  {};
     try {
-      Product product = (Product) Product.getStaticInstance(Product.class);
-      Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
-      Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
+      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+      Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
+      Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(p.*) FROM  "+Contract.getContractTableName() +" c");
+        buffer.append("SELECT distinct(p.*) FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
         buffer.append(", "+product.getEntityName()+" p");
         if (ownerResellerId != -1) {
           buffer.append(", "+reseller.getTreeRelationshipTableName(reseller)+" r");
         }
         buffer.append(" WHERE ");
-        buffer.append("c."+Contract.getColumnNameResellerId()+" = "+contractedResellerId);
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+contractedResellerId);
         buffer.append(" AND ");
-        buffer.append("c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+product.getIDColumnName());
         if (supplierId != -1) {
           buffer.append(" AND ");
-          buffer.append("p."+Product.getColumnNameSupplierId()+" = "+supplierId);
+          buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = "+supplierId);
         }else if (ownerResellerId != -1) {
           buffer.append(" AND ");
           buffer.append("r."+reseller.getTreeRelationshipChildColumnName(reseller)+"="+contractedResellerId);
@@ -540,23 +540,23 @@ public class ResellerManager {
     boolean returner = false;
 
     try {
-      Product product = (Product) Product.getStaticInstance(Product.class);
-      Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
+      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+      Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(c.*) FROM  "+Contract.getContractTableName() +" c");
+        buffer.append("SELECT distinct(c.*) FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
         if (supplierId != -1) {
           buffer.append(", "+product.getEntityName()+" p");
         }
         buffer.append(" WHERE ");
-        buffer.append("c."+Contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
-        buffer.append("c."+Contract.getColumnNameServiceId()+" = "+productId);
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = "+productId);
         if (supplierId != -1) {
           buffer.append(" AND ");
-          buffer.append("p."+product.getIDColumnName()+" = c."+Contract.getColumnNameServiceId());
+          buffer.append("p."+product.getIDColumnName()+" = c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId());
           buffer.append(" AND ");
-          buffer.append("p."+Product.getColumnNameSupplierId()+" = "+supplierId);
+          buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = "+supplierId);
         }
 
       String[] resuls = SimpleQuerier.executeStringQuery(buffer.toString());
@@ -579,14 +579,14 @@ public class ResellerManager {
     String description = permissionGroupDescription;
 
     PermissionGroup pGroup = null;
-    List listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), name, PermissionGroup.getGroupDescriptionColumnName(), description  );
+    List listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), name, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description  );
     if (listi != null) {
       if (listi.size() > 0) {
         pGroup = (PermissionGroup) listi.get(listi.size()-1);
       }
     }
     if (listi == null) {
-      listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), reseller.getName()+ permissionGroupNameExtention, PermissionGroup.getGroupDescriptionColumnName(), description  );
+      listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), reseller.getName()+ permissionGroupNameExtention, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description  );
       if (listi != null) {
         if (listi.size() > 0) {
           pGroup = (PermissionGroup) listi.get(listi.size()-1);
@@ -601,7 +601,7 @@ public class ResellerManager {
     String name = reseller.getName()+"_"+reseller.getID();
     ResellerStaffGroup sGroup = null;
 
-    List listi = EntityFinder.findAllByColumn((ResellerStaffGroup) ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class), ResellerStaffGroup.getNameColumnName(), name);
+    List listi = EntityFinder.findAllByColumn((ResellerStaffGroup) com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.getStaticInstance(ResellerStaffGroup.class), com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.getNameColumnName(), name);
     if (listi != null) {
       if (listi.size() > 0) {
         sGroup = (ResellerStaffGroup) listi.get(listi.size()-1);
@@ -609,7 +609,7 @@ public class ResellerManager {
     }
 
     if (listi == null) {
-      listi = EntityFinder.findAllByColumn((ResellerStaffGroup) ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class), ResellerStaffGroup.getNameColumnName(), reseller.getName());
+      listi = EntityFinder.findAllByColumn((ResellerStaffGroup) com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.getStaticInstance(ResellerStaffGroup.class), com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.getNameColumnName(), reseller.getName());
       if (listi != null) {
         if (listi.size() > 0) {
           sGroup = (ResellerStaffGroup) listi.get(listi.size()-1);
@@ -675,7 +675,7 @@ public class ResellerManager {
   }
 
   public static List getUsersIncludingSubResellers(Reseller reseller) {
-    Iterator childs = ResellerManager.getResellerChilds(reseller, Reseller.getColumnNameName());
+    Iterator childs = ResellerManager.getResellerChilds(reseller, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     List users = getUsers(reseller);
     List temp;
 
@@ -689,7 +689,7 @@ public class ResellerManager {
   }
 
   public static List getUsersIncludingSubResellers(Reseller reseller, Object objectBetweenResellers) {
-    Iterator childs = ResellerManager.getResellerChilds(reseller, Reseller.getColumnNameName());
+    Iterator childs = ResellerManager.getResellerChilds(reseller, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     List users = getUsers(reseller);
     List temp;
 
@@ -717,7 +717,7 @@ public class ResellerManager {
     for (int i = 0; i < groups.size(); i++) {
       group = (GenericGroup) groups.get(i);
       type = group.getGroupType();
-      if (type != null && type.equals(ResellerStaffGroup.GROUP_TYPE_VALUE)) {
+      if (type != null && type.equals(com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.GROUP_TYPE_VALUE)) {
         isReseller = true;
         number= i;
         break;
@@ -725,7 +725,7 @@ public class ResellerManager {
     }
 
     if (isReseller) {
-      Reseller[] resellers = Reseller.getValidResellers();
+      Reseller[] resellers = com.idega.block.trade.stockroom.data.ResellerBMPBean.getValidResellers();
       GenericGroup rGroup = (GenericGroup) groups.get(number);
       String name;
       for (int i = 0; i < resellers.length; i++) {
@@ -740,7 +740,7 @@ public class ResellerManager {
   }
 
   public static User getMainUser(Reseller reseller) throws SQLException  {
-    List users = UserGroupBusiness.getUsersContained(new GenericGroup(reseller.getGroupId()));
+    List users = UserGroupBusiness.getUsersContained(((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(reseller.getGroupId()));
     if (users != null && users.size() > 0) {
       return (User) users.get(0);
     }else {

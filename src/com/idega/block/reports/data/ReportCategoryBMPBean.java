@@ -1,0 +1,28 @@
+package com.idega.block.reports.data;
+
+import java.sql.SQLException;
+import com.idega.core.data.ICCategory;
+
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega multimedia
+ * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * @version 1.0
+ */
+
+public class ReportCategoryBMPBean extends com.idega.core.data.ICCategoryBMPBean implements com.idega.block.reports.data.ReportCategory {
+
+  public ReportCategoryBMPBean(){
+    super();
+  }
+  public ReportCategoryBMPBean(int id)throws SQLException{
+    super(id);
+  }
+
+  public String getCategoryType(){
+    return "reports";
+  }
+
+}

@@ -493,7 +493,7 @@ public class ReportsEditorWindow extends IWAdminWindow {
     boolean b = false;
     if(iReportId >0 ){
       try {
-        R = new Report(iReportId);
+        R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(iReportId);
         b = true;
       }
       catch (SQLException ex) {

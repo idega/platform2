@@ -27,7 +27,7 @@ public class ContentBusiness{
 	public static boolean addFileToContent(int iContentId,int iICFileId){
 		try {
 
-			new ICFile(iICFileId).addTo(new Content(iContentId));
+			((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iICFileId).addTo(((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId));
 			return true;
 		}
 		catch (SQLException ex) {
@@ -38,7 +38,7 @@ public class ContentBusiness{
 
 	public static boolean removeFileFromContent(int iContentId,int iICFileId){
 	  try {
-			new ICFile(iICFileId).removeFrom(new Content(iContentId));
+			((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iICFileId).removeFrom(((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId));
 		}
 		catch (Exception ex) {
 
@@ -52,7 +52,7 @@ public class ContentBusiness{
     try {
       t.begin();
     //  List O = TextFinder.listOfObjectInstanceTexts();
-      Content eContent = new Content(iContentId);
+      Content eContent = ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
       List L = ContentFinder.listOfLocalizedText(eContent);
       if(L != null){
         LocalizedText lt;
@@ -108,22 +108,22 @@ public class ContentBusiness{
       LocalizedText locText = null;
       if(iContentId > 0){
         ctUpdate = true;
-        eContent = new Content(iContentId);
+        eContent = ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
         if(iLocalizedTextId > 0){
           locUpdate = true;
-          locText = new LocalizedText(iLocalizedTextId);
+          locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).findByPrimaryKeyLegacy(iLocalizedTextId);
         }
         else{
           locUpdate = false;
-          locText = new LocalizedText();
+          locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
         }
       }
       else{
         ctUpdate = false;
         locUpdate = false;
-        eContent = new Content();
+        eContent = ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).createLegacy();
         eContent.setCreated(idegaTimestamp.getTimestampRightNow());
-        locText = new LocalizedText();
+        locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       }
 
       locText.setHeadline(sHeadline);

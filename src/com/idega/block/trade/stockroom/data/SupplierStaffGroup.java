@@ -1,41 +1,8 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.core.data.GenericGroup;
-import java.sql.SQLException;
+import javax.ejb.*;
 
-/**
- * Title:        IW Trade
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega.is
- * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
- * @version 1.0
- */
-
-public class SupplierStaffGroup extends GenericGroup {
-  public static final String GROUP_TYPE_VALUE = "sr_supplier_staff";
-
-
-  public SupplierStaffGroup() {
-    super();
-  }
-
-  public SupplierStaffGroup(int id) throws SQLException {
-    super(id);
-  }
-
-
-  public String getGroupTypeValue() {
-    return GROUP_TYPE_VALUE;
-  }
-
-
-  public static String getClassName(){
-    return SupplierStaffGroup.class.getName();
-  }
-
-  protected boolean identicalGroupExistsInDatabase() throws Exception {
-    return false;
-  }
-
-  } // Class SupplierStaffGroup
+public interface SupplierStaffGroup extends com.idega.core.data.GenericGroup
+{
+ public java.lang.String getGroupTypeValue();
+}

@@ -4,7 +4,7 @@ import com.idega.data.EntityFinder;
 import com.idega.block.text.business.TextHelper;
 import com.idega.util.LocaleUtil;
 import com.idega.block.text.data.*;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityControl;
 import java.util.List;
 import java.util.Hashtable;
@@ -74,7 +74,7 @@ public class TextFinder {
 
   public static List listOfLocalizedText(int iTxTextId){
     try {
-      TxText tt = new TxText(iTxTextId);
+      TxText tt = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTxTextId);
       return ContentFinder.listOfLocalizedText(tt.getContentId());
     }
     catch (SQLException ex) {
@@ -93,10 +93,10 @@ public class TextFinder {
     }
   }
 
-  public static List listOfLocalizedText(GenericEntity entity){
+  public static List listOfLocalizedText(IDOLegacyEntity entity){
     List L = null;
     try {
-      LocalizedText lt = new LocalizedText();
+      LocalizedText lt = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       L = EntityFinder.findRelated(entity,lt);
     }
     catch (SQLException ex) {
@@ -106,12 +106,12 @@ public class TextFinder {
     return L;
   }
 
-  public static LocalizedText getLocalizedText(GenericEntity entity, int iLocaleID){
+  public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int iLocaleID){
     return getLocalizedText(entity,entity.getID(),iLocaleID);
   }
 
-  public static LocalizedText getLocalizedText(GenericEntity entity, int entityID, int iLocaleID){
-		LocalizedText localText = new LocalizedText();
+  public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int entityID, int iLocaleID){
+		LocalizedText localText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
     try {
       List list = EntityFinder.findRelated(entity,localText);
       if ( list != null ) {
@@ -131,7 +131,7 @@ public class TextFinder {
     }
   }
 
-  public static String[] getLocalizedString(GenericEntity entity, int iLocaleID) {
+  public static String[] getLocalizedString(IDOLegacyEntity entity, int iLocaleID) {
     String[] locString = new String[3];
 
     if ( entity != null ) {
@@ -164,7 +164,7 @@ public class TextFinder {
 
   public static int getObjectInstanceTextId(ICObjectInstance eObjectInstance){
     try {
-      List L = EntityFinder.findRelated(eObjectInstance ,new TxText());
+      List L = EntityFinder.findRelated(eObjectInstance ,((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy());
       if(L!= null){
         return ((TxText) L.get(0)).getID();
       }
@@ -180,8 +180,8 @@ public class TextFinder {
 
   public static int getObjectInstanceIdFromTextId(int iTextId){
     try {
-      TxText tx = new TxText(iTextId);
-      List L = EntityFinder.findRelated( tx,new ICObjectInstance());
+      TxText tx = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTextId);
+      List L = EntityFinder.findRelated( tx,((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
       }
@@ -197,7 +197,7 @@ public class TextFinder {
 
   public static List listOfTextForObjectInstanceId(int instanceid){
     try {
-      ICObjectInstance obj = new ICObjectInstance(instanceid );
+      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(instanceid );
       return listOfTextForObjectInstanceId(obj);
     }
     catch (SQLException ex) {
@@ -207,7 +207,7 @@ public class TextFinder {
 
   public static List listOfTextForObjectInstanceId( ICObjectInstance obj){
     try {
-      List L = EntityFinder.findRelated(obj,new TxText());
+      List L = EntityFinder.findRelated(obj,((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy());
       return L;
     }
     catch (SQLException ex) {
@@ -236,7 +236,7 @@ public class TextFinder {
   public static TxText getText(String sAttribute){
     TxText th = null;
     try {
-      List L = EntityFinder.findAllByColumn(new TxText(),TxText.getColumnNameAttribute(),sAttribute);
+      List L = EntityFinder.findAllByColumn(((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy(),com.idega.block.text.data.TxTextBMPBean.getColumnNameAttribute(),sAttribute);
       if(L!= null)
         th =  (TxText) L.get(0);
     }
@@ -249,7 +249,7 @@ public class TextFinder {
 
   public static TxText getText(int iTextId){
     try {
-      return new TxText(iTextId);
+      return ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTextId);
     }
     catch (SQLException ex) {
       ex.printStackTrace();

@@ -1,5 +1,5 @@
 /*
- * $Id: TPosException.java,v 1.2 2002/03/14 13:07:32 palli Exp $
+ * $Id: TPosException.java,v 1.3 2002/04/06 19:07:37 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *

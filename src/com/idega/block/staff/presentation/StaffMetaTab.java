@@ -254,7 +254,7 @@ public class StaffMetaTab extends UserTab{
   public void initFieldContents(){
 
     try{
-      StaffMetaData[] staffMetaData = (StaffMetaData[]) StaffMetaData.getStaticInstance(StaffMetaData.class).findAllByColumn(StaffMetaData.getColumnNameUserID(),Integer.toString(getUserId()),"=");
+      StaffMetaData[] staffMetaData = (StaffMetaData[]) com.idega.block.staff.data.StaffMetaDataBMPBean.getStaticInstance(StaffMetaData.class).findAllByColumn(com.idega.block.staff.data.StaffMetaDataBMPBean.getColumnNameUserID(),Integer.toString(getUserId()),"=");
 
       for ( int a = 0; a < staffMetaData.length; a++ ) {
         fieldValues.put("attribute"+Integer.toString(a),(staffMetaData[a].getAttribute() != null) ? staffMetaData[a].getAttribute():"" );

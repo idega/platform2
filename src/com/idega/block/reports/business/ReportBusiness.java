@@ -36,7 +36,7 @@ public class ReportBusiness {
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       t.begin();
-      ReportCategory nc = new ReportCategory( iCategoryId );
+      ReportCategory nc = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy( iCategoryId );
       List L = ReportFinder.listOfReports(nc.getID());
       if(L != null){
         Report rep;
@@ -48,7 +48,7 @@ public class ReportBusiness {
       }
 
       if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
         nc.removeFrom(obj);
       }
       nc.delete();
@@ -73,10 +73,10 @@ public class ReportBusiness {
 	  int id = -1;
 		ReportCategory cat  = null;
 		try {
-                  cat = new ReportCategory();
+                  cat = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy();
                   boolean update = false;
                   if(iCategoryId > 0){
-                    cat = new ReportCategory(iCategoryId);
+                    cat = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).findByPrimaryKeyLegacy(iCategoryId);
                           update = true;
                   }
                   cat.setName(Name);
@@ -88,9 +88,9 @@ public class ReportBusiness {
                     cat.insert();
                           // Binding category to instanceId
                   if(iObjectInstanceId > 0){
-                          ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
+                          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
                           // Allows only one category per instanceId
-                          objIns.removeFrom(new ReportCategory());
+                          objIns.removeFrom(((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy());
                           cat.addTo(objIns);
       }
 			id = cat.getID();
@@ -106,7 +106,7 @@ public class ReportBusiness {
       eCategory.setValid(false);
       eCategory.update();
       if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
         eCategory.removeFrom(obj);
       }
 
@@ -203,9 +203,9 @@ public class ReportBusiness {
 
   public static void saveRelatedReportInfo(int iReportId,int[] ReportInfoIds){
     try {
-      Report.getEntityInstance(Report.class,iReportId).removeFrom(ReportInfo.class);
+      com.idega.block.reports.data.ReportBMPBean.getEntityInstance(Report.class,iReportId).removeFrom(ReportInfo.class);
       for (int i = 0; i < ReportInfoIds.length; i++) {
-        Report.getEntityInstance(Report.class,iReportId).addTo(ReportInfo.class,ReportInfoIds[i]);
+        com.idega.block.reports.data.ReportBMPBean.getEntityInstance(Report.class,iReportId).addTo(ReportInfo.class,ReportInfoIds[i]);
       }
     }
     catch (Exception ex) {

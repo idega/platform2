@@ -50,7 +50,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
   public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
     if (productPriceIdToReplace != -1) {
-        ProductPrice pPrice = new ProductPrice(productPriceIdToReplace);
+        ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).findByPrimaryKeyLegacy(productPriceIdToReplace);
           pPrice.invalidate();
           pPrice.update();
     }
@@ -59,7 +59,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
   }
 
   public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
-       ProductPrice prPrice = new ProductPrice();
+       ProductPrice prPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
          prPrice.setProductId(productId);
          prPrice.setCurrencyId(currencyId);
          prPrice.setPriceCategoryID(priceCategoryId);
@@ -80,19 +80,19 @@ public class StockroomBusiness /* implements SupplyManager */ {
   }
 
   public static ProductPrice getPrice(Product product) {
-    ProductPrice pPrice = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
+    ProductPrice pPrice = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
     StringBuffer buffer = new StringBuffer();
-      buffer.append("SELECT * FROM "+ProductPrice.getProductPriceTableName());
+      buffer.append("SELECT * FROM "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPriceTableName());
       buffer.append(" WHERE ");
-      buffer.append(ProductPrice.getColumnNameProductId() +" = "+product.getID());
+      buffer.append(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId() +" = "+product.getID());
       buffer.append(" AND ");
-      buffer.append(ProductPrice.getColumnNamePriceCategoryId() +" is null");
-      buffer.append(" ORDER BY "+ProductPrice.getColumnNamePriceDate()+" DESC");
+      buffer.append(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId() +" is null");
+      buffer.append(" ORDER BY "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+" DESC");
 
     try {
 //      EntityFinder.debug = true;
       List prices = EntityFinder.getInstance().findAll(ProductPrice.class, buffer.toString());
-//      List prices = EntityFinder.findAll(new ProductPrice(), buffer.toString());
+//      List prices = EntityFinder.findAll(((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy(), buffer.toString());
 //      EntityFinder.debug = false;
       if (prices != null)
       if (prices.size() > 0) {
@@ -110,14 +110,14 @@ public class StockroomBusiness /* implements SupplyManager */ {
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
 
     try {
-        PriceCategory cat = new PriceCategory(priceCategoryId);
-        ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-        TravelAddress taddr = ((TravelAddress) TravelAddress.getStaticInstance(TravelAddress.class));
-        Timeframe tfr = ((Timeframe) Timeframe.getStaticInstance(Timeframe.class));
+        PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
+        ProductPrice ppr = ((ProductPrice)com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class));
+        TravelAddress taddr = ((TravelAddress) com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+        Timeframe tfr = ((Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class));
         String addrTable = EntityControl.getManyToManyRelationShipTableName(TravelAddress.class, ProductPrice.class);
         String tfrTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class, ProductPrice.class);
 
-        if(cat.getType().equals(PriceCategory.PRICETYPE_PRICE)){
+        if(cat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)){
           StringBuffer buffer = new StringBuffer();
             buffer.append("select p.* from "+ppr.getEntityName()+" p");
             if (timeframeId != -1) {
@@ -127,7 +127,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
               buffer.append(", "+addrTable+" am");
             }
             buffer.append(" where ");
-            buffer.append("p."+ProductPrice.getColumnNameProductId()+" = "+productId);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId()+" = "+productId);
 
             if (timeframeId != -1) {
               buffer.append(" and ");
@@ -147,16 +147,16 @@ public class StockroomBusiness /* implements SupplyManager */ {
               buffer.append(ppr.getIDColumnName()+" = "+productPriceId);
             }
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameCurrencyId()+" = "+currencyId);
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" <= '"+time.toString()+"'");
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+" <= '"+time.toString()+"'");
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+" = "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
             //buffer.append(" and ");
-            //buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
-            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate()+ " desc");
+            //buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid()+" = 'Y'");
+            buffer.append(" order by p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+ " desc");
           List result = EntityFinder.findAll(ppr,buffer.toString());
 
           if(result != null && result.size() > 0){
@@ -165,7 +165,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             System.err.println(buffer.toString());
             throw new ProductPriceException();
           }
-        }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
+        }else if(cat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
           StringBuffer buffer = new StringBuffer();
             buffer.append("select p.* from "+ppr.getEntityName()+" p");
             if (timeframeId != -1) {
@@ -175,7 +175,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
               buffer.append(", "+addrTable+" am");
             }
             buffer.append(" where ");
-            buffer.append("p."+ProductPrice.getColumnNameProductId()+" = "+productId);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId()+" = "+productId);
 
             if (timeframeId != -1) {
               buffer.append(" and ");
@@ -191,14 +191,14 @@ public class StockroomBusiness /* implements SupplyManager */ {
             }
 
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+" < '"+time.toString()+"'");
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT);
+            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+" = "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT);
             //buffer.append(" and ");
-            //buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
-            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate()+ " desc");
+            //buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid()+" = 'Y'");
+            buffer.append(" order by p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+ " desc");
           List result = EntityFinder.findAll(ppr,buffer.toString());
           float disc = 0;
           if(result != null && result.size() > 0){
@@ -220,23 +220,23 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
   /**
-   * returns 0.0 if pricecategory is not of type PriceCategory.PRICETYPE_DISCOUNT
+   * returns 0.0 if pricecategory is not of type com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT
    */
   public float getDiscount(int productId, int priceCategoryId, Timestamp time) throws SQLException{
-    PriceCategory cat = new PriceCategory(priceCategoryId);
-    if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
-      ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
+    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
+    if(cat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
+      ProductPrice ppr = ((ProductPrice)com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class));
       StringBuffer buffer = new StringBuffer();
         buffer.append("select * from "+ppr.getEntityName());
         buffer.append(" where ");
-        buffer.append(ProductPrice.getColumnNameProductId()+" = "+productId);
+        buffer.append(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId()+" = "+productId);
         buffer.append(" and ");
-        buffer.append(ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+        buffer.append(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
         buffer.append(" and ");
-        buffer.append(ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+        buffer.append(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+" < '"+time.toString()+"'");
         buffer.append(" and ");
-        buffer.append(ProductPrice.getColumnNameIsValid()+" = 'Y'");
-        buffer.append(" order by "+ProductPrice.getColumnNamePriceDate());
+        buffer.append(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid()+" = 'Y'");
+        buffer.append(" order by "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate());
       List result = EntityFinder.findAll(ppr,buffer.toString());
       if(result != null && result.size() > 0){
         return ((ProductPrice)result.get(0)).getPrice();
@@ -250,8 +250,8 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
   public int createPriceCategory(int supplierId, String name, String description, String extraInfo )throws SQLException {
-    PriceCategory cat = new PriceCategory();
-    cat.setType(PriceCategory.PRICETYPE_PRICE);
+    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
+    cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
 
     cat.setName(name);
 
@@ -270,9 +270,9 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
   public void createPriceDiscountCategory(int parentId, int supplierId, String name, String description, String extraInfo) throws SQLException{
-    PriceCategory cat = new PriceCategory();
+    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
     cat.setParentId(parentId);
-    cat.setType(PriceCategory.PRICETYPE_DISCOUNT);
+    cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT);
 
     cat.setName(name);
 
@@ -290,14 +290,14 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
   public static int getUserSupplierId(User user) throws RuntimeException, SQLException{
-    com.idega.core.data.GenericGroup gGroup = new GenericGroup();
+    com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
     List gr = gGroup.getAllGroupsContainingUser(user);
     if(gr != null){
       Iterator iter = gr.iterator();
       while (iter.hasNext()) {
         GenericGroup item = (GenericGroup)iter.next();
-        if(item.getGroupType().equals(((SupplierStaffGroup)SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
-          GenericEntity[] supp = ((Supplier)Supplier.getStaticInstance(Supplier.class)).findAllByColumn(Supplier.getColumnNameGroupID(),item.getID());
+        if(item.getGroupType().equals(((SupplierStaffGroup)com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
+          IDOLegacyEntity[] supp = ((Supplier)com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameGroupID(),item.getID());
           if(supp != null && supp.length > 0){
             return supp[0].getID();
           }
@@ -347,14 +347,14 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
   public static int getUserResellerId(User user) throws RuntimeException, SQLException{
-    com.idega.core.data.GenericGroup gGroup = new GenericGroup();
+    com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
     List gr = gGroup.getAllGroupsContainingUser(user);
     if(gr != null){
       Iterator iter = gr.iterator();
       while (iter.hasNext()) {
         GenericGroup item = (GenericGroup)iter.next();
-        if(item.getGroupType().equals(((ResellerStaffGroup)ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
-          GenericEntity[] reseller = ((Reseller)Reseller.getStaticInstance(Reseller.class)).findAllByColumn(Reseller.getColumnNameGroupID(),item.getID());
+        if(item.getGroupType().equals(((ResellerStaffGroup)com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
+          IDOLegacyEntity[] reseller = ((Reseller)com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class)).findAllByColumn(com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameGroupID(),item.getID());
           if(reseller != null && reseller.length > 0){
             return reseller[0].getID();
           }

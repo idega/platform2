@@ -170,7 +170,7 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
         else if ((disposition != null) && ((disposition.equals(Part.ATTACHMENT)) ||
           (disposition.equals(Part.INLINE)))) {
           ICFile file;
-          file = new ICFile();
+          file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
           file.setDescription(part.getDescription());
           file.setFileValue(part.getInputStream());
           file.setFileSize(part.getSize());

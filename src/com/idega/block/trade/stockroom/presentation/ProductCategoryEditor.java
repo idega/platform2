@@ -73,7 +73,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
       String sSelCat = iwc.getParameter(SELECTED_CATEGORY);
       if (sSelCat != null){
         _selectedCategory = Integer.parseInt(sSelCat);
-        _productCategory = new ProductCategory(_selectedCategory);
+        _productCategory = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(_selectedCategory);
       }
       _categories = ProductBusiness.getProductCategories();
     }catch (Exception e) {

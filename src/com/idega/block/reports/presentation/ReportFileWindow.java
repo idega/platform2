@@ -73,7 +73,7 @@ public class ReportFileWindow extends Window implements Reports{
       if(sReportId!=null){
         Report R = null;
         try{
-          R = new Report(Integer.parseInt(sReportId));
+          R = ((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).findByPrimaryKeyLegacy(Integer.parseInt(sReportId));
         }
         catch(SQLException ex){
           R = null;

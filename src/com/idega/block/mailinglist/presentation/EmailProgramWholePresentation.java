@@ -141,7 +141,7 @@ public class EmailProgramWholePresentation extends Block {
      // System.err.println(" Boolean.TRUE = "+ Boolean.TRUE);
      // System.err.println(" modinfo.getParameter(adressInputName) = "+ modinfo.getParameter(adressInputName) );
       currentOpenLetterID = MailingListBusiness.addEmailLetterDataBusiness(modinfo);
-      EmailLetterData letter = new EmailLetterData(currentOpenLetterID);
+      EmailLetterData letter = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(currentOpenLetterID);
 
       try {
         EmailServices.sendServices( letter);
@@ -155,7 +155,7 @@ public class EmailProgramWholePresentation extends Block {
     //Save letter
     else if (modinfo.isParameterSet(EmailProgramViewTable.saveLetterButtonName)){
       if (currentOpenLetterID != -1) {
-        EmailLetterData letter = new EmailLetterData(currentOpenLetterID);
+        EmailLetterData letter = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(currentOpenLetterID);
         if (letter.getHasSent()) currentOpenLetterID = -1;
         System.out.println("!!!! SAVE letter.getHasSent() = " +letter.getHasSent()+" 1 STIG");
       }
@@ -201,7 +201,7 @@ public class EmailProgramWholePresentation extends Block {
         String chosenMailinglistId;
         chosenMailinglistId = modinfo.getParameter(EmailProgramSideTable.mailinglistDropDownMenuName);
         if (chosenMailinglistId != null) {
-          Mailinglist chosenMailinglist = new Mailinglist(Integer.parseInt(chosenMailinglistId));
+          Mailinglist chosenMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy(Integer.parseInt(chosenMailinglistId));
           settingsTable.setMailingListSettings(chosenMailinglist);
         }
         add(settingsTable);
@@ -268,7 +268,7 @@ public class EmailProgramWholePresentation extends Block {
         EmailProgramViewTable emailProgramViewTable = new EmailProgramViewTable();
 
         //Fails maybe because of deletion of the linkParameter???
-        EmailLetterData letter = new EmailLetterData(currentOpenLetterID);
+        EmailLetterData letter = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(currentOpenLetterID);
         emailProgramViewTable.setViewDraftLetter(letter);
         add(emailProgramViewTable);
       }

@@ -4,7 +4,7 @@ import com.idega.data.EntityFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.util.LocaleUtil;
 import com.idega.block.text.data.*;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityControl;
 import java.util.List;
 import java.util.Hashtable;
@@ -71,8 +71,8 @@ public class ContentFinder {
   public static List listOfLocalizedText(int iContentId){
     List L = null;
     try {
-      Content tt = new Content(iContentId);
-      LocalizedText lt = new LocalizedText();
+      Content tt = ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
+      LocalizedText lt = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       L = EntityFinder.findRelated(tt,lt);
     }
     catch (SQLException ex) {
@@ -84,7 +84,7 @@ public class ContentFinder {
 
   public static List listOfLocalizedText(Content eContent){
     try {
-      return EntityFinder.findRelated(eContent,new LocalizedText());
+      return EntityFinder.findRelated(eContent,((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy());
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -102,17 +102,17 @@ public class ContentFinder {
     sql.append(" and lt.ic_locale_id =  ");
     sql.append(iLocaleId);
     try {
-      return EntityFinder.findAll(new LocalizedText(),sql.toString());
+      return EntityFinder.findAll(((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy(),sql.toString());
     }
     catch (SQLException ex) {
       return null;
     }
   }
 
-  public static List listOfLocalizedText(GenericEntity entity){
+  public static List listOfLocalizedText(IDOLegacyEntity entity){
     List L = null;
     try {
-      LocalizedText lt = new LocalizedText();
+      LocalizedText lt = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       L = EntityFinder.findRelated(entity,lt);
     }
     catch (SQLException ex) {
@@ -122,12 +122,12 @@ public class ContentFinder {
     return L;
   }
 
-  public static LocalizedText getLocalizedText(GenericEntity entity, int iLocaleID){
+  public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int iLocaleID){
     return getLocalizedText(entity,entity.getID(),iLocaleID);
   }
 
-  public static LocalizedText getLocalizedText(GenericEntity entity, int entityID, int iLocaleID){
-		LocalizedText localText = new LocalizedText();
+  public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int entityID, int iLocaleID){
+		LocalizedText localText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
     try {
       List list = EntityFinder.findRelated(entity,localText);
       if ( list != null ) {
@@ -163,7 +163,7 @@ public class ContentFinder {
 
   public static List listOfContentFiles(int id){
     try {
-      return listOfContentFiles(new Content(id));
+      return listOfContentFiles(((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(id));
     }
     catch (SQLException ex) {
 
@@ -173,7 +173,7 @@ public class ContentFinder {
 
   public static List listOfContentFiles(Content content){
     try {
-      return EntityFinder.findRelated(content,new ICFile());
+      return EntityFinder.findRelated(content,((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy());
     }
     catch (SQLException ex) {
 
@@ -184,7 +184,7 @@ public class ContentFinder {
   public static Content getContent(int iContentId){
     try {
       if(iContentId > 0)
-        return new Content(iContentId);
+        return ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
     }
     catch (SQLException ex) {
       ex.printStackTrace();

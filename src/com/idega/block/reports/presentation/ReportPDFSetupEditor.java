@@ -217,7 +217,7 @@ public class ReportPDFSetupEditor extends Block implements Reports{
         border = Integer.parseInt(iwc.getParameter("border"));
       String paperSize = iwc.getParameter("pagesize");
       String infotype = iwc.getParameter("info_type");
-      ReportInfo info = new ReportInfo();
+      ReportInfo info = ((com.idega.block.reports.data.ReportInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportInfo.class)).createLegacy();
       if(id > 0)
         info = ReportFinder.getReportInfo(id);
       info.setName(name);

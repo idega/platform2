@@ -227,7 +227,7 @@ public class StaffInfoTab extends UserTab{
   public void initFieldContents(){
 
     try{
-      StaffInfo staffInfo = new StaffInfo(getUserId());
+      StaffInfo staffInfo = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).findByPrimaryKeyLegacy(getUserId());
 
       fieldValues.put(this.titleFieldName,(staffInfo.getTitle() != null) ? staffInfo.getTitle():"" );
       fieldValues.put(this.educationFieldName,(staffInfo.getEducation() != null) ? staffInfo.getEducation():"" );

@@ -110,7 +110,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
 
     if(iTextId > 0) {
-      txText = new TxText((iTextId));
+      txText = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy((iTextId));
     }
     else if ( sAttribute != null ){
       txText = TextFinder.getText(sAttribute);

@@ -15,7 +15,7 @@ import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import com.idega.core.user.data.User;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.SimpleQuerier;
 
 public class MailingListBusiness {
@@ -33,7 +33,7 @@ public class MailingListBusiness {
     MailAccount emaillist = null;
     MailAccount[] list = null;
 
-    list = (MailAccount[]) (GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(MailAccount.EMAIL, inputEmail));
+    list = (MailAccount[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL, inputEmail));
 
     if( list.length > 0 ){
       emaillist = list[0];
@@ -45,7 +45,7 @@ public class MailingListBusiness {
     }
 
     for (int i = 0; i < selctionBoxChoices.length; i++) {
-      Mailinglist mailinglist = new Mailinglist(Integer.parseInt(selctionBoxChoices[i]));
+      Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy(Integer.parseInt(selctionBoxChoices[i]));
 
       try {
         //Notice that only the first email found (if any accounts exist) is connected with a mailinglist.
@@ -65,11 +65,11 @@ public class MailingListBusiness {
 
     int reply = 1;
     MailAccount[] list;
-    list = (MailAccount[]) (GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(MailAccount.EMAIL, removeEmail));
+    list = (MailAccount[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.block.mailinglist.data.MailAccount").findAllByColumn(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL, removeEmail));
 
     if(list.length > 0){
 
-      Mailinglist removeMailinglist = new Mailinglist();
+      Mailinglist removeMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
       Mailinglist[] removeMailinglistArray = null;
       removeMailinglistArray = (Mailinglist[]) removeMailinglist.constructArray(selctionBoxChoices);
 
@@ -80,12 +80,12 @@ public class MailingListBusiness {
           }
         }
 
-        Mailinglist postList = new Mailinglist();
+        Mailinglist postList = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
         Mailinglist[] allRelatedLeftoverMailinglist = (Mailinglist[]) list[0].findReverseRelated(postList);
 
         if (allRelatedLeftoverMailinglist.length < 1 ) {
-          MailAccount mailingList =  new MailAccount();
-          mailingList.deleteMultiple(MailAccount.EMAIL, removeEmail);
+          MailAccount mailingList =  ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
+          mailingList.deleteMultiple(com.idega.block.mailinglist.data.MailAccountBMPBean.EMAIL, removeEmail);
           reply = 17;
         }
       }
@@ -111,7 +111,7 @@ public class MailingListBusiness {
                        String pop3Host, int pop3Port, String pop3Login, String pop3Password,
                        Timestamp creationDate) throws SQLException
   {
-    MailAccount mailAccount = new MailAccount();
+    MailAccount mailAccount = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
     mailAccount.setCreationDate(creationDate);
     mailAccount.setEmail(email);
     mailAccount.setPOP3Host(pop3Host);
@@ -152,9 +152,9 @@ public class MailingListBusiness {
 
 
   public static int addMailinglistBusiness(IWContext modinfo, String inputMailinglistName) throws SQLException{
-    Mailinglist mailinglist = new Mailinglist();
+    Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     Mailinglist[] mailinglistArray;
-    mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(Mailinglist.MAILINGLIST_NAME, inputMailinglistName);
+    mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME, inputMailinglistName);
     if (mailinglistArray.length < 1){
       mailinglist.setMailinglistName(inputMailinglistName);
       mailinglist.setCreationDate(idegaTimestamp.getTimestampRightNow());
@@ -164,9 +164,9 @@ public class MailingListBusiness {
   }
 
   public static int addMailinglistBusiness(IWContext modinfo, String inputMailinglistName, String email, String mailServer) throws SQLException{
-    Mailinglist mailinglist = new Mailinglist();
+    Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     Mailinglist[] mailinglistArray;
-    mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(Mailinglist.MAILINGLIST_NAME, inputMailinglistName);
+    mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME, inputMailinglistName);
     //System.err.println( "1 stig");
     if (mailinglistArray.length < 1){
     //System.err.println( "2 stig");
@@ -194,9 +194,9 @@ public class MailingListBusiness {
 
   public static int updateMailinglistBusiness(IWContext modinfo, String inputMailinglistName, String email, String mailServer) throws SQLException{
     //Even though I use an Array I assume that for every name there is only one mailinglist!
-    Mailinglist mailinglist = new Mailinglist();
+    Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     Mailinglist[] mailinglistArray;
-    mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(Mailinglist.MAILINGLIST_NAME, inputMailinglistName);
+    mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME, inputMailinglistName);
     if (mailinglistArray.length != 0){
       for (int i = 0; i < mailinglistArray.length; i++) {
         mailinglistArray[i].setMailinglistName(inputMailinglistName);
@@ -210,7 +210,7 @@ public class MailingListBusiness {
   }
 
   public static int removeMailinglistBusiness(IWContext modinfo, String[] checkedBoxChoices) throws SQLException {
-    Mailinglist mailinglist = new Mailinglist();
+    Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     Mailinglist[] mailinglistArray;
     mailinglistArray = (Mailinglist[]) mailinglist.constructArray(checkedBoxChoices);
 
@@ -218,7 +218,7 @@ public class MailingListBusiness {
       if (mailinglistArray.length >0){
         for (int i = 0; i < mailinglistArray.length; i++) {
           System.err.println(checkedBoxChoices[i]);
-          mailinglist.deleteMultiple(Mailinglist.MAILINGLIST_NAME, mailinglistArray[i].getMailinglistName());
+          mailinglist.deleteMultiple(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME, mailinglistArray[i].getMailinglistName());
         }
       }
       else {
@@ -242,8 +242,8 @@ public class MailingListBusiness {
 
     EmailLetterData letters;
     System.err.println("NOTICE !! MAILINGLIST BUSINESS letterID = "+letterID);
-    if (letterID == -1) letters = new EmailLetterData();
-    else {letters = new EmailLetterData(letterID);}
+    if (letterID == -1) letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
+    else {letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).findByPrimaryKeyLegacy(letterID);}
     letters.setBody(body);
     letters.setHasSent(sent);
     letters.setSubject(subject);
@@ -264,7 +264,7 @@ public class MailingListBusiness {
 
 
   public static int removeEmailLetterDataBusiness(IWContext modinfo, String[] checkedBoxChoices) throws SQLException{
-    EmailLetterData letters = new EmailLetterData();
+    EmailLetterData letters = ((com.idega.block.mailinglist.data.EmailLetterDataHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetterData.class)).createLegacy();
     EmailLetterData[] lettersArray;
     lettersArray = (EmailLetterData[]) letters.constructArray(checkedBoxChoices);
 

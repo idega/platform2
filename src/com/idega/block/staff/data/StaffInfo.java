@@ -1,126 +1,21 @@
 package com.idega.block.staff.data;
 
-import com.idega.data.*;
-import com.idega.core.data.*;
-import com.idega.core.user.data.User;
-import java.sql.*;
+import javax.ejb.*;
 
-
-/**
- * Title:        User
- * Copyright:    Copyright (c) 2001
- * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
- * @version 1.0
- */
-
-public class StaffInfo extends GenericEntity {
-
-    private static String sClassName = StaffInfo.class.getName();
-
-    public StaffInfo(){
-      super();
-    }
-
-    public StaffInfo(int id)throws SQLException{
-      super(id);
-    }
-
-
-    public String getEntityName(){
-            return "st_staff_info";
-    }
-
-    public void initializeAttributes(){
-      addOneToOneRelationship(getColumnNameUserID(),"Employee",com.idega.core.user.data.User.class);
-      addAttribute(getColumnNameTitle(),"Titill",true,true,"java.lang.String");
-      addAttribute(getColumnNameEducation(),"Menntun",true,true,"java.lang.String");
-      addAttribute(getColumnNameSchool(),"Skólaganga",true,true,"java.lang.String");
-      addAttribute(getColumnNameArea(),"Starfssvið",true,true,"java.lang.String");
-      addAttribute(getColumnNameBeganWork(),"Hóf störf",true,true,"java.sql.Date");
-      addManyToOneRelationship(getColumnNameImageID(),"Image",ICFile.class);
-      setNullable(getColumnNameUserID(),false);
-      setNullable(getColumnNameImageID(),false);
-      setAsPrimaryKey(getColumnNameUserID(),true);
-    }
-
-    public void setDefaultValues(){
-    }
-
-    public String getIDColumnName(){
-      return getColumnNameUserID();
-    }
-
-    public static StaffInfo getStaticInstance(){
-      return (StaffInfo)StaffInfo.getStaticInstance(sClassName);
-    }
-
-
-    /*  ColumNames begin   */
-
-    public static String getColumnNameUserID(){return User.getColumnNameUserID();}
-    public static String getColumnNameTitle(){return "title";}
-    public static String getColumnNameEducation(){return "education";}
-    public static String getColumnNameSchool(){return "school";}
-    public static String getColumnNameArea(){return "area";}
-    public static String getColumnNameBeganWork(){return "began_work";}
-    public static String getColumnNameImageID(){return "ic_file_id";}
-
-    /*  ColumNames end   */
-
-
-    /*  Getters begin   */
-
-    public String getTitle() {
-      return (String) getColumnValue(getColumnNameTitle());
-    }
-
-    public String getEducation() {
-      return (String) getColumnValue(getColumnNameEducation());
-    }
-
-    public String getSchool() {
-      return (String) getColumnValue(getColumnNameSchool());
-    }
-
-    public String getArea() {
-      return (String) getColumnValue(getColumnNameArea());
-    }
-
-    public Date getBeganWork(){
-      return (Date) getColumnValue(getColumnNameBeganWork());
-    }
-
-    public int getImageID() {
-      return getIntColumnValue(getColumnNameImageID());
-    }
-
-    /*  Getters end   */
-
-
-    /*  Setters begin   */
-
-    public void setTitle(String title) {
-      setColumn(getColumnNameTitle(),title);
-    }
-
-    public void setEducation(String education) {
-      setColumn(getColumnNameEducation(),education);
-    }
-
-    public void setSchool(String school) {
-      setColumn(getColumnNameSchool(),school);
-    }
-
-    public void setArea(String area) {
-      setColumn(getColumnNameArea(),area);
-    }
-
-    public void setBeganWork(Date beganWork){
-      setColumn(getColumnNameBeganWork(),beganWork);
-    }
-
-    public void setImageID(int imageID){
-      setColumn(getColumnNameImageID(),imageID);
-    }
+public interface StaffInfo extends com.idega.data.IDOLegacyEntity
+{
+ public java.lang.String getArea();
+ public java.sql.Date getBeganWork();
+ public java.lang.String getEducation();
+ public java.lang.String getIDColumnName();
+ public int getImageID();
+ public java.lang.String getSchool();
+ public java.lang.String getTitle();
+ public void setArea(java.lang.String p0);
+ public void setBeganWork(java.sql.Date p0);
+ public void setDefaultValues();
+ public void setEducation(java.lang.String p0);
+ public void setImageID(int p0);
+ public void setSchool(java.lang.String p0);
+ public void setTitle(java.lang.String p0);
 }

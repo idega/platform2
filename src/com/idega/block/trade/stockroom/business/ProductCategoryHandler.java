@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCategoryHandler.java,v 1.1 2002/04/05 13:22:43 laddi Exp $
+ *  $Id: ProductCategoryHandler.java,v 1.2 2002/04/06 19:07:37 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ public class ProductCategoryHandler implements PropertyHandler {
   *@return        The handlerObject value
   */
  public PresentationObject getHandlerObject( String name, String value, IWContext iwc ) {
-  List categories = CategoryFinder.getInstance().listOfCategories(ProductCategory.CATEGORY_TYPE_PRODUCT);
+  List categories = CategoryFinder.getInstance().listOfCategories(com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT);
   DropdownMenu menu = new DropdownMenu( name );
   menu.addMenuElement( "", "Select:" );
   menu.addMenuElements(categories);

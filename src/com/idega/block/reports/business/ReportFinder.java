@@ -27,8 +27,8 @@ public class ReportFinder {
 
   public static int	countReportsInCategory(int iCategoryId){
     try {
-      Report eReport = (Report)Report.getStaticInstance(Report.class);
-      return eReport.getNumberOfRecords(Report.getColumnCategoryId(),String.valueOf(iCategoryId));
+      Report eReport = (Report)com.idega.block.reports.data.ReportBMPBean.getStaticInstance(Report.class);
+      return eReport.getNumberOfRecords(com.idega.block.reports.data.ReportBMPBean.getColumnCategoryId(),String.valueOf(iCategoryId));
     }
     catch (SQLException ex) {
 
@@ -42,20 +42,20 @@ public class ReportFinder {
   }
 
    public static Report getReport(int iReportId){
-    return (Report) Report.getEntityInstance(Report.class,iReportId);
+    return (Report) com.idega.block.reports.data.ReportBMPBean.getEntityInstance(Report.class,iReportId);
   }
 
   public static ReportInfo getReportInfo(int iReportInfoId){
-    return (ReportInfo) ReportInfo.getEntityInstance(ReportInfo.class,iReportInfoId);
+    return (ReportInfo) com.idega.block.reports.data.ReportInfoBMPBean.getEntityInstance(ReportInfo.class,iReportInfoId);
   }
 
    public static ReportColumnInfo getReportColumnInfo(int iReportColumnInfoId){
-    return (ReportColumnInfo) ReportColumnInfo.getEntityInstance(ReportColumnInfo.class,iReportColumnInfoId);
+    return (ReportColumnInfo) com.idega.block.reports.data.ReportColumnInfoBMPBean.getEntityInstance(ReportColumnInfo.class,iReportColumnInfoId);
   }
 
   public static ReportColumnInfo getReportInfoFromReport(int iReportId){
     try {
-      List l = EntityFinder.findAllByColumn(new ReportColumnInfo(),ReportColumnInfo.getColumnReportId(),iReportId);
+      List l = EntityFinder.findAllByColumn(((com.idega.block.reports.data.ReportColumnInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportColumnInfo.class)).createLegacy(),com.idega.block.reports.data.ReportColumnInfoBMPBean.getColumnReportId(),iReportId);
       if(l!=null)
         return (ReportColumnInfo)l.get(0);
     }
@@ -67,7 +67,7 @@ public class ReportFinder {
 
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
-    return CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new ReportCategory().getCategoryType());
+    return CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy().getCategoryType());
   }
 
   public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
@@ -84,7 +84,7 @@ public class ReportFinder {
 
   public static List listOfCategories(){
     try {
-      return EntityFinder.findAll(new ReportCategory());
+      return EntityFinder.findAll(((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy());
     }
     catch (SQLException ex) {
 
@@ -95,7 +95,7 @@ public class ReportFinder {
 
   public static List listOfReports(int iCategoryId){
     try {
-      return EntityFinder.findAllByColumn(new Report(),Report.getColumnCategoryId(),iCategoryId);
+      return EntityFinder.findAllByColumn(((com.idega.block.reports.data.ReportHome)com.idega.data.IDOLookup.getHomeLegacy(Report.class)).createLegacy(),com.idega.block.reports.data.ReportBMPBean.getColumnCategoryId(),iCategoryId);
     }
     catch (Exception ex) {
 
@@ -113,7 +113,7 @@ public class ReportFinder {
    public static List listOfReportItems(int iCatId){
     List L = null;
     try {
-      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnCategoryId(),iCatId,ReportItem.getColumnNameDisplayOrder());
+      L = EntityFinder.findAllByColumnOrdered(((com.idega.block.reports.data.ReportItemHome)com.idega.data.IDOLookup.getHomeLegacy(ReportItem.class)).createLegacy(),com.idega.block.reports.data.ReportItemBMPBean.getColumnCategoryId(),iCatId,com.idega.block.reports.data.ReportItemBMPBean.getColumnNameDisplayOrder());
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -124,7 +124,7 @@ public class ReportFinder {
 
   public static List listOfDataClasses(){
     try {
-      return EntityFinder.findAllByColumn(new ICObject(),ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_DATA);
+      return EntityFinder.findAllByColumn(((com.idega.core.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(),com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(),com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_DATA);
     }
     catch (SQLException ex) {
 
@@ -134,7 +134,7 @@ public class ReportFinder {
 
   public static List listOfReportColumnInfo(int iReportId){
     try {
-      return EntityFinder.findAllByColumnOrdered(new ReportColumnInfo(),ReportColumnInfo.getColumnReportId(),iReportId,ReportColumnInfo.getColumnColNumber());
+      return EntityFinder.findAllByColumnOrdered(((com.idega.block.reports.data.ReportColumnInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportColumnInfo.class)).createLegacy(),com.idega.block.reports.data.ReportColumnInfoBMPBean.getColumnReportId(),iReportId,com.idega.block.reports.data.ReportColumnInfoBMPBean.getColumnColNumber());
     }
     catch (Exception ex) {
 
@@ -160,10 +160,10 @@ public class ReportFinder {
 
   public static List listOfReportInfo(int iCategoryId,String type){
     try {
-      ReportInfo info = new ReportInfo();
-      StringBuffer sql = new StringBuffer("select * from ").append(ReportInfo.getEntityTableName());
-      sql.append(" where ").append(ReportInfo.getColumnCategoryId()).append(" = ").append(iCategoryId);
-      sql.append(" and ").append(ReportInfo.getColumnType()).append(" = '").append(type).append("'");
+      ReportInfo info = ((com.idega.block.reports.data.ReportInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportInfo.class)).createLegacy();
+      StringBuffer sql = new StringBuffer("select * from ").append(com.idega.block.reports.data.ReportInfoBMPBean.getEntityTableName());
+      sql.append(" where ").append(com.idega.block.reports.data.ReportInfoBMPBean.getColumnCategoryId()).append(" = ").append(iCategoryId);
+      sql.append(" and ").append(com.idega.block.reports.data.ReportInfoBMPBean.getColumnType()).append(" = '").append(type).append("'");
       return EntityFinder.findAll(info,sql.toString());
     }
     catch (Exception ex) {
@@ -174,12 +174,12 @@ public class ReportFinder {
 
    public static List listOfReportInfo(String type){
     try {
-      ReportInfo info = new ReportInfo();
-      StringBuffer sql = new StringBuffer("select * from ").append(ReportInfo.getEntityTableName());
+      ReportInfo info = ((com.idega.block.reports.data.ReportInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportInfo.class)).createLegacy();
+      StringBuffer sql = new StringBuffer("select * from ").append(com.idega.block.reports.data.ReportInfoBMPBean.getEntityTableName());
       if(type!=null)
-        sql.append(" where ").append(ReportInfo.getColumnType()).append(" = '").append(type).append("'");
+        sql.append(" where ").append(com.idega.block.reports.data.ReportInfoBMPBean.getColumnType()).append(" = '").append(type).append("'");
       else
-        sql.append(" order by ").append(ReportInfo.getColumnType());
+        sql.append(" order by ").append(com.idega.block.reports.data.ReportInfoBMPBean.getColumnType());
       return EntityFinder.findAll(info,sql.toString());
     }
     catch (Exception ex) {
@@ -190,7 +190,7 @@ public class ReportFinder {
 
   public static List listOfRelatedReportInfo(Report eReport){
     try {
-      return EntityFinder.findRelated(eReport,new ReportInfo());
+      return EntityFinder.findRelated(eReport,((com.idega.block.reports.data.ReportInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportInfo.class)).createLegacy());
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -200,7 +200,7 @@ public class ReportFinder {
 /*
   public static List listOfReportColumnInfo(int iReportId){
     try {
-      ReportInfo info = new ReportInfo();
+      ReportInfo info = ((com.idega.block.reports.data.ReportInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ReportInfo.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select * from ").append(info.getEntityTableName());
       sql.append(" where ").append(info.getColumnCategoryId()).append(" = ").append(iCategoryId);
       sql.append(" and ").append(info.getColumnType()).append(" = '").append(type).append("'");

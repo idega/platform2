@@ -42,7 +42,7 @@ public class ProductEditorBusiness {
       if (categoryIds != null) {
         ProductCategory pCat;
         for (int i = 0; i < categoryIds.length; i++) {
-          pCat = new ProductCategory(Integer.parseInt(categoryIds[i]));
+          pCat = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(categoryIds[i]));
           addCategory(product, pCat);
         }
       }
@@ -116,10 +116,10 @@ public class ProductEditorBusiness {
         }
         int newP = Integer.parseInt(price);
         if (oldP != newP || Integer.parseInt(currencyId) != pCurrId) {
-          ProductPrice pPrice = new ProductPrice();
+          ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
             pPrice.setIsValid(true);
             pPrice.setPrice(Float.parseFloat(price));
-            pPrice.setPriceType(ProductPrice.PRICETYPE_PRICE);
+            pPrice.setPriceType(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
             pPrice.setProductId(product.getID());
             pPrice.setPriceDate(idegaTimestamp.getTimestampRightNow());
             pPrice.setCurrencyId(Integer.parseInt(currencyId));
@@ -174,8 +174,8 @@ public class ProductEditorBusiness {
       int imageId = product.getFileId();
       if (imageId != -1) {
         try {
-          if (!files.contains(new ICFile(imageId))) {
-            files.add(0, new ICFile(imageId));
+          if (!files.contains(((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId))) {
+            files.add(0, ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId));
           }
         }catch (SQLException sql){
           sql.printStackTrace(System.err);

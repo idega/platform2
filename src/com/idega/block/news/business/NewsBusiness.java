@@ -40,13 +40,13 @@ public class NewsBusiness{
 
   public static NwNews getNews(int iNewsId){
 
-    NwNews NW = new NwNews();
+    NwNews NW = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
 
     if ( iNewsId > 0 ) {
 
       try {
 
-       NW = new NwNews(iNewsId);
+       NW = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).findByPrimaryKeyLegacy(iNewsId);
 
       }
 
@@ -54,7 +54,7 @@ public class NewsBusiness{
 
         e.printStackTrace();
 
-        NW = new NwNews();
+        NW = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
 
       }
 
@@ -90,7 +90,7 @@ public class NewsBusiness{
 
       if(iObjectInstanceId > 0  ){
 
-        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
         newsCat.removeFrom(obj);
 
@@ -168,7 +168,7 @@ public class NewsBusiness{
 
     try {
 
-      deleteNwNews(new NwNews(iNewsId ));
+      deleteNwNews(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).findByPrimaryKeyLegacy(iNewsId ));
 
       return true;
 
@@ -188,7 +188,7 @@ public class NewsBusiness{
 
 	  if(fromCategoryId > 0 && toCategoryId > 0){
 
-			NwNews news = (NwNews) NwNews.getStaticInstance(NwNews.class);
+			NwNews news = (NwNews) com.idega.block.news.data.NwNewsBMPBean.getStaticInstance(NwNews.class);
 
 		  StringBuffer sql = new StringBuffer("update ");
 
@@ -196,7 +196,7 @@ public class NewsBusiness{
 
 			sql.append(" set ");
 
-			sql.append(NwNews.getColumnNameNewsCategoryId());
+			sql.append(com.idega.block.news.data.NwNewsBMPBean.getColumnNameNewsCategoryId());
 
 			sql.append(" = ");
 
@@ -204,7 +204,7 @@ public class NewsBusiness{
 
 			sql.append(" where ");
 
-			sql.append(NwNews.getColumnNameNewsCategoryId());
+			sql.append(com.idega.block.news.data.NwNewsBMPBean.getColumnNameNewsCategoryId());
 
 			sql.append(" = ");
 
@@ -242,7 +242,7 @@ public class NewsBusiness{
 
     //  List O = TextFinder.listOfObjectInstanceTexts();
 
-      NewsCategory nc = new NewsCategory( iCategoryId );
+      NewsCategory nc = ((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).findByPrimaryKeyLegacy( iCategoryId );
 
       List L = NewsFinder.listOfNwNewsInCategory(nc.getID());
 
@@ -266,7 +266,7 @@ public class NewsBusiness{
 
       if(iObjectInstanceId > 0  ){
 
-        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
         nc.removeFrom(obj);
 
@@ -316,11 +316,11 @@ public class NewsBusiness{
 
       boolean update = false;
 
-		  NwNews eNwNews = new NwNews();
+		  NwNews eNwNews = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
 
       if(iNwNewsId > 0){
 
-        eNwNews = new NwNews(iNwNewsId);
+        eNwNews = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).findByPrimaryKeyLegacy(iNwNewsId);
 
         update = true;
 
@@ -392,7 +392,7 @@ public class NewsBusiness{
 
         nwUpdate = true;
 
-        nwNews = new NwNews(iNwNewsId);
+        nwNews = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).findByPrimaryKeyLegacy(iNwNewsId);
 
         files = NewsFinder.listOfNewsFiles(nwNews);
 
@@ -400,7 +400,7 @@ public class NewsBusiness{
 
           locUpdate = true;
 
-          locText = new LocalizedText(iLocalizedTextId);
+          locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).findByPrimaryKeyLegacy(iLocalizedTextId);
 
         }
 
@@ -408,7 +408,7 @@ public class NewsBusiness{
 
           locUpdate = false;
 
-          locText = new LocalizedText();
+          locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
 
         }
 
@@ -420,9 +420,9 @@ public class NewsBusiness{
 
         locUpdate = false;
 
-        nwNews = new NwNews();
+        nwNews = ((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
 
-        locText = new LocalizedText();
+        locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
 
         files = (List)new Vector();
 
@@ -446,7 +446,7 @@ public class NewsBusiness{
 
       if(iImageId > 0){
 
-        ICFile file = new ICFile(iImageId);
+        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iImageId);
 
         ICFile[] nwfile = (ICFile[]) nwNews.findRelated(file);
 
@@ -520,7 +520,7 @@ public class NewsBusiness{
 
         if(InstanceId > 0){
 
-          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
 
           nwNews.addTo(objIns);
 
@@ -560,7 +560,7 @@ public class NewsBusiness{
 
   public static ICCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
 
-    return CategoryBusiness.getInstance().saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,new NewsCategory().getCategoryType());
+    return CategoryBusiness.getInstance().saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).createLegacy().getCategoryType());
 
   }
 
@@ -582,13 +582,13 @@ public class NewsBusiness{
 
         update = true;
 
-        newsCat = new NewsCategory(iCategoryId );
+        newsCat = ((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).findByPrimaryKeyLegacy(iCategoryId );
 
       }
 
       else{
 
-        newsCat = new NewsCategory();
+        newsCat = ((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).createLegacy();
 
       }
 
@@ -622,11 +622,11 @@ public class NewsBusiness{
 
 			if(iObjectInstanceId > 0){
 
-				ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
+				ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
 				// Allows only one category per instanceId
 
-				objIns.removeFrom(new NewsCategory());
+				objIns.removeFrom(((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).createLegacy());
 
         newsCat.addTo(objIns);
 

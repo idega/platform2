@@ -37,7 +37,7 @@ public class NewsBundleStarter implements IWBundleStartable{
     boolean hasField = false;
     if(!testNews()){
       System.err.println("News bundle starter: Adding category reference to news ");
-      hasField = addICCategoryField(new NwNews());
+      hasField = addICCategoryField(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy());
     }
 
     //
@@ -58,7 +58,7 @@ public class NewsBundleStarter implements IWBundleStartable{
                   " and n.nw_news_cat_id = cat.nw_news_cat_id ";
     //String sql = "select * from nw_news_cat ";
     String sql2 = "select IC_OBJECT_INSTANCE_ID from  NW_NEWS_CAT_IC_OBJECT_INSTANCE where NW_NEWS_CAT_ID = ";
-    String type = new NewsCategory().getCategoryType();
+    String type = ((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).createLegacy().getCategoryType();
     try{
     Connection Conn = com.idega.util.database.ConnectionBroker.getConnection();
     Statement stmt = Conn.createStatement();
@@ -77,7 +77,7 @@ public class NewsBundleStarter implements IWBundleStartable{
       oinst = SimpleQuerier.executeStringQuery(sql2+id,Conn);
       if(oinst !=null && oinst.length > 0)
         objectinstance_id = Integer.parseInt(oinst[0]);
-      ICCategory cat = new ICCategory();
+      ICCategory cat = ((com.idega.core.data.ICCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ICCategory.class)).createLegacy();
       cat.setName(name);
       cat.setDescription(info);
       cat.setType(type);
@@ -114,11 +114,11 @@ public class NewsBundleStarter implements IWBundleStartable{
 
   public static void moveNewsBetweenCategories(int fromCategoryId,int toCategoryId){
     if(fromCategoryId > 0 && toCategoryId > 0){
-      NwNews news = (NwNews) NwNews.getStaticInstance(NwNews.class);
+      NwNews news = (NwNews) com.idega.block.news.data.NwNewsBMPBean.getStaticInstance(NwNews.class);
       StringBuffer sql = new StringBuffer("update ");
       sql.append(news.getEntityName());
       sql.append(" set ");
-      sql.append(NwNews.getColumnNameNewsCategoryId());
+      sql.append(com.idega.block.news.data.NwNewsBMPBean.getColumnNameNewsCategoryId());
       sql.append(" = ");
       sql.append(toCategoryId);
       sql.append(" where ");
@@ -136,7 +136,7 @@ public class NewsBundleStarter implements IWBundleStartable{
     }
   }
 
-  public boolean addICCategoryField(GenericEntity Entity){
+  public boolean addICCategoryField(IDOLegacyEntity Entity){
     try{
     StringBuffer sql1 = new StringBuffer("ALTER TABLE ");
     sql1.append(Entity.getEntityName());

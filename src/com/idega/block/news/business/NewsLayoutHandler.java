@@ -1,5 +1,5 @@
 /*
- * $Id: NewsLayoutHandler.java,v 1.2 2001/12/12 21:06:03 palli Exp $
+ * $Id: NewsLayoutHandler.java,v 1.3 2002/04/06 19:07:33 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -72,14 +72,14 @@ public class EmailProgramViewTable extends Block {
 
     if (selectedIDStrings != null){
       int selectedIDStringsLength = selectedIDStrings.length;
-      MailAccount mailList = new MailAccount(Integer.parseInt(selectedIDStrings[0]));
+      MailAccount mailList = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).findByPrimaryKeyLegacy(Integer.parseInt(selectedIDStrings[0]));
       adress = mailList.getEmail();
       for (int i = 1; i < selectedIDStringsLength -1; i++) {
-        mailList = new MailAccount(Integer.parseInt(selectedIDStrings[i]));
+        mailList = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).findByPrimaryKeyLegacy(Integer.parseInt(selectedIDStrings[i]));
         ccAdresses += mailList.getEmail()+", ";
       }
       if (selectedIDStringsLength > 1){
-          mailList = new MailAccount(Integer.parseInt(selectedIDStrings[selectedIDStringsLength - 1]));
+          mailList = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).findByPrimaryKeyLegacy(Integer.parseInt(selectedIDStrings[selectedIDStringsLength - 1]));
           ccAdresses += mailList.getEmail();
       }
       else ccAdresses = " ";

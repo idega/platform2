@@ -163,7 +163,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
             table.add(_productCatalog.getText(Integer.toString((int) price)), 3, row);
             if (_productCatalog._showCurrency)  {
               table.add(_productCatalog.getText(Text.NON_BREAKING_SPACE), 3, row);
-              table.add(new Currency(pPrice.getCurrencyId()).getName(), 3, row);
+              table.add(((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getName(), 3, row);
             }
           }else {
             table.add(_productCatalog.getText("0"), 3, row);

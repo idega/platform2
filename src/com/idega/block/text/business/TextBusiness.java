@@ -11,14 +11,14 @@ import java.util.Iterator;
 public class TextBusiness{
 
   public static TxText getText(int iTextId){
-    TxText TX = new TxText();
+    TxText TX = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy();
     if ( iTextId > 0 ) {
       try {
-       TX = new TxText(iTextId);
+       TX = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTextId);
       }
       catch (SQLException e) {
         e.printStackTrace();
-        TX = new TxText();
+        TX = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy();
       }
     }
     else {
@@ -52,9 +52,9 @@ public class TextBusiness{
 
     try {
 
-      TxText txText= new TxText(iTextId);
+      TxText txText= ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTextId);
       if(iObjectInstanceId > 0  ){
-          ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+          ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
           txText.removeFrom(obj);
       }
       int contentId = txText.getContentId();
@@ -83,9 +83,9 @@ public class TextBusiness{
 
     try {
       boolean update = false;
-      TxText eTxText = new TxText();
+      TxText eTxText = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy();
       if(iTxTextId > 0){
-        eTxText = new TxText(iTxTextId);
+        eTxText = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTxTextId);
         update = true;
       }
       Content eContent = ContentBusiness.saveContent(eTxText.getContentId(),iLocalizedTextId,iLocaleId,iUserId,tsPubFrom,tsPubTo,sHeadline,sBody,sTitle,listOfFiles);
@@ -101,7 +101,7 @@ public class TextBusiness{
           eTxText.insert();
         if(InstanceId > 0 && !update){
           //System.err.println("instance er til");
-          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
           //System.err.println(" object instance "+objIns.getID() + objIns.getName());
           //objIns.removeFrom(new ICCategory());
           eTxText.addTo(objIns);

@@ -38,8 +38,8 @@ public class MailinglistPresentation extends Block {
     String stringOfChoices = new String();
     if (selectionBoxChoices != null){
       for (int i = 0; i < selectionBoxChoices.length ; i++) {
-        Mailinglist postList = new Mailinglist(Integer.parseInt(selectionBoxChoices[i]));
-        stringOfChoices = stringOfChoices+", "+postList.getStringColumnValue(Mailinglist.MAILINGLIST_NAME);
+        Mailinglist postList = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy(Integer.parseInt(selectionBoxChoices[i]));
+        stringOfChoices = stringOfChoices+", "+postList.getStringColumnValue(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME);
       }
     }
     return (stringOfChoices);
@@ -90,15 +90,15 @@ public class MailinglistPresentation extends Block {
     int reply=0;
     String stringReply = "Tjón dauðans";
     Table table = new Table(2,4);
-    Mailinglist mailinglist = new Mailinglist();
-    MailAccount emaillist = new MailAccount();
+    Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
+    MailAccount emaillist = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
 
     SubmitButton submitButton = new SubmitButton("Skrá Mig",submitAndRemoveParameter,addParameterValue);
     SubmitButton removeButton = new SubmitButton("Afskrá Mig",submitAndRemoveParameter,removeParameterValue);
 
     Form form = new Form();
     form.maintainAllParameters();
-    SelectionBox selctionBox = new SelectionBox(mailinglist.findAllOrdered(Mailinglist.MAILINGLIST_NAME));
+    SelectionBox selctionBox = new SelectionBox(mailinglist.findAllOrdered(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME));
     TextInput textInput = new TextInput(textInputName);
 
     textInput.setSize(10);
@@ -122,7 +122,7 @@ public class MailinglistPresentation extends Block {
     table.add(submitButton, 2, 3);
     table.add(removeButton, 1, 3);
 
-    selectionBoxChoices = (String[]) modinfo.getParameterValues(Mailinglist.MAILINGLIST_NAME);
+    selectionBoxChoices = (String[]) modinfo.getParameterValues(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME);
     if (selectionBoxChoices != null ) {
       System.out.println("ARRRGG     selectionBoxChoices.length = "+selectionBoxChoices.length);
       boolean hasSubmitted = modinfo.isParameterSet(textInputName);

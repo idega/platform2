@@ -1,59 +1,13 @@
-//idega 2000 - Gimmi
-
 package com.idega.block.projectmanager.data;
 
-//import java.util.*;
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.core.user.data.User;
+import javax.ejb.*;
 
-public class ProjectGroup extends GenericEntity{
-
-	public ProjectGroup(){
-		super();
-	}
-
-	public ProjectGroup(int id)throws SQLException{
-		super(id);
-	}
-
-
-	public void initializeAttributes(){
-		addAttribute(getIDColumnName());
-		addAttribute("name","Nafn",true,true,"java.lang.String");
-		addAttribute("visible","sýnilegt",true,true,"java.lang.Boolean",1);
-
-                this.addManyToManyRelationShip(User.class);
-	}
-
-	public void setDefaultValues() {
-		setVisible(true);
-	}
-
-        public String getIDColumnName(){
-          return "pm_group_id";
-        }
-
-
-	public String getEntityName(){
-		return "i_pm_group";
-	}
-
-
-	public boolean isVisible() {
-		return ((Boolean) getColumnValue("visible")).booleanValue();
-	}
-
-	public void setVisible(boolean isVisible) {
-		setColumn("visible",new Boolean(isVisible));
-	}
-
-	public String getName() {
-		return (String) getColumnValue("name");
-	}
-
-	public void setName(String name) {
-		setColumn("name",name);
-	}
-
+public interface ProjectGroup extends com.idega.data.IDOLegacyEntity
+{
+ public java.lang.String getIDColumnName();
+ public java.lang.String getName();
+ public boolean isVisible();
+ public void setDefaultValues();
+ public void setName(java.lang.String p0);
+ public void setVisible(boolean p0);
 }

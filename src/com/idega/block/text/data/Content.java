@@ -1,87 +1,19 @@
-//idega 2000 - Laddi
 package com.idega.block.text.data;
 
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.util.idegaTimestamp;
+import javax.ejb.*;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
- * @version 1.1
- */
-
-public class Content extends GenericEntity{
-
-  public Content(){
-    super();
-  }
-
-  public Content(int id)throws SQLException{
-    super(id);
-  }
-
-  public void initializeAttributes(){
-    addAttribute(getIDColumnName());
-    addAttribute(getColumnNameUserId(), "User",true,true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
-    addAttribute(getColumnNameCreated(),"Created", true, true, java.sql.Timestamp.class);
-    addAttribute(getColumnNameUpdated(),"Updated", true, true, java.sql.Timestamp.class);
-    addAttribute(getColumnNamePublishFrom(), "Publish from", true, true, java.sql.Timestamp.class);
-    addAttribute(getColumnNamePublishTo(), "Publish to", true, true, java.sql.Timestamp.class);
-    addManyToManyRelationShip(LocalizedText.class);
-    addManyToManyRelationShip(com.idega.core.data.ICFile.class);
-  }
-
-	public String getLocalizedTextMiddleTableName(GenericEntity returning,GenericEntity from){
-	  return getNameOfMiddleTable(new LocalizedText(),new Content());
-	}
-
-  public static String getEntityTableName(){ return "TX_CONTENT";}
-
-  public static String getColumnNameUserId(){     return "IC_USER_ID";}
-  public static String getColumnNameTitle(){      return "TITLE";}
-  public static String getColumnNameCreated(){    return "CREATED";}
-  public static String getColumnNameUpdated(){    return "UPDATED";}
-  public static String getColumnNamePublishFrom(){return "PUBLISH_FROM";}
-  public static String getColumnNamePublishTo(){  return "PUBLISH_TO";}
-
-  public String getEntityName(){
-    return getEntityTableName();
-  }
-  public int getUserId(){
-    return getIntColumnValue(getColumnNameUserId());
-  }
-  public void setUserId(int id){
-    setColumn(getColumnNameUserId(),id);
-  }
-  public void setUserId(Integer id){
-    setColumn(getColumnNameUserId(),id);
-  }
-  public Timestamp getCreated(){
-    return (java.sql.Timestamp) getColumnValue(getColumnNameCreated());
-  }
-  public void setCreated(Timestamp stamp){
-    setColumn(getColumnNameCreated(), stamp);
-  }
-  public Timestamp getLastUpdated(){
-    return (Timestamp) getColumnValue(getColumnNameUpdated());
-  }
-  public void setLastUpdated(java.sql.Timestamp stamp){
-    setColumn(getColumnNameUpdated(), stamp);
-  }
-  public Timestamp getPublishFrom(){
-    return (Timestamp) getColumnValue(getColumnNamePublishFrom());
-  }
-  public void setPublishFrom(java.sql.Timestamp publish_from){
-    setColumn(getColumnNamePublishFrom() ,publish_from);
-  }
-  public Timestamp getPublishTo(){
-    return (Timestamp) getColumnValue(getColumnNamePublishTo());
-  }
-  public void setPublishTo(Timestamp publish_to){
-    setColumn(getColumnNamePublishTo(),publish_to);
-  }
+public interface Content extends com.idega.data.IDOLegacyEntity
+{
+ public java.sql.Timestamp getCreated();
+ public java.sql.Timestamp getLastUpdated();
+ public java.lang.String getLocalizedTextMiddleTableName(com.idega.data.IDOLegacyEntity p0,com.idega.data.IDOLegacyEntity p1);
+ public java.sql.Timestamp getPublishFrom();
+ public java.sql.Timestamp getPublishTo();
+ public int getUserId();
+ public void setCreated(java.sql.Timestamp p0);
+ public void setLastUpdated(java.sql.Timestamp p0);
+ public void setPublishFrom(java.sql.Timestamp p0);
+ public void setPublishTo(java.sql.Timestamp p0);
+ public void setUserId(int p0);
+ public void setUserId(java.lang.Integer p0);
 }
