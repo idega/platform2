@@ -1173,7 +1173,7 @@ private String DatastoreType;
 		if ((i==1) && ((m + j) == 9))
 			break;
 
-                myTable.setColor(j,i,colorToUse);
+                myTable.setRowColor(i,colorToUse);
 
 		double hoursToday=0;
 
