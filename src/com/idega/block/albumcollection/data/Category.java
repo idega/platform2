@@ -17,7 +17,7 @@ public class Category extends GenericEntity {
 
   public static final String _COLUMNNAME_NAME = "name";
   public static final String _COLUMNNAME_DESCRIPTION = "description";
-  public static final String _COLUMNNAME_TYPE = "type";
+  public static final String _COLUMNNAME_TYPE = "category_type";
 
   public Category() {
     super();

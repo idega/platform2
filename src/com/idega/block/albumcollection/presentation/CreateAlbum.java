@@ -3,12 +3,14 @@ package com.idega.block.albumcollection.presentation;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.Table;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.SubmitButton;
+
 
 /**
  * Title:        AlbumCollection
@@ -41,15 +43,17 @@ public class CreateAlbum extends IWAdminWindow {
 
 
 
-  public void lineUpElements(IWContext iwc){
+  public PresentationObject getElementsOredered(IWContext iwc){
+    Table contentTable = new Table();
 
 
 
+    return contentTable;
   }
 
   public void main(IWContext iwc) throws Exception {
     myTable.empty();
-    this.lineUpElements(iwc);
+    myTable.add(getElementsOredered(iwc));
   }
 
 

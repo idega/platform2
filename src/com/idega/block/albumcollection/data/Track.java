@@ -17,7 +17,7 @@ public class Track extends GenericEntity {
 
   public static final String _COLUMNNAME_ALBUM_ID = "album_id";
   public static final String _COLUMNNAME_NAME = "name";
-  public static final String _COLUMNNAME_LENGTH = "length";
+  public static final String _COLUMNNAME_LENGTH = "track_length";
   public static final String _COLUMNNAME_LYRIC_ID = "lyric_id";
 
   public Track() {

@@ -17,7 +17,7 @@ import java.sql.Time;
 public class Album extends GenericEntity {
 
   public static final String _COLUMNNAME_NAME = "name";
-  public static final String _COLUMNNAME_ORDER = "ORDER";
+  public static final String _COLUMNNAME_NUMBER = "number";
   public static final String _COLUMNNAME_PUBLISHINGDAY = "publishingday";
   public static final String _COLUMNNAME_COVER_FRONT = "cover_front";
   public static final String _COLUMNNAME_COVER_BACK = "cover_back";
@@ -34,7 +34,7 @@ public class Album extends GenericEntity {
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(_COLUMNNAME_NAME,"Nafn",true,true,String.class,255);
-    this.addAttribute(_COLUMNNAME_ORDER,"Röð",true,true,Integer.class);
+    this.addAttribute(_COLUMNNAME_NUMBER,"Númer",true,true,Integer.class);
     this.addAttribute(_COLUMNNAME_PUBLISHINGDAY,"Útgáfudagur",true,true,java.sql.Time.class);
     this.addAttribute(_COLUMNNAME_ALBUM_TYPE_ID,"Gerð",true,true,Integer.class,"one_to_many",AlbumType.class);
     this.addAttribute(_COLUMNNAME_COVER_FRONT,"Framhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
@@ -59,11 +59,11 @@ public class Album extends GenericEntity {
   }
 
   public String getOrder(){
-    return getStringColumnValue(_COLUMNNAME_ORDER);
+    return getStringColumnValue(_COLUMNNAME_NUMBER);
   }
 
   public void setOrder(String order){
-    setColumn(_COLUMNNAME_ORDER, order);
+    setColumn(_COLUMNNAME_NUMBER, order);
   }
 
   public Time getPublishingDay(){
