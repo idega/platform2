@@ -1,5 +1,9 @@
 package com.idega.block.timesheet.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class ResourceHomeImpl extends com.idega.data.IDOFactory implements ResourceHome
 {
@@ -38,6 +42,38 @@ public class ResourceHomeImpl extends com.idega.data.IDOFactory implements Resou
 	}
 
  }
+ 
+ 
 
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.timesheet.data.ResourceHome#findAllClosed()
+	 */
+	public Collection findAllClosed() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ResourceBMPBean) entity).ejbFindAllClosed();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.timesheet.data.ResourceHome#findAllOpen()
+	 */
+	public Collection findAllOpen() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ResourceBMPBean) entity).ejbFindAllOpen();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.timesheet.data.ResourceHome#findByClosure(boolean)
+	 */
+	public Collection findByClosure(boolean closed) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ResourceBMPBean) entity).ejbFindByClosure(closed);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 }

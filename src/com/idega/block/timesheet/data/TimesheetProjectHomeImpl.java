@@ -1,43 +1,45 @@
 package com.idega.block.timesheet.data;
 
+import com.idega.data.IDOFactory;
 
-public class TimesheetProjectHomeImpl extends com.idega.data.IDOFactory implements TimesheetProjectHome
+
+public class TimesheetProjectHomeImpl extends IDOFactory implements TimesheetProjectHome
 {
  protected Class getEntityInterfaceClass(){
   return TimesheetProject.class;
  }
 
+
  public TimesheetProject create() throws javax.ejb.CreateException{
-  return (TimesheetProject) super.idoCreate();
+  return (TimesheetProject) super.createIDO();
  }
 
- public TimesheetProject createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findAllOrderByNumber()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((TimesheetProjectBMPBean)entity).ejbFindAllOrderByNumber();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public TimesheetProject findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (TimesheetProject) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findEntryRelatedByUserWithinPeriod(java.lang.Integer p0,java.sql.Date p1,java.sql.Date p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((TimesheetProjectBMPBean)entity).ejbFindEntryRelatedByUserWithinPeriod(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findUserRelated(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((TimesheetProjectBMPBean)entity).ejbFindUserRelated(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public TimesheetProject findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (TimesheetProject) super.idoFindByPrimaryKey(pk);
+  return (TimesheetProject) super.findByPrimaryKeyIDO(pk);
  }
 
- public TimesheetProject findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

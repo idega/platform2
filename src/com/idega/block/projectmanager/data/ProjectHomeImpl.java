@@ -7,37 +7,23 @@ public class ProjectHomeImpl extends com.idega.data.IDOFactory implements Projec
   return Project.class;
  }
 
+
  public Project create() throws javax.ejb.CreateException{
-  return (Project) super.idoCreate();
+  return (Project) super.createIDO();
  }
 
- public Project createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public Project findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Project) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findAllOrderByNumber()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ProjectBMPBean)entity).ejbFindAllOrderByNumber();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public Project findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Project) super.idoFindByPrimaryKey(pk);
+  return (Project) super.findByPrimaryKeyIDO(pk);
  }
 
- public Project findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

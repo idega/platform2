@@ -1,256 +1,120 @@
-//idega 2000 - Gimmi
-
-
-
+// idega 2000 - Gimmi
 package com.idega.block.timesheet.data;
-
-
-
 //import java.util.*;
-
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.projectmanager.data.Project;
-
-
-
 public class ResourceBMPBean extends com.idega.data.GenericEntity implements com.idega.block.timesheet.data.Resource {
-
-
-
-	public ResourceBMPBean(){
-
+	private static final String SHORT_NAME = "short_name";
+	private static final String IS_CLOSED = "is_closed";
+	private static final String UNIT_NAME = "unit_name";
+	private static final String PROJECT_ID = "project_id";
+	private static final String RESOURCE_TYPE = "resource_type";
+	private static final String RESOURCE_NAME = "resource_name";
+	public ResourceBMPBean() {
 		super();
-
 	}
-
-
-
-	public ResourceBMPBean(int id)throws SQLException{
-
+	public ResourceBMPBean(int id) throws SQLException {
 		super(id);
-
 	}
-
-
-
-
-
-	public void initializeAttributes(){
-
+	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-
-		addAttribute("resource_name","nafn",true,true,String.class);
-
-        	addAttribute("resource_type","týpa",true,true,String.class);
-
-                addAttribute("project_id","númer verkefnis",true,true,Integer.class,"many-to-one",TimesheetProject.class);
-
-                addAttribute("division_id","númer deildar",true,true,Integer.class);
-
-//              addAttribute("division_id","númer deildar", true, true,"java.lang.Integer","many-to-one","com.idega.jmodule.timesheet.data.Division");
-
-                addAttribute("unit_name","eining",true,true,String.class);
-
-                addAttribute("is_closed","lokaður",true,true,Boolean.class);
-
-                addAttribute("resource_short_name","Stutt nafn",true,true,String.class);
-
+		addAttribute(RESOURCE_NAME, "nafn", true, true, String.class);
+		addAttribute(RESOURCE_TYPE, "týpa", true, true, String.class);
+		addAttribute(PROJECT_ID, "númer verkefnis", true, true, Integer.class, "many-to-one", TimesheetProject.class);
+		addAttribute("division_id", "númer deildar", true, true, Integer.class);
+		//              addAttribute("division_id","númer deildar", true,
+		// true,"java.lang.Integer","many-to-one","com.idega.jmodule.timesheet.data.Division");
+		addAttribute(UNIT_NAME, "eining", true, true, String.class);
+		addAttribute(IS_CLOSED, "lokaður", true, true, Boolean.class);
+		addAttribute(SHORT_NAME, "Stutt nafn", true, true, String.class);
 	}
-
-
-
 	public String getIDColumnName() {
-
-		return "resource_id";
-
+		return "TMS_RESOURCE_ID";
 	}
-
-
-
-	public String getEntityName(){
-
-		return "resource";
-
+	public String getEntityName() {
+		return "TMS_RESOURCE";
 	}
-
-
-
-
-
-        public String getName() {
-
-          return getResourceName();
-
-        }
-
-
-
-        public String getResourceName() {
-
-          return getStringColumnValue("resource_name");
-
-        }
-
-
-
-        public void setResourceName(String name) {
-
-          setColumn("resource_name",name);
-
-        }
-
-
-
-        public String getResourceShortName() {
-
-          return getStringColumnValue("resource_short_name");
-
-        }
-
-
-
-        public void setResourceShortName(String short_name) {
-
-          setColumn("resource_short_name",short_name);
-
-        }
-
-
-
-        public String getResourceType() {
-
-          return getStringColumnValue("resource_type");
-
-        }
-
-
-
-        public void setResourceType(String resource_type) {
-
-          setColumn("resource_type",resource_type);
-
-        }
-
-
-
-
-
-        public void setProjectId(int project_id) {
-
-          setColumn("project_id",(new Integer(project_id)));
-
-        }
-
-
-
-        public int getProjectId() {
-
-          return getIntColumnValue("project_id");
-
-        }
-
-
-
-        public Project getProject() {
-
-          Project project = null;
-
-          try {
-
-              if (getProjectId() != -1 )
-
-                project = ((com.idega.block.projectmanager.data.ProjectHome)com.idega.data.IDOLookup.getHomeLegacy(Project.class)).findByPrimaryKeyLegacy(getProjectId());
-
-          }
-
-          catch (SQLException s) {
-
-          }
-
-
-
-          return project;
-
-        }
-
-
-
-
-
-        public int getDivisionId() {
-
-          return getIntColumnValue("division_id");
-
-        }
-
-
-
-        public void setDivisionId(int division_id) {
-
-          setColumn("division_id",(new Integer(division_id)));
-
-        }
-
-
-
-/*        public Division getDivision() {
-
-          Division division;
-
-          try {
-
-            if (getDivisionId() != -1 )
-
-              division = new Division(getDivisionId());
-
-          }
-
-          catch (SQLException s) {
-
-          }
-
-        }
-
-  */
-
-
-
-        public String getUnitName() {
-
-          return getStringColumnValue("unit_name");
-
-        }
-
-
-
-
-
-        public void setUnitName(String unit_name) {
-
-          setColumn("unit_name",unit_name);
-
-        }
-
-
-
-
-
-        public boolean isClosed() {
-
-		return ((Boolean)getColumnValue("is_closed")).booleanValue();
-
+	public String getName() {
+		return getResourceName();
 	}
-
-
-
-	public void setClosed (boolean closed) {
-
-		setColumn("is_closed",closed);
-
+	public String getResourceName() {
+		return getStringColumnValue(RESOURCE_NAME);
 	}
-
-
-
+	public void setResourceName(String name) {
+		setColumn(RESOURCE_NAME, name);
+	}
+	public String getShortName() {
+		return getStringColumnValue(SHORT_NAME);
+	}
+	public void setShortName(String short_name) {
+		setColumn(SHORT_NAME, short_name);
+	}
+	public String getResourceType() {
+		return getStringColumnValue(RESOURCE_TYPE);
+	}
+	public void setResourceType(String resource_type) {
+		setColumn(RESOURCE_TYPE, resource_type);
+	}
+	public void setProjectId(int project_id) {
+		setColumn(PROJECT_ID, (new Integer(project_id)));
+	}
+	public int getProjectId() {
+		return getIntColumnValue(PROJECT_ID);
+	}
+	public Project getProject() {
+		return (Project) getColumnValue(PROJECT_ID);
+	}
+	public int getDivisionId() {
+		return getIntColumnValue("division_id");
+	}
+	public void setDivisionId(int division_id) {
+		setColumn("division_id", (new Integer(division_id)));
+	}
+	/*
+	 * public Division getDivision() {
+	 * 
+	 * Division division;
+	 * 
+	 * try {
+	 * 
+	 * if (getDivisionId() != -1 )
+	 * 
+	 * division = new Division(getDivisionId());
+	 *  }
+	 * 
+	 * catch (SQLException s) {
+	 *  }
+	 *  }
+	 *  
+	 */
+	public String getUnitName() {
+		return getStringColumnValue(UNIT_NAME);
+	}
+	public void setUnitName(String unit_name) {
+		setColumn(UNIT_NAME, unit_name);
+	}
+	public boolean isClosed() {
+		return ((Boolean) getColumnValue(IS_CLOSED)).booleanValue();
+	}
+	public void setClosed(boolean closed) {
+		setColumn(IS_CLOSED, closed);
+	}
+	
+	public Collection ejbFindByClosure(boolean closed)throws FinderException{
+		com.idega.data.IDOQuery query = super.idoQueryGetSelect().appendWhereEqualsWithSingleQuotes(IS_CLOSED,closed?"Y":"N").appendOrderBy(RESOURCE_NAME);
+		System.out.println(query.toString());
+		return super.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllOpen()throws FinderException{
+		return ejbFindByClosure(false);
+	}
+	
+	public Collection ejbFindAllClosed()throws FinderException{
+		return ejbFindByClosure(true);
+	}
 }
-

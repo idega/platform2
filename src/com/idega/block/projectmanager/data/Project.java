@@ -1,11 +1,10 @@
 package com.idega.block.projectmanager.data;
 
 
-public interface Project extends com.idega.data.IDOLegacyEntity
+public interface Project extends com.idega.data.IDOEntity
 {
  public int getForumId();
  public int getGroupId();
- public java.lang.String getIDColumnName();
  public int getImportanceId();
  public int getIssueId();
  public java.lang.String getName();
