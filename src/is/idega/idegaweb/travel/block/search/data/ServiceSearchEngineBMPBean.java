@@ -31,13 +31,15 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_NAME, "name", String.class);
-		addAttribute(COLUMN_BOOKING_CODE, "code", String.class);
+		addAttribute(COLUMN_NAME, "name", String.class, 200);
+		addAttribute(COLUMN_BOOKING_CODE, "code", String.class, 200);
 		addAttribute(COLUMN_IS_VALID, "is valid", Boolean.class);
 //		addAttribute(COLUMN_GROUP_ID, "staff group Id");
 		addAttribute(COLUMN_GROUP_ID, "staff group Id", true, true, Integer.class, super.ONE_TO_ONE, ServiceSearchEngineStaffGroup.class);
 		this.setUnique(COLUMN_NAME, true);
+		this.setNullable(COLUMN_NAME, false);
 		this.setUnique(COLUMN_BOOKING_CODE, true);
+		this.setNullable(COLUMN_BOOKING_CODE, false);
 		this.addManyToManyRelationShip(Supplier.class, MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE);
 		
 	}
