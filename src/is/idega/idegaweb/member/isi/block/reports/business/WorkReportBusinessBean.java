@@ -87,7 +87,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private static final short COLUMN_MEMBER_STREET_NAME = 2;
 	private static final short COLUMN_MEMBER_POSTAL_CODE = 3;
 
-	private static final short COLUMN_BOARD_MEMBER_LEAGUE = 2;
+	private static final short COLUMN_BOARD_MEMBER_LEAGUE = 0;
 	private static final short COLUMN_BOARD_MEMBER_NAME = 2;
 	private static final short COLUMN_BOARD_MEMBER_SSN = 3;
 	private static final short COLUMN_BOARD_MEMBER_STREET_NAME = 4;
@@ -484,6 +484,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		System.out.println("Starting member importing from excel file for workreportid: " + workReportId);
 
+		//Check to see if the work report is read only
+		if (isWorkReportReadOnly(workReportId))
+			throw new WorkReportImportException("workreportimportexception.is_read_only");
+
 		//clear the table first
 		deleteWorkReportMembersForReport(workReportId);
 
@@ -498,7 +502,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		report.store();
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
-
+		int sheets = excel.getNumberOfSheets();
+		if (sheets != 3)
+			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
+				
 		HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
 		int firstRow = 4;
 		int lastRow = members.getLastRowNum();
@@ -535,7 +542,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						//this should happen, we don't want them created twice	
 
 						WorkReportMember member = createWorkReportMember(workReportId, ssn); //sets basic data
-						//member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
 
@@ -561,7 +567,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 							if (leagueCell != null) {
 								String check = leagueCell.getStringCellValue();
-								boolean isChecked = (check != null && !"".equals(check) && "X".equals(check.toUpperCase()));
+//								boolean isChecked = (check != null && !"".equals(check) && "X".equals(check.toUpperCase()));
+								boolean isChecked = (check != null && !"".equals(check));
 								if (isChecked) {
 									WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(j));
 									if (league != null) {
@@ -604,6 +611,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		System.out.println("Starting board and division importing from excel file...");
 
+		//Check to see if the work report is read only
+		if (isWorkReportReadOnly(workReportId))
+			throw new WorkReportImportException("workreportimportexception.is_read_only");
+
 		deleteWorkReportBoardMembersForReport(workReportId);
 
 		WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
@@ -615,6 +626,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		report.store();
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+		int sheets = excel.getNumberOfSheets();
+		if (sheets != 3)
+			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
+		
 
 		HSSFSheet members = excel.getSheetAt(SHEET_BOARD_PART);
 		int firstRow = 6;
@@ -733,6 +748,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public boolean importAccountPart(int workReportFileId, int workReportId) throws WorkReportImportException {
 		System.out.println("Starting account importing from excel file...");
 
+		//Check to see if the work report is read only
+		if (isWorkReportReadOnly(workReportId))
+			throw new WorkReportImportException("workreportimportexception.is_read_only");
+
 		deleteWorkReportAccountRecordsForReport(workReportId);
 
 		WorkReportAccountKeyHome accKeyHome = getWorkReportAccountKeyHome();
@@ -745,6 +764,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		report.store();
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+		int sheets = excel.getNumberOfSheets();
+		if (sheets != 3)
+			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
 
 		HSSFSheet accEntries = excel.getSheetAt(SHEET_ACCOUNT_PART);
 		int currRow = 2;
@@ -984,144 +1006,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 
-		/*
-								for (int j = 5; j < lastCell; j++) {
-									HSSFCell leagueCell = row.getCell((short)j);
-		
-									if (leagueCell != null) {
-										String check = leagueCell.getStringCellValue();
-										boolean isChecked = (check != null && !"".equals(check) && "X".equals(check.toUpperCase()));
-										if (isChecked) {
-											WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(j));
-											if (league != null) {
-												try {
-													league.addEntity(member);
-												}
-												catch (IDOAddRelationshipException e5) {
-													e5.printStackTrace();
-													throw new WorkReportImportException("workreportimportexception.database_error_could_not_add_member_to_group");
-												}
-											}
-										}
-									}
-		
-			*/
-
 		return true;
 	}
 
-	/*public boolean importAccountPart(int workReportFileId, int workReportId) throws WorkReportImportException{
-		
-				System.out.println("Starting member importing from excel file...");
-			
-				deleteWorkReportMembersForReport(workReportId);
-				
-				WorkReportMemberHome membHome = getWorkReportMemberHome();
-				WorkReport report = getWorkReportById(workReportId);
-				int year = report.getYearOfReport().intValue();
-				createOrUpdateLeagueWorkReportGroupsForYear(year);
-		
-				report.setAccountFileId(workReportFileId);
-				report.store();
-			
-	
-		
-				HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
-			
-				HSSFSheet members = excel.getSheetAt(SHEET_ACCOUNT_PART);
-				int firstRow = 4;
-				int lastRow = members.getLastRowNum();
-			
-				System.out.println("First row is at: "+firstRow);
-				System.out.println("Last row is at: "+lastRow);
-			
-				//get the top row to get a list of leagues to use.
-				HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
-				Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
-			
-			
-				//iterate through the rows that contain the actual data and create the records in the database
-				for (int i = (firstRow+1); i <= lastRow; i++) {
-					HSSFRow row = (HSSFRow) members.getRow(i);
-				
-					if(row!=null){
-						int firstCell = row.getFirstCellNum();
-						int lastCell = row.getLastCellNum();
-					
-						String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
-						String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
-						ssn = (ssn.length()<10)? "0"+ssn : ssn;
-						String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
-						String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
-						
-					
-						try {
-	
-							User user = this.getUser(ssn); 
-							
-							try {
-								membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
-							}
-							catch (FinderException e4) {
-							//this should happen, we don't want them created twice	
-						
-								WorkReportMember member = membHome.create();
-								member.setReportId(workReportId);
-								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
-								member.setName(name);
-								member.setPersonalId(ssn);
-								member.setStreetName(streetName);
-								//member.setAge();
-								//member.setDateOfBirth();
-							
-								try {
-									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
-									member.setPostalCode(postal);
-								}
-								catch (FinderException e3) {
-									//e3.printStackTrace();
-								} catch (RemoteException e) {
-									e.printStackTrace();
-								}
-							
-								member.store();
-							
-								//find which leagues the member belongs to
-								//and create the many to many connections
-								for (int j = 5; j <  lastCell ; j++) {
-									HSSFCell leagueCell = row.getCell((short)j);
-								
-									if(leagueCell !=null){
-										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
-										if(league!=null){
-											try {
-												league.addEntity(member);
-											}
-											catch (IDOAddRelationshipException e5) {
-												e5.printStackTrace();
-											}
-										}
-									}
-								
-								}
-							}
-						}
-						catch (EJBException e1) {
-							e1.printStackTrace();
-						}
-						catch (CreateException e2) {
-							//failed to create move on.
-							e2.printStackTrace();
-							System.err.println("Failed to create user for ssn : "+ssn);
-						} 
-						catch (FinderException e) {
-							System.err.println("User not found for ssn : "+ssn);
-						}
-					}
-				}
-					
-				return true;
-		}*/
 
 	/**
 	 * @param year of report
