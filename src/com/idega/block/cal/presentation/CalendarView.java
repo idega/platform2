@@ -1239,10 +1239,12 @@ public class CalendarView extends Block{
 	}
 	
 	public void addNextYearPrm(Link L, IWTimestamp idts) {
+		L.addParameter(CalendarParameters.PARAMETER_DAY, idts.getDay());
 		L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth()));
 		L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() + 1));
 	}
 	public void addLastYearPrm(Link L, IWTimestamp idts) {
+		L.addParameter(CalendarParameters.PARAMETER_DAY,idts.getDay());
 		L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth()));
 		L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() - 1));
 	}
