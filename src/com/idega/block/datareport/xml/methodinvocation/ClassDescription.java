@@ -35,7 +35,7 @@ public class ClassDescription extends XMLElement {
 	public static final String VALUE_TYPE_CLASS = "Class";
 	public static final String VALUE_TYPE_IDO_ENTITY_HOME = "IDOEntityHome";
 	public static final String VALUE_TYPE_IDO_SESSION_BEAN = "IBOSessionBean";
-	public static final String VALUE_TYPE_IDO_SERVICE_BEAN = "IBOServeceBean";	
+	public static final String VALUE_TYPE_IDO_SERVICE_BEAN = "IBOServiceBean";	
 	private List _localizedNames = new ArrayList();
 	private ClassHandler _handler = null;
 	
