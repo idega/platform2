@@ -318,8 +318,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				contentTable.add(getNewCareTimeForm());	
 				break;		
 			case METHOD_SIGN_CONTRACT :
-				headerTable.add(getHeader(localize("child_care.sign_contract", "Sign contract")));			
-				contentTable.add(getContractSignerForm(iwc));	
+	
+				Object[] contractFormResult = getContractSignerForm(iwc);	
+				contentTable.add(contractFormResult[1]);	
+				if (((Boolean) contractFormResult[0]).booleanValue()) {
+					headerTable.add(getHeader(localize("child_care.sign_contract", "Sign contract")));
+				} else {
+					headerTable.add(getHeader(localize("child_care.fill_in_fields", "Fill in contract fields")));										
+				}
 				break;		
 							
 		}
@@ -986,7 +992,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return layoutTbl;
 	}	
 	
-	private Table getContractSignerForm(IWContext iwc) throws Exception {
+	/**
+	 * 
+	 * @param iwc
+	 * @return Object array of size 2, first (Boolean) is true iff signwindow is shown, second is the Table containing the form
+	 * @throws Exception
+	 */
+	private Object[] getContractSignerForm(IWContext iwc) throws Exception {
 		Table table = null;		
 						
 		Contract contract = getContract(iwc);
@@ -995,14 +1007,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.setCellpadding(5);
 			table.setWidth(Table.HUNDRED_PERCENT);
 			table.setHeight(Table.HUNDRED_PERCENT);					
-			table.add(getHeader("The contract is signed."), 1, 1);
+			table.add(getHeader(localize("ccconsign_issigned", "The contract is signed.")), 1, 1);
 			table.add(close, 1, 2);
 			table.setHeight(2, Table.HUNDRED_PERCENT);
 			table.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_BOTTOM);
 			
 			((Window) getParentObject()).setParentToReload();
 			
-			return table;
+			return new Object[]{new Boolean(false), table};
 			
 		} else {
 		
@@ -1032,12 +1044,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//create form for still unset fields
 			table = getContractFieldsForm(contract.getUnsetFields(), tags);
 			if (table != null && table.getRows() > 1){
-				return table;			
+				return new Object[]{new Boolean(false), table};			
 			} else {
 				//TODO: (Roar) Not working...
 				((Window) getParentObject()).setWidth(700);
 				((Window) getParentObject()).setHeight(400);
-				return initSignContract(iwc);
+				return new Object[]{new Boolean(true), initSignContract(iwc)};
 			}
 		}
 	} 	
@@ -1074,8 +1086,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 							}
 						}
 					}
-				
-					table.add(getSmallHeader(field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase() + ":"), 1, row);
+					String fieldPrompt = field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase();
+					table.add(getSmallHeader(localize("ccconsign_ " + fieldPrompt, fieldPrompt) + ":"), 1, row);
 					table.add(getStyledInterface(input), 2, row);
 					row ++;
 				}
@@ -1413,10 +1425,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			application,
 			localize(
 				"ccnctw_new_caretime_msg_parents_subject",
-				"Begï¿½ran om ï¿½ndrad omsorgstid gjord"),
+				"Begäran om ändrad omsorgstid gjord"),
 			localize(
 				"ccnctw_new_caretime_msg_parents_message",
-				"Du har skickat en begï¿½ran om ï¿½ndrad omsorgstid fï¿½r ")
+				"Du har skickat en begäran om ändrad omsorgstid för ")
 				+ child.getName()
 				+ " "
 				+ child.getPersonalID());
@@ -1425,18 +1437,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			application,
 			localize(
 				"ccnctw_new_caretime_msg_provider_subject",
-				"Begï¿½ran om ï¿½ndrad omsorgstid"),
+				"Begäran om ändrad omsorgstid"),
 			owner.getName()
 				+ " "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message1",
-					"har begï¿½rt ï¿½ndrad omsorgstid till")
+					"har begärt ändrad omsorgstid till")
 				+ " "
 				+ iwc.getParameter(PARAMETER_CHILDCARE_TIME)
 				+ " "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message2",
-					"tim/vecka fï¿½r")
+					"tim/vecka för")
 				+ " "
 				+ child.getName()
 				+ " "
@@ -1444,7 +1456,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				+ ". "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message3",
-					"Den nya omsorgstiden skall gï¿½lla fr.o.m.")
+					"Den nya omsorgstiden skall gälla fr.o.m.")
 				+ " "
 				+ iwc.getParameter(PARAMETER_CHANGE_DATE)
 				+ ".",
