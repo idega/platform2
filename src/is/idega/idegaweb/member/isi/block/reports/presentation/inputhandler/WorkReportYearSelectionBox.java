@@ -60,17 +60,39 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 	}
 		
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception{
-		if(values!=null && values.length>0){
-			return new Integer(values[0]);
+		if(values == null || values.length==0) {
+			IWTimestamp stamp = IWTimestamp.RightNow();
+	
+			int currentYear = stamp.getYear();
+			int beginningYear = 2001;//Because we have no older data, could also be an application setting
+			
+			values = new String[currentYear-beginningYear+1];
+			
+			for (int i = beginningYear; i <= currentYear; i++) {
+				values[i] = Integer.toString(i);
+			}
 		}
-		else return null;
+		
+		return values;
 	}
 	
 	public String getDisplayNameOfValue(Object value, IWContext iwc) {
-		if(value!=null){
-			return value.toString();
+		String result = "";
+		if(value instanceof String){
+			result = (String) value;
+		} else if (value instanceof String[]) {
+			String[] values = ((String[])value);
+			int count = values.length;
+			StringBuffer buf = new StringBuffer(5*count);
+			for(int i=0; i<count; i++) {
+				if(i>0) {
+					buf.append(",");
+				}
+				buf.append(values[i]);
+			}
+			result = buf.toString();
 		}
-		else return "";
+		return result;
 	}
 		
 	public SelectionBox getYearSelectionBox() {
