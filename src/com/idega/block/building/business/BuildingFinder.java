@@ -416,5 +416,25 @@ public class BuildingFinder {
     return L;
 
   }
+  public static int countApartmentsInTypeAndComplex(int typeId,int cmplxId){
+    StringBuffer sql = new StringBuffer("select count(*) ");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b,bu_complex c,bu_aprt_type t ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and t.bu_aprt_type_id = ");
+    sql.append(typeId);
+    sql.append(" and c.bu_complex_id = ");
+    sql.append(cmplxId);
+    int count = 0;
+    try{
+      count = new Complex().getNumberOfRecords(sql.toString());
+    }
+    catch(SQLException ex){}
+    if(count < 0)
+      count = 0;
+    return count;
+  }
 
 }// class end

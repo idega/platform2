@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.3 2001/07/13 11:05:37 aron Exp $
+ * $Id: ContractFinder.java,v 1.4 2001/07/16 11:52:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -94,6 +94,34 @@ public abstract class ContractFinder {
     catch(SQLException e){
       return(null);
     }
+  }
+
+  public static int countApartmentsInTypeAndComplex(int typeId,int cmplxId,String status){
+    StringBuffer sql = new StringBuffer("select count(*) ");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b");
+    sql.append(",bu_complex c,bu_aprt_type t,cam_contract con ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    if(status !=null && !"".equals(status)){
+      sql.append(" and con.status = '");
+      sql.append(status);
+      sql.append("' ");
+    }
+    sql.append(" and t.bu_aprt_type_id = ");
+    sql.append(typeId);
+    sql.append(" and c.bu_complex_id = ");
+    sql.append(cmplxId);
+    int count = 0;
+    try{
+      count = new Contract().getNumberOfRecords(sql.toString());
+    }
+    catch(SQLException ex){}
+    if(count < 0)
+      count = 0;
+    return count;
   }
 
 
