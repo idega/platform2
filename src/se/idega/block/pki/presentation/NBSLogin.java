@@ -284,6 +284,11 @@ public class NBSLogin extends Login {
 	public IBPage getApplicationPage() {
 		return _applicationPage;
 	}
+	
+	public String getBundleIdentifier(){
+		return this.IW_BUNDLE_IDENTIFIER;
+	}
+	
 
 
 }
