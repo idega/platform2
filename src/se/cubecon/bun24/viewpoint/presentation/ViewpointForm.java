@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/12 13:21:20 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/13 07:38:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -289,6 +289,7 @@ public class ViewpointForm extends CommuneBlock {
                 = (TextArea) getStyledInterface (new TextArea (PARAM_MESSAGE));
 		textArea.setColumns (40);
 		textArea.setRows (10);
+        textArea.setMaximumCharacters (400);
 		final SubmitButton submit = getSubmitButton
                 (REGISTERVIEWPOINT_ACTION, SUBMITVIEWPOINT_KEY,
                  SUBMITVIEWPOINT_DEFAULT);
@@ -430,6 +431,7 @@ public class ViewpointForm extends CommuneBlock {
 		final TextArea textArea = new TextArea (PARAM_ANSWER);
 		textArea.setColumns (40);
 		textArea.setRows (10);
+        textArea.setMaximumCharacters (400);
         final SubmitButton answerButton
                 = getSubmitButton (ANSWERVIEWPOINT_ACTION,
                                    SENDANSWERTOCITIZEN_KEY,
