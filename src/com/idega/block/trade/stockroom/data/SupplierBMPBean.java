@@ -8,20 +8,22 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.block.tpos.data.TPosMerchant;
-import com.idega.block.tpos.data.TPosMerchantHome;
+import com.idega.block.creditcard.data.CreditCardInformation;
 import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 
 /**
  * Title:        IW Trade
@@ -34,7 +36,7 @@ import com.idega.data.IDORelationshipException;
 
 
 public class SupplierBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Supplier {
-
+	
   private String newName;
 
   public SupplierBMPBean(){
@@ -50,13 +52,18 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
     addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class,500);
     addAttribute(getColumnNameGroupID(),"Hópur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
     addAttribute(getColumnNameIsValid(),"Í notkun",true, true, Boolean.class);
-    addAttribute(getColumnNameTPosMerchantID(), "Viðskiptamannanumer", true, true, Integer.class);
+    /* can this be removed */
+    addAttribute(getColumnNameTPosMerchantID(), "ViÝskiptamannanumer", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Address.class,"SR_SUPPLIER_IC_ADDRESS");
     this.addManyToManyRelationShip(Phone.class,"SR_SUPPLIER_IC_PHONE");
     this.addManyToManyRelationShip(Email.class,"SR_SUPPLIER_IC_EMAIL");
     this.addManyToManyRelationShip(ProductCategory.class, "SR_SUPPLIER_PRODUCT_CATEGORY" );
     this.addManyToManyRelationShip(Reseller.class);
+
+    this.addManyToManyRelationShip(CreditCardInformation.class, "SR_SUPPLIER_CC_INFORMATION");
+    
+    
   }
 
   public void insertStartData()throws Exception{
@@ -200,15 +207,19 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
     }
     super.insert();
   }
+  
   public int getTPosMerchantId() {
     return getIntColumnValue(getColumnNameTPosMerchantID());
   }
-
+  
+/*
   public TPosMerchant getTPosMerchant() throws RemoteException, FinderException {
     TPosMerchantHome merchantHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class);
     return merchantHome.findByPrimaryKey(new Integer(getTPosMerchantId()));
   }
 
+*/
+  /*
   public void setTPosMerchantId(int id) {
   	setTPosMerchantId(new Integer(id));
   }
@@ -216,6 +227,7 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
   public void setTPosMerchantId(Integer id) {
   	setColumn(getColumnNameTPosMerchantID(), id);
   }
+  */
   
   public Settings getSettings() throws FinderException, RemoteException, CreateException {
     Collection coll = null;
@@ -244,6 +256,39 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
     } else {
       return shome.create(this);
     }
+  }
+    
+  public void setCreditCardInformation(Collection pks) throws IDORemoveRelationshipException, IDOAddRelationshipException, EJBException {
+  	if (pks != null) {
+  		Iterator iter = pks.iterator();
+  		Object obj;
+  		while (iter.hasNext()) {
+  			obj = iter.next();
+  			try {
+	  			if (obj instanceof CreditCardInformation) {
+	  				addCreditCardInformation((CreditCardInformation) obj);
+	  			} else {
+	  				addCreditCardInformationPK(obj);
+	  			}
+  			} catch (Exception e) {
+  				log("SupplierBMPBean : error adding cc info, probably primaryKey error : "+e.getMessage());
+  			}
+  		}
+  	}
+  }
+  
+  public void addCreditCardInformationPK(Object pk) throws IDOAddRelationshipException {
+  	this.idoAddTo(CreditCardInformation.class, pk);
+  }
+  
+  public void addCreditCardInformation(CreditCardInformation info) throws IDOAddRelationshipException, EJBException {
+  	if (info != null) {
+  		addCreditCardInformationPK(info.getPrimaryKey());
+  	}
+  }
+  
+  public Collection getCreditCardInformation() throws IDORelationshipException {
+  	return this.idoGetRelatedEntities(CreditCardInformation.class);
   }
 
   public Collection getProductCategories() throws IDORelationshipException{
