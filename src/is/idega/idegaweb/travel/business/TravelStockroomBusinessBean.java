@@ -1299,9 +1299,9 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
-			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
+//			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
 //			Cacheing disabled for a while // erm re-enabled			
-//			HashMap subMap = null;
+			HashMap subMap = null;
 			String stmpString = null;
 			if (stamp != null) {
 				stmpString = stamp.toSQLDateString();
