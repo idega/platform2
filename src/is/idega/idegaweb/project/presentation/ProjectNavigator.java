@@ -119,11 +119,11 @@ public class ProjectNavigator extends Block implements IFrameContainer{
 //      }
 //      try {
 //        int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc,this.getICObjectInstanceID()));
+        iframe.setSrc(BuilderLogic.getInstance().getIFrameContentURL(iwc,this.getICObjectInstanceID()));
 //      }
 //      catch (NumberFormatException ex) {
 //        int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
-//        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc, this.getICObjectInstanceID()));
+//        iframe.setSrc(BuilderLogic.getInstance().getIFrameContentURL(iwc, this.getICObjectInstanceID()));
 //      }
       this.add(iframe);
       UseIFrameLastValue=UseIFrame;
@@ -473,11 +473,11 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       }
       try {
         int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
+        iframe.setSrc(BuilderLogic.getInstance().getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
       }
       catch (NumberFormatException ex) {
         int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
+        iframe.setSrc(BuilderLogic.getInstance().getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
       }
       this.add(iframe);
       UseIFrameLastValue=UseIFrame;
