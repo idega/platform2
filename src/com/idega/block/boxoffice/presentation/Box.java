@@ -779,7 +779,7 @@ public class Box extends Block implements Builderaware {
 		_showHeaders = b;
 	}
 
-	public void setshowAllLinksInCategories(boolean showAllLinks) {
+	public void setShowAllLinksInCategories(boolean showAllLinks) {
 		_showCollection = showAllLinks;
 	}
 }
