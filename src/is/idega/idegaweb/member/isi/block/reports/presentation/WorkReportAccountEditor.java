@@ -613,7 +613,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         record.setReportId(getWorkReportId());
         record.setAccountKeyId(accountKey.intValue());
         // add this new record to the matrix
-        leagueKeyMatrix.put(groupId, accountKey, amount);
+        leagueKeyMatrix.put(groupId, accountKey, record);
       }
       catch (CreateException ex) {
         String message =
