@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.92 2003/12/10 17:11:40 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.93 2003/12/10 22:37:11 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -67,7 +67,6 @@ import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
@@ -1625,7 +1624,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		PostingDetail ret = null;
 		if (reg.getSpecialCalculation() != null) {
 			String type = reg.getSpecialCalculation().getSpecialCalculationType();
-			if (type.equals("cacc_sp_calc_type.subv")) {
+			if (type.equals(RegSpecialCalculationConstant.SUBVENTION)) {
 				PostingDetail d = null;
 				try {
 					d =
@@ -1650,20 +1649,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					ret.setAmount(Math.round(d.getAmount()-total_sum));
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
+					ret.setOrderID(reg.getConditionOrder().intValue());
 					//				ret.setVat(32.0f);
 					//				ret.setVatRegulationID(1);
 				}
 			}
-			else if (type.equals("cacc_sp_calc_type.syskon")) {
+			else if (type.equals(RegSpecialCalculationConstant.SIBLING)) {
 				float amount = reg.getDiscount() * total_sum / 100;
 				ret = new PostingDetail();
 				ret.setAmount(Math.round(amount));
 				ret.setRuleSpecType(reg.getLocalizationKey());
 				ret.setTerm(reg.getName());
+				ret.setOrderID(reg.getConditionOrder().intValue());
 				//				ret.setVat(32.0f);
 				//				ret.setVatRegulationID(1);
 			}
-			else if (type.equals("cacc_sp_calc_type.maxtaxa")) {
+			else if (type.equals(RegSpecialCalculationConstant.MAXTAXA)) {
 				User child = null;
 				if (contract != null) {
 					child = contract.getChild();
@@ -1714,6 +1715,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								ret.setAmount(Math.round(amount - total_sum));
 								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 								ret.setTerm(reg.getName());
+								ret.setOrderID(reg.getConditionOrder().intValue());
 								//			ret.setVat(32.0f);
 								//			ret.setVatRegulationID(1);
 							}
@@ -1730,7 +1732,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					}
 				}
 			}
-			else if (type.equals("cacc_sp_calc_type.laginkomst")) {
+			else if (type.equals(RegSpecialCalculationConstant.LOWINCOME)) {
+				System.out.println("ENTERING LOW INCOME ROUTINE");
 				User child = null;
 				if (contract != null) {
 					child = contract.getChild();
@@ -1740,17 +1743,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 				
 				if (child != null) {
+					System.out.println("LOW: CHILD = " + child.getName());
+					System.out.println("LOW: DATE = " + period);
+					System.out.println("LOW: OPERATION = " + (String)reg.getOperation().getPrimaryKey());
 					try {
 						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodeAndCategory(period,((Integer)child.getPrimaryKey()).intValue(), reg.getOperation());
 						if (low != null && !low.isEmpty()) {
 							Iterator lowIt = low.iterator();
 							if (lowIt.hasNext()) {
 								RegularInvoiceEntry entry = (RegularInvoiceEntry) lowIt.next();
-								
+								System.out.println("LOW: GOT AN ENTRY");
+								System.out.println("LOW: VALUE = " + entry.getAmount());
 								ret = new PostingDetail();
 								ret.setAmount(Math.round(entry.getAmount() - total_sum));
 								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 								ret.setTerm(reg.getName());
+								ret.setOrderID(reg.getConditionOrder().intValue());
 								//			ret.setVat(32.0f);
 								//			ret.setVatRegulationID(1);
 								
@@ -1770,7 +1778,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				else {
 					throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
 				}
-							
 			}
 		}
 		else {
@@ -1778,6 +1785,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			ret.setAmount(Math.round(reg.getAmount().floatValue()));
 			ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 			ret.setTerm(reg.getName());
+			ret.setOrderID(reg.getConditionOrder().intValue());
 			//			ret.setVat(32.0f);
 			//			ret.setVatRegulationID(1);
 		}
