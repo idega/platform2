@@ -22,6 +22,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -185,7 +186,6 @@ public class ChildCareStatistics extends ChildCareBlock {
 		menu.addMenuElement(ORDER_BY_ALL_CHOICES, localize("child_care.show_provider_statistics","Show by area"));
 		menu.addMenuElement(ORDER_BY_FIRST_HAND_CHOICES, localize("child_care.show_first_hand_statistics","Show by first hand choices"));
 		menu.setSelectedElement(_action);
-		menu.setToSubmit();
 		form.add(menu);
 		
 		DropdownMenu areas = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_AREA));
@@ -203,9 +203,12 @@ public class ChildCareStatistics extends ChildCareBlock {
 			re.printStackTrace(System.err);
 		}
 		areas.setSelectedElement(_areaID);
-		areas.setToSubmit();
 		form.add(Text.getNonBrakingSpace());
 		form.add(areas);
+		
+		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("child_care.get", "Get")));
+		form.add(Text.getNonBrakingSpace());
+		form.add(submit);
 		
 		return form;
 	}
