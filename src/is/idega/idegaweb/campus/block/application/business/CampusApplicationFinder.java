@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.3 2002/02/20 00:06:00 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.4 2002/03/18 15:50:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import com.idega.block.application.data.Applicant;
+//import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationFinder;
 import java.sql.SQLException;

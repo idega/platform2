@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.11 2001/09/29 18:44:16 aron Exp $
+ * $Id: Applicant.java,v 1.12 2002/03/18 15:51:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,137 +18,232 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class Applicant extends GenericEntity {
-  private static final String name_ = "app_applicant";
-  private static final String firstName_ = "first_name";
-  private static final String middleName_ = "middle_name";
-  private static final String lastName_ = "last_name";
-  private static final String fullName_ = "full_name";
-  private static final String ssn_ = "ssn";
-  private static final String legalResidence_ = "legal_residence";
-  private static final String residence_ = "residence";
-  private static final String residencePhone_ = "residence_phone";
-  private static final String po_ = "po";
-  private static final String mobilePhone_ = "mobile_phone";
-  private static final String sendSMS_ = "send_sms";
+  private static final String ENTITY_NAME = "app_applicant";
+  private static final String FIRST_NAME = "first_name";
+  private static final String MIDDLE_NAME = "middle_name";
+  private static final String LAST_NAME = "last_name";
+  private static final String FULL_NAME = "full_name";
+  private static final String SSN = "ssn";
+  private static final String LEGAL_RESIDENCE = "legal_residence";
+  private static final String RESIDENCE = "residence";
+  private static final String PHONE = "residence_phone";
+  private static final String PO = "po";
+  private static final String MOBILE_PHONE = "mobile_phone";
+  private static final String SEND_SMS = "send_sms";
 
+  /**
+   *
+   */
   public Applicant() {
     super();
   }
 
+  /**
+   *
+   */
   public Applicant(int id) throws SQLException {
     super(id);
   }
 
+  /**
+   *
+   */
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(firstName_,"First name",true,true,"java.lang.String",255);
-    addAttribute(middleName_,"Middle name",true,true,"java.lang.String",255);
-    addAttribute(lastName_,"Last name",true,true,"java.lang.String",255);
-     addAttribute(fullName_,"Full name",true,true,"java.lang.String",255);
-    addAttribute(ssn_,"Social security number",true,true,"java.lang.String",20);
-    addAttribute(legalResidence_,"Legal residence",true,true,"java.lang.String",255);
-    addAttribute(residence_,"Residence",true,true,"java.lang.String",255);
-    addAttribute(residencePhone_,"Telephone",true,true,"java.lang.String",40);
-    addAttribute(po_,"Post office",true,true,"java.lang.String",255);
-    addAttribute(mobilePhone_,"Mobile phone",true,true,"java.lang.String",40);
-    addAttribute(sendSMS_,"Send SMS",true,true,"java.lang.String",1);
+    addAttribute(getFirstNameColumnName(),"First name",true,true,"java.lang.String",255);
+    addAttribute(getMiddleNameColumnName(),"Middle name",true,true,"java.lang.String",255);
+    addAttribute(getLastNameColumnName(),"Last name",true,true,"java.lang.String",255);
+    addAttribute(getFullNameColumnName(),"Full name",true,true,"java.lang.String",255);
+    addAttribute(getSSNColumnName(),"Social security number",true,true,"java.lang.String",20);
+    addAttribute(getLegalResidenceColumnName(),"Legal residence",true,true,"java.lang.String",255);
+    addAttribute(getResidenceColumnName(),"Residence",true,true,"java.lang.String",255);
+    addAttribute(getResidencePhoneColumnName(),"Telephone",true,true,"java.lang.String",40);
+    addAttribute(getPOColumnName(),"Post office",true,true,"java.lang.String",255);
+    addAttribute(getMobilePhoneColumnName(),"Mobile phone",true,true,"java.lang.String",40);
+    addAttribute(getSendSMSColumnName(),"Send SMS",true,true,"java.lang.String",1);
   }
 
-  public String getEntityName() {    return(name_);  }
-  public static String getEntityTableName() {    return(name_);  }
-  public static String getFirstNameColumnName() {    return(firstName_);  }
-  public static String getMiddleNameColumnName() {    return(middleName_);  }
-  public static String getLastNameColumnName() {    return(lastName_);  }
-  public static String getFullNameColumnName() {    return(fullName_);  }
-  public static String getSSNColumnName() {    return(ssn_);  }
-  public static String getLegalResidenceColumnName() {    return(legalResidence_);  }
-  public static String getResidenceColumnName() {    return(residence_);  }
-  public static String getResidencePhoneColumnName() {    return(residencePhone_);  }
-  public static String getPOColumnName() {    return(po_);  }
-  public static String getMobilePhoneColumnName() {    return(mobilePhone_);  }
-  public static String getSendSMSColumnName() {    return(sendSMS_);  }
-  public static String getFullnameOrderValue(){
-    return getFirstNameColumnName()+","+getMiddleNameColumnName()+","+getLastNameColumnName();
+  /**
+   *
+   */
+  public String getEntityName() {
+    return(ENTITY_NAME);
+  }
+
+  /**
+   *
+   */
+  public static String getEntityTableName() {
+    return(ENTITY_NAME);
+  }
+
+  /**
+   *
+   */
+  public static String getFirstNameColumnName() {
+    return(FIRST_NAME);
+  }
+
+  /**
+   *
+   */
+  public static String getMiddleNameColumnName() {
+    return(MIDDLE_NAME);
+  }
+
+  /**
+   *
+   */
+  public static String getLastNameColumnName() {
+    return(LAST_NAME);
+  }
+
+  /**
+   *
+   */
+  public static String getFullNameColumnName() {
+    return(FULL_NAME);
+  }
+
+  /**
+   *
+   */
+  public static String getSSNColumnName() {
+    return(SSN);
+  }
+
+  /**
+   *
+   */
+  public static String getLegalResidenceColumnName() {
+    return(LEGAL_RESIDENCE);
+  }
+
+  /**
+   *
+   */
+  public static String getResidenceColumnName() {
+    return(RESIDENCE);
+  }
+
+  /**
+   *
+   */
+  public static String getResidencePhoneColumnName() {
+    return(PHONE);
+  }
+
+  /**
+   *
+   */
+  public static String getPOColumnName() {
+    return(PO);
+  }
+
+  /**
+   *
+   */
+  public static String getMobilePhoneColumnName() {
+    return(MOBILE_PHONE);
+  }
+
+  /**
+   *
+   */
+  public static String getSendSMSColumnName() {
+    return(SEND_SMS);
+  }
+
+  /**
+   *
+   */
+  public static String getFullnameOrderValue() {
+    StringBuffer ret = new StringBuffer(getFirstNameColumnName());
+    ret.append(",");
+    ret.append(getMiddleNameColumnName());
+    ret.append(",");
+    ret.append(getLastNameColumnName());
+    return(ret.toString());
   }
 
   public void setFirstName(String name) {
-    setColumn(firstName_,name);
+    setColumn(getFirstNameColumnName(),name);
   }
 
   public String getFirstName() {
-    return(getStringColumnValue(firstName_));
+    return(getStringColumnValue(getFirstNameColumnName()));
   }
 
   public void setMiddleName(String name) {
-    setColumn(middleName_,name);
+    setColumn(getMiddleNameColumnName(),name);
   }
 
   public String getMiddleName() {
-    return(getStringColumnValue(middleName_));
+    return(getStringColumnValue(getMiddleNameColumnName()));
   }
 
   public void setLastName(String name) {
-    setColumn(lastName_,name);
+    setColumn(getLastNameColumnName(),name);
   }
 
   public String getLastName() {
-    return(getStringColumnValue(lastName_));
+    return(getStringColumnValue(getLastNameColumnName()));
   }
 
   private void setFullName(){
-    setColumn(fullName_ ,getFullName());
+    setColumn(getFullNameColumnName(),getFullName());
   }
 
   public void setSSN(String ssn) {
-    setColumn(ssn_,ssn);
+    setColumn(getSSNColumnName(),ssn);
   }
 
   public String getSSN() {
-    return(getStringColumnValue(ssn_));
+    return(getStringColumnValue(getSSNColumnName()));
   }
 
   public void setLegalResidence(String legal) {
-    setColumn(legalResidence_,legal);
+    setColumn(getLegalResidenceColumnName(),legal);
   }
 
   public String getLegalResidence() {
-    return(getStringColumnValue(legalResidence_));
+    return(getStringColumnValue(getLegalResidenceColumnName()));
   }
 
   public void setResidence(String residence) {
-    setColumn(residence_,residence);
+    setColumn(getResidenceColumnName(),residence);
   }
 
   public String getResidence() {
-    return(getStringColumnValue(residence_));
+    return(getStringColumnValue(getResidenceColumnName()));
   }
 
   public void setResidencePhone(String phone) {
-    setColumn(residencePhone_,phone);
+    setColumn(getResidencePhoneColumnName(),phone);
   }
 
   public String getResidencePhone() {
-    return(getStringColumnValue(residencePhone_));
+    return(getStringColumnValue(getResidencePhoneColumnName()));
   }
 
   public void setPO(String po) {
-    setColumn(po_,po);
+    setColumn(getPOColumnName(),po);
   }
 
   public String getPO() {
-    return(getStringColumnValue(po_));
+    return(getStringColumnValue(getPOColumnName()));
   }
 
   public void setMobilePhone(String mobilePhone) {
-    setColumn(mobilePhone_,mobilePhone);
+    setColumn(getMobilePhoneColumnName(),mobilePhone);
   }
 
   public String getMobilePhone() {
-    return(getStringColumnValue(mobilePhone_));
+    return(getStringColumnValue(getMobilePhoneColumnName()));
   }
 
   public boolean getSendSMS() {
-    String send = getStringColumnValue(sendSMS_);
+    String send = getStringColumnValue(getSendSMSColumnName());
     if ((send == null) || (send.equalsIgnoreCase("n")))
       return(false);
     else if (send.equalsIgnoreCase("y"))
@@ -159,12 +254,12 @@ public class Applicant extends GenericEntity {
 
   public void setSendSMS(boolean send) {
     if (send)
-      setColumn(sendSMS_,"Y");
+      setColumn(getSendSMSColumnName(),"Y");
     else
-      setColumn(sendSMS_,"N");
+      setColumn(getSendSMSColumnName(),"N");
   }
 
-  public String getFullName(){
+  public String getFullName() {
     return (getFirstName()!= null?getFirstName():"")+
     " "+(getMiddleName()!= null?getMiddleName():"")+
     " "+(getLastName()!= null?getLastName():"");

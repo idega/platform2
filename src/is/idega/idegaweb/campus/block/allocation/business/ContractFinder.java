@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Iterator;
 import com.idega.core.user.data.User;
 import com.idega.block.application.data.Applicant;
+//import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.business.BuildingCacher;
 

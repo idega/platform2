@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.8 2002/02/20 00:06:00 aron Exp $
+ * $Id: ContractBusiness.java,v 1.9 2002/03/18 15:50:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -150,9 +150,9 @@ public  class ContractBusiness {
   }
 
   public static void changeApplicationStatus(Contract eContract)throws SQLException{
-    String status = Application.statusSigned;
+    String status = Application.STATUS_SIGNED;
     List L = null;
-    L = EntityFinder.findAllByColumn(new Application(),Application.getColumnNameApplicantId(),eContract.getApplicantId().intValue());
+    L = EntityFinder.findAllByColumn(new Application(),Application.getApplicantIdColumnName(),eContract.getApplicantId().intValue());
     if(L!=null){
 			Iterator I = L.iterator();
       while(I.hasNext()){

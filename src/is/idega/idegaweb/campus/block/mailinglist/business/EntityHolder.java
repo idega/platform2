@@ -8,6 +8,7 @@ import com.idega.core.user.data.User;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.data.Email;
 import com.idega.block.application.data.Applicant;
+//import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationBusiness;
 import java.util.List;

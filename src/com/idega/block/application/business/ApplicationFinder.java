@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.14 2002/02/01 12:30:54 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.15 2002/03/18 15:51:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,10 @@
  */
 package com.idega.block.application.business;
 
-import com.idega.block.application.data.*;
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.application.data.ApplicationSubject;
+import com.idega.block.application.data.ApplicationSubjectInfo;
 import com.idega.block.application.business.ApplicationHolder;
 import java.sql.SQLException;
 import java.util.List;
@@ -31,7 +34,7 @@ public class ApplicationFinder {
   public static List listOfNewApplicationInSubject(int subjectId){
     try {
       Application A = new Application();
-      String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+A.statusSubmitted+"'";
+      String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+A.STATUS_SUBMITTED+"'";
       //System.err.println(sql);
       return(EntityFinder.findAll(A,sql));
 
@@ -55,7 +58,7 @@ public class ApplicationFinder {
   public static List listOfNewApplications(){
     try {
      Application A = new Application();
-     String sql = "select * from "+A.getEntityName()+" where "+A.getStatusColumnName()+" = '"+A.statusSubmitted+"'";
+     String sql = "select * from "+A.getEntityName()+" where "+A.getStatusColumnName()+" = '"+A.STATUS_SUBMITTED+"'";
 
       return(EntityFinder.findAll(A,sql));
     }
@@ -65,11 +68,11 @@ public class ApplicationFinder {
   }
 
   public static List listOfNewApplicants(){
-    return listOfApplicants(null,Application.statusSubmitted);
+    return listOfApplicants(null,Application.STATUS_SUBMITTED);
   }
 
   public static List listOfNewApplicantsOrdered(String order){
-    return listOfApplicants(null,Application.statusSubmitted);
+    return listOfApplicants(null,Application.STATUS_SUBMITTED);
   }
 
   public static List listOfApplicantsWithStatus(String status){

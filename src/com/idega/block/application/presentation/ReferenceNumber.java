@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.14 2002/02/27 18:45:51 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.15 2002/03/18 15:51:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,32 +34,32 @@ public class ReferenceNumber extends Block {
   public static final int LAYOUT_HORIZONTAL = 2;
   public static final int LAYOUT_STACKED = 3;
 
-  private int referenceTextSize_ = -1;
-  private int inputLength_ = 10;
-  private int layout_ = -1;
-  private int pageId;
+  private int _inputLength = 10;
+  private int _layout = -1;
+  private int _pageId;
+  private int _referenceTextSize;
 
-  private String backgroundImageUrl_ = "";
-  private String referenceWidth_ = "";
-  private String referenceHeight_ = "";
-  private String referenceText_;
-  private String color_ = "";
-  private String referenceTextColor_;
-  private String styleAttribute_ = "font-size: 10pt";
-  private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
-  private String submitButtonAlignment_;
-  private boolean hasHelpButton = false;
+  private String _backgroundImageUrl = "";
+  private String _referenceWidth = "";
+  private String _referenceHeight = "";
+  private String _referenceText;
+  private String _colour = "";
+  private String _referenceTextColour;
+  private String _styleAttribute = "font-size: 10pt";
+  private String _textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
+  private String _submitButtonAlignment;
+  private boolean _hasHelpButton = false;
 
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 
-  private Table outerTable_;
+  private Table _outerTable;
 
-  private Form myForm_;
+  private Form _myForm;
 
-  private Image referenceImage_;
+  private Image _referenceImage;
 
-  protected IWResourceBundle iwrb_;
-  protected IWBundle iwb_;
+  protected IWResourceBundle _iwrb;
+  protected IWBundle _iwb;
 
   public ReferenceNumber() {
     super();
@@ -67,55 +67,55 @@ public class ReferenceNumber extends Block {
   }
 
   public void main(IWContext iwc) throws Exception {
-    iwb_ = getBundle(iwc);
-    iwrb_ = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
+    _iwrb = getResourceBundle(iwc);
 
-    referenceImage_ = iwrb_.getLocalizedImageButton("get","Get");
+    _referenceImage = _iwrb.getLocalizedImageButton("get","Get");
 
-    referenceText_ = iwrb_.getLocalizedString("referenceNumber","Tilvísunarnr.");
+    _referenceText = _iwrb.getLocalizedString("referenceNumber","Tilvísunarnr.");
     setup();
 
-    outerTable_.add(myForm_);
-    add(outerTable_);
+    _outerTable.add(_myForm);
+    add(_outerTable);
   }
 
   private void setup() {
     Table referenceTable = new Table(1,2);
     referenceTable.setBorder(0);
-    referenceTable.setWidth(referenceWidth_);
-    referenceTable.setHeight(referenceHeight_);
-    if (!color_.equals("")) {
-      referenceTable.setColor(color_);
+    referenceTable.setWidth(_referenceWidth);
+    referenceTable.setHeight(_referenceHeight);
+    if (!_colour.equals("")) {
+      referenceTable.setColor(_colour);
     }
     referenceTable.setCellpadding(0);
     referenceTable.setCellspacing(0);
-    referenceTable.setBackgroundImage(new Image(backgroundImageUrl_));
+    referenceTable.setBackgroundImage(new Image(_backgroundImageUrl));
 
-    HelpButton helpButton = new HelpButton(iwrb_.getLocalizedString("help_headline","Reference number"),iwrb_.getLocalizedString("help","Help"));
+    HelpButton helpButton = new HelpButton(_iwrb.getLocalizedString("help_headline","Reference number"),_iwrb.getLocalizedString("help","Help"));
 
-    Text referenceTexti = new Text(referenceText_);
-    if (referenceTextSize_ != -1) {
-      referenceTexti.setFontSize(referenceTextSize_);
+    Text referenceTexti = new Text(_referenceText);
+    if (_referenceTextSize != -1) {
+      referenceTexti.setFontSize(_referenceTextSize);
     }
 
-    if (referenceTextColor_ != null) {
-      referenceTexti.setFontColor(referenceTextColor_);
+    if (_referenceTextColour != null) {
+      referenceTexti.setFontColor(_referenceTextColour);
     }
 
-    referenceTexti.setFontStyle(textStyles);
+    referenceTexti.setFontStyle(_textStyles);
 
     Table inputTable;
 
     TextInput reference = new TextInput(CAM_REF_NUMBER);
-    reference.setAttribute("style",styleAttribute_);
-    reference.setSize(inputLength_);
+    reference.setAttribute("style",_styleAttribute);
+    reference.setSize(_inputLength);
 
-    switch (layout_) {
+    switch (_layout) {
       case LAYOUT_HORIZONTAL:
         inputTable = new Table(3,2);
         inputTable.setBorder(0);
-        if (!(color_.equals(""))) {
-          inputTable.setColor(color_);
+        if (!(_colour.equals(""))) {
+          inputTable.setColor(_colour);
         }
         inputTable.setCellpadding(0);
         inputTable.setCellspacing(0);
@@ -134,8 +134,8 @@ public class ReferenceNumber extends Block {
       case LAYOUT_VERTICAL:
         inputTable = new Table(3,3);
         inputTable.setBorder(0);
-        if (!(color_.equals(""))) {
-          inputTable.setColor(color_);
+        if (!(_colour.equals(""))) {
+          inputTable.setColor(_colour);
         }
         inputTable.setCellpadding(0);
         inputTable.setCellspacing(0);
@@ -160,8 +160,8 @@ public class ReferenceNumber extends Block {
         inputTable.setAlignment("center");
         inputTable.addText("",1,2);
         inputTable.setHeight(1,"2");
-        if (!(color_.equals(""))) {
-          inputTable.setColor(color_);
+        if (!(_colour.equals(""))) {
+          inputTable.setColor(_colour);
         }
         inputTable.setAlignment(1,1,"left");
         inputTable.setAlignment(1,2,"left");
@@ -174,34 +174,34 @@ public class ReferenceNumber extends Block {
     }
 
     Table submitTable = new Table(1,1);
-    if (hasHelpButton) {
+    if (_hasHelpButton) {
       submitTable = new Table(2,1);
     }
     submitTable.setBorder(0);
-    if (!color_.equals("")) {
-      submitTable.setColor(color_);
+    if (!_colour.equals("")) {
+      submitTable.setColor(_colour);
     }
     submitTable.setRowVerticalAlignment(1,"middle");
-    if (!hasHelpButton) {
-      submitTable.setAlignment(1,1,submitButtonAlignment_);
+    if (!_hasHelpButton) {
+      submitTable.setAlignment(1,1,_submitButtonAlignment);
     }
     else {
       submitTable.setAlignment(2,1,"right");
     }
     submitTable.setWidth("100%");
 
-    if (!hasHelpButton) {
-      submitTable.add(new SubmitButton(referenceImage_,"tengja"),1,1);
+    if (!_hasHelpButton) {
+      submitTable.add(new SubmitButton(_referenceImage,"tengja"),1,1);
     }
     else {
-      submitTable.add(new SubmitButton(referenceImage_,"tengja"),2,1);
+      submitTable.add(new SubmitButton(_referenceImage,"tengja"),2,1);
       submitTable.add(helpButton,1,1);
     }
 
     referenceTable.add(submitTable,1,2);
-    myForm_.add(referenceTable);
-    if(pageId > 0){
-      myForm_.setPageToSubmitTo(pageId);
+    _myForm.add(referenceTable);
+    if(_pageId > 0){
+      _myForm.setPageToSubmitTo(_pageId);
     }
   }
 
@@ -210,101 +210,101 @@ public class ReferenceNumber extends Block {
   }
 
   public void setHelpButton(boolean usehelp){
-    hasHelpButton = usehelp;
+    _hasHelpButton = usehelp;
   }
 
   public void addHelpButton() {
-    hasHelpButton = true;
+    _hasHelpButton = true;
   }
 
   public void setLayout(int layout) {
-    layout_ = layout;
+    _layout = layout;
   }
 
   private void setDefaultValues() {
-    referenceWidth_ = "148";
-    referenceHeight_ = "89";
-    submitButtonAlignment_ = "center";
-    layout_ = LAYOUT_VERTICAL;
+    _referenceWidth = "148";
+    _referenceHeight = "89";
+    _submitButtonAlignment = "center";
+    _layout = LAYOUT_VERTICAL;
 
-    outerTable_ = new Table();
-    outerTable_.setCellpadding(0);
-    outerTable_.setCellspacing(0);
-    outerTable_.setAlignment("left");
+    _outerTable = new Table();
+    _outerTable.setCellpadding(0);
+    _outerTable.setCellspacing(0);
+    _outerTable.setAlignment("left");
 
-    myForm_ = new Form();
-    myForm_.setEventListener(ReferenceNumberHandler.class.getName());
-    myForm_.add(new HiddenInput("cam_fact_view","50"));
-    myForm_.setMethod("post");
-    //myForm_.maintainAllParameters();
+    _myForm = new Form();
+    _myForm.setEventListener(ReferenceNumberHandler.class.getName());
+    _myForm.add(new HiddenInput("cam_fact_view","50"));
+    _myForm.setMethod("post");
+    //_myForm.maintainAllParameters();
   }
 
   public void setVertical() {
-    layout_ = LAYOUT_VERTICAL;
+    _layout = LAYOUT_VERTICAL;
   }
 
   public void setHorizontal() {
-    layout_ = LAYOUT_HORIZONTAL;
+    _layout = LAYOUT_HORIZONTAL;
   }
 
   public void setStacked() {
-    layout_ = LAYOUT_STACKED;
+    _layout = LAYOUT_STACKED;
   }
 
   public void setStyle(String styleAttribute) {
-    styleAttribute_ = styleAttribute;
+    _styleAttribute = styleAttribute;
   }
 
   public void setInputLength(int inputLength) {
-    inputLength_ = inputLength;
+    _inputLength = inputLength;
   }
 
   public void setReferenceTextSize(int size) {
-    referenceTextSize_ = size;
+    _referenceTextSize = size;
   }
 
   public void setReferenceTextColor(String color) {
-    referenceTextColor_ = color;
+    _referenceTextColour = color;
   }
 
   public void setColor(String color) {
-    color_ = color;
+    _colour = color;
   }
 
   public void setHeight(String height) {
-    referenceHeight_ = height;
+    _referenceHeight = height;
   }
 
   public void setWidth(String width) {
-    referenceWidth_ = width;
+    _referenceWidth = width;
   }
 
   public void setBackgroundImageUrl(String url) {
-    backgroundImageUrl_ = url;
+    _backgroundImageUrl = url;
   }
 
   public void setSubmitButtonAlignment(String alignment) {
-    submitButtonAlignment_ = alignment;
+    _submitButtonAlignment = alignment;
   }
 
   public void setTextStyle(String styleAttribute){
-    this.textStyles=styleAttribute;
+    _textStyles=styleAttribute;
   }
 
   public void setPage(com.idega.builder.data.IBPage page){
-    this.pageId = page.getID();
+    _pageId = page.getID();
   }
 
   public synchronized Object clone() {
     ReferenceNumber obj = null;
     try {
       obj = (ReferenceNumber)super.clone();
-      if(this.outerTable_!=null)
-        obj.outerTable_ = (Table)this.outerTable_.clone();
-      if(this.referenceImage_!=null)
-        obj.referenceImage_ = (Image)this.referenceImage_.clone();
-      if(this.myForm_!=null)
-        obj.myForm_ = (Form)this.myForm_.clone();
+      if(_outerTable!=null)
+        obj._outerTable = (Table)_outerTable.clone();
+      if(_referenceImage!=null)
+        obj._referenceImage = (Image)_referenceImage.clone();
+      if(_myForm!=null)
+        obj._myForm = (Form)_myForm.clone();
 
 
     }
@@ -313,6 +313,4 @@ public class ReferenceNumber extends Block {
     }
     return obj;
   }
-
-
 }

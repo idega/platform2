@@ -1,5 +1,5 @@
 /*
- * $Id: RequestHome.java,v 1.1 2002/02/21 00:22:21 palli Exp $
+ * $Id: RequestHome.java,v 1.2 2002/03/18 15:50:44 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,9 @@
  *
  */
 package is.idega.idegaweb.campus.block.request.business;
+
+import is.idega.idegaweb.campus.block.request.data.Request;
+import is.idega.idegaweb.campus.block.request.data.RequestBean;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -24,5 +27,9 @@ public class RequestHome {
       _instance = new RequestHome();
 
     return(_instance);
+  }
+
+  public Request getNewRequest() {
+    return(new RequestBean());
   }
 }

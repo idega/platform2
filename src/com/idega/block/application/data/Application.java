@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.9 2001/12/11 14:12:56 aron Exp $
+ * $Id: Application.java,v 1.10 2002/03/18 15:51:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,19 +21,19 @@ import com.idega.util.idegaTimestamp;
  * @version 1.0
  */
 public class Application extends GenericEntity {
-  public static final String name_ = "app_application";
-  private static final String subjectId_ = "app_subject_id";
-  private static final String applicantId_ = "app_applicant_id";
-  private static final String submitted_ = "submitted";
-  private static final String status_ = "status";
-  private static final String statusChanged_ = "status_changed";
+  public static final String ENTITY_NAME = "app_application";
+  private static final String SUBJECT_ID = "app_subject_id";
+  private static final String APPLICANT_ID = "app_applicant_id";
+  private static final String SUBMITTED = "submitted";
+  private static final String STATUS = "status";
+  private static final String STATUS_CHANGED = "status_changed";
 
 
-  public static final String statusSubmitted = "S";
-  public static final String statusApproved = "A";
-  public static final String statusRejected = "R";
-  public static final String statusSigned = "C";
-  public static final String statusGarbage = "G";
+  public static final String STATUS_SUBMITTED = "S";
+  public static final String STATUS_APPROVED = "A";
+  public static final String STATUS_REJECTED = "R";
+  public static final String STATUS_SIGNED = "C";
+  public static final String STATUS_GARBAGE = "G";
 
   public Application() {
     super();
@@ -45,83 +45,87 @@ public class Application extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(subjectId_,"Subject",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.application.data.ApplicationSubject.class);
-    addAttribute(applicantId_,"Applicant",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.application.data.Applicant.class);
-    addAttribute(submitted_,"Submitted",true,true,java.sql.Timestamp.class);
-    addAttribute(status_,"Status",true,true,java.lang.String.class,1);
-    addAttribute(statusChanged_,"Status changed",true,true,java.sql.Timestamp.class);
+    addAttribute(getSubjectIdColumnName(),"Subject",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.application.data.ApplicationSubject.class);
+    addAttribute(getApplicantIdColumnName(),"Applicant",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.application.data.Applicant.class);
+    addAttribute(getSubmittedColumnName(),"Submitted",true,true,java.sql.Timestamp.class);
+    addAttribute(getStatusColumnName(),"Status",true,true,java.lang.String.class,1);
+    addAttribute(getStatusChangedColumnName(),"Status changed",true,true,java.sql.Timestamp.class);
   }
 
-  public static String getEntityTableName(){return name_ ;}
+/*  public static String getEntityTableName(){return name_ ;}
   public static String getColumnNameSubjectId(){return subjectId_;}
   public static String getColumnNameApplicantId(){return applicantId_;}
   public static String getColumnNameSubmitted(){return submitted_;}
   public static String getColumnNameStatus(){return status_;}
-  public static String getColumnNameStatusChanged(){return statusChanged_;}
+  public static String getColumnNameStatusChanged(){return statusChanged_;}*/
 
   public String getEntityName() {
-    return(name_);
+    return(ENTITY_NAME);
   }
 
-  public String getSubjectIdColumnName() {
-    return(subjectId_);
+  public static String getEntityTableName() {
+    return(ENTITY_NAME);
   }
 
-  public String getStatusColumnName() {
-    return(status_);
+  public static String getSubjectIdColumnName() {
+    return(SUBJECT_ID);
   }
 
-  public String getApplicantIdColumnName() {
-    return(applicantId_);
+  public static String getStatusColumnName() {
+    return(STATUS);
   }
 
-  public String getSubmittedColumnName() {
-    return(submitted_);
+  public static String getApplicantIdColumnName() {
+    return(APPLICANT_ID);
   }
 
-  public String getStatusChangedColumnName() {
-    return(statusChanged_);
+  public static String getSubmittedColumnName() {
+    return(SUBMITTED);
+  }
+
+  public static String getStatusChangedColumnName() {
+    return(STATUS_CHANGED);
   }
 
   public void setSubjectId(int id) {
-    setColumn(subjectId_,id);
+    setColumn(getSubjectIdColumnName(),id);
   }
 
   public void setSubjectId(Integer id) {
-    setColumn(subjectId_,id);
+    setColumn(getSubjectIdColumnName(),id);
   }
 
   public int getSubjectId() {
-    return(getIntColumnValue(subjectId_));
+    return(getIntColumnValue(getSubjectIdColumnName()));
   }
 
   public void setApplicantId(int id) {
-    setColumn(applicantId_,id);
+    setColumn(getApplicantIdColumnName(),id);
   }
 
   public void setApplicantId(Integer id) {
-    setColumn(applicantId_,id);
+    setColumn(getApplicantIdColumnName(),id);
   }
 
   public int getApplicantId() {
-    return getIntColumnValue(applicantId_);
+    return getIntColumnValue(getApplicantIdColumnName());
   }
 
   public void setSubmitted(Timestamp submitted) {
-    setColumn(submitted_,submitted);
+    setColumn(getSubmittedColumnName(),submitted);
   }
 
   public Timestamp getSubmitted() {
-    return((Timestamp)getColumnValue(submitted_));
+    return((Timestamp)getColumnValue(getSubmittedColumnName()));
   }
 
   public void setStatus(String status) throws IllegalStateException {
-    if ((status.equalsIgnoreCase(statusSubmitted)) ||
-        (status.equalsIgnoreCase(statusApproved)) ||
-        (status.equalsIgnoreCase(statusSigned)) ||
-        (status.equalsIgnoreCase(statusRejected))||
-        (status.equalsIgnoreCase(statusGarbage))){
-      setColumn(status_,status);
+    if ((status.equalsIgnoreCase(STATUS_SUBMITTED)) ||
+        (status.equalsIgnoreCase(STATUS_APPROVED)) ||
+        (status.equalsIgnoreCase(STATUS_SIGNED)) ||
+        (status.equalsIgnoreCase(STATUS_REJECTED))||
+        (status.equalsIgnoreCase(STATUS_GARBAGE))){
+      setColumn(getStatusColumnName(),status);
       setStatusChanged(idegaTimestamp.getTimestampRightNow());
     }
     else
@@ -129,30 +133,30 @@ public class Application extends GenericEntity {
   }
 
   public void setStatusSubmitted() {
-    setStatus(statusSubmitted);
+    setStatus(STATUS_SUBMITTED);
   }
 
   public void setStatusApproved() {
-    setStatus(statusApproved);
+    setStatus(STATUS_APPROVED);
   }
 
   public void setStatusRejected() {
-    setStatus(statusRejected);
+    setStatus(STATUS_REJECTED);
   }
 
   public void setStatusSigned() {
-    setStatus(statusSigned);
+    setStatus(STATUS_SIGNED);
   }
 
   public String getStatus() {
-    return(getStringColumnValue(status_));
+    return(getStringColumnValue(getStatusColumnName()));
   }
 
   public void setStatusChanged(Timestamp statusChanged) {
-    setColumn(statusChanged_,statusChanged);
+    setColumn(getStatusChangedColumnName(),statusChanged);
   }
 
   public Timestamp getStatusChanged() {
-    return((Timestamp)getColumnValue(statusChanged_));
+    return((Timestamp)getColumnValue(getStatusChangedColumnName()));
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.3 2002/02/21 00:21:48 palli Exp $
+ * $Id: RequestAdminView.java,v 1.4 2002/03/18 15:50:44 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ public class RequestAdminView extends Block {
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
   private static final String NAME_KEY = "cam_request_admin_view_block";
   private static final String DEFAULT_VALUE = "Requests";
+  private static final String CAM_REQ_VIEW_SELECTED = "req_admin_filter";
 
   private IWResourceBundle _iwrb = null;
 
@@ -52,8 +53,16 @@ public class RequestAdminView extends Block {
    */
   public void main(IWContext iwc) {
     _iwrb = getResourceBundle(iwc);
+    String selected = iwc.getParameter(CAM_REQ_VIEW_SELECTED);
 
-    add(getRequests(1));
+    System.out.println("adding test to bundle " + _iwrb.getResourcesURL());
+    _iwrb.setLocalizedString("Test","test");
+    java.util.Enumeration e = _iwrb.getKeys();
+    while (e.hasMoreElements())
+      System.out.println("key = " + (String)e.nextElement());
+
+
+    add(getRequests(selected));
   }
 
   /**
@@ -77,7 +86,7 @@ public class RequestAdminView extends Block {
     return(IW_BUNDLE_IDENTIFIER);
   }
 
-  private Form getRequests(int id) {
+  private Form getRequests(String selected) {
     Form f = new Form();
     Table t = new Table(1,2);
     t.setWidth("100%");
@@ -93,7 +102,7 @@ public class RequestAdminView extends Block {
     int row = 2;
 
 
-    RadioGroup grp = new RadioGroup("req_admin_filter");
+    RadioGroup grp = new RadioGroup(CAM_REQ_VIEW_SELECTED);
     grp.addRadioButton(Request.REQUEST_STATUS_SENT,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_S")));
     grp.addRadioButton(Request.REQUEST_STATUS_RECEIVED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_R")));
     grp.addRadioButton(Request.REQUEST_STATUS_IN_PROGRESS,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_P")));
@@ -102,8 +111,6 @@ public class RequestAdminView extends Block {
     grp.setVertical(false);
     grp.keepStatusOnAction();
 
-    String selected = grp.getSelected();
-    System.out.println("Selected = " + selected);
     if (selected == null) {
       selected = Request.REQUEST_STATUS_SENT;
       grp.setSelected(selected);

@@ -182,7 +182,7 @@ public class CampusApprover extends Block{
 
     try{
       Application A = new Application(id);
-      A.setStatus(A.statusGarbage);
+      A.setStatus(A.STATUS_GARBAGE);
       A.update();
     }
     catch(Exception e){
@@ -285,7 +285,7 @@ public class CampusApprover extends Block{
       int len = L.size();
 
       boolean showcan = false;
-      if(sGlobalStatus.equals(Application.statusRejected)){
+      if(sGlobalStatus.equals(Application.STATUS_REJECTED)){
         T.add(headerText(iwrb.getLocalizedString("g","g")),col++,row);
         showcan = true;
       }

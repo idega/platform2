@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.15 2002/02/21 00:20:03 palli Exp $
+ * $Id: ApplicationForm.java,v 1.16 2002/03/18 15:51:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,16 +32,29 @@ import com.idega.presentation.Block;
  * @version 1.0
  */
 public class ApplicationForm extends PresentationObjectContainer {
-  private final int _statusEnteringPage = 0;
-  private final int _statusSubject = 1;
-  private final int _statusGeneralInfo = 2;
+  protected static final String APP_GENINFO  = "app_generalInfo";
+  protected static final String APP_FIRST_NAME = "app_firstName";
+  protected static final String APP_MIDDLE_NAME = "app_middleName";
+  protected static final String APP_LAST_NAME = "app_lastName";
+  protected static final String APP_SSN = "app_ssn";
+  protected static final String APP_LEGAL_RESIDENCE = "app_legalResidence";
+  protected static final String APP_RESIDENCE = "app_residence";
+  protected static final String APP_PHONE = "app_residencePhone";
+  protected static final String APP_PO = "app_po";
 
-  protected boolean _isAdmin;
+  protected static final String APP_STATUS = "app_status";
+  protected static final String APP_MUST_FILL_OUT = "app_mustFillOut";
+
+  protected final int _statusEnteringPage = 0;
+  protected final int _statusSubject = 1;
+  protected final int _statusGeneralInfo = 2;
+
   private static final String IW_RESOURCE_BUNDLE = "com.idega.block.application";
 
   protected IWResourceBundle _iwrb = null;
 
-  private Text _textTemplate = new Text();
+  protected Text _required = new Text(" * ");
+  protected Text _info = null;
 
   /**
    *
@@ -53,7 +66,7 @@ public class ApplicationForm extends PresentationObjectContainer {
    *
    */
   protected void control(IWContext iwc) {
-    String statusString = iwc.getParameter("status");
+    String statusString = iwc.getParameter(APP_STATUS);
     int status = 0;
 
     if (statusString == null){
@@ -69,11 +82,11 @@ public class ApplicationForm extends PresentationObjectContainer {
     }
 
     if (status == _statusEnteringPage) {
-      doSelectSubject(iwc);
+      doSelectSubject();
     }
     else if (status == _statusSubject) {
       ApplicationFormHelper.saveSubject(iwc);
-      doGeneralInformation(iwc);
+      doGeneralInformation();
     }
     else if (status == _statusGeneralInfo) {
       ApplicationFormHelper.saveApplicantInformation(iwc);
@@ -88,7 +101,7 @@ public class ApplicationForm extends PresentationObjectContainer {
     return(IW_RESOURCE_BUNDLE);
   }
 
-  protected void doSelectSubject(IWContext iwc) {
+  protected void doSelectSubject() {
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     Text textTemplate = new Text();
 
@@ -104,13 +117,6 @@ public class ApplicationForm extends PresentationObjectContainer {
     text1.setStyle("bodytext");
     text1.setText(_iwrb.getLocalizedString("applicationSubject","Umsókn um"));
     text1.setBold();
-    Text required = (Text)textTemplate.clone();
-    required.setText(" * ");
-    required.setBold();
-    required.setStyle("required");
-    Text info = (Text)textTemplate.clone();
-    info.setText(_iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
-    info.setStyle("subtext");
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
     subject.setStyle("formstyle");
@@ -123,19 +129,19 @@ public class ApplicationForm extends PresentationObjectContainer {
     form.add(t);
 
     t.add(text1,1,1);
-    t.add(required,1,1);
+    t.add(_required,1,1);
     t.add(subject,2,1);
     t.add(back,2,3);
     t.add(ok,2,3);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(Text.getBreak());
-    form.add(info);
-    form.add(new HiddenInput("status",Integer.toString(_statusSubject)));
+    form.add(_info);
+    form.add(new HiddenInput(APP_STATUS,Integer.toString(_statusSubject)));
     add(form);
   }
 
-  protected void doGeneralInformation(IWContext iwc) {
+  protected void doGeneralInformation() {
     Text textTemplate = new Text();
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
@@ -177,13 +183,7 @@ public class ApplicationForm extends PresentationObjectContainer {
     text8.setStyle("bodytext");
     text8.setText(_iwrb.getLocalizedString("po","Póstnúmer"));
     text8.setBold();
-    Text required = (Text)textTemplate.clone();
-    required.setText(" * ");
-    required.setBold();
-    required.setStyle("required");
-    Text info = (Text)textTemplate.clone();
-    info.setText(_iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
-    info.setStyle("subtext");
+
     TextInput input1 = (TextInput)textInputTemplate.clone();
     input1.setName("firstName");
     input1.setStyle("formstyle");
@@ -219,38 +219,36 @@ public class ApplicationForm extends PresentationObjectContainer {
 
     t.addTitle(heading);
     t.add(text1,1,1);
-    t.add(required,1,1);
+    t.add(_required,1,1);
     t.add(input1,2,1);
     t.add(text2,1,2);
     t.add(input2,2,2);
     t.add(text3,1,3);
-    t.add(required,1,3);
+    t.add(_required,1,3);
     t.add(input3,2,3);
     t.add(text4,1,4);
-    t.add(required,1,4);
+    t.add(_required,1,4);
     t.add(input4,2,4);
     t.add(text5,1,5);
-    t.add(required,1,5);
+    t.add(_required,1,5);
     t.add(input5,2,5);
     t.add(text6,1,6);
-    t.add(required,1,6);
+    t.add(_required,1,6);
     t.add(input6,2,6);
     t.add(text7,1,7);
-    t.add(required,1,7);
+    t.add(_required,1,7);
     t.add(input7,2,7);
     t.add(text8,1,8);
-    t.add(required,1,8);
+    t.add(_required,1,8);
     t.add(input8,2,8);
-//    t.add(ok,1,10);
     t.addButton(ok);
-
 
     form.add(t);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(Text.getBreak());
-    form.add(info);
-    form.add(new HiddenInput("status",Integer.toString(_statusGeneralInfo)));
+    form.add(_info);
+    form.add(new HiddenInput(APP_STATUS,Integer.toString(_statusGeneralInfo)));
     add(form);
   }
 
@@ -274,6 +272,7 @@ public class ApplicationForm extends PresentationObjectContainer {
 
   public void main(IWContext iwc){
     _iwrb = getResourceBundle(iwc);
+    _info = new Text(_iwrb.getLocalizedString(APP_MUST_FILL_OUT,"* Stjörnumerkt svæði verður að fylla út"));
     control(iwc);
   }
 

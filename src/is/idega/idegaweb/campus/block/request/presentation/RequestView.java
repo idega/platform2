@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.3 2002/02/21 00:21:48 palli Exp $
+ * $Id: RequestView.java,v 1.4 2002/03/18 15:50:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -231,6 +231,7 @@ public class RequestView extends Window {
     data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
     row++;
   }
+
   /**
    *
    */

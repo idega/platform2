@@ -1,0 +1,155 @@
+/*
+ * $Id: ApplicantHome.java,v 1.1 2002/03/18 15:51:22 palli Exp $
+ *
+ * Copyright (C) 2002 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
+package com.idega.block.application.business;
+
+import com.idega.block.application.data.Applicant;
+//import com.idega.block.application.data.ApplicantBean;
+import com.idega.block.application.data.Application;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * @author <a href="mail:palli@idega.is">Pall Helgason</a>
+ * @version 1.0
+ */
+public class ApplicantHome {
+  private static ApplicantHome _instance = null;
+
+  /**
+   *
+   */
+  private ApplicantHome() {
+  }
+
+  /**
+   *
+   */
+  public static ApplicantHome getInstance() {
+    if (_instance == null)
+      _instance = new ApplicantHome();
+
+    return(_instance);
+  }
+
+  /**
+   *
+   */
+  public Applicant getNewApplicant() {
+//    ApplicantBean applicant = new ApplicantBean();
+//    return(applicant);
+    return(null);
+  }
+
+  /**
+   *
+   */
+  public boolean update(Applicant applicant) {
+/*    ApplicantBean bean = (ApplicantBean)applicant;
+    try {
+      bean.update();
+    }
+    catch(SQLException e) {
+      return(false);
+    }*/
+
+    return(true);
+  }
+
+  /**
+   *
+   */
+  public boolean insert(Applicant applicant) {
+/*    ApplicantBean bean = (ApplicantBean)applicant;
+    try {
+      bean.insert();
+    }
+    catch(SQLException e) {
+      return(false);
+    }*/
+
+    return(true);
+  }
+
+  /**
+   *
+   */
+  public boolean delete(Applicant applicant) {
+/*    ApplicantBean bean = (ApplicantBean)applicant;
+    try {
+      bean.delete();
+    }
+    catch(SQLException e) {
+      return(false);
+    }*/
+
+    return(true);
+  }
+
+  /**
+   *
+   */
+  public List listOfNewApplicants() {
+    return(listOfApplicants(null,Application.STATUS_SUBMITTED));
+  }
+
+  /**
+   *
+   */
+  public List listOfNewApplicantsOrdered(String order) {
+    return(listOfApplicants(null,Application.STATUS_SUBMITTED));
+  }
+
+  /**
+   *
+   */
+  public List listOfApplicantsWithStatus(String status) {
+    return(listOfApplicants(null,status));
+  }
+
+  /**
+   *
+   */
+  public List listOfApplicants(String order,String status) {
+    try {
+      StringBuffer sql = new StringBuffer("select distinct a.* from ");
+/*      sql.append(ApplicantBean.getEntityTableName());
+      sql.append("a, ");
+      sql.append(Application.getEntityTableName());
+      sql.append("b where ");
+      sql.append("a.");
+//      sql.append(ApplicantBean.getIDColumnName());
+      sql.append(" = ");
+      sql.append("b.");
+      sql.append(Application.getApplicantIdColumnName());
+      sql.append(" and ");
+      if (status != null) {
+        sql.append("b.");
+        sql.append(Application.getStatusColumnName());
+        sql.append(" = '");
+        sql.append(status);
+        sql.append("' ");
+      }
+      if (order != null && order.length() > 0) {
+        sql.append(" order by ");
+        sql.append( order);
+      }*/
+
+//      List L = EntityFinder.getInstance().findAll(ApplicantBean.class,sql.toString());
+      List L = EntityFinder.getInstance().findAll(Applicant.class,sql.toString());
+      return(L);
+    }
+    catch(IDOFinderException e) {
+      e.printStackTrace();
+      return(null);
+    }
+  }
+}

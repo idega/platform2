@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.2 2002/03/18 15:50:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ package is.idega.idegaweb.campus.block.application.business;
 import com.idega.block.application.business.ApplicationFormHelper;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
+//import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.application.data.Application;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.ApartmentType;
