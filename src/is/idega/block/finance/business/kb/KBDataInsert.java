@@ -1,5 +1,5 @@
 /*
- * $Id: KBDataInsert.java,v 1.4 2005/03/22 13:21:41 birna Exp $
+ * $Id: KBDataInsert.java,v 1.5 2005/03/30 11:32:57 birna Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/22 13:21:41 $ by $Author: birna $
+ *  Last modified: $Date: 2005/03/30 11:32:57 $ by $Author: birna $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	private static String POST_METHOD = "https://www.bi.is/krofulinan/Pages/Senda_skra.aspx";
@@ -128,9 +128,9 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 		buffer.append("\n");
 		//"hausfaersla" ends
 
- 		Integer[] krofuNumer = new Integer[2];//bfm.getInvoiceNumbers(batchNumber);
- 		krofuNumer[0] = new Integer(1);
- 		krofuNumer[1] = new Integer(2);
+ 		Integer[] krofuNumer = bfm.getInvoiceNumbers(batchNumber);//new Integer[2];
+// 		krofuNumer[0] = new Integer(1);
+// 		krofuNumer[1] = new Integer(2);
  		
  		String numberOfClaims = String.valueOf(krofuNumer.length);
  		if(numberOfClaims.length() < 6) numberOfClaims = zeroString.substring(0, 6 - numberOfClaims.length()) + numberOfClaims;
