@@ -99,6 +99,7 @@ public class LayoutUploader extends Block {
 		Table uploadTable = new Table(2,2);
 		row = 1;
 		Form uploadForm = new Form();
+		addMaintainParametersToForm(uploadForm);
 		String defaultName = resourceBundle.getLocalizedString("layout_uploader_default_layout_name", "my layout");
 		TextInput textInput = new TextInput(KEY_NAME, defaultName );
 		Text info = new Text(resourceBundle.getLocalizedString("layout_uploader_layout_name", "layout name"));
@@ -107,7 +108,7 @@ public class LayoutUploader extends Block {
 		uploadTable.add(textInput, 2, row);
 		uploadTable.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		row++;
-		SimpleFileChooser uploader = new SimpleFileChooser(form, KEY_FILE_ID);
+		SimpleFileChooser uploader = new SimpleFileChooser(uploadForm, KEY_FILE_ID);
 		uploadTable.add(uploader, 2, row);
 		uploadTable.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		row++;
