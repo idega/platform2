@@ -129,6 +129,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
+						System.out.println("Store Invoice Header with Category "+category+" and custodian"+custodian);
 						invoiceHeader.store();
 					}
 				
