@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.50 2001/10/03 14:04:49 eiki Exp $
+ * $Id: Link.java,v 1.51 2001/10/03 16:52:05 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -124,8 +124,7 @@ public class Link extends Text {
     _obj = mo;
     setURL(url);
     _obj.setParentObject(this);
-    if( mo instanceof Text )  _objectType = OBJECT_TYPE_TEXT;
-    else _objectType = OBJECT_TYPE_MODULEOBJECT;
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
 
   }
 
