@@ -78,9 +78,9 @@ public interface Product extends IDOLegacyEntity, MetaDataCapable {
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setCreationDate
 	 */
 	public void setCreationDate(Timestamp timestamp);
-	
+
 	/**
-	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setSaleOnHold
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setAuthorizationCheck
 	 */
 	public void setAuthorizationCheck(boolean saleOnHold);
 
@@ -145,14 +145,14 @@ public interface Product extends IDOLegacyEntity, MetaDataCapable {
 	public TxText getText() throws SQLException;
 
 	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getAuthorizationCheck
+	 */
+	public boolean getAuthorizationCheck();
+
+	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductCategories
 	 */
 	public Collection getProductCategories() throws IDORelationshipException;
-	
-	/**
-	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getSaleOnHold
-	 */
-	public boolean getAuthorizationCheck();
 
 	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setProductCategories
