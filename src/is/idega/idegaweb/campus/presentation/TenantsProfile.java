@@ -70,7 +70,7 @@ public class TenantsProfile extends Block {
   private final static String PARAMETER_MODE = "profile_mode";
   private final static String PARAMETER_SAVE = "save";
   private final static String PARAMETER_EDIT = "edit";
-  private final static String PARAMETER_USER_ID = "campus_user_id";
+  protected final static String PARAMETER_USER_ID = "campus_user_id";
 
   private boolean _isAdmin = false;
   private boolean _isLoggedOn = false;

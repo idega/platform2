@@ -53,6 +53,7 @@ public class CampusPhones extends Block implements IWEventListener{
   private String[] sessArray = {sessCx ,sessBu ,sessFl,sessCt,sessTp,sessOrder};
   private String[] sValues = {sCLBU,sCLFL,sCLCX,sCLCT,sCLTP,sORDER};
   protected boolean isAdmin = false;
+  private boolean fetch = false;
 
   private String sessConPrm = "sess_con_status";
 
@@ -72,19 +73,23 @@ public class CampusPhones extends Block implements IWEventListener{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
+    fetch = false;
     for (int i = 0; i < prmArray.length; i++) {
       if(iwc.getParameter(prmArray[i])!=null){
         sValues[i] = (iwc.getParameter(prmArray[i]));
         iwc.setSessionAttribute(sessArray[i],sValues[i]);
+        fetch = true;
       }
       else if(iwc.getSessionAttribute(sessArray[i])!=null){
         sValues[i] = ((String)iwc.getSessionAttribute(sessArray[i]));
+        fetch = true;
       }
     }
 
     if(isAdmin){
         add(statusForm());
-        add(getPhoneTable(iwc));
+        if(fetch)
+         add(getPhoneTable(iwc));
     }
     else
       add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));

@@ -72,6 +72,16 @@ public class TenantsHabitants extends Block implements Campus{
       _isAdmin = false;
     }
 
+    if(iwc.isParameterSet(TenantsProfile.PARAMETER_USER_ID)){
+      add(new TenantsProfile());
+    }
+    else
+      add(getHabitantsTable(iwc));
+//      add(iwrb.getLocalizedString("accessdenied","Access denied"));
+
+  }
+
+  private Table getHabitantsTable(IWContext iwc){
     styler = new TextStyler();
     styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
     styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
@@ -117,6 +127,7 @@ public class TenantsHabitants extends Block implements Campus{
       catch (NumberFormatException e) {
         _campusID = -1;
       }
+    }
 
       Table myTable = new Table(1,2);
         myTable.setWidth("100%");
@@ -125,10 +136,7 @@ public class TenantsHabitants extends Block implements Campus{
 
       image = myTable.getTransparentCell(iwc);
         image.setHeight(6);
-
-      add(myTable);
-//      add(iwrb.getLocalizedString("accessdenied","Access denied"));
-    }
+      return myTable;
   }
 
   public Table getLinkTable(){
