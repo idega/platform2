@@ -125,6 +125,8 @@ public class CitizenLogin extends Login {
 		table.setCellpaddingTop(1, row, 16);
 		table.setCellpaddingTop(2, row, 16);
 		table.setCellpaddingLeft(2, row, 6);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.add(logoutButton, 1, row);
 		table.add(settingsButton, 2, row);
 		
@@ -169,6 +171,8 @@ public class CitizenLogin extends Login {
 		table.setCellpaddingTop(1, 2, 16);
 		table.setCellpaddingTop(2, 2, 16);
 		table.setCellpaddingLeft(2, 2, 6);
+		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setAlignment(2, 2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.add(tryAgainButton, 1, 2);
 		table.add(registerButton, 2, 2);
 		
@@ -233,6 +237,8 @@ public class CitizenLogin extends Login {
 		table.setCellpaddingTop(1, 3, 8);
 		table.setCellpaddingTop(2, 3, 8);
 		table.setCellpaddingLeft(2, 3, 6);
+		table.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_CENTER);
 		table.add(loginButton, 1, 3);
 		table.add(registerButton, 2, 3);
 		
