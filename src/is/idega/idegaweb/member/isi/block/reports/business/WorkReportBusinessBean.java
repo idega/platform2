@@ -478,7 +478,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		//get the top row to get a list of leagues to use.
 		HSSFRow headerRow = (HSSFRow)members.getRow(firstRow);
-		Map leaguesMap = getLeaguesMapFromRow(headerRow, year);
+		Map leaguesMap = getLeaguesMapFromRow(headerRow, year,5);
 
 		//iterate through the rows that contain the actual data and create the records in the database
 		for (int i = (firstRow + 1); i <= lastRow; i++) {
@@ -707,7 +707,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		//get the top row to get a list of leagues to use.
 		HSSFRow headerRow = (HSSFRow)accEntries.getRow(currRow);
-		Map leaguesMap = getLeaguesMapFromRow(headerRow, year);
+		Map leaguesMap = getLeaguesMapFromRow(headerRow, year,7);
 
 		//Get the revenue part
 		for (currRow++; currRow < 8; currRow++) {
@@ -1031,12 +1031,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	/**
 	 * @param headerRow, the first row of the members-part worksheet
 	 */
-	private Map getLeaguesMapFromRow(HSSFRow headerRow, int year) throws WorkReportImportException {
+	private Map getLeaguesMapFromRow(HSSFRow headerRow, int year, int startColumn) throws WorkReportImportException {
 		Map leagues = new HashMap();
 		int lastCell = headerRow.getLastCellNum();
 		WorkReportGroupHome home = getWorkReportGroupHome();
 
-		for (int j = 5; j < lastCell; j++) {
+		for (int j = startColumn; j < lastCell; j++) {
 			HSSFCell cell = headerRow.getCell((short)j);
 			if (cell != null) {
 				String leagueName = cell.getStringCellValue();
