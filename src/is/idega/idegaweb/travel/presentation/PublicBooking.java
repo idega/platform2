@@ -10,9 +10,9 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.text.DecimalFormat;
 import java.util.*;
 import com.idega.block.calendar.business.CalendarBusiness;
-
 import com.idega.core.data.Address;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.data.Currency;
 
@@ -294,7 +294,7 @@ public class PublicBooking extends Block  {
       Text priceText = getBoldText("");
       Text currencyText = getBoldText("");
 
-      nameTextBold.setText(product.getName());
+      nameTextBold.setText(ProductBusiness.getProductName(product));
       timeframeTextBold.setText(stampTxt1+" - "+stampTxt2);
       supplierTextBold.setText(supplier.getName());
       departureFromTextBold.setText(depAddress.getStreetName());
@@ -480,7 +480,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
-      table.add(getBoldTextWhite(this.product.getName()),2,row);
+      table.add(getBoldTextWhite(ProductBusiness.getProductName(product)),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");

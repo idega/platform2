@@ -7,6 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
@@ -187,7 +188,7 @@ public class DailyReport extends TravelManager {
           tframeText.addToText(":");
 
       DropdownMenu trip = null;
-        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
+        trip = new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
@@ -241,7 +242,7 @@ public class DailyReport extends TravelManager {
           timeText.setText(stamp.getLocaleDate(iwc));
           timeText.setFontColor(super.textColor);
       Text nameText = (Text) theBoldText.clone();
-          nameText.setText(product.getName());
+          nameText.setText(ProductBusiness.getProductName(product));
 
 
       table.setColumnAlignment(1,"left");

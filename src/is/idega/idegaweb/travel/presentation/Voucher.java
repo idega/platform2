@@ -7,6 +7,7 @@ import com.idega.idegaweb.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.data.*;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.travel.data.*;
@@ -160,7 +161,7 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
-        table.add(getText(_product.getName()),1,2);
+        table.add(getText(ProductBusiness.getProductName(_product)),1,2);
         table.add(Text.BREAK,1,2);
         table.add(getText(new idegaTimestamp(_booking.getBookingDate()).getLocaleDate(_iwc)),1,2);
         table.add(getText(" "+_iwrb.getLocalizedString("travel.at","at"))+" ",1,2);

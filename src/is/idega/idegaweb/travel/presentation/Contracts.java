@@ -711,7 +711,7 @@ public class Contracts extends TravelManager {
         ++row;
         table.setRowColor(row, theColor);
         pName = (Text) theBoldText.clone();
-          pName.setText(products[i].getName());
+          pName.setText(ProductBusiness.getProductName(products[i]));
           pName.setFontColor(super.BLACK);
 
         table.add(pName,1,row);
