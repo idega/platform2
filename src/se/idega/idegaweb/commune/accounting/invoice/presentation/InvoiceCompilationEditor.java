@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/07 21:00:00 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/08 08:08:00 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.85 $
+ * @version $Revision: 1.86 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -166,6 +166,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NOTE_KEY = PREFIX + "note";
     private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades för denna vårdnadshavare eller barn";
     private static final String NO_COMPILATION_FOUND_KEY = PREFIX + "no_compilation_found";
+    private static final String NO_RELATED_PLACEMENT_FOUND_FOR_DEFAULT = "Ingen relaterad placering hittades för";
+    private static final String NO_RELATED_PLACEMENT_FOUND_FOR_KEY = PREFIX + "no_related_placement_found_for";
     private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
     private static final String OWN_POSTING_DEFAULT = "Egen kontering";
@@ -180,20 +182,22 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PLACEMENT_PERIOD_DEFAULT = "Placeringsperiod";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
+    private static final String PRINT_DATE_DEFAULT = "Utskriftsdatum";
+    private static final String PRINT_DATE_KEY = PREFIX + "print_date";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
-    private static final String SEARCH_RULE_TEXT_KEY = PREFIX + "search_rule_text";
-    private static final String SEARCH_RULE_TEXT_DEFAULT = "Sök regeltext";
     private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
     private static final String RULE_TEXT_LINK_LIST_KEY = PREFIX + "rule_text_link_list";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
     private static final String SEARCH_KEY = PREFIX + "search";
+    private static final String SEARCH_RULE_TEXT_DEFAULT = "Sök regeltext";
+    private static final String SEARCH_RULE_TEXT_KEY = PREFIX + "search_rule_text";
     private static final String SIGNATURE_DEFAULT = "Signatur";
     private static final String SIGNATURE_KEY = PREFIX + "signature";
     private static final String SSN_DEFAULT = "Personnummer";
@@ -202,7 +206,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
-    //private static final String IN_CUSTODY_OF_KEY = PREFIX + "in_custody_of";
     private static final String TOO_MANY_RESULTS_DEFAULT = "För många sökträffar - försök att begränsa dina sökkriterier";
     private static final String TOO_MANY_RESULTS_KEY = PREFIX + "too_many_results";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
@@ -219,8 +222,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
-    private static final String NO_RELATED_PLACEMENT_FOUND_FOR_DEFAULT = "Ingen relaterad placering hittades för";
-    private static final String NO_RELATED_PLACEMENT_FOUND_FOR_KEY = PREFIX + "no_related_placement_found_for";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
     private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
@@ -242,6 +243,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         = new SimpleDateFormat ("yyMM");
     private static final SimpleDateFormat dateFormatter
         = new SimpleDateFormat ("yyyy-MM-dd");
+    private static final SimpleDateFormat dateAndTimeFormatter
+        = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
@@ -366,7 +369,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPhrase (outerTable, localize (CUSTODIAN_KEY, CUSTODIAN_DEFAULT)
                    + ": " + getUserInfo (custodian) + "\n");
         addPhrase (outerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": "
-                   + header.getPeriod ());
+                   + getFormattedPeriod (header.getPeriod ()));
+        addPhrase (outerTable, localize (PRINT_DATE_KEY, PRINT_DATE_DEFAULT)
+                   + ": " + dateAndTimeFormatter.format (new Date ()));
         addPhrase (outerTable, "\n");
         final Color lightBlue = new Color (0xf4f4f4);
         final PdfPTable recordTable = getInvoiceRecordPdfTable
