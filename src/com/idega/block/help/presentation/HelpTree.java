@@ -94,26 +94,64 @@ public class HelpTree extends Block {
 	
 	private HelpNode loadTree(IWContext iwc) {
 		/**
-		 * @todo Read this from xml
+		 * @todo Read this from xml and remove the fucking hardcoding.
 		 */
 		
-		HelpNode top = new HelpNode(1,"se.idega.idegaweb.commune","Hjälp - Medborgare");
-		HelpNode child1 = new HelpNode(2,"se.idega.idegaweb.commune","Ansökan om medborgarkonto");
-		HelpNode child2 = new HelpNode(3,"se.idega.idegaweb.commune","Medborgarkonto - för dig som inte bor i Nacka");
-		HelpNode child3 = new HelpNode(4,"se.idega.idegaweb.commune","Min sida");
-		HelpNode child4 = new HelpNode(5,"se.idega.idegaweb.commune","Mina inställningar");
-		HelpNode child5 = new HelpNode(6,"se.idega.idegaweb.commune","Skolval - att välja skola");
-		HelpNode child6 = new HelpNode(7,"se.idega.idegaweb.commune","Byte av skola");
-		HelpNode child7 = new HelpNode(8,"se.idega.idegaweb.commune","Val av skolbarnsomsorg med barnomsorgscheck");
-		HelpNode child8 = new HelpNode(9,"se.idega.idegaweb.commune","Ansökan om barnomsorgscheck");
-		HelpNode child9 = new HelpNode(10,"se.idega.idegaweb.commune","Lämna synpunkter");
-		HelpNode child10 = new HelpNode(11,"se.idega.idegaweb.commune","Politiskt ansvar");
-		HelpNode child11 = new HelpNode(12,"se.idega.idegaweb.commune","Ditt val");
-		HelpNode child12 = new HelpNode(13,"se.idega.idegaweb.commune","Sök på Nacka24");
-		HelpNode child13 = new HelpNode(14,"se.idega.idegaweb.commune","Till nacka.se");
+		System.out.println("country = " + iwc.getCurrentLocale().getLanguage());
 		
-		HelpNode subchild1 = new HelpNode(15,"se.idega.idegaweb.commune","Mina meddelanden");
-		HelpNode subchild2 = new HelpNode(16,"se.idega.idegaweb.commune","Mina ärenden");
+		HelpNode top = null;
+		HelpNode child1 = null;
+		HelpNode child2 = null;
+		HelpNode child3 = null;
+		HelpNode child4 = null;
+		HelpNode child5 = null;
+		HelpNode child6 = null;
+		HelpNode child7 = null;
+		HelpNode child8 = null;
+		HelpNode child9 = null;
+		HelpNode child10 = null;
+		HelpNode child11 = null;
+		HelpNode child12 = null;
+		HelpNode child13 = null;
+		HelpNode subchild1 = null;
+		HelpNode subchild2 = null;
+
+		if (iwc.getCurrentLocale().getLanguage().equals("en")) {
+			top = new HelpNode(1,"se.idega.idegaweb.commune","Help - Citizens");
+			child1 = new HelpNode(2,"se.idega.idegaweb.commune","Application for citizen account");
+			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Citizen account - for you who do not live in Nacka");
+			child3 = new HelpNode(4,"se.idega.idegaweb.commune","My page");
+			child4 = new HelpNode(5,"se.idega.idegaweb.commune","My settings");
+			child5 = new HelpNode(6,"se.idega.idegaweb.commune","School selection - to choose school");
+			child6 = new HelpNode(7,"se.idega.idegaweb.commune","Change of school");
+			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Selection of child-care for school children with child-care check");
+			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Application for child-care check");
+			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Leave points of view");
+			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Political responsibility");
+			child11 = new HelpNode(12,"se.idega.idegaweb.commune","Your selection");
+			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Search Nacka24");
+			child13 = new HelpNode(14,"se.idega.idegaweb.commune","To nacka.se");		
+			subchild1 = new HelpNode(15,"se.idega.idegaweb.commune","My messages");
+			subchild2 = new HelpNode(16,"se.idega.idegaweb.commune","My errands");			
+		}
+		else {
+			top = new HelpNode(1,"se.idega.idegaweb.commune","Hjälp - Medborgare");
+			child1 = new HelpNode(2,"se.idega.idegaweb.commune","Ansökan om medborgarkonto");
+			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Medborgarkonto - för dig som inte bor i Nacka");
+			child3 = new HelpNode(4,"se.idega.idegaweb.commune","Min sida");
+			child4 = new HelpNode(5,"se.idega.idegaweb.commune","Mina inställningar");
+			child5 = new HelpNode(6,"se.idega.idegaweb.commune","Skolval - att välja skola");
+			child6 = new HelpNode(7,"se.idega.idegaweb.commune","Byte av skola");
+			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Val av skolbarnsomsorg med barnomsorgscheck");
+			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Ansökan om barnomsorgscheck");
+			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Lämna synpunkter");
+			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Politiskt ansvar");
+			child11 = new HelpNode(12,"se.idega.idegaweb.commune","Ditt val");
+			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Sök på Nacka24");
+			child13 = new HelpNode(14,"se.idega.idegaweb.commune","Till nacka.se");
+			subchild1 = new HelpNode(15,"se.idega.idegaweb.commune","Mina meddelanden");
+			subchild2 = new HelpNode(16,"se.idega.idegaweb.commune","Mina ärenden");
+		}
 
 		top.addChild(child1);
 		top.addChild(child2);
