@@ -190,9 +190,9 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("save","Save"),PARAMETER_ACTION,String.valueOf(ACTION_SAVE)));
 		submit.setDescription(localize("school.save_class","Save class"));
 		
-		if (!(action == ACTION_EDIT || action == ACTION_NEW))
+		if (!(action == ACTION_EDIT || action == ACTION_NEW) && getSchoolYearID() != -1)
 			table.add(newButton,1,row);
-		if (action == ACTION_EDIT || action == ACTION_NEW)
+		if ((action == ACTION_EDIT || action == ACTION_NEW) && getSchoolYearID() != -1)
 			table.add(submit,1,row);
 		table.mergeCells(1, row, table.getColumns(), row);
 		table.setRowColor(1, getHeaderColor());
