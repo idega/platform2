@@ -46,7 +46,7 @@ public class CalendarHandler extends TravelManager {
   private Product _product;
   private Service _service;
   private Tour _tour;
-  private Timeframe _timeframe;
+  private Timeframe[] _timeframes;
   private Contract _contract;
   private Reseller _reseller;
   private idegaTimestamp _fromStamp;
@@ -101,9 +101,10 @@ public class CalendarHandler extends TravelManager {
   private void timeframeCheck() {
     if (_service != null) {
       try {
-        if (_timeframe == null) {
-          _timeframe = _product.getTimeframe();
+        if (_timeframes == null) {
+          _timeframes =_product.getTimeframes();
         }
+        /*
         if (_timeframe != null) {
           if (new idegaTimestamp(_timeframe.getFrom()).isLaterThan(_fromStamp)) {
             _fromStamp = new idegaTimestamp(_timeframe.getFrom());
@@ -115,7 +116,7 @@ public class CalendarHandler extends TravelManager {
             _toStamp = new idegaTimestamp(_fromStamp);
             _toStamp.addMonths(1);
           }
-        }
+        }*/
 
       }catch (SQLException s) {
         s.printStackTrace(System.err);
@@ -331,6 +332,7 @@ public class CalendarHandler extends TravelManager {
       int iBookings = 0;
 
       List depDays = this.getDepartureDays(iwc, _showPast);
+
       int seats = 0;
       int minSeats = 0;
 
@@ -486,7 +488,8 @@ public class CalendarHandler extends TravelManager {
     try {
       _supplier = new Supplier(product.getSupplierId());
       _service = TravelStockroomBusiness.getService(product);
-      _timeframe = product.getTimeframe();
+      _timeframes = _product.getTimeframes();
+//      _timeframe = product.getTimeframe();
       try {
         _tour = new Tour(_productId);
       }catch (SQLException sql) {}
@@ -591,19 +594,25 @@ public class CalendarHandler extends TravelManager {
 
   public List getDepartureDays(IWContext iwc, boolean showPast) {
     List depDays = new Vector();
+    /**
+     * @todo skoða betur, er bara tomt rugl
+     */
       if (_tour != null) {
-        if (_tour.getNumberOfDays() > 1) {
-          if (_timeframe.getIfYearly()) {
-            depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
+        for (int i = 0; i < _timeframes.length; i++) {
+          if (_tour.getNumberOfDays() > 1) {
+            if (_timeframes[i].getIfYearly()) {
+              depDays.addAll(TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast));
+            }else {
+              depDays.addAll(TourBusiness.getDepartureDays(iwc, _tour, showPast));
+            }
           }else {
-            depDays = TourBusiness.getDepartureDays(iwc, _tour, showPast);
+            depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }
-        }else {
-          depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
         }
       }else {
           depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
       }
+
     return depDays;
   }
 

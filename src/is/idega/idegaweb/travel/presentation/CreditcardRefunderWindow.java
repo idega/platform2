@@ -70,7 +70,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
 
     TextInput ccNumberInp = new TextInput(this.parameterNumber);
       ccNumberInp.setSize(this.ccInputSize);
-      ccNumberInp.setMaxlength(16);
+      ccNumberInp.setMaxlength(this.ccInputSize);
     TextInput ccYearInp = new TextInput(this.parameterYear);
       ccYearInp.setSize(this.dateInputSize);
       ccYearInp.setMaxlength(2);

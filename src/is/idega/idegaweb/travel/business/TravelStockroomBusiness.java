@@ -34,10 +34,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   private static String resellerDayOfWeekHashtableSessionName = "resellerDayOfWeekHashtable";
   private static String serviceDayHashtableSessionName = "serviceDayHashtable";
 
-  public static String uniqueDepartureAddressType = "TB_TRIP_DEPARTURE_ADDRESS";
-  public static String uniqueArrivalAddressType = "TB_TRIP_ARRIVAL_ADDRESS";
-  public static String uniqueHotelPickupAddressType = "TB_HOTEL_PICKUP_ADDRESS";
-
   protected Timeframe timeframe;
 
   public TravelStockroomBusiness() {
@@ -140,9 +136,9 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       int id = -1;
       if (serviceId == -1) {
-        id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,number,serviceDescription,isValid, discountTypeId);
+        id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,number,serviceDescription,isValid, addressIds, discountTypeId);
       }else {
-        id = StockroomBusiness.updateProduct(serviceId, supplierId,fileId,serviceName,number,serviceDescription,isValid, discountTypeId);
+        id = StockroomBusiness.updateProduct(serviceId, supplierId,fileId,serviceName,number,serviceDescription,isValid, addressIds, discountTypeId);
       }
 
         Service service = new Service();
@@ -157,15 +153,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         service.update();
       }
 
-        if(addressIds != null){
-          for (int i = 0; i < addressIds.length; i++) {
-            try {
-              service.addTo(Address.class, addressIds[i]);
-            }catch (SQLException sql) {
-              //sql.printStackTrace(System.err);
-            }
-          }
-        }
 
         if (timeframe != null) {
           try {
@@ -466,11 +453,15 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       if (goOn) {
 //        Service service = TravelStockroomBusiness.getService(product);
-        Timeframe frame = product.getTimeframe();
-        boolean isYearly = frame.getIfYearly();
+        Timeframe[] frames = product.getTimeframes();
+        boolean isYearly = false;
 
+        for (int i = 0; i < frames.length; i++) {
+          isYearly = frames[i].getIfYearly();
+          returner = idegaTimestamp.isInTimeframe(new idegaTimestamp(frames[i].getFrom()), new idegaTimestamp(frames[i].getTo() ), stamp, isYearly);
+          if (returner) break;
+        }
 
-        returner = idegaTimestamp.isInTimeframe(new idegaTimestamp(frame.getFrom()), new idegaTimestamp(frame.getTo() ), stamp, isYearly);
 
       }
     }catch (Exception e) {
@@ -603,25 +594,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       return returner;
   }
-  public static Address getArrivalAddress(Service service) throws SQLException{
-    Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(TravelStockroomBusiness.uniqueArrivalAddressType))));
-    if (tempAddresses.length > 0) {
-      return new Address(tempAddresses[tempAddresses.length -1].getID());
-    }else {
-      return null;
-    }
-  }
-
-  public static Address getDepartureAddress(Service service) throws SQLException{
-      Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(TravelStockroomBusiness.uniqueDepartureAddressType))));
-      if (tempAddresses.length > 0) {
-        return new Address(tempAddresses[tempAddresses.length -1].getID());
-      }else {
-        return null;
-      }
-
-
-  }
 
   public static List getDepartureDays(IWContext iwc, Product product) {
     return getDepartureDays(iwc, product, null, null, true);
@@ -639,84 +611,88 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     List returner = new Vector();
     try {
 //      Service service = new Service(product.getID());
-      Timeframe frame = product.getTimeframe();
-      boolean yearly = frame.getIfYearly();
+      Timeframe[] frames = product.getTimeframes();
 
-      idegaTimestamp tFrom = new idegaTimestamp(frame.getFrom());
-      idegaTimestamp tTo = new idegaTimestamp(frame.getTo());
+      for (int j = 0; j < frames.length; j++) {
+        boolean yearly = frames[j].getIfYearly();
 
 
-      idegaTimestamp from = null;
-      if (fromStamp != null) from = new idegaTimestamp(fromStamp);
-      idegaTimestamp to = null;
-      if (toStamp != null) to = new idegaTimestamp(toStamp);
+        idegaTimestamp tFrom = new idegaTimestamp(frames[j].getFrom());
+        idegaTimestamp tTo = new idegaTimestamp(frames[j].getTo());
 
-      if (from == null) {
-        from = new idegaTimestamp(tFrom);
-      }
-      if (to == null) {
-        to   = new idegaTimestamp(tTo);
-      }
 
-      int toMonth = tTo.getMonth();
-      int toM = to.getMonth();
-      int fromM = from.getMonth();
-      int yearsBetween = 0;
+        idegaTimestamp from = null;
+        if (fromStamp != null) from = new idegaTimestamp(fromStamp);
+        idegaTimestamp to = null;
+        if (toStamp != null) to = new idegaTimestamp(toStamp);
 
-      to.addDays(1);
+        if (from == null) {
+          from = new idegaTimestamp(tFrom);
+        }
+        if (to == null) {
+          to   = new idegaTimestamp(tTo);
+        }
 
-      if (yearly) {
-        int fromYear = tFrom.getYear();
-        int toYear   = tTo.getYear();
+        int toMonth = tTo.getMonth();
+        int toM = to.getMonth();
+        int fromM = from.getMonth();
+        int yearsBetween = 0;
 
-        int fromY = from.getYear();
-        int toY = to.getYear();
+        to.addDays(1);
 
-        int daysBetween = idegaTimestamp.getDaysBetween(from, to);
+        if (yearly) {
+          int fromYear = tFrom.getYear();
+          int toYear   = tTo.getYear();
 
-        if (fromYear == toYear) {
-          from.setYear(fromYear);
-        }else {
-            if (fromY >= toYear) {
-              if (fromM > toMonth) {
-                from.setYear(fromYear);
-              }else {
-                from.setYear(toYear);
+          int fromY = from.getYear();
+          int toY = to.getYear();
+
+          int daysBetween = idegaTimestamp.getDaysBetween(from, to);
+
+          if (fromYear == toYear) {
+            from.setYear(fromYear);
+          }else {
+              if (fromY >= toYear) {
+                if (fromM > toMonth) {
+                  from.setYear(fromYear);
+                }else {
+                  from.setYear(toYear);
+                }
               }
-            }
+          }
+
+          to = new idegaTimestamp(from);
+            to.addDays(daysBetween);
+
+          yearsBetween = to.getYear() - toY;
         }
 
-        to = new idegaTimestamp(from);
-          to.addDays(daysBetween);
+        idegaTimestamp stamp = new idegaTimestamp(from);
+        idegaTimestamp temp;
 
-        yearsBetween = to.getYear() - toY;
-      }
-
-      idegaTimestamp stamp = new idegaTimestamp(from);
-      idegaTimestamp temp;
-
-      if (!showPast) {
-        idegaTimestamp now = idegaTimestamp.RightNow();
-        if (now.isLaterThan(from) && to.isLaterThan(now)) {
-          stamp = new idegaTimestamp(now);
-        }else if (now.isLaterThan(from) && now.isLaterThan(to)) {
-          stamp = new idegaTimestamp(to);
-        }
-      }
-
-
-      int[] weekDays = ServiceDay.getDaysOfWeek(product.getID());
-
-      while (to.isLaterThan(stamp)) {
-        for (int i = 0; i < weekDays.length; i++) {
-          if (stamp.getDayOfWeek() == weekDays[i]) {
-            if (yearly) stamp.addYears(-yearsBetween);
-            returner.add(stamp);
-            stamp = new idegaTimestamp(stamp);
-            if (yearly) stamp.addYears(yearsBetween);
+        if (!showPast) {
+          idegaTimestamp now = idegaTimestamp.RightNow();
+          if (now.isLaterThan(from) && to.isLaterThan(now)) {
+            stamp = new idegaTimestamp(now);
+          }else if (now.isLaterThan(from) && now.isLaterThan(to)) {
+            stamp = new idegaTimestamp(to);
           }
         }
-        stamp.addDays(1);
+
+
+        int[] weekDays = ServiceDay.getDaysOfWeek(product.getID());
+
+        while (to.isLaterThan(stamp)) {
+          for (int i = 0; i < weekDays.length; i++) {
+            if (stamp.getDayOfWeek() == weekDays[i]) {
+              if (yearly) stamp.addYears(-yearsBetween);
+              returner.add(stamp);
+              stamp = new idegaTimestamp(stamp);
+              if (yearly) stamp.addYears(yearsBetween);
+            }
+          }
+          stamp.addDays(1);
+        }
       }
 
     }catch (SQLException sql) {

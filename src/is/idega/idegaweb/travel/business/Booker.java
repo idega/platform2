@@ -5,8 +5,8 @@ import java.sql.*;
 import com.idega.data.EntityControl;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.idegaTimestamp;
-import com.idega.block.trade.stockroom.data.Reseller;
-import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.BookingEntry;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import com.idega.util.database.ConnectionBroker;
@@ -167,14 +167,57 @@ public class Booker {
   }
 */
 
+
+  public static Booking[] getBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
+    return getBookings(new int[] {resellerId}, serviceId, stamp);
+  }
+
+  public static Booking[] getBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp) {
+    Booking[] returner = {};
+    try {
+        if (resellerIds == null) {
+          resellerIds = new int[0];
+        }
+        GeneralBooking booking = (GeneralBooking) (GeneralBooking.getStaticInstance(GeneralBooking.class));
+        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
+
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select b.* from "+GeneralBooking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
+            sql.append(" where ");
+            if (resellerIds.length > 0 ) {
+              sql.append(" br."+reseller.getIDColumnName()+" in (");
+              for (int i = 0; i < resellerIds.length; i++) {
+                if (i != 0) sql.append(", ");
+                sql.append(resellerIds[i]);
+              }
+
+              sql.append(") and ");
+            }
+            sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
+            sql.append(" and ");
+            sql.append(" b."+GeneralBooking.getIsValidColumnName()+"='Y'");
+            sql.append(" and ");
+            sql.append(" b."+GeneralBooking.getServiceIDColumnName()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(" b."+GeneralBooking.getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
+
+        returner = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAll(sql.toString());
+//        returner = Integer.parseInt(many[0]);
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+
   public static int getNumberOfBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp) {
     int returner = 0;
     try {
         if (resellerIds == null) {
           resellerIds = new int[0];
         }
-        //if (reseller != null) {resellerId = reseller.getID();}
-
         GeneralBooking booking = (GeneralBooking) (GeneralBooking.getStaticInstance(GeneralBooking.class));
         Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
 
@@ -229,7 +272,8 @@ public class Booker {
     int returner = 0;
     //Connection conn = null;
     try {
-      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(new Product(serviceId));
+//      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(new Product(serviceId));
+      Timeframe timeframe = ProductBusiness.getTimeframe(new Product(serviceId), fromStamp);
       Product product = (Product) Product.getStaticInstance(Product.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
       String pTable = Product.getProductEntityName();
@@ -238,13 +282,17 @@ public class Booker {
       //conn = ConnectionBroker.getConnection();
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select "+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName()+" b");
+            sql.append("Select b."+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName()+" b");
             sql.append(","+pTable+" p,"+middleTable+" m,"+tTable+" t");
             sql.append(" where ");
             sql.append("p."+product.getIDColumnName()+" = m."+product.getIDColumnName());
             sql.append(" and ");
             sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
             sql.append(" and ");
+            if (timeframe != null) {
+              sql.append("t."+timeframe.getIDColumnName()+" = "+timeframe.getID());
+              sql.append(" and ");
+            }
             sql.append("p."+product.getIDColumnName()+"="+serviceId);
             sql.append(" and ");
             sql.append("b."+GeneralBooking.getServiceIDColumnName()+"= p."+product.getIDColumnName());
@@ -269,7 +317,7 @@ public class Booker {
 //        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
         for (int i = 0; i < many.length; i++) {
-            returner += Integer.parseInt(many[i]);
+          returner += Integer.parseInt(many[i]);
         }
 
     }catch (Exception e) {
@@ -280,6 +328,7 @@ public class Booker {
 
     return returner;
   }
+
 
   public static Booking[] getBookings(int serviceId, idegaTimestamp stamp) {
     return getBookings(serviceId,stamp,new int[]{});

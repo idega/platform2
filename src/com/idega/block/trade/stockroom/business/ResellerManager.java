@@ -3,6 +3,7 @@ package com.idega.block.trade.stockroom.business;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.user.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.accesscontrol.business.*;
@@ -658,6 +659,15 @@ public class ResellerManager {
     }
 
     return null;
+  }
+
+  public static User getMainUser(Reseller reseller) throws SQLException  {
+    List users = UserGroupBusiness.getUsersContained(new GenericGroup(reseller.getGroupId()));
+    if (users != null && users.size() > 0) {
+      return (User) users.get(0);
+    }else {
+      return null;
+    }
   }
 
 }

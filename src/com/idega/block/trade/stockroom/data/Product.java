@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.TxText;
-import is.idega.idegaweb.travel.data.Timeframe;
+import com.idega.block.trade.stockroom.data.Timeframe;
 
 
 /**
@@ -49,6 +49,7 @@ public class Product extends GenericEntity {
     this.setNullable(getColumnNameFileId(), true);
     this.addManyToManyRelationShip(com.idega.block.text.data.LocalizedText.class, "SR_PRODUCT_LOCALIZED_TEXT");
     this.addManyToManyRelationShip(Timeframe.class ,"SR_PRODUCT_TIMEFRAME");
+    this.addManyToManyRelationShip(Address.class, "SR_PRODUCT_IC_ADDRESS");
     this.addManyToManyRelationShip(TxText.class);
   }
 
@@ -179,7 +180,7 @@ public class Product extends GenericEntity {
    * @deprecated
    */
   public String getName() {
-    return this.getNumber() + " " +this.getProductName();
+    return this.getProductName();
 //    return "Ekki nota";
   }
 
@@ -198,7 +199,7 @@ public class Product extends GenericEntity {
   public Timeframe getTimeframe() throws SQLException{
     Timeframe[] temp = getTimeframes();
     if (temp.length > 0) {
-      return temp[temp.length -1];
+      return temp[0];
     }
     else {
       return null;

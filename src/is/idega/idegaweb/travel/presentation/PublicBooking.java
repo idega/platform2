@@ -36,7 +36,7 @@ public class PublicBooking extends Block  {
   IWBundle bundle;
   Product product;
   Service service;
-  Timeframe timeframe;
+  Timeframe[] timeframes;
   Supplier supplier;
   int productId = -1;
 
@@ -92,7 +92,7 @@ public class PublicBooking extends Block  {
           throw new SQLException("Product not valid");
         }
         service = new Service(productId);
-        timeframe = product.getTimeframe();
+        timeframes = product.getTimeframes();
         supplier = new Supplier(product.getSupplierId());
 
       }catch (SQLException s) {
@@ -221,6 +221,7 @@ public class PublicBooking extends Block  {
     Form form = new Form();
     Table aroundTable = new Table(2,2);
       aroundTable.setWidth("100%");
+      aroundTable.setHeight("100%");
       aroundTable.setCellpadding(0);
       aroundTable.setCellspacing(0);
       aroundTable.setBackgroundImage(1,1,background);
@@ -228,6 +229,7 @@ public class PublicBooking extends Block  {
       aroundTable.setBackgroundImage(1,2,background);
       aroundTable.setWidth(1,"1");
       aroundTable.setHeight(1,"1");
+      aroundTable.setBorder(0);
 
 
     Table table = new Table();
@@ -240,30 +242,13 @@ public class PublicBooking extends Block  {
 //      ServiceOverview so = new ServiceOverview(iwc);
 //        form.add(so.getProductInfoTable(iwc, iwrb, product));
 
-      table.setWidth("95%");
+      table.setWidth("100%");
+      table.setHeight("100%");
       table.setAlignment("center");
       table.setBorder(0);
 
-
-      String stampTxt1 = "";
-      String stampTxt2 = "";
-      if (timeframe == null) {
-        stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
-        stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
-      }else {
-        stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
-        stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
-        if (timeframe.getIfYearly()) {
-          try {
-            stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
-            stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
-          }catch (NumberFormatException n) {}
-        }
-      }
-
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
-      Address depAddress = TravelStockroomBusiness.getDepartureAddress(service);
-      ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), true);
+      Address depAddress = ProductBusiness.getDepartureAddress(product);
       Currency currency;
 
       Text nameText = getText(iwrb.getLocalizedString("travel.name","Name"));
@@ -285,7 +270,6 @@ public class PublicBooking extends Block  {
 
 
       Text nameTextBold = getBoldText("");
-      Text timeframeTextBold = getBoldText("");
       Text supplierTextBold = getBoldText("");
       Text departureFromTextBold = getBoldText("");
       Text departureTimeTextBold = getBoldText("");
@@ -295,7 +279,6 @@ public class PublicBooking extends Block  {
       Text currencyText = getBoldText("");
 
       nameTextBold.setText(ProductBusiness.getProductName(product));
-      timeframeTextBold.setText(stampTxt1+" - "+stampTxt2);
       supplierTextBold.setText(supplier.getName());
       departureFromTextBold.setText(depAddress.getStreetName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
@@ -305,67 +288,84 @@ public class PublicBooking extends Block  {
       table.add(space,1,1);
       table.add(nameTextBold,1,1);
 
-      table.add(timeframeText,3,1);
-      table.add(space,3,1);
-      table.add(timeframeTextBold,3,1);
 
       table.add(supplierText,1,2);
       table.add(space,1,2);
       table.add(supplierTextBold,1,2);
 
-      table.add(departureFromText,3,2);
-      table.add(space,3,2);
-      table.add(departureFromTextBold,3,2);
+      table.add(departureFromText,3,1);
+      table.add(space,3,1);
+      table.add(departureFromTextBold,3,1);
 
       table.add(image,1,3);
 //      table.add(arrow,1,3);
       table.setAlignment(1,3,"left");
 
-      table.add(departureTimeText,3,3);
-      table.add(space,3,3);
-      table.add(departureTimeTextBold,3,3);
+      table.add(departureTimeText,3,2);
+      table.add(space,3,2);
+      table.add(departureTimeTextBold,3,2);
 
-      table.add(Text.NON_BREAKING_SPACE,2,4);
+      table.add(Text.NON_BREAKING_SPACE,2,3);
 
+      String stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
+      String stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
+      ProductPrice[] prices;// = ProductPrice.getProductPrices(service.getID(), true);
+      Text timeframeTextBold;
       Table pTable = new Table();
-        pTable.setWidth(300);
         pTable.setCellspacing(0);
+        pTable.setBorder(0);
 
-        pTable.add(pricesText,1,1);
-        pTable.add(space,1,1);
-        int pRow = 0;
+        //pTable.add(pricesText,1,1);
+        int pRow = 1;
+
+      for (int i = 0; i < timeframes.length; i++) {
+        prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), true);
+        stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+        stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+        if (timeframes[i].getIfYearly()) {
+          try {
+            stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+            stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+          }catch (NumberFormatException n) {}
+        }
+        timeframeTextBold = getBoldText("");
+          timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+        pTable.add(timeframeTextBold,2,pRow);
+
+
         for (int j = 0; j < prices.length; j++) {
-          ++pRow;
           currency = new Currency(prices[j].getCurrencyId());
-          nameOfCategory = getBoldText(prices[j].getPriceCategory().getName());
-            nameOfCategory.addToText(":");
+          nameOfCategory = getText(prices[j].getPriceCategory().getName());
+            nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
           try {
             priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
             currencyText = getBoldText(currency.getCurrencyAbbreviation());
-            pTable.add(currencyText,4,pRow);
+            pTable.add(currencyText,5,pRow);
           }catch (ProductPriceException p) {
             priceText.setText("T - rangt upp sett");
           }
 
-          pTable.add(nameOfCategory,2,pRow);
-          pTable.add(priceText,3,pRow);
+          pTable.add(nameOfCategory,3,pRow);
+          pTable.add(priceText,4,pRow);
           if (j%2 == 1) {
             pTable.setColor(2,pRow,"#F1F1F1");
             pTable.setColor(3,pRow,"#F1F1F1");
             pTable.setColor(4,pRow,"#F1F1F1");
+            pTable.setColor(5,pRow,"#F1F1F1");
           }
 
+          ++pRow;
         }
-        pTable.setWidth(1,"50");
-        pTable.setWidth(3,"2");
-        pTable.setWidth(4,"2");
-        pTable.setColumnAlignment(1,"left");
-        pTable.setColumnAlignment(2,"left");
-        pTable.setColumnAlignment(3,"right");
-        pTable.setColumnAlignment(4,"left");
+      }
 
-      table.add(pTable,2,5);
-      table.setAlignment(2,5,"right");
+      pTable.setColumnAlignment(1,"left");
+      pTable.setColumnAlignment(2,"left");
+      pTable.setColumnAlignment(3,"left");
+      pTable.setColumnAlignment(4,"right");
+      pTable.setColumnAlignment(5,"left");
+
+      table.add(pTable,2,4);
+      table.setAlignment(2,4,"right");
 
       table.setAlignment(3,1,"right");
       table.setAlignment(3,2,"right");
@@ -374,9 +374,9 @@ public class PublicBooking extends Block  {
       table.mergeCells(1,1,2,1);
       table.mergeCells(1,2,2,2);
       table.mergeCells(1,3,1,5);
-      table.mergeCells(2,5,3,5);
+      table.mergeCells(2,4,3,4);
 //      table.setWidth(1,"138");
-      table.setWidth(3,"350");
+//      table.setWidth(3,"350");
 
 
     }catch (Exception e) {
@@ -394,7 +394,13 @@ public class PublicBooking extends Block  {
         ch.setProduct(product);
 
       boolean legalDay = false;
-      if (timeframe != null) legalDay = stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframe.getFrom()), new idegaTimestamp(timeframe.getTo()), stamp, timeframe.getIfYearly());;
+      for (int i = 0; i < timeframes.length; i++) {
+        if (stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframes[i].getFrom()), new idegaTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getIfYearly())) {
+          legalDay = true;
+          break;
+        }
+      }
+
 
       Form form = new Form();
 
@@ -465,7 +471,12 @@ public class PublicBooking extends Block  {
     String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
     String room_number = iwc.getParameter("room_number");
 
-    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
+//    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
+    ProductPrice[] pPrices = {};
+    Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
+    if (tFrame != null) {
+      pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), true);
+    }
 
     Table table = new Table();
       table.setCellpadding(3);
@@ -608,7 +619,13 @@ public class PublicBooking extends Block  {
         int total = 0;
         int current = 0;
 
-        ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
+        //ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
+        ProductPrice[] pPrices = {};
+        Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
+        if (tFrame != null) {
+          pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), true);
+        }
+
         for (int i = 0; i < pPrices.length; i++) {
           try {
             current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
@@ -624,6 +641,7 @@ public class PublicBooking extends Block  {
 
         System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
         com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+//        System.err.println("price : "+price);
         heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
         //System.out.println("heimild = " + heimild);
         System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());

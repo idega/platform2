@@ -2,7 +2,8 @@ package is.idega.idegaweb.travel.service.tour.business;
 
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.business.*;
-import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
 import com.idega.util.*;
@@ -45,9 +46,9 @@ public class TourBusiness extends TravelStockroomBusiness {
       if (super.timeframe == null) isError = true;
       if (activeDays.length == 0) isError = true;
 
-      int departureAddressTypeId = AddressType.getId(uniqueDepartureAddressType);
-      int arrivalAddressTypeId = AddressType.getId(uniqueArrivalAddressType);
-      int hotelPickupAddressTypeId = AddressType.getId(uniqueHotelPickupAddressType);
+      int departureAddressTypeId = AddressType.getId(ProductBusiness.uniqueDepartureAddressType);
+      int arrivalAddressTypeId = AddressType.getId(ProductBusiness.uniqueArrivalAddressType);
+      int hotelPickupAddressTypeId = AddressType.getId(ProductBusiness.uniqueHotelPickupAddressType);
 
       Address departureAddress = null;
       Address arrivalAddress = null;
@@ -65,10 +66,11 @@ public class TourBusiness extends TravelStockroomBusiness {
         arrivalAddress.insert();
 
       }else {
-          Service service = new Service(tourId);
-          Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
+          //Service service = new Service(tourId);
+          Product product = new Product(tourId);
+          Address[] tempAddresses = ProductBusiness.getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
           if (tempAddresses.length > 0) {
-            arrivalAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+            arrivalAddress = new Address(tempAddresses[0].getID());
             arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
             arrivalAddress.setStreetName(arrivalAt);
             arrivalAddress.update();
@@ -79,9 +81,9 @@ public class TourBusiness extends TravelStockroomBusiness {
             arrivalAddress.insert();
           }
 
-          tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
+          tempAddresses = ProductBusiness.getDepartureAddresses(product); ///Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
           if (tempAddresses.length > 0) {
-            departureAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+            departureAddress = new Address(tempAddresses[0].getID());
             departureAddress.setAddressTypeID(departureAddressTypeId);
             departureAddress.setStreetName(departureFrom);
             departureAddress.update();
@@ -118,8 +120,9 @@ public class TourBusiness extends TravelStockroomBusiness {
       try {
           //tm.begin();
           Service service = new Service(serviceId);
-
+          Product product = new Product(serviceId);
           Tour tour;
+
           if (tourId == -1) {
             tour = new Tour();
             tour.setID(serviceId);
@@ -141,7 +144,7 @@ public class TourBusiness extends TravelStockroomBusiness {
           if (arrivalAddressIds.length > 0)
           for (int i = 0; i < arrivalAddressIds.length; i++) {
             try {
-              service.addTo(Address.class,arrivalAddressIds[i]);
+              product.addTo(Address.class,arrivalAddressIds[i]);
             }catch (SQLException sql) {}
           }
 
@@ -150,7 +153,7 @@ public class TourBusiness extends TravelStockroomBusiness {
             for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
               if (hotelPickupPlaceIds[i] != -1)
               try{
-              service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
+                service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
               }catch (SQLException sql) {}
             }
             tour.setHotelPickup(true);
@@ -319,7 +322,6 @@ public class TourBusiness extends TravelStockroomBusiness {
       idegaTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
       if (temp == null) {
         return TravelStockroomBusiness.getIfDay(iwc, contract, new Product(tour.getID()), stamp);
-//        return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
       }else {
         return (stamp.equals(temp));
       }
@@ -385,93 +387,96 @@ public class TourBusiness extends TravelStockroomBusiness {
     try {
       Product product = new Product(tour.getID());
       Service service = new Service(tour.getID());
-      Timeframe frame = product.getTimeframe();
-      if (frame == null) return returner;
-      boolean yearly = frame.getIfYearly();
+      Timeframe[] frames = product.getTimeframes();
 
-      idegaTimestamp tFrom = new idegaTimestamp(frame.getFrom());
-      idegaTimestamp tTo = new idegaTimestamp(frame.getTo());
+      for (int i = 0; i < frames.length; i++) {
+
+        boolean yearly = frames[i].getIfYearly();
+
+        idegaTimestamp tFrom = new idegaTimestamp(frames[i].getFrom());
+        idegaTimestamp tTo = new idegaTimestamp(frames[i].getTo());
 
 
-          idegaTimestamp from = null;
-          if (fromStamp != null) from = new idegaTimestamp(fromStamp);
-          idegaTimestamp to = null;
-          if (toStamp != null) to = new idegaTimestamp(toStamp);
+        idegaTimestamp from = null;
+        if (fromStamp != null) from = new idegaTimestamp(fromStamp);
+        idegaTimestamp to = null;
+        if (toStamp != null) to = new idegaTimestamp(toStamp);
 
-          int numberOfDays = tour.getNumberOfDays();
-            if (numberOfDays < 1) numberOfDays = 1;
+        int numberOfDays = tour.getNumberOfDays();
+          if (numberOfDays < 1) numberOfDays = 1;
 
-          if (from == null) {
-            from = new idegaTimestamp(tFrom);
-          }
-          if (to == null) {
-            to   = new idegaTimestamp(tTo);
-          }
+        if (from == null) {
+          from = new idegaTimestamp(tFrom);
+        }
+        if (to == null) {
+          to   = new idegaTimestamp(tTo);
+        }
 
-          int toMonth = tTo.getMonth();
-          int toM = to.getMonth();
-          int fromM = from.getMonth();
-          int yearsBetween = 0;
+        int toMonth = tTo.getMonth();
+        int toM = to.getMonth();
+        int fromM = from.getMonth();
+        int yearsBetween = 0;
 
-          to.addDays(1);
+        to.addDays(1);
 
-            if (yearly) {
-              int fromYear = tFrom.getYear();
-              int toYear   = tTo.getYear();
-              int fromY = from.getYear();
-              int toY = to.getYear();
+        if (yearly) {
+          int fromYear = tFrom.getYear();
+          int toYear   = tTo.getYear();
+          int fromY = from.getYear();
+          int toY = to.getYear();
 
-              int daysBetween = idegaTimestamp.getDaysBetween(from, to);
+          int daysBetween = idegaTimestamp.getDaysBetween(from, to);
 
-              if (fromYear == toYear) {
-                from.setYear(fromYear);
-              }else {
-                  if (fromY >= toYear) {
-                    if (fromM > toMonth) {
-                      from.setYear(fromYear);
-                    }else {
-                      from.setYear(toYear);
-                    }
-                  }
-              }
-
-              to = new idegaTimestamp(from);
-                to.addDays(daysBetween);
-
-              yearsBetween = to.getYear() - toY;
-            }
-
-          idegaTimestamp stamp = new idegaTimestamp(from);
-          idegaTimestamp temp;
-
-      idegaTimestamp now = idegaTimestamp.RightNow();
-
-          while (to.isLaterThan(stamp)) {
-            temp = getNextAvailableDay(iwc, service, stamp);
-            if (temp != null) {
-              if (idegaTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
-                if (yearly) {
-                  temp.addYears(-yearsBetween);
-                }
-                if (!showPast) {
-                  if (temp.isLaterThanOrEquals(now)) {
-                    returner.add(temp);
-                    stamp = new idegaTimestamp(temp);
-                  }else {
-                    stamp = new idegaTimestamp(temp);
-                  }
+          if (fromYear == toYear) {
+            from.setYear(fromYear);
+          }else {
+              if (fromY >= toYear) {
+                if (fromM > toMonth) {
+                  from.setYear(fromYear);
                 }else {
+                  from.setYear(toYear);
+                }
+              }
+          }
+
+          to = new idegaTimestamp(from);
+            to.addDays(daysBetween);
+
+          yearsBetween = to.getYear() - toY;
+        }
+
+      idegaTimestamp stamp = new idegaTimestamp(from);
+      idegaTimestamp temp;
+
+        idegaTimestamp now = idegaTimestamp.RightNow();
+
+        while (to.isLaterThan(stamp)) {
+          temp = getNextAvailableDay(iwc, service, stamp);
+          if (temp != null) {
+            if (idegaTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
+              if (yearly) {
+                temp.addYears(-yearsBetween);
+              }
+              if (!showPast) {
+                if (temp.isLaterThanOrEquals(now)) {
                   returner.add(temp);
                   stamp = new idegaTimestamp(temp);
+                }else {
+                  stamp = new idegaTimestamp(temp);
                 }
-                if (yearly) {
-                  stamp.addYears(yearsBetween);
-                }
+              }else {
+                returner.add(temp);
+                stamp = new idegaTimestamp(temp);
+              }
+              if (yearly) {
+                stamp.addYears(yearsBetween);
               }
             }
-            stamp.addDays(numberOfDays);
           }
+          stamp.addDays(numberOfDays);
+        }
 
+      }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }

@@ -2,7 +2,9 @@ package com.idega.block.trade.stockroom.business;
 
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.block.text.data.*;
+import com.idega.core.data.*;
 import java.util.Locale;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
@@ -13,7 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import com.idega.util.*;
 
-import is.idega.idegaweb.travel.data.Timeframe;
+import com.idega.block.trade.stockroom.data.*;
 
 
 /**
@@ -26,6 +28,9 @@ import is.idega.idegaweb.travel.data.Timeframe;
  */
 
 public class ProductBusiness {
+  public static String uniqueDepartureAddressType = "TB_TRIP_DEPARTURE_ADDRESS";
+  public static String uniqueArrivalAddressType = "TB_TRIP_ARRIVAL_ADDRESS";
+  public static String uniqueHotelPickupAddressType = "TB_HOTEL_PICKUP_ADDRESS";
 
   public static String PARAMETER_LOCALE_DROP = "product_locale_drop";
   public static int defaultLocaleId = 1;
@@ -45,6 +50,18 @@ public class ProductBusiness {
       name = text.getHeadline();
     }
     return name;
+  }
+
+  public static String getProductNameWithNumber(Product product) {
+    return getProductNameWithNumber(product, true);
+  }
+
+  public static String getProductNameWithNumber(Product product, boolean numberInFrom) {
+    if (numberInFrom) {
+      return product.getNumber() + Text.NON_BREAKING_SPACE + getProductName(product);
+    }else {
+      return getProductName(product) + Text.NON_BREAKING_SPACE + product.getNumber();
+    }
   }
 
   public static String getProductDescription(Product product, IWContext iwc) {
@@ -302,6 +319,63 @@ public class ProductBusiness {
         sql.printStackTrace(System.err);
       }
     return products;
+  }
+
+
+  public static Timeframe getTimeframe(Product product, idegaTimestamp stamp) {
+    Timeframe returner = null;
+    try {
+      Timeframe[] frames = product.getTimeframes();
+      for (int i = 0; i < frames.length; i++) {
+        returner = frames[i];
+        if (stamp.isInTimeframe( new idegaTimestamp(returner.getFrom()) , new idegaTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+          return returner;
+        }
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return returner;
+  }
+
+  public static Address[] getDepartureAddresses(Product product) throws SQLException {
+    Address[] tempAddresses = (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueDepartureAddressType))));
+    return tempAddresses;
+  }
+
+  public static Address getDepartureAddress(Product product) throws SQLException{
+      Address[] tempAddresses = getDepartureAddresses(product);
+      if (tempAddresses.length > 0) {
+        return new Address(tempAddresses[0].getID());
+      }else {
+        return null;
+      }
+  }
+
+  public static Address[] getArrivalAddresses(Product product) throws SQLException {
+    return (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueArrivalAddressType))));
+  }
+
+  public static Address getArrivalAddress(Product product) throws SQLException{
+    Address[] tempAddresses = getArrivalAddresses(product);
+    if (tempAddresses.length > 0) {
+      return new Address(tempAddresses[0].getID());
+    }else {
+      return null;
+    }
+  }
+
+  public static DropdownMenu getDropdownMenuWithProducts(int supplierId) {
+    List list = getProducts(supplierId);
+    DropdownMenu menu = new DropdownMenu(((Product)Product.getStaticInstance(Product.class)).getEntityName());
+    Product product;
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        product = (Product) list.get(i);
+        menu.addMenuElement(product.getID(), getProductNameWithNumber(product));
+      }
+    }
+    return menu;
   }
 
 }

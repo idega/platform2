@@ -89,8 +89,12 @@ public class TourBookingForm extends TravelManager {
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
-
+//      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
+      ProductPrice[] pPrices = {};
+      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
+      if (tFrame != null) {
+        pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), true);
+      }
       if (pPrices.length > 0) {
           int row = 1;
           int textInputSizeLg = 38;
@@ -237,7 +241,7 @@ public class TourBookingForm extends TravelManager {
               try {
                   ++row;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) tsb.getPrice(_service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+                  int price = (int) tsb.getPrice(pPrices[i].getID() , _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -434,7 +438,12 @@ public class TourBookingForm extends TravelManager {
 
       System.err.println("isDay : "+isDay);
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
+
+      ProductPrice[] pPrices = {};
+      Timeframe tFrame = ProductBusiness.getTimeframe(_product, stamp);
+      if (tFrame != null) {
+        pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), true);
+      }
 
       Text availSeats = (Text) theText.clone();
         availSeats.setText(iwrb.getLocalizedString("travel.there_are_available_seats","There are available seats "));
@@ -678,7 +687,7 @@ public class TourBookingForm extends TravelManager {
               try {
                   ++row;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) tsb.getPrice(_service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+                  int price = (int) tsb.getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -719,14 +728,14 @@ public class TourBookingForm extends TravelManager {
                   table.add(pPriceMany,2,row);
                   table.add(pPriceText, 2,row);
 
-
                   txtPrice = (Text) theText.clone();
                     txtPrice.setText(Integer.toString(price));
-                  //table.add(txtPrice,3,row);
-                  //table.add(txtPerPerson,4,row);
+                  table.add(txtPrice,2,row);
+//                  table.add(txtPerPerson,3,row);
 
                   table.setAlignment(1,row,"right");
                   table.setAlignment(2,row,"left");
+                  table.setAlignment(3,row,"left");
 
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
@@ -874,6 +883,7 @@ public class TourBookingForm extends TravelManager {
             table.add(pleaseFindAnotherDay,1,1);
         }
         table.setAlignment(1,1,"left");
+                  //table.setBorder(1);
     return form;
   }
 
@@ -1070,7 +1080,12 @@ public class TourBookingForm extends TravelManager {
       int iMany = 0;
       int iHotelId;
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
+//      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
+      ProductPrice[] pPrices = {};
+      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
+      if (tFrame != null) {
+        pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), true);
+      }
       int lbookingId = -1;
 
       boolean displayFormInternal = false;

@@ -14,7 +14,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
-import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
 import is.idega.idegaweb.travel.service.tour.presentation.*;
@@ -180,7 +180,8 @@ public class Statistics extends TravelManager {
 
 
       DropdownMenu trip = null;
-        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
+        trip = ProductBusiness.getDropdownMenuWithProducts(supplier.getID());
+//        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
 
       if (product != null) {
           trip.setSelectedElement(Integer.toString(product.getID()));

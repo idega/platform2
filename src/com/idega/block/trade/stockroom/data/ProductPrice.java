@@ -35,6 +35,9 @@ public class ProductPrice extends GenericEntity{
     addAttribute(getColumnNamePriceDate(), "Dagsetning verðs", true, true, Timestamp.class);
     addAttribute(getColumnNamePriceType(),"Gerð",true,true,Integer.class);
     addAttribute(getColumnNameIsValid(), "virkt", true, true, Boolean.class);
+
+    this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_TIMEFRAME");
+    this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_ADDRESS");
   }
 
 
@@ -156,7 +159,7 @@ public class ProductPrice extends GenericEntity{
   }
 
   public static void clearPrices(int productId) throws SQLException {
-    ProductPrice[] prices = getProductPrices(productId, false);
+    ProductPrice[] prices = getProductPrices(productId, -1, false);
     for (int i = 0; i < prices.length; i++) {
       prices[i].invalidate();
       prices[i].update();
@@ -164,17 +167,32 @@ public class ProductPrice extends GenericEntity{
   }
 
   public static ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
+    return getProductPrices(productId, -1, netBookingOnly);
+  }
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, boolean netBookingOnly) {
       ProductPrice[] prices = {};
       try {
         ProductPrice price = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
         PriceCategory category = (PriceCategory) PriceCategory.getStaticInstance(PriceCategory.class);
+        Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
+        Product product = (Product) Product.getStaticInstance(Product.class);
 
+        String mTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
         String pTable = price.getProductPriceTableName();
         String cTable = category.getEntityName();
 
         StringBuffer SQLQuery = new StringBuffer();
           SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
+          if (timeframeId != -1) {
+            SQLQuery.append(" , "+mTable);
+          }
           SQLQuery.append(" WHERE ");
+          if (timeframeId != -1) {
+            SQLQuery.append(mTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
+            SQLQuery.append(" AND ");
+            SQLQuery.append(mTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+            SQLQuery.append(" AND ");
+          }
           SQLQuery.append(pTable+"."+ProductPrice.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
           SQLQuery.append(" AND ");
           SQLQuery.append(pTable+"."+ProductPrice.getColumnNameProductId() +" = " + productId);

@@ -49,6 +49,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
     addAttribute(getUserIdColumnName(), "user id", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Reseller.class);
+    this.addManyToManyRelationShip(Address.class);
   }
 
 

@@ -216,7 +216,8 @@ public class BookingOverview extends TravelManager {
 
       DropdownMenu trip = null;
         if (supplier != null) {
-          trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
+          trip = ProductBusiness.getDropdownMenuWithProducts(supplier.getID());
+          // new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
         }else if (reseller != null){
           try {
             trip = new DropdownMenu(ResellerManager.getProductsForReseller(reseller.getID()));
@@ -715,7 +716,12 @@ public class BookingOverview extends TravelManager {
             deleteLink.addParameter(this.closerLookDateParameter, view_date);
             deleteLink.addParameter(this.closerLookIdParameter, view_id);
           Link link;
-          Booking[] bookings = TourBooker.getBookings(this.service.getID(), currentStamp);
+          Booking[] bookings = {};
+          if (this.supplier != null) {
+            bookings = TourBooker.getBookings(this.service.getID(), currentStamp);
+          }else if (this.reseller != null) {
+            bookings = TourBooker.getBookings(reseller.getID(), service.getID(), currentStamp);
+          }
           TourBooking tBooking;
           Object serviceType;
           for (int i = 0; i < bookings.length; i++) {

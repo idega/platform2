@@ -48,20 +48,17 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new java.lang.UnsupportedOperationException("Method getSupplyStatus() not yet implemented.");
   }
 
-
-
-
-  public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
+  public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId) throws SQLException {
     if (productPriceIdToReplace != -1) {
         ProductPrice pPrice = new ProductPrice(productPriceIdToReplace);
           pPrice.invalidate();
           pPrice.update();
     }
 
-    setPrice(productId, priceCategoryId, currencyId, time, price, priceType);
+    setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId);
   }
 
-  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
+  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId) throws SQLException {
        ProductPrice prPrice = new ProductPrice();
          prPrice.setProductId(productId);
          prPrice.setCurrencyId(currencyId);
@@ -70,6 +67,9 @@ public class StockroomBusiness /* implements SupplyManager */ {
          prPrice.setPrice(price);
          prPrice.setPriceType(priceType);
        prPrice.insert();
+       if (timeframeId != -1) {
+        prPrice.addTo(Timeframe.class, timeframeId);
+       }
   }
 
   public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
@@ -290,15 +290,15 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new RuntimeException("Does not belong to any reseller");
   }
 
-  public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int discountTypeId) throws Exception{
-    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, discountTypeId);
+  public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
+    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
   }
 
-  public static int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int discountTypeId) throws Exception{
-    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, discountTypeId);
+  public static int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
+    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
   }
 
-  private static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int discountTypeId) throws Exception{
+  private static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
     Product product= null;
     if (productId == -1) {
       product = new Product();
@@ -326,8 +326,16 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
     ProductBusiness.setProductName(product, productName);
     ProductBusiness.setProductDescription(product, productDescription);
-//    product.setProductName(productName);
-//    product.setProdcutDescription(productDescription);
+
+    if(addressIds != null){
+      for (int i = 0; i < addressIds.length; i++) {
+        try {
+          product.addTo(Address.class, addressIds[i]);
+        }catch (SQLException sql) {
+        }
+      }
+    }
+
 
     return product.getID();
 

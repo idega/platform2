@@ -11,7 +11,6 @@ import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.user.data.User;
@@ -281,7 +280,6 @@ public class InitialData extends TravelManager {
       Link link;
 
       PermissionGroup pGroup;
-      List users;
       User user;
       LoginTable logTable;
 
@@ -325,14 +323,14 @@ public class InitialData extends TravelManager {
         //pGroup = SupplierManager.getPermissionGroup(supps[i]);
         try { /** @todo Skoða betur.......*/
           //users = UserGroupBusiness.getUsersContained(pGroup);
-          users = UserGroupBusiness.getUsersContained(new GenericGroup(supps[i].getGroupId()));
-          if (users != null) {
-            for (int j = 0; j < users.size(); j++) {
-              if (j > 0) ++row;
+          user = SupplierManager.getMainUser(supps[i]);
+          if (user != null) {
+            //for (int j = 0; j < users.size(); j++) {
+              //if (j > 0) ++row;
 
               //table.setRowColor(row,super.backgroundColor);
 
-              user = (User) users.get(j);
+              //user = (User) users.get(j);
               logTable = LoginDBHandler.getUserLogin(user.getID());
               suppLoginText = (Text) theText.clone();
               suppLoginText.setText(logTable.getUserLogin());
@@ -343,7 +341,7 @@ public class InitialData extends TravelManager {
 
               table.add(suppLoginText,2,row);
               table.mergeCells(2,row,3,row);
-            }
+            //}
 
           }
         }catch (Exception e) {

@@ -15,7 +15,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.trade.stockroom.business.*;
 import java.text.DecimalFormat;
 
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
@@ -220,15 +220,19 @@ public class ServiceOverview extends TravelManager {
             edit = (Link) editClone.clone();
               edit.addParameter(ServiceDesigner.parameterUpdateServiceId, products[i].getID());
 
-            table.add(edit,1,row);
-            table.add("&nbsp;&nbsp;",1,row);
+            if (super.isInPermissionGroup) {
+              table.add(edit,1,row);
+              table.add("&nbsp;&nbsp;",1,row);
+            }
             table.add(book,1,row);
             table.add("&nbsp;&nbsp;",1,row);
             if (this.supplier != null) {
               table.add(getLink,1,row);
               table.add("&nbsp;&nbsp;",1,row);
             }
-            table.add(delete,1,row);
+            if (super.isInPermissionGroup) {
+              table.add(delete,1,row);
+            }
 
 
             table.setColor(1,row,super.backgroundColor);
@@ -327,7 +331,7 @@ public class ServiceOverview extends TravelManager {
         Image image;
 
         Service service;
-        Timeframe timeframe;
+        Timeframe[] timeframes;
         Address depAddress;
         Address arrAddress;
 
@@ -352,9 +356,10 @@ public class ServiceOverview extends TravelManager {
 
 
         service = TravelStockroomBusiness.getService(product);
-        timeframe = TravelStockroomBusiness.getTimeframe(product);
-        depAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getDepartureAddress(service);
-        arrAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getArrivalAddress(service);
+//        timeframe = TravelStockroomBusiness.getTimeframe(product);
+        timeframes = product.getTimeframes();
+        depAddress = ProductBusiness.getDepartureAddress(product);
+        arrAddress = ProductBusiness.getArrivalAddress(product);
         if (product.getFileId() != -1) {
           image = new Image(product.getFileId());
           image.setMaxImageWidth(138);
@@ -362,27 +367,9 @@ public class ServiceOverview extends TravelManager {
           image = (Image) imageToClone.clone();
         }
         prodName = (Text) theBoldText.clone();
-            prodName.setText(service.getName());
+            prodName.setText(ProductBusiness.getProductNameWithNumber(product));
             prodName.setFontColor(super.BLACK);
 
-        timeframeTxt = (Text) theBoldText.clone();
-            timeframeTxt.setFontColor(super.BLACK);
-            if (timeframe == null) {
-              stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
-              timeframeTxt.addToText(stampTxt1);
-            }else {
-              stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
-              stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
-              try {
-                if (timeframe.getIfYearly() ){
-                  stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
-                  stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -4);
-                }
-              }catch (ArrayIndexOutOfBoundsException ai) {}
-              timeframeTxt.setText(stampTxt1 + " - ");
-              timeframeTxt.addToText(Text.BREAK);
-              timeframeTxt.addToText(stampTxt2);
-            }
 
 
         depFrom = (Text) theBoldText.clone();
@@ -413,7 +400,6 @@ public class ServiceOverview extends TravelManager {
         contentTable.add(image,1,contRow);
         contentTable.setVerticalAlignment(1,contRow,"top");
         contentTable.add(nameText,2,contRow);
-        contentTable.add(timeframeText,4,contRow);
         contentTable.setVerticalAlignment(2,contRow,"top");
         contentTable.setVerticalAlignment(3,contRow,"top");
         contentTable.setVerticalAlignment(4,contRow,"top");
@@ -423,8 +409,16 @@ public class ServiceOverview extends TravelManager {
         contentTable.setAlignment(4,contRow,"right");
         contentTable.setAlignment(5,contRow,"left");
         contentTable.add(prodName,3,contRow);
-        contentTable.add(timeframeTxt,5,contRow);
         contentTable.setRowColor(contRow, super.GRAY);
+
+        dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
+        for (int j = 0; j < dayOfWeek.length; j++) {
+          if (j > 0) actDays.addToText(", ");
+          actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+        }
+
+        contentTable.add(activeDaysText,4,contRow);
+        contentTable.add(actDays,5,contRow);
 
         ++contRow;
         contentTable.setVerticalAlignment(2,contRow,"top");
@@ -462,53 +456,67 @@ public class ServiceOverview extends TravelManager {
         contentTable.setAlignment(2,contRow,"right");
         contentTable.setAlignment(3,contRow,"left");
         contentTable.setRowColor(contRow, super.GRAY);
+        contentTable.add(timeframeText,2,contRow);
 
-        dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
-        for (int j = 0; j < dayOfWeek.length; j++) {
-          if (j > 0) actDays.addToText(", ");
-          actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
-        }
-
-        contentTable.add(activeDaysText,2,contRow);
-        contentTable.add(actDays,3,contRow);
-
-
-        prices = ProductPrice.getProductPrices(service.getID(), false);
 //        contentTable.mergeCells(2,contRow,2,(contRow+prices.length-1));
 //        contentTable.mergeCells(3,contRow,3,(contRow+prices.length-1));
+        for (int k = 0; k < timeframes.length; k++) {
+          prices = ProductPrice.getProductPrices(product.getID(), timeframes[k].getID(), false);
+          timeframeTxt = (Text) theBoldText.clone();
+              timeframeTxt.setFontColor(super.BLACK);
 
-        for (int j = 0; j < prices.length; j++) {
-          currency = new Currency(prices[j].getCurrencyId());
-          nameOfCategory = (Text) theText.clone();
-            nameOfCategory.setFontColor(super.BLACK);
-            nameOfCategory.setText(prices[j].getPriceCategory().getName());
-            nameOfCategory.addToText(":");
-          priceText = (Text) theBoldText.clone();
-            priceText.setFontColor(super.BLACK);
-          try {
-            priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
-            priceText.addToText(Text.NON_BREAKING_SPACE);
-            priceText.addToText(currency.getCurrencyAbbreviation());
-          }catch (ProductPriceException p) {
-            priceText.setText("T - rangt upp sett");
+              if (timeframes.length == 0) {
+                stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
+                timeframeTxt.addToText(stampTxt1);
+              }else {
+                stampTxt1 = new idegaTimestamp(timeframes[k].getFrom()).getLocaleDate(iwc);
+                stampTxt2 = new idegaTimestamp(timeframes[k].getTo()).getLocaleDate(iwc);
+                try {
+                  if (timeframes[0].getIfYearly() ){
+                    stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
+                    stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -4);
+                  }
+                }catch (ArrayIndexOutOfBoundsException ai) {}
+                timeframeTxt.setText(stampTxt1 + " - ");
+                timeframeTxt.addToText(stampTxt2);
+              }
+          contentTable.setAlignment(2,contRow,"right");
+          contentTable.setAlignment(3,contRow,"left");
+          contentTable.add(timeframeTxt,3,contRow);
+          contentTable.setRowColor(contRow, super.GRAY);
+
+          for (int j = 0; j < prices.length; j++) {
+            currency = new Currency(prices[j].getCurrencyId());
+            nameOfCategory = (Text) theText.clone();
+              nameOfCategory.setFontColor(super.BLACK);
+              nameOfCategory.setText(prices[j].getPriceCategory().getName());
+              nameOfCategory.addToText(":");
+            priceText = (Text) theBoldText.clone();
+              priceText.setFontColor(super.BLACK);
+            try {
+              priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              priceText.addToText(Text.NON_BREAKING_SPACE);
+              priceText.addToText(currency.getCurrencyAbbreviation());
+            }catch (ProductPriceException p) {
+              priceText.setText("Rangt upp sett, hafið samband við gimmi@idega.is");
+            }
+
+            if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
+              priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
+            }
+
+            contentTable.setVerticalAlignment(4,contRow,"top");
+            contentTable.setVerticalAlignment(5,contRow,"top");
+            contentTable.setAlignment(4,contRow,"right");
+            contentTable.setAlignment(5,contRow,"left");
+
+            contentTable.add(nameOfCategory,4,contRow);
+            contentTable.add(priceText,5,contRow);
+            contentTable.setRowColor(contRow, super.GRAY);
+            ++contRow;
           }
-
-          if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
-            priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
-          }
-
-
-
-          contentTable.setVerticalAlignment(4,contRow,"top");
-          contentTable.setVerticalAlignment(5,contRow,"top");
-          contentTable.setAlignment(4,contRow,"right");
-          contentTable.setAlignment(5,contRow,"left");
-
-          contentTable.add(nameOfCategory,4,contRow);
-          contentTable.add(priceText,5,contRow);
-        contentTable.setRowColor(contRow, super.GRAY);
-          ++contRow;
         }
+
         contentTable.setWidth("100%");
         contentTable.setBorder(0);
         contentTable.setAlignment("center");

@@ -3,6 +3,7 @@ package com.idega.block.trade.stockroom.business;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.user.business.UserBusiness;
@@ -284,6 +285,15 @@ public class SupplierManager {
     }
 
     return null;
+  }
+
+  public static User getMainUser(Supplier supplier) throws SQLException  {
+    List users = UserGroupBusiness.getUsersContained(new GenericGroup(supplier.getGroupId()));
+    if (users != null && users.size() > 0) {
+      return (User) users.get(0);
+    }else {
+      return null;
+    }
   }
 
 } // Class SupplierManager

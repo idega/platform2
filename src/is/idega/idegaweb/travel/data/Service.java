@@ -66,8 +66,8 @@ public class Service extends GenericEntity{
 //    this.setAsPrimaryKey(getIDColumnName(), true);
 
     this.addManyToManyRelationShip(HotelPickupPlace.class, "TB_SERVICE_HOTEL_PICKUP_PLACE");
-
     this.addManyToManyRelationShip(Address.class, "TB_SERVICE_IC_ADDRESS");
+
 
   }
 

@@ -188,7 +188,8 @@ public class DailyReport extends TravelManager {
           tframeText.addToText(":");
 
       DropdownMenu trip = null;
-        trip = new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
+        trip = ProductBusiness.getDropdownMenuWithProducts(supplier.getID());
+//        trip = new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
@@ -384,25 +385,6 @@ public class DailyReport extends TravelManager {
           payType = (DropdownMenu) Booker.getPaymentTypes(iwrb).clone();
             payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
           iBookingId = bookings[i].getPaymentTypeId();
-/*
-          switch (iBookingId) {
-            case Booking.PAYMENT_TYPE_ID_CREDIT_CARD :
-                payTypeText.setText(iwrb.getLocalizedString("travel.credit_card","Credit card"));
-              break;
-            case Booking.PAYMENT_TYPE_ID_CASH :
-                payTypeText.setText(iwrb.getLocalizedString("travel.cash","Cash"));
-            break;
-            case Booking.PAYMENT_TYPE_ID_NO_PAYMENT :
-                payTypeText.setText(iwrb.getLocalizedString("travel.unpaid","Unpaid"));
-            break;
-            case Booking.BOOKING_TYPE_ID_INQUERY_BOOKING :
-                payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
-            break;
-            default:
-                payTypeText.setText("");
-            break;
-          }
-*/
 
           bookedText = (Text) smallText.clone();
             bookedText.setText(Integer.toString(ibookings));

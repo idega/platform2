@@ -64,8 +64,8 @@ public class TourDesigner extends TravelManager {
       tour = new Tour(tourId);
       timeframe = product.getTimeframe();
 
-      arrAddress = TourBusiness.getArrivalAddress(service);
-      depAddress = TourBusiness.getDepartureAddress(service);
+      arrAddress = ProductBusiness.getArrivalAddress(product);
+      depAddress = ProductBusiness.getDepartureAddress(product);
 
       return true;
     }catch (SQLException sql) {
@@ -113,6 +113,7 @@ public class TourDesigner extends TravelManager {
 
       DateInput active_from = new DateInput("active_from");
           active_from.setDate(stamp.getSQLDate());
+//          active_from.setYearRange(2001,);
          active_from.keepStatusOnAction();
       DateInput active_to = new DateInput("active_to");
           stamp.addDays(92);
@@ -270,8 +271,6 @@ public class TourDesigner extends TravelManager {
 
       table.add(timeframeText,1,row );
       table.add(activeTable,2,row);
-
-
 
       ++row;
       Table weekdayFixTable = new Table(9,2);
@@ -435,7 +434,7 @@ public class TourDesigner extends TravelManager {
             active_yearly.setSelected(timeframe.getIfYearly());
           }
 
-          name.setContent(product.getProductName());
+          name.setContent(ProductBusiness.getProductName(product));
           number.setContent(product.getNumber());
           description.setContent(ProductBusiness.getProductDescription(product, iwc));
 

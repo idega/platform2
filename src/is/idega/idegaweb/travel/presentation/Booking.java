@@ -202,7 +202,8 @@ public class Booking extends TravelManager {
       DropdownMenu trip = null;
       try {
         if (supplier != null) {
-          trip = new DropdownMenu(ProductBusiness.getProducts(supplierId));
+          trip = ProductBusiness.getDropdownMenuWithProducts(supplierId);
+//          trip = new DropdownMenu(ProductBusiness.getProducts(supplierId));
         }else if (reseller != null) {
           trip = new DropdownMenu(ResellerManager.getProductsForReseller(resellerId ));
         }else if (product == null) {
