@@ -97,14 +97,11 @@ public class MessageDialog extends Frame implements ActionListener{
   }
   protected void processWindowEvent(WindowEvent e) {
     if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-      cancel();
+      dispose();
+      //setState ( Frame.ICONIFIED );
+      //setState ( Frame.NORMAL );
     }
     super.processWindowEvent(e);
-  }
-  void cancel() {
-    //dispose();
-    setState ( Frame.ICONIFIED );
-
   }
 
   public void actionPerformed(ActionEvent e) {
