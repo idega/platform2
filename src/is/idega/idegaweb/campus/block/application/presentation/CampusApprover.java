@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.38 2002/07/04 10:36:16 aron Exp $
+ * $Id: CampusApprover.java,v 1.39 2002/07/05 10:15:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1413,9 +1413,10 @@ public class CampusApprover extends Block {
     if (comment != null)
       eCampusApplication.setOtherInfo(comment);
 
-    String key1 = (String)iwc.getParameter("drp_one");
-    String key2 = (String)iwc.getParameter("drp_two");
-    String key3 = (String)iwc.getParameter("drp_three");
+System.out.println("iwc = " + iwc);
+    String key1 = iwc.getParameter("drp_one");
+    String key2 = iwc.getParameter("drp_two");
+    String key3 = iwc.getParameter("drp_three");
     if(key1!=null && key2!=null && key3!=null){
       Applied applied1 = null;
       Applied applied2 = null;

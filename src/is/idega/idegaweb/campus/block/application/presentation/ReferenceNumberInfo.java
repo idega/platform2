@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.13 2002/05/02 01:44:57 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.14 2002/07/05 10:15:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
   protected void control(IWContext iwc) {
     String which = (String)iwc.getSessionAttribute("DUMMY_LOGIN");
     if (which == null) {
-    System.out.println("Handling reference number lookup");
+//    System.out.println("Handling reference number lookup");
     String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
 
     int aid = 0;
@@ -243,7 +243,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
           }
 
           if (wait != null) {
-            System.out.println("wait.getOrder() = " + wait.getOrder());
+//            System.out.println("wait.getOrder() = " + wait.getOrder());
             appliedTable.add(new Text(wait.getOrder().toString()),2,pos);
             appliedTable.setAlignment(2,pos,"center");
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.9 2002/05/03 00:05:35 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.10 2002/07/05 10:15:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -516,7 +516,10 @@ public abstract class CampusApplicationFinder {
   public static List listOfWaitinglist(int applicantId) {
      try {
       WaitingList WL = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
-      List li = EntityFinder.findAllByColumnOrdered(WL,is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApplicantIdColumnName(),String.valueOf(applicantId),is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getOrderColumnName());
+      StringBuffer orderedBy = new StringBuffer(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getPriorityColumnName());
+      orderedBy.append(", ");
+      orderedBy.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getOrderColumnName());
+      List li = EntityFinder.findAllByColumnOrdered(WL,is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApplicantIdColumnName(),String.valueOf(applicantId),orderedBy.toString());
       if (li != null) {
         updateWatingListToRightOrder(li);
       }
@@ -537,11 +540,19 @@ public abstract class CampusApplicationFinder {
       if ((wl.getApartmentTypeId() != null) && (wl.getComplexId() != null)) {
         StringBuffer sql = new StringBuffer("select count(*) from ");
         sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getEntityTableName());
-        sql.append(" where ");
+        sql.append(" where ((");
         sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getOrderColumnName());
         sql.append(" <= ");
         sql.append(wl.getOrder().toString());
         sql.append(" and ");
+        sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getPriorityColumnName());
+        sql.append(" = '");
+        sql.append(wl.getPriorityLevel());
+        sql.append("') or (");
+        sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getPriorityColumnName());
+        sql.append(" < '");
+        sql.append(wl.getPriorityLevel());
+        sql.append("')) and ");
         sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName());
         sql.append(" = ");
         sql.append(wl.getApartmentTypeId().toString());
@@ -549,6 +560,7 @@ public abstract class CampusApplicationFinder {
         sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName());
         sql.append(" = ");
         sql.append(wl.getComplexId().toString());
+
         int count = 0;
 
         try {
