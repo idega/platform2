@@ -160,8 +160,9 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
 	 */
 	public Iterator getChildrenIterator() {
 	    Iterator it = null;
-	    if (getChildren() != null) {
-	        it = getChildren().iterator();
+	    Collection children = getChildren();
+	    if (children != null) {
+	        it = children.iterator();
 	    }
 	    return it;
 	}

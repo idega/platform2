@@ -48,8 +48,9 @@ public class HelpNode implements ICTreeNode {
 	 */
 	public Iterator getChildrenIterator() {
 	    Iterator it = null;
-	    if (getChildren() != null) {
-	        it = getChildren().iterator();
+	    Collection children = getChildren();
+	    if (children != null) {
+	        it = children.iterator();
 	    }
 	    return it;
 	}
