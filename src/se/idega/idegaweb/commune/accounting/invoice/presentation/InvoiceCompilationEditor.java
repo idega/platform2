@@ -1,5 +1,30 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
+import is.idega.idegaweb.member.presentation.UserSearcher;
+
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -20,29 +45,6 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
-import is.idega.idegaweb.member.presentation.UserSearcher;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -57,10 +59,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/17 10:17:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/18 09:30:36 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -157,8 +159,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
     private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
-    private static final String SAVE_INVOICE_RECORD_DEFAULT = "Spara fakturarad";
-    private static final String SAVE_INVOICE_RECORD_KEY = PREFIX + "save_invoice_record";
+    //private static final String SAVE_INVOICE_RECORD_DEFAULT = "Spara fakturarad";
+    //private static final String SAVE_INVOICE_RECORD_KEY = PREFIX + "save_invoice_record";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
@@ -328,8 +330,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
         final String doublePosting = getPostingString (context,
                                                        DOUBLE_POSTING_KEY);
-        final Integer invoiceCompilation
-                = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
+        //final Integer invoiceCompilation = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
         final String note = context.getParameter (NOTE_KEY);
         final Integer numberOfDays = getIntegerParameter (context,
@@ -339,7 +340,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
         final Date placementStartPeriod
                 = getPeriodParameter (context, PLACEMENT_START_PERIOD_KEY);
-        final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        //final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
         final String regulationSpecType
                 = context.getParameter (REGULATION_SPEC_TYPE_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
@@ -870,8 +871,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void deleteCompilation (final IWContext context)
         throws RemoteException {
-        final Integer headerId = getIntegerParameter (context,
-                                                      INVOICE_COMPILATION_KEY);
+        //final Integer headerId = getIntegerParameter (context,INVOICE_COMPILATION_KEY);
         try {
             final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
                     .getServiceInstance (context, InvoiceBusiness.class);
