@@ -300,7 +300,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     A.setCashierId(iCashierId);
     A.setValid(true);
     A.setType(type);
-    A.setCashierId(iCategoryId);
+    A.setCategoryId(iCategoryId);
 
     A.store();
     //System.err.println("account id "+A.getID());
