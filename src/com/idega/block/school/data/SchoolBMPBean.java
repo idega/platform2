@@ -172,7 +172,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 			return null;
 		}
 		else {
-			StringBuffer select = new StringBuffer("select distinct(s.*) from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id in (");
+			StringBuffer select = new StringBuffer("select distinct s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id in (");
 			Iterator iter = typeIds.iterator();
 			int count = 0;
 			while (iter.hasNext()) {
