@@ -1,0 +1,47 @@
+starting Nacka database cleanup...
+remark eiki@idega.is     
+remark Removing all cases
+delete from COMM_ACC_PROV_SCH_SCHOOL_TYPE;
+delete from COMM_ACC_PROV;
+delete from COMM_SCH_CHOICE;
+delete from MSG_LETTER_MESSAGE;
+delete from MSG_USER_MESSAGE;  
+delete from COMM_CHILDCARE;  
+delete from CC_CHECK;
+delete from VP_VIEWPOINT;
+delete from SCH_REMINDER;
+delete from PROC_CASE_CODE_PROC_CASE_STATU;
+delete from PROC_CASE_STATUS;
+delete from PROC_CASE_LOG;
+delete from PROC_CASE_CODE;  
+delete from PROC_CASE;
+commit;
+remark Done removing cases.
+
+remark Removing all citizen emails...
+delete from ic_user_email where ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id=3  and relationship_type='GROUP_PARENT');
+delete from ic_email where ic_email_id not in (select ic_email_id from ic_user_email);
+commit;
+remark Done removing emails.
+
+remark Removing all citizen logins...
+delete from ic_login_rec;
+delete from ic_login_info where ic_login_id in (select ic_login_id from ic_login where ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id=3  and relationship_type='GROUP_PARENT'));
+delete from ic_login where ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id=3  and relationship_type='GROUP_PARENT');
+commit;
+remark Done removing logins.
+
+remark Removing all citizen phones...
+delete from ic_user_phone where ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id=3  and relationship_type='GROUP_PARENT');
+delete from ic_phone where ic_phone_id not in (select ic_phone_id from ic_user_phone);
+commit;
+remark Done removing phones.
+
+
+
+
+
+
+
+
+
