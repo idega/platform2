@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.36 2003/11/05 23:28:29 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.37 2003/11/25 11:37:38 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.36 2003/11/05 23:28:29 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.37 2003/11/25 11:37:38 roar Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -103,8 +103,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SIGNED = "pp_edit_signed";
 	private final static String PARAM_MODE_COPY = "mode_copy";
 
-	private final static String PARAM_OWN_STRING = "own_string";
-	private final static String PARAM_DOUBLE_STRING = "double_string";
+	public final static String PARAM_OWN_STRING = "own_string";
+	public final static String PARAM_DOUBLE_STRING = "double_string";
 
 	private final static String PARAM_SELECTOR_ACTIVITY = "selector_activity";
 	private final static String PARAM_SELECTOR_REGSPEC = "selector_regspec";
@@ -214,38 +214,40 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 		_theOwnString = "";
 		_theDoubleString = "";
-		
-		try {
-			int index = 1;
-			PostingBusiness pBiz = getPostingBusiness(iwc);
-			Date date = null;
-			String dateString = iwc.getParameter(PARAM_PERIOD_FROM);
-			if (dateString == null) {
-				date = new Date(System.currentTimeMillis()); 
-			} else {
-				date = parseDate(dateString);
-			}
-			if (date == null) {
-				throw new PostingParametersException(KEY_ERROR_DATE_NULL, "Datum saknas");			
-			}
-			Collection fields = pBiz.getAllPostingFieldsByDate(date);
-			Iterator iter = fields.iterator();
-			while (iter.hasNext()) {
-				PostingField field = (PostingField) iter.next();
-				int len = iwc.getParameter(PARAM_OWN_STRING + "_" + index).length();
-				if(len != field.getLen() && len > 0) {
-					throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
+		if (iwc.getParameter(PARAM_OWN_STRING) != null && iwc.getParameter(PARAM_DOUBLE_STRING) != null){
+			try {
+				int index = 1;
+				PostingBusiness pBiz = getPostingBusiness(iwc);
+				Date date = null;
+				String dateString = iwc.getParameter(PARAM_PERIOD_FROM);
+				if (dateString == null) {
+					date = new Date(System.currentTimeMillis()); 
+				} else {
+					date = parseDate(dateString);
 				}
-				len = iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index).length();
-				if(len != field.getLen() && len > 0) {
-					throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
+				if (date == null) {
+					throw new PostingParametersException(KEY_ERROR_DATE_NULL, "Datum saknas");			
 				}
-				_theOwnString += pBiz.pad(iwc.getParameter(PARAM_OWN_STRING + "_" + index), field);
-				_theDoubleString += pBiz.pad(iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index), field);
-				index++;
+				Collection fields = pBiz.getAllPostingFieldsByDate(date);
+				Iterator iter = fields.iterator();
+				while (iter.hasNext()) {
+					PostingField field = (PostingField) iter.next();
+					int len = iwc.getParameter(PARAM_OWN_STRING + "_" + index).length();
+					if(len != field.getLen() && len > 0) {
+						throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
+					}
+					len = iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index).length();
+					if(len != field.getLen() && len > 0) {
+						throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
+					}
+					_theOwnString += pBiz.pad(iwc.getParameter(PARAM_OWN_STRING + "_" + index), field);
+					_theDoubleString += pBiz.pad(iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index), field);
+					index++;
+				}
+				
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
-			
-		} catch (RemoteException e) {
 		}
 	}
 
