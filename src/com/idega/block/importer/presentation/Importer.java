@@ -16,7 +16,6 @@ import com.idega.block.media.presentation.MediaChooserWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
