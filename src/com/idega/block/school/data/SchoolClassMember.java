@@ -21,8 +21,6 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
 	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
 
 	
-	
-	
  public int getClassMemberId();
  public boolean getHasCompensationByInvoice();
  public java.lang.String getInvoiceInterval();

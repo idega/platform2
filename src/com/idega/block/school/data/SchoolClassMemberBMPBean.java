@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -44,7 +45,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String INVOICE_INTERVAL = "invoice_int";
 	public final static String LATEST_INVOICE_DATE = "latest_invoice_date";
-
+	// Borgman added String constants for INVOICE_INTERVALL column values
+	private final static String PK = "school_class_member.invoice_interval.";
+	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "month";
+	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "term";
+	private final static String KEY_INVOICE_INTERVAL_VALUE_YEAR = PK + "year";
+	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
 		this.addAttribute(MEMBER, "classmember", true, true, Integer.class, MANY_TO_ONE, com.idega.core.user.data.User.class);
@@ -521,5 +527,23 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return -1;
 	}
+	 
+	 /**
+	  * This method returns a Collection with the domain of allowed values (types) 
+	  * for the invoice_int column 
+	  * @return 
+	  * @author Borgman
+	  */
+	 public Collection ejbHomeGetInvoiceIntervalTypes() {
+	 	String[] typeArr = { 	KEY_INVOICE_INTERVAL_VALUE_MONTH,
+										KEY_INVOICE_INTERVAL_VALUE_TERM, 
+										KEY_INVOICE_INTERVAL_VALUE_YEAR	};
+										
+		Vector typeVec = new Vector();
+		for (int i = 0; i < typeArr.length; i++) {
+			typeVec.addElement(typeArr[i]);
+		}
+		return typeVec;	 	
+	 }
 
 }
