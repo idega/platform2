@@ -12,6 +12,7 @@ import is.idega.idegaweb.golf.entity.Statistic;
 import is.idega.idegaweb.golf.entity.Stroke;
 import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
+import is.idega.idegaweb.golf.entity.TeeHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
@@ -265,6 +266,13 @@ public class HandicapScore extends GolfWindow {
 					int strokes = stroke[c].getStrokeCount();
 					int par3 = stroke[c].getHolePar();
 					int points = stroke[c].getPointCount();
+					int column = c + 2;
+					try {
+						Tee tmpTee = ((TeeHome) IDOLookup.getHome(Tee.class)).findByPrimaryKey(tee_id2);
+						column = tmpTee.getHoleNumber() + 1;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					roundPar += par3;
 
 					if (par3 != 3) {
@@ -306,7 +314,7 @@ public class HandicapScore extends GolfWindow {
 
 					Text hole_par = getSmallText(String.valueOf(par3));
 					if (b == 0) {
-						myTable.add(hole_par, c + 2, 4);
+						myTable.add(hole_par, column, 4);
 						total_par += par3;
 					}
 
@@ -321,27 +329,27 @@ public class HandicapScore extends GolfWindow {
 						differenceText.setText(gameDifference + "");
 					}
 
-					myTable.add(strokes_text, c + 2, row);
-					myTable.add(pointsText, c + 2, row + 1);
-					myTable.add(differenceText, c + 2, row + 2);
+					myTable.add(strokes_text, column, row);
+					myTable.add(pointsText, column, row + 1);
+					myTable.add(differenceText, column, row + 2);
 
 					if (birdie >= 2) {
-						myTable.setColor(c + 2, row, "#51787E");
+						myTable.setColor(column, row, "#51787E");
 						dbogey_total++;
 					}
 					else if (birdie == 1) {
-						myTable.setColor(c + 2, row, "#AACFCF");
+						myTable.setColor(column, row, "#AACFCF");
 						bogey_total++;
 					}
 					else if (birdie == 0) {
 						par_total++;
 					}
 					else if (birdie == -1) {
-						myTable.setColor(c + 2, row, "#F5D6CD");
+						myTable.setColor(column, row, "#F5D6CD");
 						birdie_total++;
 					}
 					else if (birdie == -2) {
-						myTable.setColor(c + 2, row, "#F6A690");
+						myTable.setColor(column, row, "#F6A690");
 						eagle_total++;
 					}
 				}
