@@ -159,10 +159,7 @@ public class HealthCareOverview extends EHealthBlock {
 			texts2.add(localize(keySet2Text5U2, "Texten"));
 			
 			
-		}
-			
-		
-			
+		}			
 		
 		Layer layerOut = new Layer(Layer.DIV);
 		layerOut.setVisibility("visible");
@@ -332,11 +329,11 @@ public class HealthCareOverview extends EHealthBlock {
 		layerInfo.setVisibility("hidden");
 		layerInfo.setPositionType("relative");
 		layerInfo.setHeight("20");
-		layerInfo.setWidth("200");
+		layerInfo.setWidth("300");
 		layerInfo.setID("lay" + i + "_3");
 		layerInfo.setStyleClass("ehealth_div_no_border");
-		layerInfo.setLeftPosition("10");
-	
+		//layerInfo.setLeftPosition("10");
+		layerInfo.setTopPosition("0");
 		layerInfo.add(getInfoLayer(i));	
 		return layerInfo;
 	}
@@ -345,17 +342,18 @@ public class HealthCareOverview extends EHealthBlock {
 	private Layer getInfoLayer(int theCase){
 		Layer layerInfo = new Layer(Layer.DIV);
 		layerInfo.setOverflow("hidden");
-		layerInfo.setVisibility("hidden");
+		//layerInfo.setVisibility("hidden");
 		layerInfo.setPositionType("relative");
-		layerInfo.setWidth("250");
+		
+		layerInfo.setWidth("270");
 		layerInfo.setHeight("100");
 		layerInfo.setStyleClass("ehealth_row_div");
-		
+	
 		Table tableInfo = new Table(1, 10);
 		tableInfo.setNoWrap();
 		tableInfo.setCellpadding(0);
 		tableInfo.setCellspacing(0);
-		tableInfo.setBorder(1);			
+		tableInfo.setBorder(0);			
 		//tableInfo.setWidth(200);
 		int column = 1;
 		tableInfo.setWidth(column, 1, "200");
@@ -468,6 +466,7 @@ public class HealthCareOverview extends EHealthBlock {
 		s.append("layer3.style.height = '0';").append(" \n\t");
 		s.append("}else {").append("\n\t").append(" \n\t");
 		s.append("layer3.style.position = 'relative';").append(" \n\t");
+		s.append("layer3.style.height = '100';").append(" \n\t");
 		s.append("}").append("\n\t");
 		s.append("var showDiv = findObj(showLayer);").append(" \n\t");
 		s.append("if (showDiv){ ").append(" \n\t");
@@ -492,24 +491,27 @@ public class HealthCareOverview extends EHealthBlock {
 		s.append("}else {").append("\n\t").append(" \n\t");
 		s.append("layer3.style.position = 'relative';").append(" \n\t");
 		s.append("layer3.style.visibility = 'visible';").append(" \n\t");
-		s.append("layer3.style.height = '100';").append(" \n\t");
+		//s.append("layer3.style.height = '100';").append(" \n\t");
 		s.append("}").append("\n\t");
-		//s.append("var showDiv = findObj(showLayer);").append(" \n\t");
-		//s.append("if (showDiv){ ").append(" \n\t");
-		//s.append("if (showDiv.style.visibility == 'hidden') {").append(" \n\t");
-		//s.append("showDiv.style.visibility = 'visible';").append(" \n\t");
-		//s.append("showDiv.style.height = '100';").append(" \n\t");
-		//s.append("}else {").append("\n\t").append(" \n\t");
-		//s.append("showDiv.style.visibility = 'hidden';").append(" \n\t");
-		//s.append("showDiv.style.height = '0';").append(" \n\t");
-		//s.append("}").append("\n\t");
-		//s.append("}").append("\n\t");
+		/*
+		s.append("var showDiv = findObj(showLayer);").append(" \n\t");
+		s.append("if (showDiv){ ").append(" \n\t");
+		s.append("if (showDiv.style.visibility == 'hidden') {").append(" \n\t");
+		s.append("showDiv.style.visibility = 'visible';").append(" \n\t");
+		s.append("showDiv.style.height = '100';").append(" \n\t");
+		s.append("}else {").append("\n\t").append(" \n\t");
+		s.append("showDiv.style.visibility = 'hidden';").append(" \n\t");
+		s.append("showDiv.style.height = '0';").append(" \n\t");
+		s.append("}").append("\n\t");
+		s.append("}").append("\n\t");
+		*/
 		s.append("return false;").append("\n\t");
 		s.append("}").append("\n\t");
 		s.append("else if (level == 3){").append("\n\t");
 		s.append("showLayer = eval('lay' + cases + '_' + 3 + '.id');").append(" \n\t");
 		s.append("var showDiv = findObj(showLayer);").append(" \n\t");
 		s.append("if (showDiv){ ").append(" \n\t");
+		s.append("alert(showDiv.id);").append(" \n\t");
 		s.append("if (showDiv.style.visibility == 'hidden') {").append(" \n\t");
 		s.append("showDiv.style.visibility = 'visible';").append(" \n\t");
 		s.append("}else {").append("\n\t").append(" \n\t");
