@@ -157,7 +157,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 					}
 					try{
 						PostingBusiness postingBiz = (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
-						_currentPosting = postingBiz.getPostingStrings(iwc, getCurrentSchoolCategory(iwc), type, _currentRegulation, new Provider(_currentSchool), _validDate);	
+						_currentPosting = postingBiz.getPostingStrings(getCurrentSchoolCategory(iwc), type, ((Integer) _currentRegulation.getRegSpecType().getPrimaryKey()).intValue(), new Provider(_currentSchool), _validDate);	
 					}catch (RemoteException ex){
 						ex.printStackTrace();
 					}catch (PostingException ex){
