@@ -184,9 +184,8 @@ public class PIDChecker {
 		}
 		return null;
 	}
-	/**
-	 * @param year
-	 * @return
+	/** 
+	 * Get a random valid PersonalID as string representation of in the form XXXXXX-XXXX
 	 */
 	private String getRandomValidPID() {
 		String randomYearString = getRandomIntDecimalString() + getRandomIntDecimalString();
@@ -194,7 +193,7 @@ public class PIDChecker {
 	}
 	
 	/** 
-	 * Get a random valid PersonalID as string representation of in the form XXXXXX-XXXX
+	 * Get a random valid PersonalID as string representation of in the form XXXXXX-XXXX, with the year provided by yearString (either 2 or 4 in length)
 	 */
 	public String getRandomValidPID(String yearString) {
 		String tryString = "";
