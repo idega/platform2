@@ -472,8 +472,9 @@ public class ParticipantList extends AbstractContentList {
     public UserGroupSetter(){
       super("add/remove users");
       this.setAllMargins(0);
-      this.setWidth(600);
+      this.setWidth("744");
       this.setHeight(400);
+      this.setScrollbar(true);
       //this.setBackgroundColor("#d4d0c8");
     }
 
@@ -553,7 +554,6 @@ public class ParticipantList extends AbstractContentList {
 
     private UserList() {
       super();
-      this.setWidth("728");
     }
 
     private UserList(String name) {
@@ -738,7 +738,7 @@ public class ParticipantList extends AbstractContentList {
             case 1:
               return getCheckBox(staffHolder.getGroupID());
               //break;
-            case 2:
+            case 3:
               /**
                * @todo change accesscontrol
                */
@@ -753,17 +753,17 @@ public class ParticipantList extends AbstractContentList {
                 text.setText(staffHolder.getName());
 //              }
               break;
-            case 4:
+            case 5:
               if(staffHolder.getTitle() != null){
                 text.setText(staffHolder.getTitle());
               }
               break;
-            case 6:
+            case 7:
               if(staffHolder.getWorkPhone() != null){
                 text.setText(staffHolder.getWorkPhone());
               }
               break;
-            case 8:
+            case 9:
               if(staffHolder.getEmail() != null){
                 text.setText(staffHolder.getEmail());
               }
