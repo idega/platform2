@@ -189,7 +189,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
         sql.append (" group by s.sch_school_id");
         sql.append (" having max (y.year_age) <=").append(maxAge);
         sql.append (" and schoolyear.year_age = max (y.year_age)");
-        sql.append (" and school.sch_school_year_id =s.sch_school_year_id");
+        //sql.append (" and school.sch_school_year_id =s.sch_school_year_id");
         sql.append (" and school.sch_school_id = s.sch_school_id");
         sql.append (" )");
         return idoFindIDsBySQL (sql.toString ());
