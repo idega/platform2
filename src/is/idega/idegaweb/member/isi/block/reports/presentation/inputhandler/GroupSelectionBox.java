@@ -29,7 +29,6 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler{
 	protected GroupBusiness groupBiz = null;
 	private boolean useShortName = true;
 	private String displayNameSeperator = ",";
-
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
 	 * @param name	The name of the <code>GroupSelectionBox</code>

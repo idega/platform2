@@ -10,12 +10,25 @@ import com.idega.business.InputHandler;
  */
 public class RegionalUnionSelectionBox extends GroupSelectionBox implements InputHandler{
 
+	
 	/**
 	 * Creates a new <code>RegionalUnionSelectionBox</code> with all regional unions.
 	 * @param name	The name of the <code>RegionalUnionSelectionBox</code>
 	 */
 	public RegionalUnionSelectionBox(String name) {
-		super(name,IWMemberConstants.GROUP_TYPE_LEAGUE);
+		super(name,IWMemberConstants.GROUP_TYPE_REGIONAL_UNION);
 	}
 	
+	/**
+	 * 
+	 */
+	public RegionalUnionSelectionBox() {
+		super();
+		setGroupType(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION);
+		setName(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION);
+	}
+	
+
+	
+
 }

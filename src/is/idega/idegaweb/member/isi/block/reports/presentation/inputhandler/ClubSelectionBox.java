@@ -18,4 +18,13 @@ public class ClubSelectionBox extends GroupSelectionBox implements InputHandler{
 		super(name,IWMemberConstants.GROUP_TYPE_CLUB);
 	}
 	
+	/**
+	 * 
+	 */
+	public ClubSelectionBox() {
+		super();
+		setGroupType(IWMemberConstants.GROUP_TYPE_CLUB);
+		setName(IWMemberConstants.GROUP_TYPE_CLUB);
+	}
+	
 }

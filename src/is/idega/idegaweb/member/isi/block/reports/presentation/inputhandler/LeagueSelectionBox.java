@@ -18,4 +18,13 @@ public class LeagueSelectionBox extends GroupSelectionBox implements InputHandle
 		super(name,IWMemberConstants.GROUP_TYPE_LEAGUE);
 	}
 	
+	/**
+	 * 
+	 */
+	public LeagueSelectionBox() {
+		super();
+		setGroupType(IWMemberConstants.GROUP_TYPE_LEAGUE);
+		setName(IWMemberConstants.GROUP_TYPE_LEAGUE);
+	}
+	
 }
