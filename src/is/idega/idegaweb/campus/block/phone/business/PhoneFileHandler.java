@@ -236,14 +236,14 @@ public class PhoneFileHandler {
           pfi.insert();
 
           if(errorCount > 0){
-            FileWriter out = new FileWriter(new File(PhoneFile.getParentFile(),"err"+PhoneFile.getName()));
+            FileWriter out = new FileWriter(new File(PhoneFile.getParentFile(),"e_"+PhoneFile.getName()));
             BufferedWriter bout = new BufferedWriter(out);
             bout.write(sbError.toString());
             bout.close();
             out.close();
           }
           if(noAccountCount > 0){
-            FileWriter out = new FileWriter(new File(PhoneFile.getParentFile(),"noacc"+PhoneFile.getName()));
+            FileWriter out = new FileWriter(new File(PhoneFile.getParentFile(),"n_"+PhoneFile.getName()));
             BufferedWriter bout = new BufferedWriter(out);
             bout.write(sbNoAccount.toString());
             bout.close();

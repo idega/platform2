@@ -54,7 +54,7 @@ public class CampusAccountFinder  {
    *  that have legal contracts in period specified
    *  returns null if nothing found
    */
-  public static List listOfContractAccounts(String type,idegaTimestamp startDate,idegaTimestamp endDate){
+  public static List listOfContractAccountApartment(String type,idegaTimestamp startDate,idegaTimestamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(ContractAccountApartment.getEntityTableName());
     sql.append(" where ").append(ContractAccountApartment.getAccountTypeColumnName());
     sql.append(" = '").append(type).append("'");
@@ -102,6 +102,47 @@ public class CampusAccountFinder  {
     //System.err.println(sql);
     try {
       return EntityFinder.getInstance().findAll(ContractAccountApartment.class,sql.toString());
+     }
+     catch (com.idega.data.IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
+     }
+  }
+
+   /**
+   *  Returns a list of view entity ConatractAccounts
+   *  that have legal contracts in period specified
+   *  returns null if nothing found
+   */
+  public static List listOfContractAccounts(idegaTimestamp startDate,idegaTimestamp endDate){
+    StringBuffer sql = new StringBuffer("select * from ").append(ContractAccounts.getEntityTableName());
+    sql.append(" where ");
+    String start = "'"+startDate.toSQLString()+"'";
+    String end = "'"+endDate.toSQLString()+"'";
+    String validto = ContractAccounts.getColumnValidTo();
+    String validfrom = ContractAccounts.getColumnValidFrom();
+    String less = " <= ";
+    String more = " >= ";
+    /*
+      (begin <= valto && valto <= endin) ||
+      (begin <= valfr && valfr <= endin) ||
+      (begin <= valfr && valto <= endin) ||
+      (valfr <= begin && endin <= valto)
+    */
+    sql.append("(");
+    sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
+    sql.append(")");
+
+
+    //System.err.println(sql);
+    try {
+      return EntityFinder.getInstance().findAll(ContractAccounts.class,sql.toString());
      }
      catch (com.idega.data.IDOFinderException ex) {
       ex.printStackTrace();

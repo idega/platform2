@@ -107,7 +107,7 @@ public class CampusFinanceHandler implements FinanceHandler{
   public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
     List listOfTariffs = FinanceFinder.listOfTariffs(iTariffGroupId);
     //List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
-    List listOfUsers = CampusAccountFinder.listOfContractAccounts(getAccountType(),start,end);
+    List listOfUsers = CampusAccountFinder.listOfContractAccountApartment(getAccountType(),start,end);
     //Map mapOfContracts = ContractFinder.mapOfApartmentUsersBy();
     int iAccountCount = 0;
     if(listOfTariffs !=null){

@@ -6,12 +6,14 @@ import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import is.idega.idegaweb.campus.data.ContractAccounts;
+import is.idega.idegaweb.campus.block.finance.business.CampusAccountFinder;
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AccountPhoneEntry;
 import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.TariffKey;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.data.SimpleQuerier;
@@ -34,6 +36,9 @@ import java.sql.SQLException;
  */
 
 public class PhoneFinanceHandler implements FinanceHandler{
+
+  public static float tax = 1.245f;
+
   int count = 0;
   public PhoneFinanceHandler() {
   }
@@ -104,8 +109,9 @@ public class PhoneFinanceHandler implements FinanceHandler{
    }
   }
 
-  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate){
-    List listOfAccounts = listOfContractAccounts();
+  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
+    List listOfAccounts = CampusAccountFinder.listOfContractAccounts(start,end);
+    //List listOfAccounts = listOfContractAccounts();
     if(listOfAccounts != null){
       //System.err.println("phoneaccounts :"+listOfUsers.size());
 
@@ -118,7 +124,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
       try {
           AR = new AssessmentRound();
           AR.setAsNew(roundName);
-          //AR.setCategoryId(iCategoryId);
+          AR.setCategoryId(iCategoryId);
           AR.setTariffGroupId(iTariffGroupId);
           AR.setType(getAccountType());
           AR.insert();
@@ -145,42 +151,36 @@ public class PhoneFinanceHandler implements FinanceHandler{
             // All tenants accounts (Outer loop)
             AccountPhoneEntry ape;
             AccountKey AK = new AccountKey(iAccountKeyId);
+            TariffKey TK = new TariffKey(AK.getTariffKeyId());
             while (I.hasNext()) {
               accounts = (ContractAccounts)I.next();
-              Account eFinanceAccount = new Account(accounts.getPhoneAccountId());
-              Account ePhoneAccount = new Account(accounts.getPhoneAccountId());
               totalAmount = 0;
               float Amount = 0;
               List PhoneEntries = AccountManager.listOfUnBilledPhoneEntries(accounts.getPhoneAccountId(),null,idegaTimestamp.RightNow());
               if(PhoneEntries != null){
                 Iterator it = PhoneEntries.iterator();
-                AccountEntry AE = insertKreditEntry(accounts.getFinanceAccountId(),iRoundId,paydate,0,AK,iCashierId);
+                AccountEntry AE = insertKreditEntry(accounts.getFinanceAccountId(),iRoundId,paydate,0,AK,TK,iCashierId);
                 while(it.hasNext()){
                   ape = (AccountPhoneEntry) it.next();
                   Amount = ape.getPrice();
                   totalAmount += Amount;
                   ape.setAccountEntryId(AE.getID());
                   ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                  ape.setStatus(ape.statusBilled);
                   ape.update();
                 }
-                AE.setPrice(totalAmount);
+                //System.err.println("totalAmount : "+totalAmount);
+                AE.setTotal(totalAmount*tax);
+                AE.setNetto(totalAmount);
                 AE.update();
                 totals += totalAmount;
-                eFinanceAccount.setBalance(eFinanceAccount.getBalance()+AE.getTotal());
-                //System.err.print(eFinanceAccount.getBalance());
-                //System.err.print("+"+AE.getPrice());
-                eFinanceAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
 
-                eFinanceAccount.update();
-                //System.err.println("="+eFinanceAccount.getBalance());
                 iAccountCount++;
               }
               else{
                // System.err.println("no phone entries for account "+accounts.getPhoneAccountId());
               }
             }
-            AR.setTotals((float)(totals));
-            AR.setAccountCount(iAccountCount);
             AR.update();
             t.commit();
             return true;
@@ -217,12 +217,12 @@ public class PhoneFinanceHandler implements FinanceHandler{
     sql.append(" and ae.fin_assessment_round_id = ");
     sql.append(iAssessmentRound);
     sql.append(" )");
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     return sql.toString();
   }
 
 
-  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId){
+  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end){
     return null;
   }
 
@@ -253,7 +253,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
     */
   }
 
-  private static AccountEntry insertKreditEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,int iCashierId) throws SQLException{
+  private static AccountEntry insertKreditEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
     AccountEntry AE = new AccountEntry();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(key.getID());
@@ -261,8 +261,8 @@ public class PhoneFinanceHandler implements FinanceHandler{
     AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
     AE.setPrice(-amount);
     AE.setRoundId(iRoundId);
-    AE.setName(key.getName());
-    AE.setInfo(key.getInfo());
+    AE.setName(tkey.getName());
+    AE.setInfo(tkey.getInfo());
     AE.setStatus(AE.statusCreated);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
