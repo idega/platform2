@@ -1,15 +1,4 @@
-/*
- * $Id: CampusMenu.java,v 1.1 2001/11/19 00:28:35 aron Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package is.idega.idegaweb.campus.presentation;
-
-
 
 import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;
@@ -17,7 +6,6 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.jmodule.login.business.*;
-
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.localisation.business.LocaleSwitcher;
@@ -27,10 +15,14 @@ import java.sql.SQLException;
 import java.io.IOException;
 
 /**
- *
- * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
+
 public class CampusMenu extends Block implements Campus{
 
   private String iObjectName = "Menu";
@@ -45,7 +37,7 @@ public class CampusMenu extends Block implements Campus{
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-	private int templateId = -1;
+  private int templateId = -1;
 
   public CampusMenu(){
     MiddleColor = "#9FA9B3";
@@ -103,7 +95,7 @@ public class CampusMenu extends Block implements Campus{
     Image office = (iAct != ACT2?iwrb.getImage("/menu/office.gif","/menu/office_o.gif","Office",iWidth,iHeight):iwrb.getImage("/menu/office1.gif",iWidth,iHeight));
     Link lOffice = new Link(office);
     lOffice.addParameter(TextControl.strAction,"1");
-		lOffice.addParameter(getParameter(MENU_OFFICE));
+    lOffice.addParameter(getParameter(MENU_OFFICE));
     lOffice.addParameter(strAction,ACT2);
     LinkTable.add(lOffice,1,row);
     row++;
@@ -111,28 +103,28 @@ public class CampusMenu extends Block implements Campus{
     Image apartment = (iAct != ACT4?iwrb.getImage("/menu/apartment.gif","/menu/apartment_o.gif","Appartment",iWidth,iHeight):iwrb.getImage("/menu/apartment1.gif",iWidth,iHeight));
     Link lApartment = new Link(apartment);
     lApartment.addParameter(strAction,ACT4);
-		lApartment.addParameter(getParameter(MENU_APARTMENTS));
+    lApartment.addParameter(getParameter(MENU_APARTMENTS));
     LinkTable.add(lApartment,1,row);
     row++;
 
     Image apply = (iAct != ACT3?iwrb.getImage("/menu/apply.gif","/menu/apply_o.gif","Apply",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
     Link lApply = new Link(apply);
     lApply.addParameter(strAction,ACT3);
-		lApply.addParameter(getParameter(MENU_APPLICATION));
+    lApply.addParameter(getParameter(MENU_APPLICATION));
     LinkTable.add(lApply,1,row);
     row++;
 
     if ( iAct == ACT3 ) {
       Image instructs = iwrb.getImage("/menu/instructions.gif",iWidth,iHeight);
       Link lInstr = new Link(instructs);
-			lInstr.addParameter(getParameter(MENU_INSTRUCT));
+      lInstr.addParameter(getParameter(MENU_INSTRUCT));
       lInstr.addParameter(TextControl.strAction,"4");
       LinkTable.add(lInstr,1,row);
       row++;
 
       Image rules = iwrb.getImage("/menu/rules.gif",iWidth,iHeight);
       Link lRules = new Link(rules);
-			lRules.addParameter(getParameter(MENU_RULES));
+      lRules.addParameter(getParameter(MENU_RULES));
       lRules.addParameter(TextControl.strAction,"3");
       LinkTable.add(lRules,1,row);
       row++;
@@ -184,20 +176,27 @@ public class CampusMenu extends Block implements Campus{
     LinkTable.setHeight(1,row,"51");
     LinkTable.setAlignment(1,row,"center");
 
+    row++;
+    /** @todo move away */
+    Link Requests = new Link(iwrb.getLocalizedString("requests","Beiðnir"));
+    Requests.addParameter(strAction,NOACT);
+    Requests.addParameter(getParameter(REQUESTS));
+    LinkTable.add(Requests,1,row);
+    LinkTable.setAlignment(1,row,"center");
     add( LinkTable);
   }
 
-	public static Parameter getParameter(int contentView){
-		return CampusFactory.getParameter((contentView));
-	}
+  public static Parameter getParameter(int contentView){
+    return CampusFactory.getParameter((contentView));
+  }
 
   public int getAct(){
     return iAct;
   }
 
-	public void setTemplate(com.idega.builder.data.IBPage templatePage){
-	  templateId = templatePage.getID();
-	}
+  public void setTemplate(com.idega.builder.data.IBPage templatePage){
+    templateId = templatePage.getID();
+  }
 
   public String getObjectName(){
       return iObjectName;

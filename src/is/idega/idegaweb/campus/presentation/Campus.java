@@ -1,5 +1,5 @@
 /*
- * $Id: Campus.java,v 1.2 2001/11/29 11:17:34 palli Exp $
+ * $Id: Campus.java,v 1.3 2001/12/05 20:33:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,4 +32,5 @@ public interface Campus {
   public final static int MENU_INSTRUCT = 25;
   public final static int MENU_RULES = 26;
   public final static int REF_INFO = 50;
+  public final static int REQUESTS = 60;
 }

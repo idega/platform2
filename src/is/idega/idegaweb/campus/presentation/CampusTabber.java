@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTabber.java,v 1.1 2001/11/19 00:28:35 aron Exp $
+ * $Id: CampusTabber.java,v 1.2 2001/12/05 20:33:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,10 +31,14 @@ import java.util.Iterator;
 
 
 /**
- *
- * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
+
 public class CampusTabber extends Block implements Campus {
 
   private String action;
@@ -58,8 +62,8 @@ public class CampusTabber extends Block implements Campus {
   }
 
   public String getBundleIdentifier(){
-		return IW_BUNDLE_IDENTIFIER;
-	}
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
   public PresentationObject getTabs(){
     return Tabs;
@@ -131,27 +135,27 @@ public class CampusTabber extends Block implements Campus {
       Image finance = iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif");
       Link Link1 = new Link(finance);
       Link1.addParameter(getParameter(ADM_FINANCE));
-			Link1.addParameter(strAction,ACT20);
+      Link1.addParameter(strAction,ACT20);
 
       Image habitants = iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants1.gif");
       Link Link2 = new Link(habitants);
       Link2.addParameter(getParameter(ADM_HABITANTS));
-			Link2.addParameter(strAction,ACT21);
+      Link2.addParameter(strAction,ACT21);
 
       Image allocation = iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif");
       Link Link3 = new Link(allocation);
       Link3.addParameter(getParameter(CF.ADM_ALLOCATION));
-			Link3.addParameter(strAction,ACT22);
+      Link3.addParameter(strAction,ACT22);
 
       Image apartments = iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif");
       Link Link4 = new Link(apartments);
       Link4.addParameter(getParameter(ADM_APARTMENTS));
-			Link4.addParameter(strAction,ACT23);
+      Link4.addParameter(strAction,ACT23);
 
       Image announce = iwrb.getImage(iAct == ACT24?"/tabs/announcements.gif":"/tabs/announcements1.gif");
       Link Link5 = new Link(announce );
       Link5.addParameter(getParameter(ADM_ANNOUNCE));
-			Link5.addParameter(strAction,ACT24);
+      Link5.addParameter(strAction,ACT24);
 
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,1,1);
@@ -168,9 +172,6 @@ public class CampusTabber extends Block implements Campus {
       LinkTable.setCellpadding(0);
       LinkTable.setCellspacing(0);
       LinkTable.setAlignment("right");
-
-
-
 
       Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif"));
       Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants.gif"));
@@ -196,22 +197,22 @@ public class CampusTabber extends Block implements Campus {
       Image profile = iwrb.getImage(iAct == ACT20?"/tabs/my_profile.gif":"/tabs/my_profile1.gif");
       Link Link1 =  new Link(profile);
       Link1.addParameter(getParameter(TEN_PROFILE));
-			Link1.addParameter(strAction,ACT20);
+      Link1.addParameter(strAction,ACT20);
 
       Image finance = iwrb.getImage(iAct == ACT21?"/tabs/finance.gif":"/tabs/finance1.gif");
       Link Link2 = new Link(finance);
       Link2.addParameter(getParameter(TEN_FINANCE));
-			Link2.addParameter(strAction,ACT21);
+      Link2.addParameter(strAction,ACT21);
 
       Image habitants = iwrb.getImage(iAct == ACT22?"/tabs/habitants.gif":"/tabs/habitants1.gif");
       Link Link3 = new Link(habitants);
       Link3.addParameter(getParameter(TEN_HABITANTS));
-			 Link3.addParameter(strAction,ACT22);
+      Link3.addParameter(strAction,ACT22);
 
       Image announce = iwrb.getImage(iAct == ACT23?"/tabs/announcements.gif":"/tabs/announcements1.gif");
       Link Link4 = new Link(announce );
       Link4.addParameter(getParameter(TEN_ANNOUNCE));
-			Link4.addParameter(strAction,ACT23);
+      Link4.addParameter(strAction,ACT23);
 
 
       LinkTable.add(Link1,1,1);
@@ -276,10 +277,9 @@ public class CampusTabber extends Block implements Campus {
     //return false;
   }
 
-	public static Parameter getParameter(int contentView){
-		return CampusFactory.getParameter((contentView));
-	}
-
+  public static Parameter getParameter(int contentView){
+    return CampusFactory.getParameter((contentView));
+  }
 
   public void main(IWContext iwc)  {
     iwrb = getResourceBundle(iwc);

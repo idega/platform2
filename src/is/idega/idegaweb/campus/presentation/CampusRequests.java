@@ -106,7 +106,7 @@ public class CampusRequests extends Block {
       case COMPUTER: email = "umsjon@fs.is"; break;
       case RESIGN: email = "iris@fs.is"; break;
     }
-    return "aron@idega.is";
+    return email;
   }
 
   public String getSubject(int Type){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.2 2001/11/29 11:17:34 palli Exp $
+ * $Id: CampusFactory.java,v 1.3 2001/12/05 20:33:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,15 +23,21 @@ import is.idega.idegaweb.campus.presentation.Title;
 import is.idega.idegaweb.campus.block.application.presentation.ReferenceNumberInfo;
 
 /**
- * @author <a href="aron@idega.is">Aron Birkir</a>
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
+
 public class CampusFactory extends Block implements Campus {
   public final static String prmContentView = "cam_fact_view";
   private final static String prmContentViewContent = "sess_cam_fact_view";
   public final static int TABBER = 100;
   public final static int CONTENT = 200;
   public final static int MENU = 300;
+  private int page_id = -1;
 
   private int iContentType = CONTENT;
 
@@ -72,10 +78,12 @@ public class CampusFactory extends Block implements Campus {
     if (view !=null)
       iView = Integer.parseInt(view);
 
-    if (iContentType == TABBER)
+    if (iContentType == TABBER){
       add(new CampusTabber());
-    else if(iContentType == MENU)
+    }
+    else if(iContentType == MENU){
       add(new CampusMenu());
+    }
     else if(iContentType == CONTENT)
       add(getPresentationObject(iView));
   }
@@ -141,6 +149,9 @@ public class CampusFactory extends Block implements Campus {
       case REF_INFO :
         obj = new CampusRefInfo();
         break;
+      case REQUESTS :
+        obj = new CampusRequests();
+        break;
     }
     return(obj);
   }
@@ -151,4 +162,5 @@ public class CampusFactory extends Block implements Campus {
   public static Parameter getParameter(int contentView) {
     return(new Parameter(prmContentView,String.valueOf(contentView)));
   }
+
 }
