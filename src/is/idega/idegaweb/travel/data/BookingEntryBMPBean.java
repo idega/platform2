@@ -1,14 +1,16 @@
 package is.idega.idegaweb.travel.data;
 
 import is.idega.idegaweb.travel.interfaces.Booking;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -76,7 +78,16 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
   public static String getProductPriceIDColumnName() {return "SR_PRODUCT_PRICE_ID";}
 
   public Collection ejbHomeGetEntries(Booking booking) throws FinderException, RemoteException{
-    return super.idoFindAllIDsByColumnBySQL(getBookingIDColumnName(), Integer.toString(booking.getID()));
+  	
+  	Table table = new Table(this);
+  	Column bookingID = new Column(table, getBookingIDColumnName());
+  	
+  	SelectQuery select = new SelectQuery(table);
+  	select.addColumn(new WildCardColumn());
+  	select.addCriteria(new MatchCriteria(bookingID, MatchCriteria.EQUALS, booking));
+  	
+  	return super.idoFindPKsByQuery(select);
+//    return super.idoFindAllIDsByColumnBySQL(getBookingIDColumnName(), Integer.toString(booking.getID()));
 //    return null;
   }
 
