@@ -43,7 +43,7 @@ public class Messenger extends JModuleObject {
         messenger.setParam(SESSION_ID,modinfo.getSession().getId());
         messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(modinfo).getID()));
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
-        messenger.setParam(SERVER_ROOT_URL,modinfo.getServerName());
+        messenger.setParam(SERVER_ROOT_URL,"http://"+modinfo.getServerName());
       }
       add(messenger);
     }
