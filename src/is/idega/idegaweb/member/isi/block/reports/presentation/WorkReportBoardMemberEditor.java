@@ -314,7 +314,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         IWContext iwc)  {
           return ((EntityRepresentation) entity).getColumnValue(LEAGUE);
         }
-      }        
+      };        
 
         
     OptionProvider optionProvider = new OptionProvider() {
