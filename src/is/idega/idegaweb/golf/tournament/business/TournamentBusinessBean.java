@@ -100,9 +100,14 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		return tourns;
 	}
 	
-	public Tournament[] getTournaments(IWTimestamp fromStamp, IWTimestamp toStamp) throws Exception {
+	public Tournament[] getTournamentsWithRegistration(IWTimestamp now, int days) throws Exception {
 		Tournament tournament = (Tournament) IDOLookup.instanciateEntity(Tournament.class);
-		Tournament[] tourns = (Tournament[]) tournament.findAll("select * from tournament where start_time>= '" + fromStamp.toSQLDateString() + "' AND start_time<='" + toStamp.toSQLDateString() + "' order by start_time");
+		IWTimestamp then = new IWTimestamp(now);
+		then.addDays(days);
+		then.setHour(23);
+		Tournament[] tourns = (Tournament[]) tournament.findAll("select * from tournament where ((start_time>= '" + now.toSQLDateString() + "' AND start_time<='" + then.toSQLDateString() + 
+				"') OR (LAST_REGISTRATION_DATE <= '" + then.toSQLDateString() + "' AND FIRST_REGISTRATION_DATE <='" + now.toSQLDateString() + 
+				"'))AND REGISTRATION_ONLINE like 'Y' and LAST_REGISTRATION_DATE > '" + now.toSQLDateString() + "' and FIRST_REGISTRATION_DATE < '" + now.toSQLDateString() + "' order by start_time");
 		return tourns;
 	}
 
