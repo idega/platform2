@@ -131,8 +131,8 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		}
 		
 		if (column > 1) {
-			table.mergeCells(1, 4, column, 3);
-			table.mergeCells(1, 5, column, 4);
+			table.mergeCells(1, 3, column, 3);
+			table.mergeCells(1, 4, column, 4);
 		}
 		table.setRowHeight(3, "12");
 		table.add(getSmallHeader(localize("commune.instructions", "Instructions")+" :"), 1, 4);
