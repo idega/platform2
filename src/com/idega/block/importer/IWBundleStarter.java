@@ -4,11 +4,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import org.sadun.util.polling.DirectoryPoller;
-
 import com.idega.block.importer.business.AutoImportPollManager;
 import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.importer.data.ImportHandlerHome;
@@ -93,12 +90,21 @@ public class IWBundleStarter implements IWBundleStartable {
 	 * @throws IBOLookupException
 	 */
 	public static void addPoller(ImportHandler importHandler) throws IBOLookupException, ClassNotFoundException{
-		DirectoryPoller poller = new DirectoryPoller(new File(importHandler.getAutoImpFolder()));
-		poller.setAutoMove(true);		//Moves the files to a subfolder before handling
-		poller.addPollManager(new AutoImportPollManager(importHandler.getClassName(),importHandler.getAutoImpFileType()));
-		poller.setPollInterval(5*60*1000);
-		poller.start();
-		pollers.put(importHandler.getClassName(),poller);
-		System.out.println("Starting automatic import poller: "+importHandler.getName() +" for folder "+ importHandler.getAutoImpFolder());
+		File autoImpFolder = new File(importHandler.getAutoImpFolder());
+		if (autoImpFolder.isDirectory()) {
+			DirectoryPoller poller = new DirectoryPoller(autoImpFolder);
+			poller.setAutoMove(true); //Moves the files to a subfolder before
+									  // handling
+			poller.addPollManager(new AutoImportPollManager(importHandler.getClassName(),
+					importHandler.getAutoImpFileType()));
+			poller.setPollInterval(10 * 60 * 1000);
+			poller.start();
+			pollers.put(importHandler.getClassName(), poller);
+			System.out.println("Starting automatic import poller: " + importHandler.getName() + " for folder "
+					+ importHandler.getAutoImpFolder());
+		}
+		else {
+			System.out.println("WARNING: The configured folder '" + autoImpFolder + "' could not be found. Automatic import not started!");
+		}
 	}
 }
