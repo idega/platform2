@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.6 2003/08/24 06:50:02 anders Exp $
+ * $Id: ListTable.java,v 1.7 2003/08/25 19:47:36 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/24 06:50:02 $
+ * Last modified: $Date: 2003/08/25 19:47:36 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ListTable extends AccountingBlock {
 
@@ -38,6 +38,7 @@ public class ListTable extends AccountingBlock {
 		table.setWidth(getWidth());
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
+		table.setNoWrap();
 		super.add(table);
 	}
 
