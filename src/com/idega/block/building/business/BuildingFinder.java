@@ -68,8 +68,7 @@ public class BuildingFinder {
 
   public static RoomSubType[] findRoomSubTypesInBuilding(int iBuildingId){
     RoomSubType[] rt = new RoomSubType[0];
-    StringBuffer sql = new StringBuffer("select distinct room_sub_type_id,room_type_id,name,info,image_id,");
-    sql.append("room_count,area,kitchen,bathroom,storage,balcony,study,loft,rent ");
+    StringBuffer sql = new StringBuffer("select distinct room_sub_type_id,room_type_id,room_sub_type.name,room_sub_type.info,room_sub_type.image_id,room_count,area,kitchen,bathroom,storage,balcony,study,loft,rent ");
     sql.append("from room_sub_type,room,floor ");
     sql.append("where room_sub_type_id = room.sub_type_id ");
     sql.append("and room.floor_id = floor.floor_id ");
