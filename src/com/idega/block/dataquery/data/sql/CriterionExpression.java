@@ -127,47 +127,58 @@ public class CriterionExpression implements DynamicExpression {
     Object pattern = identifierValueMap.get(identifier);
     InputHandler inputHandler = getInputHandler();
     // if the pattern is a collection use OR operator
-    if (pattern != null && pattern instanceof Collection) {
+    if (pattern != null) {
     	// if there is an inputhandler get the resulting objects
-    	if (inputHandler != null)  {
-    		String[] patternAsArray = (String[]) ((Collection)pattern).toArray(new String[0]);
-    		try {
-    			pattern = inputHandler.getResultingObject(patternAsArray, iwc);
+    	if (inputHandler != null) {
+    		String[] patternAsArray = null;
+    		if (pattern instanceof Collection) {
+	    		patternAsArray = (String[]) ((Collection)pattern).toArray(new String[0]);
     		}
-    		catch (Exception ex) {};
-    	}
-    	Iterator iterator = ((Collection) pattern).iterator();
-    	if (((Collection) pattern).size() == 1) {
-				return getSingleCondition(iterator.next()).toString();
-    	}
-			StringBuffer buffer = new StringBuffer();
-    	while (iterator.hasNext()) {
-    		Object singlePattern = iterator.next();
-    		buffer.append(BRACKET_OPEN).append(WHITE_SPACE);
-    		StringBuffer singleCondition = getSingleCondition( singlePattern);
-    		buffer.append(singleCondition);
-    		buffer.append(WHITE_SPACE).append(BRACKET_CLOSE);
-    		if (iterator.hasNext()) {
-    			buffer.append(WHITE_SPACE).append(OR).append(WHITE_SPACE);
+    		// pattern is not a collection
+    		else {
+    			patternAsArray = new String[] { (String) pattern };
     		}
+	    	try {
+	    		pattern = inputHandler.getResultingObject(patternAsArray, iwc);
+	    	}
+	    		catch (Exception ex) {
+	    	}
     	}
-    	return buffer.toString();
-    }    	
+    	// inputhandler handling finished
+    	// ask again if NOW pattern is a collection (might have been changed)
+    	if (pattern instanceof Collection) {
+    		Iterator iterator = ((Collection) pattern).iterator();
+    		// catch a special case
+    		if (((Collection) pattern).size() == 1) {
+    			return getSingleCondition(iterator.next()).toString();
+    		}
+    		StringBuffer buffer = new StringBuffer();
+    		while (iterator.hasNext()) {
+	    		Object singlePattern = iterator.next();
+	    		buffer.append(BRACKET_OPEN).append(WHITE_SPACE);
+	    		StringBuffer singleCondition = getSingleCondition( singlePattern);
+	    		buffer.append(singleCondition);
+	    		buffer.append(WHITE_SPACE).append(BRACKET_CLOSE);
+	    		if (iterator.hasNext()) {
+	    			buffer.append(WHITE_SPACE).append(OR).append(WHITE_SPACE);
+	    		}
+    		}
+    		// bye bye
+    		return buffer.toString();
+    	}
+    	// pattern is not a collection
+    	else {
+    		// bye bye
+    		return getSingleCondition(pattern).toString();
+    	}
+  	}
     else if (patternField != null) {
     	expression.append(WHITE_SPACE).append(patternField);
+    	// bye bye
     	return expression.toString();
-    }	
-    // if there is an inputhandler get the resulting object
-    String patternAsString = pattern.toString();
-    if (inputHandler != null)  {
-    	String[] patternAsArray = new String[] { patternAsString };
-    	try {
-    		pattern = inputHandler.getResultingObject(patternAsArray, iwc);
-    	}
-    	catch (Exception ex) {
-    	}
     }
-    return getSingleCondition(pattern).toString();
+    // should not happen
+    return "";
   }
   
   private StringBuffer getSingleCondition(Object patternObject) {
