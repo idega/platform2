@@ -4,17 +4,11 @@
  */
 package se.idega.idegaweb.commune.accounting.userinfo.business;
 
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOServiceBean;
-import com.idega.core.location.data.Address;
-import com.idega.data.IDOStoreException;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -23,15 +17,25 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
+
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiver;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiverHome;
+import se.idega.idegaweb.commune.accounting.userinfo.data.SortableSibling;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOStoreException;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * UserInfoServiceBean
@@ -124,6 +128,10 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		return isInvoiceReceiver(userId);
 	}
 
+	/**
+	 * Returns the sibling order according to Check & Peng rules.
+	 * Most importantly, it only involves children i pre-school
+	 */
 	public int getSiblingOrder(User child, Map siblingOrders, IWTimestamp startPeriod) throws RemoteException, SiblingOrderException {
 		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		//First see if the child already has been given a sibling order
