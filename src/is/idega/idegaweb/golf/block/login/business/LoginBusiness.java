@@ -22,6 +22,7 @@ import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import is.idega.idegaweb.golf.business.AccessControl;
 
 /**
  * Title: LoginBusiness Description: Copyright: Copyright (c) 2000-2001 idega.is
@@ -34,7 +35,7 @@ import com.idega.user.data.User;
 
 public class LoginBusiness extends LoginBusinessBean implements IWPageEventListener {
 
-	public static String UserAttributeParameter = "member_login";
+	public static String UserAttributeParameter = AccessControl.USER_ATTRIBUTE_PARAMETER;
 	public static String UserAccessAttributeParameter = "member_access";
 	public static String LoginStateParameter = GolfLoginBusiness.LoginStateParameter;//"login_state";
 
@@ -112,10 +113,6 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 
 	public boolean isAdmin(IWContext modinfo) throws SQLException {
 		return AccessControl.isAdmin(modinfo);
-	}
-
-	public static Member getMember(IWContext modinfo) {
-		return (Member) modinfo.getSession().getAttribute(UserAttributeParameter);
 	}
 
 	private boolean verifyPassword(IWContext modinfo, String login, String password) throws IOException, SQLException {
