@@ -1084,7 +1084,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		letterList.setHeader(localize("printdoc.subject", "Subject"), 4);
 
 		CheckBox checkAll = new CheckBox("checkall");
-		checkAll.setToCheckOnClick(PRM_U_CHK, true);
+		checkAll.setToCheckOnClick(PRM_U_CHK,"this.checked");
 		letterList.setHeader(checkAll, 5);
 		letterList.setHeader(localize("printdoc.file", "File"), 6);
 		//letterList.setHeader(localize("printdoc.bulk_file", "Bulk ID"), 7);
