@@ -751,7 +751,7 @@ public class TourBookingForm extends BookingForm{
           Text fromText = (Text) theText.clone();
               fromText.setText(iwrb.getLocalizedString("travel.from","From"));
 //          Text manyDaysText = (Text) theText.clone();
-//              manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
+//              manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_nights","Number of nights"));
           Text commentText = (Text) theText.clone();
               commentText.setText(iwrb.getLocalizedString("travel.comment","Comment"));
 
@@ -1904,7 +1904,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 	int current = 0;
 	Currency currency = null;
 	
-	int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
+//	int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
 	
 	ProductPrice[] pPrices = {};
 	ProductPrice[] misc = {};
@@ -1914,7 +1914,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 	  misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
 	}
 	
-	for (int j = 0; j < days; j++) {
+//	for (int j = 0; j < days; j++) {
 	
 	  for (int i = 0; i < pPrices.length; i++) {
 	    try {
@@ -1935,7 +1935,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 	    price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
 	  }
 	
-	}
+//	}
 	return price;
 }
 
@@ -2007,7 +2007,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
     String depAddressId = iwc.getParameter(parameterDepartureAddressId);
 
     String fromDate = iwc.getParameter(parameterFromDate);
-    String manyDays = iwc.getParameter(parameterManyDays);
+//    String manyDays = iwc.getParameter(parameterManyDays);
 
     String ccNumber = iwc.getParameter(parameterCCNumber);
     String ccMonth = iwc.getParameter(parameterCCMonth);
@@ -2192,15 +2192,19 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.total_passengers","Total passengers")),1,row);
       table.add(getBoldTextWhite(Integer.toString(total)),2,row);
+			System.out.println("[TourBookingForm]  : 3a");
 
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.price","Price")),1,row);
-      price *= Integer.parseInt(manyDays);
+//			System.out.println("[TourBookingForm] manyDays : "+manyDays);
+//      price *= Integer.parseInt(manyDays);
+//			System.out.println("[TourBookingForm]  : 3b");
       table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
       if (currency != null)
       table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
+
 
 //      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
       SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
