@@ -41,6 +41,7 @@ public class ProductViewer extends Block {
   Image _seperator = null;
   boolean _useHRasSeperator = false;
   boolean _showRandom = false;
+  boolean _showNewest = false;
   String _imageWidth = null;
   String _textAlignment = Paragraph.HORIZONTAL_ALIGN_LEFT;
   String _imageAlignment = Paragraph.HORIZONTAL_ALIGN_RIGHT;
@@ -106,13 +107,25 @@ public class ProductViewer extends Block {
       e.printStackTrace(System.err);
     }
 
-    if ( _product == null && _showRandom ) {
-      if ( categoryList != null ) {
-	List products = ProductBusiness.getProducts(categoryList);
-	if ( products != null && products.size() > 0 ) {
-	  int random = (int) Math.round(Math.random() * (products.size() - 1));
-	  this._product = (Product) products.get(random);
-	  this._productId = _product.getID();
+    if ( _product == null ) {
+      if ( _showRandom ) {
+	if ( categoryList != null ) {
+	  List products = ProductBusiness.getProducts(categoryList);
+	  if ( products != null && products.size() > 0 ) {
+	    int random = (int) Math.round(Math.random() * (products.size() - 1));
+	    this._product = (Product) products.get(random);
+	    this._productId = _product.getID();
+	  }
+	}
+      }
+      if ( _showNewest ) {
+	if ( categoryList != null ) {
+	  List products = ProductBusiness.getProducts(categoryList);
+	  if ( products != null && products.size() > 0 ) {
+	    Collections.sort(products,new ProductComparator(ProductComparator.CREATION_DATE));
+	    this._product = (Product) products.get(0);
+	    this._productId = _product.getID();
+	  }
 	}
       }
     }
@@ -212,7 +225,8 @@ public class ProductViewer extends Block {
   }
 
   public void setShowRandomProduct(boolean showRandom) {
-    this._showRandom = showRandom;
+    _showRandom = showRandom;
+    _showNewest = !showRandom;
   }
 
   public void setProductPage(IBPage page) {
@@ -233,6 +247,11 @@ public class ProductViewer extends Block {
 
   public void setSpaceBetweenTitleAndBody(String spaceBetween) {
     _spaceBetween = spaceBetween;
+  }
+
+  public void setShowNewestProduct(boolean showNewest) {
+    _showNewest = showNewest;
+    _showRandom = !showNewest;
   }
 }
 

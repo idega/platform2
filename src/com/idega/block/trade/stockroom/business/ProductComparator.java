@@ -26,6 +26,7 @@ public class ProductComparator implements Comparator {
   public static final int DEPARTURETIME = 3;
   public static final int DEPARTURETIME_NAME = 4;
   public static final int PRICE = 5;
+  public static final int CREATION_DATE = 6;
 
   private int localeId = -1;
   private int sortBy;
@@ -53,16 +54,18 @@ public class ProductComparator implements Comparator {
       int result = 0;
 
       switch (this.sortBy) {
-        case NAME     : result = nameSort(o1, o2);
-        break;
-        case NUMBER   : result = numberSort(o1, o2);
-        break;
-        case DEPARTURETIME   : result = departureTimeSort(o1, o2);
-        break;
-        case DEPARTURETIME_NAME   : result = departureTimeNameSort(o1, o2);
-        break;
-        case PRICE : result = priceSort(o1, o2);
-        break;
+	case NAME     : result = nameSort(o1, o2);
+	break;
+	case NUMBER   : result = numberSort(o1, o2);
+	break;
+	case DEPARTURETIME   : result = departureTimeSort(o1, o2);
+	break;
+	case DEPARTURETIME_NAME   : result = departureTimeNameSort(o1, o2);
+	break;
+	case PRICE : result = priceSort(o1, o2);
+	break;
+	case CREATION_DATE : result = dateSort(o1, o2);
+	break;
       }
 
       return result;
@@ -106,11 +109,11 @@ public class ProductComparator implements Comparator {
       idegaTimestamp s2 = ProductBusiness.getDepartureTime(p2);
 
       if (s1.isLaterThan(s2)) {
-        return 1;
+	return 1;
       }else if (s2.isLaterThan(s1)){
-        return -1;
+	return -1;
       }else {
-        return 0;
+	return 0;
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -139,6 +142,24 @@ public class ProductComparator implements Comparator {
      */
   }
 
+  private int dateSort(Object o1, Object o2) {
+    Product p1 = (Product) o1;
+    Product p2 = (Product) o2;
+
+    idegaTimestamp s1 = new idegaTimestamp(p1.getCreationDate());
+    idegaTimestamp s2 = new idegaTimestamp(p2.getCreationDate());
+
+    if (s1.isLaterThan(s2)) {
+      return -1;
+    }
+    else if (s2.isLaterThan(s1)){
+      return 1;
+    }
+    else {
+      return 0;
+    }
+  }
+
   public boolean equals(Object obj) {
     /**@todo: Implement this java.util.Comparator method*/
     throw new java.lang.UnsupportedOperationException("Method equals() not yet implemented.");
@@ -148,7 +169,7 @@ public class ProductComparator implements Comparator {
       sortBy = toSortBy;
       List list = new LinkedList();
       for(int i = 0; i < products.length; i++) {
-          list.add(products[i]);
+	  list.add(products[i]);
       }
       Collections.sort(list, this);
       return list.iterator();
@@ -157,7 +178,7 @@ public class ProductComparator implements Comparator {
   public Iterator sort(Product[] products) {
       List list = new LinkedList();
       for(int i = 0; i < products.length; i++) {
-          list.add(products[i]);
+	  list.add(products[i]);
       }
       Collections.sort(list, this);
       return list.iterator();
@@ -167,12 +188,12 @@ public class ProductComparator implements Comparator {
       sortBy = toSortBy;
       List list = new LinkedList();
       for(int i = 0; i < products.length; i++) {
-          list.add(products[i]);
+	  list.add(products[i]);
       }
       Collections.sort(list, this);
       Object[] objArr = list.toArray();
       for(int i = 0; i < objArr.length; i++) {
-          products[i] = (Product) objArr[i];
+	  products[i] = (Product) objArr[i];
       }
       return (products);
   }
@@ -186,12 +207,12 @@ public class ProductComparator implements Comparator {
   public Product[] sortedArray(Product[] products) {
       List list = new LinkedList();
       for(int i = 0; i < products.length; i++) {
-          list.add(products[i]);
+	  list.add(products[i]);
       }
       Collections.sort(list, this);
       Object[] objArr = list.toArray();
       for(int i = 0; i < objArr.length; i++) {
-          products[i] = (Product) objArr[i];
+	  products[i] = (Product) objArr[i];
       }
       return (products);
   }
@@ -200,13 +221,13 @@ public class ProductComparator implements Comparator {
       sortBy = toSortBy;
       List list = new LinkedList();
       for(int i = 0; i < products.length; i++) {
-          list.add(products[i]);
+	  list.add(products[i]);
       }
       Collections.sort(list, this);
       Collections.reverse(list);
       Object[] objArr = list.toArray();
       for(int i = 0; i < objArr.length; i++) {
-          products[i] = (Product) objArr[i];
+	  products[i] = (Product) objArr[i];
       }
       return (products);
   }
