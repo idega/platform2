@@ -1,6 +1,6 @@
 /*
 
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.1 2002/04/06 19:07:37 tryggvil Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.2 2003/03/18 21:15:15 gimmi Exp $
 
  *
 
@@ -20,11 +20,13 @@ package com.idega.block.tpos.data;
 
 
 
-import com.idega.block.tpos.data.TPosAuthorisationEntries;
 
 import com.idega.data.IDOLegacyEntity;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 
 
@@ -2147,5 +2149,9 @@ public class TPosAuthorisationEntriesBeanBMPBean extends com.idega.data.GenericE
     setColumn(getXMLAttachmentColumnName(), xml);
 
   }
+
+	public Collection ejbHomeFindByAuthorisationIdRsp(String authIdRsp) throws FinderException {
+		return this.idoFindAllIDsByColumnBySQL(AUTHORISATION_ID_RSP, authIdRsp);
+	}
 
 }

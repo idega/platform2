@@ -7,9 +7,11 @@ public class TPosAuthorisationEntriesBeanHomeImpl extends com.idega.data.IDOFact
   return TPosAuthorisationEntriesBean.class;
  }
 
+
  public TPosAuthorisationEntriesBean create() throws javax.ejb.CreateException{
-  return (TPosAuthorisationEntriesBean) super.idoCreate();
+  return (TPosAuthorisationEntriesBean) super.createIDO();
  }
+
 
  public TPosAuthorisationEntriesBean createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class TPosAuthorisationEntriesBeanHomeImpl extends com.idega.data.IDOFact
 
  }
 
- public TPosAuthorisationEntriesBean findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (TPosAuthorisationEntriesBean) super.idoFindByPrimaryKey(id);
- }
 
  public TPosAuthorisationEntriesBean findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (TPosAuthorisationEntriesBean) super.idoFindByPrimaryKey(pk);
+  return (TPosAuthorisationEntriesBean) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public TPosAuthorisationEntriesBean findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (TPosAuthorisationEntriesBean) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public TPosAuthorisationEntriesBean findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,14 @@ public class TPosAuthorisationEntriesBeanHomeImpl extends com.idega.data.IDOFact
 	}
 
  }
+
+
+public java.util.Collection findByAuthorisationIdRsp(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((TPosAuthorisationEntriesBeanBMPBean)entity).ejbHomeFindByAuthorisationIdRsp(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

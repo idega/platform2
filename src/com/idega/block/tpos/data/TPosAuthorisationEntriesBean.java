@@ -37,6 +37,7 @@ public interface TPosAuthorisationEntriesBean extends com.idega.data.IDOLegacyEn
  public java.lang.String getVoidedAuthorisationIdResponse();
  public java.lang.String getVoidedTransactionNr();
  public java.lang.String getXMLAttachment();
+ public void initializeAttributes();
  public void setAttachmentCount(java.lang.String p0);
  public void setAuthorisationAmount(java.lang.String p0);
  public void setAuthorisationCode(java.lang.String p0);
