@@ -37,19 +37,19 @@ private String sLocaleId;
 private String sAttribute = null;
 
 private int iTextId = -1;
-private int textSize = 1;
+private int textSize = -1;
 private int tableTextSize = 1;
-private int headlineSize = 2;
+private int headlineSize = -2;
 private String tableWidth = "";
 private String textBgColor = null;
-private String textColor = "#000000";
+private String textColor;
 private String headlineBgColor = null;
-private String headlineColor = "#000000";
+private String headlineColor;
 private String tableAlignment = "top";
 private String textWidth = "100%";
-private String textStyle = "";
+private String textStyle;
 private String textAlignment = "left";
-private String headlineStyle = "";
+private String headlineStyle;
 private String spaceBetweenHeadlineAndBody = null;
 private boolean displayHeadline=true;
 private boolean enableDelete=false;
@@ -152,11 +152,14 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setWidth("100%");
     String sHeadline = locText.getHeadline()!= null ? locText.getHeadline():"";
     Text headline = new Text(sHeadline);
-    headline.setFontSize(headlineSize);
-    headline.setFontColor(headlineColor);
-    headline.setBold();
-    headline.setAttribute("class","headlinetext");
-    headline.setFontStyle(headlineStyle);
+    if ( headlineSize > -1 )
+      headline.setFontSize(headlineSize);
+    if ( headlineColor != null )
+      headline.setFontColor(headlineColor);
+    //headline.setBold();
+    //headline.setAttribute("class","headlinetext");
+    if ( headlineStyle != null )
+      headline.setFontStyle(headlineStyle);
 
     String textBody = locText.getBody()!= null ? locText.getBody():"";
 
@@ -173,10 +176,13 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       bodyParagraph.setAlign(textAlignment);
 
     Text body = new Text(textBody);
-      body.setFontSize(textSize);
-      body.setFontColor(textColor);
-      body.setAttribute("class","bodytext");
-      body.setFontStyle(textStyle);
+      if ( textSize > -1 )
+	body.setFontSize(textSize);
+      if ( textColor != null )
+	body.setFontColor(textColor);
+      //body.setAttribute("class","bodytext");
+      if ( textStyle != null )
+	body.setFontStyle(textStyle);
 
     if(spaceBetweenHeadlineAndBody !=null){
       T.setHeight(2,spaceBetweenHeadlineAndBody);
@@ -190,20 +196,20 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     if(files!=null){
     //Iterator iter = files.iterator();
       //while (iter.hasNext()) {
-        try{
-          //ICFile imagefile = (ICFile)iter.next();
-          ICFile imagefile = (ICFile)files.get(0);
-          int imid = imagefile.getID();
-          String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
+	try{
+	  //ICFile imagefile = (ICFile)iter.next();
+	  ICFile imagefile = (ICFile)files.get(0);
+	  int imid = imagefile.getID();
+	  String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
 
-          Image textImage = new Image(imid);
-          if(att != null)
-            textImage.setAttributes(getAttributeMap(att));
-          bodyParagraph.add(textImage);
-        }
-        catch(SQLException ex){
-          ex.printStackTrace();
-        }
+	  Image textImage = new Image(imid);
+	  if(att != null)
+	    textImage.setAttributes(getAttributeMap(att));
+	  bodyParagraph.add(textImage);
+	}
+	catch(SQLException ex){
+	  ex.printStackTrace();
+	}
       //}
     }
     bodyParagraph.add(body);
@@ -237,9 +243,9 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     if(iTextId > 0){
       Link breyta = new Link(iwcb.getImage("/shared/edit.gif"));
-        breyta.setWindowToOpen(TextEditorWindow.class);
-        breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
-        breyta.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
+	breyta.setWindowToOpen(TextEditorWindow.class);
+	breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
+	breyta.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
       T.add(breyta,column++,1);
 
       if ( enableDelete ) {
