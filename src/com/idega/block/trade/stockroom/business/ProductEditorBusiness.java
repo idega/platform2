@@ -238,8 +238,13 @@ public class ProductEditorBusiness {
       CurrencyHolder holder = (CurrencyHolder) iter.next();
       _currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
     }
-    if (defaultCurrency != null)
-    _currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(defaultCurrency).getCurrencyID()));
+    if (defaultCurrency != null) {
+      try {
+        _currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(defaultCurrency).getCurrencyID()));
+      }
+      catch (Exception e) {
+      }
+    }
     return _currencies;
   }
 
