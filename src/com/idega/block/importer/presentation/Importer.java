@@ -8,6 +8,8 @@ import java.util.Iterator;
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.block.importer.data.ImportFileClass;
+import com.idega.block.importer.data.ImportFileRecord;
+import com.idega.block.importer.data.ImportFileRecordHome;
 import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
@@ -43,11 +45,14 @@ public class Importer extends Window {
   private boolean usingLocalFileSystem,selectFiles,importFiles,selectFileSystemFolder = false;
   private IWResourceBundle iwrb;
   private Group group = null;
+  private String groupId = null;
 
   private static final String ACTION_PARAMETER = "im_ac"; //action
   private static final String SELECT_FILES = "im_sf"; //select files action
   private static final String IMPORT_FILES = "im_if"; //import files action
-  private static final String IMPORT_FILE_PATHS = "im_fp"; //list of files
+  private static final String IMPORT_FILE_PATHS = "im_fp"; //list of local files
+  private static final String IMPORT_FILE_IDS = "im_f_ids"; //list of files in database
+    
   private static final String SELECT_NEW_FOLDER = "im_snf"; //new folder overrides builder parameter action
   private static final String NEW_FOLDER_PATH = "im_nfp"; //new folder path
   
@@ -67,12 +72,12 @@ public class Importer extends Window {
  * Method setFolderPath. Use this set method if you want to select files from the local filesystem.
  * @param path
  */
-  public void setFolderPath(String path){
+  public void setLocalFolderPath(String path){
     this.folderPath = path;
     usingLocalFileSystem = true;
   }
 
-  public String getFolderPath(){
+  public String getLocalFolderPath(){
     return this.folderPath;
   }
   
@@ -83,28 +88,40 @@ public class Importer extends Window {
   public void setImportFolder(ICFile folder){
   	this.importFolder = folder;	
   	usingLocalFileSystem = false;
-  	    
+  }
+  
+  
+  public ICFile getImportFolder(){
+    return this.importFolder;
   }
 
   private void parseAction(IWContext iwc){
+  	
     if( iwc.isParameterSet(ACTION_PARAMETER) ){
       if( iwc.getParameter(ACTION_PARAMETER).equals(IMPORT_FILES) ){
         importFiles = true;
       }
       else if( iwc.getParameter(ACTION_PARAMETER).equals(SELECT_FILES) ){
-        if( iwc.isParameterSet(NEW_FOLDER_PATH) ){
+        /*if( iwc.isParameterSet(NEW_FOLDER_PATH) ){
           this.setFolderPath(iwc.getParameter(NEW_FOLDER_PATH));
-        }
+        }*/ //removed this because folders are now set at design time in the Builder not runtime
         selectFiles = true;
       }
-      else if(  iwc.getParameter(ACTION_PARAMETER).equals(SELECT_NEW_FOLDER) ){
+      /*else if(  iwc.getParameter(ACTION_PARAMETER).equals(SELECT_NEW_FOLDER) ){
         selectFileSystemFolder = true;
-      }
+      }*/
     }
     else{
      selectFiles = true;
     }
+    
+    //if importing into sepecific group. Used for compatabilty to idegaWeb Member system
+    groupId = iwc.getParameter(this.PARAMETER_GROUP_ID);
 
+    if( groupId!=null ){
+    	iwc.setSessionAttribute(this.PARAMETER_GROUP_ID,groupId);
+    }
+    
   }
   
 
@@ -113,23 +130,180 @@ public class Importer extends Window {
     iwrb = this.getResourceBundle(iwc);
 
     parseAction(iwc);
-    
-    String groupId = iwc.getParameter(this.PARAMETER_GROUP_ID);
 
-    if( groupId!=null ){
-    	iwc.setSessionAttribute(this.PARAMETER_GROUP_ID,groupId);
+    if( selectFiles ){
+    	if( usingLocalFileSystem ){
+			showLocalFileSystemSelection(iwc);
+      	}
+      	else {
+      		showIWFileSystemSelection(iwc);      	
+      	}
+
     }
-
+    else if( importFiles ){
+		importFiles(iwc);		   
+    }
+    
+    //removed this because folders are now set at design time in the Builder not runtime  
+    /*
     Link selectFolderLink = new Link(iwrb.getLocalizedString("importer.select.folder","Select folder"));
     selectFolderLink.addParameter(ACTION_PARAMETER,SELECT_NEW_FOLDER);
     selectFolderLink.setAsImageButton(true);
     add(selectFolderLink);
-    addBreak();
+    addBreak();*/
+    
+        //removed this because folders are now set at design time in the Builder not runtime
+   /* else if( selectFileSystemFolder ){
+      Form form = new Form();
+      form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
+      String path = getFolderPath();
+      if( path == null ){
+       path = iwc.getApplication().getApplicationRealPath()+"import";
+      }
+      form.add(new TextInput(NEW_FOLDER_PATH,path) );
+      form.add(new SubmitButton());
+      add(form);
+      add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) ); 
+    }*/
     
 
-    if( selectFiles ){
-      if( this.getFolderPath()!=null ){
-        File folder = new File(getFolderPath());
+  }
+
+	/**
+	 * Method importFiles.
+	 * @param iwc
+	 */
+	private void importFiles(IWContext iwc) throws Exception{
+		 add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
+	
+	     String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
+	     String groupIDFromSession = (String)iwc.getSessionAttribute(this.PARAMETER_GROUP_ID);
+	     String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
+	     String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
+	     
+	      // for each file to import
+	     for (int i = 0; i < values.length; i++) {
+	        boolean success = false;
+	        
+	        if(groupIDFromSession!=null){
+	        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i],new Integer(groupIDFromSession));       
+	        }
+	        else{
+	        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i]);
+	        }
+	        
+	        //MediaBusiness.getCachedFileInfo(icfileid,iwc)
+	        
+	        String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
+	        Text fileStatus = new Text(values[i]+" : "+status);
+	        fileStatus.setBold();
+	
+			addBreak();
+	        add(fileStatus);
+	        addBreak();
+		}
+	}
+
+
+	/**
+	 * Method showIWFileSystemSelection.
+	 * @param iwc
+	 */
+	private void showIWFileSystemSelection(IWContext iwc) throws Exception{
+
+        if( MediaBusiness.isFolder(importFolder) ){
+        	
+        	//do I have to do this?
+        	ImportFileRecord folder = changeICFileToImportFileRecord(importFolder);
+        	int fileCount = folder.getChildCount();
+          
+          
+        	if(fileCount>0){
+	          	Iterator files = folder.getChildren();
+	          	Form form = new Form();
+	          	//name,size,creationdate(uploaddate),modificationdata(importdate),
+	          	//imported(status),reportlink,checkbox
+	          	Table fileTable = new Table(7,fileCount+3);
+	          	fileTable.setWidth(Table.HUNDRED_PERCENT);
+	          	form.add(fileTable);
+	          	
+	          	fileTable.mergeCells(1,1,5,1);//merge the header
+	          	//header
+	          	fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),1,1); 
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.select.files.to.import","Importer : Select files to import")),1,1);
+	            
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.filename","File name")),1,2);
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.filesize","File size")),2,2);
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.creationdate","Uploaded")),3,2);
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.modificationdate","Imported")),4,2);
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.status","Status")),5,2);
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.report","Report")),6,2);
+	            
+	            //footer
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.import.handler","Import handler")+" : "), 1, fileCount+3);
+	            fileTable.add(this.getImportHandlers(iwc), 2, fileCount+3);
+	            
+	            fileTable.add(new Text(iwrb.getLocalizedString("importer.import.filetype","File type")+" : "), 3, fileCount+3);
+	            fileTable.add(this.getImportFileClasses(iwc), 4, fileCount+3);
+	            
+	            fileTable.add(new SubmitButton(iwrb.getLocalizedString("importer.import","Import")), 7, fileCount+3);
+	            
+	            
+	            
+	            //data	            
+	            int row = 3;
+	            while (files.hasNext()) {
+					ImportFileRecord file = (ImportFileRecord) files.next();
+
+					if( MediaBusiness.isFolder(file) ){//add support for folders within this?
+						fileTable.add(file.getName()+iwrb.getLocalizedString("importer.folder"," (Folder)"),1,row);
+					}
+					else{//is a file
+						boolean imported = file.hasBeenImported();
+						fileTable.add(new Text( file.getName() ) ,1,row);
+						fileTable.add(new Text( file.getFileSize().toString() ) ,2,row);
+						fileTable.add(new Text( file.getCreationDate().toString() ) ,3,row);
+						if(imported){
+							fileTable.add(new Text( file.getModificationDate().toString() ) ,4,row);
+							fileTable.add(new Text(iwrb.getLocalizedString("importer.imported","Imported")),5,row);
+						}
+						else{
+							fileTable.add(new Text(iwrb.getLocalizedString("importer.not.imported","Not imported")),5,row);
+						}
+						
+						if( !file.isLeaf() ){
+							fileTable.add(new Text("Temp: has report!"),6,row);
+						}
+						
+						fileTable.add(new CheckBox(IMPORT_FILE_IDS, ((Integer)file.getPrimaryKey()).toString() ),7,row);
+					  
+					}
+					
+					row++;
+	            }
+
+
+          add(form);//add the form
+          	
+          }
+          else{
+          	add(iwrb.getLocalizedString("no.files","No files to import, please upload files first"));	
+          }
+          
+          
+        }
+        else{
+          add( iwrb.getLocalizedString("importer.not.a.folder","Selected import folder is a file! Please select a folder.") );
+        }		
+	}
+
+
+	/**
+	 * Method showLocalFileSystemSelection.
+	 * @param iwc
+	 */
+	private void showLocalFileSystemSelection(IWContext iwc) throws Exception{
+	    File folder = new File(getLocalFolderPath());
 
         if( folder.isDirectory() ){
 
@@ -170,68 +344,10 @@ public class Importer extends Window {
         else{
           add( iwrb.getLocalizedString("importer.nosuchfolder","No such folder.") );
           add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) );
-        }
+        }		
+		
+	}
 
-
-      }
-
-    }
-    else if( selectFileSystemFolder ){
-      Form form = new Form();
-      form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
-      String path = getFolderPath();
-      if( path == null ){
-       path = iwc.getApplication().getApplicationRealPath()+"import";
-      }
-      form.add(new TextInput(NEW_FOLDER_PATH,path) );
-      form.add(new SubmitButton());
-      add(form);
-      add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) ); 
-
-
-    }
-    else if( importFiles ){
-      add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
-
-      String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
-      String groupIDFromSession = (String)iwc.getSessionAttribute(this.PARAMETER_GROUP_ID);
-      String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
-      String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
-      
-     
-	  // for each file to import
-      for (int i = 0; i < values.length; i++) {
-      /** @todo make support for uploaded files
-       */
-   
-        boolean success = false;
-        
-        if(groupIDFromSession!=null){
-        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i],new Integer(groupIDFromSession));       
-        }
-        else{
-        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i]);
-        }
-        
-        //MediaBusiness.getCachedFileInfo(icfileid,iwc)
-        
-        String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
-        Text fileStatus = new Text(values[i]+" : "+status);
-        fileStatus.setBold();
-
-		addBreak();
-        add(fileStatus);
-        addBreak();
-        
-      }
-
-
-
-
-
-    }
-
-  }
   
   	public DropdownMenu getImportHandlers(IWContext iwc) throws RemoteException{
   		DropdownMenu menu = new DropdownMenu(this.PARAMETER_IMPORT_HANDLER);
@@ -265,5 +381,12 @@ public class Importer extends Window {
   		return (ImportBusiness) IBOLookup.getServiceInstance(iwc,ImportBusiness.class);	
   		
   	}
+  	
+  	private ImportFileRecord changeICFileToImportFileRecord(ICFile folder) throws Exception{
+  		return (ImportFileRecord) ((ImportFileRecordHome)com.idega.data.IDOLookup.getHome(ImportFileRecord.class)).findByPrimaryKey(folder.getPrimaryKey());
+  	}
+  	
+  	
+  	
 
 }
