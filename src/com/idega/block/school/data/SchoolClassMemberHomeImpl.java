@@ -264,7 +264,7 @@ public SchoolClassMember findByUserAndSchoolAndSeason(int p0,int p1,int p2,java.
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
-public SchoolClassMember findByUserAndSchoolAndSeasonAndStudyPath(int p0, int p1, int p2, String[] p3)throws javax.ejb.FinderException{
+public SchoolClassMember findByUserAndSchoolAndSeasonAndStudyPath(int p0, int p1, int p2, int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSchoolAndSeasonAndStudyPath(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
