@@ -56,10 +56,11 @@ public class ChildCareContracts extends ChildCareBlock {
 				User child;
 				IWTimestamp created;
 				IWTimestamp validFrom;
-				Link alterCareTime;
+				Link alterCareTime = null;
 				Link viewContract;
 				Link archive;
 				boolean isCancelled;
+				boolean isNotYetActive;
 				
 				Iterator iter = contracts.iterator();
 				while (iter.hasNext()) {
@@ -75,15 +76,27 @@ public class ChildCareContracts extends ChildCareBlock {
 					}
 					else
 						isCancelled = false;
+						
+					if (validFrom.isLaterThan(dateNow))
+						isNotYetActive = true;
+					else
+						isNotYetActive = false;
 					
 					viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
 					viewContract.setFile(contract.getContractFileID());
 					viewContract.setTarget(Link.TARGET_NEW_WINDOW);
 					
-					alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
+					if (isNotYetActive) {
+						alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_VALID_FROM_DATE);
+					}
+					else {
+						alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
+					}
 					alterCareTime.setWindowToOpen(ChildCareWindow.class);
-					alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
 					alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
+					alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 					
 					if (row % 2 == 0)
 						table.setRowColor(row, getZebraColor1());

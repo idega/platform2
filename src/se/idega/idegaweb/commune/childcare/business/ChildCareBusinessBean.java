@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -776,17 +777,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
-			application.setApplicationStatus(getStatusReady());
-			int oldFileID = application.getContractFileId();
+			alterValidFromDate(application, application.getFromDate(), locale, user);
 			IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-
-			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
-			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, fromDate, false), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-
-			application.setContractFileId(fileID);
-			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
-			addContractToArchive(oldFileID, application, -1, fromDate.getDate());
-			
 			/*try {
 				SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(application.getChildId(), application.getProviderId());
 				classMember.setSchoolClassId(groupID);
@@ -803,6 +795,29 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		return false;
+	}
+	
+	public void alterValidFromDate(int applicationID, Date newDate, Locale locale, User user) throws RemoteException {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			alterValidFromDate(application, newDate, locale, user); 
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}		
+	}
+
+	public void alterValidFromDate(ChildCareApplication application, Date newDate, Locale locale, User user) throws RemoteException {
+		application.setApplicationStatus(getStatusReady());
+		int oldFileID = application.getContractFileId();
+		IWTimestamp fromDate = new IWTimestamp(newDate);
+
+		PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
+		int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, fromDate, false), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+
+		application.setContractFileId(fileID);
+		changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
+		addContractToArchive(oldFileID, application, -1, fromDate.getDate());
 	}
 
 	public void moveToGroup(int childID, int providerID , int schoolClassID) throws RemoteException {
@@ -1624,6 +1639,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				archive.setTerminatedDate(application.getRejectionDate());
 			archive.setCareTime(application.getCareTime());
 			archive.store();
+			
+			if (contractFileID != -1) {
+				Contract contract = archive.getContract();
+				contract.setValidFrom(validFrom);
+				contract.store();
+			}
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -1679,19 +1700,34 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareContractArchive archive = getContractFile(contractFileID);
 			if (archive != null) {
-				archive.setTerminatedDate(terminatedDate);
-				Contract contract = archive.getContract();
-				if (contract != null) {
-					contract.setValidTo(terminatedDate);
-					contract.store();
+				IWTimestamp terminate = new IWTimestamp(terminatedDate);
+				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
+				if (validFrom.isLaterThan(terminate)) {
+					Contract contract = archive.getContract();
+					if (contract != null) {
+						contract.setStatus("T");
+						contract.store();
+					}
+					archive.remove();
 				}
-				archive.store();
+				else {
+					archive.setTerminatedDate(terminatedDate);
+					Contract contract = archive.getContract();
+					if (contract != null) {
+						contract.setValidTo(terminatedDate);
+						contract.store();
+					}
+					archive.store();
+				}
 			}
 		}
 		catch (IDOStoreException e) {
 			e.printStackTrace();
 		}
 		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (RemoveException e) {
 			e.printStackTrace();
 		}
 	}
@@ -2073,6 +2109,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (numberOfContracts > 0)
 			return true;
 		return false;
+	}
+	
+	public boolean hasActiveContract(int applicationID) throws RemoteException {
+		try {
+			IWTimestamp stampNow = new IWTimestamp();
+			int numberOfContracts = getChildCareContractArchiveHome().getNumberOfActiveForApplication(applicationID, stampNow.getDate());
+			if (numberOfContracts > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
 	}
 	
 	public int getNumberOfFutureContracts(int applicationID) throws RemoteException {

@@ -88,6 +88,13 @@ public int getFutureContractsCountByApplication(int p0,java.sql.Date p1)throws c
 	return theReturn;
 }
 
+public int getNumberOfActiveForApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareContractArchiveBMPBean)entity).ejbHomeGetNumberOfActiveForApplication(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getNumberOfActiveNotWithProvider(int p0,int p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ChildCareContractArchiveBMPBean)entity).ejbHomeGetNumberOfActiveNotWithProvider(p0,p1);

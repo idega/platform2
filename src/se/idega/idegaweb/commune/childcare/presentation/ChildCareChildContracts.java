@@ -50,7 +50,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			int row = 1;
 			table.add(getInformationTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
-			if (getBusiness().hasFutureContracts(getSession().getApplicationID())) {
+			if (getBusiness().hasFutureContracts(getSession().getApplicationID()) && getBusiness().hasActiveContract(getSession().getApplicationID())) {
 				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.add(getRemoveContractsForm(), 1, row++);
 				table.setHeight(row++, 6);

@@ -70,6 +70,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_CANCEL_CONTRACT = 11;
 	public static final int METHOD_CHANGE_OFFER = 12;
 	public static final int METHOD_RETRACT_OFFER = 13;
+	public static final int METHOD_ALTER_VALID_FROM_DATE = 14;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -86,6 +87,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_DELETE_GROUP = 12;
 	public static final int ACTION_RETRACT_OFFER = 13;
 	public static final int ACTION_REMOVE_FUTURE_CONTRACTS = 14;
+	public static final int ACTION_CREATE_CONTRACT_FOR_BANKID = 15;
+	public static final int ACTION_ALTER_VALID_FROM_DATE = 16;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -150,6 +153,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case ACTION_REMOVE_FUTURE_CONTRACTS :
 				removeFutureContracts(iwc);
 				break;
+			case ACTION_CREATE_CONTRACT_FOR_BANKID :
+				createContractForBankID(iwc);
+				break;
+			case ACTION_ALTER_VALID_FROM_DATE :
+				alterValidFromDate(iwc);
+				break;
 		}
 
 		if (_method != -1)
@@ -203,7 +212,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_CHANGE_DATE :
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")));
-				contentTable.add(getChangeDateForm());
+				contentTable.add(getChangeDateForm(false));
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")));
@@ -239,6 +248,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_RETRACT_OFFER :
 				headerTable.add(getHeader(localize("child_care.retract_offer", "Retract offer")));
 				contentTable.add(getRetractOfferForm(iwc));
+				break;
+			case METHOD_ALTER_VALID_FROM_DATE :
+				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date")));
+				contentTable.add(getChangeDateForm(true));
 				break;
 		}
 		
@@ -368,7 +381,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getChangeDateForm() throws RemoteException {
+	private Table getChangeDateForm(boolean isAlteration) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -414,8 +427,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
 
-		SubmitButton reject = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_date", "Change date"), PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_DATE)));
-		table.add(reject, 1, row);
+		SubmitButton changeDate = null;
+		if (isAlteration)
+			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_placement_date", "Change placement date"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_VALID_FROM_DATE)));
+		else
+			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_date", "Change date"), PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_DATE)));
+		table.add(changeDate, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
@@ -720,6 +737,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		close();
 	}
 
+	private void alterValidFromDate(IWContext iwc) throws RemoteException {
+		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
+		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), iwc.getCurrentLocale(), iwc.getCurrentUser());
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+
 	private void makeOffer(IWContext iwc) throws RemoteException {
 		String messageHeader = localize("child_care.application_accepted_subject", "Child care application accepted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
@@ -764,6 +789,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
+		getBusiness().assignContractToApplication(_applicationID, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+
+		close();
+	}
+	
+	private void createContractForBankID(IWContext iwc) throws RemoteException {
 		getBusiness().assignContractToApplication(_applicationID, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		close();

@@ -314,11 +314,23 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
-				GenericButton createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), -1);
-				createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
+				GenericButton createContract = null;
+				GenericButton disabledCreateContract = null;
+				
+				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
+					createContract = getButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID"), -1);
+					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT_FOR_BANKID);
 
-				GenericButton disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
-				disabledCreateContract.setDisabled(true);
+					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
+					disabledCreateContract.setDisabled(true);
+				}
+				else {
+					createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), -1);
+				  createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
+
+					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
+				  disabledCreateContract.setDisabled(true);
+				}
 
 				GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 
