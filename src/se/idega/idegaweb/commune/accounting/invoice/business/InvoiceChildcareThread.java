@@ -244,7 +244,12 @@ public class InvoiceChildcareThread extends BillingThread{
 					
 					//Moved up for better logging
 					//Get all the parameters needed to select the correct contract
-					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
+					SchoolClassMember schoolClassMember = null;
+					try{
+						schoolClassMember = contract.getSchoolClassMember();
+					}catch (NullPointerException e){
+						throw new NoSchoolClassMemberException("");
+					}
 					User child = schoolClassMember.getStudent();
 //					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
@@ -472,6 +477,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					regularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
 					log.info("done calling regularInvoiceForChild");
 					
+				}catch (NoSchoolClassMemberException e1) {
+					e1.printStackTrace();
+						errorRelated.append(e1);
+						createNewErrorMessage(errorRelated,"invoice.SchoolClassMemberNotSetForContract");
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
