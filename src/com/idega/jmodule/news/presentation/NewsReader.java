@@ -485,10 +485,10 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
   if(isAdmin) {
     Table links = new Table(2,1);
-    Link newsEdit = new Link(change,"/news/editor.jsp");
+    Link newsEdit = new Link(change,newsEditorURL);
     newsEdit.addParameter("news_id",newsId);
 
-    Link newsDelete = new Link(delete,"/news/editor.jsp");
+    Link newsDelete = new Link(delete,newsEditorURL);
     newsDelete.addParameter("news_id",newsId);
     newsDelete.addParameter("mode","delete");
 
