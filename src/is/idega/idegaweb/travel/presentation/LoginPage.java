@@ -134,20 +134,28 @@ public class LoginPage extends TravelManager {
         innerTable.setAlignment(2,2,"center");
 
 
-        Text rightHeader = new Text(iwrb.getLocalizedString("travel.usage_rules","Usage rules"));
+        Text rightHeader = new Text(iwrb.getLocalizedString("travel.usage_rules_header","Usage rules"));
           rightHeader.setBold();
           rightHeader.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        Text rightContent = new Text("Kerfi þetta er einungi heimilað aðilum innan ferðaþjónustu.");
+        Text rightContent = new Text(iwrb.getLocalizedString("travel.usage_rules_1","Kerfi þetta er einungi heimilað aðilum innan ferðaþjónustu."));
           rightContent.addBreak();
           rightContent.addBreak();
-          rightContent.addToText("Misnotkun varðar lög blablabla");
+          String string = iwrb.getLocalizedString("travel.usage_rules_2","Misnotkun varðar lög blablabla");
+          if (string.length() > 1) {
+          rightContent.addToText(string);
           rightContent.addBreak();
           rightContent.addBreak();
-          rightContent.addToText("hérna vantar eitthvað djúsi stuff til að skrifa og hafa töff. Kannski ég fái einhvern annan í það :)");
+          }
+          string = iwrb.getLocalizedString("travel.usage_rules_3","hérna vantar eitthvað djúsi stuff til að skrifa og hafa töff. Kannski ég fái einhvern annan í það :)");
+          if (string.length() > 1) {
+          rightContent.addToText(string);
           rightContent.addBreak();
           rightContent.addBreak();
-          rightContent.addToText("Hafir þú gleymt notandanafni og/eða lykilorði hafðu þá samband við fsdfjli");
-
+          }
+          string = iwrb.getLocalizedString("travel.usage_rules_4","Hafir þú gleymt notandanafni og/eða lykilorði hafðu þá samband við fsdfjli");
+          if (string.length() > 1) {
+          rightContent.addToText(string);
+          }
           rightContent.setFontSize(Text.FONT_SIZE_7_HTML_1);
 
         Table rightTextTable = new Table(1,2);
