@@ -917,7 +917,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
           }
 
         }else {
-          ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDayHome.class);
+          ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
           sDayHome.deleteService(serviceId);
         }
       }else {
