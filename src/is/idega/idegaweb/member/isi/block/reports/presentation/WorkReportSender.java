@@ -109,16 +109,27 @@ public class WorkReportSender extends WorkReportSelector {
 		String accountResponse = "";
 		
 		if(accountForEmpty){
-			accountResponse = iwrb.getLocalizedString("workreportsender.account_exist_for_empty_division","Account entries exist for an empty division!");
+			accountResponse = iwrb.getLocalizedString("workreportsender.account_exist_for_empty_division","Account entries exist for an empty division! ");
+			report.append(accountResponse);
 		}
-		
-		report.append(accountResponse);
 		
 		//b. is there an account missing for a division with members
 		boolean accountMissing = getWorkReportBusiness(iwc).isYearlyAccountMissingForADivisionWithMembers(workReportId);
+		String accountMissingResponse = "";
+		
+		if(accountMissing){
+			accountMissingResponse = iwrb.getLocalizedString("workreportsender.account_missing_for_a_division_with_members","Account entries are missing for a division!");
+			report.append(accountMissingResponse);
+		}
+		
 		//c. is the board info missing for a division with members or account info
 		boolean boardMissing = getWorkReportBusiness(iwc).isBoardMissingForDivisionWithMembersOrYearlyAccount(workReportId);
-	
+		String boardMissingResponse = "";
+		
+		if(boardMissing){
+			boardMissingResponse = iwrb.getLocalizedString("workreportsender.board_info_is_missing_for_a_division","Board info is missing for a division!");
+			report.append(boardMissingResponse);
+		}
 		
 		
 		/////////
