@@ -59,11 +59,8 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 	productCatalog.sortList(catProducts);
 
 	int numberOfRows = ( catProducts.size() / productCatalog._numberOfColumns ) + firstRow;
-	System.out.println("NumberOfRows: "+catProducts.size() / productCatalog._numberOfColumns);
-	System.out.println("NumberOfRows (modulus): "+catProducts.size() % productCatalog._numberOfColumns);
 	if ( (catProducts.size() % productCatalog._numberOfColumns) > 0 )
 	  numberOfRows++;
-	System.out.println("NumberOfRows (final): "+numberOfRows);
 
 	for (int j = 0; j < catProducts.size(); j++) {
 	  try {
@@ -86,8 +83,12 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 
 	  ++row;
 	}
-	System.out.println("Resetting column");
 	column = 1;
+
+	int percent = 100 / productCatalog._numberOfColumns;
+	for ( int a = 1; a <= productCatalog._numberOfColumns; a++ ) {
+	  table.setWidth(a,String.valueOf(percent)+"%");
+	}
       }
       catch (Exception e) {
 	e.printStackTrace(System.err);
