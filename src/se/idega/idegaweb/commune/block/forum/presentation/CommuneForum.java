@@ -138,7 +138,7 @@ public class CommuneForum extends Forum {
 						throw new RuntimeException(e.getMessage());
 					}
 					
-					if (isModerator) {
+					if (isModerator || iwc.hasEditPermission(this)) {
 						table.setColumns(7);
 						Link editTopic = new Link(_iwrb.getLocalizedString("edit_topic","Edit"));
 						editTopic.setAsImageButton(true);
