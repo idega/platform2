@@ -264,9 +264,9 @@ public class PhoneFileHandler {
       catch(FileNotFoundException fnfe){
         fnfe.printStackTrace();
       }
-      catch(IOException fnfe){
+      /*catch(IOException fnfe){
         fnfe.printStackTrace();
-      }
+      }*/
     }
     else{
       System.err.println("no accounts behind phonenumbers");
@@ -463,9 +463,9 @@ public class PhoneFileHandler {
       catch(FileNotFoundException fnfe){
         fnfe.printStackTrace();
       }
-      catch(IOException fnfe){
+      /*catch(IOException fnfe){
         fnfe.printStackTrace();
-      }
+      }*/
     }
     else{
       System.err.println("no accounts behind phonenumbers");
