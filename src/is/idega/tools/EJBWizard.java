@@ -178,7 +178,7 @@ public class EJBWizard {
       length+=3;
     }
     else{
-      length+=2;
+      length+=1;
     }
     String[] returningMethods = new String[length];
     int i = 0;
@@ -213,14 +213,8 @@ public class EJBWizard {
     }
 
 
-    String codeString =" public "+introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
-    codeString+="{\n";
-    codeString+="  return ("+introspector.getShortName()+") super.findByPrimaryKeyIDO(id);";
-    codeString+="\n }\n\n";
-    returningMethods[i]=codeString;
-    i++;
 
-    codeString =" public "+introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
+    String codeString =" public "+introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
     codeString+="{\n";
     codeString+="  return ("+introspector.getShortName()+") super.findByPrimaryKeyIDO(pk);";
     codeString+="\n }\n\n";
@@ -228,6 +222,15 @@ public class EJBWizard {
     i++;
 
     if(legacyIDO){
+
+
+      codeString =" public "+introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
+      codeString+="{\n";
+      codeString+="  return ("+introspector.getShortName()+") super.findByPrimaryKeyIDO(id);";
+      codeString+="\n }\n\n";
+      returningMethods[i]=codeString;
+      i++;
+
       codeString =" public "+introspector.getShortName()+" findByPrimaryKeyLegacy(int id) throws java.sql.SQLException";
       codeString+="{\n";
       codeString+="\ttry{\n";

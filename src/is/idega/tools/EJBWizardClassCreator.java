@@ -180,11 +180,7 @@ public class EJBWizardClassCreator {
           codeString+=";\n";
         }
         if(ejbWizard.finderMethodsAllowed()){
-          codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
-          if(throwRemoteExceptionsInHome()){
-            codeString+=", java.rmi.RemoteException";
-          }
-          codeString+=";\n";
+
           codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
           if(throwRemoteExceptionsInHome()){
             codeString+=", java.rmi.RemoteException";
@@ -192,6 +188,13 @@ public class EJBWizardClassCreator {
           codeString+=";\n";
 
           if(legacyIDO){
+
+            codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
+            if(throwRemoteExceptionsInHome()){
+              codeString+=", java.rmi.RemoteException";
+            }
+            codeString+=";\n";
+
             codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKeyLegacy(int id) throws java.sql.SQLException";
             if(throwRemoteExceptionsInHome()){
               codeString+=", java.rmi.RemoteException";
