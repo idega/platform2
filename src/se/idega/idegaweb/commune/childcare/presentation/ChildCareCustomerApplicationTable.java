@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.83 2005/01/28 08:14:01 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.84 2005/01/28 13:13:30 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -594,6 +594,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				cancelledContractStillActive &= (new Date(System.currentTimeMillis())).getTime() < activeApplication.getOfferValidUntil().getTime();
 			}
 			cancelledContractStillActive |= activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusWaiting();
+			cancelledContractStillActive |= activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusParentTerminated();
 			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady() || cancelledContractStillActive) {
 				GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
 				careTimePopup.setWindowToOpen(ChildCareWindow.class);
