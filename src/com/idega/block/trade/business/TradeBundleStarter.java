@@ -31,7 +31,9 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
     bundle_ = bundle;
     EventTimer timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
     timer.addActionListener(this);
-    timer.start();
+    //Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
+    // -- Fix for working properly on Interebase with entity-auto-create-on.
+    timer.start(3*60*1000);
     System.out.println("Trade bundle starter: starting");
   }
 
