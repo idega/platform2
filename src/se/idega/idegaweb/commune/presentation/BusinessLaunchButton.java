@@ -1,5 +1,5 @@
 /*
- * $Id: BusinessLaunchButton.java,v 1.3 2003/06/02 22:59:22 palli Exp $
+ * $Id: BusinessLaunchButton.java,v 1.4 2003/06/02 23:11:55 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,9 @@ public class BusinessLaunchButton extends ChildCareBlock {
 	protected void control(IWContext iwc) {
 		if (iwc.isParameterSet(SUBMIT)) {
 			getBusiness().convertOldQueue();
+		}
+		else if (iwc.isParameterSet(SUBMIT2)) {
+			getBusiness().addMissingGrantedChecks();
 		}
 		
 		displayForm();			
