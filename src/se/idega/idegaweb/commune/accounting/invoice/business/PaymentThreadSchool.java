@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/14 16:30:04 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/14 18:21:20 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.51 $
+ * @version $Revision: 1.52 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -117,11 +117,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 					//Only look at those not "payment by invoice"
 					//Check if it is private or in Nacka
-					if (school.getCommune().getIsDefault() || (provider.getProviderTypeId() == privateType && !provider.getPaymentByInvoice())) {
+					final boolean schoolIsInDefaultCommune = school.getCommune().getIsDefault();
+					final boolean schoolIsPrivate = provider.getProviderTypeId() == privateType;
+					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
 						for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
 							try{
 								SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
-								craetePaymentForSchoolClassMember(regBus, provider, schoolClassMember);
+								createPaymentForSchoolClassMember (regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
 							} catch(NullPointerException e){
 								e.printStackTrace();
 								createNewErrorMessage("invoice.PaymentSchool","invoice.nullpointer");
@@ -215,16 +217,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 	
-	private void craetePaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember) 
+	private void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
 			throws RemoteException, FinderException, RegulationException, EJBException, PostingException, CreateException, IDOLookupException {
-		School school;
-		
 		errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
         
 		dispTime("Found " + schoolClassMember.getStudent().getName());
-		if (getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent())) {
+		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
+		if (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate) {
 			ArrayList conditions = getConditions (schoolClassMember);
-			school = schoolClassMember.getSchoolClass().getSchool();
+			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append(
 			   "Category "+ category.getCategory()+"<br>"
 			   + "PaymentFlowConstant.OUT "+ PaymentFlowConstant.OUT+"<br>"
@@ -558,7 +559,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	}
 
 	private Collection getSchools() throws IDOLookupException, EJBException, FinderException, CreateException, RemoteException {
-		return getSchoolHome().findAllInHomeCommuneByCategory(category);
+		return getSchoolHome().findAllByCategory(category);
 	}
 
 	private Collection getSchoolClassMembers(School school) throws FinderException, RemoteException, EJBException {
