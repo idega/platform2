@@ -245,7 +245,7 @@ public class DynamicReportDesign {
 	 */
 	private void createPageFooter() {
 		PageFooter pFooter = new PageFooter();
-		pFooter.setHeight(15);
+		pFooter.setHeight(60);
 		//pFooter.setIsSplitAllowed(true);
 			StaticText sText = new StaticText();
 				ReportElement rElement = new ReportElement(0,0,40,15);
