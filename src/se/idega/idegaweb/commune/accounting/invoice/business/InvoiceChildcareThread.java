@@ -121,7 +121,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						//No header was found so we have to create it
 						invoiceHeader = getInvoiceHeaderHome().create();
 						//Fill in all the field available at this times
-						invoiceHeader.setSchoolCagtegoryID(category);
+						invoiceHeader.setSchoolCategoryID(category);
 						invoiceHeader.setPeriod(startPeriod.getDate());
 						invoiceHeader.setCustodianId(custodian);
 						invoiceHeader.setDateCreated(currentDate);
@@ -261,7 +261,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						//No header was found so we have to create it
 						invoiceHeader = getInvoiceHeaderHome().create();
 						//Fill in all the field available at this times
-						invoiceHeader.setSchoolCagtegoryID(category);
+						invoiceHeader.setSchoolCategoryID(category);
 						invoiceHeader.setPeriod(startPeriod.getDate());
 						invoiceHeader.setCustodianId(custodian);
 						invoiceHeader.setDateCreated(currentDate);

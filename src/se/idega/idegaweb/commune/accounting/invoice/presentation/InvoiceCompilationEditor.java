@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/04 16:50:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/05 14:46:56 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -49,6 +49,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
+    private static final String CREATE_INVOICE_COMPILATION_DEFAULT = "Skapa fakturaunderlag";
+    private static final String CREATE_INVOICE_COMPILATION_KEY = PREFIX + "create_invoice_compilation";
     private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
     private static final String DELETE_INVOICE_COMPILATION_DEFAULT = "Ta bort fakturaunderlag";
@@ -66,6 +68,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_ADDRESS_KEY = PREFIX + "invoice_address";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader är nu borttagna";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_KEY = PREFIX + "invoice_compilation_and_records_removed";
+    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlag är nu skapat";
+    private static final String INVOICE_COMPILATION_CREATED_KEY = PREFIX + "invoice_compilation_created";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
     private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
@@ -95,6 +99,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
     private static final String SEARCH_DEFAULT = "Sök";
+    private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
+    private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "personal_id";
@@ -112,14 +118,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
 
-
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
-            ACTION_NEW_INVOICE_RECORD = 2,
+            ACTION_NEW_RECORD = 2,
             ACTION_DELETE_COMPILATION = 3,
             ACTION_DELETE_RECORD = 4,
-            ACTION_SHOW_RECORD = 5;
+            ACTION_SHOW_RECORD = 5,
+            ACTION_SHOW_NEW_COMPILATION_FORM = 6,
+            ACTION_NEW_COMPILATION = 7;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -139,6 +146,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             } catch (final Exception dummy) {
                 // do nothing, actionId is default
             }
+
 			switch (actionId) {
 				case ACTION_SHOW_COMPILATION:
 					showCompilation (context);
@@ -152,17 +160,118 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     deleteRecord (context);
                     break;
 
+                case ACTION_SHOW_NEW_COMPILATION_FORM:
+                    showNewCompilationForm (context);
+                    break;
+
+                case ACTION_NEW_COMPILATION:
+                    newCompilation (context);
+                    break;
+
                 default:
                     showCompilationList (context);
 					break;					
 			}
+
+            displayRedText
+                    ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
+                     + "<li>skapa manuell faktura ifrån 'visa underlagslista'"
+                     + "<li>klicka på faktureringsrad och se detaljer"
+                     + "<li>skapa justeringsrad till en faktura"
+                     + "<li>se faktureringsunderlag i pdf"
+                     + "<li>tillåt inte negativt taxbelopp mm"
+                     + "<li>uppdatera totalbelopp och momsers. vid justering"
+                     + "<li>visa i sökrutorna om man hittar exakt en person"
+                     + "<li>sök på huvudverksamhet - bara barnomsorg"
+                     + "<li>felhantering för periodinmatning, t ex  '1313'"
+                     + "<li>högerjustera totalAmount och andra tal"
+                     + "<li>skriv ut personnummer som yymmdd-xxxx"
+                     + "<li>inte skriva ut null på egen kontering/motkontering"
+                     + "<li>visa amount utan decimaler"
+                     + "</ol>\n\n(" + actionId + ')');
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
 		}
-
-        displayRedText (null, "<p>Denna funktion är inte färdig. Bland annat så återstår:<ol><li>skapa manuell faktura ifrån 'visa underlagslista'<li>klicka på faktureringsrad och se detaljer<li>skapa justeringsrad till en faktura<li>se faktureringsunderlag i pdf<li>tillåt inte negativt taxbelopp mm<li>uppdatera totalbelopp och momsersättning vid justering</ol>\n\n");
 	}
+
+    private void newCompilation (final IWContext context)
+        throws RemoteException, javax.ejb.CreateException {
+        final String operationalField = getSession ().getOperationalField ();
+        final Date period
+                = getPeriodFromString (context.getParameter (PERIOD_KEY));
+        final int custodianId = Integer.parseInt (context.getParameter
+                                                  (INVOICE_RECEIVER_KEY));
+        final User currentUser = context.getCurrentUser ();
+        final String ownPosting = context.getParameter (OWN_POSTING_KEY);
+        final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
+        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                .getServiceInstance (context, InvoiceBusiness.class);
+        business.createInvoiceHeader
+                (operationalField, currentUser, custodianId, doublePosting,
+                 ownPosting, new java.sql.Date (period.getTime ()));
+        final Table table = getConfirmTable
+                (INVOICE_COMPILATION_CREATED_KEY,
+                 INVOICE_COMPILATION_CREATED_DEFAULT);
+        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
+                              CREATE_INVOICE_COMPILATION_DEFAULT, table));
+    }
 	
+    private void showNewCompilationForm (final IWContext context)
+        throws RemoteException {
+        final UserSearcher searcher = createSearcher ();
+        final Table table = createTable (6);
+        setColumnWidthsEqual (table);
+        int row = 2; // first row is reserved for setting column widths
+        addOperationFieldDropdown (table, row++);
+        addUserSearcherForm (table, row++, context, searcher);
+        table.setHeight (row++, 12);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM + "",
+                                    SEARCH_INVOICE_RECEIVER_KEY,
+                                    SEARCH_INVOICE_RECEIVER_DEFAULT), 1, row++);
+        if (null != searcher.getUser ()) {
+            // exactly one user found - display users invoice compilation list
+            table.setHeight (row++, 12);
+            final User user = searcher.getUser ();
+            int col = 1;
+            addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
+                            INVOICE_RECEIVER_DEFAULT, ":");
+            final String userInfo = getUserName (user) + " ("
+                    + user.getPersonalID () + "), " + getAddressString (user);
+            table.mergeCells (2, row, table.getColumns (), row);
+            table.add (new HiddenInput (INVOICE_RECEIVER_KEY,
+                                        user.getPrimaryKey () + ""), col, row);
+            addSmallText(table, userInfo, col++, row++);
+            col = 1;
+            addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
+            final Date now = new Date ();
+            table.add (getStyledInput (PERIOD_KEY, periodFormatter.format
+                                       (now)), col++, row);
+            addSmallHeader (table, col++, row, OWN_POSTING_KEY,
+                            OWN_POSTING_DEFAULT, ":");
+            table.add (getStyledInput (OWN_POSTING_KEY), col++, row);
+            addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
+                            DOUBLE_POSTING_DEFAULT, ":");
+            table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row);
+            table.setHeight (row++, 12);
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getSubmitButton (ACTION_NEW_COMPILATION + "",
+                                        CREATE_INVOICE_COMPILATION_KEY,
+                                        CREATE_INVOICE_COMPILATION_DEFAULT), 1,
+                       row++);
+        } else if (null != searcher.getUsersFound ()) {
+            table.mergeCells (1, row, table.getColumns (), row);            
+            table.add (searcher, 1, row++);
+        }
+        final Form form = new Form ();
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        final Table outerTable = createTable (1);
+        outerTable.add (form, 1, 1);
+        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
+                              CREATE_INVOICE_COMPILATION_DEFAULT,  outerTable));
+    }
+
     private void deleteCompilation (final IWContext context)
         throws RemoteException {
         final int headerId = Integer.parseInt (context.getParameter
@@ -198,10 +307,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             final InvoiceRecordHome home = business.getInvoiceRecordHome ();
             final InvoiceRecord record
                     = home.findByPrimaryKey (new Integer (recordId));
+            final String headerId = record.getInvoiceHeader () + "";
             business.removeInvoiceRecord (record);
+            final String [][] parameters = getHeaderLinkParameters
+                    (ACTION_SHOW_COMPILATION, headerId);
             final Table table = getConfirmTable
                     (INVOICE_RECORD_REMOVED_KEY,
-                     INVOICE_RECORD_REMOVED_DEFAULT);
+                     INVOICE_RECORD_REMOVED_DEFAULT, parameters);
             add (createMainTable (INVOICE_RECORD_KEY,
                                   INVOICE_RECORD_DEFAULT, table));
         } catch (Exception e) {
@@ -215,13 +327,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     
     private Table getConfirmTable (final String key,
                                    final String defaultString) {
+        final String [][] noParameters = {};
+        return getConfirmTable (key, defaultString, noParameters);
+    }
+    
+    private Table getConfirmTable (final String key, final String defaultString,
+                                   final String [][] parameters) {
         final Table table = createTable (1);
         int row = 1;
         table.setHeight (row++, 24);
         table.add (new Text (localize (key, defaultString)), 1, row++);
         table.setHeight (row++, 12);
-        table.add (getSmallLink (localize (GO_BACK_KEY, GO_BACK_DEFAULT)), 1,
-                   row++);
+        final String goBackText = localize (GO_BACK_KEY, GO_BACK_DEFAULT);
+        final Link link = createSmallLink (goBackText, parameters);
+        table.add (link, 1, row++);
         return table;
     }
     
@@ -290,7 +409,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                    row++);
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getSubmitButton (ACTION_NEW_INVOICE_RECORD + "", NEW_KEY,
+        table.add (getSubmitButton (ACTION_NEW_RECORD + "", NEW_KEY,
                                     NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
@@ -311,7 +430,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final UserSearcher searcher = createSearcher ();
         final Table table = createTable (6);
         setColumnWidthsEqual (table);
-        int row = 2;
+        int row = 2; // first row is reserved for setting column widths
         addOperationFieldDropdown (table, row++);
         addUserSearcherForm (table, row++, context, searcher);
         table.mergeCells (2, row, table.getColumns () - 1, row);
@@ -340,8 +459,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 table.add (new Text ("no compilations found for this custodian"
                                      + " or child!"), 1, row++);
             }
+        } else if (null != searcher.getUsersFound ()) {
+            table.mergeCells (1, row, table.getColumns (), row);            
+            table.add (searcher, 1, row++);
         }
-
+        table.setHeight (row++, 12);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM + "",
+                                    NEW_KEY, NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
@@ -531,7 +656,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return mainTable;
     }
 
-    void addUserSearcherForm
+    private void addUserSearcherForm
         (final Table table, final int row, final IWContext context,
          final UserSearcher searcher) throws RemoteException {
         int col = 1;
@@ -554,7 +679,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                    (context, USERSEARCHER_LASTNAME_KEY), col++, row);
     }
 
-    void addPeriodForm (final Table table, final int row,
+    private void addPeriodForm (final Table table, final int row,
                         final IWContext context) {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
@@ -565,11 +690,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private TextInput getUserSearcherInput (final IWContext context,
                                             final String key) {
+        return getStyledInput (key, context.getParameter (key));
+    }
+
+    private TextInput getStyledInput (final String key) {
+        return getStyledInput (key, null);
+    }
+
+    private TextInput getStyledInput (final String key, final String value) {
         final TextInput input = (TextInput) getStyledInterface
                 (new TextInput (key));
         input.setLength (12);
-        if (context.isParameterSet (key)) {
-            input.setValue (context.getParameter (key));
+        if (null != value) {
+            input.setValue (value);
         }
         return input;
     }
@@ -637,7 +770,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
-                                         (action, localize (key, defaultName)));
+                                         (localize (key, defaultName),
+                                          ACTION_KEY, action));
     }
 
     private void addOperationFieldDropdown
@@ -786,8 +920,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private void displayRedText (final String key, final String defaultString) {
         final String localizedString = key != null
                 ? localize (key, defaultString) : defaultString;
-        final Text text
-                = new Text ('\n' + localizedString + '\n');
+        displayRedText (localizedString);
+    }
+
+    private void displayRedText (final String string) {
+        final Text text = new Text ('\n' + string + '\n');
         text.setFontColor ("#ff0000");
         add (text);
     }

@@ -93,10 +93,10 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	}
 
 
-	public void setSchoolCagtegoryID(int i) {
+	public void setSchoolCategoryID(int i) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
 	}
-	public void setSchoolCagtegoryID(SchoolCategory sc) {
+	public void setSchoolCategoryID(SchoolCategory sc) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, sc);
 	}
 	public void setPeriod(Date d) {

@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.ejb.CreateException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -39,10 +40,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/04 18:39:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/05 14:46:56 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -242,6 +243,32 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             return null != contract ? contract.getChild () : null;
         } catch (final FinderException e) {
             return null;
+        }
+    }
+
+    public void createInvoiceHeader
+        (final String schoolCategory, final User createdBy,
+         final int custodianId, final String doublePosting,
+         final String ownPosting, final Date period) throws CreateException {
+        try {
+
+            final InvoiceHeader header = getInvoiceHeaderHome ().create ();
+            System.err.println ("school category = " + schoolCategory);
+
+            final String createdBySignature
+                    = createdBy.getFirstName ().charAt (0)
+                    + "" + createdBy.getLastName ().charAt (0);
+            header.setCreatedBy (createdBySignature);
+            header.setCustodianId (custodianId);
+            header.setDateCreated (new Date (new java.util.Date ().getTime()));
+            header.setDoublePosting (doublePosting);
+            header.setOwnPosting (ownPosting);
+            header.setPeriod (period);
+            //            header.setStatus (ConstantStatus.PRELIMINARY);
+            header.store ();
+        } catch (RemoteException e) {
+            e.printStackTrace ();
+            throw new CreateException (e.getMessage ());
         }
     }
 
