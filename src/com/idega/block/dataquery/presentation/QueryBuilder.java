@@ -24,7 +24,6 @@ import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
 import com.idega.block.dataquery.business.QueryXMLConstants;
-import com.idega.block.media.presentation.FileChooser;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.data.IWTreeNode;
@@ -62,17 +61,20 @@ public class QueryBuilder extends Block {
 	private static final String IWBUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	private QueryHelper helper = null;
 	private boolean hasEditPermission = false, hasTemplatePermission = false, hasCreatePermission = false;
-	;
+	
+	//thomas added:
+	public static final String SHOW_WIZARD = "show_wizard";
+	
 	private static final String PARAM_STEP = "step";
 	private static final String PARAM_NEXT = "next";
 	private static final String PARAM_LAST = "last";
 	private static final String PARAM_FINAL = "final";
-	private static final String PARAM_CANCEL = "cancel";
-	private static final String PARAM_SAVE = "save";
+	public static final String PARAM_CANCEL = "cancel";
+	public static final String PARAM_SAVE = "save";
 	private static final String PARAM_ADD = "add";
 	private static final String PARAM_DROP = "drop";
 	private static final String PARAM_DYNAMIC = "dynamic";
-	private static final String PARAM_QUIT = "quit";
+	public static final String PARAM_QUIT = "quit";
 	private static final String PARAM_SOURCE = "source_entity";
 	private static final String PARAM_RELATED = "related_entity";
 	private static final String PARAM_FIELDS = "entity_fields";
@@ -80,7 +82,8 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
 	private static final String PARAM_COND_ENTITY = "entity";
-	public static final String PARAM_FOLDER_ID = "qb_fid";
+	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
+	public static final String PARAM_LAYOUT_FOLDER_ID ="qb_layoutId";
 	public static final String PARAM_QUERY_ID = "qb_qid";
 	public static final String PARAM_QUERY_NAME = "q_name";
 	private static final String PERM_TEMPL_EDIT = "template";
@@ -104,12 +107,33 @@ public class QueryBuilder extends Block {
 	private boolean allowFunctions = true;
 	private QuerySession sessionBean;
 	private String defaultDynamicPattern = "";
+	
+	public static void cleanSession(IWContext iwc)	{
+		try {
+			IBOLookup.removeSessionInstance(iwc, QuerySession.class);
+		}
+		catch (RemoteException ex) {
+			String message =
+				"[QueryBuilder]: Can't retrieve IBOLookup.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException(message);
+		}
+		catch (RemoveException rmEx) {
+			String message =
+				"[WorkReportBoardMemberEditor]: Can't remove SessionBean.";
+			System.err.println(message + " Message is: " + rmEx.getMessage());
+			rmEx.printStackTrace(System.err);
+		}
+	}
+		
+	
 	public void control(IWContext iwc) {
 		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
 			try {
 
-				if (iwc.isParameterSet(PARAM_FOLDER_ID)) {
-					queryFolderID = Integer.parseInt(iwc.getParameter(PARAM_FOLDER_ID));
+				if (iwc.isParameterSet(PARAM_QUERY_FOLDER_ID)) {
+					queryFolderID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_FOLDER_ID));
 				}
 				if (iwc.isParameterSet(PARAM_QUERY_ID)) {
 					queryID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_ID));
@@ -160,12 +184,20 @@ public class QueryBuilder extends Block {
 				// thomas changed: queryFolder  id is always set
 				// if (queryFolderID > 0 && step < 5)
 				if (queryFolderID > 0) {
-					form.addParameter(PARAM_FOLDER_ID, queryFolderID);
+					form.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
 				}
 				if (queryID > 0)
 					form.addParameter(PARAM_QUERY_ID, queryID);
 				table.add(getButtons(step), 1, 3);
 				form.addParameter(PARAM_STEP, step);
+				// thomas added:
+				// this parameter serves as a flag for the outer window to continue showing the wizard
+				// the outer window checks also if PARAM_CANCEL or PARAM_QUIT exist
+				form.addParameter(SHOW_WIZARD, SHOW_WIZARD);
+				if (iwc.isParameterSet(PARAM_LAYOUT_FOLDER_ID)) {
+					String layoutFolderId = iwc.getParameter(PARAM_LAYOUT_FOLDER_ID);
+					form.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
+				}
 				form.add(table);
 				add(form);
 			}
@@ -191,7 +223,9 @@ public class QueryBuilder extends Block {
 		if (iwc.isParameterSet(PARAM_QUIT)) {
 			//if(closeParentWindow)
 			// try to close parent window
-			IBOLookup.removeSessionInstance(iwc, QuerySession.class);
+			// thomas: replaced by staic method
+			// IBOLookup.removeSessionInstance(iwc, QuerySession.class);
+			QueryBuilder.cleanSession(iwc);
 			step = 1;
 		}
 		else if (iwc.isParameterSet(PARAM_CANCEL)) {
@@ -512,7 +546,7 @@ public class QueryBuilder extends Block {
 			SelectionBox select = new SelectionBox(PARAM_SOURCE);
 			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 			select.setHeight("20");
-			select.setWidth("150");
+			select.setWidth("300");
 			Iterator iter = sourceEntities.iterator();
 			while (iter.hasNext()) {
 				QueryEntityPart element = (QueryEntityPart) iter.next();
@@ -628,21 +662,26 @@ public class QueryBuilder extends Block {
 	}
 	
 	private PresentationObject getFunctionTable(){
-		Table table = new Table(7,2);
+		Table table = new Table(8,2);
 		int col = 1;
-		table.mergeCells(1,1,7,1);
+		table.mergeCells(1,1,8,1);
 		table.add(getMsgText(iwrb.getLocalizedString("step_3_choose_function","Select function to apply on selected fields in the left box, and new display name if required")),1,1);
 		TextInput display = new TextInput("display");
 		SubmitButton count = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count","Count"),PARAM_FUNCTION,QueryXMLConstants.FUNC_COUNT);
-		SubmitButton concat = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.concat","Concat"),PARAM_FUNCTION,QueryXMLConstants.FUNC_CONCAT);
+		// concat not supported yet
+		//SubmitButton concat = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.concat","Concat"),PARAM_FUNCTION,QueryXMLConstants.FUNC_CONCAT);
 		SubmitButton max = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.max","Max"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MAX);
 		SubmitButton min = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.min","Min"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MIN);
+		SubmitButton sum = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.sum","Sum"),PARAM_FUNCTION,QueryXMLConstants.FUNC_SUM);
+		SubmitButton avg = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.avg","Avg"),PARAM_FUNCTION,QueryXMLConstants.FUNC_AVG);
 		SubmitButton alias = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.alias","Alias"),PARAM_FUNCTION,QueryXMLConstants.FUNC_ALIAS);
 		table.add(display,col++,2);
 		table.add(count,col++,2);
-		table.add(concat,col++,2);
+//		table.add(concat,col++,2);
 		table.add(max,col++,2);
 		table.add(min,col++,2);
+		table.add(sum, col++,2);
+		table.add(avg,col++,2);
 		table.add(alias,col++,2);
 		return table;
 	}
@@ -812,6 +851,8 @@ public class QueryBuilder extends Block {
 			SubmitButton last =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_previous", "<< previous"), PARAM_LAST, "true");
 			T.add(last, 1, 1);
+		}
+		if (currentStep > 0) {
 			SubmitButton cancel =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_cancel", "cancel"), PARAM_CANCEL, "true");
 			T.add(cancel, 4, 1);
@@ -962,6 +1003,11 @@ public class QueryBuilder extends Block {
 	public void setQueryFolderID(int i) {
 		queryFolderID = i;
 	}
+
+	public int getQueryId()	{
+		return queryID;
+	}
+
 
 	private DropdownMenu getConditionTypeDropdown() {
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_TYPE);
