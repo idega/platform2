@@ -28,8 +28,14 @@ import com.idega.projects.golf.service.*;
 import com.idega.util.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class HandicapOverview extends JModuleObject {
+
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 private String member_id;
 private boolean isAdmin = false;
@@ -62,6 +68,8 @@ private String headerTextColor = "#FFFFFF";
   }
 
   public void main(ModuleInfo modinfo) throws Exception {
+
+        iwrb = getResourceBundle(modinfo);
 
         this.isAdmin=isAdministrator(modinfo);
 
@@ -109,40 +117,40 @@ private String headerTextColor = "#FFFFFF";
 			myTable.setRowAlignment(1,"center");
 			myTable.setRowVerticalAlignment(1,"bottom");
 
-			Text dags = new Text("Dags");
+			Text dags = new Text(iwrb.getLocalizedString("handicap.date","date"));
 				dags.setFontColor(headerTextColor);
 				dags.setFontSize("1");
-			Text vollur = new Text("Völlur");
+			Text vollur = new Text(iwrb.getLocalizedString("handicap.course","course"));
 				vollur.setFontColor(headerTextColor);
 				vollur.setFontSize("1");
-			Text mot = new Text("Mót");
+			Text mot = new Text(iwrb.getLocalizedString("handicap.tournament","Tournament"));
 				mot.setFontColor(headerTextColor);
 				mot.setFontSize("1");
-			Text teigar = new Text("Teigar");
+			Text teigar = new Text(iwrb.getLocalizedString("handicap.tees","tees"));
 				teigar.setFontColor(headerTextColor);
 				teigar.setFontSize("1");
-			Text vaegi = new Text("Slope/CR");
+			Text vaegi = new Text(iwrb.getLocalizedString("handicap.slope","Slope/CR"));
 				vaegi.setFontColor(headerTextColor);
 				vaegi.setFontSize("1");
-			Text leikforgjof = new Text("Leik-<br>forgjöf");
+			Text leikforgjof = new Text(iwrb.getLocalizedString("handicap.play_handicap","play handicap"));
 				leikforgjof.setFontColor(headerTextColor);
 				leikforgjof.setFontSize("1");
-			Text punktar = new Text("Punktar");
+			Text punktar = new Text(iwrb.getLocalizedString("handicap.points","points"));
 				punktar.setFontColor(headerTextColor);
 				punktar.setFontSize("1");
-			Text grunnpunktar = new Text("Grunn-<br>punktar");
+			Text grunnpunktar = new Text(iwrb.getLocalizedString("handicap.base_points","base points"));
 				grunnpunktar.setFontColor(headerTextColor);
 				grunnpunktar.setFontSize("1");
-			Text mismunur = new Text("Mis-<br>munur");
+			Text mismunur = new Text(iwrb.getLocalizedString("handicap.differnce","difference"));
 				mismunur.setFontColor(headerTextColor);
 				mismunur.setFontSize("1");
-			Text grunnforgjof = new Text("Grunn-<br>forgjöf");
+			Text grunnforgjof = new Text(iwrb.getLocalizedString("handicap.handicap","handicap"));
 				grunnforgjof.setFontColor(headerTextColor);
 				grunnforgjof.setFontSize("1");
-			Text ny_grunnforgjof = new Text("Ný&nbsp;grunn-<br>forgjöf");
+			Text ny_grunnforgjof = new Text(iwrb.getLocalizedString("handicap.new_base_handicap","new base handicap"));
 				ny_grunnforgjof.setFontColor(headerTextColor);
 				ny_grunnforgjof.setFontSize("1");
-			Text skor = new Text("Skorkort");
+			Text skor = new Text(iwrb.getLocalizedString("handicap.scorecard","scorecard"));
 				skor.setFontColor(headerTextColor);
 				skor.setFontSize("1");
 
@@ -638,7 +646,12 @@ private String headerTextColor = "#FFFFFF";
       this.headerColor=headerColor;
     }
 
+
     public void setHeaderTextColor(String headerTextColor) {
       this.headerTextColor=headerTextColor;
     }
+
+    public String getBundleIdentifier(){
+  return IW_BUNDLE_IDENTIFIER;
+}
 }

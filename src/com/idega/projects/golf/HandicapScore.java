@@ -145,15 +145,15 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
 
       DropdownMenu select_holes = new DropdownMenu("number_of_holes");
 
-              select_holes.addMenuElement("18","18 holur");
-              select_holes.addMenuElement("1","9 holur - fyrri");
-              select_holes.addMenuElement("10","9 holur - seinni");
+              select_holes.addMenuElement("18",iwrb.getLocalizedString("handicap.18_holes","18 holes"));
+              select_holes.addMenuElement("1",iwrb.getLocalizedString("handicap.first_9_holes","first 9 holes"));
+              select_holes.addMenuElement("10",iwrb.getLocalizedString("handicap.last_9_holes","last 9 holes"));
               select_holes.keepStatusOnAction();
 
       DropdownMenu select_stats = new DropdownMenu("statistics");
 
-              select_stats.addMenuElement("0","Engin tölfræði");
-              select_stats.addMenuElement("1","Skrá tölfræði");
+              select_stats.addMenuElement("0",iwrb.getLocalizedString("handicap.nostatistics","no statistics"));
+              select_stats.addMenuElement("1",iwrb.getLocalizedString("handicap.file_statistics","file statistics"));
               select_stats.keepStatusOnAction();
 
       DropdownMenu select_month = new DropdownMenu("month");
