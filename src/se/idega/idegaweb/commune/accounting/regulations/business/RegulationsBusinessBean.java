@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.24 2003/09/12 12:57:15 anders Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.25 2003/09/12 15:30:01 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,51 +9,51 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
-import java.util.Collection;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-import javax.ejb.CreateException;
 
-import com.idega.util.IWTimestamp;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.school.data.SchoolManagementType;
-import com.idega.block.school.data.SchoolManagementTypeHome;
-import com.idega.block.school.data.SchoolTypeHome;
-import com.idega.block.school.data.SchoolType;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
-import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
-import se.idega.idegaweb.commune.accounting.regulations.data.MainRuleHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRuleHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType;
+import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType;
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+
+import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolManagementTypeHome;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -935,7 +935,80 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return (Collection) arr;	
 
 	}
+
+	/**
+	 * Function that will return term (the descriptive text for a charge), the amount, VAT
+	 * and the VAT Type using the return object postingDetail. The regulation is selected
+	 * where all the inputparameters are fulfilled.
+	 * 
+	 * @param operation (Huvudverksamhet)
+	 * @param flow (Ström)
+	 * @param period (date when the reule is valid)
+	 * @param conditionType (Villkorstyp)
+	 * @param condition (Collection of conditions)
+	 * @param regSpecType (RegelSpec.Typ)
+	 * @param totalSum total sum calculated so far. Sometimes needed for calculation to return
+	 * @param contract The contract archive
+	 * @return postingDetail
+	 */	
+	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+			String operation, String flow, Date period, String conditionType, 
+			String regSpecType, Collection condition, float totalSum, ChildCareContract contract){
 	
+		PostingDetail postingDetail = new PostingDetail();
+		
+		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
+		System.out.println(operation+flow+period+conditionType+condition+regSpecType+totalSum+contract);
+
+		//Insert code here to create postingDetail
+	
+		return postingDetail;
+	}
+
+	/**
+	 * Function to return all the regulations that fit the description/selection 
+	 * according to the input parameters.
+	 * 
+	 * @param operation
+	 * @param flow
+	 * @param period
+	 * @param conditionType
+	 * @param condition
+	 * @return ArrayList containing the regulations 
+	 */
+	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+			String operation, String flow, Date period, String conditionType, Collection condition){
+	
+		ArrayList regulations = new ArrayList();
+		
+		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
+		System.out.println(operation+flow+period+conditionType+condition);
+
+		//Insert code here to create regulations
+
+		return regulations;
+	}
+	
+	/**
+	 * Returns the text, sum, vat and vat type using the contract
+	 * @param totalSum
+	 * @param contract
+	 * @return PostingDetail
+	 */
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract){
+	
+		PostingDetail postingDetail = new PostingDetail();
+		
+		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
+		System.out.println(totalSum+" "+contract);
+
+		//Insert code here to create postingDetail
+	
+		return postingDetail;
+	}
+
+
+
 	/**
 	 * I Need this before we can use replaceAll with regular expressions in 1.4
 	 * 
