@@ -666,7 +666,18 @@ public class ResellerCreator extends TravelManager {
 
   private void addSuppliers(IWContext iwc, int resellerId) throws SQLException {
     SupplierHome sHome = (SupplierHome) IDOLookup.getHomeLegacy(Supplier.class);
-    Supplier[] allSuppsArr = (Supplier[]) sHome.createLegacy().findAll("select * from "+SupplierBMPBean.getSupplierTableName()+" where "+SupplierBMPBean.getColumnNameIsValid()+" = 'Y' order by "+SupplierBMPBean.getColumnNameName());
+    Collection collAllSupps = null;
+		try {
+			collAllSupps = sHome.findAll();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		Supplier[] allSuppsArr = new Supplier[]{};
+    if (collAllSupps != null) {
+    		collAllSupps.toArray(new Supplier[]{});
+    }
+    //Supplier[] allSuppsArr = sHome.findAll();//create().findAll("select * from "+SupplierBMPBean.getSupplierTableName()+" where "+SupplierBMPBean.getColumnNameIsValid()+" = 'Y' order by "+SupplierBMPBean.getColumnNameName());
     Supplier[] resSuppsArr = ResellerManager.getSuppliers(resellerId, SupplierBMPBean.getColumnNameName());
     Supplier supp;
     
