@@ -9,7 +9,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
-import com.idega.presentation.CollectionNavigator;
+//import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.HorizontalRule;
@@ -32,9 +32,11 @@ public class ChildCareAdmin extends ChildCareBlock {
 
 	private static final String PARAMETER_CLEAN_QUEUE = "cc_clean_queue";
 	
-	private int _numberPerPage = 15;
-	private int _start = 0;
-	private int _applicantsSize = 0;
+	//private int _numberPerPage = 15;
+	//private int _start = 0;
+	//private int _applicantsSize = 0;
+	private int _numberPerPage = -1;
+	private int _start = -1;
 
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -55,16 +57,19 @@ public class ChildCareAdmin extends ChildCareBlock {
 			Table table = new Table(1,7);
 			table.setWidth(getWidth());
 			table.setHeight(2, 12);
-			table.setHeight(4, 3);
-			table.setHeight(6, 6);
+			//table.setHeight(4, 3);
+			//table.setHeight(6, 6);
+			table.setHeight(4, 6);
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			add(table);
 			
 			table.add(getSortTable(), 1, 1);
-			table.add(getNavigator(iwc), 1, 3);
-			table.add(getApplicationTable(iwc), 1, 5);
-			table.add(getLegendTable(true), 1, 7);
+			//table.add(getNavigator(iwc), 1, 3);
+			//table.add(getApplicationTable(iwc), 1, 5);
+			//table.add(getLegendTable(true), 1, 7);
+			table.add(getApplicationTable(iwc), 1, 3);
+			table.add(getLegendTable(true), 1, 5);
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
@@ -82,7 +87,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		}
 	}
 	
-	private CollectionNavigator getNavigator(IWContext iwc) throws RemoteException {
+	/*private CollectionNavigator getNavigator(IWContext iwc) throws RemoteException {
 		if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL)
 			_applicantsSize = getBusiness().getNumberOfApplicationsByProvider(getSession().getChildCareID(), getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
 		else
@@ -97,7 +102,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		_start = navigator.getStart(iwc);
 		
 		return navigator;
-	}
+	}*/
 	
 	private Collection getApplicationCollection() throws RemoteException {
 		Collection applications;
@@ -261,7 +266,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		
 		if (_showQueueCleaning) {
 			Form form = new Form();
-			form.maintainParameter(CollectionNavigator.PARAMETER_CURRENT_PAGE);
+			//form.maintainParameter(CollectionNavigator.PARAMETER_CURRENT_PAGE);
 			form.setEventListener(ChildCareEventListener.class);
 			form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
 			
@@ -290,7 +295,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 	private Form getSortTable() throws RemoteException {
 		Form form = new Form();
 		form.setEventListener(ChildCareEventListener.class);
-		form.maintainParameter(CollectionNavigator.getParameterName());
+		//form.maintainParameter(CollectionNavigator.getParameterName());
 		
 		Table table = new Table(7,2);
 		table.setCellpadding(0);
