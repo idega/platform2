@@ -133,36 +133,43 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
   /**
    * @returns True if the childToCheck is a child of parent else false
    */
-  public boolean isChildOf(User childToCheck,User parent)throws RemoteException{
-    if(this.hasPersonGotChildren(parent)){
-      try{
-        Collection children = this.getChildrenFor(parent);
-        Iterator iter = children.iterator();
-        while (iter.hasNext()) {
-          User child = (User)iter.next();
-          if(child.equals(childToCheck)){
-            return true;
-          }
-        }
+  public boolean isChildOf(User childToCheck,User parent) throws RemoteException {
+    if ( this.hasPersonGotChildren(parent) ) {
+      try {
+	Collection coll = getChildrenFor(parent);
+	return coll.contains(childToCheck);
       }
-      catch(NoChildrenFound ncf){
+      catch (NoChildrenFound ex) {
       }
     }
     return false;
   }
 
   /**
+   * @returns True if the parent is the parent of childToCheck else false
+   */
+  public boolean isParentOf(User parentToCheck,User child) throws RemoteException {
+    try {
+      Collection coll = getCustodiansFor(child);
+      return coll.contains(parentToCheck);
+    }
+    catch (NoCustodianFound ex) {
+      return false;
+    }
+  }
+
+  /**
    * @returns True if the personToCheck is a spouse of relatedPerson else false
    */
-  public boolean isSpouseOf(User personToCheck,User relatedPerson)throws RemoteException{
-    if(this.hasPersonGotSpouse(personToCheck)){
+  public boolean isSpouseOf(User personToCheck,User relatedPerson) throws RemoteException {
+    if ( this.hasPersonGotSpouse(personToCheck) ) {
       try{
-        User spouse = this.getSpouseFor(personToCheck);
-        if(spouse.equals(relatedPerson)){
-          return true;
-        }
+	User spouse = this.getSpouseFor(personToCheck);
+	if( spouse.equals(relatedPerson) ) {
+	  return true;
+	}
       }
-      catch(NoSpouseFound nsf){
+      catch (NoSpouseFound nsf) {
       }
     }
     return false;
@@ -173,6 +180,11 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
     parent.addRelation(personToSet,this.RELATION_TYPE_GROUP_PARENT);
   }
 
+  public void setAsParentFor(User parent,User child)throws CreateException,RemoteException{
+    child.addRelation(parent,this.RELATION_TYPE_GROUP_CHILD);
+    parent.addRelation(child,this.RELATION_TYPE_GROUP_PARENT);
+  }
+
   public void setAsSpouseFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     personToSet.addRelation(relatedPerson,this.RELATION_TYPE_GROUP_SPOUSE);
     relatedPerson.addRelation(personToSet,this.RELATION_TYPE_GROUP_SPOUSE);
@@ -181,6 +193,11 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
   public void removeAsChildFor(User personToSet,User parent)throws RemoveException,RemoteException{
     personToSet.removeRelation(parent,this.RELATION_TYPE_GROUP_CHILD);
     parent.removeRelation(personToSet,this.RELATION_TYPE_GROUP_PARENT);
+  }
+
+  public void removeAsParentFor(User parent,User child)throws RemoveException,RemoteException{
+    child.removeRelation(parent,this.RELATION_TYPE_GROUP_CHILD);
+    parent.removeRelation(child,this.RELATION_TYPE_GROUP_PARENT);
   }
 
   public void removeAsSpouseFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
