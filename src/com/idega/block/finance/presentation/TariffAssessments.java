@@ -52,6 +52,7 @@ public class TariffAssessments extends Finance {
 	private static final String PRM_ACCOUNT_ID = "ass_acc_id";
 	private static final String PRM_ROUND_ID = "ass_round_id";
 	private static final String PRM_GROUP_ID = "tass_grp";
+	private static final String PRM_SHOW_ALL = "shw_all";
 	protected static final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5, ACT6 = 6, ACT7 = 7;
 	public static final String PRM_ACTION = "tt_action";
 	protected boolean isAdmin = false;
@@ -70,6 +71,7 @@ public class TariffAssessments extends Finance {
 	private Collection accounts = null;
 	private Collection assessments = null;
 	
+	private boolean showAll = false;
 	
 	private CollectionNavigator collectionNavigator =null;
 	
@@ -160,6 +162,12 @@ public class TariffAssessments extends Finance {
 			
 			setTabPanel(getGroupLinks(iwc));
 			setNavigationPanel(collectionNavigator);
+			Link showAllLink = new Link(getText(localize("showall","Show all")));
+			showAllLink.addParameter(PRM_SHOW_ALL,"true");
+			showAllLink.maintainParameter(PRM_ROUND_ID,iwc);
+			showAllLink.maintainParameter(PRM_GROUP_ID,iwc);
+			showAllLink.maintainParameter(PRM_ACTION,iwc);
+			setNavigationPanel(showAllLink);
 			setSearchPanel(getActionButtonsTable(iwc));
 		} else
 			add(localize("access_denied", "Access denies"));
@@ -261,7 +269,10 @@ public class TariffAssessments extends Finance {
 					}	
 				
 						try {
-							accounts = getFinanceService().getAccountHome().findByAssessmentRound(roundID, getCollectionViewSize(),getCollectionIndex());
+							if(iwc.isParameterSet(PRM_SHOW_ALL))
+								accounts = getFinanceService().getAccountHome().findByAssessmentRound(roundID,-1,-1);
+							else
+								accounts = getFinanceService().getAccountHome().findByAssessmentRound(roundID, getCollectionViewSize(),getCollectionIndex());
 						} catch (RemoteException e) {
 							e.printStackTrace();
 						} catch (FinderException e) {
