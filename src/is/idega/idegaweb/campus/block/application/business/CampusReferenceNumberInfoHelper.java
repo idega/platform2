@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.2 2002/01/08 15:26:37 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.3 2002/02/11 10:45:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -68,6 +68,7 @@ public class CampusReferenceNumberInfoHelper {
     String ref = com.idega.block.application.business.ReferenceNumberHandler.getReferenceNumber(iwc);
     Vector l = new Vector();
 
+
     try {
       com.idega.block.application.data.Applicant applicant = new com.idega.block.application.data.Applicant();
       List li = EntityFinder.findAllByColumn(applicant,applicant.getSSNColumnName(),ref);
@@ -86,8 +87,12 @@ public class CampusReferenceNumberInfoHelper {
 
             String passwd = com.idega.block.login.business.LoginCreator.createPasswd(8);
 
-            login.setUserPassword(passwd);
-            login.update();
+//            login.setUserPassword(passwd);
+//            login.update();
+//            com.idega.core.accesscontrol.business.LoginDBHandler.getUserLogin();
+//            Contract contract = is.idega.idegaweb.campus.block.allocation.business.ContractFinder.findApplicant(applicant.getID());
+            com.idega.core.accesscontrol.business.LoginDBHandler.updateLogin(user.getID(),login.getUserLogin(),passwd);
+
 
             l.add(login.getUserLogin());
             l.add(passwd);
@@ -96,6 +101,9 @@ public class CampusReferenceNumberInfoHelper {
       }
     }
     catch(SQLException e) {
+
+    }
+    catch(Exception ex) {
 
     }
 

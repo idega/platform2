@@ -51,44 +51,57 @@ import com.idega.util.text.StyleConstants;
  */
 
 public class TenantsProfile extends Block {
+  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
+  protected IWResourceBundle _iwrb;
+  protected IWBundle _iwb;
 
-private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-protected IWResourceBundle iwrb;
-protected IWBundle iwb;
+  private final static String NAME = "name",
+                              SSN = "ssn",
+                              MOBILE = "mobile",
+                              EMAIL = "email",
+                              FACULTY = "faculty",
+                              STUDYTRACK = "studytrack",
+                              STUDYBEGIN = "studybegin",
+                              STUDYEND = "studyend",
+                              SPOUSENAME = "spousename",
+                              SPOUSESSN = "spousessn",
+                              CHILDREN = "children";
 
-private final static String NAME="name",SSN="ssn",MOBILE="mobile",EMAIL="email",FACULTY="faculty",
-                            STUDYTRACK="studytrack",STUDYBEGIN="studybegin",STUDYEND="studyend",
-                            SPOUSENAME="spousename",SPOUSESSN="spousessn",CHILDREN="children";
+  private final static String PARAMETER_MODE = "profile_mode";
+  private final static String PARAMETER_SAVE = "save";
+  private final static String PARAMETER_EDIT = "edit";
+  private final static String PARAMETER_USER_ID = "campus_user_id";
 
-private final static String PARAMETER_MODE = "profile_mode";
-private final static String PARAMETER_SAVE = "save";
-private final static String PARAMETER_EDIT = "edit";
-private final static String PARAMETER_USER_ID = "campus_user_id";
+  private boolean _isAdmin = false;
+  private boolean _isLoggedOn = false;
+  private int _userID = -1;
+  private int _campusID = -1;
+  private boolean _update = false;
 
-private boolean _isAdmin = false;
-private boolean _isLoggedOn = false;
-private int _userID = -1;
-private int _campusID = -1;
-private boolean _update = false;
+  private Contract _contract;
+  private Applicant _applicant;
+  private CampusApplication _campusApplication;
+  private TextStyler _styler;
+  private Image _image;
 
-private Contract contract;
-private Applicant applicant;
-private CampusApplication campusApplication;
-private TextStyler styler;
-private Image image;
+  public static final String darkBlue = CampusColors.DARKBLUE;
+  public static final String darkGray = CampusColors.DARKGREY;
+  public static final String lightGray = CampusColors.LIGHTGREY;
+  public static final String white = CampusColors.WHITE;
+  public static final String darkRed = CampusColors.DARKRED;
 
-public static final String darkBlue = CampusColors.DARKBLUE;
-public static final String darkGray = CampusColors.DARKGREY;
-public static final String lightGray = CampusColors.LIGHTGREY;
-public static final String white = CampusColors.WHITE;
-public static final String darkRed = CampusColors.DARKRED;
-
+  /**
+   *
+   */
   public TenantsProfile() {
   }
 
-  public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+  /**
+   *
+   */
+  public void main(IWContext iwc) {
+    _iwrb = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
 
     try {
       _isAdmin = iwc.hasEditPermission(this);
@@ -121,9 +134,9 @@ public static final String darkRed = CampusColors.DARKRED;
         }
       }
 
-      contract = ContractFinder.findApplicant(_userID);
-      applicant = ContractFinder.getApplicant(contract);
-      campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
+      _contract = ContractFinder.findApplicant(_userID);
+      _applicant = ContractFinder.getApplicant(_contract);
+      _campusApplication = CampusApplicationFinder.getApplicantInfo(_applicant).getCampusApplication();
 
       if ( iwc.getParameter(PARAMETER_MODE) != null ) {
         if ( iwc.getParameter(PARAMETER_MODE).equalsIgnoreCase(PARAMETER_SAVE) )
@@ -132,30 +145,30 @@ public static final String darkRed = CampusColors.DARKRED;
           _update = true;
       }
 
-      styler = new TextStyler();
-        styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
-        styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
+      _styler = new TextStyler();
+      _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
+      _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
 
       Table myTable = new Table(2,3);
-        myTable.setWidth("100%");
-        myTable.setWidth(1,"50%");
-        myTable.setWidth(2,"50%");
-        myTable.mergeCells(1,1,1,3);
-        myTable.setColumnVerticalAlignment(1,"top");
-        myTable.setColumnVerticalAlignment(2,"top");
-        myTable.add(getProfile(),1,1);
-        myTable.add(getApartment(),2,1);
-        myTable.add(getAccount(),2,2);
-        myTable.add(getRequests(),2,3);
-        myTable.setCellspacing(6);
+      myTable.setWidth("100%");
+      myTable.setWidth(1,"50%");
+      myTable.setWidth(2,"50%");
+      myTable.mergeCells(1,1,1,3);
+      myTable.setColumnVerticalAlignment(1,"top");
+      myTable.setColumnVerticalAlignment(2,"top");
+      myTable.add(getProfile(),1,1);
+      myTable.add(getApartment(),2,1);
+      myTable.add(getAccount(),2,2);
+      myTable.add(getRequests(),2,3);
+      myTable.setCellspacing(6);
 
-      image = myTable.getTransparentCell(iwc);
-        image.setHeight(6);
+      _image = myTable.getTransparentCell(iwc);
+      _image.setHeight(6);
 
       add(myTable);
     }
     else{
-      add(iwrb.getLocalizedString("accessdenied","Access denied"));
+      add(_iwrb.getLocalizedString("accessdenied","Access denied"));
     }
   }
 
@@ -168,28 +181,28 @@ public static final String darkRed = CampusColors.DARKRED;
       table.mergeCells(1,1,3,1);
       table.setWidth("100%");
 
-    table.add(formatText(iwrb.getLocalizedString("profile","Profile"),"#FFFFFF",true),1,1);
+    table.add(formatText(_iwrb.getLocalizedString("profile","Profile"),"#FFFFFF",true),1,1);
     int row = 2;
 
-    addToTable(table,row++,iwrb.getLocalizedString("name","Name"),applicant.getFullName(),new TextInput(NAME),35);
-    addToTable(table,row++,iwrb.getLocalizedString("ssn","SSN"),applicant.getSSN(),new TextInput(SSN),10);
-    addToTable(table,row++,iwrb.getLocalizedString("email","email"),campusApplication.getEmail(),new TextInput(EMAIL),20);
-    addToTable(table,row++,iwrb.getLocalizedString("mobile","Mobile phone"),applicant.getMobilePhone(),new TextInput(MOBILE),7);
-    addToTable(table,row++,iwrb.getLocalizedString("faculty","Faculty"),campusApplication.getFaculty(),new TextInput(FACULTY),20);
-    addToTable(table,row++,iwrb.getLocalizedString("studyTrack","Study track"),campusApplication.getStudyTrack(),new TextInput(STUDYTRACK),20);
-    addToTable(table,row++,iwrb.getLocalizedString("studyBegin","Study began"),campusApplication.getStudyBeginMonth()+"."+campusApplication.getStudyBeginYear(),new TextInput(STUDYBEGIN),7);
-    addToTable(table,row++,iwrb.getLocalizedString("studyEnd","Study ends"),campusApplication.getStudyEndMonth()+"."+campusApplication.getStudyEndYear(),new TextInput(STUDYEND),7);
+    addToTable(table,row++,_iwrb.getLocalizedString("name","Name"),_applicant.getFullName(),new TextInput(NAME),35);
+    addToTable(table,row++,_iwrb.getLocalizedString("ssn","SSN"),_applicant.getSSN(),new TextInput(SSN),10);
+    addToTable(table,row++,_iwrb.getLocalizedString("email","email"),_campusApplication.getEmail(),new TextInput(EMAIL),20);
+    addToTable(table,row++,_iwrb.getLocalizedString("mobile","Mobile phone"),_applicant.getMobilePhone(),new TextInput(MOBILE),7);
+    addToTable(table,row++,_iwrb.getLocalizedString("faculty","Faculty"),_campusApplication.getFaculty(),new TextInput(FACULTY),20);
+    addToTable(table,row++,_iwrb.getLocalizedString("studyTrack","Study track"),_campusApplication.getStudyTrack(),new TextInput(STUDYTRACK),20);
+    addToTable(table,row++,_iwrb.getLocalizedString("studyBegin","Study began"),_campusApplication.getStudyBeginMonth()+"."+_campusApplication.getStudyBeginYear(),new TextInput(STUDYBEGIN),7);
+    addToTable(table,row++,_iwrb.getLocalizedString("studyEnd","Study ends"),_campusApplication.getStudyEndMonth()+"."+_campusApplication.getStudyEndYear(),new TextInput(STUDYEND),7);
 
-    if ( _update || (campusApplication.getSpouseName() != null && campusApplication.getSpouseName().length() > 0) ) {
-      addToTable(table,row++,iwrb.getLocalizedString("spouseName","Spouse"),campusApplication.getSpouseName(),new TextInput(SPOUSENAME),35);
-      addToTable(table,row++,iwrb.getLocalizedString("spouseSSN","Spouse SSN"),campusApplication.getSpouseSSN(),new TextInput(SPOUSESSN),10);
+    if ( _update || (_campusApplication.getSpouseName() != null && _campusApplication.getSpouseName().length() > 0) ) {
+      addToTable(table,row++,_iwrb.getLocalizedString("spouseName","Spouse"),_campusApplication.getSpouseName(),new TextInput(SPOUSENAME),35);
+      addToTable(table,row++,_iwrb.getLocalizedString("spouseSSN","Spouse SSN"),_campusApplication.getSpouseSSN(),new TextInput(SPOUSESSN),10);
     }
 
-    if ( _update || (campusApplication.getChildren() != null && campusApplication.getChildren().length() > 0) ) {
-      String children = campusApplication.getChildren();
+    if ( _update || (_campusApplication.getChildren() != null && _campusApplication.getChildren().length() > 0) ) {
+      String children = _campusApplication.getChildren();
       if ( !_update )
-        children = TextSoap.findAndReplace(campusApplication.getChildren(),",",Text.getBreak().toString());
-      addToTable(table,row++,iwrb.getLocalizedString("childrenProfile","Children"),children,new TextArea(CHILDREN,45,3),45);
+        children = TextSoap.findAndReplace(_campusApplication.getChildren(),",",Text.getBreak().toString());
+      addToTable(table,row++,_iwrb.getLocalizedString("childrenProfile","Children"),children,new TextArea(CHILDREN,45,3),45);
     }
 
     table.setHorizontalZebraColored(white,lightGray);
@@ -199,7 +212,7 @@ public static final String darkRed = CampusColors.DARKRED;
     table.setColumnVerticalAlignment(2,"top");
     table.mergeCells(1,row,2,row);
 
-    table.add(image,1,row);
+    table.add(_image,1,row);
     table.setColor(1,row,darkRed);
 
     row++;
@@ -209,12 +222,12 @@ public static final String darkRed = CampusColors.DARKRED;
     if ( _update ) {
       myForm.add(table);
       myForm.add(new HiddenInput(this.PARAMETER_USER_ID,Integer.toString(_userID)));
-      table.add(new BackButton(iwrb.getImage("back.gif")),1,row);
-      table.add(new SubmitButton(iwrb.getImage("save.gif"),PARAMETER_MODE,PARAMETER_SAVE),1,row);
+      table.add(new BackButton(_iwrb.getImage("back.gif")),1,row);
+      table.add(new SubmitButton(_iwrb.getImage("save.gif"),PARAMETER_MODE,PARAMETER_SAVE),1,row);
       return myForm;
     }
     else {
-      Link editLink = new Link(iwrb.getImage("edit.gif"));
+      Link editLink = new Link(_iwrb.getImage("edit.gif"));
         editLink.addParameter(PARAMETER_MODE,PARAMETER_EDIT);
         editLink.addParameter(PARAMETER_USER_ID,_userID);
       table.add(editLink,1,row);
@@ -229,16 +242,16 @@ public static final String darkRed = CampusColors.DARKRED;
       table.mergeCells(1,1,2,1);
       table.setWidth("100%");
 
-    Text apartmentStatusText = formatText(iwrb.getLocalizedString("apartment","Apartment"),"#FFFFFF",true);
+    Text apartmentStatusText = formatText(_iwrb.getLocalizedString("apartment","Apartment"),"#FFFFFF",true);
       table.add(apartmentStatusText,1,1);
 
-    Apartment apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
+    Apartment apartment = BuildingCacher.getApartment(_contract.getApartmentId().intValue());
     Floor floor = BuildingCacher.getFloor(apartment.getFloorId());
     Building building = BuildingCacher.getBuilding(floor.getBuildingId());
     Complex complex = BuildingCacher.getComplex(building.getComplexId());
 
-    String[] attributes = {iwrb.getLocalizedString("apartment","Apartment"),iwrb.getLocalizedString("floor","Floor"),
-                          iwrb.getLocalizedString("complex","Complex"),iwrb.getLocalizedString("building","Building")};
+    String[] attributes = {_iwrb.getLocalizedString("apartment","Apartment"),_iwrb.getLocalizedString("floor","Floor"),
+                          _iwrb.getLocalizedString("complex","Complex"),_iwrb.getLocalizedString("building","Building")};
 
     String[] values = {apartment.getName(),floor.getName(),complex.getName(),building.getName()};
     int row = 2;
@@ -254,12 +267,12 @@ public static final String darkRed = CampusColors.DARKRED;
     table.setColor(1,1,darkBlue);
     table.mergeCells(1,row,2,row);
 
-    table.add(image,1,row);
+    table.add(_image,1,row);
     table.setColor(1,row,darkRed);
     row++;
 
-    Link resignLink = new Link(iwrb.getImage("resign.gif"));
-      resignLink.addParameter("contract_id",contract.getID());
+    Link resignLink = new Link(_iwrb.getImage("resign.gif"));
+      resignLink.addParameter("contract_id",_contract.getID());
       resignLink.setWindowToOpen(ContractReSignWindow.class);
     table.mergeCells(1,row,3,row);
     table.setAlignment(1,row,"right");
@@ -275,10 +288,10 @@ public static final String darkRed = CampusColors.DARKRED;
       table.mergeCells(1,1,3,1);
       table.setWidth("100%");
 
-    table.add(formatText(iwrb.getLocalizedString("account_status","Account status"),"#FFFFFF",true),1,1);
-    table.add(formatText(iwrb.getLocalizedString("account","Account")),1,2);
-    table.add(formatText(iwrb.getLocalizedString("lastentry","Last Entry")),2,2);
-    table.add(formatText(iwrb.getLocalizedString("balance","Balance")),3,2);
+    table.add(formatText(_iwrb.getLocalizedString("account_status","Account status"),"#FFFFFF",true),1,1);
+    table.add(formatText(_iwrb.getLocalizedString("account","Account")),1,2);
+    table.add(formatText(_iwrb.getLocalizedString("lastentry","Last Entry")),2,2);
+    table.add(formatText(_iwrb.getLocalizedString("balance","Balance")),3,2);
 
     Account[] account = AccountManager.findAccounts(_userID);
     int row = 3;
@@ -303,7 +316,7 @@ public static final String darkRed = CampusColors.DARKRED;
     table.setRowColor(2,darkGray);
     table.mergeCells(1,row,3,row);
 
-    table.add(image,1,row);
+    table.add(_image,1,row);
     table.setColor(1,row,darkRed);
 
     return table;
@@ -316,10 +329,10 @@ public static final String darkRed = CampusColors.DARKRED;
       table.mergeCells(1,1,3,1);
       table.setWidth("100%");
 
-    table.add(formatText(iwrb.getLocalizedString("requests","Requests"),"#FFFFFF",true),1,1);
-    table.add(formatText(iwrb.getLocalizedString("request","Request")),1,2);
-    table.add(formatText(iwrb.getLocalizedString("sent","Sent")),2,2);
-    table.add(formatText(iwrb.getLocalizedString("status","Status")),3,2);
+    table.add(formatText(_iwrb.getLocalizedString("requests","Requests"),"#FFFFFF",true),1,1);
+    table.add(formatText(_iwrb.getLocalizedString("request","Request")),1,2);
+    table.add(formatText(_iwrb.getLocalizedString("sent","Sent")),2,2);
+    table.add(formatText(_iwrb.getLocalizedString("status","Status")),3,2);
 
     int row = 3;
 
@@ -328,10 +341,9 @@ public static final String darkRed = CampusColors.DARKRED;
     RequestHolder holder = null;
 
     if ( requests != null ) {
-      for ( int a = 1; a < requests.size(); a++ ) {
+      for ( int a = 0; a < requests.size(); a++ ) {
         holder = (RequestHolder) requests.get(a);
         request = holder.getRequest();
-//        table.add(formatText(requestType.getName()),1,row);
         table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
         table.add(formatText(request.getStatus()),3,row);
         row++;
@@ -343,20 +355,42 @@ public static final String darkRed = CampusColors.DARKRED;
     table.setRowColor(2,darkGray);
     table.mergeCells(1,row,3,row);
 
-    table.add(image,1,row);
+    table.add(_image,1,row);
     table.setColor(1,row,darkRed);
     row++;
 
-    Link requestLink = new Link(iwrb.getImage("request.gif"));
-    requestLink.addParameter("user_id",_userID);
-      //requestLink.setWindowToOpen(RequestView.class);
-    requestLink.addParameter(TabAction.sAction,0);
-    requestLink.addParameter(CampusFactory.getParameter(60));
+    Link requestLink = new Link(_iwrb.getImage("request.gif"));
+    requestLink.setWindowToOpen(RequestView.class);
+    Apartment apartment = null;
+    Floor floor = null;
+    Building building = null;
+    if (_contract != null) {
+      apartment = BuildingCacher.getApartment(_contract.getApartmentId().intValue());
+      floor = BuildingCacher.getFloor(apartment.getFloorId());
+      building = BuildingCacher.getBuilding(floor.getBuildingId());
+    }
+
+    if (building != null)
+      requestLink.addParameter(RequestView.REQUEST_STREET,building.getName());
+    if (apartment != null)
+      requestLink.addParameter(RequestView.REQUEST_APRT,apartment.getName());
+    if (_applicant != null) {
+      requestLink.addParameter(RequestView.REQUEST_NAME,_applicant.getFullName());
+      requestLink.addParameter(RequestView.REQUEST_TEL,_applicant.getResidencePhone());
+    }
+    if (_campusApplication != null)
+      requestLink.addParameter(RequestView.REQUEST_EMAIL,_campusApplication.getEmail());
+
+//    Link requestLink2 = new Link(iwrb.getImage("request.gif"));
+//    requestLink2.setWindowToOpen(RequestView.class);
+//    requestLink2.addParameter(TabAction.sAction,0);
+//    requestLink2.addParameter(CampusFactory.getParameter(60));
 
 
     table.mergeCells(1,row,3,row);
     table.setAlignment(1,row,"right");
     table.add(requestLink,1,row);
+//    table.add(requestLink2,1,row);
 
     return table;
   }
@@ -381,62 +415,62 @@ public static final String darkRed = CampusColors.DARKRED;
       while ( tokens.hasMoreTokens() ) {
         String token = tokens.nextToken();
         if ( count == 1 )
-          applicant.setFirstName(token);
+          _applicant.setFirstName(token);
         if ( count > 1 && count < number )
-          applicant.setMiddleName(token);
+          _applicant.setMiddleName(token);
         if ( count > 2 && count < number )
-          applicant.setMiddleName(" "+token);
+          _applicant.setMiddleName(" "+token);
         if ( count == number )
-          applicant.setLastName(token);
+          _applicant.setLastName(token);
         count++;
       }
     }
     if ( ssn != null ) {
-      applicant.setSSN(ssn);
+      _applicant.setSSN(ssn);
     }
     if ( email != null ) {
-      campusApplication.setEmail(email);
+      _campusApplication.setEmail(email);
     }
     if ( mobile != null ) {
-      applicant.setMobilePhone(mobile);
+      _applicant.setMobilePhone(mobile);
     }
     if ( faculty != null ) {
-      campusApplication.setFaculty(faculty);
+      _campusApplication.setFaculty(faculty);
     }
     if ( studyTrack != null ) {
-      campusApplication.setStudyTrack(studyTrack);
+      _campusApplication.setStudyTrack(studyTrack);
     }
     if ( spouseName != null ) {
-      campusApplication.setSpouseName(spouseName);
+      _campusApplication.setSpouseName(spouseName);
     }
     if ( spouseSSN != null ) {
-      campusApplication.setSpouseSSN(spouseSSN);
+      _campusApplication.setSpouseSSN(spouseSSN);
     }
     if ( children != null ) {
-      campusApplication.setChildren(children);
+      _campusApplication.setChildren(children);
     }
     if ( studyBegin != null && studyBegin.length() > 0 ) {
       String studyBeginMo = studyBegin.substring(0,studyBegin.indexOf("."));
       String studyBeginYe = studyBegin.substring(studyBegin.indexOf(".")+1);
-      campusApplication.setStudyBeginMonth(Integer.parseInt(studyBeginMo));
-      campusApplication.setStudyBeginYear(Integer.parseInt(studyBeginYe));
+      _campusApplication.setStudyBeginMonth(Integer.parseInt(studyBeginMo));
+      _campusApplication.setStudyBeginYear(Integer.parseInt(studyBeginYe));
     }
     if ( studyBegin != null && studyBegin.length() > 0 ) {
       String studyEndMo = studyEnd.substring(0,studyEnd.indexOf("."));
       String studyEndYe = studyEnd.substring(studyEnd.indexOf(".")+1);
-      campusApplication.setStudyEndMonth(Integer.parseInt(studyEndMo));
-      campusApplication.setStudyEndYear(Integer.parseInt(studyEndYe));
+      _campusApplication.setStudyEndMonth(Integer.parseInt(studyEndMo));
+      _campusApplication.setStudyEndYear(Integer.parseInt(studyEndYe));
     }
 
     try {
-      applicant.update();
+      _applicant.update();
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);
     }
 
     try {
-      campusApplication.update();
+      _campusApplication.update();
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);
@@ -477,13 +511,13 @@ public static final String darkRed = CampusColors.DARKRED;
   private Text formatText(String text,String color,boolean bold){
     if ( text == null ) text = "";
     Text T =new Text(text);
-      styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,color);
+      _styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,color);
       if ( bold )
-        styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
+        _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
       else
-        styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_NORMAL);
+        _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_NORMAL);
 
-      T.setFontStyle(styler.getStyleString());
+      T.setFontStyle(_styler.getStyleString());
 
     return T;
   }

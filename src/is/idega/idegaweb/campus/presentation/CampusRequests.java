@@ -1,39 +1,50 @@
+/*
+ * $Id: CampusRequests.java,v 1.5 2002/02/11 10:46:31 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package is.idega.idegaweb.campus.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.HorizontalRule;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.PresentationObject;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.SendMail;
 import com.idega.util.idegaTimestamp;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
  * @author <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
-
 public class CampusRequests extends Block {
-
-  private IWResourceBundle iwrb;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  private static String sAction = "reqs_act";
-  private final static int REPAIR = 1,COMPUTER = 2,RESIGN = 3;
+  private final static String ACTION = "reqs_act";
+  private final static int REPAIR = 1;
+  private final static int COMPUTER = 2;
+  private IWResourceBundle iwrb;
   private String tab = "\t";
   private String newline = "\n";
   private String columnwidth = "150";
   private int inputWidth = 40;
 
-  public void control(IWContext iwc){
+  public void control(IWContext iwc) {
     int type = 0;
-    if(iwc.isParameterSet(sAction))
-      type = Integer.parseInt(iwc.getParameter(sAction));
+    if (iwc.isParameterSet(ACTION))
+      type = Integer.parseInt(iwc.getParameter(ACTION));
 
     Table T = new Table();
     T.setWidth("100%");
@@ -56,7 +67,6 @@ public class CampusRequests extends Block {
     T.setAlignment("center");
       T.add(getLink(REPAIR),1,1);
       T.add(getLink(COMPUTER),1,2);
-//      T.add(getLink(RESIGN),1,3);
     return T;
   }
 
@@ -64,7 +74,7 @@ public class CampusRequests extends Block {
     Link link = new Link(getSubject(type));
     link.setBold();
     link.setFontSize(4);
-    link.addParameter(sAction,type);
+    link.addParameter(ACTION,type);
     return link;
   }
 
@@ -96,7 +106,6 @@ public class CampusRequests extends Block {
     switch (Type) {
       case REPAIR: obj =  getRepairFields();  break;
       case COMPUTER: obj = getComputerFields(); break;
-//      case RESIGN: obj = getResignFields(); break;
     }
     return obj;
   }
@@ -106,7 +115,6 @@ public class CampusRequests extends Block {
     switch (Type) {
       case REPAIR: email =  "gunnar@fs.is";  break;
       case COMPUTER: email = "umsjon@fs.is"; break;
-//      case RESIGN: email = "iris@fs.is"; break;
     }
     return email;
   }
@@ -116,7 +124,6 @@ public class CampusRequests extends Block {
     switch (Type) {
       case REPAIR: subject =  iwrb.getLocalizedString("repairrequest","Viðgerðarbeiðni");  break;
       case COMPUTER: subject = iwrb.getLocalizedString("computerrequest","Tölvuviðgerðarbeiðni"); break;
-//      case RESIGN: subject = iwrb.getLocalizedString("resignrequest","Uppsagnarbeiðni"); break;
     }
     return subject;
   }
@@ -152,7 +159,7 @@ public class CampusRequests extends Block {
     T.add(formatText(iwrb.getLocalizedString("spectime","Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),3,5);
     T.add(new TextInput("specialtime",""),3,5);
     T.add(new RadioButton("time","spectime"),1,5);
-    T.add(new HiddenInput(sAction,String.valueOf(REPAIR)));
+    T.add(new HiddenInput(ACTION,String.valueOf(REPAIR)));
     T.setWidth(1,columnwidth);
     return T;
   }
@@ -165,22 +172,7 @@ public class CampusRequests extends Block {
     T.add(getTextArea("comment",""),3,3);
     T.add(formatText(iwrb.getLocalizedString("spectime","Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),1,4);
     T.add(getTextInput("specialtime",""),3,4);
-    T.add(new HiddenInput(sAction,String.valueOf(COMPUTER)));
-    T.setWidth(1,columnwidth);
-    return T;
-  }
-
-  public PresentationObject getResignFields(){
-    Table T = new Table();
-    T.add(formatText(iwrb.getLocalizedString("movingdate","Áætlað að rýma herbergi/íbúð: ")),1,2);
-    T.add(getTextInput("movingdate",""),3,2);
-    T.add(formatText(iwrb.getLocalizedString("newaddress","Nýtt heimilisfang")),1,3);
-    T.add(getTextInput("newaddress",""),3,3);
-    T.add(formatText(iwrb.getLocalizedString("newzip","Nýtt póstfang")),1,4);
-    T.add(getTextInput("newzip",""),3,4);
-    T.add(formatText(iwrb.getLocalizedString("phone","Nýtt símanúmer")),1,5);
-    T.add(getTextInput("phone",""),3,5);
-    T.add(new HiddenInput(sAction,String.valueOf(RESIGN)));
+    T.add(new HiddenInput(ACTION,String.valueOf(COMPUTER)));
     T.setWidth(1,columnwidth);
     return T;
   }
@@ -195,7 +187,7 @@ public class CampusRequests extends Block {
         info.append(iwrb.getLocalizedString("sendtime","Sent :"));
         info.append(idegaTimestamp.RightNow().getISLDate());
         try{
-          SendMail.send("admin@campus.is",getEmail(type),"","aron@idega.is","mail.idega.is",getSubject(type),info.toString());
+//          SendMail.send("admin@campus.is",getEmail(type),"","aron@idega.is","mail.idega.is",getSubject(type),info.toString());
           return iwrb.getLocalizedString("requestsent","Beiðni hefur verið send !");
         }
         catch(Exception ex){
@@ -212,7 +204,6 @@ public class CampusRequests extends Block {
     String info = null;
     switch (type) {
       case REPAIR: info = getRepairInfo(iwc);        break;
-//      case RESIGN: info = getResignInfo(iwc);        break;
       case COMPUTER: info = getComputerInfo(iwc);        break;
     }
     return info;
@@ -293,27 +284,6 @@ public class CampusRequests extends Block {
     info.append(iwc.getParameter("specialtime"));
     info.append(newline);
 
-    return info.toString();
-  }
-
-  private String getResignInfo(IWContext iwc){
-    StringBuffer info = new StringBuffer();
-    info.append(formatText(iwrb.getLocalizedString("movingdate","Áætlað að rýma herbergi/íbúð: ")));
-    info.append(tab);
-    info.append(iwc.getParameter("movingdate"));
-    info.append(newline);
-    info.append(formatText(iwrb.getLocalizedString("newaddress","Nýtt heimilisfang")));
-    info.append(tab);
-    info.append(iwc.getParameter("newaddress"));
-    info.append(newline);
-    info.append(formatText(iwrb.getLocalizedString("newzip","Nýtt póstfang")));
-    info.append(tab);
-    info.append(iwc.getParameter("newzip"));
-    info.append(newline);
-    info.append(formatText(iwrb.getLocalizedString("phone","Nýtt símanúmer")));
-    info.append(tab);
-    info.append(iwc.getParameter("phone"));
-    info.append(newline);
     return info.toString();
   }
 
