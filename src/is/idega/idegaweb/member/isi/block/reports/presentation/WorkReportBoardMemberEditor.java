@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
@@ -31,6 +32,8 @@ import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -118,6 +121,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }  
     // does the user want to save a new entry?
     if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      WorkReportBoardMember member = createWorkReportBoardMember(getYear());
       Iterator iterator = fieldList.iterator();
       while (iterator.hasNext())  {
         String field = (String) iterator.next();
@@ -126,12 +131,13 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
           DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
         if (entityPathValueContainerFromTextEditor.isValid()) {
-          updateWorkReportBoardMember(entityPathValueContainerFromTextEditor, iwc);
+          setValuesOfWorkReportBoardMember(entityPathValueContainerFromTextEditor, member, workReportBusiness);
         }
         if (entityPathValueContainerFromDropDownMenu.isValid()) {
-          updateWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, iwc);
+          setValuesOfWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, member, workReportBusiness);
         }
       }
+      member.store();
     }  
     // does the user want to modify an existing entity?
     EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
@@ -342,78 +348,99 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return converter;
   }    
   
+  private WorkReportBoardMember createWorkReportBoardMember(int year)  {
+    WorkReportBoardMember workReportBoardMember = null;
+    try {
+      workReportBoardMember =
+        (WorkReportBoardMember) IDOLookup.create(WorkReportBoardMember.class);
+    } catch (IDOLookupException e) {
+      System.err.println("[WorkReportBoardMember] Could not lookup home of WorkReportBoardMember. Message is: "+ e.getMessage());
+      e.printStackTrace(System.err);
+    } catch (CreateException e) {
+      System.err.println("[WorkReportBoardMember] Could not create new WorkReportBoardMember. Message is: "+ e.getMessage());
+      e.printStackTrace(System.err);
+    }
+    workReportBoardMember.setReportId(getWorkReportId());
+    return workReportBoardMember;
+  }
+  
   private void updateWorkReportBoardMember(EntityPathValueContainer valueContainer, IWContext iwc)  {
     // precondition: value container is valid, that is its method isValid() returns true.
     // get the corresponding entity
     Integer id = valueContainer.getEntityId();
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-//  WorkReportBoardMember member = null;
-//    try {
-//      member = workReportBusiness.getWorkReportBoardMemberHome().findByPrimaryKey(id);
-//    }
-//    catch (RemoteException ex) {
-//      System.err.println(
-//        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBoardMember. Message is: "
-//          + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBoardMember.");
-//    }
-//    catch (FinderException ex)  {
-//      System.err.println(
-//      "[WorkReportBoardMemberEditor]: Can't find WorkReportBoardMember, Message is: "
-//        + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//    }
-//    String pathShortKey = valueContainer.getEntityPathShortKey();
-//    Object value = valueContainer.getValue();
-//    
-//    if (pathShortKey.equals(STATUS))  {
-//      member.setStatus(value.toString());
-//    }
-//    else if (pathShortKey.equals(NAME)) {
-//      member.setName(value.toString());
-//    }
-//    else if (pathShortKey.equals(PERSONAL_ID))  {
-//      member.setPersonalId(value.toString());
-//    }
-//    else if (pathShortKey.equals(STREET_NAME))  {
-//      member.setStreetName(value.toString());
-//    }
-//    else if(pathShortKey.equals(POSTAL_CODE_ID))  {
-//      try {
-//        int postalCode = Integer.parseInt(value.toString());
-//        member.setPostalCodeID(postalCode);
-//      }
-//      catch (NumberFormatException ex)  {
-//      }
-//    }
-//    else if(pathShortKey.equals(HOME_PHONE))  {
-//      member.setHomePhone(value.toString());
-//    }
-//    else if (pathShortKey.equals(WORK_PHONE)) {
-//      member.setWorkPhone(value.toString());
-//    }
-//    else if (pathShortKey.equals(FAX))  {
-//      member.setFax(value.toString());
-//    }
-//    else if (pathShortKey.equals(EMAIL))  {
-//      member.setEmail(value.toString());
-//    }
-//    else if (pathShortKey.equals(LEAGUE)) {
-//      String oldWorkGroupName = valueContainer.getPreviousValue().toString();
-//      String newWorkGroupName = valueContainer.getValue().toString();
-//      int year = getYear();
-//      try {
-//        workReportBusiness.changeWorkReportGroupOfMember(oldWorkGroupName, year, newWorkGroupName, year, member);
-//      }
-//      catch (RemoteException ex) {
-//        System.err.println(
-//          "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-//            + ex.getMessage());
-//        ex.printStackTrace(System.err);
-//        throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-//      }
-//    }
+    WorkReportBoardMember member = null;
+    try {
+      member = workReportBusiness.getWorkReportBoardMemberHome().findByPrimaryKey(id);
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBoardMember. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBoardMember.");
+    }
+    catch (FinderException ex)  {
+      System.err.println(
+      "[WorkReportBoardMemberEditor]: Can't find WorkReportBoardMember, Message is: "
+        + ex.getMessage());
+      ex.printStackTrace(System.err);
+    }
+    setValuesOfWorkReportBoardMember(valueContainer, member, workReportBusiness);
+    member.store();
+  }
+
+  private void setValuesOfWorkReportBoardMember(EntityPathValueContainer valueContainer, WorkReportBoardMember member, WorkReportBusiness workReportBusiness)  {
+    String pathShortKey = valueContainer.getEntityPathShortKey();
+    Object value = valueContainer.getValue();
+    
+    if (pathShortKey.equals(STATUS))  {
+      member.setStatus(value.toString());
+    }
+    else if (pathShortKey.equals(NAME)) {
+      member.setName(value.toString());
+    }
+    else if (pathShortKey.equals(PERSONAL_ID))  {
+      member.setPersonalId(value.toString());
+    }
+    else if (pathShortKey.equals(STREET_NAME))  {
+      member.setStreetName(value.toString());
+    }
+    else if(pathShortKey.equals(POSTAL_CODE_ID))  {
+      try {
+        int postalCode = Integer.parseInt(value.toString());
+        member.setPostalCodeID(postalCode);
+      }
+      catch (NumberFormatException ex)  {
+      }
+    }
+    else if(pathShortKey.equals(HOME_PHONE))  {
+      member.setHomePhone(value.toString());
+    }
+    else if (pathShortKey.equals(WORK_PHONE)) {
+      member.setWorkPhone(value.toString());
+    }
+    else if (pathShortKey.equals(FAX))  {
+      member.setFax(value.toString());
+    }
+    else if (pathShortKey.equals(EMAIL))  {
+      member.setEmail(value.toString());
+    }
+    else if (pathShortKey.equals(LEAGUE)) {
+      String oldWorkGroupName = valueContainer.getPreviousValue().toString();
+      String newWorkGroupName = valueContainer.getValue().toString();
+      int year = getYear();
+      try {
+        workReportBusiness.changeWorkReportGroupOfMember(oldWorkGroupName, year, newWorkGroupName, year, member);
+      }
+      catch (RemoteException ex) {
+        System.err.println(
+          "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+            + ex.getMessage());
+        ex.printStackTrace(System.err);
+        throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
+      }
+    }
   }
 }
 
