@@ -326,7 +326,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			List union = getWorkReportBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
 			if (!union.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_UNION;
-				return null;
+				return ((Integer) ((Group)union.iterator().next()).getPrimaryKey());	
 			}
 
 			List regional = getWorkReportBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user, iwc); //should only be one
