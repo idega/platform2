@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  */
 public class Referrals extends EHealthBlock {
 	
-	private String prefix = "patient_";
+	private String prefix = "ref_";
 	private String prmForm = prefix + "form_visit";
 		
 	private String prmDateReferral = prefix + "date_referral";
@@ -65,6 +65,27 @@ public class Referrals extends EHealthBlock {
 	private String keyRemiss3U2 = prefix + "remiss3U2";
 	private String keyRemiss4U2 = prefix + "remiss4U2";
 	private String keyRemiss5U2 = prefix + "remiss5U2";
+	
+	private String keyColumn1Row1 = prefix + "keyColumn1Row1";
+	private String keyColumn1Row2 = prefix + "keyColumn1Row2";
+	private String keyColumn1Row3 = prefix + "keyColumn1Row3";
+	private String keyColumn1Row4 = prefix + "keyColumn1Row4";
+	private String keyColumn1Row5 = prefix + "keyColumn1Row5";
+	private String keyColumn2Row1 = prefix + "keyColumn2Row1";
+	private String keyColumn2Row2 = prefix + "keyColumn2Row2";
+	private String keyColumn2Row3 = prefix + "keyColumn2Row3";
+	private String keyColumn2Row4 = prefix + "keyColumn2Row4";
+	private String keyColumn2Row5 = prefix + "keyColumn2Row5";
+	private String keyColumn3Row1 = prefix + "keyColumn3Row1";
+	private String keyColumn3Row2 = prefix + "keyColumn3Row2";
+	private String keyColumn3Row3 = prefix + "keyColumn3Row3";
+	private String keyColumn3Row4 = prefix + "keyColumn3Row4";
+	private String keyColumn3Row5 = prefix + "keyColumn3Row5";
+	private String keyColumn4Row1 = prefix + "keyColumn4Row1";
+	private String keyColumn4Row2 = prefix + "keyColumn4Row2";
+	private String keyColumn4Row3 = prefix + "keyColumn4Row3";
+	private String keyColumn4Row4 = prefix + "keyColumn4Row4";
+	private String keyColumn4Row5 = prefix + "keyColumn4Row5";
 	
 	
 	private int userID = -1;
@@ -124,18 +145,18 @@ public class Referrals extends EHealthBlock {
 		
 		ArrayList info = new ArrayList();
 		if (age != null && age.getYears() >= 70){	
-			info.add(localize(keyRemiss1U1, "Remiss"));
-			info.add(localize(keyRemiss2U1, "Remiss"));
-			info.add(localize(keyRemiss3U1, "Remiss"));
-			info.add(localize(keyRemiss4U1, "Remiss"));
-			info.add(localize(keyRemiss5U1, "Remiss"));
+			info.add(localize(keyRemiss1U1, "Remiss1"));
+			info.add(localize(keyRemiss2U1, "Remiss2"));
+			info.add(localize(keyRemiss3U1, "Remiss3"));
+			info.add(localize(keyRemiss4U1, "Remiss4"));
+			info.add(localize(keyRemiss5U1, "Remiss5"));
 		}
 		else {
-			info.add(localize(keyRemiss1U2, "Remiss"));
-			info.add(localize(keyRemiss2U2, "Remiss"));
-			info.add(localize(keyRemiss3U2, "Remiss"));
-			info.add(localize(keyRemiss4U2, "Remiss"));
-			info.add(localize(keyRemiss5U2, "Remiss"));
+			info.add(localize(keyRemiss1U2, "Remiss1"));
+			info.add(localize(keyRemiss2U2, "Remiss2"));
+			info.add(localize(keyRemiss3U2, "Remiss3"));
+			info.add(localize(keyRemiss4U2, "Remiss4"));
+			info.add(localize(keyRemiss5U2, "Remiss5"));
 		}
 		
 		
@@ -204,10 +225,10 @@ public class Referrals extends EHealthBlock {
 		int theRow = 1;
 		int theColumn = 1;
 		
-		String dates[] = {"2004-05-30", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
-		String caregivers[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Magne Syhl"};
-		String vcs[] = {"Enköpings las", "Enköpings las", "Enköpings las", "Enköpings las", "Enköpings las"};
-		String visitypes[] = {"Konsultation", "Konsultation", "Klinisk kemi..", "Klinisk kemi..", "Konsultation", "Konsultation"};
+		String dates[] = {localize(keyColumn1Row1, "2004-05-30"), localize(keyColumn1Row2,"2004-10-06"),localize(keyColumn1Row3,"2004-06-15"),localize(keyColumn1Row4, "2004-02-07"),localize(keyColumn1Row5, "2003-12-16")};
+		String caregivers[] = {localize(keyColumn2Row1,"Dr Magne Syhl"),localize(keyColumn2Row2,"Dr Alve Don"),localize(keyColumn2Row3,"Dr Inga Pren"),localize(keyColumn2Row4,"Dr Alve Don"),localize(keyColumn2Row5,"Dr Magne Syhl")};
+		String vcs[] = {localize(keyColumn3Row1,"Enköpings las"),localize(keyColumn2Row2,"Enköpings las"),localize(keyColumn2Row3,"Enköpings las"),localize(keyColumn2Row4,"Enköpings las"),localize(keyColumn2Row5,"Enköpings las")};
+		String visitypes[] = {localize(keyColumn4Row1,"Konsultation"),localize(keyColumn4Row2,"Konsultation"),localize(keyColumn4Row3,"Klinisk kemi.."),localize(keyColumn4Row4,"Konsultation"),localize(keyColumn4Row5,"Konsultation")};
 		
 		
 				
