@@ -134,8 +134,8 @@ public void main(ModuleInfo modinfo)throws Exception{
   outerTable.setAlignment(1,3,"center");
   outerTable.setWidth(outerTableWidth);
   outerTable.setHeight(outerTableHeight);
-  outerTable.setHeight(1,1,"18");
-  outerTable.setHeight(1,3,"18");
+  outerTable.setHeight(1,1,"23");
+  outerTable.setHeight(1,3,"23");
   outerTable.setCellpadding(2);
   outerTable.setCellspacing(0);
  // outerTable.setBorder(1);
