@@ -55,6 +55,13 @@ public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(j
 	return this.findByPrimaryKey(pk);
 }
 
+public PaymentRecord findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(PaymentHeader header, java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(header, p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public PaymentRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PaymentRecord) super.findByPrimaryKeyIDO(pk);
  }

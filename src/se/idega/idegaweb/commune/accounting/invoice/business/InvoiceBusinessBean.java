@@ -1,37 +1,5 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-
-import java.io.InputStream;
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
-
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -50,17 +18,46 @@ import com.idega.io.MemoryInputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.CalendarMonth;
+import com.idega.util.CalendarMonth;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import java.io.InputStream;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/19 22:03:37 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/20 23:18:26 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -461,7 +458,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 						(regSpecTypeId);
 				final String regSpecTypeName = regSpecType.getRegSpecType ();
 				if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
-					//	connectToPayment (record);
+					connectToPayment (record);
 				}
 			} catch (Exception e) {
 				e.printStackTrace ();
@@ -475,16 +472,16 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	
 	private void connectToPayment (final InvoiceRecord invoiceRecord)
 	throws RemoteException, CreateException {
-		final PaymentHeaderHome paymentHeaderHome = getPaymentHeaderHome ();
 		final InvoiceHeader invoiceHeader = invoiceRecord.getInvoiceHeader ();
 		final SchoolCategory schoolCategory = invoiceHeader.getSchoolCategory ();
 		final School school = invoiceRecord.getProvider ();
 		final Date period = invoiceHeader.getPeriod ();
 		final char status = 'P';
 		PaymentHeader paymentHeader;
+		PaymentHeaderHome paymentHeaderHome = getPaymentHeaderHome ();
 		try {
-			paymentHeader
-					= paymentHeaderHome.findBySchoolCategoryAndSchoolAndPeriodAndStatus
+			paymentHeader	= paymentHeaderHome
+					.findBySchoolCategoryAndSchoolAndPeriodAndStatus
 					(school, schoolCategory, period, status + "");
 		} catch (FinderException e) {
 			paymentHeader = paymentHeaderHome.create ();
@@ -494,8 +491,43 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			paymentHeader.setStatus (status);
 			paymentHeader.store ();
 		}
-	}
-	
+		final String ownPosting = invoiceRecord.getOwnPosting ();
+		final String doublePosting = invoiceRecord.getDoublePosting ();
+		final String regSpecTypeName
+				= invoiceRecord.getRegSpecType ().getRegSpecType ();
+		final String ruleText = invoiceRecord.getRuleText ();
+		final float amount = invoiceRecord.getAmount ();
+		final float amountVat = invoiceRecord.getAmountVAT ();
+		PaymentRecord paymentRecord;
+		PaymentRecordHome paymentRecordHome = getPaymentRecordHome ();
+		try {
+			paymentRecord = paymentRecordHome
+					.findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth
+					(paymentHeader, ownPosting, doublePosting, regSpecTypeName, ruleText,
+					 new CalendarMonth (period));
+			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount () + amount);
+			paymentRecord.setTotalAmountVAT (paymentRecord.getTotalAmountVAT ()
+																			 + amountVat);
+			paymentRecord.setPlacements (paymentRecord.getPlacements () + 1);
+		} catch (FinderException e) {
+			paymentRecord = paymentRecordHome.create ();
+			paymentRecord.setCreatedBy (invoiceRecord.getCreatedBy ());
+			paymentRecord.setDateCreated (invoiceRecord.getDateCreated ());
+			paymentRecord.setVATType (invoiceRecord.getVATType ());
+			paymentRecord.setDoublePosting (doublePosting);
+			paymentRecord.setOwnPosting (ownPosting);
+			paymentRecord.setPaymentHeader (paymentHeader);
+			paymentRecord.setPaymentText (ruleText);
+			paymentRecord.setPeriod (period);
+			paymentRecord.setRuleSpecType (regSpecTypeName);
+			paymentRecord.setStatus (status);
+			paymentRecord.setTotalAmount (amount);
+			paymentRecord.setTotalAmountVAT (amountVat);
+		}
+		invoiceRecord.setPaymentRecord (paymentRecord);
+		paymentRecord.store ();
+	}	
+
 	public SchoolClassMember [] getSchoolClassMembers
 		(final InvoiceHeader header) {
 		final Collection allPlacements = new ArrayList ();
