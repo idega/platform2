@@ -131,7 +131,7 @@ public class CitizenChildren extends CommuneBlock {
 		if (addLoggedInUser()) {
 			childs.add(user);
 		}
-		if (!childs.isEmpty()) {
+		if (childs != null && !childs.isEmpty()) {
 			Iterator iter = childs.iterator();
 			User child;
 			ArrayList outOfRangeChilds = new ArrayList();
