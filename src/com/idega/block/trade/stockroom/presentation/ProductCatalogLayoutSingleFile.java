@@ -94,9 +94,10 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 	      teaser = ProductBusiness.getProductTeaser(product, productCatalog._currentLocaleId);
 	      if (!teaser.equals("")) {
 		++row;
-		table.setWidth(2, row, "100%");
-		table.mergeCells(2, row, 3, row);
-		table.add(productCatalog.getText(teaser), 2,row);
+		table.mergeCells(1, row, 3, row);
+		table.setWidth(1, row, "100%");
+		table.add(productCatalog.getTeaserText(teaser), 1,row);
+		table.setHeight(++row,"12");
 	      }
 	    }
 

@@ -52,6 +52,7 @@ public class ProductCatalog extends CategoryBlock{
 
   private String _fontStyle = null;
   private String _catFontStyle = null;
+  private String _teaserFontStyle = null;
   private String _anchorString = "prodCatAnchorID_";
 
   String _width = null;
@@ -258,6 +259,10 @@ public class ProductCatalog extends CategoryBlock{
     this._catFontStyle = catFontStyle;
   }
 
+  public void setTeaserFontStyle(String teaserFontStyle) {
+    this._teaserFontStyle = teaserFontStyle;
+  }
+
   public void setItemsPerPage(int numberOfItems) {
     this.productsPerPage = numberOfItems;
   }
@@ -366,6 +371,15 @@ public class ProductCatalog extends CategoryBlock{
     if (_catFontStyle != null) {
       text.setFontStyle(_catFontStyle);
     }
+    return text;
+  }
+
+  Text getTeaserText(String content) {
+    Text text = new Text(content);
+    if (_teaserFontStyle != null) {
+      text.setFontStyle(_teaserFontStyle);
+    }
+    //text.setHorizontalAlignment(Paragraph.HORIZONTAL_ALIGN_JUSTIFY);
     return text;
   }
 
