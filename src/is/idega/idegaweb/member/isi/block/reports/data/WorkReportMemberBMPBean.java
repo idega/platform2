@@ -153,6 +153,18 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public Collection ejbFindAllWorkReportMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
+  
+  public Integer ejbFindWorkReportMemberBySocialSecurityNumberAndWorkReportId(String ssn, int reportId) throws FinderException  {
+    IDOQuery sql = idoQuery();
+    
+    sql.appendSelectAllFrom(this.getEntityName())
+    .appendWhere()
+    .append(COLUMN_NAME_PERSONAL_ID).appendEqualSign()
+    .append('\'').append(ssn).append('\'')
+    .appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
+  
+    return (Integer) idoFindOnePKByQuery(sql);
+  }
 	
 	public Integer ejbFindWorkReportMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();

@@ -27,6 +27,13 @@ public java.util.Collection findAllWorkReportMembersByWorkReportIdOrderedByMembe
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public WorkReportMember findWorkReportMemberBySocialSecurityNumberAndWorkReportId(java.lang.String p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((WorkReportMemberBMPBean)entity).ejbFindWorkReportMemberBySocialSecurityNumberAndWorkReportId(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public WorkReportMember findWorkReportMemberByUserIdAndWorkReportId(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((WorkReportMemberBMPBean)entity).ejbFindWorkReportMemberByUserIdAndWorkReportId(p0,p1);

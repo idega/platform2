@@ -56,6 +56,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.IWColor;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -89,6 +90,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private List fieldList;
   
   private boolean personalIdnotCorrect = false;
+  private boolean memberAlreadyExist = false;
   
   // key: member id, value: collection of league names, to that the member belongs
   private Map memberLeaguesMap = null;
@@ -306,6 +308,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       text.setBold();
       add(text);
     }
+    if (memberAlreadyExist) {
+      String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number already exist");
+    }
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
@@ -419,9 +424,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     browser.setDefaultNumberOfRows(Math.min(entities.size(), 20));
     browser.setEntities("dummy_string", entities);
+    // some look settings
     browser.setCellpadding(2);
     browser.setCellspacing(0);
     browser.setBorder(0);
+    browser.setColorForEvenRows(IWColor.getHexColorString(246, 246, 247));
+    browser.setColorForOddRows("#FFFFFF");
     return browser;
   }
   
@@ -464,10 +472,10 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   /** business method: find
    * @param primaryKey
    * @return desired WorkReportDivisionBoard or null if not found
-   */
-  private WorkReportMember findWorkReportMember(Integer primaryKey, IWContext iwc) {
+   */  
+  private WorkReportMember findWorkReportMember(Integer primaryKey, IWApplicationContext iwac) {
     WorkReportMember member = null;
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwac);
     try {
       member = workReportBusiness.getWorkReportMemberHome().findByPrimaryKey(primaryKey);
     }
@@ -489,8 +497,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   // business method: create
   private void createWorkReportMember(String personalId, IWApplicationContext iwac)  {
+    WorkReportMember member = findWorkReportMember(personalId, iwac);
+    if (member != null) {
+      memberAlreadyExist = true;
+      return;
+    }
     try {
-      WorkReportMember member = getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
+      member = getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
       if (member == null) {
         personalIdnotCorrect = true;
       }
@@ -516,13 +529,15 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     else if (pathShortKey.equals(PERSONAL_ID))  {
       String socialSecurityNumber = value.toString();
-      Integer userId = getUserIdBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
-      if (userId == null) {
+      User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
+      if (user == null) {
         personalIdnotCorrect = true;
         return;
       }
-      member.setUserId(userId.intValue());
+      member.setName(user.getName());
+      member.setUserId(((Integer) user.getPrimaryKey()).intValue());
       member.setPersonalId(value.toString());
+      
     }
     else if (pathShortKey.equals(STREET_NAME))  {
       member.setStreetName(value.toString());
@@ -541,8 +556,39 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
     }
   }
+
+  /** business method: find
+   * @param primaryKey
+   * @return desired WorkReportDivisionBoard or null if not found
+   */  
+  private WorkReportMember findWorkReportMember(String ssn, IWApplicationContext iwac) {
+    WorkReportMember member = null;
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwac);
+    try {
+      member = workReportBusiness.getWorkReportMemberHome().
+      findWorkReportMemberBySocialSecurityNumberAndWorkReportId(ssn, getWorkReportId());
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard.");
+    }
+    catch (FinderException ex)  {
+      System.err.println(
+      "[WorkReportDivisionBoardEditor]: Can't find WorkReportDivisionBoard. Message is: "
+        + ex.getMessage());
+      ex.printStackTrace(System.err);
+      member = null;
+    }  
+    return member;
+  }
+
+
+
   
-  private Integer getUserIdBySocialSecurityNumber(String socialSecurirtyNumber, WorkReportBusiness workReportBusiness)  {
+  private User getUserBySocialSecurityNumber(String socialSecurirtyNumber, WorkReportBusiness workReportBusiness)  {
     User user;
     try {
       user = workReportBusiness.getUser(socialSecurirtyNumber);
@@ -554,7 +600,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       return null;
     } ;
-    return (user == null) ? null : (Integer) user.getPrimaryKey();
+    return user;
   }    
  
   // business method: remove league
