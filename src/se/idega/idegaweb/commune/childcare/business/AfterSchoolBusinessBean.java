@@ -165,7 +165,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		choice.setHasPriority(true);
 		
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
-			getSchoolChoiceBusiness().sendMessageToParents(choice, subject, body);
+			sendMessageToParents(choice, subject, body);
 		}
 
 		if (parentCase != null)
