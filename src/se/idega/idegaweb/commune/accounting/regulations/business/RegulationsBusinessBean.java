@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.2 2003/08/21 15:58:22 anders Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.3 2003/08/23 21:01:48 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,7 +12,6 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 import java.util.Collection;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
-import java.sql.Date;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
@@ -26,14 +25,12 @@ import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome
 import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulationHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 
 /**
  * @author Kjell Lindman
  * 
  */ 
-public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean implements RegulationsBusiness  {
+public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean implements RegulationsBusiness {
 	 
 	/**
 	 * Gets all Activity types
@@ -136,7 +133,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
-
+ 
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
 	}
@@ -160,45 +157,5 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	protected ProviderTypeHome getProviderTypeHome() throws RemoteException {
 		return (ProviderTypeHome) com.idega.data.IDOLookup.getHome(ProviderType.class);
 	}	
-		
-	protected VATRegulationHome getVATRegulationHome() throws RemoteException {
-		return (VATRegulationHome) com.idega.data.IDOLookup.getHome(VATRegulation.class);
-	}	
-	
-	/**
-	 * Finds all VAT regulations.
-	 * @return collection of VAT regulation objects
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#VATRegulation 
-	 * @author anders
-	 */
-	public Collection findAllVATRegulations() {
-		try {
-			VATRegulationHome home = getVATRegulationHome();
-			return home.findAll();				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
-			return null;
-		}
-	}	
-	
-	/**
-	 * Finds all VAT regulations for the specified period.
-	 * @param from the start of the period
-	 * @param to the end of the period
-	 * @return collection of VAT regulation objects
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#VATRegulation 
-	 * @author anders
-	 */
-	public Collection findVATRegulations(Date from, Date to) {
-		try {
-			VATRegulationHome home = getVATRegulationHome();
-			return home.findByPeriod(from, to);				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
-			return null;
-		}
-	}	
-
 }
+ 
