@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
@@ -352,6 +353,29 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (CreateException cre) {
 		}
 	}
+	public void savePayment(int userID, int distanceID, String payMethod, String amount) {
+		try {
+			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			Collection runObjs = runHome.findRunByUserIDandDistanceID(userID,distanceID);
+			if(runObjs != null) {
+				Iterator runIt = runObjs.iterator();
+				while(runIt.hasNext()) {
+					Run run = (Run) runIt.next();
+					if(run != null) {
+						run.setPayMethod(payMethod);
+						run.setPayedAmount(amount);
+						run.store();
+					}
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void setParticipantNumber(Run participant) {
 		try {
@@ -603,7 +627,6 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * @return a Collection of the run types
 	 */
 	public Collection getRuns() {
-		IWContext iwc = IWContext.getInstance();
 		Collection runs = null;
 		String[] type = { IWMarathonConstants.GROUP_TYPE_RUN };
 		try {
@@ -613,6 +636,53 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			runs = null;
 		}
 		return runs;
+	}
+	public Collection getRunsForUser(User user) {
+		Collection groups = null;
+		Collection runs = new ArrayList();
+		String[] typeRun = { IWMarathonConstants.GROUP_TYPE_RUN };
+		String[] typeGroup = { IWMarathonConstants.GROUP_TYPE_RUN_GROUP };
+		try {
+			groups = getUserBiz().getUserGroups(user,typeGroup,true);
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+			groups = null;
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			groups = null;
+		}
+		if(groups != null) {
+			Iterator groupsIter = groups.iterator();
+			while(groupsIter.hasNext()) {
+				Group group = (Group) groupsIter.next();
+				Collection r = null;
+				try {
+					r = getGroupBiz().getParentGroupsRecursive(group,typeRun,true);
+				}
+				catch (IBOLookupException e1) {
+					e1.printStackTrace();
+				}
+				catch (EJBException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
+				if(r != null) {
+					Iterator rIter = r.iterator();
+					while(rIter.hasNext()) {
+						Group run = (Group) rIter.next();
+						if(run != null) {
+							runs.add(run);
+						}
+					}
+				}
+			}
+		}
+		return runs;
+		
 	}
 
 	/**
