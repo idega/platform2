@@ -68,7 +68,6 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
@@ -1309,11 +1308,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return contractFile;
 	}
 	
-	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer) {
+	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer)throws RemoteException {
 	    verifyApplication(lastContract,application,member,performer);
 	}
 
-	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer,int schoolTypeId,int schoolClassId) {
+	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer,int schoolTypeId,int schoolClassId)throws RemoteException {
 		try {
 		    //Collection archives = getChildCareContractArchiveHome().findLatestByApplication(((Integer) application.getPrimaryKey()).intValue(),2);
 		    //Iterator iter = archives.iterator();
@@ -1343,7 +1342,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			    Collection contractPlacements = getChildCareContractArchiveHome().findAllBySchoolClassMember(placement);
 			    // only allow update when only one contract linked to the classmember
 			    // or the one being changed is the first contract
-			    if(contractPlacements.size()==1 || lastContract.getPrimaryKey().equals(firstContract.getPrimaryKey()) ) {
+			    if(contractPlacements.size()==1 ){//|| lastContract.getPrimaryKey().equals(firstContract.getPrimaryKey()) ) {
 					placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
 					if (lastContract.getTerminatedDate() != null) {
 						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
@@ -1358,6 +1357,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					
 					placement.store();
 				}
+			    // create new placement and attach to archive
+			    else if( schoolTypeId>0 && schoolClassId>0){
+			        SchoolClassMember newPlacement = createNewPlacement(new Integer(lastContract.getChildID()),new Integer(schoolTypeId),new Integer(schoolClassId),placement,new IWTimestamp(lastContract.getValidFromDate()), performer);
+			        lastContract.setSchoolClassMember(newPlacement);
+			        if (lastContract.getTerminatedDate() != null) {
+						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
+						placement.store();
+			        }
+				
+			    }
 			}
 
 		}
