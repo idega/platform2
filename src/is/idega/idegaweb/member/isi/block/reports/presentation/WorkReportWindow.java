@@ -7,7 +7,9 @@ import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -29,6 +31,11 @@ import com.idega.util.IWTimestamp;
  */
 
 public class WorkReportWindow extends StyledIWAdminWindow {
+	private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
+	public static final String STATS_LAYOUT_PREFIX = "STATS_LAYOUT_PREFIX";
+	private static final String STATS_LAYOUT_PARAM = "STATS_LAYOUT_PARAM";
+	private static final String STATS_INVOCATION_PARAM = "STATS_INVOCATION_PARAM";
+	private static final String STATS_INVOCATION_PREFIX = "stats_invocation_xml_file_id_";
 	private MemberUserBusiness memBiz;
 	private GroupBusiness groupBiz;
 	private UserBusiness userBiz;
@@ -63,7 +70,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	protected static final String COLOR_LIGHTEST = "#EFEFEF";
 
 	private IWResourceBundle iwrb;
-
+	private IWBundle iwb;
+	
 	public WorkReportWindow() {
 		setHeight(600);
 		setWidth(800);
@@ -75,6 +83,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
+		
 		workBiz = getWorkReportBusiness(iwc);
 
 		//sets the type of user making or viewing the reports. union staff, regional union staff, league staff, federation staff or club staff
@@ -182,7 +192,33 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"));
 			}
 			else if (action.equals(ACTION_STATISTICS)) {
-				selector = new WorkReportSelector();
+				ReportGenerator repGen = new ReportGenerator();
+				repGen.setParameterToMaintain(ACTION);
+				repGen.setParameterToMaintain(STATS_INVOCATION_PARAM);
+				repGen.setParameterToMaintain(STATS_LAYOUT_PARAM);
+				repGen.setParameterToMaintain(STATS_LOCALIZABLE_KEY_NAME);
+				
+				String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
+				String layoutKey = iwc.getParameter(STATS_LAYOUT_PARAM);
+				String localizedNameKey = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
+				
+				if(invocationKey!=null && iwb.getProperty(invocationKey,"-1")!=null ){
+					Integer invocationICFileID = new Integer(iwb.getProperty(invocationKey));
+					if(invocationICFileID.intValue()>0)
+					repGen.setMethodInvocationICFileID(invocationICFileID);
+	
+					if(layoutKey!=null && iwb.getProperty(layoutKey,"-1")!=null ){
+						Integer layoutICFileID = new Integer(iwb.getProperty(layoutKey));
+						if(layoutICFileID.intValue()>0)
+						repGen.setLayoutICFileID(layoutICFileID);
+					}
+					
+					if(localizedNameKey!=null){
+						repGen.setReportName(iwrb.getLocalizedString(localizedNameKey));
+					}
+				}
+				
+				table.add(repGen,2,1);	//not a selector
 				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"));
 			}
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
@@ -370,13 +406,61 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//B.12
 		Text statistics = formatHeadline(iwrb.getLocalizedString("workreportwindow.statistics", "Statistics"));
 
-		Lists statsList = new Lists();
-		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.leagues", "Leagues")));
-		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.regional_unions", "Regional unions")));
-		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.clubs", "Clubs")));
-		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.accounts", "Accounts")));
-		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.reports_list", "Reports list")));
-		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.misc", "Misc")));
+		Table stats = new Table(1,12);
+		
+		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.leagues", "Leagues")),1,1);
+		
+		
+		LinkContainer b12_1_1 = new LinkContainer();
+		b12_1_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_1_reportname", "Players per club -/+ 16"), false));
+		b12_1_1.addParameter(ACTION, ACTION_STATISTICS);
+		b12_1_1.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_1");
+		b12_1_1.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_1");
+		b12_1_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_1_reportname");
+		b12_1_1.setStyleClass(styledLink);
+		
+		stats.add(b12_1_1,1,2);
+		stats.addBreak(1,2);
+		
+		LinkContainer b12_1_2 = new LinkContainer();
+		b12_1_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_2_reportname", "Players per reg.uni. -/+ 16"), false));
+		b12_1_2.addParameter(ACTION, ACTION_STATISTICS);
+		b12_1_2.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_2");
+		b12_1_2.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_2");
+		b12_1_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_2_reportname");
+		b12_1_2.setStyleClass(styledLink);
+		
+		stats.add(b12_1_2,1,2);
+		stats.addBreak(1,2);
+		
+		LinkContainer b12_1_3 = new LinkContainer();
+		b12_1_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_3_reportname", "Players per league -/+ 16"), false));
+		b12_1_3.addParameter(ACTION, ACTION_STATISTICS);
+		b12_1_3.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_3");
+		b12_1_3.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_3");
+		b12_1_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_3_reportname");
+		b12_1_3.setStyleClass(styledLink);
+		
+		stats.add(b12_1_3,1,2);
+		stats.addBreak(1,2);
+		
+		LinkContainer b12_1_4 = new LinkContainer();
+		b12_1_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_4_reportname", "Compare player stats with previous year"), false));
+		b12_1_4.addParameter(ACTION, ACTION_STATISTICS);
+		b12_1_4.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_4");
+		b12_1_4.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_4");
+		b12_1_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_4_reportname");
+		b12_1_4.setStyleClass(styledLink);
+		
+		stats.add(b12_1_4,1,2);
+		
+			
+		
+		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.regional_unions", "Regional unions")),1,3);
+		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.clubs", "Clubs")),1,5);
+		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.accounts", "Accounts")),1,7);
+		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.reports_list", "Reports list")),1,9);
+		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.misc", "Misc")),1,11);
 
 		//B.13
 		LinkContainer createReports = new LinkContainer();
@@ -417,7 +501,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			if (!WorkReportConstants.WR_USER_TYPE_CLUB.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(statistics, 1, 12);
 				menu.setRowColor(12, COLOR_MIDDLE);
-				menu.add(statsList, 1, 13);
+				menu.add(stats, 1, 13);
 			}
 			
 
