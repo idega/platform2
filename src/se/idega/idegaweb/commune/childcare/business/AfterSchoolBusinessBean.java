@@ -295,11 +295,11 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 				} else {
 					continue;
 				}
-				if (!hasActivePlacementNotWithProvider(application.getChildId(), providerId)) {
+				//if (!hasActivePlacementNotWithProvider(application.getChildId(), providerId)) {
 					if (assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user, locale, true)) {
 						users.add(application.getChild());
 					}
-				}
+				//}
 			}
 		}
 		return users;
