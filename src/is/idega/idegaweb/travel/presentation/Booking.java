@@ -33,7 +33,14 @@ public class Booking extends TravelManager {
   private IWResourceBundle iwrb;
 
   private Supplier supplier;
+    private int supplierId;
+  private Reseller reseller;
+    private int resellerId;
+  private Contract contract;
+    private int contractId;
+
   private Product product;
+    private int productId;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
   private String BookingAction = "booking_action";
@@ -57,7 +64,7 @@ public class Booking extends TravelManager {
       super.main(modinfo);
       initialize(modinfo);
 
-      if (supplier != null) {
+      if ( (supplier != null) || (reseller != null)) {
         String action = modinfo.getParameter(this.BookingAction);
         if (action == null) {action = "";}
 
@@ -78,16 +85,20 @@ public class Booking extends TravelManager {
       iwrb = super.getResourceBundle();
 
       supplier = super.getSupplier();
+      reseller = super.getReseller();
+      if (supplier != null) supplierId = supplier.getID();
+      if (reseller != null) resellerId = reseller.getID();
 
-      String productId = modinfo.getParameter(Product.getProductEntityName());
+      String sProductId = modinfo.getParameter(Product.getProductEntityName());
       try {
-        if (productId == null) {
-          productId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
+        if (sProductId == null) {
+          sProductId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
         }else {
-          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
+          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",sProductId);
         }
-        if (productId != null) {
-          product = new Product(Integer.parseInt(productId));
+        if (sProductId != null) {
+          productId = Integer.parseInt(sProductId);
+          product = new Product(productId);
           service = tsb.getService(product);
           tour = tsb.getTour(product);
           timeframe = tsb.getTimeframe(product);
@@ -100,6 +111,18 @@ public class Booking extends TravelManager {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
+      if ((reseller != null) && (product != null)){
+        try {
+            Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(reseller.getID()), Contract.getColumnNameServiceId(), Integer.toString(product.getID()) );
+            if (contracts.length > 0) {
+              contract = contracts[0];
+              contractId = contract.getID();
+            }
+        }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+        }
+
+      }
       stamp = getIdegaTimestamp(modinfo);
 
   }
@@ -150,7 +173,11 @@ public class Booking extends TravelManager {
 
       DropdownMenu trip = null;
       try {
-        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID() ));
+        if (supplier != null) {
+          trip = new DropdownMenu(tsb.getProducts(supplierId));
+        }else if (reseller != null) {
+          trip = new DropdownMenu(tsb.getProductsForReseller(resellerId ));
+        }
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());
@@ -189,7 +216,7 @@ public class Booking extends TravelManager {
       topTable.add(year,4,1);
 
       topTable.setAlignment(5,1,"right");
-      topTable.add(new SubmitButton("TEMP-Sækja"),5,1);
+      topTable.add(new SubmitButton("TEMP-Sækja",this.BookingAction, ""),5,1);
 
       return topTable;
   }
@@ -259,41 +286,48 @@ public class Booking extends TravelManager {
         table.setWidth(6,"200");
 
       int row = 1;
-
+      boolean isDayVisible = false;
       try {
-          if (TravelStockroomBusiness.getIfDay(this.product, this.stamp)) {
-              table.mergeCells(1,row,5,row);
-              table.add(getInqueries(),1,row);
-              table.setColor(1,row,NatBusiness.YELLOW);
-
-              table.setColor(6,row,NatBusiness.backgroundColor);
-              table.setVerticalAlignment(6,row,"top");
-              table.add(getCalendar(modinfo),6,row);
-
-              ++row;
-              table.mergeCells(1,row,5,row);
-              table.setColor(1,row,NatBusiness.backgroundColor );
-              table.mergeCells(6,1,6,row);
-              table.add(getBookingForm(),1,row);
-
-          }else {
-              table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(modinfo));
-              table.mergeCells(1,row,5,row);
-              table.setAlignment(1,row, "center");
-
-              table.setColor(6,row,NatBusiness.backgroundColor);
-              table.setVerticalAlignment(6,row,"top");
-              table.add(getCalendar(modinfo),6,row);
-
-              ++row;
-              table.mergeCells(1,row,5,row);
-              table.setColor(1,row,NatBusiness.backgroundColor );
-              table.mergeCells(6,1,6,row);
+        isDayVisible = TravelStockroomBusiness.getIfDay(modinfo,this.product, this.stamp);
+        if (reseller != null) {
+          if (isDayVisible) {
+            TravelStockroomBusiness.getIfDay(modinfo, contract, stamp);
           }
+        }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
+      }
+
+      if (isDayVisible) {
+          table.mergeCells(1,row,5,row);
+          table.add(getInqueries(),1,row);
+          table.setColor(1,row,NatBusiness.YELLOW);
+
+          table.setColor(6,row,NatBusiness.backgroundColor);
+          table.setVerticalAlignment(6,row,"top");
+          table.add(getCalendar(modinfo),6,row);
+
+          ++row;
+          table.mergeCells(1,row,5,row);
+          table.setColor(1,row,NatBusiness.backgroundColor );
+          table.mergeCells(6,1,6,row);
+          table.add(getBookingForm(),1,row);
+
+      }else {
+          table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(modinfo));
+          table.mergeCells(1,row,5,row);
+          table.setAlignment(1,row, "center");
+
+          table.setColor(6,row,NatBusiness.backgroundColor);
+          table.setVerticalAlignment(6,row,"top");
+          table.add(getCalendar(modinfo),6,row);
+
+          ++row;
+          table.mergeCells(1,row,5,row);
+          table.setColor(1,row,NatBusiness.backgroundColor );
+          table.mergeCells(6,1,6,row);
       }
 
       return table;
@@ -425,11 +459,23 @@ public class Booking extends TravelManager {
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
 
       try {
-        for (int i = 1; i <= lengthOfMonth; i++) {
-          if (TravelStockroomBusiness.getIfDay(product,temp)) {
-            sm.setDayColor(temp, colorForAvailableDay);
+        if (supplier != null) {
+          for (int i = 1; i <= lengthOfMonth; i++) {
+            if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
+              sm.setDayColor(temp, colorForAvailableDay);
+            }
+            temp.addDays(1);
           }
-          temp.addDays(1);
+        }
+        else if (contract != null) {
+          for (int i = 1; i <= lengthOfMonth; i++) {
+            if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
+              if (TravelStockroomBusiness.getIfDay(modinfo,contract,temp)) {
+                sm.setDayColor(temp, colorForAvailableDay);
+              }
+            }
+            temp.addDays(1);
+          }
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
         snfe.printStackTrace(System.err);
@@ -546,7 +592,8 @@ public class Booking extends TravelManager {
       Text availableTextBold = (Text) theSmallBoldText.clone();
 
       try {
-          if (TravelStockroomBusiness.getIfDay(this.product, this.stamp)) {
+        if (supplier != null) {
+          if (TravelStockroomBusiness.getIfDay(modinfo, this.product, this.stamp)) {
             iCount = tour.getTotalSeats();
             countTextBold.setText(Integer.toString(iCount));
 
@@ -560,6 +607,22 @@ public class Booking extends TravelManager {
             availableTextBold.setText(Integer.toString(iAvailable));
 
           }
+        }else if (reseller != null) {
+          if (TravelStockroomBusiness.getIfDay(modinfo, contract, this.stamp)) {
+            iCount = contract.getAlotment();
+            countTextBold.setText(Integer.toString(iCount));
+
+            iBooked = tsb.getNumberOfBookings(resellerId, service.getID(), this.stamp);
+            bookedTextBold.setText(Integer.toString(iBooked));
+
+            iInquery = 0;
+            inqTextBold.setText(Integer.toString(iInquery));
+
+            iAvailable = iCount - iBooked;
+            availableTextBold.setText(Integer.toString(iAvailable));
+
+          }
+        }
 
 
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
@@ -637,6 +700,10 @@ public class Booking extends TravelManager {
           Text countryText = (Text) theText.clone();
               countryText.setText(iwrb.getLocalizedString("travel.country_sm","country"));
 
+          Text tReferenceNumber = (Text) theText.clone();
+            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+          TextInput tiReferenceNumber = new TextInput("reference_number");
+            tiReferenceNumber.setSize(10);
 
 
           TextInput surname = new TextInput("surname");
@@ -759,6 +826,12 @@ public class Booking extends TravelManager {
           table.add(TotalTextInput,2,row);
 
           ++row;
+          if (reseller != null) {
+            table.setAlignment(2,row,"right");
+            table.add(tReferenceNumber,2,row);
+            table.add(tiReferenceNumber,3,row);
+          }
+
           ++row;
           table.add(new SubmitButton("TEMP BÓKA"),4,row);
           table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
@@ -817,12 +890,14 @@ public class Booking extends TravelManager {
       String country = modinfo.getParameter("country");
       String hotelPickupPlaceId = modinfo.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
 
+      String referenceNumber = modinfo.getParameter("reference_number");
+
       String many;
       int iMany = 0;
       int iHotelId;
 
       ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
-      int bookingId;
+      int bookingId = -1;
 
       try {
         int[] manys = new int[pPrices.length];
@@ -842,16 +917,25 @@ public class Booking extends TravelManager {
           iHotelId = -1;
         }
 
-        bookingId = tsb.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+        if (supplier != null) {
+            bookingId = tsb.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+        }else if (reseller != null) {
+            if (reseller.getReferenceNumber().equals(referenceNumber)) {
+              bookingId = tsb.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
+              reseller.addTo(is.idega.travel.data.Booking.class, bookingId);
+            }
+        }
 
-        BookingEntry bEntry;
-        for (int i = 0; i < pPrices.length; i++) {
-          if (manys[i] != 0) {
-            bEntry = new BookingEntry();
-              bEntry.setProductPriceId(pPrices[i].getID());
-              bEntry.setBookingId(bookingId);
-              bEntry.setCount(manys[i]);
-            bEntry.insert();
+        if (bookingId != -1) {
+          BookingEntry bEntry;
+          for (int i = 0; i < pPrices.length; i++) {
+            if (manys[i] != 0) {
+              bEntry = new BookingEntry();
+                bEntry.setProductPriceId(pPrices[i].getID());
+                bEntry.setBookingId(bookingId);
+                bEntry.setCount(manys[i]);
+              bEntry.insert();
+            }
           }
         }
 

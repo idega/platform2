@@ -445,6 +445,9 @@ public class ServiceDesigner extends TravelManager {
             int serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
             setService(modinfo,serviceId);
         }
+        /**
+         * @todo TravelStockroomBusiness.removeServiceDayHashtable....
+         */
 
         priceCategoryCreation(modinfo);
 

@@ -173,12 +173,7 @@ public class Statistics extends TravelManager {
 
 
       DropdownMenu trip = null;
-      try {
-        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID()));
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-        trip = new DropdownMenu(Product.getProductEntityName());
-      }
+        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
 
       if (product != null) {
           trip.setSelectedElement(Integer.toString(product.getID()));

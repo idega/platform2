@@ -3,7 +3,7 @@ package is.idega.travel.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
-import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.*;
 
 /**
  * Title:        IW Travel
@@ -46,6 +46,8 @@ public class Booking extends GenericEntity{
     addAttribute(getPostalCodeColumnName(), "Póstnúmer", true, true, String.class);
     addAttribute(getAttendanceColumnName(), "Mæting", true, true, Integer.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
+
+    this.addManyToManyRelationShip(Reseller.class);
   }
 
   public void setDefaultValues() {

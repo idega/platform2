@@ -76,24 +76,22 @@ public class TravelManager extends JModuleObject {
           table.setHeight(1,2,"100%");
           table.setWidth("850");
 
+        Image iDesign = iwrb.getImage("buttons/design_trip.gif");
+        Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
+        Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
+        Image iBooking = iwrb.getImage("buttons/booking.gif");
+        Image iStatistics = iwrb.getImage("buttons/statistics.gif");
+        Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
+        Image iContracts = iwrb.getImage("buttons/contracts.gif");
+        Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
+
         if ( AccessControl.isAdmin(modinfo)){
 
-            Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,"lInitialData");
             table.add(lInitialData,1,1);
 
         }else if (supplier != null) {
-
-            Image iDesign = iwrb.getImage("buttons/design_trip.gif");
-            Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
-            Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
-            Image iBooking = iwrb.getImage("buttons/booking.gif");
-            Image iStatistics = iwrb.getImage("buttons/statistics.gif");
-            Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
-            Image iContracts = iwrb.getImage("buttons/contracts.gif");
-            Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
-
 
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
               lDesign.addParameter(this.sAction,"lDesign");
@@ -124,10 +122,12 @@ public class TravelManager extends JModuleObject {
         }
         else if (reseller!= null) {
 
-            Image iBooking = iwrb.getImage("buttons/booking.gif");
             Link lBooking = new Link(iBooking,Booking.class);
               lBooking.addParameter(this.sAction,"lBooking");
             table.add(lBooking,1,1);
+            Link lOverview = new Link(iOverview,BookingOverview.class);
+              lOverview.addParameter(this.sAction,"lOverview");
+            table.add(lOverview,1,1);
 
         }
         Link lHome = new Link("heim","/index.jsp");

@@ -12,6 +12,9 @@ import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import com.idega.data.EntityControl;
 import java.util.List;
+import java.util.Map;
+import com.idega.util.datastructures.HashtableDoubleKeyed;
+import com.idega.jmodule.object.ModuleInfo;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import java.sql.Date;
@@ -27,6 +30,10 @@ import com.idega.data.SimpleQuerier;
  */
 
 public class TravelStockroomBusiness extends StockroomBusiness {
+
+  private static String resellerDayHashtableSessionName = "resellerDayHashtable";
+  private static String resellerDayOfWeekHashtableSessionName = "resellerDayOfWeekHashtable";
+  private static String serviceDayHashtableSessionName = "serviceDayHashtable";
 
   public static String uniqueDepartureAddressType = "TB_TRIP_DEPARTURE_ADDRESS";
   public static String uniqueArrivalAddressType = "TB_TRIP_ARRIVAL_ADDRESS";
@@ -190,7 +197,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 */
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
-      int[] hotelPickupPlaceIds = new int[pickupPlaceIds.length];
+      int[] hotelPickupPlaceIds ={};
+      if (pickupPlaceIds != null) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
       for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
         hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
       }
@@ -260,7 +268,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           sqlQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+tTable);
           sqlQuery.append(" WHERE "+pTable+"."+Product.getStaticInstance(Product.class).getIDColumnName()+" = "+tTable+"."+Timeframe.getStaticInstance(Timeframe.class).getIDColumnName());
           sqlQuery.append(" AND "+pTable+"."+Product.getColumnNameSupplierId()+" = "+supplierId);
-          sqlQuery.append(" ORDER by "+Timeframe.getTimeframeFromColumnName());
+          sqlQuery.append(" ORDER by "+Product.getColumnNameProductName());
 
         products = (Product[]) (new Product()).findAll(sqlQuery.toString());
       }catch(SQLException sql) {
@@ -481,25 +489,131 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  public static boolean getIfDay(int productId, int dayOfWeek) {
-      return ServiceDay.getIfDay(productId, dayOfWeek);
+  private static HashtableDoubleKeyed getServiceDayHashtable(ModuleInfo modinfo) {
+      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) modinfo.getSessionAttribute(serviceDayHashtableSessionName);
+      if (hash == null) {
+        hash =  new HashtableDoubleKeyed();
+        modinfo.setSessionAttribute(serviceDayHashtableSessionName, hash);
+      }
+
+      return hash;
   }
 
-  public static boolean getIfDay(Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+  public static boolean getIfDay(ModuleInfo modinfo,int productId, int dayOfWeek) {
+      boolean returner = false;
+
+      HashtableDoubleKeyed hash = getServiceDayHashtable(modinfo);
+      Object obj = hash.get(productId+"_"+dayOfWeek,"");
+      if (obj == null) {
+        returner = ServiceDay.getIfDay(productId, dayOfWeek);
+        hash.put(productId+"_"+dayOfWeek,"",new Boolean(returner));
+      }else {
+        returner = ((Boolean)obj).booleanValue();
+      }
+
+      return returner;
+  }
+
+  public static boolean getIfDay(ModuleInfo modinfo, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
       boolean isDay = false;
+      String key1 = Integer.toString(product.getID());
+      String key2 = stamp.toSQLDateString();
+
+      HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(modinfo);
+      Object obj = serviceDayHash.get(key1, key2);
+      if (obj == null) {
+
+          int dayOfWeek = stamp.getDayOfWeek();
+          boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(modinfo, product.getID(), dayOfWeek);
+          Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
+
+          if (isValidWeekDay) {
+              idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
+              idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
+              if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
+                  isDay = true;
+                  serviceDayHash.put(key1, key2, new Boolean(true) );
+              }else if (stamp.toSQLDateString().equals(from.toSQLDateString()) || stamp.toSQLDateString().equals(to.toSQLDateString())) {
+                  isDay = true;
+                  serviceDayHash.put(key1, key2, new Boolean(true) );
+              }else {
+                  serviceDayHash.put(key1, key2, new Boolean(false) );
+              }
+          }else {
+              serviceDayHash.put(key1, key2, new Boolean(false) );
+          }
+      }
+      else {
+        isDay = ((Boolean) obj).booleanValue();
+      }
+      return isDay;
+  }
+
+  public static HashtableDoubleKeyed getResellerDayHashtable(ModuleInfo modinfo) {
+      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) modinfo.getSessionAttribute(resellerDayHashtableSessionName);
+      if (hash == null) {
+        hash =  new HashtableDoubleKeyed();
+        modinfo.setSessionAttribute(resellerDayHashtableSessionName, hash);
+      }
+      return hash;
+  }
+
+  public static void removeResellerHashtables(ModuleInfo modinfo) {
+      modinfo.removeSessionAttribute(resellerDayHashtableSessionName);
+      modinfo.removeSessionAttribute(resellerDayOfWeekHashtableSessionName);
+  }
+
+  public static void removeServiceDayHashtable(ModuleInfo modinfo) {
+    modinfo.removeSessionAttribute(serviceDayHashtableSessionName);
+  }
+
+  private static HashtableDoubleKeyed getResellerDayOfWeekHashtable(ModuleInfo modinfo) {
+      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) modinfo.getSessionAttribute(resellerDayOfWeekHashtableSessionName);
+      if (hash == null) {
+        hash =  new HashtableDoubleKeyed();
+        modinfo.setSessionAttribute(resellerDayOfWeekHashtableSessionName, hash);
+      }
+      return hash;
+  }
+
+  public static boolean getIfDay(ModuleInfo modinfo, Contract contract, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+      boolean isDay = false;
+      String key1 = Integer.toString(contract.getID());
+      String key2 = stamp.toSQLDateString();
 
       int dayOfWeek = stamp.getDayOfWeek();
-      boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(product.getID(), dayOfWeek);
-      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
+      boolean isValidWeekDay = false;
 
-      if (isValidWeekDay) {
-          idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
-          idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
+
+      HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(modinfo);
+      Object object = resellerDayOfWeekHash.get(key1, key2);
+      if (object == null) {
+          isValidWeekDay = ResellerDay.getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
+          resellerDayOfWeekHash.put(key1, key2, new Boolean(isValidWeekDay));
+      }else {
+        isValidWeekDay = ((Boolean) object).booleanValue();
+      }
+
+      HashtableDoubleKeyed resellerDayHash = getResellerDayHashtable(modinfo);
+      Object obj = resellerDayHash.get(key1, key2);
+      if (obj == null) {
+        if (isValidWeekDay) {
+          idegaTimestamp from = new idegaTimestamp(contract.getFrom());
+          idegaTimestamp to = new idegaTimestamp(contract.getTo());
           if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
-              isDay = true;
+            isDay = true;
+            resellerDayHash.put(key1, key2, new Boolean(true));
           }else if (stamp.toSQLDateString().equals(from.toSQLDateString()) || stamp.toSQLDateString().equals(to.toSQLDateString())) {
-              isDay = true;
+            isDay = true;
+            resellerDayHash.put(key1, key2, new Boolean(true));
+          }else {
+            resellerDayHash.put(key1, key2, new Boolean(false));
           }
+        }else {
+          resellerDayHash.put(key1, key2, new Boolean(false));
+        }
+      }else {
+        isDay = ((Boolean) obj).booleanValue();
       }
 
       return isDay;
@@ -608,6 +722,65 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     booking.insert();
 
     return booking.getID();
+  }
+
+  public int getNumberOfAssignedSeats(int serviceId, idegaTimestamp stamp) {
+    int returner = 0;
+    try {
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select sum("+Contract.getColumnNameAlotment()+") from "+Contract.getContractTableName());
+            sql.append(" where ");
+            sql.append(Contract.getColumnNameServiceId()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
+            sql.append(" and ");
+            sql.append(Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
+
+        many = SimpleQuerier.executeStringQuery(sql.toString());
+
+
+        if (many != null) {
+          if (many[0] != null)
+          returner += Integer.parseInt(many[0]);
+        }
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+  public int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
+    int returner = 0;
+    try {
+        Booking booking = (Booking) (Booking.getStaticInstance(Booking.class));
+        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
+
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select count(b."+Booking.getTotalCountColumnName()+") from "+Booking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
+            sql.append(" where ");
+            sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
+            sql.append(" and ");
+            sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
+            sql.append(" and ");
+            sql.append(" b."+Booking.getServiceIDColumnName()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(" b."+Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+        many = SimpleQuerier.executeStringQuery(sql.toString());
+
+        if (many != null) {
+          if (many[0] != null)
+            returner = Integer.parseInt(many[0]);
+        }
+
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
   }
 
   public int getNumberOfBookings(int serviceId, idegaTimestamp stamp){
@@ -739,8 +912,36 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  public Product[] getProductsForDrowdown(int supplierId) throws SQLException {
-    return (Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
+  public Product[] getProductsForReseller(int resellerId) throws SQLException {
+    Product[] products = {};
+
+    try {
+        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
+        Product product = (Product) (Product.getStaticInstance(Product.class));
+
+        StringBuffer sql = new StringBuffer();
+          sql.append("SELECT p.* FROM "+Reseller.getResellerTableName()+" r, "+Product.getProductEntityName()+" p, "+Contract.getContractTableName()+" c");
+          sql.append(" WHERE ");
+          sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" r."+reseller.getIDColumnName() +" = "+resellerId);
+          sql.append(" AND ");
+          sql.append(" p."+Product.getColumnNameIsValid()+" = 'Y'");
+          sql.append(" ORDER BY p."+Product.getColumnNameProductName());
+
+        products = (Product[]) product.findAll(sql.toString());
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+
+
+    return products;
+
+    //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
   }
 
   public float getBookingPrice(Booking booking) {

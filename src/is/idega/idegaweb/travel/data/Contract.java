@@ -1,6 +1,7 @@
 package is.idega.travel.data;
 
 import com.idega.data.*;
+import com.idega.block.trade.stockroom.data.Reseller;
 import java.sql.Timestamp;
 import java.sql.SQLException;
 
@@ -16,10 +17,17 @@ import java.sql.SQLException;
 public class Contract extends GenericEntity {
 
   public Contract() {
+    super();
   }
+
+  public Contract(int id) throws SQLException {
+    super(id);
+  }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameServiceId(), "ServiceID", true, true, Integer.class, "many-to-one",Service.class);
+    addAttribute(getColumnNameResellerId(), "ResellerID", true, true, Integer.class, "many-to-one",Reseller.class);
     addAttribute(getColumnNameAlotment(), "Fjöldi sæta", true, true, Integer.class);
     addAttribute(getColumnNameFrom(), "Virkt frá", true, true, Timestamp.class);
     addAttribute(getColumnNameTo(), "Virkt til", true, true, Timestamp.class);
@@ -38,6 +46,14 @@ public class Contract extends GenericEntity {
 
   public void setService(Service service) {
     setServiceId(service.getID());
+  }
+
+  public void setResellerId(int id) {
+    setColumn(getColumnNameResellerId(), id);
+  }
+
+  public void setReseller(Reseller reseller) {
+    setResellerId(reseller.getID());
   }
 
   public void setAlotment(int alotment) {
@@ -69,6 +85,14 @@ public class Contract extends GenericEntity {
     return new Service(getServiceId());
   }
 
+  public int getResellerId() {
+    return getIntColumnValue(getColumnNameResellerId());
+  }
+
+  public Reseller getReseller() throws SQLException {
+    return new Reseller(getResellerId());
+  }
+
   public int getAlotment() {
     return getIntColumnValue(getColumnNameAlotment());
   }
@@ -92,6 +116,7 @@ public class Contract extends GenericEntity {
 
   public static String getContractTableName() { return "TB_CONTRACT";}
   public static String getColumnNameServiceId() { return "TB_SERVICE_ID";}
+  public static String getColumnNameResellerId() { return "SR_RESELLER_ID";}
   public static String getColumnNameAlotment() { return "ALOTMENT";}
   public static String getColumnNameFrom() { return "ACTIVE_FROM";}
   public static String getColumnNameTo() { return "ACTIVE_TO";}

@@ -82,7 +82,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
       }
 
       float pr = this.getPrice(productId,cat.getParentId(),currencyId,time);
-      return pr - pr*((100-disc) /100);
+      return pr*((100-disc) /100);
     }else{
       throw new ProductPriceException();
     }

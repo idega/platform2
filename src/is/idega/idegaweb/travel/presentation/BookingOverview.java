@@ -17,6 +17,7 @@ import java.sql.SQLException;
 
 import is.idega.travel.data.Service;
 import is.idega.travel.data.Tour;
+import is.idega.travel.data.Contract;
 import is.idega.travel.data.Timeframe;
 import is.idega.travel.data.HotelPickupPlace;
 /**
@@ -34,6 +35,9 @@ public class BookingOverview extends TravelManager {
   private IWResourceBundle iwrb;
 
   private Supplier supplier;
+  private Reseller reseller;
+  private Contract contract;
+
   private Product product;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
@@ -63,7 +67,7 @@ public class BookingOverview extends TravelManager {
       initialize(modinfo);
       supplier = super.getSupplier();
 
-      if (supplier != null) {
+      if ( (supplier != null) || (reseller != null) ) {
         displayForm(modinfo);
         super.addBreak();
       }else {
@@ -77,6 +81,7 @@ public class BookingOverview extends TravelManager {
       iwrb = super.getResourceBundle();
 
       supplier = super.getSupplier();
+      reseller = super.getReseller();
 
       String productId = modinfo.getParameter(Product.getProductEntityName());
       try {
@@ -98,6 +103,19 @@ public class BookingOverview extends TravelManager {
       }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
+
+
+      if ((reseller != null) && (product != null)){
+        try {
+            Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(reseller.getID()), Contract.getColumnNameServiceId(), Integer.toString(product.getID()) );
+            if (contracts.length > 0) {
+              contract = contracts[0];
+            }
+        }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+        }
+
+      }
 
       fromStamp = getFromIdegaTimestamp(modinfo);
       toStamp = getToIdegaTimestamp(modinfo);
@@ -183,13 +201,18 @@ public class BookingOverview extends TravelManager {
           tframeText.addToText(":");
 
       DropdownMenu trip = null;
-      try {
-        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID()));
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-        trip = new DropdownMenu(Product.getProductEntityName());
-      }
-      trip.addMenuElementFirst("-10","TEMP - ALLAR FERÐIR");
+        if (supplier != null) {
+          trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
+        }else if (reseller != null){
+          try {
+            trip = new DropdownMenu(tsb.getProductsForReseller(reseller.getID()));
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+            trip = new DropdownMenu();
+          }
+        }
+
+      //trip.addMenuElementFirst("-10","TEMP - ALLAR FERÐIR");
 
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
@@ -340,7 +363,9 @@ public class BookingOverview extends TravelManager {
 
 
           Product[] products;
-          int supplierId = supplier.getID();
+          int supplierId = 0;
+          if (supplier != null)
+            supplierId = supplier.getID();
           idegaCalendar cal = new idegaCalendar();
           int dayOfWeek;
           boolean upALine = false;
@@ -352,6 +377,7 @@ public class BookingOverview extends TravelManager {
           int iBooked =0;
           int iInquery=0;
           int iAvailable=0;
+          int iAssigned=0;
 
           idegaTimestamp tempStamp = new idegaTimestamp(fromStamp);
 
@@ -376,24 +402,40 @@ public class BookingOverview extends TravelManager {
                   dateTextBold.setText(tempStamp.getLocaleDate(modinfo));
               table.add(dateTextBold,1,row);
 
+              boolean bContinue= false;
+
               for (int i = 0; i < products.length; i++) {
-                  if (TravelStockroomBusiness.getIfDay(products[i].getID(),dayOfWeek) ) {
-                      try {
+                  try {
+                      if (supplier != null) {
+                        bContinue =TravelStockroomBusiness.getIfDay(modinfo,products[i],tempStamp);
+                      }else if (reseller != null) {
+                        bContinue = TravelStockroomBusiness.getIfDay(modinfo,contract,tempStamp);
+                      }
+                      if (bContinue) {
                           iCount = 0;
                           iBooked =0;
                           iInquery=0;
                           iAvailable=0;
+                          iAssigned=0;
                           service = tsb.getService(products[i]);
                           tour = tsb.getTour(products[i]);
 
-                          iCount = tour.getTotalSeats();
+                          if (supplier != null) {
+                              iCount = tour.getTotalSeats();
+                              iBooked = tsb.getNumberOfBookings(service.getID(), tempStamp);
+                              iAssigned = tsb.getNumberOfAssignedSeats(service.getID(), tempStamp);
+
+                              iInquery = 0;
+                              iAvailable = iCount - iBooked - iAssigned;
+                          }else if (reseller != null) {
+                              iCount = contract.getAlotment();
+                              iBooked = tsb.getNumberOfBookings(reseller.getID() ,service.getID(), tempStamp);
+                              iAssigned = 0;
+
+                              iInquery = 0;
+                              iAvailable = iCount - iBooked - iAssigned;
+                          }
                           countTextBold.setText(Integer.toString(iCount));
-
-                          iBooked = tsb.getNumberOfBookings(service.getID(), tempStamp);
-
-                          iInquery = 0;
-
-                          iAvailable = iCount - iBooked;
 
 
                           nameTextBold  = (Text) theSmallBoldText.clone();
@@ -401,7 +443,7 @@ public class BookingOverview extends TravelManager {
                           countTextBold = (Text) theSmallBoldText.clone();
                               countTextBold.setText(Integer.toString(iCount));
                           assignedTextBold = (Text) theSmallBoldText.clone();
-                              assignedTextBold.setText("0");
+                              assignedTextBold.setText(Integer.toString(iAssigned));
                           inqTextBold = (Text) theSmallBoldText.clone();
                               inqTextBold.setText(Integer.toString(iInquery));
                           bookedTextBold = (Text) theSmallBoldText.clone();
@@ -410,10 +452,7 @@ public class BookingOverview extends TravelManager {
                               availableTextBold.setText(Integer.toString(iAvailable));
 
                           SubmitButton btnNanar = new SubmitButton("Nanar",closerLookDateParameter,tempStamp.toSQLDateString());
-                            //btnNanar.setOnClick("this.form."+closerLookIdParameter+".value='"+service.getID()+"'");
-
                           SubmitButton btnBook = new SubmitButton("Boka",bookParameter,Integer.toString(service.getID()));
-
 
                           table.add(nameTextBold,2,row);
                           table.add(countTextBold,3,row);
@@ -432,11 +471,13 @@ public class BookingOverview extends TravelManager {
                           table.add(btnBook,8,row);
                           ++row;
                           upALine = true;
-                      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
-                        snfe.printStackTrace(System.err);
-                      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
-                        tnfe.printStackTrace(System.err);
                       }
+                  }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+                    snfe.printStackTrace(System.err);
+                  }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+                    tnfe.printStackTrace(System.err);
+                  }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+                    tfnfe.printStackTrace(System.err);
                   }
               }
               if (upALine) --row;

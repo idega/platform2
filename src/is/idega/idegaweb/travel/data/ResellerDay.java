@@ -93,6 +93,7 @@ public class ResellerDay extends GenericEntity {
         if (days.length == 1) {
           returner = true;
         }else if (days.length > 1) {
+          returner = true;
           System.err.println("ResellerDay : getIfDay : Primary Key Error");
         }
     }catch (SQLException sql) {
@@ -118,7 +119,7 @@ public class ResellerDay extends GenericEntity {
   }
 
 
-  public static String getResellerDaysTableName() {return "TB_SERVICE_DAY";}
+  public static String getResellerDaysTableName() {return "TB_RESELLER_DAY";}
   public static String getColumnNameResellerId() {return "SR_RESELLER_ID";}
   public static String getColumnNameServiceId() {return "TB_SERVICE_ID";}
   public static String getColumnNameDayOfWeek() {return "DAY_OF_WEEK";}

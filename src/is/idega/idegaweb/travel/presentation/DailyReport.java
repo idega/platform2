@@ -158,12 +158,12 @@ public class DailyReport extends TravelManager {
 
 
       DropdownMenu trip = null;
-      try {
-        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID()));
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-        trip = new DropdownMenu(Product.getProductEntityName());
-      }
+//      try {
+        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
+//      }catch (SQLException sql) {
+//        sql.printStackTrace(System.err);
+//       trip = new DropdownMenu(Product.getProductEntityName());
+//      }
 
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
