@@ -1,5 +1,5 @@
 /*
- * $Id: NackaFixBusinessBean.java,v 1.3 2004/12/07 21:53:56 laddi Exp $
+ * $Id: NackaFixBusinessBean.java,v 1.4 2004/12/08 13:05:45 tryggvil Exp $
  * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,13 +33,13 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2004/12/07 21:53:56 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/08 13:05:45 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBusiness{
-
+/*
 	private SchoolBusiness getSchoolBusiness() {
 		try {
 			return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
@@ -66,25 +66,26 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 			throw new IBORuntimeException(ile);
 		}
 	}
-	
+*/	
 	public void fixHighSchoolPlacements() {
-		try {
+/*		try {
 			fixSchoolPlacements(getSchoolBusiness().getCategoryHighSchool());
 		}
 		catch (RemoteException re) {
 			log(re);
-		}
+		}*/
 	}
 	
 	public void fixElementarySchoolPlacements() {
-		try {
+	/*	try {
 			fixSchoolPlacements(getSchoolBusiness().getCategoryElementarySchool());
 		}
 		catch (RemoteException re) {
 			log(re);
 		}
+	*/
 	}
-	
+/*	
 	private void fixSchoolPlacements(SchoolCategory category) {
 		try {
 			Collection placements = getSchoolClassMemberHome().findAllByCategory(category);
@@ -128,9 +129,9 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 			log(fe);
 		}
 	}
-	
+*/	
 	public void fixChildCarePlacements() {
-		try {
+/*		try {
 			Collection placements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryChildcare());
 			int size = placements.size();
 			System.out.println("[FIX]: Updating removed date for "+size+" child care/after school care placements");
@@ -168,5 +169,6 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 		catch (RemoteException re) {
 			log(re);
 		}
+*/
 	}
 }
