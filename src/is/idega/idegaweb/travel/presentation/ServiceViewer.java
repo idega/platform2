@@ -458,7 +458,7 @@ public class ServiceViewer extends Window {
     Text nameOfCategory = getText("");
 
     Product product = new Product(service.getID());
-    Address[] depAddresses = ProductBusiness.getDepartureAddresses(product);
+    TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
     Timeframe[] timeframes = product.getTimeframes();
     ProductPrice[] prices = null;
 
@@ -475,7 +475,7 @@ public class ServiceViewer extends Window {
 
 
         for (int l = 0; l < depAddresses.length; l++) {
-          departureFromTextBold = getBoldText(depAddresses[l].getStreetName());
+          departureFromTextBold = getBoldText(depAddresses[l].getName());
             departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
           pTable.add(departureFromTextBold, 1, pRow);
           for (int i = 0; i < timeframes.length; i++) {

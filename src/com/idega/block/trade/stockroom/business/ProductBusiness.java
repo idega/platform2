@@ -12,7 +12,7 @@ import com.idega.block.text.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.*;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 import com.idega.util.*;
 
 import com.idega.block.trade.stockroom.data.*;
@@ -306,7 +306,7 @@ public class ProductBusiness {
 
   public static idegaTimestamp getDepartureTime(Product product) throws SQLException {
     return getDepartureTime(product.getID());
-  }
+ }
 
   public static idegaTimestamp getDepartureTime(int productId) throws SQLException {
     Service service = new Service(productId);
@@ -314,15 +314,19 @@ public class ProductBusiness {
     return tempStamp;
   }
 
-  public static Address[] getDepartureAddresses(Product product) throws SQLException {
-    Address[] tempAddresses = (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueDepartureAddressType))));
+  public static Address[] getDepartureAddressesOld(Product product) throws SQLException {
+    return (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueDepartureAddressType))));
+  }
+
+  public static TravelAddress[] getDepartureAddresses(Product product) throws SQLException {
+    TravelAddress[] tempAddresses = (TravelAddress[]) (product.findRelated( (TravelAddress) TravelAddress.getStaticInstance(TravelAddress.class), TravelAddress.getColumnNameAddressTypeId(), Integer.toString(TravelAddress.ADDRESS_TYPE_DEPARTURE)));
     return tempAddresses;
   }
 
-  public static Address getDepartureAddress(Product product) throws SQLException{
-      Address[] tempAddresses = getDepartureAddresses(product);
+  public static TravelAddress getDepartureAddress(Product product) throws SQLException{
+      TravelAddress[] tempAddresses = getDepartureAddresses(product);
       if (tempAddresses.length > 0) {
-        return new Address(tempAddresses[0].getID());
+        return new TravelAddress(tempAddresses[0].getID());
       }else {
         return null;
       }

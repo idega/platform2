@@ -257,8 +257,8 @@ public class PublicBooking extends Block  {
       table.setBorder(0);
 
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
-      Address[] depAddresses = ProductBusiness.getDepartureAddresses(product);
-      Address depAddress = ProductBusiness.getDepartureAddress(product);
+      TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
+      TravelAddress depAddress = ProductBusiness.getDepartureAddress(product);
       Currency currency;
 
       Text nameText = getText(iwrb.getLocalizedString("travel.name","Name"));
@@ -292,7 +292,7 @@ public class PublicBooking extends Block  {
 
       nameTextBold.setText(ProductBusiness.getProductName(product));
       supplierTextBold.setText(supplier.getName());
-      departureFromTextBold.setText(depAddress.getStreetName());
+      departureFromTextBold.setText(depAddress.getName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
       String[] dayOfWeekName = new String[8];
@@ -330,13 +330,13 @@ public class PublicBooking extends Block  {
 //      table.add(arrow,1,3);
       table.setAlignment(1,3,"left");
 
-      table.add(departureTimeText,2,2);
-      table.add(space,2,2);
-      table.add(departureTimeTextBold,2,2);
+//      table.add(departureTimeText,2,2);
+//      table.add(space,2,2);
+//      table.add(departureTimeTextBold,2,2);
 
-      table.add(daysText,2,3);
-      table.add(space,2,3);
-      table.add(daysTextBold,2,3);
+      table.add(daysText,2,2);
+      table.add(space,2,2);
+      table.add(daysTextBold,2,2);
 
 //      table.add(Text.NON_BREAKING_SPACE,2,3);
 
@@ -351,7 +351,7 @@ public class PublicBooking extends Block  {
         //pTable.add(pricesText,1,1);
         int pRow = 1;
       for (int l = 0; l < depAddresses.length; l++) {
-        departureFromTextBold = getBoldText(depAddresses[l].getStreetName());
+        departureFromTextBold = getBoldText(depAddresses[l].getName());
           departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         pTable.add(departureFromTextBold, 1, pRow);
         for (int i = 0; i < timeframes.length; i++) {
@@ -398,7 +398,7 @@ public class PublicBooking extends Block  {
       pTable.setColumnAlignment(5,"left");
       pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
-      table.add(pTable,2,4);
+      table.add(pTable,2,3);
 //      table.setAlignment(2,4,"right");
 
       table.setAlignment(2,1,"right");
@@ -410,7 +410,7 @@ public class PublicBooking extends Block  {
       table.mergeCells(1,1,2,1);
 //      table.mergeCells(1,2,2,2);
       table.mergeCells(1,3,1,5);
-      table.mergeCells(2,4,2,5);
+      table.mergeCells(2,3,2,5);
 //      table.setWidth(1,"138");
 //      table.setWidth(3,"350");
 //      table.setWidth(2,"350");
@@ -558,7 +558,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.departure_place","Departure place")),1,row);
-      table.add(getBoldTextWhite(new Address(Integer.parseInt(depAddressId)).getStreetName()),2,row);
+      table.add(getBoldTextWhite(new Address(Integer.parseInt(depAddressId)).getName()),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");

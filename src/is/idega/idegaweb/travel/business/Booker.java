@@ -97,8 +97,8 @@ public class Booker {
     }
 
     GeneralBooking temp = new GeneralBooking(booking.getID());
-    temp.removeFrom(Address.class);
-    temp.addTo(Address.class, addressId);
+    temp.removeFrom(TravelAddress.class);
+    temp.addTo(TravelAddress.class, addressId);
 
     return returner;
   }
@@ -400,7 +400,7 @@ public class Booker {
   }
 
   public static float getBookingEntryPrice(IWContext iwc, BookingEntry entry, Booking booking) {
-    String applName = bookingEntryPriceApplication+booking.getID();
+    String applName = bookingEntryPriceApplication+entry.getID();
       float total = 0;
 
       try {
@@ -412,7 +412,6 @@ public class Booker {
           iwc.setApplicationAttribute(applName, new Float(total));
         }else {
           total = temp.floatValue();
-          System.err.println("Booker.java : getting entry price from application, bookingEntryId = "+entry.getID());
         }
 
       }catch (SQLException sql) {
@@ -449,7 +448,6 @@ public class Booker {
           iwc.setApplicationAttribute(applName, new Float(total));
         }else {
           total = temp.floatValue();
-          System.err.println("Booker.java : getting price from application, bookingId = "+booking.getID());
         }
 
       }catch (SQLException sql) {

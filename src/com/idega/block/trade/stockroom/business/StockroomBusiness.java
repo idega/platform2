@@ -71,7 +71,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
         prPrice.addTo(Timeframe.class, timeframeId);
        }
        if (addressId != -1) {
-        prPrice.addTo(Address.class, addressId);
+        prPrice.addTo(TravelAddress.class, addressId);
        }
   }
 
@@ -86,9 +86,9 @@ public class StockroomBusiness /* implements SupplyManager */ {
     try {
         PriceCategory cat = new PriceCategory(priceCategoryId);
         ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-        Address addr = ((Address) Address.getStaticInstance(Address.class));
+        TravelAddress taddr = ((TravelAddress) TravelAddress.getStaticInstance(TravelAddress.class));
         Timeframe tfr = ((Timeframe) Timeframe.getStaticInstance(Timeframe.class));
-        String addrTable = EntityControl.getManyToManyRelationShipTableName(Address.class, ProductPrice.class);
+        String addrTable = EntityControl.getManyToManyRelationShipTableName(TravelAddress.class, ProductPrice.class);
         String tfrTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class, ProductPrice.class);
 
         if(cat.getType().equals(PriceCategory.PRICETYPE_PRICE)){
@@ -111,7 +111,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             }
             if (addressId != -1) {
               buffer.append(" and ");
-              buffer.append("am."+addr.getIDColumnName()+" = "+addressId);
+              buffer.append("am."+taddr.getIDColumnName()+" = "+addressId);
               buffer.append(" and ");
               buffer.append("p."+ppr.getIDColumnName()+" = am."+ppr.getIDColumnName());
             }
@@ -159,7 +159,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             }
             if (addressId != -1) {
               buffer.append(" and ");
-              buffer.append("am."+addr.getIDColumnName()+" = "+addressId);
+              buffer.append("am."+taddr.getIDColumnName()+" = "+addressId);
               buffer.append(" and ");
               buffer.append("p."+ppr.getIDColumnName()+" = am."+ppr.getIDColumnName());
             }
@@ -378,7 +378,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
     if(addressIds != null){
       for (int i = 0; i < addressIds.length; i++) {
         try {
-          product.addTo(Address.class, addressIds[i]);
+          product.addTo(TravelAddress.class, addressIds[i]);
         }catch (SQLException sql) {
         }
       }

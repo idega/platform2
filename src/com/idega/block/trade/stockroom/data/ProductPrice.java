@@ -38,6 +38,7 @@ public class ProductPrice extends GenericEntity{
 
     this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_TIMEFRAME");
     this.addManyToManyRelationShip(Address.class,getProductPriceTableName()+"_ADDRESS");
+    this.addManyToManyRelationShip(TravelAddress.class);
   }
 
 
@@ -161,11 +162,11 @@ public class ProductPrice extends GenericEntity{
         ProductPrice price = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
         PriceCategory category = (PriceCategory) PriceCategory.getStaticInstance(PriceCategory.class);
         Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
-        Address address = (Address) Address.getStaticInstance(Address.class);
+        TravelAddress tAddress = (TravelAddress) TravelAddress.getStaticInstance(TravelAddress.class);
         Product product = (Product) Product.getStaticInstance(Product.class);
 
         String ptmTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
-        String pamTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Address.class);
+        String pamTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, TravelAddress.class);
         String pTable = price.getProductPriceTableName();
         String cTable = category.getEntityName();
 
@@ -185,7 +186,7 @@ public class ProductPrice extends GenericEntity{
             SQLQuery.append(" AND ");
           }
           if (addressId != -1) {
-            SQLQuery.append(pamTable+"."+address.getIDColumnName()+" = "+addressId);
+            SQLQuery.append(pamTable+"."+tAddress.getIDColumnName()+" = "+addressId);
             SQLQuery.append(" AND ");
             SQLQuery.append(pamTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
             SQLQuery.append(" AND ");

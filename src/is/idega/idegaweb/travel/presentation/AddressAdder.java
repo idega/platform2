@@ -5,6 +5,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.core.data.*;
+import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 /**
@@ -30,6 +31,7 @@ public class AddressAdder extends TravelWindow {
   private String parameterClose = "addressAdderClose";
 
   private String textInputNameAddress = "addressAddress";
+  private String parameterTime = "addressAdderTime";
 
   private Product _product;
   private int _productId = -1;
@@ -84,35 +86,51 @@ public class AddressAdder extends TravelWindow {
 
   private boolean saveDepartureAddress(IWContext iwc) {
     boolean returner = true;
-    try {
       String[] name = iwc.getParameterValues(textInputNameAddress);
-      String[] ids = iwc.getParameterValues(this._parameterAddressId);
+      String[] ids = iwc.getParameterValues(_parameterAddressId);
+      int counter = 0;
+      String time = "";
 
       for (int i = 0; i < name.length; i++) {
-        if (ids[i].equals("-1") ) {
-          if (!name[i].equals("")) {
-            Address newAddress = new Address();
-              newAddress.setStreetName(name[i]);
-              newAddress.setAddressTypeID(AddressType.getId(ProductBusiness.uniqueDepartureAddressType));
-            newAddress.insert();
-            newAddress.addTo(_product);
+        try {
+          ++counter;
+          time = iwc.getParameter(parameterTime+counter);
+
+          if (ids[i].equals("-1") ) {
+            if (!name[i].equals("")) {
+              Address newAddress = new Address();
+                newAddress.setStreetName(name[i]);
+                newAddress.setAddressTypeID(AddressType.getId(ProductBusiness.uniqueDepartureAddressType));
+              newAddress.insert();
+
+              TravelAddress tAddress = new TravelAddress();
+                tAddress.setAddressId(newAddress.getID());
+                tAddress.setAddressTypeId(TravelAddress.ADDRESS_TYPE_DEPARTURE);
+                tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
+                tAddress.insert();
+              tAddress.addTo(_product);
+            }
+          }else {
+            if (iwc.getParameter(this._parameterDelete+ids[i]) != null) {
+              TravelAddress tAddress = new TravelAddress(Integer.parseInt(ids[i]));
+              Address newAddress = new Address(tAddress.getAddressId());
+                tAddress.removeFrom(_product);
+                tAddress.delete();
+                newAddress.delete();
+            }else if (!name[i].equals("")) {
+              TravelAddress tAddress = new TravelAddress(Integer.parseInt(ids[i]));
+                tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
+              Address newAddress = new Address(tAddress.getAddressId());
+                newAddress.setStreetName(name[i]);
+              tAddress.update();
+              newAddress.update();
+            }
           }
-        }else {
-          if (iwc.getParameter(this._parameterDelete+ids[i]) != null) {
-            Address newAddress = new Address(Integer.parseInt(ids[i]));
-             newAddress.removeFrom(_product);
-             newAddress.delete();
-          }else if (!name[i].equals("")) {
-            Address newAddress = new Address(Integer.parseInt(ids[i]));
-              newAddress.setStreetName(name[i]);
-            newAddress.update();
-          }
+        }catch (Exception e) {
+          // Error, nenni ekki að eyða loggnum í svona vitleysu
         }
       }
       return true;
-    }catch (Exception e) {
-      return false;
-    }
   }
 
   private void drawForm(IWContext iwc) {
@@ -131,32 +149,45 @@ public class AddressAdder extends TravelWindow {
       nameTxt.setText(iwrb.getLocalizedString("travel.address","Address"));
       nameTxt.setFontColor(TravelManager.WHITE);
       nameTxt.setBold(true);
+    Text timeTxt = (Text) text.clone();
+      timeTxt.setText(iwrb.getLocalizedString("travel.time","Time"));
+      timeTxt.setFontColor(TravelManager.WHITE);
+      timeTxt.setBold(true);
     Text delTxt = (Text) text.clone();
       delTxt.setText(iwrb.getLocalizedString("travel.delete","delete"));
       delTxt.setFontColor(TravelManager.WHITE);
       delTxt.setBold(true);
 
     try {
-      Address[] addresses = ProductBusiness.getDepartureAddresses(_product);
+      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(_product);
       TextInput nameInp = new TextInput(textInputNameAddress);
       CheckBox del;
+      TimeInput timeInp;
 
       table.add(nameTxt, 1, row);
-      table.add(delTxt, 2, row);
-      table.setAlignment(2,row, "center");
+      table.add(timeTxt, 2, row);
+      table.add(delTxt, 3, row);
+      table.setAlignment(3,row, "center");
       table.setRowColor(row, TravelManager.backgroundColor);
-
+      idegaTimestamp timestamp;
+      int counter = 0;
       for (int i = 0; i < addresses.length; i++) {
         ++row;
+        ++counter;
 
         nameInp = new TextInput(textInputNameAddress);
           nameInp.setContent(addresses[i].getStreetName());
         del = new CheckBox(this._parameterDelete+addresses[i].getID());
           del.setChecked(false);
+        timestamp = new idegaTimestamp(addresses[i].getTime());
+        timeInp = new TimeInput(this.parameterTime+counter);
+          timeInp.setHour(timestamp.getHour());
+          timeInp.setMinute(timestamp.getMinute());
 
         table.add(nameInp, 1,row);
-        table.add(del, 2,row);
-        table.setAlignment(2,row, "center");
+        table.add(timeInp, 2,row);
+        table.add(del, 3,row);
+        table.setAlignment(3,row, "center");
         table.add(new HiddenInput(this._parameterAddressId, Integer.toString(addresses[i].getID())));
 
         table.setRowColor(row, TravelManager.GRAY);
@@ -164,12 +195,14 @@ public class AddressAdder extends TravelWindow {
 
       for (int i = 0; i < extraFields; i++) {
         ++row;
-        table.mergeCells(1,row,2,row);
+        ++counter;
 
         nameInp = new TextInput(textInputNameAddress);
+        timeInp = new TimeInput(this.parameterTime+counter);
         table.add(new HiddenInput(this._parameterAddressId, "-1"));
         table.add(nameInp, 1,row);
-        table.setColor(1,row, TravelManager.GRAY);
+        table.add(timeInp , 2, row);
+        table.setRowColor(row, TravelManager.GRAY);
       }
 
       SubmitButton saveBtn = new SubmitButton(iwrb.getImage("buttons/save.gif"),sAction,parameterSave);
@@ -178,8 +211,8 @@ public class AddressAdder extends TravelWindow {
 
       ++row;
       table.add(closeBtn,1,row);
-      table.add(saveBtn,2,row);
-      table.setAlignment(2,row,"right");
+      table.add(saveBtn,3,row);
+      table.setAlignment(3,row,"right");
       table.setRowColor(row, TravelManager.GRAY);
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);

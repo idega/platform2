@@ -94,7 +94,7 @@ public class TourBookingForm extends TravelManager {
       table.setColumnAlignment(4,"left");
 
 //      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
-      Address[] addresses = ProductBusiness.getDepartureAddresses(_product);
+      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(_product);
       int addressId = -1;
       String sAddressId = iwc.getParameter(parameterDepartureAddressId);
       if (sAddressId != null) {
@@ -475,7 +475,7 @@ public class TourBookingForm extends TravelManager {
 
       isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
 
-      Address[] addresses = ProductBusiness.getDepartureAddresses(_product);
+      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(_product);
       int addressId = -1;
       String sAddressId = iwc.getParameter(parameterDepartureAddressId);
       if (sAddressId != null) {

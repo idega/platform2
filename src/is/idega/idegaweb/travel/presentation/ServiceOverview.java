@@ -431,8 +431,8 @@ public class ServiceOverview extends TravelManager {
 
         Service service;
         Timeframe[] timeframes;
-        Address[] depAddresses;
-        Address depAddress;
+        TravelAddress[] depAddresses;
+        TravelAddress depAddress;
         Address arrAddress;
 
         idegaTimestamp depTimeStamp;
@@ -440,7 +440,7 @@ public class ServiceOverview extends TravelManager {
         Text prodName;
         Text timeframeTxt;
         Text depFrom;
-        Text depTime;
+//        Text depTime;
         Text arrFrom;
         Text arrTime;
         Text actDays;
@@ -475,9 +475,9 @@ public class ServiceOverview extends TravelManager {
 
 
         depTimeStamp = new idegaTimestamp(service.getDepartureTime());
-        depTime = (Text) theBoldText.clone();
-            depTime.setFontColor(super.BLACK);
-            depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
+        //depTime = (Text) theBoldText.clone();
+            //depTime.setFontColor(super.BLACK);
+            //depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
         arrFrom = (Text) theBoldText.clone();
             arrFrom.setFontColor(super.BLACK);
@@ -525,9 +525,14 @@ public class ServiceOverview extends TravelManager {
 
         for (int l = 0; l < depAddresses.length; l++) {
           depFrom = (Text) theBoldText.clone();
-            depFrom.setFontColor(super.BLACK);
-            depFrom.setText(depAddress.getStreetName());
-          depFrom.setText(depAddresses[l].getStreetName());
+          depFrom.setFontColor(super.BLACK);
+          depFrom.setText(depAddresses[l].getName());
+/*
+          depTimeStamp = new idegaTimestamp(depAddresses[l].getTime());
+          depTime = (Text) theBoldText.clone();
+          depTime.setFontColor(super.BLACK);
+          depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
+*/
           contentTable.setVerticalAlignment(2,contRow,"top");
           contentTable.setVerticalAlignment(3,contRow,"top");
           contentTable.setVerticalAlignment(4,contRow,"top");
@@ -539,7 +544,7 @@ public class ServiceOverview extends TravelManager {
           contentTable.setAlignment(4,contRow,"right");
           contentTable.setAlignment(5,contRow,"left");
           contentTable.add(depFrom,3,contRow);
-          contentTable.add(depTime,4,contRow);
+//          contentTable.add(depTime,4,contRow);
           //contentTable.add(depTime,5,contRow);
           contentTable.setRowColor(contRow, super.GRAY);
           ++contRow;

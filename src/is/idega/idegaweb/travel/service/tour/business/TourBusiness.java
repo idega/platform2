@@ -50,14 +50,21 @@ public class TourBusiness extends TravelStockroomBusiness {
       int arrivalAddressTypeId = AddressType.getId(ProductBusiness.uniqueArrivalAddressType);
       int hotelPickupAddressTypeId = AddressType.getId(ProductBusiness.uniqueHotelPickupAddressType);
 
-      Address departureAddress = null;
+      TravelAddress departureAddress = null;
       Address arrivalAddress = null;
+      Address address = null;
 
       if (tourId == -1) {
 
-        departureAddress = new Address();
-        departureAddress.setAddressTypeID(departureAddressTypeId);
-        departureAddress.setStreetName(departureFrom);
+        address = new Address();
+        address.setAddressTypeID(departureAddressTypeId);
+        address.setStreetName(departureFrom);
+        address.insert();
+
+        departureAddress = new TravelAddress();
+        departureAddress.setAddressId(address.getID());
+        departureAddress.setAddressTypeId(TravelAddress.ADDRESS_TYPE_DEPARTURE);
+        departureAddress.setTime(departureTime.getTimestamp());
         departureAddress.insert();
 
         arrivalAddress = new Address();
@@ -81,16 +88,25 @@ public class TourBusiness extends TravelStockroomBusiness {
             arrivalAddress.insert();
           }
 
-          tempAddresses = ProductBusiness.getDepartureAddresses(product); ///Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
+          TravelAddress[] tAddresses = ProductBusiness.getDepartureAddresses(product); ///Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
           if (tempAddresses.length > 0) {
-            departureAddress = new Address(tempAddresses[0].getID());
-            departureAddress.setAddressTypeID(departureAddressTypeId);
-            departureAddress.setStreetName(departureFrom);
+            departureAddress = new TravelAddress(tAddresses[0].getID());
+            departureAddress.setTime(departureTime);
             departureAddress.update();
+
+            address = new Address(departureAddress.getAddressId());
+            address.setStreetName(departureFrom);
+            address.update();
           }else {
-            departureAddress = new Address();
-            departureAddress.setAddressTypeID(departureAddressTypeId);
-            departureAddress.setStreetName(departureFrom);
+            address = new Address();
+            address.setAddressTypeID(departureAddressTypeId);
+            address.setStreetName(departureFrom);
+            address.insert();
+
+            departureAddress = new TravelAddress();
+            departureAddress.setAddressTypeId(TravelAddress.ADDRESS_TYPE_DEPARTURE);
+            departureAddress.setTime(departureTime);
+            departureAddress.setAddressId(address.getID());
             departureAddress.insert();
           }
 

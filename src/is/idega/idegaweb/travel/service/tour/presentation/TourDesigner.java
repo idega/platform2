@@ -39,7 +39,7 @@ public class TourDesigner extends TravelManager {
   Service service;
   Tour tour;
   Timeframe timeframe;
-  Address depAddress;
+  TravelAddress depAddress;
   Address arrAddress;
 
 
@@ -467,12 +467,14 @@ public class TourDesigner extends TravelManager {
                 break;
             }
           }
+          idegaTimestamp tempStamp;
 
-          if (depAddress != null)
-          departure_from.setContent(depAddress.getStreetName());
-          idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
-          departure_time.setHour(tempStamp.getHour());
-          departure_time.setMinute(tempStamp.getMinute());
+          if (depAddress != null) {
+            departure_from.setContent(depAddress.getStreetName());
+            tempStamp = new idegaTimestamp(depAddress.getTime());
+            departure_time.setHour(tempStamp.getHour());
+            departure_time.setMinute(tempStamp.getMinute());
+          }
 
           if (arrAddress != null)
           arrival_at.setContent(arrAddress.getStreetName());

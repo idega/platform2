@@ -71,10 +71,8 @@ public class DailyReport extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception {
-    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " BEGIN");
       super.main(iwc);
       initialize(iwc);
-    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " init done");
 
       if (super.isLoggedOn(iwc)) {
         String action = iwc.getParameter(sAction);
@@ -145,19 +143,16 @@ public class DailyReport extends TravelManager {
   }
 
   public void displayForm(IWContext iwc) {
-    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " displayForm begins");
 
       Form form = new Form();
       Table topTable = getTopTable(iwc);
         form.add(topTable);
-    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " topTable done");
 
       if (this.viewAllProducts) {
         if (products != null) {
           Table table = getFullReport(iwc);
           form.add(Text.BREAK);
           form.add(table);
-    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " getFullReport done");
         }
       }else {
         if (product != null) {
@@ -216,14 +211,12 @@ public class DailyReport extends TravelManager {
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           tframeText.addToText(":");
 
-      System.err.println(idegaTimestamp.RightNow()+" dropdownCreation starts");
       DropdownMenu trip = null;
         trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
         if (product != null) {
             trip.setSelectedElement(Integer.toString(product.getID()));
         }
         trip.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.all_services","All services"));
-      System.err.println(idegaTimestamp.RightNow().toSQLTimeString()+" dropdownCreation ends");
 
 
       DateInput active_from = new DateInput("active_from");
@@ -402,7 +395,7 @@ public class DailyReport extends TravelManager {
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
       Timeframe tframe = ProductBusiness.getTimeframe(this.product, this.stamp);
       ProductPrice[] prices = {};
-      Address[] addresses = {};
+      TravelAddress[] addresses = {};
       try {
         addresses = ProductBusiness.getDepartureAddresses(product);
       }catch (SQLException sql) {
@@ -428,7 +421,7 @@ public class DailyReport extends TravelManager {
 
 
       Booking[] bookings = TourBooker.getBookings(product.getID(),stamp,bookingTypeIds);
-      Address[] bookingAddresses;
+      TravelAddress[] bookingAddresses;
       String theColor = super.GRAY;
       DropdownMenu payType;
       BookingEntry[] entries;
@@ -487,10 +480,10 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (Address[]) bookings[i].findRelated((Address)Address.getStaticInstance(Address.class));
+            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)TravelAddress.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
-              addressText.setText(bookingAddresses[0].getStreetName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               addressText.setFontColor(super.BLACK);
               table.add(addressText, 1, row+1);
               table.setAlignment(1,row+1, "right");
@@ -606,10 +599,10 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (Address[]) bookings[i].findRelated((Address)Address.getStaticInstance(Address.class));
+            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)TravelAddress.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
-              addressText.setText(bookingAddresses[0].getStreetName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               addressText.setFontColor(super.BLACK);
               addTable.add(addressText, 1, addRow+1);
               addTable.setAlignment(1,addRow+1, "right");
@@ -716,10 +709,10 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (Address[]) bookings[i].findRelated((Address)Address.getStaticInstance(Address.class));
+            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)TravelAddress.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
-              addressText.setText(bookingAddresses[0].getStreetName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               addressText.setFontColor(super.BLACK);
               correctionTable.add(addressText, 1, corrRow+1);
               correctionTable.setAlignment(1,corrRow+1, "right");
@@ -810,7 +803,7 @@ public class DailyReport extends TravelManager {
           for (int k = 0; k < addresses.length; k++) {
               prices = ProductPrice.getProductPrices(product.getID(), tframe.getID(), addresses[k].getID(), false);
               addressText = (Text) smallText.clone();
-                addressText.setText(addresses[k].getStreetName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
+                addressText.setText(addresses[k].getName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
                 addressText.setFontColor(super.BLACK);
               totalTable.add(addressText, 1, tRow+1);
               totalTable.setAlignment(1,tRow+1,"right");

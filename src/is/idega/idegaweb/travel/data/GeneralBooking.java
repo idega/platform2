@@ -50,6 +50,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
 
     this.addManyToManyRelationShip(Reseller.class);
     this.addManyToManyRelationShip(Address.class);
+    this.addManyToManyRelationShip(TravelAddress.class);
   }
 
 

@@ -194,10 +194,11 @@ public class ServiceDesigner extends TravelManager {
 
 
           Timeframe[] tFrames = product.getTimeframes();
-          Address[] addresses = ProductBusiness.getDepartureAddresses(product);
+          TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(product);
 
           Text serviceNameText = (Text) super.theBoldText.clone();
             serviceNameText.setText(ProductBusiness.getProductNameWithNumber(product));
+
           table.add(serviceNameText,1,row);
           table.mergeCells(1,row,3,row);
           table.setRowColor(row, super.backgroundColor);
@@ -221,16 +222,17 @@ public class ServiceDesigner extends TravelManager {
 
 
           Text addrText;
-              TextInput priceDiscount;
-              Text categoryName;
-              Text infoText;
-              Text counter;
+          TextInput priceDiscount;
+          Text categoryName;
+          Text infoText;
+          Text counter;
+          idegaTimestamp timestamp;
 
           for (int l = 0; l < addresses.length; l++) {
             table.mergeCells(1,row,3,row);
             table.setRowColor(row, super.backgroundColor);
             addrText = (Text) super.theBoldText.clone();
-              addrText.setText(addresses[l].getStreetName());
+              addrText.setText(addresses[l].getName());
             table.add(addrText, 1, row);
             ++row;
 
