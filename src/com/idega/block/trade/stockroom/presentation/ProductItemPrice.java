@@ -49,7 +49,7 @@ public class ProductItemPrice extends ProductItem {
 	if (this.showCurrency) {
 	  try {
 	    text.addToText(Text.NON_BREAKING_SPACE);
-	    text.addToText(((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getName());
+	    text.addToText(((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getCurrencyAbbreviation());
 	  }catch (SQLException sql) {}
 	}
       }else {

@@ -10,6 +10,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.category.business.CategoryComparator;
 import com.idega.block.presentation.CategoryBlock;
 import com.idega.block.presentation.CategoryWindow;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
@@ -199,6 +200,7 @@ public class ProductCatalog extends CategoryBlock{
 	  productCategories = (List) getCategories();
 	  if (productCategories == null) {
 	    productCategories = new Vector();
+	    Collections.sort(productCategories, new CategoryComparator());
 	  }
 	}catch (Exception e) {
 	  e.printStackTrace(System.err);
