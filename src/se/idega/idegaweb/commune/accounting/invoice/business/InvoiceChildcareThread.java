@@ -184,9 +184,10 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 					}
 				}
-				if(invoiceReceiver!=null)
-				contract.setInvoiceReciver(invoiceReceiver);
-				contract.store();
+				if(invoiceReceiver!=null){
+					contract.setInvoiceReciver(invoiceReceiver);
+					contract.store();
+				}
 			} catch (NoCustodianFound e1) {
 				//Poor child
 			} catch (RemoteException e) {
@@ -197,7 +198,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		//If no invoice receiver is set in contract and no fitting custodian found,  
 		//just set the owner of the contract and create a warning
 		if(invoiceReceiver == null){
-			invoiceReceiver = contract.getApplication().getOwner();
+			contract.setInvoiceReciver(contract.getApplication().getOwner());
+			contract.store();
 			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound_UsingContractOwner");
 		}
 		errorRelated.append("Invoice receiver "+invoiceReceiver);
@@ -238,8 +240,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated = new ErrorLogger();
 					errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
 //					errorRelated.append("Contract "+contract.getContractID());
-//					errorRelated.append("Contract Start "+contract.getValidFromDate());
-//					errorRelated.append("Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
+					errorRelated.append("Contract Start "+contract.getValidFromDate()+"; Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
 					
 					//Moved up for better logging
 					//Get all the parameters needed to select the correct contract

@@ -53,7 +53,12 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 		add(form);
 		
 		DateInput monthInput = new DateInput(PARAM_MONTH,true);
-		monthInput.setToCurrentDate();
+		String date = iwc.getParameter(PARAM_MONTH);
+		if(date!=null){
+			monthInput.setDate(new IWTimestamp(date).getDate());
+		}else{
+			monthInput.setToCurrentDate();
+		}
 		monthInput.setToShowDay(false);
 		int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
 		monthInput.setYearRange(currentYear - 1, currentYear + 1);
@@ -62,9 +67,7 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 		form.add(month);
 
 		GenericButton saveButton = this.getSaveButton();
-//		GenericButton cancelButton = this.getCancelButton();
 		form.add(saveButton);
-//		form.add(cancelButton);
 	}
 	
 	/**
