@@ -335,7 +335,6 @@ public class PublicBooking extends Block  {
       Text display = getBoldTextWhite("");
       boolean success = false;
       boolean inquirySent = false;
-      String heimild = "";
 
       com.idega.block.tpos.business.TPosClient t = null;
       GeneralBooking  gBooking = null;
@@ -354,80 +353,7 @@ public class PublicBooking extends Block  {
         if (bookingId == BookingForm.inquirySent) {
           inquirySent = true;
           tm.commit();
-        }else {/*
-          try {
-            System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
-						String currency = bf.getCurrencyForBooking(gBooking);
-						System.out.println("...TPOS  Price = "+price+" "+currency);
-						if (currency == null) {
-							currency = "ISK";	
-						}
-						t = bf.getTPosClient(iwc, gBooking);
-            heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
-            System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
-          
-          }catch (NullPointerException npe) {
-            display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
-            throw new TPosException("");
-          }catch(com.idega.block.tpos.business.TPosException e) {
-            System.out.println("TPOS errormessage = " + e.getErrorMessage());
-            System.out.println("number = " + e.getErrorNumber());
-            System.out.println("display = " + e.getDisplayError());
-            int number = Integer.parseInt(e.getErrorNumber());
-            switch (number) {
-              case 6:
-              case 12:
-              case 19:
-                display.setText(iwrb.getLocalizedString("travel.creditcard_number_incorrect","Creditcard number incorrect"));
-                break;
-              case 10:
-              case 22:
-              case 74:
-                display.setText(iwrb.getLocalizedString("travel.creditcard_type_not_accepted","Creditcard type not accepted"));
-                break;
-              case 17:
-              case 18:
-                display.setText(iwrb.getLocalizedString("travel.creditcard_is_expired","Creditcard is expired"));
-                break;
-              case 48:
-              case 49:
-              case 50:
-              case 51:
-              case 56:
-              case 57:
-              case 76:
-              case 79:
-              case 2002:
-              case 2010:
-                display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
-                break;
-              case 7:
-              case 37:
-              case 69:
-              case 75:
-                display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
-                break;
-              //case 69:
-              //  display.setText(e.getErrorMessage());
-              //  break;
-              case 20:
-              case 31:
-                display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
-                break;
-              case 99999:
-                display.setText(iwrb.getLocalizedString("travel.booking_was_not_confirmed_try_again_later","Booking was not confirmed. Please try again later"));
-                break;
-              default:
-                display.setText(iwrb.getLocalizedString("travel.cannot_connect","Cannot communicate with server"));
-                break;
-            }
-
-            throw e;
-          }
-*/
-          gBooking.setCreditcardAuthorizationNumber(heimild);
-          gBooking.store();
-
+        }else {
           debug("commiting");
           tm.commit();
           success = true;
