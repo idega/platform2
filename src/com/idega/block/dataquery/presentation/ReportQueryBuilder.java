@@ -1619,8 +1619,16 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	private String getDisplay(QueryFieldPart part) {
-		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()));
-		buffer.append(" -> ").append(part.getDisplay()).append(" ( ").append(part.getName()).append(" )");
+		String entity = part.getEntity();
+		String displayName = part.getDisplay();//localizable key
+		String fieldName = part.getName();
+		
+		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entity, entity));
+		buffer.append(" -> ")
+		.append(iwrb.getLocalizedString(displayName,displayName))
+		.append(" ( ")
+		.append(iwrb.getLocalizedString(fieldName,fieldName))
+		.append(" )");
 		return buffer.toString();
 	}
 
