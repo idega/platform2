@@ -29,6 +29,10 @@ public class ImageCatagory extends GenericEntity{
           this.setParentId(-1);
         }
 
+        public void setImageCatagoryName(String name){
+          setColumn("image_catagory_name",name);
+        }
+
 	public String getImageCatagoryName() {
           return (String) getColumnValue("image_catagory_name");
 	}

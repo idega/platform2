@@ -113,6 +113,55 @@ public void makeDefaultSizes(){
       return ImageBusiness.getImageCatagories(-1);
     }
 
+    public static void storeEditForm(ModuleInfo modinfo){
+      String catagoriTextInputName = "catagory";  // same as in ImageViewer getEditForm
+      String deleteTextInputName = "delete";      // same as in ImageViewer getEditForm
+
+      String[] catagoryName = modinfo.getParameterValues(catagoriTextInputName);
+      String[] deleteValue = modinfo.getParameterValues(deleteTextInputName);
+      ImageCatagory catagory = new ImageCatagory();
+
+      //change
+//      if(catagoryName != null && catagoryName.length > 0){
+//        for (int i = 0; i < catagoryName.length; i++) {
+//          String tempName = catagoryName[i];
+//          catagory = new ImageCatagory(deleteValue[i]);
+//        }
+//
+//      }
+
+      //delete
+      try {
+        if(deleteValue != null){
+          for(int i = 0; i < deleteValue.length; i++){
+            catagory.deleteMultiple(catagory.getIDColumnName(), deleteValue[i]);
+          }
+        }
+      }
+      catch (Exception ex) {
+
+      }
+
+      try {
+        for (int i = deleteValue.length; i < catagoryName.length; i++) {
+          if (catagoryName[i] != null && !"".equals(catagoryName[i]) ) {
+            ImageCatagory temp = new ImageCatagory();
+            temp.setParentId(-1);
+            temp.setImageCatagoryName(catagoryName[i]);
+            temp.insert();
+          }
+        }
+      }
+      catch (Exception ex) {
+
+      }
+
+
+
+
+
+    }
+
 
 }//end of class
 
