@@ -166,7 +166,9 @@ public class TeeTimeSearch extends GolfBlock {
 									//Error1.setBorder(1);
 									Error1.setColumnAlignment(1, "center");
 									Error1.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error1", "_")), 1, 1);
-									this.add(Error1);
+									Paragraph p = new Paragraph();
+									p.add(Error1);
+									this.add(p);
 									break;
 								}
 								if (E.getMessage().equals("Error2")) {
@@ -176,7 +178,9 @@ public class TeeTimeSearch extends GolfBlock {
 									//Error2.setBorder(1);
 									Error2.setColumnAlignment(1, "center");
 									Error2.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error2", "_")), 1, 1);
-									this.add(Error2);
+									Paragraph p = new Paragraph();
+									p.add(Error2);
+									this.add(p);
 									break;
 								}
 								if (E.getMessage().equals("Error3")) {
@@ -190,7 +194,9 @@ public class TeeTimeSearch extends GolfBlock {
 									Error3.setColumnAlignment(1, "center");
 									Error3.add(this.getSmallErrorText(getFieldName(myField.get_field_id())), 1, 1);
 									Error3.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error3", "_")), 1, 2);
-									this.add(Error3);
+									Paragraph p = new Paragraph();
+									p.add(Error3);
+									this.add(p);
 								}
 							}
 						}
@@ -201,7 +207,9 @@ public class TeeTimeSearch extends GolfBlock {
 	
 						Error.setColumnAlignment(1, "center");
 						Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error4", "_")), 1, 1);
-						this.add(Error);
+						Paragraph p = new Paragraph();
+						p.add(Error);
+						this.add(p);
 					}
 				} else {
 					Table Error = new Table(1, 1);
@@ -210,7 +218,9 @@ public class TeeTimeSearch extends GolfBlock {
 	
 					Error.setColumnAlignment(1, "center");
 					Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error5", "_")), 1, 1);
-					this.add(Error);
+					Paragraph p = new Paragraph();
+					p.add(Error);
+					this.add(p);
 				}
 			}
 		}

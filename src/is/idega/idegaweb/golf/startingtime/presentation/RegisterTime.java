@@ -615,7 +615,7 @@ public class RegisterTime extends GolfBlock {
           }
         }else{
         	
-        		Paragraph p = new Paragraph();
+        	  Paragraph p = new Paragraph();
           Text comment = (Text)templText.clone();
           comment.setText(localize("start.no_one_was_registered","No one was registered"));//"Enginn skr‡Ýist");
           p.add(Text.getBreak());
@@ -712,88 +712,98 @@ public class RegisterTime extends GolfBlock {
 
 
    public void main(IWContext modinfo) throws Exception {
-    this.getParentPage().setTitle(this.localize("start.register_tee_time","Register tee time"));
-
-	  boolean keepOn = true;
-	  try{
-	  	
-	    String date = modinfo.getParameter("date");
-	    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-	    currentField = modinfo.getParameter("field_id");
-	    currentUnion = modinfo.getParameter("union_id");
-	    
-	    if(date==null){
-	    		date = (String)modinfo.getSession().getAttribute("date");
+	this.getParentPage().setTitle(this.localize("start.register_tee_time","Register tee time"));
+	
+	try {
+		  boolean keepOn = true;
+		  try{
+		  	
+		    String date = modinfo.getParameter("date");
 		    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-		    currentField = (String)modinfo.getSession().getAttribute("field_id");
-		    currentUnion = (String)modinfo.getSession().getAttribute("union_id");
-	    }
-	    
-	    String wmlLock = modinfo.getParameter(PRM_LOCKED_AS_WML_LAYOUT);
-	    lockedAsWapLayout = (wmlLock != null && !"".equals(wmlLock));
-	    
-	    String bPage = modinfo.getParameter(PRM_BACK_PAGE);
-	    if(bPage!=null){
-	    		try {
-				backPage = Integer.parseInt(bPage);
-			} catch (NumberFormatException e1) {
-			}
-	    }
-	
-	
-        currentMember = Integer.toString(GolfLoginBusiness.getMember(modinfo).getID());
-        currentDay = new IWTimestamp(date);
-      }catch(Exception e){
-      	e.printStackTrace();
-        keepOn = false;
-        this.noPermission();
-      }
-	
-	
-	
-	  //    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
-	  //      this.handleFormInfo(modinfo);
-	  //    }
-	
-	  if(keepOn){
-	      myForm.maintainParameter("secure_num");
-	      myForm.maintainParameter("line");
-	      myForm.maintainParameter("date");
-	      myForm.maintainParameter("field_id");
-	      myForm.maintainParameter("union_id");
-	      myForm.maintainParameter(PRM_LOCKED_AS_WML_LAYOUT);
-	      myForm.maintainParameter(PRM_BACK_PAGE);
-	      
-	      int skraMargaInt = 0;
-	      String skraMarga = modinfo.getParameter("skraMarga");
-	
-	      int line = Integer.parseInt( modinfo.getParameter("line"));
-	      int check = business.countEntriesInGroup(line, currentField, currentDay);
-	
-	      if( check > 3){
-	        setErroResponse(myForm, false);
-	      }
-	      else{
-	        if( modinfo.getParameter("secure_num") != null){
-	        	handleFormInfo(modinfo);
-	          if(lockedAsWapLayout || modinfo.isClientHandheld()){
-	          	this.empty();
-	          	this.add(frameTable);
-	          }
-	        }else{
-	          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
-	          skraMargaInt = Integer.parseInt(skraMarga);
-	          if(lockedAsWapLayout || modinfo.isClientHandheld()){
-	          	lineUpWMLTable(skraMargaInt, modinfo);
-	          } else {
-	          	lineUpTable(skraMargaInt, modinfo);
-	          }
-	        }
-	      }
-	
-	   }else{
-	     this.noPermission();
-	   }
+		    currentField = modinfo.getParameter("field_id");
+		    currentUnion = modinfo.getParameter("union_id");
+		    
+		    if(date==null){
+		    		date = (String)modinfo.getSession().getAttribute("date");
+			    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
+			    currentField = (String)modinfo.getSession().getAttribute("field_id");
+			    currentUnion = (String)modinfo.getSession().getAttribute("union_id");
+		    }
+		    
+		    String wmlLock = modinfo.getParameter(PRM_LOCKED_AS_WML_LAYOUT);
+		    lockedAsWapLayout = (wmlLock != null && !"".equals(wmlLock));
+		    
+		    String bPage = modinfo.getParameter(PRM_BACK_PAGE);
+		    if(bPage!=null){
+		    		try {
+					backPage = Integer.parseInt(bPage);
+				} catch (NumberFormatException e1) {
+				}
+		    }
+		
+		
+		    currentMember = Integer.toString(GolfLoginBusiness.getMember(modinfo).getID());
+		    currentDay = new IWTimestamp(date);
+		  }catch(Exception e){
+		  	e.printStackTrace();
+		    keepOn = false;
+		    this.noPermission();
+		  }
+		
+		
+		
+		  //    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
+		  //      this.handleFormInfo(modinfo);
+		  //    }
+		
+		  if(keepOn){
+		      myForm.maintainParameter("secure_num");
+		      myForm.maintainParameter("line");
+		      myForm.maintainParameter("date");
+		      myForm.maintainParameter("field_id");
+		      myForm.maintainParameter("union_id");
+		      myForm.maintainParameter(PRM_LOCKED_AS_WML_LAYOUT);
+		      myForm.maintainParameter(PRM_BACK_PAGE);
+		      
+		      int skraMargaInt = 0;
+		      String skraMarga = modinfo.getParameter("skraMarga");
+		
+		      int line = Integer.parseInt( modinfo.getParameter("line"));
+		      int check = business.countEntriesInGroup(line, currentField, currentDay);
+		
+		      if( check > 3){
+		        setErroResponse(myForm, false);
+		      }
+		      else{
+		        if( modinfo.getParameter("secure_num") != null){
+		        	handleFormInfo(modinfo);
+		          if(lockedAsWapLayout || modinfo.isClientHandheld()){
+		          	this.empty();
+		          	this.add(frameTable);
+		          }
+		        }else{
+		          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
+		          skraMargaInt = Integer.parseInt(skraMarga);
+		          if(lockedAsWapLayout || modinfo.isClientHandheld()){
+		          	lineUpWMLTable(skraMargaInt, modinfo);
+		          } else {
+		          	lineUpTable(skraMargaInt, modinfo);
+		          }
+		        }
+		      }
+		
+		   }else{
+		     this.noPermission();
+		   }
+	} catch (NumberFormatException e) {
+		e.printStackTrace();
+	} catch (NullPointerException e){
+		e.printStackTrace();
+	} catch (SQLException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
     } // method main() ends
 
 /**
