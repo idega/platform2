@@ -203,7 +203,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			return (IFSCheckRecordHome) IDOLookup.getHome(IFSCheckRecord.class);
 		}
 		catch (IDOLookupException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -707,7 +706,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			//Posttyp
 			bWriter.write("10");
 			//Rutinkod + kundkod
-			//			for (int i = 0; i < 8; i++)
 			bWriter.write(empty.substring(0, 8));
 			//Rutinkod for avsandande rutin
 			bWriter.write("KU ");
@@ -716,7 +714,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			//Klockslag
 			bWriter.write(executionDate.getDateString("hhmmss"));
 			//Kommentar
-			//			for (int i = 0; i < 225; i++)
 			bWriter.write(empty.substring(0, 225));
 			bWriter.newLine();
 
@@ -746,7 +743,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						//Posttyp
 						bWriter.write("60");
 						//Filler etc
-						//					for (int i = 0; i < 22; i++)
 						bWriter.write(empty.substring(0, 22));
 						//Perioden
 						if (periodText.length() < 20) {
@@ -832,8 +828,15 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						String co = "";
 						if (ad != null) {
 							//Hack to fix silly bug in database. There seems to be an entry in the Address table with type == 2 for the user, but the street name and number are null.
-							if (ad.getStreetName() != null)
-								co = ad.getName();
+							if (ad.getStreetName() != null) {
+								StringBuffer coBuffer = new StringBuffer(ad.getStreetName());
+								if (ad.getStreetNumber() != null) {
+									coBuffer.append(" ");
+									coBuffer.append(ad.getStreetNumber());
+								}
+								
+								co = coBuffer.toString();
+							}
 						}
 						if (co.length() < 25) {
 							StringBuffer p = new StringBuffer(co);
@@ -847,7 +850,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						}
 						bWriter.write(co);
 						//Filler
-						//					for (int i = 0; i < 8; i++)
 						bWriter.write(empty.substring(0, 8));
 						//Er referens
 						StringBuffer bun = new StringBuffer("Kundvalgruppen Tel: 718 80 00");
@@ -858,12 +860,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						//Avsertyp
 						bWriter.write("BARNOMSORG");
 						//Filler
-						//					for (int i = 0; i < 25; i++)
 						bWriter.write(empty.substring(0, 25));
 						//Verksamhetskod
 						bWriter.write("BO");
 						//Filler
-						//					for (int i = 0; i < 15; i++)
 						bWriter.write(empty.substring(0, 15));
 
 						bWriter.newLine();
@@ -883,7 +883,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								//Posttype
 								bWriter.write("62");
 								//Filler
-								//							for (int i = 0; i < 10; i++)
 								bWriter.write(empty.substring(0, 10));
 								//Tecken
 								float am = iRec.getAmount();
@@ -898,13 +897,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								bWriter.write("000000000000000");
 								bWriter.write("000000000000");
 								//moms, filler
-								//							for (int i = 0; i < 2; i++)
 								bWriter.write(empty.substring(0, 2));
 								//Avser period f.o.m
-								//							for (int i = 0; i < 8; i++)
 								bWriter.write(empty.substring(0, 8));
 								//Avser period t.o.m
-								//							for (int i = 0; i < 8; i++)
 								bWriter.write(empty.substring(0, 8));
 								//Faktura text 1
 								boolean insertLRow = false;
@@ -925,15 +921,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 								bWriter.write(text);
 								//Filler
-								//							for (int i = 0; i < 11; i++)
-//								bWriter.write(empty.substring(0, 11));
 								//Faktura text 2, 3 and 4
-								//							for (int i = 0; i < 108; i++)
 								bWriter.write(empty.substring(0, 108));
 								//Kod
 								bWriter.write('T');
 								//Filler
-								//							for (int i = 0; i < 33; i++)
 								bWriter.write(empty.substring(0, 33));
 
 								bWriter.newLine();
@@ -942,7 +934,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 									//Posttype
 									bWriter.write("62");
 									//Filler
-									//								for (int i = 0; i < 10; i++)
 									bWriter.write(empty.substring(0, 10));
 									//Tecken
 									bWriter.write(' ');
@@ -952,13 +943,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 									bWriter.write("000000000000000");
 									bWriter.write("000000000000");
 									//moms, filler
-									//								for (int i = 0; i < 2; i++)
 									bWriter.write(empty.substring(0, 2));
 									//Avser period f.o.m
-									//								for (int i = 0; i < 8; i++)
 									bWriter.write(empty.substring(0, 8));
 									//Avser period t.o.m
-									//								for (int i = 0; i < 8; i++)
 									bWriter.write(empty.substring(0, 8));
 									//Faktura text 1
 									if (LText.length() < 36) {
@@ -974,12 +962,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 									bWriter.write(LText);
 									//Faktura text 2, 3 and 4
-									//								for (int i = 0; i < 108; i++)
 									bWriter.write(empty.substring(0, 108));
 									//Kod
 									bWriter.write('L');
 									//Filler
-									//								for (int i = 0; i < 33; i++)
 									bWriter.write(empty.substring(0, 33));
 
 									bWriter.newLine();
@@ -987,16 +973,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 								bWriter.write("63");
 								//Filler
-								//							for (int i = 0; i < 6; i++)
 								bWriter.write(empty.substring(0, 6));
 								//Tecken
-//								am = iRec.getAmount();
-//								if (am < 0)
-//									bWriter.write('-');
-//								else
 									bWriter.write(' ');
 								//Belopp
-	//							am = Math.abs(am);
 								bWriter.write(format.format(am));
 								//Kvantitet and Apris
 								bWriter.write("000000000000000");
@@ -1027,17 +1007,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								bWriter.write(tmp);
 								//Resurs
 								bWriter.write(empty.substring(0, 10));
-/*								tmp = pb.findFieldInStringByName(posting, "Resurs");
-								if (tmp.length() < 10) {
-									StringBuffer post = new StringBuffer(tmp);
-									while (post.length() < 10)
-										post.append(' ');
-									tmp = post.toString();
-								}
-								else if (tmp.length() > 10) {
-									tmp = tmp.substring(0, 10);
-								}
-								bWriter.write(tmp);*/
 								//Verksamhet
 								tmp = pb.findFieldInStringByName(posting, "Verksamhet");
 								if (tmp.length() < 10) {
@@ -1099,13 +1068,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								}
 								bWriter.write(tmp);
 								//Anlaggnings nummber
-								//							for (int i = 0; i < 10; i++)
 								bWriter.write(empty.substring(0, 10));
 								//Internranta
-								//							for (int i = 0; i < 10; i++)
 								bWriter.write(empty.substring(0, 10));
 								//Filler
-								//							for (int i = 0; i < 100; i++)
 								bWriter.write(empty.substring(0, 100));
 
 								bWriter.newLine();
@@ -1183,12 +1149,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			//Posttyp
 			bWriter.write("50");
 			//Filler
-			//			for (int i = 0; i < 94; i++)
 			bWriter.write(empty.substring(0, 94));
 			//Antal poster posttyp 60
 			bWriter.write(format2.format(numberOfHeaders));
 			//Filler, etc...
-			//			for (int i = 0; i < 144; i++)
 			bWriter.write(empty.substring(0, 144));
 			bWriter.newLine();
 
