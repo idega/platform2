@@ -68,7 +68,6 @@ private int complexID;
     }
 
     Table table = new Table(1,2);
-      table.setAlignment("center");
       table.setCellpadding(0);
       table.setCellspacing(0);
       table.setAlignment(1,2,"center");
