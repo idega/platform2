@@ -62,7 +62,7 @@ public class TenantsHabitants extends Block implements Campus{
   }
 
   public void main(IWContext iwc){
-    debugParameters(iwc);
+    //debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
