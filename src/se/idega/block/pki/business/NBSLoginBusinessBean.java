@@ -10,6 +10,7 @@ import java.io.File;
 import java.sql.SQLException;
 
 import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSAuthResult;
@@ -314,7 +315,8 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 				}
 			}
 
-		} catch (EJBException e) {
+		} catch (FinderException e) {
+			System.err.println("User with personalId:"+personalID+" not found in db.");
 			returner = false;
 		}
 		return returner;
