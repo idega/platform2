@@ -280,6 +280,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				
 				if (hasSchoolPlacement) {
 					delete = new SubmitButton(getDeleteIcon(localize("child_care.remove_application","Remove application")), PARAMETER_DELETE_APPLICATION, application.getPrimaryKey().toString());
+					delete.setToolTip(localize("child_care.remove_application","Remove application"));
 					delete.setSubmitConfirm(localize("child_care.remove_application_request", "Do you really want to remove the application?"));
 					applicationTable.add(delete, column, row);
 				}

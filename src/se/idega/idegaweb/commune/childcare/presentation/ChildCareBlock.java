@@ -279,6 +279,7 @@ public class ChildCareBlock extends CommuneBlock {
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusNotAnswered()), getStatusString(getBusiness().getStatusNotAnswered()) + " (" + getStatusStringAbbr(getBusiness().getStatusNotAnswered()) + ")");
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusRejected()), getStatusString(getBusiness().getStatusRejected()) + " (" + getStatusStringAbbr(getBusiness().getStatusRejected()) + ")");
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusTimedOut()), getStatusString(getBusiness().getStatusTimedOut()) + " (" + getStatusStringAbbr(getBusiness().getStatusTimedOut()) + ")");
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusDeleted()), getStatusString(getBusiness().getStatusDeleted()) + " (" + getStatusStringAbbr(getBusiness().getStatusDeleted()) + ")");
 		if (getSession().getStatus() != null) {
 			menu.setSelectedElement(getSession().getStatus());
 		}
