@@ -116,10 +116,10 @@ public class FishingDesigner extends TravelManager implements DesignerForm {
     String sundays = iwc.getParameter( PARAMETER_SUNDAYS );
     String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
 
-    String departureFrom = iwc.getParameter( PARAMETER_DEPARTURE_FROM );
-    String departureTime = iwc.getParameter( PARAMETER_DEPARTURE_TIME );
-    String arrivalAt = iwc.getParameter( PARAMETER_ARRIVAL_AT );
-    String arrivalTime = iwc.getParameter( PARAMETER_ARRIVAL_TIME );
+//    String departureFrom = iwc.getParameter( PARAMETER_DEPARTURE_FROM );
+//    String departureTime = iwc.getParameter( PARAMETER_DEPARTURE_TIME );
+//    String arrivalAt = iwc.getParameter( PARAMETER_ARRIVAL_AT );
+//    String arrivalTime = iwc.getParameter( PARAMETER_ARRIVAL_TIME );
 
     String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
 
@@ -154,15 +154,15 @@ public class FishingDesigner extends TravelManager implements DesignerForm {
       activeToStamp = new IWTimestamp( activeTo );
     }
 
-    IWTimestamp departureStamp = null;
-    if ( departureTime != null ) {
-      departureStamp = new IWTimestamp( "2001-01-01 " + departureTime );
-    }
-
-    IWTimestamp arrivalStamp = null;
-    if ( arrivalTime != null ) {
-      arrivalStamp = new IWTimestamp( "2001-01-01 " + arrivalTime );
-    }
+//    IWTimestamp departureStamp = null;
+//    if ( departureTime != null ) {
+//      departureStamp = new IWTimestamp( "2001-01-01 " + departureTime );
+//    }
+//
+//    IWTimestamp arrivalStamp = null;
+//    if ( arrivalTime != null ) {
+//      arrivalStamp = new IWTimestamp( "2001-01-01 " + arrivalTime );
+//    }
 
 
     int[] tempDays = new int[7];
@@ -210,14 +210,14 @@ public class FishingDesigner extends TravelManager implements DesignerForm {
     try {
       if ( serviceId == -1 ) {
         hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
-        returner = hb.createFishing(_supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp,true, iDiscountType);
+        returner = hb.createFishing(_supplier.getID(), iImageId, name, number, description, activeDays, true, iDiscountType);
       } else {
         String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
         if ( timeframeId == null ) {
           timeframeId = "-1";
         }
         hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        returner = hb.updateFishing(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp, true, iDiscountType);
+        returner = hb.updateFishing(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, true, iDiscountType);
         if ( useImageId == null ) {
           ProductEditorBusiness.getInstance().dropImage( _product, true );
         }
@@ -306,20 +306,20 @@ public class FishingDesigner extends TravelManager implements DesignerForm {
       saturdays.keepStatusOnAction();
       sundays.keepStatusOnAction();
 
-      TextInput departure_from = new TextInput( PARAMETER_DEPARTURE_FROM );
-      departure_from.setSize( 40 );
-      departure_from.keepStatusOnAction();
-      TimeInput departure_time = new TimeInput( PARAMETER_DEPARTURE_TIME );
-      departure_time.setHour( 8 );
-      departure_time.setMinute( 0 );
-      departure_time.keepStatusOnAction();
-      TextInput arrival_at = new TextInput( PARAMETER_ARRIVAL_AT );
-      arrival_at.setSize( 40 );
-      arrival_at.keepStatusOnAction();
-      TimeInput arrival_time = new TimeInput( PARAMETER_ARRIVAL_TIME );
-      arrival_time.setHour( 8 );
-      arrival_time.setMinute( 0 );
-      arrival_time.keepStatusOnAction();
+//      TextInput departure_from = new TextInput( PARAMETER_DEPARTURE_FROM );
+//      departure_from.setSize( 40 );
+//      departure_from.keepStatusOnAction();
+//      TimeInput departure_time = new TimeInput( PARAMETER_DEPARTURE_TIME );
+//      departure_time.setHour( 8 );
+//      departure_time.setMinute( 0 );
+//      departure_time.keepStatusOnAction();
+//      TextInput arrival_at = new TextInput( PARAMETER_ARRIVAL_AT );
+//      arrival_at.setSize( 40 );
+//      arrival_at.keepStatusOnAction();
+//      TimeInput arrival_time = new TimeInput( PARAMETER_ARRIVAL_TIME );
+//      arrival_time.setHour( 8 );
+//      arrival_time.setMinute( 0 );
+//      arrival_time.keepStatusOnAction();
 
 
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
@@ -458,30 +458,30 @@ public class FishingDesigner extends TravelManager implements DesignerForm {
       weekdaysText.setText( _iwrb.getLocalizedString( "travel.weekdays", "Weekdays" ) );
       table.add( weekdaysText, 1, row );
       table.add( weekdayFixTable, 2, row );
-
-      ++row;
-      Text arrivalAtText = ( Text ) theBoldText.clone();
-      arrivalAtText.setText( _iwrb.getLocalizedString( "travel.arrival_at", "Arrival at" ) );
-      table.add( arrivalAtText, 1, row );
-      table.add( arrival_at, 2, row );
-
-      ++row;
-      Text arrivalTimeText = ( Text ) theBoldText.clone();
-      arrivalTimeText.setText( _iwrb.getLocalizedString( "travel.arrival_time", "Arrival time" ) );
-      table.add( arrivalTimeText, 1, row );
-      table.add( arrival_time, 2, row );
-
-      ++row;
-      Text departureFromText = ( Text ) theBoldText.clone();
-      departureFromText.setText( _iwrb.getLocalizedString( "travel.departure_from", "Departure from" ) );
-      table.add( departureFromText, 1, row );
-      table.add( departure_from, 2, row );
-
-      ++row;
-      Text departureTimeText = ( Text ) theBoldText.clone();
-      departureTimeText.setText( _iwrb.getLocalizedString( "travel.departure_time", "Departure time" ) );
-      table.add( departureTimeText, 1, row );
-      table.add( departure_time, 2, row );
+//
+//      ++row;
+//      Text arrivalAtText = ( Text ) theBoldText.clone();
+//      arrivalAtText.setText( _iwrb.getLocalizedString( "travel.arrival_at", "Arrival at" ) );
+//      table.add( arrivalAtText, 1, row );
+//      table.add( arrival_at, 2, row );
+//
+//      ++row;
+//      Text arrivalTimeText = ( Text ) theBoldText.clone();
+//      arrivalTimeText.setText( _iwrb.getLocalizedString( "travel.arrival_time", "Arrival time" ) );
+//      table.add( arrivalTimeText, 1, row );
+//      table.add( arrival_time, 2, row );
+//
+//      ++row;
+//      Text departureFromText = ( Text ) theBoldText.clone();
+//      departureFromText.setText( _iwrb.getLocalizedString( "travel.departure_from", "Departure from" ) );
+//      table.add( departureFromText, 1, row );
+//      table.add( departure_from, 2, row );
+//
+//      ++row;
+//      Text departureTimeText = ( Text ) theBoldText.clone();
+//      departureTimeText.setText( _iwrb.getLocalizedString( "travel.departure_time", "Departure time" ) );
+//      table.add( departureTimeText, 1, row );
+//      table.add( departure_time, 2, row );
 
       ++row;
       Text discountTypeText = ( Text ) theBoldText.clone();

@@ -1,13 +1,13 @@
 package is.idega.idegaweb.travel.service.fishing.business;
 
-import java.sql.*;
-
-
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.data.*;
-import com.idega.util.*;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.service.business.*;
+import is.idega.idegaweb.travel.business.TravelStockroomBusinessBean;
+import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
+import java.sql.SQLException;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductCategoryHome;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.data.IDOLookup;
 
 
 /**
@@ -24,19 +24,19 @@ public class FishingBusinessBean extends TravelStockroomBusinessBean implements 
   public FishingBusinessBean() {
   }
 
-  public int createFishing(int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimestamp departureTime, String arrivalAt, IWTimestamp arrivalTime,  boolean isValid, int discountTypeId) throws Exception{
-    return updateFishing(-1, supplierId, fileId, name, number, description, activeDays, departureFrom, departureTime, arrivalAt, arrivalTime, isValid, discountTypeId);
+  public int createFishing(int supplierId, Integer fileId, String name, String number, String description, int[] activeDays,  boolean isValid, int discountTypeId) throws Exception{
+    return updateFishing(-1, supplierId, fileId, name, number, description, activeDays, isValid, discountTypeId);
   }
 
-  public int updateFishing(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimestamp departureTime, String arrivalAt, IWTimestamp arrivalTime,boolean isValid, int discountTypeId) throws Exception{
+  public int updateFishing(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, boolean isValid, int discountTypeId) throws Exception{
     int productId = -1;
-    int[] departureAddressIds = setDepartureAddress(serviceId, departureFrom, departureTime);
-    int[] arrivalAddressesIds = setArrivalAddress(serviceId, arrivalAt);
+    int[] departureAddressIds = new int[]{};//setDepartureAddress(serviceId, departureFrom, departureTime);
+    int[] arrivalAddressesIds = new int[]{};//setArrivalAddress(serviceId, arrivalAt);
 
     if (serviceId == -1) {
-      productId = createService(supplierId, fileId, name, number, description, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
+      productId = createService(supplierId, fileId, name, number, description, isValid, departureAddressIds, null, null, discountTypeId);
     }else {
-      productId = updateService(serviceId, supplierId, fileId, name, number, description, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
+      productId = updateService(serviceId, supplierId, fileId, name, number, description, isValid, departureAddressIds, null, null, discountTypeId);
     }
 
     setActiveDays(productId, activeDays);
