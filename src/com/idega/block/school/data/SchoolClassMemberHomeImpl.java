@@ -1,12 +1,5 @@
 package com.idega.block.school.data;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
-import com.idega.user.data.User;
-
 
 public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory implements SchoolClassMemberHome
 {
@@ -19,6 +12,27 @@ public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory impleme
   return (SchoolClassMember) super.createIDO();
  }
 
+
+public java.util.Collection findAllBySeasonAndMaximumAge(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySeasonAndMaximumAge(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
 public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -48,21 +62,6 @@ public java.util.Collection findBySchoolClass(com.idega.block.school.data.School
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByStudent(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindByStudent(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findAllBySeasonAndMaximumAge(int seasonID,int maxAge)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySeasonAndMaximumAge(seasonID,maxAge);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-
 public java.util.Collection findByStudent(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindByStudent(p0);
@@ -70,15 +69,28 @@ public java.util.Collection findByStudent(int p0)throws javax.ejb.FinderExceptio
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByStudent(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindByStudent(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
-public SchoolClassMember findByUserAndSchoolClass(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public SchoolClassMember findByUserAndSchoolAndSeason(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSchoolAndSeason(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolClassMember findByUserAndSchoolClass(com.idega.user.data.User p0,com.idega.block.school.data.SchoolClass p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSchoolClass(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
 
-public SchoolClassMember findByUserAndSchoolClass(com.idega.user.data.User p0,com.idega.block.school.data.SchoolClass p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public SchoolClassMember findByUserAndSchoolClass(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSchoolClass(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -104,25 +116,5 @@ public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.ide
  }
 
 
-
-	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberHome#findAllByUserAndSeason(int, int)
-	 */
-	public Collection findAllByUserAndSeason(int p0, int p1) throws FinderException,RemoteException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberHome#findAllByUserAndSeason(com.idega.user.data.User, com.idega.block.school.data.SchoolSeason)
-	 */
-	public Collection findAllByUserAndSeason(User p0, SchoolSeason p1) throws FinderException,RemoteException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
 
 }
