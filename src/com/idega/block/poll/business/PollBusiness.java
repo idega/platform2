@@ -464,9 +464,8 @@ public static final String _PARAMETER_CLOSE = "close";
     try {
       if ( poll != null ) {
         poll.delete();
-        return true;
       }
-      return false;
+      return true;
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);

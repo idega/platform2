@@ -71,7 +71,8 @@ public class PollFinder {
 
   public static PollEntity getObjectInstanceFromID(int ICObjectInstanceID){
     try {
-      List L = EntityFinder.findRelated(PollEntity.getStaticInstance(PollEntity.class),new ICObjectInstance(ICObjectInstanceID));
+      ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
+      List L = EntityFinder.findRelated(ICObjInst,PollEntity.getStaticInstance(PollEntity.class));
       if(L!= null){
         return (PollEntity) L.get(0);
       }
