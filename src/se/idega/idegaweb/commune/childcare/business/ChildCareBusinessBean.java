@@ -42,6 +42,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			ChildCareApplication appl = null;
+			ChildCareApplication parent = null;
+			
 			IWTimestamp now = new IWTimestamp();
 			for (int i = 0; i < 5; i++) {
 				appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).create();
@@ -57,11 +59,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl.setMethod(1);
 				appl.setChoiceNumber(i+1);
 				appl.setCheckId(checkId);
-				if (i == 0)
+				if (i == 0) {
 					appl.setCaseStatus(getCaseStatusOpen());
-				else
+				}
+				else {
 					appl.setCaseStatus(getCaseStatusInactive());
+					appl.setParentCase(parent);					
+				}
 				appl.store();
+				
+				parent = appl;				
 			}
 			
 			/**
