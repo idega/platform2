@@ -42,6 +42,6 @@ public class RunGroupMap extends MultivaluedHashMap {
 		
 		((RunGroup) key).setCounter(counter);
 		
-		return super.put(key, value);
+		return super.put(key, values);
 	}
 }
