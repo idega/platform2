@@ -123,7 +123,11 @@ public class ContractEditWindow extends Window{
           T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
           T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
           row++;
+
+          idegaTimestamp today = idegaTimestamp.RightNow();
+
           DateInput from = new DateInput("from_date",true);
+          from.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getValidFrom()!=null)
             from.setDate(eContract.getValidFrom());
           Edit.setStyle(from);
@@ -131,6 +135,7 @@ public class ContractEditWindow extends Window{
           T.add(from,2,row);
           row++;
           DateInput to = new DateInput("to_date",true);
+          to.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getValidTo()!=null)
             to.setDate(eContract.getValidTo());
           Edit.setStyle(to);
@@ -138,6 +143,7 @@ public class ContractEditWindow extends Window{
           T.add(to,2,row);
           row++;
           DateInput moving = new DateInput("moving_date",true);
+          moving.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getMovingDate()!=null)
             moving.setDate(eContract.getMovingDate());
           Edit.setStyle(moving);
@@ -145,6 +151,7 @@ public class ContractEditWindow extends Window{
           T.add(moving,2,row);
           row++;
           TimestampInput deliver = new TimestampInput("deliver_date",true);
+          deliver.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getDeliverTime()!=null)
             deliver.setTimestamp(eContract.getDeliverTime());
           Edit.setStyle(deliver);
@@ -152,6 +159,7 @@ public class ContractEditWindow extends Window{
           T.add(deliver,2,row);
           row++;
           TimestampInput returnd = new TimestampInput("return_date",true);
+          returnd.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getReturnTime()!=null)
             returnd.setTimestamp(eContract.getReturnTime());
           Edit.setStyle(returnd);
