@@ -214,7 +214,11 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 					}
 					
 					if(localizedNameKey!=null){
-						repGen.setReportName(iwrb.getLocalizedString(localizedNameKey));
+						String reportName = iwrb.getLocalizedString(localizedNameKey);
+						repGen.setReportName(reportName);
+						
+						table.add(formatHeadline(reportName),2,1);	//not a selector
+						table.addBreak(2,1);
 					}
 				}
 				
