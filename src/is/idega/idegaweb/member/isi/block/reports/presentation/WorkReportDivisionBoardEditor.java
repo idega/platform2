@@ -507,7 +507,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
    */
   private Integer decodePrimaryKey(Integer primaryKey)  {
     String primaryKeyAsString = primaryKey.toString();
-    int index = primaryKeyAsString.lastIndexOf("8");
+    int index = primaryKeyAsString.lastIndexOf('8');
     return new Integer(primaryKeyAsString.substring(0,index));
   }
 
@@ -565,8 +565,9 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
      */
     private Integer encodePrimaryKey(Integer primaryKey)  {
       numberOfCallsOfWorkReportDivisionBoardHelper++;
-      StringBuffer buffer = new StringBuffer(primaryKey.intValue());
-      buffer.append("8").append(Integer.toOctalString(numberOfCallsOfWorkReportDivisionBoardHelper));
+      StringBuffer buffer = new StringBuffer();
+      buffer.append(primaryKey.intValue());
+      buffer.append('8').append(Integer.toOctalString(numberOfCallsOfWorkReportDivisionBoardHelper));
       return new Integer(buffer.toString());
     }
     
