@@ -442,6 +442,10 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 
 	protected Text getThreadDate(IWContext iwc, ForumData thread) {
 		IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
+		return getFormattedDate(stamp, iwc);
+	}
+	
+	protected Text getFormattedDate(IWTimestamp stamp, IWContext iwc) {
 		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 		Date date = new Date(stamp.getTimestamp().getTime());
 		return formatText(format.format(date));
