@@ -52,21 +52,19 @@ public class TournamentResultsDetailed extends JModuleObject {
 
   public void main(ModuleInfo modinfo) throws SQLException {
     try {
-      System.out.println("Starting: "+new idegaTimestamp().getTimestampRightNow().toString());
       iwrb = getResourceBundle(modinfo);
       iwb = getBundle(modinfo);
       tournament = new Tournament(tournamentId_);
       getMemberVector();
       if ( result != null ) {
         if ( result.size() > 1 ) {
-          System.out.println("Here");
           sortMemberVector();
         }
       }
 
       setValues();
+      getFieldInfo();
       getResults();
-      System.out.println("Done: "+new idegaTimestamp().getTimestampRightNow().toString());
     }
     catch (Exception e) {
       e.printStackTrace(System.out);
@@ -83,11 +81,6 @@ public class TournamentResultsDetailed extends JModuleObject {
         if ( size <= 1 ) {
           r.calculateCompareInfo();
         }
-        if ( a == 0 ) {
-          Vector parVector = r.getPar();
-          getFieldInfo(parVector);
-        }
-
         getMemberScore(r,row);
         row += 2;
       }
@@ -130,58 +123,56 @@ public class TournamentResultsDetailed extends JModuleObject {
       Vector strokes = r.getStrokes();
       Vector pars = r.getPar();
 
-      int strokeSize = strokes.size();
-      for ( int b = 0; b < strokeSize; b++ ) {
-        strokeValue = ((Double)strokes.elementAt(b)).intValue();
-        parValue = ((Integer)pars.elementAt(b)).intValue();
+      if ( strokes != null ) {
+        int strokeSize = strokes.size();
+        for ( int b = 0; b < strokeSize; b++ ) {
+          strokeValue = ((Double)strokes.elementAt(b)).intValue();
+          parValue = ((Integer)pars.elementAt(b)).intValue();
 
-        difference += strokeValue - parValue;
-        totalStrokes += strokeValue;
+          difference += strokeValue - parValue;
+          totalStrokes += strokeValue;
 
-        Text stroke = (Text) blackText.clone();
-          stroke.setText(Integer.toString(strokeValue));
-        Text differ = getDifference(difference);
+          Text stroke = (Text) blackText.clone();
+            stroke.setText(Integer.toString(strokeValue));
+          Text differ = getDifference(difference);
 
-        /*String color = this.getBackgroundColor(strokeValue,parValue);
-        if ( color != null ) {
-          myTable.setColor(column,row,color);
-        }*/
+          /*String color = this.getBackgroundColor(strokeValue,parValue);
+          if ( color != null ) {
+            myTable.setColor(column,row,color);
+          }*/
 
-        myTable.add(stroke,column,row);
-        myTable.add(differ,column,row+1);
-        myTable.setWidth(column,row,"25");
-        column++;
-
-        if ( b+1 == 9 ) {
-          outScore = totalStrokes;
-          Text outValueText = (Text) blackText.clone();
-            outValueText.setText(Integer.toString(outScore));
-            outValueText.setFontColor(getColor(outScore,outValue));
-          myTable.add(outValueText,column,row);
+          myTable.add(stroke,column,row);
           myTable.add(differ,column,row+1);
-          myTable.setWidth(column,row,"30");
           column++;
+
+          if ( b+1 == 9 ) {
+            outScore = totalStrokes;
+            Text outValueText = (Text) blackText.clone();
+              outValueText.setText(Integer.toString(outScore));
+              outValueText.setFontColor(getColor(outScore,outValue));
+            myTable.add(outValueText,column,row);
+            myTable.add(differ,column,row+1);
+            column++;
+          }
+
+          if ( b+1 == 18 ) {
+            inScore = totalStrokes - outScore;
+            Text inValueText = (Text) blackText.clone();
+              inValueText.setText(Integer.toString(inScore));
+              inValueText.setFontColor(getColor(inScore,inValue));
+            myTable.add(inValueText,column,row);
+            myTable.add(differ,column,row+1);
+            column++;
+          }
+
         }
 
-        if ( b+1 == 18 ) {
-          inScore = totalStrokes - outScore;
-          Text inValueText = (Text) blackText.clone();
-            inValueText.setText(Integer.toString(inScore));
-            inValueText.setFontColor(getColor(inScore,inValue));
-          myTable.add(inValueText,column,row);
-          myTable.add(differ,column,row+1);
-          myTable.setWidth(column,row,"30");
-          column++;
-        }
-
+        Text totalText = (Text) blackText.clone();
+          totalText.setText(Integer.toString(totalStrokes));
+          totalText.setFontColor(getColor(totalStrokes,totalPar));
+        myTable.add(totalText,22,row);
+        myTable.add(getDifference(difference),22,row+1);
       }
-
-      Text totalText = (Text) blackText.clone();
-        totalText.setText(Integer.toString(totalStrokes));
-        totalText.setFontColor(getColor(totalStrokes,totalPar));
-      myTable.add(totalText,column,row);
-      myTable.setWidth(column,row,"40");
-      myTable.add(getDifference(difference),column,row+1);
 
     }
     catch (Exception e) {
@@ -236,90 +227,93 @@ public class TournamentResultsDetailed extends JModuleObject {
     }
   }
 
-  private void getFieldInfo(Vector parVector) {
+  private void getFieldInfo() {
     try {
-      if ( parVector != null ) {
-        int parValue = 0;
-        int column = 2;
+      int parValue = 0;
+      int column = 2;
+      Tee[] tee = (Tee[]) Tee.getStaticInstance("com.idega.projects.golf.entity.Tee").findAll("select distinct hole_number,par from tee where field_id = "+tournament.getFieldId()+" order by hole_number");
 
-        Text holeText = (Text) whiteText.clone();
-          holeText.setText(iwrb.getLocalizedString("tournament.hole","Hole")+"&nbsp;");
-        Text parText = (Text) blackText.clone();
-          parText.setText(iwrb.getLocalizedString("tournament.par","Par")+"&nbsp;");
-          parText.setBold();
-          parText.setFontFace(Text.FONT_FACE_VERDANA);
-        Text outText = (Text) whiteText.clone();
-          outText.setText(iwrb.getLocalizedString("tournament.out","Out"));
-          outText.setBold();
-          outText.setFontFace(Text.FONT_FACE_VERDANA);
-        Text inText = (Text) whiteText.clone();
-          inText.setText(iwrb.getLocalizedString("tournament.in","In"));
-          inText.setBold();
-          inText.setFontFace(Text.FONT_FACE_VERDANA);
-        Text totalText = (Text) whiteText.clone();
-          totalText.setText(iwrb.getLocalizedString("tournament.total","Total"));
-          totalText.setBold();
-          totalText.setFontFace(Text.FONT_FACE_VERDANA);
+      Text holeText = (Text) whiteText.clone();
+        holeText.setText(iwrb.getLocalizedString("tournament.hole","Hole")+"&nbsp;");
+      Text parText = (Text) blackText.clone();
+        parText.setText(iwrb.getLocalizedString("tournament.par","Par")+"&nbsp;");
+        parText.setBold();
+        parText.setFontFace(Text.FONT_FACE_VERDANA);
+      Text outText = (Text) whiteText.clone();
+        outText.setText(iwrb.getLocalizedString("tournament.out","Out"));
+        outText.setBold();
+        outText.setFontFace(Text.FONT_FACE_VERDANA);
+      Text inText = (Text) whiteText.clone();
+        inText.setText(iwrb.getLocalizedString("tournament.in","In"));
+        inText.setBold();
+        inText.setFontFace(Text.FONT_FACE_VERDANA);
+      Text totalText = (Text) whiteText.clone();
+        totalText.setText(iwrb.getLocalizedString("tournament.total","Total"));
+        totalText.setBold();
+        totalText.setFontFace(Text.FONT_FACE_VERDANA);
 
-        for ( int b = 0; b < parVector.size(); b++ ) {
-          parValue = ((Integer)parVector.elementAt(b)).intValue();
-          totalPar += parValue;
-          Text par = (Text) blackText.clone();
-            par.setText(Integer.toString(parValue));
-            par.setBold();
-            par.setFontFace(Text.FONT_FACE_VERDANA);
-          Text hole = (Text) whiteText.clone();
-            hole.setText(Integer.toString(b+1));
+      for ( int b = 0; b < tee.length; b++ ) {
+        parValue = tee[b].getPar();
+        totalPar += parValue;
+        Text par = (Text) blackText.clone();
+          par.setText(Integer.toString(parValue));
+          par.setBold();
+          par.setFontFace(Text.FONT_FACE_VERDANA);
+        Text hole = (Text) whiteText.clone();
+          hole.setText(Integer.toString(b+1));
 
-          myTable.add(hole,column,2);
-          myTable.add(par,column,3);
+        myTable.add(hole,column,2);
+        myTable.add(par,column,3);
+        myTable.setWidth(column,2,"25");
+        column++;
+
+        if ( b+1 == 9 ) {
+          outValue = totalPar;
+          Text outValueText = (Text) blackText.clone();
+            outValueText.setText(Integer.toString(outValue));
+            outValueText.setBold();
+            outValueText.setFontFace(Text.FONT_FACE_VERDANA);
+          myTable.add(outText,column,2);
+          myTable.setWidth(column,2,"30");
+          myTable.add(outValueText,column,3);
           column++;
-
-          if ( b+1 == 9 ) {
-            outValue = totalPar;
-            Text outValueText = (Text) blackText.clone();
-              outValueText.setText(Integer.toString(outValue));
-              outValueText.setBold();
-              outValueText.setFontFace(Text.FONT_FACE_VERDANA);
-            myTable.add(outText,column,2);
-            myTable.add(outValueText,column,3);
-            column++;
-          }
-
-          if ( b+1 == 18 ) {
-            inValue = totalPar - outValue;
-            Text inValueText = (Text) blackText.clone();
-              inValueText.setText(Integer.toString(inValue));
-              inValueText.setBold();
-              inValueText.setFontFace(Text.FONT_FACE_VERDANA);
-            myTable.add(inText,column,2);
-            myTable.add(inValueText,column,3);
-            column++;
-          }
-
         }
 
-        Text totalParText = (Text) blackText.clone();
-          totalParText.setText(Integer.toString(totalPar));
-          totalParText.setBold();
-          totalParText.setFontFace(Text.FONT_FACE_VERDANA);
-        myTable.add(totalText,column,2);
-        myTable.add(totalParText,column,3);
-        myTable.add(holeText,1,2);
-        myTable.add(parText,1,3);
+        if ( b+1 == 18 ) {
+          inValue = totalPar - outValue;
+          Text inValueText = (Text) blackText.clone();
+            inValueText.setText(Integer.toString(inValue));
+            inValueText.setBold();
+            inValueText.setFontFace(Text.FONT_FACE_VERDANA);
+          myTable.add(inText,column,2);
+          myTable.setWidth(column,2,"30");
+          myTable.add(inValueText,column,3);
+          column++;
+        }
 
-        myTable.setHeight(2,"20");
-        myTable.setHeight(3,"20");
-
-        myTable.mergeCells(1,1,myTable.getColumns(),1);
-
-        Text tournamentText = new Text(tournament.getName());
-          tournamentText.setBold();
-          tournamentText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-          tournamentText.setFontFace(Text.FONT_FACE_VERDANA);
-          tournamentText.setFontColor("FFFFFF");
-        myTable.add(tournamentText,1,1);
       }
+
+      Text totalParText = (Text) blackText.clone();
+        totalParText.setText(Integer.toString(totalPar));
+        totalParText.setBold();
+        totalParText.setFontFace(Text.FONT_FACE_VERDANA);
+      myTable.setWidth(column,2,"40");
+      myTable.add(totalText,column,2);
+      myTable.add(totalParText,column,3);
+      myTable.add(holeText,1,2);
+      myTable.add(parText,1,3);
+
+      myTable.setHeight(2,"20");
+      myTable.setHeight(3,"20");
+
+      myTable.mergeCells(1,1,myTable.getColumns(),1);
+
+      Text tournamentText = new Text(tournament.getName());
+        tournamentText.setBold();
+        tournamentText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+        tournamentText.setFontFace(Text.FONT_FACE_VERDANA);
+        tournamentText.setFontColor("FFFFFF");
+      myTable.add(tournamentText,1,1);
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
@@ -372,7 +366,6 @@ public class TournamentResultsDetailed extends JModuleObject {
   }
 
   private void sortMemberVector() {
-    System.out.println("Sorting");
     ResultComparator comparator = new ResultComparator(ResultComparator.TOTALSTROKES);
     Collections.sort(result,comparator);
   }
