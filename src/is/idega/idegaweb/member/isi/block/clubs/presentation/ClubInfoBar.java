@@ -36,6 +36,8 @@ public class ClubInfoBar extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	public static final String PARAM_NAME_DIVISION_ID = "division_id";
+	public static final String PARAM_NAME_SHOW_PLAYERS_CALENDAR_LINK = "show_pla_cal_links";
+	
 	private String pageId = null;
 	
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
@@ -119,8 +121,6 @@ public class ClubInfoBar extends Block {
 				flockInserted = true;
 			}
 			if(showGroup(playerGroup)) {
-				System.out.println("showing group " + playerGroup.getName() + " (" + playerGroup.getPrimaryKey() + ")");
-				
 				Link link = new Link(playerGroup.getName());
 				link.addParameter(PARAM_NAME_GROUP_ID, playerGroup.getPrimaryKey().toString());
 				if(pageId!=null) {
@@ -129,6 +129,11 @@ public class ClubInfoBar extends Block {
 			
 				link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());
 				link.addParameter(PARAM_NAME_DIVISION_ID, divisionId);
+				if(!isFlock) {
+					// if not flock, the "players" and "calendar" link are to be hidden on the destination page, must use Filter block on that page
+					// that filters based on the parameter PARAM_NAME_SHOW_PLAYERS_CALENDAR_LINK
+					link.addParameter(PARAM_NAME_SHOW_PLAYERS_CALENDAR_LINK, "false");
+				}
 				topLevelMenu.add(link);
 			}
 		}
