@@ -99,6 +99,19 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 	public School createSchool(
 		String name,
+		String address,
+		String zipcode,
+		String ziparea,
+		String phone,
+		int area_id,
+		int[] sch_types)
+		throws CreateException
+	{
+		return createSchool(name, null, address, zipcode, ziparea, phone, null, null, null, area_id, sch_types);
+	}
+	
+	public School createSchool(
+		String name,
 		String info,
 		String address,
 		String zipcode,

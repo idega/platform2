@@ -23,4 +23,14 @@ public com.idega.block.school.data.School createSchool(
 		String phone,
 		int school_type)
 		throws CreateException,java.rmi.RemoteException;
+public com.idega.block.school.data.School createSchool(
+		String name,
+		String address,
+		String zipcode,
+		String ziparea,
+		String phone,
+		int school_are_id,
+		int[] school_types)
+		throws CreateException,java.rmi.RemoteException;
+		
 }
