@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.73 2002/02/25 13:49:57 eiki Exp $
+ * $Id: NewsReader.java,v 1.74 2002/02/26 13:56:16 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -88,7 +88,7 @@ public class NewsReader extends Block implements IWBlock {
   private boolean showBackText = false;
   private boolean showMoreText = false;
   private boolean showCollectionText = true;
-  private boolean showTeaserText = false;
+  private boolean showTeaserText = true;
   private String outerTableWidth = "100%";
   private String sObjectAlign = "center";
   private String headlineImageURL;
