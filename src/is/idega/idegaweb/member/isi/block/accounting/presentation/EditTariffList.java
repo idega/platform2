@@ -24,7 +24,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.FloatInput;
+import com.idega.presentation.ui.DoubleInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -250,7 +250,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		}
 		TextInput textInput = new TextInput(LABEL_TEXT);
 		textInput.setLength(10);
-		FloatInput amountInput = new FloatInput(LABEL_AMOUNT);
+		DoubleInput amountInput = new DoubleInput(LABEL_AMOUNT);
 		amountInput.setLength(10);
 		DatePicker fromInput = new DatePicker(LABEL_FROM);
 		DatePicker toInput = new DatePicker(LABEL_TO);

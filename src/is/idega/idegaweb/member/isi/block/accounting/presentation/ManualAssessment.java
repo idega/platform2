@@ -31,8 +31,8 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DatePicker;
+import com.idega.presentation.ui.DoubleInput;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -133,7 +133,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		float defaultAmount = -1;
+		double defaultAmount = -1;
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
 			if (!saveAssessment(iwc)) {
 				Table error = new Table();
@@ -265,10 +265,11 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 				tariffInput.setSelectedElement(selectedTariff);
 			}
 			
-			FloatInput amountInput = new FloatInput(LABEL_AMOUNT);
+			DoubleInput amountInput = new DoubleInput(LABEL_AMOUNT);
 			amountInput.setLength(10);
-			if (defaultAmount > 0)
+			if (defaultAmount > 0) {
 				amountInput.setValue(defaultAmount);
+			}
 			TextInput infoInput = new TextInput(LABEL_INFO);
 			infoInput.setLength(20);
 			infoInput.setMaxlength(255);

@@ -3,7 +3,7 @@ package is.idega.idegaweb.member.isi.block.accounting.data;
 
 public interface ClubTariff extends com.idega.data.IDOEntity
 {
- public float getAmount();
+ public double getAmount();
  public com.idega.user.data.Group getClub();
  public int getClubID();
  public boolean getDeleted();
@@ -16,7 +16,7 @@ public interface ClubTariff extends com.idega.data.IDOEntity
  public is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType getTariffType();
  public int getTariffTypeId();
  public java.lang.String getText();
- public void setAmount(float p0);
+ public void setAmount(double p0);
  public void setClub(com.idega.user.data.Group p0);
  public void setClubID(int p0);
  public void setDeleted(boolean p0);

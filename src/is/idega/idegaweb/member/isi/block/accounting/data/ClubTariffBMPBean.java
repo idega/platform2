@@ -54,7 +54,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		addManyToOneRelationship(COLUMN_GROUP, Group.class);
 		addManyToOneRelationship(COLUMN_TARIFF_TYPE, ClubTariffType.class);
 		addAttribute(COLUMN_TEXT, "Text", true, true, String.class);
-		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Float.class);
+		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Double.class);
 		addAttribute(COLUMN_PERIOD_FROM, "Period from", true, true, Date.class);
 		addAttribute(COLUMN_PERIOD_TO, "Period to", true, true, Date.class);
 		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
@@ -96,7 +96,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		setColumn(COLUMN_TEXT, text);
 	}
 
-	public void setAmount(float amount) {
+	public void setAmount(double amount) {
 		setColumn(COLUMN_AMOUNT, amount);
 	}
 
@@ -148,8 +148,8 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		return getStringColumnValue(COLUMN_TEXT);
 	}
 
-	public float getAmount() {
-		return getFloatColumnValue(COLUMN_AMOUNT);
+	public double getAmount() {
+		return getDoubleColumnValue(COLUMN_AMOUNT);
 	}
 
 	public Date getPeriodFrom() {

@@ -31,6 +31,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DoubleInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
@@ -434,9 +435,8 @@ public class Checkout extends CashierSubWindowTemplate {
 
 		inputTable.add(nf.format(sumTotalRemaining), 1, row);
 		inputTable.add(nf.format(sumTotalDiscount), 2, row);
-		TextInput toPayInput = new TextInput(LABEL_TO_PAY);
-		int value = (int) sumTotalRemaining;
-		toPayInput.setValue(value);
+		DoubleInput toPayInput = new DoubleInput(LABEL_TO_PAY);
+		toPayInput.setValue(sumTotalRemaining);
 		inputTable.add(toPayInput, 3, row);
 		Collection types = null;
 		try {

@@ -199,9 +199,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             }
         }
 
-        float am = 0;
+        double am = 0.0d;
         try {
-            am = Float.parseFloat(amount);
+            am = Double.parseDouble(amount);
         } catch (Exception e) {
         }
 
@@ -210,7 +210,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
     }
 
     public boolean insertTariff(Group club, Group division, Group group,
-            ClubTariffType type, String text, float amount, Date from, Date to,
+            ClubTariffType type, String text, double amount, Date from, Date to,
             boolean applyToChildren, String skipList, List skip) {
         if (skip == null || skip.isEmpty()) {
             skip = new ArrayList();
@@ -732,7 +732,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
         return true;
     }
 
-    private Map equalizeBasket(Map basket, float amount, IWUserContext iwuc) {
+    private Map equalizeBasket(Map basket, double amount, IWUserContext iwuc) {
         Map users = new HashMap();
         Map divisions = null;
 
@@ -775,7 +775,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             Collections.sort(sortable, comparator);
             Iterator it = sortable.iterator();
 
-            while (it.hasNext() && amount != 0.0f) {
+            while (it.hasNext() && amount != 0.0d) {
                 BasketEntry bEntry = (BasketEntry) it.next();
                 FinanceEntry entry = (FinanceEntry) bEntry.getItem();
                 if (amount >= entry.getItemPrice().doubleValue()) {
@@ -843,7 +843,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 
                     entry.setAmountEqualized(entry.getAmountEqualized()
                             + amount);
-                    amount = 0.0f;
+                    amount = 0.0d;
                 }
 
                 entry.store();
@@ -903,9 +903,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             }
         }
 
-        float am = 0;
+        double am = 0.0d;
         try {
-            am = Float.parseFloat(amount);
+            am = Double.parseDouble(amount);
         } catch (Exception e) {
         }
 
@@ -914,7 +914,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
     }
 
     public boolean insertManualAssessment(Group club, Group div, User user,
-            Group group, ClubTariff tariff, float amount, String info,
+            Group group, ClubTariff tariff, double amount, String info,
             User currentUser, Timestamp paymentDate) {
         try {
             FinanceEntry entry = getFinanceEntryHome().create();
@@ -927,15 +927,16 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             entry.setGroup(group);
             entry.setAmount(amount);
             entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
-            if (info != null && !"".equals(info))
+            if (info != null && !"".equals(info)) {
                 entry.setInfo(info);
-            else
+            } else {
                 entry.setInfo(tariff.getText());
+            }
             entry.setTariffID(((Integer) tariff.getPrimaryKey()).intValue());
             entry.setTariffTypeID(tariff.getTariffTypeId());
             entry.setStatusCreated();
             entry.setTypeManual();
-            if (amount < 0.0f) {
+            if (amount < 0.0d) {
                 entry.setEntryOpen(false);
                 entry.setAmountEqualized(amount);
                 equalizeEntries(club, div, user, -amount);
@@ -954,17 +955,14 @@ public class AccountingBusinessBean extends IBOServiceBean implements
         return false;
     }
 
-    public void equalizeEntries(Group club, Group div, User user, float amount) {
+    public void equalizeEntries(Group club, Group div, User user, double amount) {
         try {
             Collection entries = getFinanceEntryHome()
                     .findAllOpenAssessmentByUser(club, div, user);
             if (entries != null && !entries.isEmpty()) {
                 Iterator it = entries.iterator();
-                while (it.hasNext() && amount != 0.0f) {
-                    System.out.println("amount = " + amount);
+                while (it.hasNext() && amount != 0.0d) {
                     FinanceEntry entry = (FinanceEntry) it.next();
-                    System.out.println("itemprice = "
-                            + entry.getItemPrice().doubleValue());
                     if (amount >= entry.getItemPrice().doubleValue()) {
                         amount -= entry.getItemPrice().doubleValue();
                         entry.setAmountEqualized(entry.getAmountEqualized()
@@ -973,7 +971,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                     } else {
                         entry.setAmountEqualized(entry.getAmountEqualized()
                                 + amount);
-                        amount = 0.0f;
+                        amount = 0.0d;
                     }
 
                     entry.store();
