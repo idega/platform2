@@ -92,9 +92,9 @@ public class IWMarathonConstants {
   public static final String RR_AGREEMENT = "run_reg.agreement";
 	public static final String RR_AGREE = "run_reg.agree";
 	public static final String RR_DISAGREE = "run_reg.disagree";
-  public static final String RYSDD_TOTAL = "run_year_sort.total";
-  public static final String RYSDD_GROUPS = "run_year_sort.groups";
-  public static final String RYSDD_GROUPS_COMP = "run_year_sort.groups_comp";
+  public static final int RYSDD_TOTAL = 1;
+  public static final int RYSDD_GROUPS = 2;
+  public static final int RYSDD_GROUPS_COMP = 3;
   
   
   public static final String DISTANCE_55 = "55_km";
