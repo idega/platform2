@@ -100,7 +100,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private Map accountKeyNumberAccountKeyMap = new HashMap();
   
   private Map specialFieldAccountKeyIdsPlus = new HashMap();
-  private Map specialFieldAccountKeyIdsMinus = new HashMap();
 
   public WorkReportAccountEditor() {
     super();
@@ -423,15 +422,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       fieldList.add(name);
       accountKeyNameAccountKeyMap.put(name, key);
       accountKeyNumberAccountKeyMap.put(keyNumber, key);
+      // do not add the values of the children
       if (key.getParentKeyNumber() == null) {
         plus.add(primaryKey);
       }
-      else {
-        minus.add(primaryKey);
-      }
     }
     specialFieldAccountKeyIdsPlus.put(accountArea, plus);
-    specialFieldAccountKeyIdsMinus.put(accountArea,minus);
   }
   
   private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
@@ -547,6 +543,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private void deleteWorkReportAccountGroupHelper(List ids, IWContext iwc) {
     Iterator idIterator = ids.iterator();
     while (idIterator.hasNext())  {
+      List removedRecords = new ArrayList();
       Integer groupId = (Integer) idIterator.next();
       Map recordsMap = leagueKeyMatrix.get(groupId);
       Collection records = recordsMap.values();
@@ -557,7 +554,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
           int accountKey = record.getAccountKeyId();
           record.remove();
           // remove the value from the matrix
-          leagueKeyMatrix.remove(groupId, new Integer(accountKey));
+          removedRecords.add(new Integer(accountKey));
         }
         catch (EJBException ex) {
           String message =
@@ -571,6 +568,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
           System.err.println(message + " Message is: " + ex.getMessage());
           ex.printStackTrace(System.err);
         }
+      }
+      Iterator removedRecordsIterator = removedRecords.iterator();
+      while (removedRecordsIterator.hasNext())  {
+        Integer id = (Integer) removedRecordsIterator.next();
+        // remove the value from the matrix
+        leagueKeyMatrix.remove(groupId, id);
       }
     }
   }
@@ -799,11 +802,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     
     private float calculateAccountArea(String accountArea)  {
-      List minusIds = (List) specialFieldAccountKeyIdsMinus.get(accountArea);
       List plusIds = (List) specialFieldAccountKeyIdsPlus.get(accountArea);
-      float minus = addRecords(minusIds);
       float plus = addRecords(plusIds);
-      return plus - minus;
+      return plus;
     }
     
     private float addRecords(List accountKeyIds)  {
