@@ -449,11 +449,11 @@ public class FinanceFinder  {
       StringBuffer sql = new StringBuffer(" select * from ");
       sql.append(ti.getEntityName());
       sql.append(" where ");
-      sql.append(ti.getColumnNameType());
+      sql.append(TariffIndex.getColumnNameType());
       sql.append( " = '");
       sql.append(type);
       sql.append("' and ");
-      sql.append(ti.getColumnCategoryId());
+      sql.append(TariffIndex.getColumnCategoryId());
       sql.append(" = ");
       sql.append(iCategoryId);
       sql.append(" order by ");

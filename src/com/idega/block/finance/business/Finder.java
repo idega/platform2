@@ -202,7 +202,7 @@ public class Finder  {
   public static TariffIndex getTariffIndex(String type){
     TariffIndex ti = new TariffIndex();
     try {
-      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,ti.getColumnNameType(),type,ti.getIDColumnName());
+      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,TariffIndex.getColumnNameType(),type,ti.getIDColumnName());
       if(L!= null)
         ti =  (TariffIndex) L.get(0);
       else

@@ -98,7 +98,7 @@ public class AccountManager {
 
       Account a = new Account();
 
-       A = EntityFinder.findAllByColumn(a,Account.getUserIdColumnName(),String.valueOf(iUserId),a.getTypeColumnName(),sType);
+       A = EntityFinder.findAllByColumn(a,Account.getUserIdColumnName(),String.valueOf(iUserId),Account.getTypeColumnName(),sType);
 
     }
 
