@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.accounting.update.presentation;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -19,7 +19,7 @@ import com.idega.presentation.ui.GenericButton;
  * @author Joakim
  */
 public class SetSchoolClassSchoolTypeRelation extends AccountingBlock {
-	ArrayList list;
+	List list;
 	
 	public void init(IWContext iwc){
 	
@@ -59,7 +59,7 @@ public class SetSchoolClassSchoolTypeRelation extends AccountingBlock {
 	private void handleSave(IWContext iwc) {
 		try {
 			SchoolClassSchoolTypeBusiness ctBusiness = (SchoolClassSchoolTypeBusiness)IBOLookup.getServiceInstance(iwc, SchoolClassSchoolTypeBusiness.class);
-			list = ctBusiness.setClassTypeRelation();
+			list = ctBusiness.setSchoolClassSchoolTypeAndContractPlacementRelations();
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
