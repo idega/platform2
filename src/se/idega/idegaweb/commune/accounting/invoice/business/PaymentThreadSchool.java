@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/19 12:11:36 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/19 16:14:23 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.123 $
+ * @version $Revision: 1.124 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -148,7 +148,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			ProviderTypeHome providerTypeHome = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
 			ProviderType providerType = providerTypeHome.findPrivateType();
 			if (hasPlacements()) {
-				throw new NotEmptyException("invoice.must_first_empty_old_data");
+				throw new NotEmptyException(getLocalizedString("invoice.must_first_empty_old_data","Must first empty old data"));
 			}
   			validSchoolSeasonId = ((Integer)getSchoolSeasonHome().findCurrentSeason().getPrimaryKey()).intValue();
 
@@ -173,10 +173,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		catch (RemoteException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.Severe_DBError");
+				errorRelated.append(e);
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.Severe_DBError","Severe DataBase Error"));
 			}
 			else {
-				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_DBError");
+				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_DBError","Severe DataBase Error"));
 			}
 		}
 		catch (FinderException e) {
@@ -185,7 +186,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindSchoolCategory");
 			}
 			else {
-				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindSchoolCategory");
+				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_CouldNotFindSchoolCategory","Severe Could not find school category"));
 			}
 		}
 		catch (EJBException e) {
@@ -194,16 +195,17 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindHomeCommune");
 			}
 			else {
-				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
+				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_CouldNotFindHomeCommune","Severe Could not find  home commune"));
 			}
 		}
 		catch (IDOException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.Severe_IDOException");
+				errorRelated.append(e);
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.Severe_IDOException","Severe IDO Exception"));
 			}
 			else {
-				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_IDOException");
+				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_IDOException","Severe IDO Exception"));
 			}
 		}
 	}
@@ -212,7 +214,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		try {
 //			school = getSchoolHome().findByPrimaryKey(new Integer(8));
 			errorRelated = new ErrorLogger();
-			errorRelated.append("School:" + school.getName(),1);
+			errorRelated.append(getLocalizedString("invoice.School","School")+":" + school.getName(),1);
 			final boolean schoolIsInDefaultCommune;
 			final boolean schoolIsPrivate;
 			Provider provider = null;
@@ -220,7 +222,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				provider = new Provider(Integer.parseInt(school.getPrimaryKey().toString()));
 				//Only look at those not "payment by invoice"
 				//Check if it is private or in Nacka
-				errorRelated.append("School commune:" + school.getCommune().getCommuneName());
+				errorRelated.append(getLocalizedString("invoice.SchoolCommune","School commune")+":" + school.getCommune().getCommuneName());
 				schoolIsInDefaultCommune = school.getCommune().getIsDefault();
 				schoolIsPrivate = provider.getProviderTypeId() == privateType;
 			}
@@ -247,51 +249,52 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					catch (NullPointerException e) {
 						e.printStackTrace();
 						errorRelated.append(e);
-						createNewErrorMessage(errorRelated, "invoice.nullpointer");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.NullPointer","Nullpointer"));
 					}
 					catch (MissingFlowTypeException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.ErrorFindingFlowType");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.ErrorFindingFlowType","Error Finding FlowType"));
 					}
 					catch (MissingConditionTypeException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.ErrorFindingConditionType");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.ErrorFindingConditionType","Error Finding ConditionType"));
 					}
 					catch (MissingRegSpecTypeException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.ErrorFindingRegSpecType");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.ErrorFindingRegSpecType","Error Finding RegSpecType"));
 					}
 					catch (TooManyRegulationsException e) {
 						e.printStackTrace();
 						errorRelated.append("Regulations found:"+e.getRegulationNamesString());
-						createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingTooManyRegulations","Error Finding too many regulations"));
 					}
 					catch (PostingException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.PostingString");
+						createNewErrorMessage(errorRelated, 
+								getLocalizedString("invoice.PostingString","Posting String"));
 					}
 					catch (RegulationException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.RegulationException");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.RegulationException","Regulation Exception"));
 					}
 					catch (RemoteException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.RemoteException");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.RemoteException","Remote Exception"));
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.FinderException");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.FinderException","Finder Exception"));
 					}
 					catch (EJBException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.EJBException");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.EJBException","EJB Exception"));
 					}
 					catch (CreateException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.CreateException");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.CreateException","Create Exception"));
 					} catch (NotDefaultCommuneException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated, "invoice.BothStudentAndSchoolOutsideDefaultCommmune");
+						createNewErrorMessage(errorRelated, getLocalizedString("invoice.BothStudentAndSchoolOutsideDefaultCommmune","Both student and school outside default commmune"));
 					}
 				}
 			}else{
@@ -301,24 +304,24 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		catch (RemoteException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.DBError_Creating_contracts_for_school");
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.DBError_Creating_contracts_for_school","DBError, Creating contracts for school"));
 			}
 			else {
-				createNewErrorMessage("invoice.school", "invoice.DBError_Creating_contracts_for_school");
+				createNewErrorMessage(getLocalizedString("invoice.school","School"), getLocalizedString("invoice.DBError_Creating_contracts_for_school","DBError, Creating contracts for school"));
 			}
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.CouldNotFindContractForSchool");
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.CouldNotFindContractForSchool","Could not find contract for school"));
 			}
 			else {
-				createNewErrorMessage("invoice.school", "invoice.CouldNotFindContractForSchool");
+				createNewErrorMessage(getLocalizedString("invoice.school",""), getLocalizedString("invoice.CouldNotFindContractForSchool","Could not find contract for school"));
 			}
 		}
 		catch (SchoolMissingVitalDataException e) {
 			e.printStackTrace();
-			createNewErrorMessage(errorRelated, "invoice.SchoolMissingVitalData");
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.SchoolMissingVitalData","School is missing vital data"));
 		}
 		catch (NullPointerException e) {
 					e.printStackTrace();
@@ -330,7 +333,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						errorRelated = new ErrorLogger(errorRelated.toString().substring(1, 900));
 */
 					errorRelated.append(e);
-					createNewErrorMessage(errorRelated, "invoice.NullpointerException");
+					createNewErrorMessage(errorRelated, getLocalizedString("invoice.NullpointerException","Nullpointer exception"));
 		}
 	}
 	
@@ -357,9 +360,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			MissingRegSpecTypeException, TooManyRegulationsException, RemoteException, 
 			NotDefaultCommuneException {
 
-		errorRelated.append("SchoolClassMemeber:"+schoolClassMember.getPrimaryKey());
+		errorRelated.append(getLocalizedString("invoice.SchoolClassMemeber","SchoolClassMemeber")+":"+schoolClassMember.getPrimaryKey());
 		if (null != schoolClassMember.getStudent()) {
-			errorRelated.append("Student:"+schoolClassMember.getStudent().getName()+"; P#"+schoolClassMember.getStudent().getPersonalID());
+			errorRelated.append(getLocalizedString("invoice.Student","Student")+":"+schoolClassMember.getStudent().getName()+
+					"; "+getLocalizedString("invoice.PersonalID","PersonalID")+":"+schoolClassMember.getStudent().getPersonalID());
 		}
 //		errorRelated.logToConsole();
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
@@ -370,7 +374,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 //		errorRelated.append("Valid group "+placementIsInValidGroup);
 //		errorRelated.append("Comp by agreement "+comp_by_agreement);
 		if(!schoolIsInDefaultCommune && !userIsInDefaultCommune){
-			throw new NotDefaultCommuneException("School:"+provider.getSchool().getName()+"; Student:"+schoolClassMember.getStudent().getName());
+			throw new NotDefaultCommuneException(getLocalizedString("invoice.School","School")+":"+provider.getSchool().getName()+
+					"; "+getLocalizedString("invoice.Student","Student")+":"+schoolClassMember.getStudent().getName());
 		}
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || (schoolIsInDefaultCommune && !schoolIsPrivate))
@@ -378,7 +383,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 			ArrayList conditions = getConditions(schoolClassMember, provider);
 			School school = schoolClassMember.getSchoolClass().getSchool();
-			errorRelated.append("Date:" + calculationDate.toString());
+			errorRelated.append(getLocalizedString("invoice.Date","Date")+":" + calculationDate.toString());
 			//Get the check
 			currentProvider = provider;
 			PostingDetail postingDetail = getCheck(regBus, conditions,schoolClassMember); 
@@ -414,9 +419,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						}
 					}
 				}
-//			}
-//			catch (NumberFormatException e) {
-//				//That's OK I only want years 1-6
 			} catch (IDORelationshipException e) {
 				e.printStackTrace();
 				if (errorRelated != null) {
@@ -441,15 +443,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 //					errorRelated = new ErrorLogger();
 					User user = null != schoolClassMember ? schoolClassMember.getStudent() : null;
 					String studentInfo = null != user ? user.getName() + " " + user.getPersonalID() : "";
-					errorRelated.append("Student:" + studentInfo);
-					errorRelated.append("Conditions:" + conditions);
-					errorRelated.append("Resource:" + resource);
+					errorRelated.append(getLocalizedString("invoice.Student","Student")+":" + studentInfo);
+					errorRelated.append(getLocalizedString("invoice.Conditions","Conditions")+":"+ conditions);
+					errorRelated.append(getLocalizedString("invoice.Resource","Resource")+":" + resource);
 //					java.io.StringWriter sw = new java.io.StringWriter();
 //					e.printStackTrace(new java.io.PrintWriter(sw, true));
 					errorRelated.append(e);
 //					if (errorRelated.toString().length() > 900)
 //						errorRelated = new StringBuffer(errorRelated.substring(1, 900));
-					createNewErrorMessage(errorRelated, "invoice.createPaymentsForResourceError");
+					createNewErrorMessage(errorRelated, getLocalizedString("invoice.createPaymentsForResourceError","Create payments for resource error"));
 				}
 			}
 		}
@@ -489,28 +491,24 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		Collection resourceConditions = new ArrayList();
 		//Just a safety precation to trace down null pointer error
 		if(null==regBus || null==schoolClassMember || null==resource || null == provider){
-			createNewErrorMessage(errorRelated, "invoice.NullpointerInCallToGetRegulationForResourceArray");
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.NullpointerInCallToGetRegulationForResourceArray","Nullpointer in call to get regulation for resource array"));
 			return resourceConditions;
 		}
 		if(null!=schoolClassMember.getSchoolType()){
-//			errorRelated.append("SchoolType:"+schoolClassMember.getSchoolType().getName());
 		}else{
-			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolType");
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.NullpointerInSchoolType","Nullpointer in schooltype"));
 			return resourceConditions;
 		}
 		if(null!=resource.getResource()){
-			errorRelated.append("Resource:"+resource.getResource().getResourceName());
+			errorRelated.append(getLocalizedString("invoice.Resource","Resource")+":"+resource.getResource().getResourceName());
 		}else{
-			createNewErrorMessage(errorRelated, "invoice.NullpointerInResource");
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.NullpointerInResource","Nullpointer in resource"));
 			return resourceConditions;
 		}
-		if(null!=schoolClassMember.getSchoolYear()){
-//			errorRelated.append("SchoolYear:"+schoolClassMember.getSchoolYear().getName());
-		}else{
-			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolYear");
+		if(null==schoolClassMember.getSchoolYear()){
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.NullpointerInSchoolYear","Nullpointer in schoolyear"));
 			return resourceConditions;
 		}
-//		errorRelated.append("Statsbidrag "+provider.getStateSubsidyGrant());
 
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
@@ -540,7 +538,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
 			try {
 				Regulation regulation = (Regulation) i.next();
-				errorRelated.append("Regulation:"+regulation.getName());
+				errorRelated.append(getLocalizedString("invoice.Regulation","Regulation")+":"+regulation.getName());
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
@@ -595,8 +593,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			null, oppenConditions
 		);
 		if(regulationForTypeArray.size()!=1){
-			errorRelated.append("Number of regulations found for fritidsklubb:"+regulationForTypeArray.size());
-			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForFritidsklubbNotCorrect");
+			errorRelated.append(getLocalizedString("invoice.Number_of_regulations_found_for_fritidsklubb","Number of regulations found for fritidsklubb")+":"+regulationForTypeArray.size());
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.Number_of_regulations_for_fritidsklubb_not_correct","Number of regulations for fritidsklubb not correct"));
 		}
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
 			try {
@@ -609,7 +607,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(
 						(getRegulationSpecTypeHome().findByRegulationSpecType(
 								postingDetail.getRuleSpecType())).getLocalizationKey())){
-					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
+					createNewErrorMessage(errorRelated, 
+							getLocalizedString("invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb","Warning: Conflicting RegSpecTypes given for fritidsklubb"));
 				}
 				
 				schoolYearName = schoolClassMember.getSchoolYear().getName();
@@ -619,7 +618,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
 					SchoolYear schoolYear = ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
 							findByYearName(FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
-					errorRelated.append("Fritidsklubb schoolyear:" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
+					errorRelated.append(getLocalizedString("invoice.FritidsklubbSchoolyear","Fritidsklubb schoolyear")+":" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					
 					String[] postings =  getPostingStrings(category, schoolType, 
 							((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, 
@@ -627,15 +626,17 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
-					errorRelated.append("created payment info for fritidsklubb:" + schoolClassMember.getStudent().getName());
+//					errorRelated.append("created payment info for fritidsklubb:" + schoolClassMember.getStudent().getName());
 					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 				} catch (FinderException e1) {
 					e1.printStackTrace();
-					createNewErrorMessage(errorRelated, "invoice.CouldNotFindSchoolYearForFritidsklubb");
+					createNewErrorMessage(errorRelated, 
+							getLocalizedString("invoice.CouldNotFindSchoolYearForFritidsklubb","Could not find schoolyear for fritidsklubb"));
 				} catch (NumberFormatException e1) {
 					e1.printStackTrace();
-					createNewErrorMessage(errorRelated, "invoice.CouldNotParseSchoolYearForFritidsklubb");
+					createNewErrorMessage(errorRelated, 
+							getLocalizedString("invoice.CouldNotParseSchoolYearForFritidsklubb","Could not parse schoolyear for fritidsklubb"));
 				}
 			}
 			catch (BruttoIncomeException e) {

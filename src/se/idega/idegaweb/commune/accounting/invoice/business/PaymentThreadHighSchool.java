@@ -63,18 +63,18 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 				//calcVAT();
 			}
 			else {
-				createNewErrorMessage("invoice.severeError", "invoice.Posts_with_status_L_or_H_already_exist");
+				createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.Posts_with_status_L_or_H_already_exist","Posts with status L or H already exist"));
 			}
 		}
 		catch (NotEmptyException e) {
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
+			createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment school"), getLocalizedString("invoice.Severe_MustFirstEmptyOldData","Severe. Must first empty old data"));
 			e.printStackTrace();
 		}
 		catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the
 			// browser, just log them
 			e.printStackTrace();
-			createNewErrorMessage("invoice.severeError", "invoice.DBSetupProblem");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.DBSetupProblem","Database setup problem"));
 		}
 		batchRunLoggerDone();
 		BatchRunSemaphore.releaseHighRunSemaphore();
