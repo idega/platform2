@@ -57,11 +57,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/11 08:36:17 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/11 08:48:38 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -102,10 +102,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RegulationsBusiness regBus = getRegulationsBusiness();
 			
 			//Go through all elementary schools
-			for (Iterator schoolIter = getSchools().iterator(); schoolIter.hasNext();) {
+			for (Iterator i = getSchools().iterator(); i.hasNext();) {
 				dispTime("Enter main loop");
 				try {
-					school = (School) schoolIter.next();
+					school = (School) i.next();
 					errorRelated = new StringBuffer("School "+school.getName());
 					dispTime("Gotten School" + school.getName());
 					System.out.println("About to create payments for school " + school.getName());
@@ -113,10 +113,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					//Only look at those not "payment by invoice"
 					//Check if it is private or in Nacka
 					if (school.getCommune().getIsDefault() || (provider.getProviderTypeId() == privateType && !provider.getPaymentByInvoice())) {
-						for (Iterator schoolClassMemberIter = getSchoolClassMembers().iterator(); schoolClassMemberIter.hasNext();) {
+						for (Iterator j = getSchoolClassMembers().iterator(); j.hasNext();) {
 							try{
-                                SchoolClassMember schoolClassMember = null;
-                                schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
+                                SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
                                 craetePaymentForSchoolClassMember(regBus, provider, schoolClassMember);
 							} catch(NullPointerException e){
 								e.printStackTrace();
@@ -281,15 +280,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				int schoolYear = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
                 
 				if (schoolYear <= 3) {
-					for (Iterator typeIter = getSchoolTypes(schoolClassMember).iterator();typeIter.hasNext();) {
-						schoolType = (SchoolType) typeIter.next();
+					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
+						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
 							createPaymentsForOppenVerksamhet(regBus, provider, schoolClassMember, conditions);
 						}
 					}
 				}else if (schoolYear <= 6) {
-					for (Iterator typeIter = getSchoolTypes(schoolClassMember).iterator();typeIter.hasNext();) {
-						schoolType = (SchoolType) typeIter.next();
+					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
+						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB))
 							createPaymentsForFritidsklubb(regBus, provider, schoolClassMember, conditions);
 					}
@@ -308,8 +307,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Get all the resources for the child
 			Collection resources = getResourceBusiness().getResourcePlacementsByMemberId((Integer) schoolClassMember.getPrimaryKey());
 			log.info("Found "+resources.size()+" resources for "+schoolClassMember.getStudent().getName());
-			for (Iterator resourceIter = resources.iterator();resourceIter.hasNext();) {
-				ResourceClassMember resource = (ResourceClassMember) resourceIter.next();
+			for (Iterator i = resources.iterator(); i.hasNext();) {
+				ResourceClassMember resource = (ResourceClassMember) i.next();
 				createPaymentsForResource(regBus, provider, schoolClassMember, conditions, resource);
 			}
 		}
@@ -334,9 +333,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
                                                                                       resourceConditions			//The conditions that need to fulfilled
                                                                                       );        
 		dispTime("Getting regulations for resource of size " + regulationForResourceArray.size());		
-		for (Iterator regulationForResourceIter = regulationForResourceArray.iterator();regulationForResourceIter.hasNext();) {
+		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
 			try {
-				Regulation regulation = (Regulation) regulationForResourceIter.next();
+				Regulation regulation = (Regulation) i.next();
 				log.info("Found regulation '"+regulation.getName()+"' for resource "+resource.getResource().getResourceName());
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
@@ -363,9 +362,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
                                                                                       null,
                                                                                       oppenConditions //The conditions that need to fulfilled
                                                                                       );
-        for (Iterator regulationForTypeIter = regulationForTypeArray.iterator(); regulationForTypeIter.hasNext();) {
+        for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
             try {
-                Regulation regulation = (Regulation) regulationForTypeIter.next();
+                Regulation regulation = (Regulation) i.next();
                 PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
                 RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
                 String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
@@ -390,9 +389,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
                                                                                       null,
                                                                                       oppenConditions //The conditions that need to fulfilled
                                                                                       );
-		for (Iterator regulationForTypeIter = regulationForTypeArray.iterator(); regulationForTypeIter.hasNext();) {
+		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
 			try {
-				Regulation regulation = (Regulation) regulationForTypeIter.next();
+				Regulation regulation = (Regulation) i.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
@@ -445,12 +444,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 * for the Regular payments
 	 */
 	protected void regularPayment() {
-		PostingDetail postingDetail = null;
-        
+        PostingDetail postingDetail = null;
 		try {
 			//Go through all the regular payments
-			for (Iterator regularPaymentIter = getRegularPayments().iterator(); regularPaymentIter.hasNext();) {
-				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
+			for (Iterator i = getRegularPayments().iterator(); i.hasNext();) {
+				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) i.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
 			}
