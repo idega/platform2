@@ -45,7 +45,16 @@ public class VisitBookingOlders extends EHealthBlock {
 	private String prmMonth = prefix + "month";
 	private String prmTime = prefix + "time";
 	private String prmChoose = prefix + "choose";
+	private String prmCooseWay = prefix + "chooseWay";
+	private String prmEmail = prefix + "email";
+	private String prmSMS = prefix + "sms";
+	private String prmHeadingCase = prefix + "heading_case";
+	private String prmVisitReason = prefix + "visit_reason";
+	private String prmSelect = prefix + "select";
+	private String prmConfirm = prefix + "confirm";
 	
+	
+
 	public void main(IWContext iwc) throws Exception {
 		
 		add(getVisitForm(iwc));
@@ -62,7 +71,7 @@ public class VisitBookingOlders extends EHealthBlock {
 		Table table = new Table(1, 12);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setBorder(1);
+		table.setBorder(0);
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
@@ -94,9 +103,9 @@ public class VisitBookingOlders extends EHealthBlock {
 			}
 			
 			
-			Text chooseWay = getLocalizedText("ehealth.chooseWay","Choose way: ");
-			Text email = getLocalizedText("ehealth.email","Email ");
-			Text sms = getLocalizedText("ehealth.sms","SMS ");
+			Text chooseWay = getLocalizedText(prmCooseWay,"Choose way: ");
+			Text email = getLocalizedText(prmEmail,"Email ");
+			Text sms = getLocalizedText(prmSMS,"SMS ");
 			CheckBox cbEmail = getCheckBox("cbEmail", "true");
 			CheckBox cbSMS = getCheckBox("cbEmail", "true");
 			cbSMS.setChecked(true);
@@ -107,29 +116,30 @@ public class VisitBookingOlders extends EHealthBlock {
 			table.add(sms, 1, row);
 			table.add(cbSMS, 1, row++);
 			
-			table.add(getLocalizedText("ehealth.heading_case","Heading/case"), 1, row++);
+			table.add(getLocalizedText(prmHeadingCase,"Heading/case"), 1, row++);
 			
 			TextInput textSubject  = (TextInput) getStyledInterface(new TextInput(prmInform));
 			textSubject.setLength(50);
+			textSubject.setStyleClass("lul_text");
 			
 			table.add(textSubject, 1, row++);
-			table.add(getLocalizedText("ehealth.visit_reason","Reason for visit"), 1, row++);
+			table.add(getLocalizedText(prmVisitReason,"Reason for visit"), 1, row++);
 			
 			TextArea textReason = (TextArea) getStyledInterface(new TextArea(prmReason));
-		
-			table.add(textReason, 1, row++);
+			textReason.setStyleClass("lul_text");
 			
+			table.add(textReason, 1, row++);	
 			
 			SubmitButton btnClear = (SubmitButton) getStyledInterface(new SubmitButton(prmClear));
+			btnClear.setStyleClass("lul_form");
+			btnClear.setValue(localize(prmClear,"Clear"));
 			
 			table.add(btnClear, 1, row);
 			table.setHeight(1, row++, "40");
 			
 			//DatePicker dp = new DatePicker("date");		
 			//table.add(dp, 1, row++);
-			CalendarMonth cm = new CalendarMonth();
-			cm.setMonth(1);
-			
+						
 			DropdownMenu dropMonth = new DropdownMenu(prmMonth);
 			dropMonth.addMenuElementFirst("-1", "Välj månad");
 			dropMonth.addMenuElement( 1, "Januari");
@@ -145,6 +155,7 @@ public class VisitBookingOlders extends EHealthBlock {
 			dropMonth.addMenuElement( 11, "November");
 			dropMonth.addMenuElement( 12, "Descember");
 			
+			dropMonth.setStyleClass("lul_form");
 			table.add(dropMonth, 1, row);
 			table.setHeight(1, row++, "25");
 			
@@ -181,6 +192,7 @@ public class VisitBookingOlders extends EHealthBlock {
 			dropDay.addMenuElement( 30, "30");
 			dropDay.addMenuElement( 31, "31");
 		
+			dropDay.setStyleClass("lul_form");
 			table.add(dropDay, 1, row);
 			table.setHeight(1, row++, "25");
 			
@@ -198,14 +210,16 @@ public class VisitBookingOlders extends EHealthBlock {
 			dropTime.addMenuElement( 16, "16:00");
 			dropTime.addMenuElement( 17, "17:00");
 			
+			dropTime.setStyleClass("lul_form");
 			table.add(dropTime, 1, row);
 			table.setHeight(1, row++, "25");
 			
 			
 			SubmitButton selectDate = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
 			selectDate.setOnClick("setTime(); return false");
-			selectDate.setValue(localize("ehealth.select","Select"));
+			selectDate.setValue(localize(prmSelect,"Select"));
 			
+			selectDate.setStyleClass("lul_form");
 			table.add(selectDate, 1, row);
 			table.setHeight(1, row++, "25");
 			
@@ -215,7 +229,8 @@ public class VisitBookingOlders extends EHealthBlock {
 			
 			SubmitButton confirm = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
 			
-			confirm.setValue(localize("ehealth.confirm","Confirm"));
+			confirm.setValue(localize(prmConfirm,"Confirm"));
+			confirm.setStyleClass("lul_form");
 			
 			table.add(confirm, 1, row);
 			table.setHeight(1, row, "30");

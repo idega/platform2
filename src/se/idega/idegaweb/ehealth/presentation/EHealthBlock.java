@@ -33,6 +33,8 @@ public class EHealthBlock extends Block {
 	private IWResourceBundle iwrb = null;
 	private IWBundle iwb = null;
 	
+	public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.ehealth";
+	
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_CHECKBOX = "CheckBox";
 	public final static String STYLENAME_INTERFACE = "Interface";
