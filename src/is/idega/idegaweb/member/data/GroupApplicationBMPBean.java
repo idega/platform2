@@ -125,7 +125,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
   }
 
   public void setCreated(Timestamp created) {
-    setColumn(this.COLUMN_CREATED,created);
+    setColumn(COLUMN_CREATED,created);
   }
   
   public Timestamp getModified() {
@@ -133,19 +133,19 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
   }
 
   public void setModified(Timestamp modified) {
-    setColumn(this.COLUMN_MODIFIED,modified);
+    setColumn(COLUMN_MODIFIED,modified);
   }
 
   public String ejbHomeGetPendingStatusString() throws RemoteException{
-    return this.STATUS_PENDING;
+    return STATUS_PENDING;
   }
 
   public String ejbHomeGetApprovedStatusString() throws RemoteException{
-   return this.STATUS_APPROVED;
+   return STATUS_APPROVED;
   }
   
   public String ejbHomeGetDeniedStatusString() throws RemoteException{
-   return this.STATUS_DENIED;
+   return STATUS_DENIED;
   }
   
   public void addGroup(Group group) throws IDOAddRelationshipException {
@@ -192,7 +192,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
    	.append("='").append(status).append("' and ").append(COLUMN_APPLICATION_GROUP_ID)
    	.append("=").append( ((Integer)applicationGroup.getPrimaryKey()).intValue() );
   	
-  	return this.idoFindIDsBySQL(sql.toString()); 
+  	return this.idoFindPKsBySQL(sql.toString()); 
   }
   
   public Collection ejbFindAllApplicationsByStatusAndApplicationGroupOrderedByCreationDate(String status, Group applicationGroup) throws FinderException,RemoteException{
@@ -202,7 +202,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
    	.append("=").append( ((Integer)applicationGroup.getPrimaryKey()).intValue() )
    	.append(" order by ").append(COLUMN_CREATED);
   	
-  	return this.idoFindIDsBySQL(sql.toString());
+  	return this.idoFindPKsBySQL(sql.toString());
   }
   
   public Collection ejbFindAllApplicationsByStatusAndUserOrderedByCreationDate(String status, User user) throws FinderException,RemoteException{
@@ -212,7 +212,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
    	.append("=").append( ((Integer)user.getPrimaryKey()).intValue() )
    	.append(" order by ").append(COLUMN_CREATED);
   	
-  	return this.idoFindIDsBySQL(sql.toString());
+  	return this.idoFindPKsBySQL(sql.toString());
   }
 
 
