@@ -1,8 +1,8 @@
 /*
  * Created on Aug 13, 2003
- *  
  */
 package se.idega.idegaweb.commune.accounting.userinfo.presentation;
+
 import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 import is.idega.idegaweb.member.business.NoSpouseFound;
@@ -30,6 +30,8 @@ import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
+//import se.idega.util.PIDChecker;
+
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
@@ -49,10 +51,10 @@ import com.idega.util.Age;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
+
 /*
  * HouseHoldViewer contains a search used to find citizens and their family
  * living at the same address. Tvo user families can be searched an compared.
- * 
  * @author aron
  * 
  * @version 1.0
@@ -62,7 +64,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private User secondUser = null;
 	private HouseHoldFamily firstFamily = null, secondFamily = null;
 	private boolean hasUser = false;
-	
+
 	private NumberFormat nf = null;
 	private Integer userEditorPageID = null;
 	private Integer userBruttoIncomePageID = null;
@@ -80,6 +82,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private int personalIdInputLength = 15;
 	private boolean constrainSearchToUniqueIdentifier = false;
 	private UserSearcher searcherOne = null, searcherTwo = null;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -91,6 +94,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		process(iwc);
 		presentate(iwc);
 	}
+
 	private void initSearches() {
 		searcherOne = new UserSearcher();
 		searcherOne.setShowMiddleNameInSearch(false);
@@ -120,6 +124,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
 		searcherTwo.addMonitoredSearchIdentifier("one");
 	}
+
 	public void process(IWContext iwc) {
 		String prm = UserSearcher.getUniqueUserParameterName("one");
 		if (iwc.isParameterSet(prm)) {
@@ -174,6 +179,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		lookupFamilies(iwc);
 		//lookupChildren(iwc);
 	}
+
 	private void lookupFamilies(IWContext iwc) {
 		try {
 			firstFamily = getUserInfoService(iwc).getHouseHoldFamily(firstUser);
@@ -183,6 +189,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			e.printStackTrace();
 		}
 	}
+
 	public void presentate(IWContext iwc) {
 		appForm = new ApplicationForm(this);
 		appForm.setLocalizedTitle("household.title", "Household info");
@@ -192,6 +199,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		presentateButtons(iwc);
 		add(appForm);
 	}
+
 	public void presentateSearch(IWContext iwc) {
 		Table table = new Table();
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
@@ -208,6 +216,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		appForm.maintainParameter(prmTwo);
 		appForm.setSearchPanel(table);
 	}
+
 	public void presentateUsersFound(IWContext iwc) {
 		Text tAdults = getHeader(localize("household.adults", "Adults"));
 		//add(tAdults);
@@ -247,7 +256,7 @@ public class HouseHoldViewer extends AccountingBlock {
 				users.add(secondFamily.getCohabitant());
 			}
 		}
-		for (Iterator iter = users.iterator(); iter.hasNext();) {
+		for (Iterator iter = users.iterator(); iter.hasNext(); ) {
 			User user = (User) iter.next();
 			col = 1;
 			table.add(getText(user.getNameLastFirst()));
@@ -290,6 +299,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		T.add(Text.getBreak(), 1, 3);
 		appForm.setMainPanel(T);
 	}
+
 	public void presentateChildren(IWContext iwc) {
 		Table T = new Table();
 		Text tChildren = getHeader(localize("household.children", "Children"));
@@ -325,7 +335,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		for (int i = 0; i < familyChildren.length; i++) {
 			Collection children = familyChildren[i];
 			if (children != null) {
-				for (Iterator iter = children.iterator(); iter.hasNext();) {
+				for (Iterator iter = children.iterator(); iter.hasNext(); ) {
 					User child = (User) iter.next();
 					col = 1;
 					table.add(getChildHistoryLink(child));
@@ -338,9 +348,10 @@ public class HouseHoldViewer extends AccountingBlock {
 						table.skip();
 					}
 					try {
-						int siblingOrder = getUserInfoService (iwc).getSiblingOrder (child, new CalendarMonth (new IWTimestamp (System.currentTimeMillis())));
+						int siblingOrder = getUserInfoService(iwc).getSiblingOrder(child, new CalendarMonth(new IWTimestamp(System.currentTimeMillis())));
 						table.add(getText(siblingOrder + ""));
- 				} catch (Exception e) {
+					}
+					catch (Exception e) {
 						table.skip();
 					}
 					int age = getCalculatedAge(iwc, child);
@@ -396,27 +407,24 @@ public class HouseHoldViewer extends AccountingBlock {
 		//add(Text.getBreak());
 		appForm.setMainPanel(T);
 	}
+
 	public void presentateButtons(IWContext iwc) {
 		DropdownMenu drp = new DropdownMenu("usr_drp");
-		HouseHoldFamily[] families = { firstFamily, secondFamily };
+		HouseHoldFamily[] families = {firstFamily, secondFamily};
 		for (int i = 0; i < families.length; i++) {
 			HouseHoldFamily family = families[i];
 			if (family != null) {
-				drp.addMenuElement(
-					family.getHeadOfFamily().getPrimaryKey().toString(),
-					family.getHeadOfFamily().getName());
+				drp.addMenuElement(family.getHeadOfFamily().getPrimaryKey().toString(), family.getHeadOfFamily().getName());
 				if (firstFamily.hasSpouse()) {
 					drp.addMenuElement(family.getSpouse().getPrimaryKey().toString(), family.getSpouse().getName());
 				}
 				if (firstFamily.hasCohabitant()) {
-					drp.addMenuElement(
-						family.getCohabitant().getPrimaryKey().toString(),
-						family.getCohabitant().getName());
+					drp.addMenuElement(family.getCohabitant().getPrimaryKey().toString(), family.getCohabitant().getName());
 				}
 				if (firstFamily.hasChildren()) {
 					Collection children = family.getChildren();
 					if (children != null) {
-						for (Iterator iter = children.iterator(); iter.hasNext();) {
+						for (Iterator iter = children.iterator(); iter.hasNext(); ) {
 							User child = (User) iter.next();
 							drp.addMenuElement(child.getPrimaryKey().toString(), child.getName());
 						}
@@ -429,9 +437,8 @@ public class HouseHoldViewer extends AccountingBlock {
 		 * Table table = new Table(); table.add(drp, 1, 1);
 		 * table.add(getUserEditorButton(iwc),2,1);
 		 * table.add(getBruttoIncomeEditorButton(iwc),3,1);
-		 * table.add(getLowIncomeEditorButton(iwc),4,1);
-		 * 
-		 * Form form = new Form(); form.add(table); add(form);
+		 * table.add(getLowIncomeEditorButton(iwc),4,1); Form form = new Form();
+		 * form.add(table); add(form);
 		 */
 		ButtonPanel bPanel = new ButtonPanel(this);
 		bPanel.add(drp);
@@ -440,6 +447,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		bPanel.add(getLowIncomeEditorButton(iwc));
 		appForm.setButtonPanel(bPanel);
 	}
+
 	private PresentationObject getUserEditorButton(IWContext iwc) {
 		GenericButton button = new SubmitButton(localize("household.edit_user", "Edit user"));
 		button = getButton(button);
@@ -454,6 +462,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		return button;
 	}
+
 	private PresentationObject getBruttoIncomeEditorButton(IWContext iwc) {
 		GenericButton button = new SubmitButton(localize("household.edit_brutto_income", "Edit brutto income"));
 		button = getButton(button);
@@ -461,20 +470,19 @@ public class HouseHoldViewer extends AccountingBlock {
 			button.setPageToOpen(userBruttoIncomePageID.intValue());
 		}
 		else if (hasUser && userBruttoIncomeWindowClass != null) {
-			button.setOnClick(
-				getButtonOnClickForWindow(iwc, userBruttoIncomeWindowClass, userBruttoIncomeUserParameterName));
+			button.setOnClick(getButtonOnClickForWindow(iwc, userBruttoIncomeWindowClass, userBruttoIncomeUserParameterName));
 		}
 		else {
 			button.setDisabled(true);
 		}
 		return button;
 	}
+
 	private PresentationObject getLowIncomeEditorButton(IWContext iwc) {
 		GenericButton button = new SubmitButton(localize("household.edit_low_income", "Edit low income"));
 		button = getButton(button);
 		if (hasUser && userLowIncomePageID != null) {
-			String onclickString =
-				getButtonOnClickForPage(iwc, userLowIncomePageID.intValue(), userLowIncomeUserParameterName);
+			String onclickString = getButtonOnClickForPage(iwc, userLowIncomePageID.intValue(), userLowIncomeUserParameterName);
 			if (onclickString != null)
 				button.setOnClick(onclickString);
 			else
@@ -488,6 +496,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		return button;
 	}
+
 	private String getButtonOnClickForWindow(IWContext iwc, Class windowClass, String userParameterName) {
 		String prm = "";
 		if (userParameterName != null)
@@ -495,6 +504,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		String URL = Window.getWindowURL(windowClass, iwc) + prm;
 		return "javascript:" + Window.getCallingScriptString(windowClass, URL, true, iwc) + ";return false;";
 	}
+
 	private String getButtonOnClickForPage(IWContext iwc, int pageID, String userParameterName) {
 		try {
 			URLUtil url = new URLUtil(getBuilderService(iwc).getPageURI(pageID), true);
@@ -507,6 +517,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		return null;
 	}
+
 	private Collection getCustodians(IWContext iwc, User user) {
 		try {
 			return getUserService(iwc).getMemberFamilyLogic().getCustodiansFor(user);
@@ -519,28 +530,29 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		return null;
 	}
+
 	private User getSpouse(IWContext iwc, User user) {
 		try {
 			return getUserService(iwc).getMemberFamilyLogic().getSpouseFor(user);
 		}
-		catch (NoSpouseFound e) {
-		}
+		catch (NoSpouseFound e) {}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
 	private User getCohabitant(IWContext iwc, User user) {
 		try {
 			return getUserService(iwc).getMemberFamilyLogic().getCohabitantFor(user);
 		}
-		catch (NoCohabitantFound e) {
-		}
+		catch (NoCohabitantFound e) {}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
 	private BruttoIncome getBruttoIncome(User user) {
 		try {
 			return getBruttoIncomeHome().findLatestByUser((Integer) user.getPrimaryKey());
@@ -551,10 +563,10 @@ public class HouseHoldViewer extends AccountingBlock {
 		catch (EJBException e) {
 			e.printStackTrace();
 		}
-		catch (FinderException e) {
-		}
+		catch (FinderException e) {}
 		return null;
 	}
+
 	private Address getUserAddress(IWContext iwc, User user) {
 		try {
 			return getUserService(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue());
@@ -567,6 +579,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		return null;
 	}
+
 	//  some clever calculation
 	private int getCalculatedAge(IWContext iwc, User user) {
 		try {
@@ -580,24 +593,20 @@ public class HouseHoldViewer extends AccountingBlock {
 		else
 			return 0;
 	}
+
+	/*
 	// TODO get sibling order from database somehow
 	private Integer getSiblingOrder(User child, Collection children) {
 		if (children != null && !children.isEmpty()) {
-			IWTimestamp birthdate =
-				child.getDateOfBirth() != null
-					? new IWTimestamp(child.getDateOfBirth())
-					: getBirthDateFromPin(child.getPersonalID());
+			IWTimestamp birthdate = child.getDateOfBirth() != null ? new IWTimestamp(child.getDateOfBirth()) : new IWTimestamp(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
 			// setting the order as of the oldest child
 			int order = children.size();
 			// lets find if anybody is older
-			for (Iterator iter = children.iterator(); iter.hasNext();) {
+			for (Iterator iter = children.iterator(); iter.hasNext(); ) {
 				User sibling = (User) iter.next();
 				// only test the other siblings
 				if (!sibling.getPrimaryKey().toString().equals(child.getPrimaryKey().toString())) {
-					IWTimestamp birth =
-						sibling.getDateOfBirth() != null
-							? new IWTimestamp(sibling.getDateOfBirth())
-							: getBirthDateFromPin(sibling.getPersonalID());
+					IWTimestamp birth = sibling.getDateOfBirth() != null ? new IWTimestamp(sibling.getDateOfBirth()) : new IWTimestamp(PIDChecker.getInstance().getDateFromPersonalID(sibling.getPersonalID()));
 					//  sibling is older than current child lets lower the order
 					if (birth.isEarlierThan(birthdate))
 						order--;
@@ -606,15 +615,18 @@ public class HouseHoldViewer extends AccountingBlock {
 			return new Integer(order);
 		}
 		return new Integer(1);
-	}
+	}*/
+
 	// TODO fetch low income invoice record
 	private Object getLowIncome(User user) {
 		System.out.println("Unimplemented: getting lowincome for userid" + user.getPrimaryKey());
 		return null;
 	}
+
 	private UserInfoService getUserInfoService(IWApplicationContext iwac) throws RemoteException {
 		return (UserInfoService) IBOLookup.getServiceInstance(iwac, UserInfoService.class);
 	}
+
 	private CommuneUserBusiness getUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
@@ -622,177 +634,197 @@ public class HouseHoldViewer extends AccountingBlock {
 	private AgeBusiness getAgeService(IWContext iwc) throws RemoteException {
 		return (AgeBusiness) IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
 	}
+
 	private BruttoIncomeHome getBruttoIncomeHome() throws RemoteException {
 		return (BruttoIncomeHome) IDOLookup.getHome(BruttoIncome.class);
 	}
+
 	/**
 	 * @return
 	 */
 	public int getNameInputLength() {
 		return nameInputLength;
 	}
+
 	/**
 	 * @param nameInputLength
 	 */
 	public void setNameInputLength(int nameInputLength) {
 		this.nameInputLength = nameInputLength;
 	}
+
 	/**
 	 * @return
 	 */
 	public int getPersonalIdInputLength() {
 		return personalIdInputLength;
 	}
+
 	/**
 	 * @param personalIdInputLength
 	 */
 	public void setPersonalIdInputLength(int personalIdInputLength) {
 		this.personalIdInputLength = personalIdInputLength;
 	}
+
 	/**
 	 * @return
 	 */
 	public Integer getUserBruttoIncomePageID() {
 		return userBruttoIncomePageID;
 	}
+
 	/**
 	 * @param userBruttoIncomePageID
 	 */
 	public void setUserBruttoIncomePageID(Integer userBruttoIncomePageID) {
 		this.userBruttoIncomePageID = userBruttoIncomePageID;
 	}
+
 	/**
 	 * @return
 	 */
 	public String getUserBruttoIncomeUserParameterName() {
 		return userBruttoIncomeUserParameterName;
 	}
+
 	/**
 	 * @param userBruttoIncomeUserParameterName
 	 */
 	public void setUserBruttoIncomeUserParameterName(String userBruttoIncomeUserParameterName) {
 		this.userBruttoIncomeUserParameterName = userBruttoIncomeUserParameterName;
 	}
+
 	/**
 	 * @return
 	 */
 	public Class getUserBruttoIncomeWindowClass() {
 		return userBruttoIncomeWindowClass;
 	}
+
 	/**
 	 * @param userBruttoIncomeWindowClass
 	 */
 	public void setUserBruttoIncomeWindowClass(Class userBruttoIncomeWindowClass) {
 		this.userBruttoIncomeWindowClass = userBruttoIncomeWindowClass;
 	}
+
 	/**
 	 * @return
 	 */
 	public Integer getUserEditorPageID() {
 		return userEditorPageID;
 	}
+
 	/**
 	 * @param userEditorPageID
 	 */
 	public void setUserEditorPageID(Integer userEditorPageID) {
 		this.userEditorPageID = userEditorPageID;
 	}
+
 	/**
 	 * @return
 	 */
 	public String getUserEditorUserParameterName() {
 		return userEditorUserParameterName;
 	}
+
 	/**
 	 * @param userEditorUserParameterName
 	 */
 	public void setUserEditorUserParameterName(String userEditorUserParameterName) {
 		this.userEditorUserParameterName = userEditorUserParameterName;
 	}
+
 	/**
 	 * @return
 	 */
 	public Class getUserEditorWindowClass() {
 		return userEditorWindowClass;
 	}
+
 	/**
 	 * @param userEditorWindowClass
 	 */
 	public void setUserEditorWindowClass(Class userEditorWindowClass) {
 		this.userEditorWindowClass = userEditorWindowClass;
 	}
+
 	/**
 	 * @return
 	 */
 	public Integer getUserLowIncomePageID() {
 		return userLowIncomePageID;
 	}
+
 	/**
 	 * @param userLowIncomePageID
 	 */
 	public void setUserLowIncomePageID(Integer userLowIncomePageID) {
 		this.userLowIncomePageID = userLowIncomePageID;
 	}
+
 	public void setUserLowIncomePageID(int userLowIncomePageID) {
 		this.userLowIncomePageID = new Integer(userLowIncomePageID);
 	}
+
 	/**
 	 * @return
 	 */
 	public String getUserLowIncomeUserParameterName() {
 		return userLowIncomeUserParameterName;
 	}
+
 	/**
 	 * @param userLowIncomeUserParameterName
 	 */
 	public void setUserLowIncomeUserParameterName(String userLowIncomeUserParameterName) {
 		this.userLowIncomeUserParameterName = userLowIncomeUserParameterName;
 	}
+
 	/**
 	 * @return
 	 */
 	public Class getUserLowIncomeWindowClass() {
 		return userLowIncomeWindowClass;
 	}
+
 	/**
 	 * @param userLowIncomeWindowClass
 	 */
 	public void setUserLowIncomeWindowClass(Class userLowIncomeWindowClass) {
 		this.userLowIncomeWindowClass = userLowIncomeWindowClass;
 	}
-	// TODO taken from commune userbusiness, maybe this should be a public
-	// method there
-	private IWTimestamp getBirthDateFromPin(String pin) {
-		int dd = Integer.parseInt(pin.substring(6, 8));
-		int mm = Integer.parseInt(pin.substring(4, 6));
-		int yyyy = Integer.parseInt(pin.substring(0, 4));
-		IWTimestamp dob = new IWTimestamp(dd, mm, yyyy);
-		return dob;
-	}
+
 	/**
 	 * @return
 	 */
 	public String getChildContractHistoryChildParameterName() {
 		return childContractHistoryChildParameterName;
 	}
+
 	/**
 	 * @param childContractHistoryChildParameterName
 	 */
 	public void setChildContractHistoryChildParameterName(String childContractHistoryChildParameterName) {
 		this.childContractHistoryChildParameterName = childContractHistoryChildParameterName;
 	}
+
 	/**
 	 * @return
 	 */
 	public Class getChildContractHistoryWindowClass() {
 		return childContractHistoryWindowClass;
 	}
+
 	/**
 	 * @param childContractHistoryWindowClass
 	 */
 	public void setChildContractHistoryWindowClass(Class childContractHistoryWindowClass) {
 		this.childContractHistoryWindowClass = childContractHistoryWindowClass;
 	}
+
 	private PresentationObject getChildHistoryLink(User child) {
 		if (childContractHistoryWindowClass != null && childContractHistoryChildParameterName != null) {
 			Link l = new Link(child.getFirstName());
