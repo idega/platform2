@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.20 2002/11/13 13:52:12 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.21 2002/11/13 15:38:23 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -569,12 +569,15 @@ public class CitizenAccountApplication extends CommuneBlock {
     private static void addSubmitButton
         (final CommuneBlock communeBlock, final Table table, final int row,
          final IWContext iwc, final String submitId, final String defaultText) {
-		table.setAlignment (2, row, "right");
         final String text = communeBlock.localize (submitId, defaultText);
 		final SubmitButton submitButton = new SubmitButton
                 (communeBlock.getBundle(iwc).getImageButton (text), submitId);
 		submitButton.setStyleClass (communeBlock.getLinkFontStyle());
-		table.add (submitButton, 2, row);
+		//table.add (submitButton, 2, row);
+		//table.setAlignment (2, row, "right");
+		/** Gimmi 13.11.2002 */
+		table.setAlignment (1, row, Table.HORIZONTAL_ALIGN_LEFT);
+		table.add (submitButton, 1, row);
     }
     
     private static int getIntParameter (final IWContext iwc, final String key) {
