@@ -13,6 +13,13 @@ public class PaymentHeaderHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
+public java.util.Collection findBySchoolAndSchoolCategoryPKAndStatus(java.lang.Object p0,java.lang.Object p1,java.lang.String p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolAndSchoolCategoryPKAndStatus(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findBySchoolCategoryAndPeriodForPrivate(com.idega.block.school.data.SchoolCategory p0,java.sql.Date p1)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryAndPeriodForPrivate(p0,p1);
