@@ -189,7 +189,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		int areaID = -1;
 		for (int i = 1; i < 6; i++) {
 			try {
-				application = getBusiness().getApplication(getSession().getChildID(), i);
+				application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
 				if (application != null) {
 					areaID = application.getProvider().getSchoolAreaId();
 					message = application.getMessage();
