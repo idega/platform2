@@ -79,6 +79,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
 	private String ERROR_REG_SPEC_BLANK = "error_reg_spec_blank";	
 	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
+	private String ERROR_NO_USER_SESSION = "error_no_user_session";	
 	
 //	private String ERROR_AMOUNT_EMPTY = "error_amount_empty";
 	private String ERROR_POSTING = "error_posting";
@@ -343,12 +344,16 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		Map errorMessages = new HashMap();
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
 		
+		if (iwc.getCurrentUser() == null){
+			errorMessages.put(ERROR_NO_USER_SESSION, localize(ERROR_NO_USER_SESSION, "Not logged in."));
+		}
+		
 		if (entry == null){
 			try{
 				entry = getRegularInvoiceEntryHome().create();
 				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
 				entry.setCreatedSign(iwc.getCurrentUser().getName());	
-				entry.setEditSign("");	
+				entry.setEditSign(" ");	
 			}catch(CreateException ex2){
 				ex2.printStackTrace();
 				return;
@@ -392,10 +397,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		try{
 			PostingBlock p = new PostingBlock(iwc);			
-			entry.setOwnPosting(p.getOwnPosting());
-			if (p.getOwnPosting() == null || p.getOwnPosting().length() == 0){
+			if (p.getOwnPosting() == null || p.getOwnPosting().trim().length() == 0){
 				errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
 			}			
+			entry.setOwnPosting(p.getOwnPosting());
 			entry.setDoublePosting(p.getDoublePosting());
 		} catch (PostingParametersException e) {
 			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
@@ -731,6 +736,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN, user), 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+		
+		if (errorMessages.get(ERROR_NO_USER_SESSION) != null){
+			table.add(getErrorText((String) errorMessages.get(ERROR_NO_USER_SESSION)), 1, row++);			
+		}			
 				
 		addField(table, KEY_SSN, user.getPersonalID(), 1, row);
 		addField(table, KEY_NAME, user.getLastName() + ", " + user.getFirstName(), 3, row++);

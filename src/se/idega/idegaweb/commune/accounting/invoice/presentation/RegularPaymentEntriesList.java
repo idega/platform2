@@ -82,6 +82,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
 	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
 	private String ERROR_PLACING_NULL = "error_placing_null";
+	private String ERROR_NO_USER_SESSION = "error_no_user_session";
 	
 
 	private static String LOCALIZER_PREFIX = "regular_payment_entries_list.";
@@ -387,87 +388,92 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		Map errorMessages = new HashMap();
 		checkNotNull(iwc, RegulationSearchPanel.PAR_PLACING, errorMessages, ERROR_PLACING_NULL, "Placing must be set");
 				
+		if (iwc.getCurrentUser() == null){
+			errorMessages.put(ERROR_NO_USER_SESSION, localize(ERROR_NO_USER_SESSION, "Not logged in."));
+		}
 
 		RegularPaymentEntry entry = null;
-		
-		if (iwc.getParameter(PAR_PK) != null){
-			entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
-		}
-		
-		if (entry == null){
-			try{
-				entry = getRegularPaymentEntryHome().create();
-				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
-				entry.setCreatedSign(iwc.getCurrentUser().getName());
-				entry.setEditSign("");								
+		if (errorMessages.isEmpty()){
 			
-			}catch(CreateException ex2){
-				ex2.printStackTrace();
-				return;
-			}			
-		} else{
-			entry.setEditDate(new Date(new java.util.Date().getTime()));
-			entry.setEditSign(iwc.getCurrentUser().getName());
-		}
-
-		long amountMonth = 0;
-		try{
-			amountMonth = AccountingUtil.roundAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
-			entry.setAmount(amountMonth);
-		}catch(NumberFormatException ex){
-			ex.printStackTrace();
-			errorMessages.put(ERROR_AMOUNT_FORMAT, localize(ERROR_AMOUNT_FORMAT, "Wrong format for amount"));
-		}
-
-		Date from = parseDate(iwc.getParameter(PAR_FROM));
-		Date to = parseDate(iwc.getParameter(PAR_TO));
-		entry.setFrom(from);
-		entry.setTo(to);
+			if (iwc.getParameter(PAR_PK) != null){
+				entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
+			}
 			
-		if (iwc.getParameter(PAR_REMARK) != null){
-			entry.setNote(iwc.getParameter(PAR_REMARK));
-		}
-		if (iwc.getParameter(PAR_SCH_TYPE) != null){
-			entry.setSchoolTypeId(Integer.parseInt(iwc.getParameter(PAR_SCH_TYPE)));
-		}
-		entry.setPlacing(iwc.getParameter(PAR_PLACING));
-		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
-			entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
-		}
-		
-		entry.setUser(getUser(iwc));
-		
-		if (iwc.getParameter(PAR_VAT_TYPE) != null && iwc.getParameter(PAR_VAT_TYPE).length() != 0){
-			entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-		}
-
-		try{
-			PostingBlock p = new PostingBlock(iwc);			
-			entry.setOwnPosting(p.getOwnPosting());
-			entry.setDoublePosting(p.getDoublePosting());
-		} catch (PostingParametersException e) {
-			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
-		}	
-					
-//			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-//			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
-		if (from == null || to == null){
-			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
-		} else if (to.before(from)){
-			errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
-		} 
-		if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
-			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
-		} 
-//			if (entry.getAmount() == 0){
-//				errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
-//			}
-
-		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
-			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
-		}
+			if (entry == null){
+				try{
+					entry = getRegularPaymentEntryHome().create();
+					entry.setCreatedDate(new Date(new java.util.Date().getTime()));
+					entry.setCreatedSign(iwc.getCurrentUser().getName());
+					entry.setEditSign(" ");								
+				
+				}catch(CreateException ex2){
+					ex2.printStackTrace();
+					return;
+				}			
+			} else{
+				entry.setEditDate(new Date(new java.util.Date().getTime()));
+				entry.setEditSign(iwc.getCurrentUser().getName());
+			}
 	
+			long amountMonth = 0;
+			try{
+				amountMonth = AccountingUtil.roundAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+				entry.setAmount(amountMonth);
+			}catch(NumberFormatException ex){
+				ex.printStackTrace();
+				errorMessages.put(ERROR_AMOUNT_FORMAT, localize(ERROR_AMOUNT_FORMAT, "Wrong format for amount"));
+			}
+	
+			Date from = parseDate(iwc.getParameter(PAR_FROM));
+			Date to = parseDate(iwc.getParameter(PAR_TO));
+			entry.setFrom(from);
+			entry.setTo(to);
+				
+			if (iwc.getParameter(PAR_REMARK) != null){
+				entry.setNote(iwc.getParameter(PAR_REMARK));
+			}
+			if (iwc.getParameter(PAR_SCH_TYPE) != null){
+				entry.setSchoolTypeId(Integer.parseInt(iwc.getParameter(PAR_SCH_TYPE)));
+			}
+			entry.setPlacing(iwc.getParameter(PAR_PLACING));
+			entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
+				entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+			}
+			
+			entry.setUser(getUser(iwc));
+			
+			if (iwc.getParameter(PAR_VAT_TYPE) != null && iwc.getParameter(PAR_VAT_TYPE).length() != 0){
+				entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+			}
+	
+			try{
+				PostingBlock p = new PostingBlock(iwc);			
+				entry.setOwnPosting(p.getOwnPosting());
+				entry.setDoublePosting(p.getDoublePosting());
+			} catch (PostingParametersException e) {
+				errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
+			}	
+						
+	//			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+	//			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+			if (from == null || to == null){
+				errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
+			} else if (to.before(from)){
+				errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
+			} 
+			if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
+				errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
+			} 
+	//			if (entry.getAmount() == 0){
+	//				errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
+	//			}
+	
+			if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
+				errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
+			}
+		} //END: errorMessages.isEmpty
+			
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, entry, errorMessages);	
 		}else{		
@@ -761,6 +767,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 //		
 //			
 //		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+		if (errorMessages.get(ERROR_NO_USER_SESSION) != null){
+			table.add(getErrorText((String) errorMessages.get(ERROR_NO_USER_SESSION)), 1, row++);			
+		}	
+		
 		if (errorMessages.get(ERROR_PLACING_NULL) != null){
 			table.add(getErrorText((String) errorMessages.get(ERROR_PLACING_NULL)), 1, row++);			
 		}		
