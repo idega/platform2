@@ -207,7 +207,9 @@ public abstract class BillingThread extends Thread{
 		time = new IWTimestamp(startPeriod);
 		log.info("Start Placement = "+startTime.toString()+"  Start period = "+time.toString());
 		time.setAsDate();
-		startTime = startTime.isLater(startTime,time);
+		if(!startTime.isLaterThan(time)){
+			startTime = time;
+		}
 		log.info("Start for calc set to = "+startTime.toString());
 		//Then get end date
 		endTime = new IWTimestamp(endPeriod);
@@ -216,7 +218,9 @@ public abstract class BillingThread extends Thread{
 		if(end!=null){
 			time = new IWTimestamp(end);
 			log.info("End placement = "+time);
-			endTime = endTime.isEarlier(endTime, time);
+			if(!endTime.isEarlierThan(time)){
+				endTime = time;
+			}
 		}
 		log.info("End for calc set to = "+endTime.toString());
 		//calc the how many months are in the given time.

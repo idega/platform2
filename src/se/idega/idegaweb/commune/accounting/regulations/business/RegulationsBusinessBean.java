@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.79 2003/11/30 23:17:18 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.80 2003/12/01 18:00:29 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1528,6 +1528,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					flowID = ((Integer) pfType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
+				System.out.println("WARNING: Could not find flow: "+flow);
 				e.printStackTrace();
 				flowID = -1;
 			}
@@ -1538,6 +1539,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					condTypeID = ((Integer) cType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
+				System.out.println("WARNING: Could not find conditionType: "+conditionType);
 				e.printStackTrace();
 				condTypeID = -1;
 			}
@@ -1548,6 +1550,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					regSpecTypeID = ((Integer) sType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
+				System.out.println("WARNING: Could not find regSpecType: "+regSpecType);
 				e.printStackTrace();
 				regSpecTypeID = -1;
 			}

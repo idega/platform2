@@ -163,6 +163,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 								conditions = new ArrayList();
 								conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 								conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
+								int studyPathId = schoolClassMember.getStudyPathId();
+								if(studyPathId!=-1){
+									conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH,new Integer(studyPathId)));
+								}
 
 								System.out.println(
 									"Getting regulations for school "

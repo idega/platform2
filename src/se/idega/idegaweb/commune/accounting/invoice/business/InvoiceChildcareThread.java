@@ -226,8 +226,10 @@ public class InvoiceChildcareThread extends BillingThread{
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, postings[0], postings[1]);
 			
 					totalSum = postingDetail.getAmount()*months;
+					int siblingOrder = getSiblingOrder(contract);
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
-							new Integer(getSiblingOrder(contract))));
+							new Integer(siblingOrder)));
+					log.info("Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
 
 					//Get all the rules for this contract
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
