@@ -1180,7 +1180,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		HiddenInput HA = new HiddenInput(sAction, String.valueOf(APARTMENT));
 		HiddenInput HID = new HiddenInput("dr_id", sId);
 
-		Window chooserWindow = new Window("b_editor", ApartmentChooser.class, Page.class);
+		Window chooserWindow = new Window("b_editor", ApartmentChooser.class);
 		chooserWindow.setWidth(550);
 		chooserWindow.setHeight(500);
 		chooserWindow.setResizable(true);
