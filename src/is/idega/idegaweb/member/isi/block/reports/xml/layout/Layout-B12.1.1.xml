@@ -58,35 +58,35 @@
     <groupFooter>
       <band height="37">
         <staticText>
-          <reportElement positionType="Float" mode="Transparent" x="113" y="3" width="96" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="121" y="3" width="96" height="15" />
           <textElement textAlignment="Right">
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <text>Samtals</text>
         </staticText>
         <textField evaluationTime="Group" evaluationGroup="league_group" isBlankWhenNull="true">
-          <reportElement positionType="Float" mode="Transparent" x="218" y="3" width="36" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="222" y="3" width="36" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <textFieldExpression class="java.lang.Integer">$V{wUnderAgeSum}</textFieldExpression>
         </textField>
         <textField evaluationTime="Group" evaluationGroup="league_group" isBlankWhenNull="true">
-          <reportElement positionType="Float" mode="Transparent" x="255" y="3" width="35" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="265" y="3" width="35" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <textFieldExpression class="java.lang.Integer">$V{wOverOrEqualAgeLimit}</textFieldExpression>
         </textField>
         <textField evaluationTime="Group" evaluationGroup="league_group" isBlankWhenNull="true">
-          <reportElement positionType="Float" mode="Transparent" x="291" y="3" width="35" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="305" y="3" width="35" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <textFieldExpression class="java.lang.Integer">$V{mUnderAgeLimit}</textFieldExpression>
         </textField>
         <textField evaluationTime="Group" evaluationGroup="league_group" isBlankWhenNull="true">
-          <reportElement positionType="Float" mode="Transparent" x="332" y="3" width="35" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="342" y="3" width="35" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>

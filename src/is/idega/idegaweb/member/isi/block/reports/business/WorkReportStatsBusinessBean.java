@@ -316,8 +316,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					String leagueText=league.toString();
 					
 					data.addData(leagueString, leagueText);
-					//TODO order by the number
-					//data.addData(leagueString, league.getNumber());
+					
 
 					List statsForLeague = (List) workReportsByLeagues.get(league.getPrimaryKey());
 					if (statsForLeague == null)
