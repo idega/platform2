@@ -54,7 +54,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_AMOUNT_EQUALIZED = "AccountingStatsBusiness.amount_equalized";
 	private static final String LOCALIZED_TARIFF_TYPE = "AccountingStatsBusiness.tariff_type";
 	private static final String LOCALIZED_INFO = "AccountingStatsBusiness.info";
-	private static final String LOCALIZED_PAYMENT_MODE = "AccountingStatsBusiness.payment_mode";
+	private static final String LOCALIZED_PAYMENT_TYPE = "AccountingStatsBusiness.payment_type";
 	private static final String LOCALIZED_SENT = "AccountingStatsBusiness.sent";
 	private static final String LOCALIZED_PAYMENT_DATE = "AccountingStatsBusiness.payment_date";
 	
@@ -68,7 +68,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String FIELD_NAME_AMOUNT_EQUALIZED = "amount_equalized";
 	private static final String FIELD_NAME_TARIFF_TYPE = "tariff_type";
 	private static final String FIELD_NAME_INFO = "info";
-	private static final String FIELD_NAME_PAYMENT_MODE = "payment_mode";
+	private static final String FIELD_NAME_PAYMENT_TYPE = "payment_type";
 	private static final String FIELD_NAME_SENT = "sent";
 	private static final String FIELD_NAME_PAYMENT_DATE = "payment_date";
 	
@@ -308,9 +308,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
 		
-		ReportableField paymentModeField = new ReportableField(FIELD_NAME_PAYMENT_MODE, String.class);
-		paymentModeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_MODE, "Payment mode"), currentLocale);
-		reportCollection.addField(paymentModeField);
+		ReportableField paymentTypeField = new ReportableField(FIELD_NAME_PAYMENT_TYPE, String.class);
+		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
+		reportCollection.addField(paymentTypeField);
 		
 		ReportableField sentField = new ReportableField(FIELD_NAME_SENT, String.class);
 		sentField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SENT, "Sent"), currentLocale);
@@ -365,7 +365,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
-			data.addData(paymentModeField, paymentTypeString );
+			data.addData(paymentTypeField, paymentTypeString );
 			data.addData(sentField, "" );
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
@@ -941,9 +941,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
-		ReportableField paymentModeField = new ReportableField(FIELD_NAME_PAYMENT_MODE, String.class);
-		paymentModeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_MODE, "Payment mode"), currentLocale);
-		reportCollection.addField(paymentModeField);
+		ReportableField paymentTypeField = new ReportableField(FIELD_NAME_PAYMENT_TYPE, String.class);
+		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
+		reportCollection.addField(paymentTypeField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
 		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
@@ -1007,7 +1007,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(paymentModeField, paymentTypeString );
+			data.addData(paymentTypeField, paymentTypeString );
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );
 			
@@ -1026,7 +1026,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, paymentModeField, groupField, nameField };
+		ReportableField[] sortFields = new ReportableField[] {divisionField, paymentTypeField, groupField, nameField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
