@@ -72,7 +72,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
     private static final String ACTION_CREDITCARD_COMPANY_CONTRACT = "isi_acc_cw_act_cc_contract";
 
-    private static final String ACTION_CASHIER_LEDGER = "isi_acc_cw_act_cash_ledger";
+    public static final String ACTION_CASHIER_LEDGER = "isi_acc_cw_act_cash_ledger";
 
     private static final String ACTION_CANCEL = "isi_acc_cw_act_cc";
 
