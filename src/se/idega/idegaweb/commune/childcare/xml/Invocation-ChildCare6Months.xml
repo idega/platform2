@@ -19,7 +19,7 @@
 				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.DateInputHandler" />
 			</class_description>
 
-			<class_description class="java.lang.Integer" default_display_name="Provider" name="provider">
+			<class_description class="java.lang.Integer" default_display_name="Provider" name="school">
 				<localized_name name="Anordnare" locale="sv_SE"/>
 				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.SchoolDropDownMenu" />
 			</class_description>
