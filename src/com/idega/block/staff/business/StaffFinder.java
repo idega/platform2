@@ -1,6 +1,7 @@
 package com.idega.block.staff.business;
 
 import java.util.List;
+import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
 import com.idega.presentation.IWContext;
@@ -12,6 +13,7 @@ import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 
 /**
  * Title:        User
@@ -173,5 +175,82 @@ public class StaffFinder {
       e.printStackTrace();
       return null;
     }
+  }
+
+  public static List getStaffHolders(List users,IWContext iwc) {
+    return getStaffHolders(users,ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
+  }
+
+  public static List getStaffHolders(List users,int localeID) {
+    Vector staffHolders = new Vector();
+
+    if ( users != null ) {
+      Iterator iter = users.iterator();
+      while (iter.hasNext()) {
+        staffHolders.add(getStaffHolder((User)iter.next(),localeID));
+      }
+    }
+    return staffHolders;
+  }
+
+  public static StaffHolder getStaffHolder(int userID,IWContext iwc) {
+    User user = StaffFinder.getUser(userID);
+    return getStaffHolder(user,ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
+  }
+
+  public static StaffHolder getStaffHolder(int userID,int localeID) {
+    User user = StaffFinder.getUser(userID);
+    return getStaffHolder(user,localeID);
+  }
+
+  public static StaffHolder getStaffHolder(User user,int localeID) {
+    StaffEntity staff = StaffFinder.getStaff(user.getID());
+    StaffLocalized staffInfo = StaffFinder.getLocalizedStaff(staff,localeID);
+    StaffMeta[] staffMeta = StaffFinder.getMeta(user.getID(),localeID);
+    Phone workPhone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
+    Phone mobilePhone = UserBusiness.getUserPhone(user.getID(),PhoneType.MOBILE_PHONE_ID);
+
+    StaffHolder holder = new StaffHolder();
+    if ( user != null ) {
+     idegaTimestamp stamp = null;
+     if ( user.getDateOfBirth() != null )
+        stamp = new idegaTimestamp(user.getDateOfBirth());
+      idegaTimestamp dateToday = new idegaTimestamp();
+
+      int userAge = 0;
+      if ( stamp != null )
+        userAge = (new idegaTimestamp().getDaysBetween(stamp,dateToday))/365;
+
+      holder.setFirstName(user.getFirstName());
+      holder.setMiddleName(user.getMiddleName());
+      holder.setLastName(user.getLastName());
+      holder.setAge(userAge);
+      holder.setUserID(user.getID());
+    }
+    if ( staff != null ) {
+      if ( staff.getBeganWork() != null )
+        holder.setBeganWork(new idegaTimestamp(staff.getBeganWork()));
+      holder.setImageID(staff.getImageID());
+    }
+    if ( staffInfo != null ) {
+      holder.setArea(staffInfo.getArea());
+      holder.setEducation(staffInfo.getEducation());
+      holder.setTitle(staffInfo.getTitle());
+    }
+    if ( staffMeta != null ) {
+      String[] attributes = new String[staffMeta.length];
+      String[] values = new String[staffMeta.length];
+      for ( int a = 0; a < staffMeta.length; a++ ) {
+        attributes[a] = staffMeta[a].getAttribute();
+        values[a] = staffMeta[a].getValue();
+      }
+    }
+    if ( workPhone != null ) {
+      holder.setWorkPhone(workPhone.getNumber());
+    }
+    if ( mobilePhone != null ) {
+      holder.setArea(mobilePhone.getNumber());
+    }
+    return holder;
   }
 } // Class StaffFinder

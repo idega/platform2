@@ -165,14 +165,11 @@ private Table _myTable;
 
     int staffRow = 1;
 
-    User user = null;
-    Email email = null;
     Link userLink = null;
     Link emailLink = null;
     Text titleText = null;
     Text phoneText = null;
-    StaffLocalized staffInfo = null;
-    Phone phone = null;
+    StaffHolder holder = null;
     int column = 1;
 
     if ( users != null ) {
@@ -180,25 +177,20 @@ private Table _myTable;
       Collections.sort(users,comparator);
       for ( int a = 0; a < users.size(); a++ ) {
         column = 1;
-        user = (User)users.get(a);
-        email = StaffFinder.getUserEmail(user);
-        if ( _showListTitle )
-          staffInfo = StaffFinder.getLocalizedStaff(StaffFinder.getStaff(user.getID()),_localeID);
-        if ( _showListWorkPhone )
-          phone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
+        holder = StaffFinder.getStaffHolder((User)users.get(a),_localeID);
 
-        userLink = getStaffLink(user);
-        emailLink = getEmailLink(email);
+        userLink = getStaffLink(holder.getName(),holder.getUserID());
+        emailLink = getEmailLink(holder.getEmail());
 
-        if ( staffInfo != null && staffInfo.getTitle() != null ) {
-          titleText = new Text(staffInfo.getTitle());
+        if ( holder.getTitle() != null ) {
+          titleText = new Text(holder.getTitle());
         }
         else
           titleText = new Text("");
         titleText.setFontStyle(_textStyle);
 
-        if ( phone != null ) {
-          phoneText = new Text(phone.getNumber());
+        if ( holder.getWorkPhone() != null ) {
+          phoneText = new Text(holder.getWorkPhone());
         }
         else
           phoneText = new Text("");
@@ -213,8 +205,8 @@ private Table _myTable;
           table.add(emailLink,column++,staffRow);
 
         if ( _isAdmin ) {
-          table.add(getEditLink(user),column,staffRow);
-          table.add(getDeleteLink(user),column,staffRow);
+          table.add(getEditLink(holder.getUserID()),column,staffRow);
+          table.add(getDeleteLink(holder.getUserID()),column,staffRow);
         }
 
         staffRow++;
@@ -254,12 +246,7 @@ private Table _myTable;
   }
 
   private void getUser(IWContext iwc) {
-    User user = StaffFinder.getUser(_userID);
-    StaffEntity staff = StaffFinder.getStaff(_userID);
-    StaffLocalized staffInfo = StaffFinder.getLocalizedStaff(staff,_localeID);
-    StaffMeta[] staffMeta = StaffFinder.getMeta(_userID,_localeID);
-    Phone workphone = UserBusiness.getUserPhone(_userID,PhoneType.WORK_PHONE_ID);
-    Phone mobilephone = UserBusiness.getUserPhone(_userID,PhoneType.MOBILE_PHONE_ID);
+    StaffHolder holder = StaffFinder.getStaffHolder(_userID,iwc);
 
     Table userTable = new Table();
       userTable.setWidth("100%");
@@ -274,9 +261,9 @@ private Table _myTable;
     int column = 1;
 
     Image image = null;
-    if ( staff != null && staff.getImageID() != -1 ) {
+    if ( holder != null && holder.getImageID() != -1 ) {
       try {
-        image = new Image(staff.getImageID());
+        image = new Image(holder.getImageID());
         if ( _imageWidth != null ) image.setWidth(_imageWidth);
         if ( _imageHeight != null ) image.setHeight(_imageHeight);
         image.setBorder(1);
@@ -292,25 +279,17 @@ private Table _myTable;
       }
     }
 
-    if ( user != null ) {
+    if ( holder != null ) {
       Text name = new Text(_iwrb.getLocalizedString("user_name","Name")+":");
         name.setFontStyle(_headlineStyle);
-      Text nameText = new Text(user.getName());
+      Text nameText = new Text(holder.getName());
         nameText.setFontStyle(_textStyle);
 
       textTable.add(name,column,tableRow);
       textTable.add(nameText,column+1,tableRow);
       tableRow++;
 
-      idegaTimestamp dateOfBirth = null;
-      if ( user.getDateOfBirth() != null )
-        dateOfBirth = new idegaTimestamp(user.getDateOfBirth());
-      idegaTimestamp dateToday = new idegaTimestamp();
-
-      int userAge = 0;
-      if ( dateOfBirth != null )
-        userAge = (new idegaTimestamp().getDaysBetween(dateOfBirth,dateToday))/365;
-
+      int userAge = holder.getAge();
       Text age = new Text(_iwrb.getLocalizedString("user_age","Age")+":");
         age.setFontStyle(_headlineStyle);
       Text ageText = new Text(Integer.toString(userAge));
@@ -336,8 +315,8 @@ private Table _myTable;
       Text title = new Text(_iwrb.getLocalizedString("user_title","Title")+":");
         title.setFontStyle(_headlineStyle);
       Text titleText = new Text("");
-        if ( staffInfo != null )
-          titleText.setText(staffInfo.getTitle());
+        if ( holder.getTitle() != null )
+          titleText.setText(holder.getTitle());
         titleText.setFontStyle(_textStyle);
 
       if ( _showTitle ) {
@@ -349,8 +328,8 @@ private Table _myTable;
       Text workPhone = new Text(_iwrb.getLocalizedString("work_phone","Work phone")+":");
         workPhone.setFontStyle(_headlineStyle);
       Text workPhoneText = new Text("");
-        if ( workphone != null )
-          workPhoneText.setText(workphone.getNumber());
+        if ( holder.getWorkPhone() != null )
+          workPhoneText.setText(holder.getWorkPhone());
         workPhoneText.setFontStyle(_textStyle);
 
       if ( _showWorkPhone ) {
@@ -362,8 +341,8 @@ private Table _myTable;
       Text mobilePhone = new Text(_iwrb.getLocalizedString("Mobile_phone","Mobile phone")+":");
         mobilePhone.setFontStyle(_headlineStyle);
       Text mobilePhoneText = new Text("");
-        if ( mobilephone != null )
-          mobilePhoneText.setText(mobilephone.getNumber());
+        if ( holder.getMobilePhone() != null )
+          mobilePhoneText.setText(holder.getMobilePhone());
         mobilePhoneText.setFontStyle(_textStyle);
 
       if ( _showMobilePhone ) {
@@ -375,8 +354,8 @@ private Table _myTable;
       Text area = new Text(_iwrb.getLocalizedString("user_area","Area")+":");
         area.setFontStyle(_headlineStyle);
       Text areaText = new Text("");
-        if ( staffInfo != null )
-          areaText.setText(staffInfo.getArea());
+        if ( holder.getArea() != null )
+          areaText.setText(holder.getArea());
         areaText.setFontStyle(_textStyle);
 
       if ( _showArea ) {
@@ -388,8 +367,8 @@ private Table _myTable;
       Text beganWork = new Text(_iwrb.getLocalizedString("user_began_work","Began work")+":");
         beganWork.setFontStyle(_headlineStyle);
       Text beganWorkText = new Text("");
-        if ( staff != null && staff.getBeganWork() != null )
-          beganWorkText.setText(new idegaTimestamp(staff.getBeganWork()).getLocaleDate(iwc));
+        if ( holder.getBeganWork() != null )
+          beganWorkText.setText(holder.getBeganWork().getLocaleDate(iwc));
         beganWorkText.setFontStyle(_textStyle);
 
       if ( _showBeganWork ) {
@@ -401,8 +380,8 @@ private Table _myTable;
       Text education = new Text(_iwrb.getLocalizedString("user_education","Education")+":");
         education.setFontStyle(_headlineStyle);
       Text educationText = new Text("");
-        if ( staffInfo != null )
-          educationText.setText(staffInfo.getEducation());
+        if ( holder.getEducation() != null )
+          educationText.setText(holder.getEducation());
         educationText.setFontStyle(_textStyle);
 
       if ( _showEducation ) {
@@ -411,11 +390,13 @@ private Table _myTable;
         tableRow++;
       }
 
-      if ( staffMeta != null && staffMeta.length > 0 && _showMetaData ) {
-        for ( int a = 0; a < staffMeta.length; a++ ) {
-          Text meta = new Text(staffMeta[a].getAttribute()+":");
+      if ( holder.getMetaAttributes() != null && _showMetaData ) {
+        String[] attributes = holder.getMetaAttributes();
+        String[] values = holder.getMetaValues();
+        for ( int a = 0; a < attributes.length; a++ ) {
+          Text meta = new Text(attributes[a]+":");
             meta.setFontStyle(_headlineStyle);
-          Text metaText = new Text(staffMeta[a].getValue());
+          Text metaText = new Text(values[a]);
             metaText.setFontStyle(_textStyle);
 
           textTable.add(meta,column,tableRow);
@@ -431,7 +412,7 @@ private Table _myTable;
     if ( users != null ) {
       GenericUserComparator comparator = new GenericUserComparator(GenericUserComparator.NAME);
       Collections.sort(users,comparator);
-      index = users.indexOf(user);
+      index = users.indexOf(StaffFinder.getUser(_userID));
     }
 
     Table linkTable = new Table(3,1);
@@ -476,7 +457,7 @@ private Table _myTable;
     _myTable.add(userTable,1,row);
 
     if ( _isAdmin ) {
-      _myTable.add(getEditLink(user),1,row+1);
+      _myTable.add(getEditLink(_userID),1,row+1);
     }
   }
 
@@ -504,44 +485,42 @@ private Table _myTable;
     return link;
   }
 
-  private Link getStaffLink(User user) {
-    String name = user.getName();
-
+  private Link getStaffLink(String name,int userID) {
     Link link = new Link(name);
       if ( _styles )
         link.setStyle(_name);
-      link.addParameter(StaffBusiness.PARAMETER_USER_ID,user.getID());
+      link.addParameter(StaffBusiness.PARAMETER_USER_ID,userID);
 
     return link;
   }
 
-  private Link getEmailLink(Email email) {
+  private Link getEmailLink(String email) {
     Link link = null;
 
     if ( email != null ) {
-      link = new Link(email.getEmailAddress());
+      link = new Link(email);
         if ( _styles )
           link.setStyle(_name);
-        link.setURL("mailto:"+email.getEmailAddress());
+        link.setURL("mailto:"+email);
     }
 
     return link;
   }
 
-  private Link getEditLink(User user) {
+  private Link getEditLink(int userID) {
     Image adminImage = _iwb.getImage("shared/edit.gif");
     Link adminLink = new Link(adminImage);
       adminLink.setWindowToOpen(StaffEditor.class);
-      adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID,user.getID());
+      adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID,userID);
 
     return adminLink;
   }
 
-  private Link getDeleteLink(User user) {
+  private Link getDeleteLink(int userID) {
     Image adminImage = _iwb.getImage("shared/delete.gif");
     Link adminLink = new Link(adminImage);
       adminLink.setWindowToOpen(StaffEditor.class);
-      adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID,user.getID());
+      adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID,userID);
       adminLink.addParameter(StaffBusiness.PARAMETER_MODE,StaffBusiness.PARAMETER_DELETE);
 
     return adminLink;
