@@ -392,13 +392,21 @@ public class Doc extends FolderBlock implements IWBlock {
 	categoryTable.setCellpadding(1);
 	categoryTable.setCellspacing(0);
 	categoryTable.setWidth(2, "100%");
+	int icObjectInstanceID = this.getICObjectInstanceID();
+	int ic_obj_inst_id = icObjectInstanceID;
+	try {
+	  ic_obj_inst_id = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID));
+	}
+	catch (Exception e) {
+	  ic_obj_inst_id = icObjectInstanceID;
+	}
 
 	TextStyler styler = new TextStyler(_categoryStyle);
 	styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR, _highlightColor);
 	Image categoryImage = _iwbDoc.getImage("shared/category.gif");
 
 	for (int a = 0; a <= categories.length; a++) {
-	    if (a == 0 && _catID == -1) {
+	    if (a == 0 && (_catID == -1 || ic_obj_inst_id != icObjectInstanceID)) {
 		_catID = categories[a].getID();
 	    }
 
@@ -427,8 +435,10 @@ public class Doc extends FolderBlock implements IWBlock {
 
 	    Link categoryImageLink = new Link(categoryImage);
 	    categoryImageLink.addParameter(DocBusiness.PARAMETER_CATEGORY_ID, categoryID);
+	    categoryImageLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID,icObjectInstanceID);
 	    Link categoryLink = new Link(categoryText);
 	    categoryLink.addParameter(DocBusiness.PARAMETER_CATEGORY_ID, categoryID);
+	    categoryImageLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID,icObjectInstanceID);
 
 	    categoryTable.add(categoryImageLink, 1, a + 1);
 	    categoryTable.add(categoryLink, 2, a + 1);
@@ -459,7 +469,7 @@ public class Doc extends FolderBlock implements IWBlock {
 	    else
 	      links = DocFinder.getLinksInFolder(folder);
 
-	    if (links != null) {
+	    if (links != null && ic_obj_inst_id == icObjectInstanceID) {
 		Table linksTable = new Table();
 		linksTable.setCellpadding(0);
 		linksTable.setCellspacing(1);
