@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.12 2002/11/06 07:56:12 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.13 2002/11/06 09:13:44 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -249,14 +249,14 @@ public class CitizenAccountApplication extends CommuneBlock {
 		final String phoneHome = iwc.getParameter (PHONE_HOME_KEY);
 		final String email = iwc.getParameter (EMAIL_KEY);
 		final String phoneWork = iwc.getParameter (PHONE_WORK_KEY);
+        final String custodian1Ssn
+                = getSsn (iwc, "_" + CUSTODIAN_KEY + "_" + 1);
         final String custodian1CivilStatus
                 = iwc.getParameter (getCustodianKey (CIVIL_STATUS_KEY, 1));
-        final String custodian1Pid
-                = iwc.getParameter (getCustodianKey (PID_KEY, 1));
+        final String custodian2Ssn
+                = getSsn (iwc, "_" + CUSTODIAN_KEY + "_" + 2);
         final String custodian2CivilStatus
                 = iwc.getParameter (getCustodianKey (CIVIL_STATUS_KEY, 2));
-        final String custodian2Pid
-                = iwc.getParameter (getCustodianKey (PID_KEY, 2));
         final String street = iwc.getParameter (STREET_KEY);
         final String zipCode = iwc.getParameter (ZIP_CODE_KEY);
         final String city = iwc.getParameter (CITY_KEY);
@@ -308,7 +308,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			isInserted = business.insertApplication
                     (name, genderId, ssn, birthDate.getTime (), email,
                      phoneHome, phoneWork,
-                     custodian1Pid, custodian1CivilStatus, custodian2Pid,
+                     custodian1Ssn, custodian1CivilStatus, custodian2Ssn,
                      custodian2CivilStatus, street, zipCode, city);
 		}
 		catch (Exception e) {
@@ -331,24 +331,23 @@ public class CitizenAccountApplication extends CommuneBlock {
                                   "Application submitted")));
     }
 
-    private void addCustodianInput
-        (final Table table, final int row,
-         final IWContext iwc, final int custodianId) {
+    private void addCustodianInput (final Table table, final int row,
+                                    final IWContext iwc,
+                                    final int custodianId) {
         final String custodianKey = CUSTODIAN_KEY + "_" + custodianId;
-        final String custodianDefault = CUSTODIAN_DEFAULT + " " + custodianId;
-        final Text custodianHeader = getLocalizedHeader (custodianKey,
-                                                         custodianDefault);
+        final Text custodianHeader = getLocalizedHeader
+                (custodianKey, CUSTODIAN_DEFAULT + " " + custodianId);
         table.add (custodianHeader, 1, row);
         addSsnInput (table, row + 1, iwc, "_" + custodianKey);
         addHeader (table, row + 3, false, CIVIL_STATUS_KEY,
                    CIVIL_STATUS_DEFAULT);
-        final String civilStatusKey = getCustodianKey (CIVIL_STATUS_KEY,
-                                                       custodianId);
+        final String civilStatusKey
+                = getCustodianKey (CIVIL_STATUS_KEY, custodianId);
         addSingleInput (table, row + 4, iwc, civilStatusKey, 40);
     }
 
     private void addSimpleInputs (final Table table, final IWContext iwc) {
-        addSsnInput (table, 1, iwc, "");
+        addSsnInput (table, 1, iwc);
         addHeader (table, 3, _isEmailError, EMAIL_KEY, EMAIL_DEFAULT);
         addSingleInput (table, 4, iwc, EMAIL_KEY, 40);
         addHeader (table, 5, _isPhoneHomeError, PHONE_HOME_KEY,
@@ -364,24 +363,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.setCellpadding (4);
 		table.setColor (getBackgroundColor ());
         return table;
-    }
-
-    private void addSsnInput (final Table table, final int row,
-                              final IWContext iwc, final String paramPostfix) {
-        final String subject = localize (SSN_KEY, SSN_DEFAULT);
-        table.add (getSmallText (subject), 1, row);
-        final Calendar rightNow = Calendar.getInstance();
-        final int currentYear = rightNow.get (Calendar.YEAR);
-        addDropdownInput (table, row + 1, iwc, BIRTH_YEAR_KEY + paramPostfix,
-                          currentYear - 110, currentYear - 18);
-        table.add (new Text (" / "), 1, row + 1);
-        addDropdownInput (table, row + 1, iwc, BIRTH_MONTH_KEY + paramPostfix,
-                          12, 1);
-        table.add (new Text (" / "), 1, row + 1);
-        addDropdownInput (table, row + 1, iwc, BIRTH_DAY_KEY + paramPostfix,
-                          31, 1);
-        table.add (new Text (" - "), 1, row + 1);
-        addSingleInput (table, row + 1, iwc, PID_KEY + paramPostfix, 4);
     }
 
     private void addDropdownInput
@@ -461,11 +442,39 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add (submitButton, 1, row);
     }
 
+    private void addSsnInput (final Table table, final int row,
+                              final IWContext iwc) {
+        addSsnInput (table, row, iwc, "");
+    }
+
+    private void addSsnInput (final Table table, final int row,
+                              final IWContext iwc, final String paramPostfix) {
+        final String subject = localize (SSN_KEY, SSN_DEFAULT);
+        table.add (getSmallText (subject), 1, row);
+        final Calendar rightNow = Calendar.getInstance();
+        final int currentYear = rightNow.get (Calendar.YEAR);
+        addDropdownInput (table, row + 1, iwc, BIRTH_YEAR_KEY + paramPostfix,
+                          currentYear - 110, currentYear - 18);
+        table.add (new Text (" / "), 1, row + 1);
+        addDropdownInput (table, row + 1, iwc, BIRTH_MONTH_KEY + paramPostfix,
+                          12, 1);
+        table.add (new Text (" / "), 1, row + 1);
+        addDropdownInput (table, row + 1, iwc, BIRTH_DAY_KEY + paramPostfix,
+                          31, 1);
+        table.add (new Text (" - "), 1, row + 1);
+        addSingleInput (table, row + 1, iwc, PID_KEY + paramPostfix, 4);
+    }
+
     private static String getSsn (final IWContext iwc) {
-        final String year = iwc.getParameter (BIRTH_YEAR_KEY);
-        final String month = iwc.getParameter (BIRTH_MONTH_KEY);
-        final String day = iwc.getParameter (BIRTH_DAY_KEY);
-        final String pid = iwc.getParameter (PID_KEY);
+        return getSsn (iwc, "");
+    }
+
+    private static String getSsn (final IWContext iwc,
+                                  final String paramPostfix) {
+        final String year = iwc.getParameter (BIRTH_YEAR_KEY + paramPostfix);
+        final String month = iwc.getParameter (BIRTH_MONTH_KEY + paramPostfix);
+        final String day = iwc.getParameter (BIRTH_DAY_KEY + paramPostfix);
+        final String pid = iwc.getParameter (PID_KEY + paramPostfix);
         final String ssn = year + (month.length () > 1 ? month : "0" + month)
                 + (day.length () > 1 ? day : "0" + day) + pid;
         return ssn;
