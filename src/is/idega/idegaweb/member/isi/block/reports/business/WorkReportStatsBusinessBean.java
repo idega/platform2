@@ -1064,6 +1064,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 		}
 		
+		ReportableField[] sortFields = new ReportableField[] {leagueString};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
 		//finished return the collection
 		return reportCollection;
 	
@@ -4124,6 +4128,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReport(report);
 				}
 			}
+			regData = addToIntegerCount(memberCount, regData, members);
+			regData = addToIntegerCount(playerCount, regData, players);
 			regData = addToIntegerCount(memberCountTot, regData, members);
 			regData = addToIntegerCount(playerCountTot, regData, players);
 			
@@ -4294,6 +4300,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReportAndWorkReportGroup(report, league);
 					}
 				}
+				leagueStatsData = addToIntegerCount(memberCount, leagueStatsData, members);
+				leagueStatsData = addToIntegerCount(playerCount, leagueStatsData, players);
 				leagueStatsData = addToIntegerCount(memberCountTot, leagueStatsData, members);
 				leagueStatsData = addToIntegerCount(playerCountTot, leagueStatsData, players);
 				if(showClubs) {
