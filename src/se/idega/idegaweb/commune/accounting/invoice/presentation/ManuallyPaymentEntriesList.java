@@ -18,6 +18,10 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
@@ -232,45 +236,52 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			handleEditAction(iwc, errorMessages);	
 		} else {
 		
-			PaymentRecord entry = null;
+			PaymentRecord pay = null;
+			PaymentHeader payhdr = null;
+			InvoiceRecord inv = null;
 			
+		
 
 			try{
-				entry = getPaymentRecordHome().create();
+				pay = getPaymentRecordHome().create();
+				payhdr = getPaymentHeaderHome().create();
+				inv = getInvoiceRecordHome().create();
 			}catch(CreateException ex2){
 				ex2.printStackTrace();
 				return;
 			}			
 
-
-			entry.setTotalAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+			pay.setPaymentHeader(payhdr);
+			pay.setTotalAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
 			
-			entry.setNotes(iwc.getParameter(PAR_REMARK));
-//			entry.setPlacing(iwc.getParameter(PAR_PLACING));
-			entry.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+			pay.setNotes(iwc.getParameter(PAR_REMARK));
+//			pay.setPlacing(iwc.getParameter(PAR_PLACING));
+			pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
-//				entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+				payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
 			}
 			
-//			entry.setUser(getUser(iwc));
-			entry.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+//			pay.setUser(getUser(iwc));
+			pay.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
 			
 			try{
 				PostingBlock p = new PostingBlock(iwc);			
-				entry.setOwnPosting(p.getOwnPosting());
-				entry.setDoublePosting(p.getDoublePosting());
+				pay.setOwnPosting(p.getOwnPosting());
+				pay.setDoublePosting(p.getDoublePosting());
 			} catch (PostingParametersException e) {
 				errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
 			}	
 						
-//			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-//			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+			pay.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+			pay.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 		
 			if (! errorMessages.isEmpty()){
 				handleEditAction(iwc, errorMessages);	
 			}else{		
 
-				entry.store();		
+				payhdr.store();		
+				pay.store();		
+				inv.store();		
 				//TODO return to calling page
 			}
 		}					
@@ -288,7 +299,29 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 		return home;
 	}
+	
+	private PaymentHeaderHome getPaymentHeaderHome() {
+		PaymentHeaderHome home = null;
+		try{
+			home = (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
+			
+		}catch(IDOLookupException ex){
+			ex.printStackTrace();			
+		}
+		return home;
+	}	
 		
+	
+	private InvoiceRecordHome getInvoiceRecordHome() {
+		InvoiceRecordHome home = null;
+		try{
+			home = (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+			
+		}catch(IDOLookupException ex){
+			ex.printStackTrace();			
+		}
+		return home;
+	}		
 
 	private void handleEditAction(IWContext iwc){
 		handleEditAction(iwc, new HashMap());
