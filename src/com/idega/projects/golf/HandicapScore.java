@@ -39,7 +39,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 protected IWResourceBundle iwrb;
 protected IWBundle iwb;
 
-private Table myTable;
+private Table outerTable;
 private Form myForm;
 
   public HandicapScore() {
@@ -98,7 +98,7 @@ private Form myForm;
         getForm();
         drawTable(modinfo);
 
-        myForm.add(myTable);
+        myForm.add(outerTable);
         add(myForm);
       }
   }
@@ -232,7 +232,13 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
       Text statistics = new Text(iwrb.getLocalizedString("handicap.statistics","Statistics")+":");
               statistics.setFontSize(1);
 
-      myTable = new Table(2,7);
+      outerTable = new Table(2,1);
+        outerTable.setCellspacing(6);
+        outerTable.setCellpadding(6);
+        outerTable.setAlignment("center");
+        outerTable.setAlignment(1,1,"center");
+
+      Table myTable = new Table(2,7);
               myTable.setBorder(0);
               myTable.setCellpadding(8);
               myTable.setCellspacing(0);
@@ -267,6 +273,11 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
       else {
         myTable.addText(iwrb.getLocalizedString("handicap.no_tees","No tees registered")+":",2,3);
       }
+
+      Image swingImage = new Image("/pics/handicap/swing.gif","",161,300);
+
+      outerTable.add(myTable,1,1);
+      outerTable.add(swingImage,2,1);
 
 }
 
