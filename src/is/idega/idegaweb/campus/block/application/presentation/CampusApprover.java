@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.45 2003/04/10 12:41:05 palli Exp $
+ * $Id: CampusApprover.java,v 1.46 2003/07/24 16:54:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ public class CampusApprover extends Block {
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
-	private int iSubjectId = -1;
+	private int iSubjectId = -1,iGlobalSize = 50;
 	private String sGlobalStatus = "S", sGlobalOrder = null;
 	private ListIterator iterator = null;
 	private LinkedList linkedlist = null;
@@ -116,6 +116,14 @@ public class CampusApprover extends Block {
 		}
 		else if (iwc.getSessionAttribute("gl_status") != null) {
 			this.sGlobalStatus = ((String) iwc.getSessionAttribute("gl_status"));
+		}
+		if (iwc.getParameter("global_size") != null) {
+			infoCheck = false;
+			this.iGlobalSize = Integer.parseInt(iwc.getParameter("global_size"));
+			iwc.setSessionAttribute("gl_size",new Integer( iGlobalSize));
+		}
+		else if (iwc.getSessionAttribute("gl_size") != null) {
+			this.iGlobalSize = ((Integer) iwc.getSessionAttribute("gl_size")).intValue();
 		}
 		if (iwc.getParameter("global_order") != null) {
 			infoCheck = false;
@@ -403,7 +411,7 @@ public class CampusApprover extends Block {
 
 		DataTable T = new DataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("applicants", "Applicants"));
+		
 		T.setTitlesHorizontal(true);
 
 		int row = 1;
@@ -440,6 +448,12 @@ public class CampusApprover extends Block {
 			ListIterator iterator = L.listIterator();
 			iwc.setSessionAttribute("iterator", iterator);
 			int len = L.size();
+			
+			if(iGlobalSize>0){
+				len = iGlobalSize;
+			}
+			T.addTitle(iwrb.getLocalizedString("applicants", "Applicants")+" "+iwrb.getLocalizedString("viewing","viewing")
+			+" "+len+" "+iwrb.getLocalizedString("of","of")+" "+L.size());
 
 			boolean showcan = false;
 			if (sGlobalStatus.equals(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED)) {
@@ -490,8 +504,13 @@ public class CampusApprover extends Block {
 				T.add(Edit.formatText(String.valueOf(i + 1)), col++, row);
 				if (CA == null)
 					T.add(Edit.formatText("A"), col++, row);
-				else
+				else if(CA.getPriorityLevel()!=null){
 					T.add(Edit.formatText(CA.getPriorityLevel()), col++, row);
+				}
+				else {
+					col++;
+				}
+					
 				T.add(Edit.formatText(cypher), col++, row);
 				String Name = A.getFirstName() + " " + A.getMiddleName() + " " + A.getLastName();
 				T.add(Edit.formatText(Name), col++, row);
@@ -1688,6 +1707,7 @@ public class CampusApprover extends Block {
 		DropdownMenu drp = subjectDrop(String.valueOf(this.iSubjectId));
 		DropdownMenu status = statusDrop("global_status", sGlobalStatus);
 		DropdownMenu order = orderDrop("global_order", sGlobalOrder);
+		DropdownMenu sizeMenu = sizeDrop("global_size",iGlobalSize);
 		SubmitButton New = new SubmitButton(iwrb.getLocalizedImageButton("new", "New"), "new_app", "true");
 		SubmitButton Info = new SubmitButton(iwrb.getLocalizedImageButton("info", "Info"), "subj_info", "true");
 		//SubmitButton New = new SubmitButton("new","New");
@@ -1695,10 +1715,11 @@ public class CampusApprover extends Block {
 		drp.setToSubmit();
 		status.setToSubmit();
 		order.setToSubmit();
+		sizeMenu.setToSubmit();
 		Edit.setStyle(status);
 		Edit.setStyle(order);
 		Edit.setStyle(New);
-		//    Edit.setStyle(New2);
+		Edit.setStyle(sizeMenu);
 		DataTable T = new DataTable();
 		T.addTitle(iwrb.getLocalizedString("filter", "Filter"));
 		T.setTitlesHorizontal(true);
@@ -1707,11 +1728,14 @@ public class CampusApprover extends Block {
 		T.add(Edit.formatText(iwrb.getLocalizedString("subject", "Subject")), col++, row);
 		T.add(Edit.formatText(iwrb.getLocalizedString("status", "Status")), col++, row);
 		T.add(Edit.formatText(iwrb.getLocalizedString("order", "Order")), col++, row);
+		T.add(Edit.formatText(iwrb.getLocalizedString("viewsize", "View size")), col++, row);
 		row++;
 		col = 1;
 		T.add(drp, col++, row);
+		
 		T.add(status, col++, row);
 		T.add(order, col++, row);
+		T.add(sizeMenu, col++, row);
 		T.add(Info, col++, row);
 		if (iSubjectId > 0) {
 			T.add(New, col++, row);
@@ -1797,6 +1821,19 @@ public class CampusApprover extends Block {
 		drp.setSelectedElement(selected);
 		return drp;
 	}
+	
+	private DropdownMenu sizeDrop(String name, int  selected) {
+			DropdownMenu drp = new DropdownMenu(name);
+			drp.addMenuElement("10");
+			drp.addMenuElement("20");
+			drp.addMenuElement("50");
+			drp.addMenuElement("100");
+			drp.addMenuElement("500");
+			drp.addMenuElement("-1","All");
+			drp.setSelectedElement(selected);
+			return drp;
+		}
+
 
 	private DropdownMenu orderDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);

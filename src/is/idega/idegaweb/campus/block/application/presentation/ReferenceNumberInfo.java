@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.24 2003/07/24 15:39:31 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.25 2003/07/24 16:54:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -153,26 +153,26 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		row++;
 		
 		String status = app.getStatus();
+		String statusText = app.getStatus();
 		
 		if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED))
-			status = _iwrb.getLocalizedString("appSubmitted", "Waiting to be processed");
+			statusText = _iwrb.getLocalizedString("appSubmitted", "Waiting to be processed");
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)){
-			status = _iwrb.getLocalizedString("appApproved", "Approved / On waiting list");
+			statusText = _iwrb.getLocalizedString("appApproved", "Approved / On waiting list");
 		}
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED))
-			status = _iwrb.getLocalizedString("appContracted", "Contracted");
+			statusText = _iwrb.getLocalizedString("appContracted", "Contracted");
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED))
-			status = _iwrb.getLocalizedString("appRejected", "Rejected");
+			statusText = _iwrb.getLocalizedString("appRejected", "Rejected");
 		else
-			status = _iwrb.getLocalizedString("appUnknownStatus", "Lost in limbo somewhere");
+			statusText = _iwrb.getLocalizedString("appUnknownStatus", "Lost in limbo somewhere");
 		
 		refTable.add(new Text(_iwrb.getLocalizedString("appStatus", "Application status") + ": "), 1, row);
-		Text statusText = new Text(status);
-		statusText.setBold();
-		refTable.add(statusText, 1, row);
+		Text stsText = new Text(statusText);
+		stsText.setBold();
+		refTable.add(stsText, 1, row);
 		
 		if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)) { //F?kk ekki ?thluta?, e?a ekki b?i? a? ?thluta.
-			debug("status approved");
 			Contract c = holder.getContract();
 			Integer allocatedTypeID = new Integer(-1);
 			Integer allocatedComplexID = new Integer(-1);
@@ -262,6 +262,12 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 						
 						appliedTable.add(dateFormat.format(wait.getLastConfirmationDate()),4,pos);
 				}
+				// no waitinglist entries
+				else{
+					appliedTable.mergeCells(2,pos,4,pos);
+					appliedTable.addText(_iwrb.getLocalizedString("appNoWaitingList","Not on waitinglist"),2,pos);
+					appliedTable.setAlignment(2,4,Table.HORIZONTAL_ALIGN_CENTER);
+				}
 			}
 		
 			container.setAlignment(1, 1, "right");
@@ -275,14 +281,12 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			
 		}
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED)) { //Ekki b?i? a? ?thluta
-			debug("status submitted");
 				Text notAllocated = new Text("&nbsp;*&nbsp;" + _iwrb.getLocalizedString("appSubmitted", "Application not processed yet"));
 					notAllocated.setStyle("required");
 					refTable.add(notAllocated, 1, row);
 					row++;
 		}
 		else if(status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED)) {
-			debug("status signed");
 			Text signed = new Text("&nbsp;*&nbsp;" +_iwrb.getLocalizedString("appAssigned", "You have been assigned to an apartment"));
 			signed.setStyle("required");
 			refTable.add(signed, 1, row);
