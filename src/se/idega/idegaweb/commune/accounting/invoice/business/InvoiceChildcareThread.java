@@ -252,6 +252,8 @@ public class InvoiceChildcareThread extends BillingThread{
 
 						// **Create the invoice record
 						//TODO (JJ) get these strings from the postingDetail instead.
+						System.out.println("posting:"+postings[0]);
+						System.out.println("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 						invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], postings[1]);
 
 						//Need to store the subvention row, so that it can be adjusted later if needed					
