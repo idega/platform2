@@ -3916,8 +3916,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				latestContract.remove();
 				
 				if (contract != null) {
-					contract.removeAllFiles();
-					contract.remove();
+					contract.setStatus("T");
+					contract.store();
 				}
 				
 				ChildCareContract newLatestContract = getLatestContractByApplication(applicationID);
