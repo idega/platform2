@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.16 2004/01/06 14:03:14 tryggvil Exp $
+ * $Id: VATBusinessBean.java,v 1.17 2004/01/06 14:09:53 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/01/06 14:03:14 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/06 14:09:53 $ by $Author: tryggvil $
  *
  * @author Anders Lindman
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -404,12 +404,23 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public float getVATPercentForRegulation(Regulation normalRegulation)throws VATException{
 		return getVATRegulationFromRegulation(normalRegulation).getVATPercent();
 	}
-	
+
+	/**
+	 * Finds the VATRegulation from the given normalRegulation which can be any regulation.
+	 * It uses the VATRuleRegulation field to find the VATRegulation from.
+	 * Returns VATRegulation if found
+	 */
 	public VATRegulation getVATRegulationFromRegulation(Regulation normalRegulation)throws VATException{
 		Regulation vatRuleRegulation = normalRegulation.getVATRuleRegulation();
 		return getVATRegulationFromVATRuleRegulation(vatRuleRegulation);
 	}
 	
+	/**
+	 * Finds the VATRegulation from the given vatRuleRegulation by its condition fields
+	 * @param vatRuleRegulation A Regulation of type VAT (Moms)
+	 * @return
+	 * @throws VATException
+	 */
 	protected VATRegulation getVATRegulationFromVATRuleRegulation(Regulation vatRuleRegulation)throws VATException{
 		try {
 			RegulationsBusiness regBus = getRegulationsBusiness();
@@ -436,6 +447,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	}
 
 	/**
+	 * Gets an instance of the RegulationsBusiness
 	 * @return
 	 */
 	private RegulationsBusiness getRegulationsBusiness() throws IBOLookupException {
