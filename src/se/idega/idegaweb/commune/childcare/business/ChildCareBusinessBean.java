@@ -2467,7 +2467,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public int getQueueTotalByProvider(int providerID) throws RemoteException {
 		try {
-			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
+			String[] caseStatus = { getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString() };
 			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus);
 		}
 		catch (IDOException e) {
@@ -2477,7 +2477,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getQueueByProvider(int providerID) throws RemoteException {
 		try {
-			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, getCaseStatusOpen().getStatus());
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, getCaseStatusOpenString());
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2486,7 +2486,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getQueueTotalByArea(int areaID) throws RemoteException {
 		try {
-			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
+
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString() };			
+
 			return getChildCareApplicationHome().getQueueSizeByAreaNotInStatus(areaID, caseStatus);
 		}
 		catch (IDOException e) {
@@ -2496,7 +2498,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getQueueByArea(int areaID) throws RemoteException {
 		try {
-			return getChildCareApplicationHome().getQueueSizeByAreaInStatus(areaID, getCaseStatusOpen().getStatus());
+			return getChildCareApplicationHome().getQueueSizeByAreaInStatus(areaID, getCaseStatusOpenString());
 		}
 		catch (IDOException e) {
 			return 0;
