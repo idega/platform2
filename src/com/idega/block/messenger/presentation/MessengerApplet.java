@@ -380,6 +380,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       add(item);
 
       doLayout();
+      item.repaint();
+
       repaint();
   }
 
