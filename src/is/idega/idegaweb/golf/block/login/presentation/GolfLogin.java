@@ -9,8 +9,12 @@ import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
-import com.idega.core.builder.business.ICBuilderConstants;
+import java.rmi.RemoteException;
+
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
@@ -41,7 +45,7 @@ public class GolfLogin extends GolfBlock {
 	private int _indent = 8;
 	private int _logOnPage = -1;
 	private boolean lockedAsWapLayout = false;
-	private String PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE = "nooptimer";
+	private static final String PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE = "nooptimer";
 
 	public GolfLogin() {
 		super();
@@ -335,15 +339,30 @@ public class GolfLogin extends GolfBlock {
 			if(_logOnPage>0){
 				Link go = new Link(getResourceBundle().getLocalizedString("login.forward","forward >"));
 				go.setPage(_logOnPage);
-				myTable.add(go, 1, row++);
-				if(modinfo.getParameter(PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE = "nooptimer")==null){ 
-					StringBuffer url = new StringBuffer();
-					url.append(modinfo.getServerURL());
-					url.append("?").append(ICBuilderConstants.IB_PAGE_PARAMETER).append("=").append(_logOnPage);
-					if(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE)!=null){
-						url.append("&amp;").append(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE).append("=").append(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE));
+				Paragraph p2 = new Paragraph();
+				p2.add(go);
+				myTable.add(p2, 1, row++);
+				try {
+					if(modinfo.getParameter(PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE)==null){ 
+						StringBuffer url = new StringBuffer();
+						url.append(getBuilderService(modinfo).getPageURI(_logOnPage));
+						if(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE)!=null){
+							if(IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+								url.append("&amp;");
+							} else {
+								url.append("&");
+							}
+							url.append(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE).append("=").append(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE));
+						}
+						String redirectURL = url.toString();
+						if(IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+							redirectURL = modinfo.getResponse().encodeURL(redirectURL);
+						}
+//						System.out.println("Golflogin redirect url: "+redirectURL);
+						this.getParentPage().setToRedirect(redirectURL,3);
 					}
-					this.getParentPage().setToRedirect(modinfo.getResponse().encodeURL(url.toString()),3);
+				} catch (RemoteException e) {
+					e.printStackTrace();
 				}
 			}
 			
@@ -522,5 +541,17 @@ public class GolfLogin extends GolfBlock {
 
 	public void setLogOnPage(int page) {
 		_logOnPage = page;
+	}
+	
+	/**
+	 * Convenience method to return the instance of BuilderService
+	 * 
+	 * @param iwc
+	 * @return @throws
+	 *         RemoteException
+	 */
+	protected BuilderService getBuilderService(IWApplicationContext iwc) throws RemoteException
+	{
+		return BuilderServiceFactory.getBuilderService(iwc);
 	}
 }

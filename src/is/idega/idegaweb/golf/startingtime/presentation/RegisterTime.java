@@ -449,6 +449,7 @@ public class RegisterTime extends GolfBlock {
                 myText.setText(localize("start.the_following_where_registered","The following where registered:"));
 
                 Table tempTable = new Table(3,legal.size());
+                tempTable.setToForceToRenderAsTableInWML(true);
 
                 for (int i = 0; i < legal.size(); i++) {
                   int index = ((Integer)legal.get(i)).intValue();
@@ -487,6 +488,7 @@ public class RegisterTime extends GolfBlock {
                 myText.setText(localize("start.error_in_following","Error in following:"));
 
                 Table tempTable = new Table(3,illegal.size());
+                tempTable.setToForceToRenderAsTableInWML(true);
 
                 for (int i = 0; i < illegal.size(); i++) {
                   int index = ((Integer)illegal.get(i)).intValue();
@@ -560,10 +562,11 @@ public class RegisterTime extends GolfBlock {
                 
                 if(lockedAsWapLayout || modinfo.isClientHandheld()){
                 		if(backPage!=-1){
-                			frameTable.add(new Paragraph());
+                			Paragraph p = new Paragraph();
                 			Link link = new Link(localize("start.wml_back_link","Back to overview"));
                 			link.setPage(backPage);
-                          frameTable.add(link);
+                			p.add(link);
+                          frameTable.add(p);
                 		}
                 } else{
                   //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
@@ -573,12 +576,13 @@ public class RegisterTime extends GolfBlock {
                 }
               }else{
               	if(lockedAsWapLayout || modinfo.isClientHandheld()){    
-                    if(backPage!=-1){
-                    	frameTable.add(new Paragraph());
-            			Link link = new Link(localize("start.wml_back_link","Back to overview"));
-            			link.setPage(backPage);
-                      frameTable.add(link);
-                	   }
+              		if(backPage!=-1){
+	            			Paragraph p = new Paragraph();
+	            			Link link = new Link(localize("start.wml_back_link","Back to overview"));
+	            			link.setPage(backPage);
+	            			p.add(link);
+	                      frameTable.add(p);
+              		}
               	}else{
 	                this.getParentPage().setParentToReload();
 	                this.getParentPage().close();
