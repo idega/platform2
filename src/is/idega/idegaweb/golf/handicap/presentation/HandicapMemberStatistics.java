@@ -227,7 +227,7 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.add(getSmallText(localize("handicap.putts", "Putts")), 1, row);
 		if (fairways > 0) {
 			table.add(getSmallText(String.valueOf(putts)), 2, row);
-			table.add(getSmallText(statBusiness.getPercentText(averagePutts)), 3, row);
+			table.add(getSmallText(statBusiness.getDecimalText(averagePutts)), 3, row);
 		}
 		else {
 			table.add(getSmallText("-"), 2, row);
