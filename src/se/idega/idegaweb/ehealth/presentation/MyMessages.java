@@ -50,7 +50,7 @@ public class MyMessages extends EHealthBlock {
 	private String prmCareUnit = prefix + "care_unit";
 	
 	//private String prmReply = prefix + "reply";
-	private String prmClear = prefix + "clear";
+	//private String prmClear = prefix + "clear";
 	//private String prmSend = prefix + "send";
 	private String prmDelete = prefix + "delete";
 	

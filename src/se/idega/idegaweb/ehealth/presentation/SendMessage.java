@@ -7,10 +7,8 @@
 package se.idega.idegaweb.ehealth.presentation;
 
 
-import se.idega.util.PIDChecker;
+//import se.idega.util.PIDChecker;
 
-import com.idega.business.IBOLookup;
-import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -20,8 +18,7 @@ import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.business.UserBusiness;
-import com.idega.util.Age;
+//import com.idega.util.Age;
 
 
 
@@ -43,19 +40,20 @@ public class SendMessage extends EHealthBlock {
 	private String prmSend = prefix + "send";
 	private String prmDoctor = prefix + "doctor";
 	
-	private int userID = -1;
-	private User user;
+	//private int userID = -1;
+	//private User user;
 	IWContext _iwc = null;
 	
 	public void main(IWContext iwc) throws Exception {
 		
 		_iwc = iwc;
 		
-		userID = iwc.getUserId();
+		//userID = iwc.getUserId();
 		
-		if (userID > 0) {
+		/*if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 		}
+		*/
 		add(getSendMessageForm());
 		
 	}
@@ -85,12 +83,12 @@ public class SendMessage extends EHealthBlock {
 		myForm.add(table);
 		int row = 1;
 		
-		Age age = null;
+		/*Age age = null;
 		if (user != null && user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
 		else if (user != null && user.getPersonalID() != null)
 			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
-				
+		*/		
 			DropdownMenu dropDr = new DropdownMenu(prmDoctor);
 			dropDr.addMenuElementFirst("-1", "Till");
 			dropDr.addMenuElement("1", "Dr Magne Syhl");

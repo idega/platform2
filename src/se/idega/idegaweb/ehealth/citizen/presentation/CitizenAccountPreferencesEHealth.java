@@ -106,8 +106,8 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	private final static String KEY_PHONE_WORK = KEY_PREFIX + "phone_work";
 	private final static String KEY_PHONE_ALT = KEY_PREFIX + "phone_alt";
 	private final static String KEY_TEMP_ADDRESS = KEY_PREFIX + "temporay_address";
-	private final static String KEY_CO_ADDRESS_INFO = KEY_PREFIX + "co_address_info";
-	private final static String KEY_CO_ADDRESS_SELECT = KEY_PREFIX + "co_address_select";
+	//private final static String KEY_CO_ADDRESS_INFO = KEY_PREFIX + "co_address_info";
+	//private final static String KEY_CO_ADDRESS_SELECT = KEY_PREFIX + "co_address_select";
 	private final static String KEY_CO_STREET_ADDRESS = KEY_PREFIX + "co_street_address";
 	private final static String KEY_CO_POSTAL_CODE = KEY_PREFIX + "co_postal_code";
 	private final static String KEY_CO_CITY = KEY_PREFIX + "co_city";
@@ -146,8 +146,8 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	private final static String DEFAULT_PHONE_MOBILE = "Phone (mobile)";
 	private final static String DEFAULT_PHONE_WORK = "Phone (work)";
 	private final static String DEFAULT_PHONE_ALT = "Phone (alt)";
-	private final static String DEFAULT_CO_ADDRESS_INFO = "To use the temporary address...";
-	private final static String DEFAULT_CO_ADDRESS_SELECT = "Use c/o address";
+	//private final static String DEFAULT_CO_ADDRESS_INFO = "To use the temporary address...";
+	//private final static String DEFAULT_CO_ADDRESS_SELECT = "Use c/o address";
 	private final static String DEFAULT_TEMP_ADDRESS = "Temporary address";
 	private final static String DEFAULT_CO_STREET_ADDRESS = "Street address c/o";		
 	private final static String DEFAULT_CO_POSTAL_CODE = "Postal code c/o";		
