@@ -1,5 +1,5 @@
 /*
- * $Id: ContractText.java,v 1.2 2001/07/30 11:01:46 aron Exp $
+ * $Id: ContractText.java,v 1.3 2001/07/30 21:23:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ public class ContractText extends GenericEntity {
   public static String getTextColumnName(){return "TEXT";}
   public static String getOrdinalColumnName(){return "ORDINAL";}
   public static String getLanguageColumnName(){return "LANGUAGE";}
+  public static String getUseTagsColumnName(){return "USETAGS";}
 
 
   public ContractText() {
@@ -41,6 +42,7 @@ public class ContractText extends GenericEntity {
     addAttribute(getTextColumnName(),"Text",true,true,"java.lang.String",4000);
     addAttribute(getOrdinalColumnName(),"Ordinal",true,true,"java.lang.Integer");
     addAttribute(getLanguageColumnName(),"Language",true,true,"java.lang.String");
+    addAttribute(getUseTagsColumnName(),"Tagcheck",true,true,"java.lang.Boolean");
   }
 
   public String getEntityName() {
@@ -72,6 +74,12 @@ public class ContractText extends GenericEntity {
   }
   public int getOrdinal(){
     return getIntColumnValue(getOrdinalColumnName());
+  }
+  public boolean getUseTags(){
+    return getBooleanColumnValue(getUseTagsColumnName());
+  }
+  public void setUseTags(boolean usetags){
+    setColumn(getUseTagsColumnName(), usetags);
   }
 
 }
