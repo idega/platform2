@@ -47,8 +47,8 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
     addAttribute(getColumnNameMaxPerUnit(), "Fjoldi a einingu", true, true, Integer.class);
     addAttribute(getColumnNameRoomTypeId(), "room type", true, true, Integer.class, "one-to-one", RoomType.class);
     addAttribute(getColumnNameRating(), "rating", true, true, Float.class);
-    addManyToManyRelationShip(RoomType.class);
-    addManyToManyRelationShip(HotelType.class, "TB_ACC_TB_ACC_ROOM_TYPE");
+    addManyToManyRelationShip(RoomType.class,  "TB_ACC_TB_ACC_ROOM_TYPE");
+    addManyToManyRelationShip(HotelType.class, "TB_ACC_TB_ACC_ACC_TYPE");
   }
 
   public String getEntityName() {
