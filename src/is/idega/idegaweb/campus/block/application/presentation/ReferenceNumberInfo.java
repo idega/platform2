@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.20 2003/07/18 13:05:27 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.21 2003/07/18 13:10:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,7 +35,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.HiddenInput;
-import com.leviathansoft.emailvalidator.EmailValidator;
 
 import java.util.Vector;
 import java.util.Date;
