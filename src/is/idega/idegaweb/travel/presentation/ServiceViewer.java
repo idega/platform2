@@ -371,8 +371,9 @@ public class ServiceViewer extends Window {
 
       if( showBuyButton){
         Link buy = LinkGenerator.getLink(iwc,service.getID());
-        buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
-        buy.setAsImageButton(true);
+        buy.setImage(iwrb.getImage("buttons/book_nat.gif"));
+//        buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
+//        buy.setAsImageButton(true);
         content.add(buy,2,++y);
         content.setAlignment(2,y,"right");
       }
