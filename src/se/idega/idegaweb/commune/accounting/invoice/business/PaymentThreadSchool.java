@@ -13,15 +13,16 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
-import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness;
+import se.idega.idegaweb.commune.accounting.resource.data.Resource;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
@@ -161,6 +162,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										}
 	*/
 //										ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
+
 										Date sDate= null;
 										Date eDate=null;
 										if(schoolClassMember.getRegisterDate()!=null)
@@ -176,14 +178,36 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
 										RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 												findByRegulationSpecType(postingDetail.getRuleSpecType());
-										int schoolType = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
-										String[] postings = compilePostingStrings(iwc,
-												schoolType, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
+										String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
 										System.out.println("about to create payment record");
 										createPaymentRecord(postingDetail,postings[0],postings[1]);
 										System.out.println("created payment record");
+
+										Iterator resourceIter = getResourceBusiness().getResourcePlacementsByMemberId((Integer)schoolClassMember.getStudent().getPrimaryKey()).iterator();
+										while (resourceIter.hasNext()) {
+											Resource resource = (Resource) resourceIter.next();
+											ArrayList resourceConditions = new ArrayList();
+											resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE,resource.getResourceName()));
+											
+											Collection regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+												category.getCategory(),			//The ID that selects barnomsorg in the regulation
+												PaymentFlowConstant.OUT, 		//The payment flow is out
+												currentDate,						//Current date to select the correct date range
+												RuleTypeConstant.DERIVED,		//The conditiontype
+												resourceConditions				//The conditions that need to fulfilled
+												);
+
+											Iterator regulationForResourceIter = regulationForResourceArray.iterator();
+											while(regulationForResourceIter.hasNext())
+											{
+												regulation = (Regulation)regulationIter.next();
+												postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+												regSpecType = getRegulationSpecTypeHome().
+													findByRegulationSpecType(postingDetail.getRuleSpecType());
+												createPaymentRecord(postingDetail,postings[0],postings[1]);
+											}
+										}
 									}
-									
 								}catch(NullPointerException e){
 									e.printStackTrace();
 									if(schoolClassMember != null){
@@ -204,15 +228,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 				} catch (CreateException e) {
 					e.printStackTrace();
 					createNewErrorMessage(school.getName(),"invoice.CouldNotInsertIntoDatabase");
-				} catch (PostingParametersException e) {
-					e.printStackTrace();
-					createNewErrorMessage(school.getName(),"invoice.PostingParameterIncorrect");
 				} catch (PostingException e) {
 					e.printStackTrace();
 					createNewErrorMessage(school.getName(),"invoice.PostingString");
-				} catch (MissingMandatoryFieldException e) {
-					e.printStackTrace();
-					createNewErrorMessage(school.getName(),"invoice.PostingStringIsMissingMandatoryField");
 				}
 			}
 		} catch (RemoteException e) {
@@ -288,6 +306,10 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+
+	private ResourceBusiness getResourceBusiness() throws RemoteException {
+		return (ResourceBusiness) IBOLookup.getServiceInstance(iwc, ResourceBusiness.class);
 	}
 
 	private SchoolHome getSchoolHome() throws RemoteException {

@@ -41,6 +41,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -66,7 +67,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private PostingDetail postingDetail;
 	private int childcare;
 	private Map siblingOrders = new HashMap();
-	private String ownPosting, doublePosting;
+//	private String ownPosting, doublePosting;
 
 	public InvoiceChildcareThread(Date month, IWContext iwc){
 		super(month,iwc);
@@ -156,8 +157,9 @@ public class InvoiceChildcareThread extends BillingThread{
 					RegulationsBusiness regBus = getRegulationsBusiness();
 				
 					//Get all the parameters needed to select the correct contract
-					String childcareType = contract.getSchoolClassMmeber().getSchoolClass().getSchoolType().getName();
-					childcare = ((Integer)contract.getSchoolClassMmeber().getSchoolClass().getSchoolType().getPrimaryKey()).intValue();
+					SchoolClassMember schoolClassMember = contract.getSchoolClassMmeber();
+					String childcareType = schoolClassMember.getSchoolType().getName();
+					childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
 					age = new Age(contract.getChild().getDateOfBirth());
 					ArrayList conditions = new ArrayList();
@@ -180,11 +182,11 @@ public class InvoiceChildcareThread extends BillingThread{
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 							findByRegulationSpecType(RegSpecConstant.CHECK);
-					compilePostingStrings(iwc, childcare, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
-					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, ownPosting, doublePosting);			//MUST create payment record first, since it is used in invoice record
+					String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1]);			//MUST create payment record first, since it is used in invoice record
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
-							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord);
+							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, postings[0], postings[1]);
 			
 					totalSum = postingDetail.getAmount()*months;
 					conditions.add(new ConditionParameter(IntervalConstant.SIBLING_NUMBER,
@@ -209,7 +211,8 @@ public class InvoiceChildcareThread extends BillingThread{
 							regulation);
 
 						// **Create the invoice record
-						invoiceRecord = createInvoiceRecord(invoiceHeader);
+						//TODO (JJ) get these strings from the postingDetail instead.
+						invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], postings[1]);
 
 						//Need to store the subvention row, so that it can be adjusted later if needed					
 						if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
@@ -506,13 +509,13 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws CreateException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, PaymentRecord paymentRecord) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
+	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, PaymentRecord paymentRecord, String ownPosting, String doublePosting) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecordId(paymentRecord);
-		return createInvoiceRecordSub(invoiceRecord);
+		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting);
 	}
 
 	/**
@@ -525,11 +528,11 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws CreateException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
+	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(postingDetail.getTerm());
-		return createInvoiceRecordSub(invoiceRecord);
+		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting);
 	}
 
 	/**
@@ -544,7 +547,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws RemoteException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
+	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProviderId(school);
         //		invoiceRecord.setContractId(contract.getContractID());
 		invoiceRecord.setSchoolClassMemberId(contract.getSchoolClassMmeber());

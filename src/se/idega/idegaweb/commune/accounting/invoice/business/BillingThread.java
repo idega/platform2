@@ -10,14 +10,27 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.*;
-import se.idega.idegaweb.commune.accounting.posting.business.*;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
-import se.idega.idegaweb.commune.accounting.regulations.data.*;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
@@ -174,34 +187,6 @@ public abstract class BillingThread extends Thread{
 	}
 
 	/**
-	 * Creates a pair of posting strings according to the settings of the provider and the categoryPosting
-	 * @throws CreateException
-	 * @throws PostingParametersException
-	 * @throws PostingException
-	 * @throws RemoteException
-	 * @throws MissingMandatoryFieldException
-	 */
-	protected String[] compilePostingStrings(IWContext iwc, int category, int regSpecType, Provider provider) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
-		//Set the posting strings
-		PostingBusiness postingBusiness = (PostingBusiness)IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
-
-		PostingParameters parameters;
-		//TODO (JJ) fix the  params
-		parameters = postingBusiness.getPostingParameter(currentDate, category, regSpecType, "0", 0);
-
-		String ownPosting = parameters.getPostingString();
-		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
-		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
-		postingBusiness.validateString(ownPosting,currentDate);
-
-		String doublePosting = parameters.getDoublePostingString();
-		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
-		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
-		postingBusiness.validateString(doublePosting,currentDate);
-		return new String[] {ownPosting, doublePosting};
-	}
-
-	/**
 	 * calculatest the number of days and months between the start and end date 
 	 * and sets the local variables monts and days
 	 * 
@@ -333,7 +318,10 @@ public abstract class BillingThread extends Thread{
 		return (RegularPaymentBusiness) IBOLookup.getServiceInstance(iwc, RegularPaymentBusiness.class);
 	}
 
-	//Getters to different commonly used objects
+	protected PostingBusiness getPostingBusiness() throws RemoteException {
+		return (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
+	}
+
 	protected InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
 		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
 	}
