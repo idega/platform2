@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.15 2001/06/27 00:56:24 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.16 2001/06/27 02:06:22 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -136,12 +136,12 @@ public class GolfMainJSPModulePage extends MainPage {
    // IS.setFontColor("#CCCCCC");
    // EN.setFontColor("#ABABAB");
 
-    Link isLink = new Link(iwb.getImage("shared/english.gif"));
-    isLink.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class);
+    Link isLink = new Link(iwb.getImage("shared/icelandic.gif"));
+    isLink.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
     isLink.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.icelandicParameterString);
 
-    Link enLink = new Link(iwb.getImage("shared/icelandic.gif") );
-    enLink.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class);
+    Link enLink = new Link(iwb.getImage("shared/english.gif") );
+    enLink.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
     enLink.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.englishParameterString);
 
     languages.add( isLink , 1,1);
