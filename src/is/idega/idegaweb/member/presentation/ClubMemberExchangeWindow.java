@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -118,7 +119,7 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 	}
 
 
-	private void addForm(IWContext iwc) {
+	private void addForm(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		
 		Table mainTable = new Table();
@@ -228,8 +229,10 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 	 * @param groups
 	 * @param name
 	 * @return DropdownMenu
+	 * @throws RemoteException
+	 * @throws 
 	 */
-	private DropdownMenu getGroupDropDown(Collection groups, String name) {
+	private DropdownMenu getGroupDropDown(Collection groups, String name) throws RemoteException {
 		DropdownMenu menu = new DropdownMenu(name);
 		
 		if( groups!=null && !groups.isEmpty()){

@@ -58,7 +58,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -920,8 +919,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 				}
 			}
-			catch (NoEmailFoundException ex) {
-				// empty block
+			catch (RemoteException e) {
+				e.printStackTrace();
 			}
 		}
 		//store it!
