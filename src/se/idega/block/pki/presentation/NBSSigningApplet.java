@@ -7,18 +7,21 @@
 package se.idega.block.pki.presentation;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import se.nexus.nbs.sdk.NBSMessageHttp;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.idegaweb.IWMainApplication;
+//import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.Applet;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 
 /**
@@ -33,8 +36,8 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
 	
-	private final static String PARM_SCRIPTABLE = "scriptable";
-	private final static String PARM_MAYSCRIPT = "mayscript";
+//	private final static String PARM_SCRIPTABLE = "scriptable";
+//	private final static String PARM_MAYSCRIPT = "mayscript";
 	private final static String PARM_CABBASE = "cabbase";
 	private final static String PARM_BUTTONCOLOR = "BUTTONCOLOR";
 	private final static String PARM_USERCOLOR = "USERCOLOR";
@@ -48,10 +51,11 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 	private final static String PARM_MESSAGEFONT= "MESSAGEFONT";
 	private final static String PARM_LOCALE = "locale";
 	private final static String PARM_SIGNTEXT = "signtext";
-	private final static String PARM_SIGN_APPLET2_VIEWCLASS = "SignApplet2.viewclass";
+//	private final static String PARM_SIGN_APPLET2_VIEWCLASS = "SignApplet2.viewclass";
 	
 	private HashMap appletParameterMap = new HashMap();
 	private HashMap formParameterMap = new HashMap();
+	private Map _hiddenInputs = null;
 	
 	private String _action = "";
 	
@@ -320,9 +324,11 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 			//System.out.println("parm="+name+",value="+value+".");
 			loginForm.addParameter(name,value);
 		}
-		
-		
-		loginForm.addParameter("ib_page",((_loggedOnPageID != null) ? _loggedOnPageID : iwc.getParameter("ib_page")));
+		if (_loggedOnPageID != null){
+			loginForm.addParameter("ib_page", _loggedOnPageID);
+		} else if (iwc.getParameter("ib_page") != null) {
+			loginForm.addParameter("ib_page", iwc.getParameter("ib_page"));	
+		}
 		loginForm.addParameter("idega_session_id",iwc.getSessionId());
 		loginForm.addParameter("iw_language",iwc.getParameter("iw_language"));
 		
@@ -331,7 +337,15 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 			Parameter parm = (Parameter)_parameters.get(i);
 			loginForm.add(parm);
 		}
-
+		
+		if (_hiddenInputs != null) {
+			Iterator i = _hiddenInputs.entrySet().iterator();
+			while (i.hasNext()){
+				Map.Entry e = (Map.Entry) i.next();
+				loginForm.add(new HiddenInput((String) e.getKey(), (String) e.getValue()));
+			}		
+		}
+		
 		//if some eventListenerClassName is set then a hidden input is added to the form 
 		//same as form.setEventListener(String str) 
 		if(_eventListenerClassName != null){
@@ -600,6 +614,9 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		_errorPageUrl = url;
 	}
 	
+	public void setHiddenInputs (Map hiddenInputs){
+		_hiddenInputs = hiddenInputs;
+	}
 	
 
 
