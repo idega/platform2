@@ -175,12 +175,12 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					submit.setDisabled(true);
 				}
 			}
-			submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
-			form.setToDisableOnSubmit(submit, true);
 			
 			table.add(showPrognosis, 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(submit, 1, row);
+			submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
+			form.setToDisableOnSubmit(submit, true);
 			
 			if (submit.getDisabled()) {
 				row++;
