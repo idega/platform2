@@ -196,14 +196,22 @@ public void addParameter(Parameter parameter){
 }
 
 public void addParameter(String ParameterName, String ParameterValue){
-        String encodedName = java.net.URLEncoder.encode(ParameterName);
-        String encodedValue = java.net.URLEncoder.encode(ParameterValue);
-	if (parameterString == null){
-		parameterString = "&"+encodedName+"="+encodedValue;
-	}
-	else{
-		parameterString=parameterString+"&"+encodedName+"="+encodedValue;
-	}
+        String encodedName=null;
+        String encodedValue=null;
+        if(ParameterName!=null){
+          encodedName = java.net.URLEncoder.encode(ParameterName);
+        }
+        if(ParameterValue!=null){
+          encodedValue = java.net.URLEncoder.encode(ParameterValue);
+        }
+        if( (encodedValue!=null) && (encodedName!=null)){
+          if (parameterString == null){
+                  parameterString = "&"+encodedName+"="+encodedValue;
+          }
+          else{
+                  parameterString=parameterString+"&"+encodedName+"="+encodedValue;
+          }
+        }
 }
 
 public void addParameter(String parameterName,int parameterValue){
