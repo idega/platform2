@@ -3304,12 +3304,26 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		while(rData.hasNext()) {
 			ReportableData rd = (ReportableData) rData.next();
 			int mc = ((Integer)rd.getFieldValue(membersAnnualChange)).intValue();
-			double mwn = 100.0*((double)mc)/((double)mChangeTotal);
+//			double mwn = 100.0*((double)mc)/((double)mChangeTotal);
+
+			double mwn = (
+													((double)mc) /
+													((double) (mChangeTotal>0?mChangeTotal:(mc!=0?mc:1)))
+													) * 100.0
+														* (((mc!=0 && mChangeTotal!=0) && (mc>=mChangeTotal))?1.0:-1.0);
+			
 			String value = format.format(mwn);
 			rd.addData(membersAnnualChangePercentOfTotal, value);
 			
 			int pc = ((Integer)rd.getFieldValue(playersAnnualChange)).intValue();
-			double pwn = 100.0*((double)pc)/((double)pChangeTotal);
+	//		double pwn = 100.0*((double)pc)/((double)pChangeTotal);
+			
+			double pwn = (
+													((double)pc) /
+													((double) (pChangeTotal>0?pChangeTotal:(pc!=0?pc:1)))
+													) * 100.0
+													  * (((pc!=0 && pChangeTotal!=0) && (pc>=pChangeTotal))?1.0:-1.0);
+			
 			value = format.format(pwn);
 			rd.addData(playersAnnualChangePercentOfTotal, value);
 			macptTotal += mwn;
