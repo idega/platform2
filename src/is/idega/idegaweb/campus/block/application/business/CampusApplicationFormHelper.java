@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.20 2004/06/05 07:43:04 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.21 2004/06/07 18:41:21 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -328,7 +328,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		application.setSpouseStudyEndYear(spouseStudyEndYr);
 
 		IWTimestamp t = new IWTimestamp(wantHousingFrom);
-		application.setHousingFrom(t.getSQLDate());
+		application.setHousingFrom(t.getDate());
 		if (waitingList == null)
 			application.setOnWaitinglist(false);
 		else
