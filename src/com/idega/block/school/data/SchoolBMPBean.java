@@ -381,6 +381,39 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		return super.idoFindPKsBySQL(select);
 	}
 
+	public Collection ejbFindAllByAreaTypeManagementCommune(int areaId, Collection typeIds, Collection managementTypes, int communeId) throws javax.ejb.FinderException {
+		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_id = s.sch_school_id " +
+				" and " + SCHOOLAREA + " = " + areaId + 
+				" and " + COMMUNE + " = " + communeId + 
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')";
+		if (typeIds != null && !typeIds.isEmpty()) {
+			select += (" and m.sch_school_type_id in (");
+			Iterator it = typeIds.iterator();
+			Integer type = null;
+			while (it.hasNext()) {
+				type = (Integer) it.next();
+				select += "'" + type + "'";
+				if (it.hasNext())
+					select += ",";					
+			}
+			select += ")";
+		}
+		if (managementTypes != null && !managementTypes.isEmpty()) {
+			select += (" and s." + MANAGEMENT_TYPE + " in (");
+			Iterator it = managementTypes.iterator();
+			String type = null;
+			while (it.hasNext()) {
+				type = (String) it.next();
+				select += "'" + type + "'";
+				if (it.hasNext())
+					select += ",";					
+			}
+			select += ")";
+		}
+		select += " order by s."+NAME;
+		return super.idoFindPKsBySQL(select);
+	}
+
 	public Collection ejbFindAllByAreaTypeCommune(int areaId, int typeId, int communeId) throws javax.ejb.FinderException {
 		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id " +
 				" and " + SCHOOLAREA + " = " + areaId + 
