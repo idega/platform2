@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.6 2003/11/03 15:03:29 laddi Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.7 2003/11/05 22:25:02 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -80,7 +80,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 
 	public Object ejbFindByChildAndChoiceNumberAndSeason(Integer childID,Integer choiceNumber, Integer seasonID, String[] caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append("c , proc_case p");
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+SCHOOL_SEASON, seasonID.intValue());
 		sql.appendAndEquals("c."+CHOICE_NUMBER,choiceNumber.intValue());
