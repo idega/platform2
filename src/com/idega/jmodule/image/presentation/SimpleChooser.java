@@ -37,7 +37,8 @@ import com.idega.idegaweb.IWBundle;
     }
 
     public static String getSaveImageFunction(){
-      StringBuffer function = new StringBuffer(" var iImageId = -1 ; \n");
+      StringBuffer function = new StringBuffer("");
+      function.append(" var iImageId = -1 ; \n");
       function.append("function "+getSaveImageFunctionName()+" {\n \t");
       function.append("top.window.opener.setImageId(iImageId) ; \n \t");
       function.append("window.close(); \n }");
