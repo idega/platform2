@@ -927,6 +927,125 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//finished return the collection
 		return reportCollection;
 	}
+	
+	
+	/*
+	 * Report B12.1.5 of the ISI Specs
+	 * NOT FINISHED
+	 */
+	public ReportableCollection getCostPerPlayerStatisticsForLeaguesByYearAgeGenderAndLeaguesFilteringComparedWithLastYear(final Integer year,Integer age,String gender, Collection leaguesFilter)throws RemoteException {
+	
+		//initialize stuff
+		int selectedAge = (age!=null)?age.intValue():-1;
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+		
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters
+		//fake columns (data gotten by business methods)		
+		ReportableField leagueString = new ReportableField("league_info", String.class);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		reportCollection.addField(leagueString);
+		
+		
+		ReportableField totalCountOfPlayersForLeague = new ReportableField("totalCountOfPlayersForLeague", Integer.class);
+		totalCountOfPlayersForLeague.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.totalCountOfPlayersForLeague", "Players"), currentLocale);
+		reportCollection.addField(totalCountOfPlayersForLeague);
+		
+		ReportableField costPerPlayers = new ReportableField("costPerPlayers", Integer.class);
+		costPerPlayers.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.costPerPlayers", "cost/player"),currentLocale);
+		reportCollection.addField(costPerPlayers);
+		
+		ReportableField totalCost = new ReportableField("totalCost", Integer.class);
+		totalCost.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.totalCost","Total cost"), currentLocale);
+		reportCollection.addField(totalCost);
+		
+		
+		//Real data stuff
+		//Gathering data
+		//Get all the workreports (actually more than needed)
+		//then for each get its leagues and the count for
+		//each age and create a row and insert into an ordered map by league
+		//then insert into the final report collection.
+		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), null, null);
+		
+		Map leagueStatsMap = new TreeMap();
+		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+		
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+	
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			
+			try {
+				Collection leagues = report.getLeagues();
+				Iterator iterator = leagues.iterator();
+				while (iterator.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
+					
+					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+						continue; //don't process this one, go to next
+					}
+					
+					String leagueIdentifier = getLeagueIdentifier(league);
+					//fetch the stats or initialize
+					ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
+					if(leagueStatsData==null){//initialize
+						leagueStatsData = new ReportableData();
+						//Actually fetching a lot more than needed the layout sums up fields
+						leagueStatsData.addData(leagueString, leagueIdentifier);
+						leagueStatsData.addData(totalCountOfPlayersForLeague, new Integer(0));
+						leagueStatsData.addData(costPerPlayers, new Integer(0));
+						leagueStatsData.addData(totalCost,new Integer(0));	
+					}
+					
+					//add to counts
+					
+					int playerCount = 0;
+					//if(age!=null){
+						playerCount = getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(report, league);
+						
+					//}
+					//else{
+						
+					//}
+					leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague, leagueStatsData, playerCount);
+					
+					//getWorkReportBusiness().getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(report.getP)
+									  
+					//put it back again
+					leagueStatsMap.put(leagueKey,leagueStatsData);
+					
+				}
+				
+			}
+			catch (IDOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+
+		//add the data to the collection
+		reportCollection.addAll(leagueStatsMap.values());
+		
+		//finished return the collection
+		return reportCollection;
+	
+	}
 
 	/*
 	 * Report B12.2.2 of the ISI Specs
