@@ -117,7 +117,7 @@ public class WorkReportOverViewCloseView extends Block {
 		if(year==-1) {
 			year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 		}
-
+	parseAction(iwc);
     Form form = new Form();
     PresentationObject pres = getContent(iwc, iwrb, form);
     form.add(pres);
