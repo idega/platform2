@@ -9,6 +9,7 @@ package se.idega.block.pki.presentation;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
@@ -141,7 +142,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		NBSServerHttp server = getNBSServer(iwc);
 		HttpMessage httpReq = new HttpMessage();
 		ServletUtil.servletRequestToHttpMessage(iwc.getRequest(), httpReq);
-		NBSMessageResult result =  (NBSMessageResult) server.doSign(toBeSigned, httpReq);	
+		NBSMessageResult result =  (NBSMessageResult) server.doSign(breakString(toBeSigned, 60), httpReq);	
 				
 		if (result != null)
 		{
@@ -150,6 +151,53 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			return (NBSMessageHttp) result.getMessage();
 		}			
 		return null;
+	}
+	
+	public static void main(String[] args){
+		String page = "This   string\n"+
+			"\n"+
+			"is\n"+
+			"made just for the purpose of testing the breakString\n"+
+			"method. This method is supposed to break a looooooooong\n"+
+			"string into lines of max length specified by a parameter. If\n"+
+			"the String cotains linebreaks, this should be taken into\n"+
+			"account.";
+//		System.out.println(breakString(page, 60));
+		
+	}
+	
+	private String breakString(String page, int maxLineLength) {
+		StringBuffer pageWrapped = new StringBuffer();
+		StringBuffer line = new StringBuffer();
+		StringTokenizer stLine = new StringTokenizer(page, "\n", true);	
+		while (stLine.hasMoreTokens())
+		{	
+			String readLine = stLine.nextToken();
+			System.out.println("Token: " + readLine);
+			if (readLine.equals("\n")){
+				pageWrapped.append(line.toString().trim());
+				pageWrapped.append("\n");
+				line = new StringBuffer();					
+			}else{
+				StringTokenizer stWord = new StringTokenizer(readLine, " ", true);
+				while (stWord.hasMoreTokens()) {
+					String word = stWord.nextToken();
+					if (line.length() + word.length() > maxLineLength){
+						String trimmedLine = line.toString().trim();
+						if (trimmedLine.length() > 0){
+							pageWrapped.append(trimmedLine);
+							pageWrapped.append("\n");
+						}
+						line = new StringBuffer();						
+					}
+					line.append(word);
+
+				}
+			}
+		}
+		pageWrapped.append(line.toString().trim());
+		
+		return pageWrapped.toString();
 	}
 	
 	
