@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.4 2001/06/25 18:05:18 palli Exp $
+ * $Id: Application.java,v 1.5 2001/06/28 13:07:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class Application extends GenericEntity {
     addAttribute(children_,"Children info",true,true,"java.lang.String");
     addAttribute(income_,"Income",true,true,"java.lang.Integer");
     addAttribute(spouseIncome_,"Spouses income",true,true,"java.lang.Integer");
-    addAttribute(housingFrom_,"Want housing from",true,true,"java.lang.Date");
+    addAttribute(housingFrom_,"Want housing from",true,true,"java.sql.Date");
     addAttribute(onWaitinglist_,"Want to be on waiting list",true,true,"java.lang.String");
     addAttribute(wantFurniture_,"Want to rent furniture",true,true,"java.lang.String");
     addAttribute(contactPhone_,"If not reachable, call",true,true,"java.lang.String");

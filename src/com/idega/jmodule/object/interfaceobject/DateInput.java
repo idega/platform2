@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.6 2001/06/26 23:27:15 tryggvil Exp $
+ * $Id: DateInput.java,v 1.7 2001/06/28 13:07:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -288,6 +288,15 @@ public void setDate(java.sql.Date date){
 	//System.out.println("Date gefur month: "+date.getMonth()+" fyrir "+this.getName());
 	//System.out.println("Date gefur day: "+date.getDay()+" fyrir "+this.getName());
 }
+
+public void setToCurrentDate(){
+  GregorianCalendar greg = new GregorianCalendar();
+	setYear(greg.get(Calendar.YEAR));
+	setMonth(greg.get(Calendar.MONTH)+1);
+	setDay(greg.get(Calendar.DAY_OF_MONTH));
+}
+
+
 /**
 **Does nothing - overrides function in superclass
 **/

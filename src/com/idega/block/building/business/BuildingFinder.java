@@ -6,6 +6,7 @@ import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import java.util.List;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.sql.*;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
@@ -298,6 +299,43 @@ public class BuildingFinder {
 
     }
     return L;
+  }
+
+  public static Vector getApartmentTypesComplexForCategory(int categoryId) {
+    Vector v = new Vector();
+    Connection Conn = null;
+
+    String sqlString = "select * from v_cam_aprt_type_complex where bu_aprt_cat_id = " + categoryId;
+
+    try {
+      Conn = com.idega.util.database.ConnectionBroker.getConnection();
+      Statement stmt = Conn.createStatement();
+      ResultSet RS  = stmt.executeQuery(sqlString);
+      int a = 0;
+
+      while (RS.next()) {
+        ApartmentTypeComplexHelper appHelp = new ApartmentTypeComplexHelper();
+        int typeId = RS.getInt("bu_aprt_type_id");
+        int complexId = RS.getInt("bu_complex_id");
+        String typeName = RS.getString("aprt_type_name");
+        String complexName = RS.getString("complex_name");
+
+        appHelp.setKey(typeId,complexId);
+        appHelp.setName(typeName + " (" + complexName + ")");
+        v.addElement(appHelp);
+      }
+
+      RS.close();
+      stmt.close();
+    }
+    catch(SQLException e) {
+      System.err.println(e.toString());
+    }
+    finally{
+      com.idega.util.database.ConnectionBroker.freeConnection(Conn);
+    }
+
+    return(v);
   }
 
 }// class end

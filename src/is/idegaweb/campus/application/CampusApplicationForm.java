@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.1 2001/06/27 14:40:43 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.2 2001/06/28 13:07:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,9 @@ package is.idegaweb.campus.application;
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
+import com.idega.block.application.business.ApplicationFinder;
+import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.interfaceobject.DropdownMenu;
@@ -22,6 +25,7 @@ import com.idega.jmodule.object.interfaceobject.DateInput;
 import com.idega.jmodule.object.interfaceobject.CheckBox;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
+import com.idega.jmodule.object.textObject.Text;
 import com.idega.util.idegaTimestamp;
 import is.idegaweb.campus.application.CampusApplicationFinder;
 import is.idegaweb.campus.entity.Application;
@@ -83,8 +87,78 @@ public class CampusApplicationForm extends ApplicationForm {
     }
   }
 
-  protected void doSelectAppliedFor(ModuleInfo modinfo) {
+  protected void doSelectSubject(ModuleInfo modinfo) {
+    List subjects = ApplicationFinder.listOfSubject();
+    List categories = BuildingFinder.listOfApartmentCategory();
 
+    Form form = new Form();
+
+    DropdownMenu subject = new DropdownMenu(subjects,"subject");
+    DropdownMenu aprtCat = new DropdownMenu(categories,"aprtCat");
+
+    form.add("Umsókn um : ");
+    form.add(subject);
+    form.add(Text.getBreak());
+    form.add("Veldu tegund íbúðar sem sækja á um : ");
+    form.add(aprtCat);
+    form.add(Text.getBreak());
+    form.add(new SubmitButton("ok","áfram"));
+    form.add(new HiddenInput("status",Integer.toString(statusSubject_)));
+    add(form);
+  }
+
+  protected void saveSubject(ModuleInfo modinfo) {
+    String subject = (String)modinfo.getParameter("subject");
+    String aprtCat = (String)modinfo.getParameter("aprtCat");
+    com.idega.block.application.data.Application application = new com.idega.block.application.data.Application();
+    application.setSubjectId(Integer.parseInt(subject));
+    application.setSubmitted(idegaTimestamp.getTimestampRightNow());
+    application.setStatusSubmitted();
+    application.setStatusChanged(idegaTimestamp.getTimestampRightNow());
+    modinfo.setSessionAttribute("application",application);
+    modinfo.setSessionAttribute("aprtCat",aprtCat);
+  }
+
+
+  protected void doSelectAppliedFor(ModuleInfo modinfo) {
+    int id;
+    String aprtCat = (String)modinfo.getSessionAttribute("aprtCat");
+    try {
+      id = Integer.parseInt(aprtCat);
+    }
+    catch(Exception e) {
+      id = 0;
+    }
+
+    java.util.Vector vAprtType = BuildingFinder.getApartmentTypesComplexForCategory(id);
+    DropdownMenu aprtType = new DropdownMenu("aprtType");
+    DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
+    DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
+    aprtType2.addMenuElement("-1","");
+    aprtType3.addMenuElement("-1","");
+
+    for (int i = 0; i < vAprtType.size(); i++) {
+      ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper)vAprtType.elementAt(i);
+      aprtType.addMenuElement(eAprtType.getKey(),eAprtType.getName());
+      aprtType2.addMenuElement(eAprtType.getKey(),eAprtType.getName());
+      aprtType3.addMenuElement(eAprtType.getKey(),eAprtType.getName());
+    }
+
+    Form form = new Form();
+    form.add("Húsnæði sem sótt er um");
+    form.add(Text.getBreak());
+    form.add(Text.getBreak());
+    form.add("1. ");
+    form.add(aprtType);
+    form.add(Text.getBreak());
+    form.add("2. ");
+    form.add(aprtType2);
+    form.add(Text.getBreak());
+    form.add("3. ");
+    form.add(aprtType3);
+    form.add(new SubmitButton("ok","áfram"));
+    form.add(new HiddenInput("status",Integer.toString(statusAppliedFor_)));
+    add(form);
   }
 
   protected void doCampusInformation(ModuleInfo modinfo) {
@@ -94,7 +168,7 @@ public class CampusApplicationForm extends ApplicationForm {
     DropdownMenu occSelect = new DropdownMenu(occupations,"spouseOccupation");
 
     Form form = new Form();
-    Table t = new Table(3,23);
+    Table t = new Table(3,24);
     form.add(t);
     t.mergeCells(1,1,3,1);
     t.add("Aðrar upplýsingar um umsækjanda",1,1);
@@ -135,7 +209,9 @@ public class CampusApplicationForm extends ApplicationForm {
     t.add("Tekjur, styrkir og námslán umsækjanda/maka 1.1 - 1.6 í ár",1,17);
     t.add(new TextInput("spouseIncome"),2,17);
     t.add("Húsnæði óskast frá og með",1,18);
-    t.add(new DateInput("wantHousingFrom"),2,18);
+    DateInput d = new DateInput("wantHousingFrom");
+    d.setToCurrentDate();
+    t.add(d,2,18);
     t.add("Óska eftir að vera á biðlista ef ég fæ ekki úthlutað húsnæði",1,19);
     t.add(new CheckBox("waitingList"),2,19);
     t.add("Óska eftir að leigja húsgögn ef mögulegt er",1,20);
@@ -144,34 +220,34 @@ public class CampusApplicationForm extends ApplicationForm {
     t.add(new TextInput("contact"),2,21);
     t.add("Tölvupóstur",1,22);
     t.add(new TextInput("email"),2,22);
-    t.add("Aðrar upplýsingar",1,15);
-    t.add(new TextArea("info"),2,15);
-    t.add(new SubmitButton("ok","áfram"),3,23);
+    t.add("Aðrar upplýsingar",1,23);
+    t.add(new TextArea("info"),2,23);
+    t.add(new SubmitButton("ok","áfram"),3,24);
     form.add(new HiddenInput("status",Integer.toString(statusCampusInfo_)));
-    addMain(form);
+    add(form);
   }
 
   protected void saveCampusInformation(ModuleInfo modinfo) {
-    String studyBeginMon = modinfo.getParameter("studyBeginMo");
-    String studyBeginYr = modinfo.getParameter("studyBeginYr");
-    String studyEndMo = modinfo.getParameter("studyEndMo");
-    String studyEndYr = modinfo.getParameter("studyEndYr");
+    int studyBeginMon = 0;
+    int studyBeginYr = 0;
+    int studyEndMo = 0;
+    int studyEndYr = 0;
     String faculty = modinfo.getParameter("faculty");
     String studyTrack = modinfo.getParameter("studyTrack");
-    String currentResidence = modinfo.getParameter("currentResidence");
-    String spouseOccupation = modinfo.getParameter("spouseOccupation");
+    int currentResidence = 0;
+    int spouseOccupation = 0;
     String resInfo = modinfo.getParameter("resInfo");
     String spouseName = modinfo.getParameter("spouseName");
     String spouseSSN = modinfo.getParameter("spouseSSN");
     String spouseSchool = modinfo.getParameter("spouseSchool");
     String spouseStudyTrack = modinfo.getParameter("spouseStudyTrack");
-    String spouseStudyBeginMo = modinfo.getParameter("spouseStudyBeginMo");
-    String spouseStudyBeginYr = modinfo.getParameter("spouseStudyBeginYr");
-    String spouseStudyEndMo = modinfo.getParameter("spouseStudyEndMo");
-    String spouseStudyEndYr = modinfo.getParameter("spouseStudyEndYr");
+    int spouseStudyBeginMo = 0;
+    int spouseStudyBeginYr = 0;
+    int spouseStudyEndMo = 0;
+    int spouseStudyEndYr = 0;
     String children = modinfo.getParameter("children");
-    String income = modinfo.getParameter("income");
-    String spouseIncome = modinfo.getParameter("spouseIncome");
+    int income = 0;
+    int spouseIncome = 0;
     String wantHousingFrom = modinfo.getParameter("wantHousingFrom");
     String waitingList = modinfo.getParameter("waitingList");
     String furniture = modinfo.getParameter("furniture");
@@ -180,25 +256,86 @@ public class CampusApplicationForm extends ApplicationForm {
     String info = modinfo.getParameter("info");
 
     Application application = new Application();
-    application.setCurrentResidenceId(Integer.parseInt("currentResidence"));
-    application.setSpouseOccupationId(Integer.parseInt("spouseOccupation"));
-    application.setStudyBeginMonth(Integer.parseInt("studyBeginMo"));
-    application.setStudyBeginYear(Integer.parseInt("studyBeginYr"));
-    application.setStudyEndMonth(Integer.parseInt("studyEndMo"));
-    application.setStudyEndYear(Integer.parseInt("studyEndYr"));
+
+    try {
+      currentResidence = Integer.parseInt(modinfo.getParameter("currentResidence"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      spouseOccupation = Integer.parseInt(modinfo.getParameter("spouseOccupation"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      studyBeginMon = Integer.parseInt(modinfo.getParameter("studyBeginMon"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      studyBeginYr = Integer.parseInt(modinfo.getParameter("studyBeginYr"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      studyEndMo = Integer.parseInt(modinfo.getParameter("studyEndMo"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      studyEndYr = Integer.parseInt(modinfo.getParameter("studyEndYr"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      spouseIncome = Integer.parseInt(modinfo.getParameter("spouseIncome"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      spouseStudyBeginMo = Integer.parseInt(modinfo.getParameter("spouseStudyBeginMo"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      spouseStudyBeginYr = Integer.parseInt(modinfo.getParameter("spouseStudyBeginYr"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      spouseStudyEndMo = Integer.parseInt(modinfo.getParameter("spouseStudyEndMo"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      spouseStudyEndYr = Integer.parseInt(modinfo.getParameter("spouseStudyEndYr"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    try {
+      income = Integer.parseInt(modinfo.getParameter("income"));
+    }
+    catch(java.lang.NumberFormatException e) {}
+
+    application.setCurrentResidenceId(currentResidence);
+    application.setSpouseOccupationId(spouseOccupation);
+    application.setStudyBeginMonth(studyBeginMon);
+    application.setStudyBeginYear(studyBeginYr);
+    application.setStudyEndMonth(studyEndMo);
+    application.setStudyEndYear(studyEndYr);
     application.setFaculty(faculty);
     application.setStudyTrack(studyTrack);
     application.setSpouseName(spouseName);
-    application.setSpouseIncome(Integer.parseInt("spouseIncome"));
+    application.setSpouseIncome(spouseIncome);
     application.setSpouseSSN(spouseSSN);
     application.setSpouseSchool(spouseSchool);
     application.setSpouseStudyTrack(spouseStudyTrack);
-    application.setSpouseStudyBeginMonth(Integer.parseInt("spouseStudyTrack"));
-    application.setSpouseStudyBeginYear(Integer.parseInt("spouseStudyBeginYr"));
-    application.setSpouseStudyEndMonth(Integer.parseInt("spouseStudyEndMo"));
-    application.setSpouseStudyEndYear(Integer.parseInt("spouseStudyEndYr"));
+    application.setSpouseStudyBeginMonth(spouseStudyBeginMo);
+    application.setSpouseStudyBeginYear(spouseStudyBeginYr);
+    application.setSpouseStudyEndMonth(spouseStudyEndMo);
+    application.setSpouseStudyEndYear(spouseStudyEndYr);
     application.setChildren(children);
-    application.setIncome(Integer.parseInt("income"));
+    application.setIncome(income);
     idegaTimestamp t = new idegaTimestamp(wantHousingFrom);
     application.setHousingFrom(t.getSQLDate());
     if (waitingList == null)
@@ -217,6 +354,11 @@ public class CampusApplicationForm extends ApplicationForm {
   }
 
   protected void saveAppliedFor(ModuleInfo modinfo) {
+    String key1 = (String)modinfo.getParameter("aprtType");
+    String key2 = (String)modinfo.getParameter("aprtType2");
+    String key3 = (String)modinfo.getParameter("aprtType3");
+
+
 
   }
 
@@ -235,8 +377,8 @@ public class CampusApplicationForm extends ApplicationForm {
       campusApplication.setAppApplicationId(application.getID());
       campusApplication.insert();
 
-      applied.setApplicationId(campusApplication.getID());
-      applied.insert();
+//      applied.setApplicationId(campusApplication.getID());
+//      applied.insert();
     }
     catch(SQLException e) {
       System.err.println(e.toString());
@@ -247,166 +389,9 @@ public class CampusApplicationForm extends ApplicationForm {
       modinfo.removeSessionAttribute("application");
       modinfo.removeSessionAttribute("campusapplication");
       modinfo.removeSessionAttribute("applied");
+      modinfo.removeSessionAttribute("aprtCat");
     }
 
     return(true);
   }
 }
-
-
-
-
-/*
-<%!
-public class TestEditor extends Editor {
-  private final String sApartmentCategoryInfo = "apartmentCategoryInfo";
-  private final String sGeneralInfo = "generalInfo";
-  private final String sCampusInfo = "campusInfo";
-  private final String sAppliedFor = "appliedFor";
-  private final String sDone = "done";
-
-
-  protected void control(ModuleInfo modinfo){
-    this.makeView();
-    setBorder(0);
-    String status = modinfo.getParameter("status");
-    if (status == null){
-      status = sApartmentCategoryInfo;
-    }
-
-    if (status.equals(sApartmentCategoryInfo)) {
-      doSelectApartmentCategory(modinfo);
-    }
-    else if (status.equals(sGeneralInfo)) {
-      doGeneralInformation(modinfo);
-    }
-    else if (status.equals(sCampusInfo)) {
-      doCampusInformation(modinfo);
-    }
-    else if (status.equals(sAppliedFor)) {
-      doAppliedFor(modinfo);
-    }
-    else if (status.equals(sDone)) {
-      doDone(modinfo);
-    }
-  }
-
-  private void doSelectApartmentCategory(ModuleInfo modinfo) {
-    ApartmentCategory eAprtCat[] = null;
-    ApplicationSubject subjects[] = null;
-    Form form = new Form();
-
-    try {
-      eAprtCat = (ApartmentCategory[])new ApartmentCategory().findAll();
-      subjects = (ApplicationSubject[])new ApplicationSubject().findAll();
-    }
-    catch(SQLException e) {
-
-    }
-    DropdownMenu subject = new DropdownMenu(subjects,"subject");
-    DropdownMenu aprtCat = new DropdownMenu(eAprtCat,"aprtCat");
-
-    form.add("Umsóknartímabil : ");
-    form.add(subject);
-    form.add(Text.getBreak());
-    form.add("Veldu tegund íbúðar sem sækja á um : ");
-    form.add(aprtCat);
-    form.add(Text.getBreak());
-    form.add(new SubmitButton("ok","áfram"));
-    form.add(new HiddenInput("status",sGeneralInfo));
-    addMain(form);
-  }
-
-  private void doGeneralInformation(ModuleInfo modinfo) {
-    String aprtCat = modinfo.getParameter("aprtCat");
-    String subject = modinfo.getParameter("subject");
-    modinfo.setSessionAttribute("aprtCat",aprtCat);
-    modinfo.setSessionAttribute("subject",subject);
-
-    Form form = new Form();
-    Table t = new Table(2,11);
-    form.add(t);
-    t.mergeCells(1,1,2,1);
-    t.add("Almennar upplýsingar um umsækjanda",1,1);
-    t.add("Fornafn",1,3);
-    t.add(new TextInput("firstName"),2,3);
-    t.add("Millinafn",1,4);
-    t.add(new TextInput("middleName"),2,4);
-    t.add("Eftirnafn",1,5);
-    t.add(new TextInput("lastName"),2,5);
-    t.add("Kennitala",1,6);
-    t.add(new TextInput("ssn"),2,6);
-    t.add("Lögheimili",1,7);
-    t.add(new TextInput("legalResidence"),2,7);
-    t.add("Dvalarstaður",1,8);
-    t.add(new TextInput("residence"),2,8);
-    t.add("Símanúmer á dvalarstað",1,9);
-    t.add(new TextInput("residencePhone"),2,9);
-    t.add("Póstnúmer",1,10);
-    t.add(new TextInput("po"),2,10);
-    t.add(new SubmitButton("ok","Áfram"),2,11);
-    form.add(new HiddenInput("status",sCampusInfo));
-    addMain(form);
-  }
-
-
-  private void doAppliedFor(ModuleInfo modinfo) {
-    int id;
-    String aprtCat = (String)modinfo.getSessionAttribute("aprtCat");
-    try {
-      id = Integer.parseInt(aprtCat);
-    }
-    catch(Exception e) {
-      id = 0;
-    }
-
-    ApartmentType eAprtType[] = BuildingFinder.findApartmentTypesForCategory(id);
-    DropdownMenu aprtType = new DropdownMenu(eAprtType,"aprtType");
-    DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
-    DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
-    aprtType2.addMenuElement(-1,"");
-    aprtType3.addMenuElement(-1,"");
-
-    Vector v = new Vector(eAprtType.length);
-    for (int i = 0; i < eAprtType.length; i++)
-      v.add(eAprtType[i]);
-
-    aprtType2.addMenuElements(v);
-    aprtType3.addMenuElements(v);
-
-    Form form = new Form();
-    form.add("Húsnæði sem sótt er um");
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    form.add("1. ");
-    form.add(aprtType);
-    form.add(Text.getBreak());
-    form.add("2. ");
-    form.add(aprtType2);
-    form.add(Text.getBreak());
-    form.add("3. ");
-    form.add(aprtType3);
-    form.add(new SubmitButton("ok","áfram"));
-    form.add(new HiddenInput("status",sDone));
-    addMain(form);
-  }
-
-  private void doDone(ModuleInfo modinfo) {
-    Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
-
-    try {
-      applicant.insert();
-    }
-    catch(SQLException e) {
-      System.err.println(e.toString());
-    }
-    finally {
-      modinfo.removeSessionAttribute("applicant");
-    }
-
-    add("Umsókn skráð");
-    add(Text.getBreak());
-    add(Text.getBreak());
-  }
-}
-%>*/
