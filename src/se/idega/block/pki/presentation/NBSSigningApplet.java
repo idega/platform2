@@ -9,10 +9,8 @@ package se.idega.block.pki.presentation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-
 import se.nexus.nbs.sdk.NBSMessageHttp;
-
-import com.idega.builder.business.BuilderConstants;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Applet;
 import com.idega.presentation.IWContext;
@@ -352,14 +350,14 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		if(scriptString.indexOf("onLogonOK")!= -1){
 			script.addFunction("onLogonOK","\n function onLogonOK(logonMessage) {\n document.LogonForm.cbtInput.value = logonMessage;\n document.LogonForm.submit()\n }\n");
 			if(_errorPageID != -1){
-				script.addFunction("onLogonCancel","\n function onLogonCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+iwc.getRequestURI()+"?"+BuilderConstants.IB_PAGE_PARAMETER+"="+_errorPageID+"&"+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
+				script.addFunction("onLogonCancel","\n function onLogonCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+iwc.getRequestURI()+"?"+ICBuilderConstants.IB_PAGE_PARAMETER+"="+_errorPageID+"&"+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			} else {
 				script.addFunction("onLogonCancel","\n function onLogonCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+_errorPageUrl+((_errorPageUrl.indexOf('?')==-1)?"?":"")+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			}
 		} else {
 			script.addFunction("noSignOK","\n function onSignOK(signMessage) {\n document.LogonForm.cbtInput.value = signMessage;\n document.LogonForm.submit()\n }\n");
 			if(_errorPageID != -1){
-				script.addFunction("onSignCancel","\n function onSignCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+iwc.getRequestURI()+"?"+BuilderConstants.IB_PAGE_PARAMETER+"="+_errorPageID+"&"+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
+				script.addFunction("onSignCancel","\n function onSignCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+iwc.getRequestURI()+"?"+ICBuilderConstants.IB_PAGE_PARAMETER+"="+_errorPageID+"&"+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			} else {
 				script.addFunction("onSignCancel","\n function onSignCancel(reason, message) {\n alert(reason+\"; \"+message);\n location = \""+_errorPageUrl+((_errorPageUrl.indexOf('?')==-1)?"?":"")+PARM_ERROR_MESSAGE+"=\"+message;\n }\n ");
 			}
