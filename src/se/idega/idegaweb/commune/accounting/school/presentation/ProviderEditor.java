@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.6 2003/09/24 08:40:11 anders Exp $
+ * $Id: ProviderEditor.java,v 1.7 2003/09/25 16:00:33 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -57,10 +57,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/24 08:40:11 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/25 16:00:33 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -607,6 +607,7 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getSchoolManagementTypeDropdownMenu(iwc, PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID, schoolManagementTypeId), 2, row++);
 		table.add(getSmallHeader(localize(KEY_TERMINATION_DATE, "Termination date")), 1, row);
 		DateInput di = new DateInput(PARAMETER_TERMINATION_DATE);
+		di.setToDisplayDayLast(true);
 		Date d = parseDate(terminationDate);
 		if (d != null) {
 			di.setDate(parseDate(terminationDate));
