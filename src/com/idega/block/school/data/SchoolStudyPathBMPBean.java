@@ -30,6 +30,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
+		setAsPrimaryKey(getIDColumnName(), true);
 		addAttribute(COLUMN_CODE, "course name", true, true, String.class);
 		addAttribute(COLUMN_DESCRIPTION, "description, ", true, true, String.class);
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
