@@ -277,6 +277,25 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		return super.idoFindPKsBySQL(sql.toString());
 
 	}
+	
+	public Collection ejbFindAllByAreaAndTypeAndYear(int areaID, int typeID, int yearID) throws javax.ejb.FinderException {
+		StringBuffer sql = new StringBuffer("select s.* ");
+		sql.append(" from sch_school_sch_school_year ssy,sch_school_area a, sch_school s, sch_school_type t, sch_school_sch_school_type m ");
+		sql.append(" where a.sch_school_area_id = s.sch_school_area_id ");
+		sql.append(" and t.sch_school_type_id = m.sch_school_type_id ");
+		sql.append(" and s.sch_school_id = m.sch_school_id ");
+		sql.append(" and m.sch_school_id = ssy.sch_school_id ");
+		sql.append(" and t.sch_school_type_id = ");
+		sql.append(typeID);
+		sql.append(" and a.sch_school_area_id = ");
+		sql.append(areaID);
+		sql.append(" and ssy.sch_school_year_id = ");
+		sql.append(yearID);
+
+		System.out.println(sql.toString());
+		return super.idoFindPKsBySQL(sql.toString());
+		
+	}
 
 	public Collection ejbFindAllByAreaAndTypes(int area, Collection types) throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select s.* ");
