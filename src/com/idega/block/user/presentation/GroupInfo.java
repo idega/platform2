@@ -9,7 +9,6 @@ package com.idega.block.user.presentation;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -20,11 +19,6 @@ import java.util.Set;
 import com.idega.block.user.business.UserInfoBusiness;
 import com.idega.block.user.business.UserInfoBusinessBean;
 import com.idega.block.user.data.UserExtraInfo;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.contact.data.PhoneType;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -33,7 +27,6 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -54,7 +47,7 @@ public class GroupInfo extends Block {
 		_biz = UserInfoBusinessBean.getUserInfoBusiness(iwc);
 		_collator = Collator.getInstance(iwc.getLocale());
 		
-		List groups = getGroups(iwc);
+		getGroups(iwc);
 	}
 	
 	/**
@@ -90,7 +83,7 @@ public class GroupInfo extends Block {
 			}
 		}
 		
-		int column = 1;
+		//int column = 1;
 		if(_showTitle) {
 			String title = userExtraInfo.getTitle();
 			String titleLabel = _iwrb.getLocalizedString("title", "Title: ");
@@ -176,7 +169,7 @@ public class GroupInfo extends Block {
 	 */
 	private PresentationObject getEmailLinkList(User user) {
 		PresentationObjectContainer container = new PresentationObjectContainer();
-		int row = 1;
+		//int row = 1;
 		try {
 			// @TODO use email list from business bean
 			Iterator emailIter = _biz.getEmailList(user).iterator();
