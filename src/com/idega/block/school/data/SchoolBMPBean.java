@@ -74,7 +74,6 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
 	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";
-	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -93,8 +92,6 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		/** Gimmi 4-5 Nov 2002 */
 		this.addAttribute(FAX, "fax", true, true, String.class, 20);
 		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 500);
-		/* Borgman 9 sept 2003 */
-		this.addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
 		/** Laddi 3 Sep 2003 */
 		//this.addAttribute(MANAGEMENT_TYPE_ID, "management_type", true, true, Integer.class);
 		addManyToOneRelationship(MANAGEMENT_TYPE, SchoolManagementType.class);
@@ -285,14 +282,6 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
 	}
 	
-	public String getPlacementParagraph() {
-		return this.getStringColumnValue(PLACEMENT_PARAGRAPH);
-	}
-
-	public void setPlacementParagraph(String placementParagraph) {
-		this.setColumn(PHONE, placementParagraph);
-	}
-
 	private Date getCurrentDate() {
 		return new Date(System.currentTimeMillis());
 	}
