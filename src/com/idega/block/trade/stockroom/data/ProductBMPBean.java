@@ -3,7 +3,7 @@ package com.idega.block.trade.stockroom.data;
 import java.util.Collections;
 import com.idega.data.*;
 import com.idega.core.data.*;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.sql.Timestamp;
@@ -13,6 +13,8 @@ import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.business.TimeframeComparator;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDORelationshipException;
+import java.util.Collection;
 
 /**
  *  Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
@@ -482,5 +484,10 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     super.update();
   }
 
+
+  public Collection getProductCategories() throws IDORelationshipException {
+    Collection coll = this.idoGetRelatedEntities(ProductCategory.class);
+    return coll;
+  }
 }
 

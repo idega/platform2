@@ -1,6 +1,8 @@
 package com.idega.block.trade.stockroom.data;
 
 import javax.ejb.*;
+import java.util.Collection;
+import com.idega.data.IDORelationshipException;
 
 public interface Product extends com.idega.data.IDOLegacyEntity
 {
@@ -28,4 +30,5 @@ public interface Product extends com.idega.data.IDOLegacyEntity
  public void setNumber(java.lang.String p0);
  public void setSupplierId(java.lang.Integer p0);
  public void setSupplierId(int p0);
+ public Collection getProductCategories() throws IDORelationshipException;
 }

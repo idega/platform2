@@ -39,5 +39,12 @@ public class ProductCategoryHomeImpl extends com.idega.data.IDOFactory implement
 
  }
 
+ public ProductCategory getProductCategory(String type) throws javax.ejb.FinderException, java.rmi.RemoteException {
+    com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+    ProductCategory theReturn = ((ProductCategoryBMPBean)entity).ejbHomeGetProductCategory(type);
+    this.idoCheckInPooledEntity(entity);
+    return theReturn;
+ }
+
 
 }

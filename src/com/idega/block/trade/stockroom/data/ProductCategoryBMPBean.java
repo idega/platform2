@@ -2,8 +2,11 @@ package com.idega.block.trade.stockroom.data;
 
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICCategory;
+import com.idega.data.IDOLookup;
 import java.sql.SQLException;
-
+import java.util.*;
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 /**
  * Title:        IW Trade
  * Description:
@@ -15,9 +18,6 @@ import java.sql.SQLException;
 
 public class ProductCategoryBMPBean extends com.idega.core.data.ICCategoryBMPBean implements com.idega.block.trade.stockroom.data.ProductCategory {
 
-  public static final String CATEGORY_TYPE_TOUR = "sr_prod_cat_tour";
-  public static final String CATEGORY_TYPE_HOTEL = "sr_prod_cat_hotel";
-  public static final String CATEGORY_TYPE_FISHING = "sr_prod_cat_fishing";
   public static final String CATEGORY_TYPE_PRODUCT = "sr_prod_cat_product";
 
   public ProductCategoryBMPBean(){
@@ -35,6 +35,42 @@ public class ProductCategoryBMPBean extends com.idega.core.data.ICCategoryBMPBea
   public void setDefaultValues() {
     super.setDefaultValues();
     this.setType(CATEGORY_TYPE_PRODUCT);
+  }
+
+  public void setCategoryType(String catType) {
+    setType(catType);
+//    this.setColumn(com.idega.core.data.ICCategoryBMPBean.getColumnType(), catType);
+  }
+
+  public String getCategoryType() {
+    return getStringColumnValue(com.idega.core.data.ICCategoryBMPBean.getColumnType());
+  }
+
+  public ProductCategory ejbHomeGetProductCategory(String type) throws FinderException, RemoteException {
+    Collection coll = this.idoFindAllIDsByColumnBySQL(com.idega.core.data.ICCategoryBMPBean.getColumnType(), type);
+    ProductCategoryHome pcHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
+    if (coll.size() == 1) {
+
+      Iterator iter = coll.iterator();
+      try {
+        return pcHome.findByPrimaryKeyLegacy( ( (Integer) iter.next() ).intValue());
+      }catch (SQLException sql) {
+        throw new FinderException(sql.getMessage());
+      }
+
+    }else if (coll.size() == 0) {
+
+      ProductCategory pCat = pcHome.createLegacy();
+        pCat.setCategoryType(type);
+        pCat.setName(type);
+        pCat.store();
+      return pCat;
+
+    }else {//(coll.size() > 1) {
+
+      throw new FinderException("Found more than one ProductCategory, should only be one.");
+
+    }
   }
 
 

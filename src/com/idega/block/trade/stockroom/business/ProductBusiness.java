@@ -632,6 +632,9 @@ public class ProductBusiness {
 
   public static List getDepartureAddresses(Product product, boolean ordered) throws IDOFinderException  {
     List list = EntityFinder.getInstance().findRelated(product, TravelAddress.class, com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE) );
+    if (list == null) {
+      list = new Vector();
+    }
     if (ordered) {
       Collections.sort(list, new TravelAddressComparator(TravelAddressComparator.TIME));
     }
