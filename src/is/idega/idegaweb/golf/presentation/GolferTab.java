@@ -56,6 +56,7 @@ public class GolferTab extends UserTab {
 	private String[] subClubsAbbrFromRequest;
 	private SelectOption noMainClub = null;
 	private LoginByUUIDLink loginByUUIDLink;
+	private boolean loginByUUIDSet = false;
 	
 	public GolferTab() {
 		super();
@@ -74,8 +75,11 @@ public class GolferTab extends UserTab {
 		User user = getUser();
 		uuid = user.getUniqueId();
 		
-		if(uuid!=null && loginByUUIDLink!=null){
+		if(uuid!=null && loginByUUIDLink!=null && !loginByUUIDSet){
 			loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
+			//hack, this parameter is in GolfLoginBusiness
+			loginByUUIDLink.addParameter("golf_login_state","login");
+			loginByUUIDSet = true;
 		}
 		
 		String mainClubAbbreviation = (mainClubAbbrFromRequest!=null)?mainClubAbbrFromRequest : user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
