@@ -66,6 +66,7 @@ public class NewsReader extends Block implements IWBlock{
   private boolean showImages = true;
   private boolean showOnlyDates = false;
 	private boolean showTime = true;
+	private boolean showTimeFirst = false;
   private boolean headlineAsLink = false;
   private boolean showHeadlineImage = false;
   private boolean showMoreButton = true;
@@ -275,7 +276,7 @@ public class NewsReader extends Block implements IWBlock{
     ContentHelper contentHelper = newsHelper.getContentHelper();
     NwNews news = newsHelper.getNwNews();
     LocalizedText locText = contentHelper.getLocalizedText(locale);
-    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime);
+    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime,showTimeFirst);
 
     String sNewsBody = "";
     String sHeadline = "";
@@ -429,7 +430,7 @@ public class NewsReader extends Block implements IWBlock{
 
 		Text headLine = new Text(sHeadline);
 
-    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime);
+    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime,showTimeFirst);
 		newsInfo = setInformationAttributes(newsInfo);
 		headLine = setHeadlineAttributes(headLine);
 
@@ -559,8 +560,8 @@ public class NewsReader extends Block implements IWBlock{
     return links;
   }
 
-  private Text getInfoText(NwNews nwNews,Content content ,String sCategoryName,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime){
-    return new Text(NewsFormatter.getInfoText(nwNews,content,sCategoryName,locale,ifUseOnlyDates,ifShowTime) );
+  private Text getInfoText(NwNews nwNews,Content content ,String sCategoryName,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime,boolean ifShowTimeFirst){
+    return new Text(NewsFormatter.getInfoText(nwNews,content,sCategoryName,locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst) );
   }
 
   private void showCategoryMaker(){
@@ -776,6 +777,10 @@ public class NewsReader extends Block implements IWBlock{
 	public void setShowTime(boolean showTime) {
     this.showTime=showOnlyDates;
   }
+
+	public void setShowTimeFirst(boolean showTimeFirst) {
+    this.showTimeFirst=showTimeFirst;
+  }
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
@@ -823,6 +828,7 @@ public class NewsReader extends Block implements IWBlock{
 			obj.showImages = showImages;
 			obj.showOnlyDates = showOnlyDates;
 			obj.showTime = showTime;
+			obj.showTimeFirst = showTimeFirst;
 			obj.headlineAsLink = headlineAsLink;
 			obj.showHeadlineImage = showHeadlineImage;
 			obj.showMoreButton = showMoreButton;
