@@ -1876,7 +1876,8 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 //	    booking.store();
 			gBooking.setIsValid(false);
 			gBooking.store();
-	
+      getBooker(iwc).invalidateCache(((Integer)gBooking.getPrimaryKey()).intValue());
+
 	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, comment, gBooking.getID(), _reseller, null);
 	
 

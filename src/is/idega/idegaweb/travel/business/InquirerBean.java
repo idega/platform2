@@ -187,6 +187,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
             booking = inquery.getBooking();
             booking.setIsValid(true);
             booking.store();
+            getBooker().invalidateCache(inquery.getBookingId());
           }
         }
 
@@ -319,6 +320,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
                 booking = inquery.getBooking();
                 booking.setIsValid(true);
                 booking.store();
+                getBooker().invalidateCache(inq.getBookingId());
               }
     				}
     			}
@@ -531,7 +533,9 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
     return (Inquery[]) coll.toArray(new Inquery[]{});
   }
   
-
+  private Booker getBooker() throws RemoteException {
+  	return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
+  }
 
   private ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
