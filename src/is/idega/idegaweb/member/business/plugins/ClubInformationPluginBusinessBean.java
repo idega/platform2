@@ -134,15 +134,24 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			Group specialGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(connection)));
 
 			Group child = null;
+			Group clubDivisionGroup = null;
 			boolean foundIt = false;
+			boolean foundClubDivisionGroup = false;
 			List children = specialGroup.getChildGroups();
 			Iterator it = children.iterator();
-			while (it.hasNext()) {
+			while (it.hasNext() && !foundIt && !foundClubDivisionGroup) {
 				child = (Group) it.next();
 				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
 					foundIt = true;
-					break;
 				}
+				else if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
+					clubDivisionGroup = child;
+					foundClubDivisionGroup = true;
+				}
+			}
+
+			if (clubDivisionGroup == null) {
+				clubDivisionGroup = specialGroup;
 			}
 
 			if (foundIt && child != null) {
@@ -155,8 +164,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 				
 
 				group.addGroup(newGroup);
-
-				insertCopyOfChild(newGroup, child, specialGroup, clubName,iwc);
+				insertCopyOfChild(newGroup, child, clubDivisionGroup, clubName,iwc);
 			}
 		}
 		catch (Exception e) {
@@ -203,21 +211,27 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			while (it.hasNext()) {
 				Group playerGroup = (Group) it.next();
 				if (playerGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE)) {
+					//Create new "flokkur" under the division
 					Group newGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
 					newGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 					newGroup.setName(playerGroup.getName());
 					newGroup.setAlias(playerGroup);
 
+					//Copy the metadata
 					java.util.Hashtable t = playerGroup.getMetaDataAttributes();
 					if (t != null)
 						newGroup.setMetaDataAttributes(t);
 
 					newGroup.store();
+					//Should probably remove this and use Eiki's stuff instead
 					setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newGroup);
 
+					//Add new group under division group (or root).
 					parent.addGroup(newGroup);
 
+					//Try to update the connection to the league. If it does not exist, create a new connection.
 					if (!updateSpecial(special, playerGroup, newGroup, clubName,iwc)) {
+						//Create a new group under the league_club_division group that links to the playerGroup in the league.
 						Group newSpecialPlayerGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
 						newSpecialPlayerGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 						newSpecialPlayerGroup.setName(playerGroup.getName());
@@ -227,6 +241,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 
 						special.addGroup(newSpecialPlayerGroup);
 
+						//Create a link to the actual group in the club, with a new name and put it under the group created above.
 						Group newSpecialPlayerAliasGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
 						newSpecialPlayerAliasGroup.setGroupType(IWMemberConstants.GROUP_TYPE_ALIAS);
 						newSpecialPlayerAliasGroup.setAlias(newGroup);
@@ -235,14 +250,13 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
-						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);
-						
+						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);					
 
 						newSpecialPlayerGroup.addGroup(newSpecialPlayerAliasGroup);
 					}
 
-					if (playerGroup.getChildCount() > 0)
-						insertCopyOfChild(newGroup, playerGroup, special, clubName,iwc);
+//					if (playerGroup.getChildCount() > 0)
+//						insertCopyOfChild(newGroup, playerGroup, special, clubName,iwc);
 				}
 			}
 		}
@@ -264,7 +278,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						newSpecialPlayerAliasGroup.setAlias(newGroup);
 						String name = newGroup.getName();
 						if (clubName != null)
-							name = clubName;
+							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
 						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);
@@ -273,10 +287,10 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						return true;
 					}
 
-					if (child.getChildCount() > 0) {
-						if (updateSpecial(child, playerGroup, newGroup, clubName,iwc))
-							return true;
-					}
+//					if (child.getChildCount() > 0) {
+//						if (updateSpecial(child, playerGroup, newGroup, clubName,iwc))
+//							return true;
+//					}
 				}
 			}
 		}
