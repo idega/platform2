@@ -32,13 +32,14 @@ import com.idega.util.IWTimestamp;
 public class MemberGroupData {
 	
 	public static final String LOCALIZE_KEY_PREFIX_GROUP_CATEGORY = "group_category_";
-	public static final String LOCALIZE_KEY_PREFIX_STATUS = "status_";
+	//public static final String LOCALIZE_KEY_PREFIX_STATUS = "usr_stat_";
 	
 	/**
 	 * @param user The user to create the MemverGroupData for
 	 * @param iwrb
 	 */
-	public MemberGroupData(User user, IWResourceBundle iwrb) {
+	public MemberGroupData(User user, IWResourceBundle iwrb, IWResourceBundle comUserBundle) {
+		_comUserBundle = comUserBundle;
 		_iwrb = iwrb;
 		_user = user;
 		int userId = user.getID();
@@ -211,11 +212,11 @@ public class MemberGroupData {
 	}
 	
 	private String getStatusLocalizedName(String statusKey) {
-		return _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_STATUS + statusKey, "Unknown");
+		return _comUserBundle.getLocalizedString(statusKey, null);
 	}
 	
 	private String getGroupTypeLocalizedName(String groupTypeKey) {
-		return _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, "Unknown");
+		return _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, null);
 	}
 	
 	
@@ -224,4 +225,5 @@ public class MemberGroupData {
 	private User _user;
 	private StringBuffer _buf = new StringBuffer();
 	private IWResourceBundle _iwrb;
+	private IWResourceBundle _comUserBundle;
 }

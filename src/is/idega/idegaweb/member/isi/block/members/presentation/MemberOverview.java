@@ -54,6 +54,7 @@ public class MemberOverview extends Block {
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
+		IWResourceBundle comUserBundle = iwc.getApplicationContext().getIWMainApplication().getBundle("com.idega.user").getResourceBundle(iwc);
 		_collator = Collator.getInstance(iwc.getLocale());
 		
 		String status = iwc.getParameter(PARAM_NAME_SHOW_STATUS);
@@ -65,7 +66,7 @@ public class MemberOverview extends Block {
 		
 		User user = iwc.getCurrentUser();
 		_iwrb = getResourceBundle(iwc);
-		_data = new MemberGroupData(user, _iwrb);
+		_data = new MemberGroupData(user, _iwrb, comUserBundle);
 		try {
 			_financeData = (Collection) ((FinanceEntryHome) com.idega.data.IDOLookup.getHome(FinanceEntry.class)).findAllByUser(user);
 		} catch (Exception e) {
