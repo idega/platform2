@@ -194,7 +194,7 @@ public class CampusAllocator extends PresentationObjectContainer{
       int totalCount = 0,totalFree = 0,totalApplied = 0,totApp1 = 0,totApp2= 0,totApp3 = 0;
       int freeCount = 0;
       int type,cmpx;
-      Image printImage = new Image("/pics/print.gif");
+      Image printImage = iwb.getImage("print.gif");
       for (int i = 0; i < cLen; i++) {
         ApartmentCategory AC = (ApartmentCategory) Categories.get(i);
         List L = BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
@@ -375,7 +375,7 @@ public class CampusAllocator extends PresentationObjectContainer{
           Frame.add(formatText(A.getMobilePhone()),col++,row);
           Frame.add(formatText(A.getResidencePhone()),col++,row);
           if(ifLong)
-          Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),col,row);
+          Frame.add(getPDFLink(iwb.getImage("print.gif"),A.getID()),col,row);
 
           if(redColorSet)
             TextFontColor = TempColor;
@@ -405,7 +405,7 @@ public class CampusAllocator extends PresentationObjectContainer{
   }
 
   private Link getAllocateLink(int id){
-    Link L = new Link(new Image("/pics/red.gif"));
+    Link L = new Link(iwb.getImage("red.gif"));
     L.addParameter("allocate",String.valueOf(id));
     if(pTypeId!=null && pComplexId!=null){
       L.addParameter(pTypeId);
@@ -428,7 +428,7 @@ public class CampusAllocator extends PresentationObjectContainer{
   }
 
   private Link getChangeLink(int Contractid,int iApplicantId){
-    Link L = new Link(new Image("/pics/green.gif"));
+    Link L = new Link(iwb.getImage("green.gif"));
     L.addParameter("change",String.valueOf(Contractid));
     L.addParameter("applicant",String.valueOf(iApplicantId));
     if(pTypeId!=null && pComplexId!=null){
@@ -439,7 +439,7 @@ public class CampusAllocator extends PresentationObjectContainer{
   }
 
   private Link getHomeLink(){
-    Link L =  new Link(new Image("/pics/list.gif"));
+    Link L =  new Link(iwb.getImage("list.gif"));
     L.addParameter("list","");
     return L;
   }

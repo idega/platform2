@@ -1268,17 +1268,17 @@ public class CampusApprover extends PresentationObjectContainer{
 
     if(iterator != null){
       if(iterator.hasPrevious()){
-        Link lLast = new Link(new Image("/pics/last.gif"));
+        Link lLast = new Link(iwb.getImage("last.gif"));
         lLast.addParameter("view","-2");
         T.add(lLast,1,1);
       }
       if(iterator.hasNext()){
-        Link lNext = new Link(new Image("/pics/next.gif"));
+        Link lNext = new Link(iwb.getImage("next.gif"));
         lNext.addParameter("view","-4");
         T.add(lNext,5,1);
       }
     }
-    Link lList = new Link(new Image("/pics/list.gif"));
+    Link lList = new Link(iwb.getImage("list.gif"));
     T.add(lList,3,1);
     T.setCellpadding(1);
     T.setCellspacing(1);

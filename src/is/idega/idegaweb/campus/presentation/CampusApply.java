@@ -6,6 +6,7 @@ import com.idega.presentation.IWContext;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
+import com.idega.idegaweb.IWBundle;
 
 
 /**
@@ -19,11 +20,17 @@ import com.idega.presentation.Image;
 
 public class CampusApply extends PresentationObjectContainer {
 
+	private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
+
   public CampusApply() {
   }
 
-  public void main(IWContext iwc){
+	public String getBundleIdentifier(){
+	  return IW_RESOURCE_BUNDLE;
+	}
 
+  public void main(IWContext iwc){
+		IWBundle iwb = getBundle(iwc);
    Table T = new Table(2,1);
       T.setWidth("100%");
       //T.setBorder(1);
@@ -32,7 +39,7 @@ public class CampusApply extends PresentationObjectContainer {
       T.setVerticalAlignment(1,1,"top");
       T.setVerticalAlignment(2,1,"top");
 
-    Image textImage = new Image("/pics/text_pictures/apply.jpg");
+    Image textImage = iwb.getImage("/text_pictures/apply.jpg");
       textImage.setVerticalSpacing(12);
 
     T.add(new CampusApplicationForm(),1,1);

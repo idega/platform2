@@ -222,7 +222,7 @@ public class AprtTypePeriodMaker extends PresentationObjectContainer{
   }
 
   private Link getHomeLink(){
-		return CampusLinkFactory.getLink(new Image("/pics/list.gif"),CampusLinkFactory.ADM_ALLOCATION);
+		return CampusLinkFactory.getLink(iwb.getImage("list.gif"),CampusLinkFactory.ADM_ALLOCATION);
   }
 
 }

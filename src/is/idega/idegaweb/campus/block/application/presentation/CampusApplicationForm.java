@@ -27,6 +27,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.CypherText;
+import com.idega.idegaweb.IWBundle;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
 import com.idega.block.building.presentation.ApartmentTypeViewer;
@@ -54,6 +55,8 @@ public class CampusApplicationForm extends ApplicationForm {
   private int apartment2 = -1;
   private int apartment3 = -1;
 
+	private IWBundle iwb;
+
   private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
 
   /**
@@ -66,6 +69,7 @@ public class CampusApplicationForm extends ApplicationForm {
    *
    */
   protected void control(IWContext iwc) {
+		iwb = getBundle(iwc);
     String statusString = iwc.getParameter("status");
     int status = 0;
 
@@ -212,7 +216,7 @@ public class CampusApplicationForm extends ApplicationForm {
       window.setHeight(550);
       window.setScrollbar(false);
 
-    Image apartmentImage = new Image("/pics/list.gif",iwrb_.getLocalizedString("get_apartment","Click for information about apartment"));
+    Image apartmentImage = iwb.getImage("list.gif",iwrb_.getLocalizedString("get_apartment","Click for information about apartment"));
       apartmentImage.setAlignment("absmiddle");
       apartmentImage.setHorizontalSpacing(4);
     Link apartmentLink = new Link(apartmentImage,window);

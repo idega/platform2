@@ -59,7 +59,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     iwrb = getResourceBundle(iwc);
 
     if(isAdmin){
-      //add(getPDFLink(new Image("/pics/print.gif")));
+      //add(getPDFLink(iwb.getImage("print.gif")));
       if(iwc.getParameter("savetitle")!=null){
           updateTitleForm(iwc);
           add(getMainTable());
@@ -116,7 +116,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 
 
     int row = 1;
-    T.add(getPDFLink(new Image("/pics/print.gif")),1,row);
+    T.add(getPDFLink(iwb.getImage("print.gif")),1,row);
     T.add(getNewLink(),2,row);
     row++;
     T.add(Edit.titleText(iwrb.getLocalizedString("header","Header")),1,row);
@@ -409,11 +409,11 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 
 
   private Link getUpLink(){
-    return new Link(new Image("/pics/list.gif"));
+    return new Link(iwb.getImage("list.gif"));
   }
 
   private Link getNewLink(){
-    Link newLink = new Link(new Image("/pics/new.gif"));
+    Link newLink = new Link(iwb.getImage("new.gif"));
     newLink.addParameter("new_text","new");
     return newLink;
   }

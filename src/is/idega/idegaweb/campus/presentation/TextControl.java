@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.1 2001/11/08 15:53:51 aron Exp $
+ * $Id: TextControl.java,v 1.2 2001/11/08 19:00:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import com.idega.block.text.data.TxText;
 import java.util.Hashtable;
 import java.sql.SQLException;
 import java.io.IOException;
+import com.idega.idegaweb.IWBundle;
 
 /**
  *
@@ -39,6 +40,7 @@ public class TextControl extends Block {
   private String sAct;
   private int iAct;
   private final int NOACT = 0;
+	private IWBundle iwb;
 
 
   public TextControl(){
@@ -52,7 +54,7 @@ public class TextControl extends Block {
   }
 
   private void control(IWContext iwc){
-
+		iwb = getBundle(iwc);
     try{
 
 
@@ -109,7 +111,7 @@ public class TextControl extends Block {
           }
       }
 
-      Image textImage = new Image("/pics/text_pictures/info.jpg");
+      Image textImage = iwb.getImage("/text_pictures/info.jpg");
         textImage.setVerticalSpacing(12);
         T.add(textImage,2,1);
 
@@ -131,7 +133,7 @@ public class TextControl extends Block {
         T.setVerticalAlignment(1,1,"top");
         T.setVerticalAlignment(2,1,"top");
 
-      Image textImage = new Image("/pics/text_pictures/picture"+Integer.toString(action)+".jpg");
+      Image textImage = iwb.getImage("/text_pictures/picture"+Integer.toString(action)+".jpg");
         textImage.setVerticalSpacing(12);
 
       try {
