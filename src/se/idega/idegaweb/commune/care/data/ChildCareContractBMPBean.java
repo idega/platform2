@@ -577,6 +577,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public Collection ejbFindAllBySchoolClassMember(SchoolClassMember member)throws FinderException{
 	    IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCH_CLASS_MEMBER, member);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE);
 		return idoFindPKsByQuery(sql);
 	}
 }
