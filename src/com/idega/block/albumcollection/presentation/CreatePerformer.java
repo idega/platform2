@@ -34,6 +34,7 @@ public class CreatePerformer extends IWAdminWindow {
     super();
     this.setHeight(170);
     this.setWidth(350);
+    this.setScrollbar(false);
     myForm = new Form();
   }
 

@@ -54,6 +54,7 @@ public class InsertLyric extends IWAdminWindow {
   public InsertLyric() {
     super();
     this.setHeight(450);
+    this.setScrollbar(false);
 
     myForm = new Form();
   }

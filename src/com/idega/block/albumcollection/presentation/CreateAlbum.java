@@ -60,7 +60,8 @@ public class CreateAlbum extends IWAdminWindow {
 
   public CreateAlbum() {
     super();
-    this.setHeight(430);
+    this.setHeight(440);
+    this.setScrollbar(false);
 
     myForm = new Form();
     /*myTable = new Table(1,1);

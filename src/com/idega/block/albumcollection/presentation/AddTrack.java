@@ -60,7 +60,8 @@ public class AddTrack extends IWAdminWindow {
 
   public AddTrack() {
     super();
-    this.setHeight(430);
+    this.setHeight(440);
+    this.setScrollbar(false);
 
     myForm = new Form();
   }
