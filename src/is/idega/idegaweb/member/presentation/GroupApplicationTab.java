@@ -72,13 +72,17 @@ public class GroupApplicationTab extends UserTab {
   	String adminComment = iwc.getParameter(ADMIN_COMMENT_PARAM);
   	
   	String[] groupIds = iwc.getParameterValues(SELECTED_GROUPS_PARAM);
+  	if( app!=null ){
   	
-  	try {
-		return getGroupApplicationBusiness().changeGroupApplicationAdminCommentAndGroups(app,adminComment,groupIds) ;
-	} catch (RemoteException e) {
-		e.printStackTrace();
-		return false;
-	}
+	  	try {
+			return getGroupApplicationBusiness().changeGroupApplicationAdminCommentAndGroups(app,adminComment,groupIds) ;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return false;
+		}
+	  	}
+  	
+  	return true;
   }
   
   public void initFieldContents() {
