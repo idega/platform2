@@ -22,6 +22,7 @@ import com.idega.block.application.data.ApplicationHome;
 import com.idega.block.application.data.ApplicationSubjectHome;
 import com.idega.block.application.data.ApplicationSubjectInfoHome;
 import com.idega.block.building.business.BuildingService;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
 
 
@@ -53,5 +54,6 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public CampusApplicationHolder getApplicationInfo(Application a);
 	public CampusApplicationHolder getApplicationInfo(int applicationId);
 	public void storeApplicationSubject(String description,IWTimestamp expires) throws CreateException,RemoteException;
+	public String getStatus(String status,IWResourceBundle iwrb) throws RemoteException;
 	
 }

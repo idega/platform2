@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.54 2004/06/16 01:16:44 aron Exp $
+ * $Id: CampusApprover.java,v 1.55 2004/06/24 15:20:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.block.application.business.ApartmentInfo;
 import is.idega.idegaweb.campus.block.application.business.ApplicantInfo;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.business.ChildInfo;
 import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
 import is.idega.idegaweb.campus.block.application.business.SpouseInfo;
@@ -45,6 +46,7 @@ import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -263,9 +265,10 @@ public class CampusApprover extends CampusBlock {
 			e.printStackTrace();
 		}
 		catch (EJBException e) {
+			applicationID = null;
 			e.printStackTrace();
 		}
-		applicationID =null;
+		
 	}
 		
 	public PresentationObject makeApplicantTable(IWContext iwc) {
@@ -347,7 +350,7 @@ public class CampusApprover extends CampusBlock {
 					T.add(getText(A.getPO() != null ? A.getPO() : ""), col++, row);
 					T.add(getText(A.getResidencePhone() != null ? A.getResidencePhone() : ""), col++, row);
 					T.add(getText(A.getMobilePhone() != null ? A.getMobilePhone() : ""), col++, row);
-					T.add((getPDFLink(printImage, ( (Integer) A.getPrimaryKey() ).intValue())), col++, row);
+					T.add((getPDFLink(iwc,printImage, ( (Integer) campusApplication.getPrimaryKey() ).intValue())), col++, row);
 					T.add(getCampusApplicationLink(viewImage, ((Integer)campusApplication.getPrimaryKey()),i), col++, row);
 					T.add(getTrashLink(trashImage, ((Integer)campusApplication.getPrimaryKey())), col, row);
 					if (lastcol < col)
@@ -1252,9 +1255,9 @@ public class CampusApprover extends CampusBlock {
 			DropdownMenu drpOne = drpTypes(typeHelpers, "drp_one", sOne, false);
 			DropdownMenu drpTwo = drpTypes(typeHelpers, "drp_two", sTwo, true);
 			DropdownMenu drpThree = drpTypes(typeHelpers, "drp_three", sThree, true);
-			Edit.setStyle(drpOne);
-			Edit.setStyle(drpTwo);
-			Edit.setStyle(drpThree);
+			drpOne = (DropdownMenu) getStyledInterface(drpOne);
+			drpTwo = (DropdownMenu) getStyledInterface(drpTwo);
+			drpThree = (DropdownMenu) getStyledInterface(drpThree);
 
 			T.add(getText("1"), 1, row);
 			T.add(drpOne, 2, row++);
@@ -1653,18 +1656,20 @@ public class CampusApprover extends CampusBlock {
 		return L;
 	}
 
-	public Link getPDFLink(PresentationObject MO, int cam_app_id) {
-		Link L = new Link(MO);
-		L.setWindowToOpen(ApplicationFilerWindow.class);
-		L.addParameter("cam_app_id", cam_app_id);
-		return L;
+	public Link getPDFLink(IWContext iwc,PresentationObject MO, int cam_app_id) {
+		Link link = new Link(MO);
+		link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"application"+cam_app_id+".pdf");
+	    link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
+		link.addParameter(CampusApplicationWriter.PRM_CAMPUS_APPLICATION_ID, cam_app_id);
+		return link;
 	}
-	public Link getPDFLink(PresentationObject MO, String status, int subject_id) {
-		Link L = new Link(MO);
-		L.setWindowToOpen(ApplicationFilerWindow.class);
-		L.addParameter("app_status", status);
-		L.addParameter("app_sub_id", subject_id);
-		return L;
+	public Link getPDFLink(IWContext iwc,PresentationObject MO, String status, int subject_id) {
+		Link link = new Link(MO);
+		link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"apps_stat_"+status+"_subj_"+subject_id+".xls");
+	    link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
+	    link.addParameter(CampusApplicationWriter.PRM_APPLICATION_STATUS, status);
+	    link.addParameter(CampusApplicationWriter.PRM_SUBJECT_ID, subject_id);
+		return link;
 	}
 	
 	public void main(IWContext iwc) throws RemoteException{

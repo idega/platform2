@@ -1,12 +1,12 @@
 package is.idega.idegaweb.campus.block.application.data;
 
-import com.idega.block.application.data.Application;
 
 
 public interface CampusApplication extends com.idega.data.IDOEntity
 {
  public java.lang.Integer getAppApplicationId();
- public Application getApplication();
+ public com.idega.block.application.data.Application getApplication();
+ public java.util.Collection getApplied();
  public java.lang.String getApplicationIdColumnName();
  public java.lang.String getChildren();
  public java.lang.String getChildrenColumnName();
@@ -59,13 +59,12 @@ public interface CampusApplication extends com.idega.data.IDOEntity
  public java.lang.String getStudyTrackColumnName();
  public boolean getWantFurniture();
  public java.lang.String getWantFurnitureColumnName();
- public void initializeAttributes();
  public void setAppApplicationId(int p0);
  public void setAppApplicationId(java.lang.Integer p0);
  public void setChildren(java.lang.String p0);
  public void setContactPhone(java.lang.String p0);
- public void setCurrentResidenceId(java.lang.Integer p0);
  public void setCurrentResidenceId(int p0);
+ public void setCurrentResidenceId(java.lang.Integer p0);
  public void setEmail(java.lang.String p0);
  public void setFaculty(java.lang.String p0);
  public void setHousingFrom(java.sql.Date p0);
@@ -74,28 +73,28 @@ public interface CampusApplication extends com.idega.data.IDOEntity
  public void setOnWaitinglist(boolean p0);
  public void setOtherInfo(java.lang.String p0);
  public void setPriorityLevel(java.lang.String p0);
- public void setSpouseIncome(java.lang.Integer p0);
  public void setSpouseIncome(int p0);
+ public void setSpouseIncome(java.lang.Integer p0);
  public void setSpouseName(java.lang.String p0);
  public void setSpouseOccupationId(java.lang.Integer p0);
  public void setSpouseOccupationId(int p0);
  public void setSpouseSSN(java.lang.String p0);
  public void setSpouseSchool(java.lang.String p0);
- public void setSpouseStudyBeginMonth(java.lang.Integer p0);
  public void setSpouseStudyBeginMonth(int p0);
+ public void setSpouseStudyBeginMonth(java.lang.Integer p0);
  public void setSpouseStudyBeginYear(java.lang.Integer p0);
  public void setSpouseStudyBeginYear(int p0);
- public void setSpouseStudyEndMonth(java.lang.Integer p0);
  public void setSpouseStudyEndMonth(int p0);
- public void setSpouseStudyEndYear(java.lang.Integer p0);
+ public void setSpouseStudyEndMonth(java.lang.Integer p0);
  public void setSpouseStudyEndYear(int p0);
+ public void setSpouseStudyEndYear(java.lang.Integer p0);
  public void setSpouseStudyTrack(java.lang.String p0);
- public void setStudyBeginMonth(java.lang.Integer p0);
  public void setStudyBeginMonth(int p0);
+ public void setStudyBeginMonth(java.lang.Integer p0);
  public void setStudyBeginYear(java.lang.Integer p0);
  public void setStudyBeginYear(int p0);
- public void setStudyEndMonth(java.lang.Integer p0);
  public void setStudyEndMonth(int p0);
+ public void setStudyEndMonth(java.lang.Integer p0);
  public void setStudyEndYear(java.lang.Integer p0);
  public void setStudyEndYear(int p0);
  public void setStudyTrack(java.lang.String p0);

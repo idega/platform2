@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.62 2004/06/09 17:07:36 aron Exp $
+ * $Id: CampusAllocator.java,v 1.63 2004/06/24 15:20:17 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,9 +15,9 @@ import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
-import is.idega.idegaweb.campus.block.application.presentation.ApplicationFilerWindow;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
 import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.data.SystemProperties;
@@ -54,6 +54,7 @@ import com.idega.block.building.data.Floor;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -240,7 +241,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			}
 			// get type and complex list
 			else
-				Frame.add(getCategoryLists(), 1, row);
+				Frame.add(getCategoryLists(iwc), 1, row);
 			Frame.setRowVerticalAlignment(2, "top");
 			add(Frame);
 		}
@@ -451,7 +452,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		return MO;
 	}
 	
-	private PresentationObject getCategoryLists() throws RemoteException,FinderException{
+	private PresentationObject getCategoryLists(IWContext iwc) throws RemoteException,FinderException{
 		DataTable T = new DataTable();
 		T.setTitlesHorizontal(true);
 		T.addTitle(localize("apartment_category", "Apartment category"));
@@ -504,7 +505,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						name.append(" (");
 						name.append(view.getComplexName());
 						name.append(")");
-						T.add(getPDFLink(printImage, type, cmpx), 1, row);
+						T.add(getPDFLink(iwc,printImage, type, cmpx), 1, row);
 						T.add(getListLink(name.toString(), type, cmpx), 2, row);
 						T.add(getText(String.valueOf(listCount)), 3, row);
 						T.add(getText(String.valueOf(freeCount)), 4, row);
@@ -530,7 +531,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			T.add(getHeader(localize("choice1", "1.Choice")), 6, 1);
 			T.add(getHeader(localize("choice2", "2.Choice")), 7, 1);
 			T.add(getHeader(localize("choice3", "3.Choice")), 8, 1);
-			T.add(getPDFLink(printImage, -1, -1), 1, row);
+			T.add(getPDFLink(iwc,printImage, -1, -1), 1, row);
 			T.add(getHeader(totalCount), 3, row);
 			T.add(getHeader(totalFree), 4, row);
 			T.add(getHeader(totalApplied), 5, row);
@@ -1121,18 +1122,20 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		return form;
 	}
 	
-	public Link getPDFLink(PresentationObject MO, int cam_app_id) {
-		Link L = new Link(MO);
-		L.setWindowToOpen(ApplicationFilerWindow.class);
-		L.addParameter("cam_app_id", cam_app_id);
-		return L;
+	public Link getPDFLink(IWContext iwc,PresentationObject MO, int cam_app_id) {
+		Link link = new Link(MO);
+		link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"application"+cam_app_id+".pdf");
+	    link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
+		link.addParameter(CampusApplicationWriter.PRM_CAMPUS_APPLICATION_ID, cam_app_id);
+		return link;
 	}
-	public Link getPDFLink(PresentationObject MO, int aprt_type_id, int cmplx_id) {
-		Link L = new Link(MO);
-		L.setWindowToOpen(ApplicationFilerWindow.class);
-		L.addParameter("aprt_type_id", aprt_type_id);
-		L.addParameter("cmplx_id", cmplx_id);
-		return L;
+	public Link getPDFLink(IWContext iwc,PresentationObject MO, int aprt_type_id, int cmplx_id) {
+		Link link = new Link(MO);
+		link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"apps_type_"+aprt_type_id+"_complex_"+cmplx_id+".xls");
+	    link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
+	    link.addParameter(CampusApplicationWriter.PRM_APARTMENT_TYPE_ID, aprt_type_id);
+	    link.addParameter(CampusApplicationWriter.PRM_COMPLEX_ID, cmplx_id);
+		return link;
 	}
 
 	private String getStatus(String status) throws RemoteException {

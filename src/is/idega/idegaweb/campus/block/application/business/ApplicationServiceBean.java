@@ -55,6 +55,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
 import com.idega.data.SimpleQuerier;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -322,6 +323,7 @@ import com.idega.util.IWTimestamp;
 				return application;
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				try {
 					t.rollback();
 				}
@@ -368,7 +370,12 @@ import com.idega.util.IWTimestamp;
 						child.setSSN(info.getSsn());
 						child.setStatus("C");
 						child.store();
-						superApplicant.addChild(child);
+						try {
+							superApplicant.addChild(child);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -390,7 +397,12 @@ import com.idega.util.IWTimestamp;
 				spouse.setSSN(info.getSsn());
 				spouse.setStatus("P");
 				spouse.store();
-				superApplicant.addChild(spouse);
+				try {
+					superApplicant.addChild(spouse);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -877,6 +889,24 @@ import com.idega.util.IWTimestamp;
 				list.add(appHelp);
 			}
 			return list;
+		}
+		
+		
+		public String getStatus(String status,IWResourceBundle iwrb) {
+			String r = "";
+			Character stat = new Character( status.charAt(0));
+			if(stat.equals(Status.SUBMITTED))
+				r = iwrb.getLocalizedString("submitted", "Submitted");
+			else if(stat.equals(Status.APPROVED))	
+				r = iwrb.getLocalizedString("approved", "Approved");
+			else if(stat.equals(Status.REJECTED))
+				r = iwrb.getLocalizedString("rejected", "Rejected");
+			else if(stat.equals(Status.SIGNED))
+				r = iwrb.getLocalizedString("contracted", "Contract");
+			else if(stat.equals(Status.GARBAGE))
+				r = iwrb.getLocalizedString("garbage", "Garbage");
+			
+			return r;
 		}
 	}
 	

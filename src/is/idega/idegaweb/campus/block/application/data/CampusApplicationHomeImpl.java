@@ -4,13 +4,9 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.data.IDOException;
-import com.idega.data.IDORelationshipException;
-
 
 public class CampusApplicationHomeImpl extends com.idega.data.IDOFactory implements CampusApplicationHome
 {
-	
  protected Class getEntityInterfaceClass(){
   return CampusApplication.class;
  }
@@ -42,35 +38,41 @@ public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.Finde
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindBySubjectAndStatus(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindBySubjectAndStatus(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public CampusApplication findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (CampusApplication) super.findByPrimaryKeyIDO(pk);
  }
 
- /* (non-Javadoc)
-	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationHome#findBySubjectAndStatus(java.lang.Integer, java.lang.String)
-	 */
-	public Collection findBySubjectAndStatus(Integer subjectID, String status,String order)
-			throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindBySubjectAndStatus(subjectID,status,order);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-	
-	public Collection findBySubjectAndStatus(Integer subjectID, String status,String order,int numberOfRecords,int startingIndex)
-	throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindBySubjectAndStatus(subjectID,status,order,numberOfRecords,startingIndex);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-	
-	public int getCountBySubjectAndStatus(Integer subjectID,String status) throws IDORelationshipException, IDOException{
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		int count  = ((CampusApplicationBMPBean)entity).ejbHomeGetCountBySubjectAndStatus(subjectID,status);
-		this.idoCheckInPooledEntity(entity);
-		return count;
-	}
-	
 
+public int getCountBySubjectAndStatus(java.lang.Integer p0,java.lang.String p1)throws com.idega.data.IDORelationshipException,com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((CampusApplicationBMPBean)entity).ejbHomeGetCountBySubjectAndStatus(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.application.data.CampusApplicationHome#ejbFindByApartmentTypeAndComplex(java.lang.Integer, java.lang.Integer)
+	 */
+	public Collection findByApartmentTypeAndComplex(Integer typeId,	Integer complexID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindByApartmentTypeAndComplex(typeId,complexID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusApplicationWriter.java,v 1.6 2004/06/05 07:43:04 aron Exp $
+ * $Id: CampusApplicationWriter.java,v 1.7 2004/06/24 15:20:17 aron Exp $
 
  *
 
@@ -17,17 +17,35 @@
  */
 package is.idega.idegaweb.campus.block.application.business;
 import is.idega.idegaweb.campus.block.application.data.Applied;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.business.CampusSettings;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+import javax.servlet.http.HttpServletRequest;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.io.MediaWritable;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
+import com.idega.presentation.IWContext;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
@@ -44,27 +62,110 @@ import com.lowagie.text.pdf.PdfWriter;
  *
 
  */
-public class CampusApplicationWriter
-{
-	public static boolean writePDF(Collection listOfCampusApplicationHolders, IWResourceBundle iwrb, String realpath)
+public class CampusApplicationWriter implements MediaWritable{
+	
+	public static final String PRM_COMPLEX_ID = "cmplx_id";
+	public static final String PRM_APARTMENT_TYPE_ID = "aprt_type_id";
+	public static final String PRM_SUBJECT_ID = "app_sub_id";
+	public static final String PRM_APPLICATION_STATUS = "app_status";
+	public static final String PRM_CAMPUS_APPLICATION_ID = "cam_app_id";
+	private MemoryFileBuffer buffer = null;
+	private Collection applicationInfos = null;
+	private ApplicationService appService = null;
+	
+	/* (non-Javadoc)
+	 * @see com.idega.io.MediaWritable#getMimeType()
+	 */
+	public String getMimeType() {
+		return "application/pdf";
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.io.MediaWritable#init(javax.servlet.http.HttpServletRequest, com.idega.presentation.IWContext)
+	 */
+	public void init(HttpServletRequest req, IWContext iwc) {
+		// TODO Auto-generated method stub
+		try {
+			appService = (ApplicationService)IBOLookup.getServiceInstance(iwc,ApplicationService.class);
+			// one application
+			if(iwc.getParameter(PRM_CAMPUS_APPLICATION_ID)!=null){
+			   Integer id = Integer.valueOf(iwc.getParameter(PRM_CAMPUS_APPLICATION_ID));
+			   CampusApplication application = appService.getCampusApplicationHome().findByPrimaryKey(id);
+			   applicationInfos = new ArrayList();
+			   applicationInfos.add(application);
+			}
+			// applications in subject and with given status
+			else if(iwc.getParameter(PRM_APPLICATION_STATUS)!=null && iwc.getParameter(PRM_SUBJECT_ID)!=null){
+			    String status = iwc.getParameter(PRM_APPLICATION_STATUS);
+			    Integer subid = Integer.valueOf(iwc.getParameter(PRM_SUBJECT_ID));
+			    applicationInfos = appService.getCampusApplicationHome().findBySubjectAndStatus(subid,status,null,-1,-1);
+			}
+			// applications in a given waitinglist specified by apartment type and complex id
+			else if(iwc.getParameter(PRM_APARTMENT_TYPE_ID)!=null && iwc.getParameter(PRM_COMPLEX_ID)!=null){
+			    Integer typeid = Integer.valueOf(iwc.getParameter(PRM_APARTMENT_TYPE_ID));
+			    Integer cplxid = Integer.valueOf(iwc.getParameter(PRM_COMPLEX_ID));
+			    applicationInfos = appService.getCampusApplicationHome().findByApartmentTypeAndComplex(typeid,cplxid);
+			}
+			if(applicationInfos!=null && !applicationInfos.isEmpty())
+				writePDF(iwc.getIWMainApplication().getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()));
+		} catch (IBOLookupException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.io.MediaWritable#writeTo(java.io.OutputStream)
+	 */
+	public void writeTo(OutputStream out) throws IOException {
+		if (buffer != null) {
+			MemoryInputStream mis = new MemoryInputStream(buffer);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			// Read the entire contents of the file.
+			while (mis.available() > 0) {
+				baos.write(mis.read());
+			}
+			baos.writeTo(out);
+		}
+		else
+			System.err.println("buffer is null");
+
+	}
+	public boolean writePDF(IWResourceBundle iwrb)
 	{
 		boolean returner = false;
 		try
 		{
-			String file = realpath;
-			FileOutputStream fos = new FileOutputStream(file);
+			buffer = new MemoryFileBuffer();
+			MemoryOutputStream ous = new MemoryOutputStream(buffer);
+			
 			Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-			PdfWriter.getInstance(document, fos);
+			PdfWriter.getInstance(document, ous);
 			document.addAuthor("Idegaweb Campus");
 			document.addSubject("");
 			document.open();
-			if (listOfCampusApplicationHolders != null)
+			if (applicationInfos != null)
 			{
-				int len = listOfCampusApplicationHolders.size();
+				int len = applicationInfos.size();
 				//System.err.println("listsize:"+len);
-				CampusApplicationHolder CAH;
-				for (Iterator iter = listOfCampusApplicationHolders.iterator(); iter.hasNext();) {
-					 CAH = (CampusApplicationHolder) iter.next();
+				//CampusApplicationHolder CAH;
+				CampusApplication campusApplication;
+				Application application;
+				Applicant applicant;
+				
+				for (Iterator iter = applicationInfos.iterator(); iter.hasNext();) {
+					 //CAH = (CampusApplicationHolder) iter.next();
+					campusApplication = (CampusApplication) iter.next();
+					application = campusApplication.getApplication();
+					applicant = application.getApplicant();
 					//System.err.println("name "+CAH.getApplicant().getFirstName());
 					//System.err.println("email "+CAH.getCampusApplication().getEmail());
 					Table datatable = new Table(4);
@@ -79,93 +180,100 @@ public class CampusApplicationWriter
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("submitted", "Submitted"));
 					datatable.setDefaultColspan(3);
-					datatable.addCell(CAH.getApplication().getSubmitted().toString());
+					datatable.addCell(application.getSubmitted().toString());
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("changed", "Status change"));
 					datatable.setDefaultColspan(3);
-					datatable.addCell(CAH.getApplication().getStatusChanged().toString());
+					datatable.addCell(application.getStatusChanged().toString());
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("status", "Status"));
 					datatable.setDefaultColspan(3);
-					datatable.addCell(getStatus(CAH.getApplication().getStatus(), iwrb));
+					datatable.addCell(getStatus(application.getStatus(), iwrb));
 					datatable.setDefaultColspan(2);
 					datatable.addCell(iwrb.getLocalizedString("applicant", "Applicant"));
 					datatable.setDefaultColspan(2);
 					datatable.addCell(iwrb.getLocalizedString("spouse", "Spouse"));
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("name", "Name"));
-					datatable.addCell(CAH.getApplicant().getFullName());
+					datatable.addCell(applicant.getFullName());
 					datatable.addCell(iwrb.getLocalizedString("name", "Name"));
-					datatable.addCell(CAH.getCampusApplication().getSpouseName());
+					datatable.addCell(campusApplication.getSpouseName());
 					datatable.addCell(iwrb.getLocalizedString("ssn", "Socialnumber"));
-					datatable.addCell(CAH.getApplicant().getSSN());
+					datatable.addCell(applicant.getSSN());
 					datatable.addCell(iwrb.getLocalizedString("ssn", "Socialnumber"));
-					datatable.addCell(CAH.getCampusApplication().getSpouseSSN());
+					datatable.addCell(campusApplication.getSpouseSSN());
 					datatable.addCell(iwrb.getLocalizedString("legal_residence", "Legal Residence"));
-					datatable.addCell(CAH.getApplicant().getLegalResidence());
+					datatable.addCell(applicant.getLegalResidence());
 					datatable.addCell(iwrb.getLocalizedString("school", "School"));
-					datatable.addCell(CAH.getCampusApplication().getSpouseSchool());
+					datatable.addCell(campusApplication.getSpouseSchool());
 					datatable.addCell(iwrb.getLocalizedString("residence", "Residence"));
-					datatable.addCell(CAH.getApplicant().getResidence());
+					datatable.addCell(applicant.getResidence());
 					datatable.addCell(iwrb.getLocalizedString("studytrack", "Study Track"));
-					datatable.addCell(CAH.getCampusApplication().getSpouseStudyTrack());
+					datatable.addCell(campusApplication.getSpouseStudyTrack());
 					datatable.addCell(iwrb.getLocalizedString("po", "PO"));
-					datatable.addCell(CAH.getApplicant().getLegalResidence());
+					datatable.addCell(applicant.getLegalResidence());
 					datatable.addCell(iwrb.getLocalizedString("study_begins", "Study begins"));
 					String studybegin =
-						CAH.getCampusApplication().getSpouseStudyBeginMonth()
+						campusApplication.getSpouseStudyBeginMonth()
 							+ " "
-							+ CAH.getCampusApplication().getSpouseStudyBeginYear();
+							+ campusApplication.getSpouseStudyBeginYear();
 					datatable.addCell(studybegin);
 					datatable.addCell(iwrb.getLocalizedString("phone", "Residence phone"));
-					datatable.addCell(CAH.getApplicant().getResidencePhone());
+					datatable.addCell(applicant.getResidencePhone());
 					datatable.addCell(iwrb.getLocalizedString("study_ends", "Study ends"));
 					String studyend =
-						CAH.getCampusApplication().getSpouseStudyEndMonth()
+						campusApplication.getSpouseStudyEndMonth()
 							+ " "
-							+ CAH.getCampusApplication().getSpouseStudyEndYear();
+							+ campusApplication.getSpouseStudyEndYear();
 					datatable.addCell(studybegin);
 					datatable.addCell(iwrb.getLocalizedString("email", "Email"));
-					datatable.addCell(CAH.getCampusApplication().getEmail());
+					datatable.addCell(campusApplication.getEmail());
 					datatable.addCell(iwrb.getLocalizedString("income", "Income"));
-					datatable.addCell(CAH.getCampusApplication().getSpouseIncome().toString());
+					if(campusApplication.getSpouseIncome()!=null)
+						datatable.addCell(campusApplication.getSpouseIncome().toString());
+					else 
+						datatable.addCell("");
 					datatable.addCell(iwrb.getLocalizedString("faculty", "Faculty"));
-					datatable.addCell(CAH.getCampusApplication().getFaculty());
+					datatable.addCell(campusApplication.getFaculty());
 					datatable.setDefaultColspan(2);
 					datatable.addCell(iwrb.getLocalizedString("children", "Children"));
 					datatable.setDefaultColspan(1);
-					StringTokenizer st = new StringTokenizer(CAH.getCampusApplication().getChildren(), "\n");
-					int size = st.countTokens();
-					Vector children = new Vector(size);
+					Vector children = new Vector();
+					int size = 0;
+					if(campusApplication.getChildren()!=null){
+					StringTokenizer st = new StringTokenizer(campusApplication.getChildren(), "\n");
+					size = st.countTokens();
+					children = new Vector(size);
 					while (st.hasMoreTokens())
 					{
 						children.add(st.nextToken());
 					}
+					}
 					datatable.addCell(iwrb.getLocalizedString("studytrack", "Study Track"));
-					datatable.addCell(CAH.getCampusApplication().getStudyTrack());
+					datatable.addCell(campusApplication.getStudyTrack());
 					datatable.setDefaultColspan(2);
 					datatable.addCell(size >= 1 ? (String) children.get(0) : "");
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("study_begins", "Study begins"));
 					studybegin =
-						CAH.getCampusApplication().getStudyBeginMonth()
+						campusApplication.getStudyBeginMonth()
 							+ " "
-							+ CAH.getCampusApplication().getStudyBeginYear();
+							+ campusApplication.getStudyBeginYear();
 					datatable.addCell(studybegin);
 					datatable.setDefaultColspan(2);
 					datatable.addCell(size >= 2 ? (String) children.get(1) : "");
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("study_ends", "Study ends"));
 					studyend =
-						CAH.getCampusApplication().getStudyEndMonth()
+						campusApplication.getStudyEndMonth()
 							+ " "
-							+ CAH.getCampusApplication().getStudyEndYear();
+							+ campusApplication.getStudyEndYear();
 					datatable.addCell(studybegin);
 					datatable.setDefaultColspan(2);
 					datatable.addCell(size >= 3 ? (String) children.get(2) : "");
 					datatable.setDefaultColspan(1);
 					datatable.addCell(iwrb.getLocalizedString("income", "Income"));
-					datatable.addCell(CAH.getCampusApplication().getIncome().toString());
+					datatable.addCell(campusApplication.getIncome().toString());
 					datatable.setDefaultColspan(2);
 					datatable.addCell(size >= 4 ? (String) children.get(3) : "");
 					datatable.setDefaultColspan(1);
@@ -183,7 +291,7 @@ public class CampusApplicationWriter
 					datatable.addCell(iwrb.getLocalizedString("applied", "Applied"));
 					datatable.addCell(iwrb.getLocalizedString("requests", "Requests"));
 					datatable.setDefaultColspan(1);
-					Vector applied = CAH.getApplied();
+					Vector applied = new Vector(campusApplication.getApplied());
 					size = applied.size();
 					datatable.addCell("1");
 					ApartmentTypeHome aptHome =(ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class);
@@ -195,7 +303,7 @@ public class CampusApplicationWriter
 					else
 						datatable.addCell("");
 					datatable.addCell(iwrb.getLocalizedString("housingfrom", "Housing from"));
-					datatable.addCell(CAH.getCampusApplication().getHousingFrom().toString());
+					datatable.addCell(campusApplication.getHousingFrom().toString());
 					datatable.addCell("2");
 					if (size >= 2)
 					{
@@ -205,7 +313,7 @@ public class CampusApplicationWriter
 					else
 						datatable.addCell("");
 					datatable.addCell(iwrb.getLocalizedString("wantfurniture", "Wants furniture"));
-					datatable.addCell(CAH.getCampusApplication().getWantFurniture() ? "X" : "");
+					datatable.addCell(campusApplication.getWantFurniture() ? "X" : "");
 					datatable.addCell("3");
 					if (size >= 3)
 					{
@@ -215,7 +323,7 @@ public class CampusApplicationWriter
 					else
 						datatable.addCell("");
 					datatable.addCell(iwrb.getLocalizedString("onwaitinglist", "On waitinglist"));
-					datatable.addCell(CAH.getCampusApplication().getOnWaitinglist() ? "X" : "");
+					datatable.addCell(campusApplication.getOnWaitinglist() ? "X" : "");
 					document.add(datatable);
 					document.newPage();
 				}
@@ -225,7 +333,7 @@ public class CampusApplicationWriter
 			document.close();
 			try
 			{
-				fos.close();
+				ous.close();
 			}
 			catch (Exception ex)
 			{
@@ -240,22 +348,15 @@ public class CampusApplicationWriter
 		}
 		return returner;
 	}
-	private static String getStatus(String status, IWResourceBundle iwrb)
+	private String getStatus(String status, IWResourceBundle iwrb)
 	{
-		String r = "";
-		char c = status.charAt(0);
-		switch (c)
-		{
-			case 'S' :
-				r = iwrb.getLocalizedString("submitted", "Submitted");
-				break;
-			case 'A' :
-				r = iwrb.getLocalizedString("approved", "Approved");
-				break;
-			case 'R' :
-				r = iwrb.getLocalizedString("rejected", "Rejected");
-				break;
-		}
-		return r;
+		if(appService!=null)
+			try {
+				return appService.getStatus(status,iwrb);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		return status;
 	}
+	
 }
