@@ -25,8 +25,17 @@ public class WorkReportConstants extends IWMemberConstants{
 	public static final String WR_USER_TYPE_FEDERATION = "FEDERATION";
 	public static final String WR_USER_TYPE_LEAGUE = "LEAGUE";
 	
-	
-	
-	
-
+  // name of the "group" that represents the main board
+  public static final String MAIN_BOARD = "main_board"; 
+  // artificial id of the "group" that represents the main board
+  // do not use -1 because that is used to represent a new entity that is not stored yet 
+  public static final Integer MAIN_BOARD_ID = new Integer(-42);
+  
+  public static final String INCOME_SUM_KEY = "FIN_income_sum";
+  public static final String EXPONSES_SUM_KEY = "FIN_exponses_sum";
+  public static final String INCOME_EXPONSES_SUM_KEY = "FIN_income_exponses_sum";
+  public static final String ASSET_SUM_KEY = "FIN_asset_sum";
+  public static final String DEBT_SUM_KEY = "FIN_debt_sum";
+  
+  public static final String[] NOT_EDITABLE_FIN_NAMES = {"FIN_40000", "FIN_92000" };	
 }

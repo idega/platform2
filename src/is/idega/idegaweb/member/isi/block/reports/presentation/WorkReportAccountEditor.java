@@ -509,7 +509,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     browser.setUseExternalForm(true);
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
-    WorkReportAccountInputConverter textEditorConverter = new WorkReportAccountInputConverter(form);
+    WorkReportAccountInputConverter textEditorConverter = new WorkReportAccountInputConverter(form, resourceBundle);
     EntityToPresentationObjectConverter textConverter = new WorkReportAccountTextConverter();
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     // define path short keys and map corresponding converters
@@ -972,8 +972,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   class WorkReportAccountInputConverter extends TextEditorConverter {
     
-    public WorkReportAccountInputConverter(Form form) {
+    public WorkReportAccountInputConverter(Form form, IWResourceBundle resourceBundle) {
       super(form);
+      String message = 
+        resourceBundle.getLocalizedString("wr_account_editor_message_entry_is_not_a_number", "The input is not a valid number.");
+      setAsFloat(message);
     }
     
     protected Object getValue(
