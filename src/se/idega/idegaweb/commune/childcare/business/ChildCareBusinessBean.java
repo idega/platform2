@@ -1035,7 +1035,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
 				application.store();
 			}
-			verifyApplication(application, performer);
+			verifyApplication(application, null, performer);
 			
 			trans.commit();
 		}
@@ -1052,7 +1052,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return true;
 	}
 	
-	protected void verifyApplication(ChildCareApplication application, User performer) {
+	protected void verifyApplication(ChildCareApplication application, SchoolClassMember member, User performer) {
 		try {
 			ChildCareContract firstContract = getChildCareContractArchiveHome().findFirstContractByApplication(((Integer)application.getPrimaryKey()).intValue());
 			ChildCareContract lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer)application.getPrimaryKey()).intValue());
@@ -1083,6 +1083,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException fe) {
 			application.setContractId(null);
 			application.setContractFileId(null);
+			if (member != null) {
+				member.setRemovedDate(member.getRegisterDate());
+				member.store();
+			}
 			try {
 				changeCaseStatus(application, getCaseStatusDeleted().getStatus(), performer);
 			}
@@ -2737,14 +2741,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();
 			
 			Contract contract = childcareContract.getContract();
-			contract.removeFileFromContract(childcareContract.getContractFile());
+			if (contract != null) {
+				contract.removeFileFromContract(childcareContract.getContractFile());
+			}
 			
 			ChildCareApplication application = childcareContract.getApplication();
+			SchoolClassMember member = childcareContract.getSchoolClassMember();
 			
 			removeInvoiceRecords(childcareContract);
 			childcareContract.remove();
-			verifyApplication(application, performer);
-			contract.remove();
+			verifyApplication(application, member, performer);
+			
+			if (contract != null) {
+				contract.removeAllFiles();
+				contract.remove();
+			}
 			
 			t.commit();
 		}
