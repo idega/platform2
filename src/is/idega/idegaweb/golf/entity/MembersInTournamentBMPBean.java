@@ -3,16 +3,12 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.*;
+import com.idega.data.GenericEntity;
 
 
-public class MembersInTournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBMPBean implements is.idega.idegaweb.golf.entity.MembersInTournament {
+public class MembersInTournamentBMPBean extends GenericEntity implements MembersInTournament{
 
-	public MembersInTournamentBMPBean(){
-		super();
-	}
-
-        public String getEntityName(){
+  public String getEntityName(){
 		return "display_scores";
 	}
 

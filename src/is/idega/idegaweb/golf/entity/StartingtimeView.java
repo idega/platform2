@@ -20,4 +20,5 @@ public interface StartingtimeView extends com.idega.data.IDOLegacyEntity
  public java.sql.Date getStartingtimeDate();
  public int getStartingtimeId();
  public int getUnionId();
+	public boolean getPaid();
 }

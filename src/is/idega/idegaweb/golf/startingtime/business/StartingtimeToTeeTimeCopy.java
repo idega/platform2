@@ -3,6 +3,7 @@ package is.idega.idegaweb.golf.startingtime.business;
 import is.idega.idegaweb.golf.entity.Startingtime;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import java.util.List;
 import java.sql.SQLException;
@@ -22,18 +23,18 @@ public class StartingtimeToTeeTimeCopy {
   public StartingtimeToTeeTimeCopy() {
   }
 
-  public static void putListsInSession(IWContext iwc) throws SQLException{
-    Startingtime stTime = ((is.idega.idegaweb.golf.entity.StartingtimeHome)com.idega.data.IDOLookup.getHomeLegacy(Startingtime.class)).createLegacy();
+  public static void putListsInSession(IWContext modinfo) throws SQLException{
+    Startingtime stTime = (Startingtime) IDOLookup.instanciateEntity(Startingtime.class);
     List from = EntityFinder.findAll(stTime,"select * from "+stTime.getEntityName());
     List notFrom = EntityFinder.findAll(stTime,"select * from tournament_round_startingtime trs, startingtime st where trs.startingtime_id = st.startingtime_id");
 
-    iwc.setSessionAttribute("from",from);
-    iwc.setSessionAttribute("notFrom",from);
+    modinfo.setSessionAttribute("from",from);
+    modinfo.setSessionAttribute("notFrom",from);
   }
 
-  public static void sortLists(IWContext iwc){
-    List from = (List)iwc.getSessionAttribute("from");
-    List notFrom = (List)iwc.getSessionAttribute("notFrom");
+  public static void sortLists(IWContext modinfo){
+    List from = (List)modinfo.getSessionAttribute("from");
+    List notFrom = (List)modinfo.getSessionAttribute("notFrom");
 
     Vector vector = new Vector();
 
@@ -43,15 +44,15 @@ public class StartingtimeToTeeTimeCopy {
       }
     }
     System.err.println(vector.size());
-    iwc.setSessionAttribute("vector",vector);
+    modinfo.setSessionAttribute("vector",vector);
 
 
   }
 
 
-  public static void copy(IWContext iwc)throws SQLException{
-    List toCopy = (List)iwc.getSessionAttribute("vector");
-    TeeTime t = ((is.idega.idegaweb.golf.startingtime.data.TeeTimeHome)com.idega.data.IDOLookup.getHomeLegacy(TeeTime.class)).createLegacy();
+  public static void copy(IWContext modinfo)throws SQLException{
+    List toCopy = (List)modinfo.getSessionAttribute("vector");
+    TeeTime t = (TeeTime) IDOLookup.createLegacy(TeeTime.class);
     Startingtime s = null;
     System.err.println(toCopy.size());
     for (int i = 0; i < toCopy.size(); i++) {
@@ -76,9 +77,9 @@ public class StartingtimeToTeeTimeCopy {
   }
 
 
-  public static void remove(IWContext iwc){
-    iwc.removeSessionAttribute("from");
-    iwc.removeSessionAttribute("notFrom");
-    iwc.removeSessionAttribute("vector");
+  public static void remove(IWContext modinfo){
+    modinfo.removeSessionAttribute("from");
+    modinfo.removeSessionAttribute("notFrom");
+    modinfo.removeSessionAttribute("vector");
   }
 }

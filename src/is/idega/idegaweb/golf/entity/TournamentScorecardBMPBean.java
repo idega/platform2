@@ -8,13 +8,9 @@ import com.idega.data.*;
 import java.util.*;
 
 
-public class TournamentScorecardBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBMPBean implements is.idega.idegaweb.golf.entity.TournamentScorecard {
+public class TournamentScorecardBMPBean extends GenericEntity implements TournamentScorecard{
 
-	public TournamentScorecardBMPBean(){
-		super();
-	}
-
-        public String getEntityName(){
+  public String getEntityName(){
 		return "tournament_participants";
 	}
 
@@ -84,7 +80,7 @@ public class TournamentScorecardBMPBean extends is.idega.idegaweb.golf.entity.Go
         public static TournamentScorecard getScorecard(int tournament_round_id,int member_id) {
             TournamentScorecard scorecard = null;
             try {
-                java.util.List scoreCards = EntityFinder.findAllByColumn(((is.idega.idegaweb.golf.entity.TournamentScorecardHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentScorecard.class)).createLegacy(),"tournament_round_id",tournament_round_id+"","member_id",member_id+"");
+                java.util.List scoreCards = EntityFinder.findAllByColumn((TournamentScorecard) IDOLookup.instanciateEntity(TournamentScorecard.class),"tournament_round_id",tournament_round_id+"","member_id",member_id+"");
                 if (scoreCards != null) {
                     if (scoreCards.size()  > 0) scorecard = (TournamentScorecard) scoreCards.get(0);
                 }

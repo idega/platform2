@@ -6,13 +6,9 @@ package is.idega.idegaweb.golf.entity;
 import java.sql.*;
 
 
-public class TournamentRoundParticipantsBMPBean extends is.idega.idegaweb.golf.entity.TournamentParticipantsBMPBean implements is.idega.idegaweb.golf.entity.TournamentRoundParticipants {
+public class TournamentRoundParticipantsBMPBean extends TournamentParticipantsBMPBean implements TournamentRoundParticipants {
 
-	public TournamentRoundParticipantsBMPBean(){
-		super();
-	}
-
-        public String getEntityName(){
+  public String getEntityName(){
 		return "tournament_round_participants";
 	}
 
@@ -38,10 +34,16 @@ public class TournamentRoundParticipantsBMPBean extends is.idega.idegaweb.golf.e
 		addAttribute("difference","par",true,true, "java.lang.Integer");
 		addAttribute("grup_num","Ráshópur",true,true, "java.lang.Integer");
 		addAttribute("group_name","Ráshópsnafn",true,true, "java.lang.String");
+		// gimmi 10 JUNE 2003	
+		addAttribute("paid", "Greitt", true, true, "java.lang.Boolean");
 	}
 
 	public int getGroupNumber() {
 		return getIntColumnValue("grup_num");
 	}
-
+	
+	public boolean getPaid() {
+		return getBooleanColumnValue("paid");	
+	}
+	
 }

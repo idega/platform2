@@ -3,16 +3,15 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.*;
+import java.sql.SQLException;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
 
 
-public class TournamentParticipantsBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBMPBean implements is.idega.idegaweb.golf.entity.TournamentParticipants {
+public class TournamentParticipantsBMPBean extends GenericEntity implements TournamentParticipants {
 
-	public TournamentParticipantsBMPBean(){
-		super();
-	}
-
-        public String getEntityName(){
+  public String getEntityName(){
 		return "tournament_participants";
 	}
 
@@ -37,6 +36,8 @@ public class TournamentParticipantsBMPBean extends is.idega.idegaweb.golf.entity
 		addAttribute("total_par","Par vallarins",true, true , "java.lang.Integer");
 		addAttribute("difference","par",true,true, "java.lang.Integer");
 		addAttribute("group_name","Ráshópsnafn",true,true, "java.lang.String");
+		// gimmi 10 JUNE 2003	
+		addAttribute("paid", "Greitt", true, true, "java.lang.Boolean");
 	}
 
 	public int getMemberID() {
@@ -72,6 +73,10 @@ public class TournamentParticipantsBMPBean extends is.idega.idegaweb.golf.entity
 
 	public String getFirstName(){
 		return (String) getColumnValue("first_name");
+	}
+	
+	public boolean getPaid() {
+		return getBooleanColumnValue("paid");	
 	}
 
 	public String getMiddleName(){
@@ -145,7 +150,7 @@ public class TournamentParticipantsBMPBean extends is.idega.idegaweb.golf.entity
         public static is.idega.idegaweb.golf.entity.TournamentParticipants getTournamentParticipants(int member_id,int tournament_id) {
             is.idega.idegaweb.golf.entity.TournamentParticipants returner = null;
             try {
-                java.util.List members = com.idega.data.EntityFinder.findAllByColumn(((is.idega.idegaweb.golf.entity.TournamentParticipantsHome)com.idega.data.IDOLookup.getHomeLegacy(is.idega.idegaweb.golf.entity.TournamentParticipants.class)).createLegacy(),"member_id",member_id+"","tournament_id",tournament_id+"");
+                java.util.List members = com.idega.data.EntityFinder.findAllByColumn((TournamentParticipants) IDOLookup.instanciateEntity(TournamentParticipants.class),"member_id",member_id+"","tournament_id",tournament_id+"");
                 if (members != null) {
                     if (members.size()  > 0) returner = (is.idega.idegaweb.golf.entity.TournamentParticipants) members.get(0);
                 }

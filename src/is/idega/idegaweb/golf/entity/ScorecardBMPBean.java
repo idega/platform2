@@ -1,460 +1,231 @@
 //idega 2000 - Ægir
 
-
-
 package is.idega.idegaweb.golf.entity;
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
 
 
-//import java.util.*;
+public class ScorecardBMPBean extends GenericEntity implements Scorecard {
+  private final String FOREIGN_ROUND = "foreign_round";
+  private final String FOREIGN_COURSE_NAME = "foreign_name";
 
-import java.sql.*;
+  private final String YES = "Y";
+  private final String NO = "N";
 
-import com.idega.data.EntityFinder;
-
-import java.util.List;
-
-
-
-public class ScorecardBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBMPBean implements is.idega.idegaweb.golf.entity.Scorecard {
-
-
-
-	public ScorecardBMPBean(){
-
-		super();
-
-	}
-
-
-
-	public ScorecardBMPBean(int id)throws SQLException{
-
-		super(id);
-
-	}
-
-
-
-	public void initializeAttributes(){
-
+	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-
-		addAttribute("member_id", "Meðlimur id", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Member");
-
-		addAttribute("tournament_round_id", "Mót id", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.TournamentRound");
-
-		addAttribute("scorecard_date", "Dagsetning", true, true, "java.sql.Timestamp");
-
-		addAttribute("total_points", "Heildarstig", true, true, "java.lang.Integer");
-
-		addAttribute("handicap_before", "Forgjöf áður", true, true, "java.lang.Float");
-
-		addAttribute("handicap_after", "Forgjöf eftir", true, true, "java.lang.Float");
-
-		addAttribute("slope", "Slope", true, true, "java.lang.Integer");
-
-		addAttribute("course_rating", "CR", true, true, "java.lang.Float");
-
-		addAttribute("field_id", "Völlur", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Field");
-
-		addAttribute("tee_color_id", "Tee litur", true, true, "java.lang.Integer");
-
-		addAttribute("handicap_correction", "Leiðrétting forgjafar", true, true, "java.lang.String");
-
-		addAttribute("update_handicap", "Uppfærsla forgjafar", true, true, "java.lang.String");
-
+		addAttribute("member_id","Meðlimur id",true,true,"java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Member");
+		addAttribute("tournament_round_id","Mót id",true,true,"java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.TournamentRound");
+		addAttribute("scorecard_date","Dagsetning",true,true,"java.sql.Timestamp");
+		addAttribute("total_points","Heildarstig",true,true,"java.lang.Integer");
+		addAttribute("handicap_before","Forgjöf áður",true,true,"java.lang.Float");
+		addAttribute("handicap_after","Forgjöf eftir",true,true,"java.lang.Float");
+		addAttribute("slope", "Slope",true,true,"java.lang.Integer");
+		addAttribute("course_rating","CR",true,true,"java.lang.Float");
+		addAttribute("field_id","Völlur",true,true,"java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Field");
+		addAttribute("tee_color_id","Tee litur",true,true,"java.lang.Integer");
+		addAttribute("handicap_correction","Leiðrétting forgjafar",true,true,"java.lang.String");
+		addAttribute("update_handicap","Uppfærsla forgjafar",true,true,"java.lang.String");
+    addAttribute(FOREIGN_ROUND,"Hringur á erlendum velli",true,true,"java.lang.String");
+    addAttribute(FOREIGN_COURSE_NAME,"Nafn á erlendum velli",true,true,"java.lang.String");
+    setMaxLength(FOREIGN_ROUND,1);
+    setMaxLength(FOREIGN_COURSE_NAME,255);
 	}
 
-
-
-	public String getEntityName(){
-
+	public String getEntityName() {
 		return "scorecard";
-
 	}
 
-
-
-	public int getMemberId(){
-
+	public int getMemberId() {
 		return getIntColumnValue("member_id");
-
 	}
 
-
-
-	public void setMemberId(int memberId){
-
-		setColumn("member_id", memberId);
-
+	public void setMemberId(int memberId) {
+		setColumn("member_id",memberId);
 	}
 
-
-
-	public int getTournamentRoundId(){
-
+	public int getTournamentRoundId() {
 		return getIntColumnValue("tournament_round_id");
-
 	}
 
-
-
-	public void setTournamentRoundId(int tournamentRoundId){
-
-		setColumn("tournament_round_id", tournamentRoundId);
-
+	public void setTournamentRoundId(int tournamentRoundId) {
+		setColumn("tournament_round_id",tournamentRoundId);
 	}
 
-
-
-	public TournamentRound getTournamentRound(){
-
-		return (TournamentRound) getColumnValue("tournament_round_id");
-
+	public TournamentRound getTournamentRound() {
+		return (TournamentRound)getColumnValue("tournament_round_id");
 	}
 
-
-
-	public void setTournamentRound(TournamentRound tournamentRound){
-
-		setColumn("tournament_round_id", tournamentRound );
-
+	public void setTournamentRound(TournamentRound tournamentRound) {
+		setColumn("tournament_round_id",tournamentRound );
 	}
 
-
-
-	public java.sql.Timestamp getScorecardDate(){
-
-		return (java.sql.Timestamp) getColumnValue("scorecard_date");
-
+	public java.sql.Timestamp getScorecardDate() {
+		return (Timestamp)getColumnValue("scorecard_date");
 	}
 
-
-
-	public void setScorecardDate(java.sql.Timestamp scorecardDate){
-
-		setColumn("scorecard_date", scorecardDate);
-
+	public void setScorecardDate(Timestamp scorecardDate) {
+		setColumn("scorecard_date",scorecardDate);
 	}
 
-
-
-	public int getTotalPoints(){
-
+	public int getTotalPoints() {
 		return getIntColumnValue("total_points");
-
 	}
 
-
-
-	public void setTotalPoints(int totalPoints){
-
-		setColumn("total_points", totalPoints);
-
+	public void setTotalPoints(int totalPoints) {
+		setColumn("total_points",totalPoints);
 	}
 
-
-
-	public float getHandicapBefore(){
-
+	public float getHandicapBefore() {
 		return getFloatColumnValue("handicap_before");
-
 	}
 
-
-
-	public void setHandicapBefore(float handicapBefore){
-
-		setColumn("handicap_before", handicapBefore);
-
+	public void setHandicapBefore(float handicapBefore) {
+		setColumn("handicap_before",handicapBefore);
 	}
 
-
-
-	public float getHandicapAfter(){
-
+	public float getHandicapAfter() {
 		return getFloatColumnValue("handicap_after");
-
 	}
 
-
-
-	public void setHandicapAfter(float handicapAfter){
-
-		setColumn("handicap_after", handicapAfter);
-
+	public void setHandicapAfter(float handicapAfter) {
+		setColumn("handicap_after",handicapAfter);
 	}
 
-
-
-	public void setMember(Member member){
-
+	public void setMember(Member member) {
 		setColumn("member_id",member);
-
 	}
 
-
-
-	public Member getMember(){
-
+	public Member getMember() {
 		return (Member)getColumnValue("member_id");
-
 	}
 
-
-
-	public int getSlope(){
-
+	public int getSlope() {
 		return getIntColumnValue("slope");
-
 	}
 
-
-
-	public void setSlope(int slope){
-
-		setColumn("slope", slope);
-
+	public void setSlope(int slope) {
+		setColumn("slope",slope);
 	}
 
-
-
-	public float getCourseRating(){
-
+	public float getCourseRating() {
 		return getFloatColumnValue("course_rating");
-
 	}
 
-
-
-	public void setCourseRating(float course_rating){
-
-		setColumn("course_rating", course_rating);
-
+	public void setCourseRating(float course_rating) {
+		setColumn("course_rating",course_rating);
 	}
 
-
-
-	public int getFieldID(){
-
+	public int getFieldID() {
 		return getIntColumnValue("field_id");
-
 	}
 
-
-
-	public void setFieldID(int field_id){
-
-		setColumn("field_id", field_id);
-
+	public void setFieldID(int field_id) {
+		setColumn("field_id",field_id);
 	}
 
-
-
-	public int getTeeColorID(){
-
+	public int getTeeColorID() {
 		return getIntColumnValue("tee_color_id");
-
 	}
 
-
-
-	public void setTeeColorID(int tee_color_id){
-
-		setColumn("tee_color_id", tee_color_id);
-
+	public void setTeeColorID(int tee_color_id) {
+		setColumn("tee_color_id",tee_color_id);
 	}
 
-
-
-        public String getHandicapCorrection(){
-
+  public String getHandicapCorrection() {
 		return getStringColumnValue("handicap_correction");
-
 	}
 
-
-
-        public boolean getHandicapCorrectionBoolean(){
-
+  public boolean getHandicapCorrectionBoolean(){
 		String correction = getStringColumnValue("handicap_correction");
+    boolean handicapCorrection = true;
 
-                boolean handicapCorrection = true;
+    if (correction.equalsIgnoreCase("n")) {
+      handicapCorrection = false;
+    }
 
-
-
-                if ( correction.equalsIgnoreCase("n") ) {
-
-                  handicapCorrection = false;
-
-                }
-
-
-
-                return handicapCorrection;
-
+    return handicapCorrection;
 	}
-
-
 
 	public void setHandicapCorrection(String handicap_correction){
-
 		setColumn("handicap_correction", handicap_correction);
-
 	}
-
-
 
 	public void setHandicapCorrection(boolean correction){
+		String handicap_correction = YES;
 
-		String handicap_correction = "Y";
+    if (correction == false) {
+      handicap_correction = NO;
+    }
 
-
-
-                if ( correction == true ) {
-
-                  handicap_correction = "Y";
-
-                }
-
-                if ( correction == false ) {
-
-                  handicap_correction = "N";
-
-                }
-
-
-
-                setColumn("handicap_correction", handicap_correction);
-
+    setColumn("handicap_correction", handicap_correction);
 	}
 
-
-
-        public String getUpdateHandicap(){
-
+  public String getUpdateHandicap() {
 		return getStringColumnValue("update_handicap");
-
 	}
 
+  public boolean getUpdateHandicapBoolean() {
+    String update = getStringColumnValue("update_handicap");
+    boolean updateHandicap = true;
 
+    if (update.equalsIgnoreCase("n")) {
+      updateHandicap = false;
+    }
 
-        public boolean getUpdateHandicapBoolean(){
+    return updateHandicap;
+  }
 
-		String update = getStringColumnValue("update_handicap");
-
-                boolean updateHandicap = true;
-
-
-
-                if ( update.equalsIgnoreCase("n") ) {
-
-                  updateHandicap = false;
-
-                }
-
-
-
-                return updateHandicap;
-
-	}
-
-
-
-	public void setUpdateHandicap(String update_handicap){
-
+	public void setUpdateHandicap(String update_handicap) {
 		setColumn("update_handicap", update_handicap);
-
 	}
 
+	public void setUpdateHandicap(boolean handicap) {
+    String update_handicap = YES;
 
+    if (handicap == false) {
+      update_handicap = NO;
+    }
 
-	public void setUpdateHandicap(boolean handicap){
-
-		String update_handicap = "Y";
-
-
-
-                if ( handicap == true ) {
-
-                  update_handicap = "Y";
-
-                }
-
-                if ( handicap == false ) {
-
-                  update_handicap = "N";
-
-                }
-
-
-
-                setColumn("update_handicap", update_handicap);
-
+    setColumn("update_handicap",update_handicap);
 	}
 
+  public void delete() throws SQLException {
+    ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).deleteMultiple("scorecard_id",Integer.toString(this.getID()));
+    ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).deleteMultiple("scorecard_id",Integer.toString(this.getID()));
 
+    super.delete();
+  }
 
-        public void delete() throws SQLException{
+  public void setForeignRound(boolean foreign) {
+    String isForeign = NO;
 
+    if (foreign)
+      isForeign = YES;
 
+    setColumn(FOREIGN_ROUND,isForeign);
+  }
 
-            //com.idega.data.EntityBulkUpdater bulk = new com.idega.data.EntityBulkUpdater();
+  public boolean getForeignRound() {
+    String isForeign = getStringColumnValue(FOREIGN_ROUND);
+    boolean foreign = true;
 
+    if (isForeign == null || isForeign.equalsIgnoreCase("n")) {
+      foreign = false;
+    }
 
+    return foreign;
+  }
 
-            System.out.println(new com.idega.util.IWTimestamp().getTimestampRightNow().toString());
+  public void setForeignCourseName(String name) {
+    setColumn(FOREIGN_COURSE_NAME,name);
+  }
 
-            is.idega.idegaweb.golf.entity.StrokeBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Stroke").deleteMultiple("scorecard_id",Integer.toString(this.getID())); //.findAllByColumn("SCORECARD_ID",this.getID());
-
-            /*for (int i = 0; i < strokes.length; i++) {
-
-               bulk.add(strokes[i],com.idega.data.EntityBulkUpdater.delete);
-
-                //strokes[i].delete();
-
-            }*/
-
-
-
-            System.out.println(new com.idega.util.IWTimestamp().getTimestampRightNow().toString());
-
-            is.idega.idegaweb.golf.entity.StatisticBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Statistic").deleteMultiple("scorecard_id",Integer.toString(this.getID())); //.findAllByColumn("scorecard_id",this.getID());
-
-            /*for (int i = 0; i < statistics.length; i++) {
-
-                //statistics[i].delete();
-
-                bulk.add(statistics[i],com.idega.data.EntityBulkUpdater.delete);
-
-            }
-
-
-
-            try {
-
-              bulk.execute();
-
-            }
-
-            catch (Exception e) {
-
-              e.printStackTrace(System.out);
-
-            }*/
-
-
-
-            System.out.println(new com.idega.util.IWTimestamp().getTimestampRightNow().toString());
-
-            super.delete();
-
-            System.out.println(new com.idega.util.IWTimestamp().getTimestampRightNow().toString());
-
-        }
-
-
-
+  public String getForeignCourseName() {
+    return this.getStringColumnValue(FOREIGN_COURSE_NAME);
+  }
 }
-

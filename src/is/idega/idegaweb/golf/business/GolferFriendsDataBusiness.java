@@ -26,7 +26,7 @@ public class GolferFriendsDataBusiness {
     boolean nameAppearance, String paymentAmount, String paymentDuration, String billAdress,
     String billName, String billSSNumber, String nameToAppear, String golferName) throws SQLException{
 
-    GolferPageFriendsData golferPageFriendsData = ((is.idega.idegaweb.golf.entity.GolferPageFriendsDataHome)com.idega.data.IDOLookup.getHomeLegacy(GolferPageFriendsData.class)).createLegacy();
+    GolferPageFriendsData golferPageFriendsData = (GolferPageFriendsData) IDOLookup.createLegacy(GolferPageFriendsData.class);
     golferPageFriendsData.setName(name);
     golferPageFriendsData.setGolferName(golferName);
     golferPageFriendsData.setAdress(adress);
@@ -54,7 +54,7 @@ public class GolferFriendsDataBusiness {
   public static void insertGolferPageData(int memberID, int newsReaderID,
     int profileID, int golfbagID, int resultsAbroadID, int statisticsID,
     int supportesID, int supportPreSigningID) throws SQLException{
-    GolferPageData golferPageData = ((is.idega.idegaweb.golf.entity.GolferPageDataHome)com.idega.data.IDOLookup.getHomeLegacy(GolferPageData.class)).createLegacy();
+    GolferPageData golferPageData = (GolferPageData) IDOLookup.createLegacy(GolferPageData.class);
 
     golferPageData.setGolfbagID(golfbagID);
     golferPageData.setMemberID(memberID);

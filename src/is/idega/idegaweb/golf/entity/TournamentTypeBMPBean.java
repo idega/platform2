@@ -14,15 +14,7 @@ import com.idega.data.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class TournamentTypeBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBMPBean implements is.idega.idegaweb.golf.entity.TournamentType {
-
-	public TournamentTypeBMPBean(){
-		super();
-	}
-
-	public TournamentTypeBMPBean(int id)throws SQLException{
-		super(id);
-	}
+public class TournamentTypeBMPBean extends GenericEntity implements TournamentType{
 
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());

@@ -12,17 +12,7 @@ import java.sql.*;
  * @version 1.0
  */
 
-public class UnionMemberInfoBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBMPBean implements is.idega.idegaweb.golf.entity.UnionMemberInfo {
-
-
-    public UnionMemberInfoBMPBean(){
-      super();
-    }
-
-    public UnionMemberInfoBMPBean(int id)throws SQLException{
-      super(id);
-    }
-
+public class UnionMemberInfoBMPBean extends GenericEntity implements UnionMemberInfo {
 
     public void initializeAttributes() {
         addAttribute(getIDColumnName());
@@ -296,13 +286,13 @@ public class UnionMemberInfoBMPBean extends is.idega.idegaweb.golf.entity.GolfEn
           /**
            * @todo impliment
            */
-/*		Union union = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(getMainUnionID());
+/*		Union union = new Union(getMainUnionID());
 		return union;
 	}
 */
 
    /*     public Card[] getCards()throws SQLException{
-                return ((Card[]) findReverseRelated(((is.idega.idegaweb.golf.entity.CardHome)com.idega.data.IDOLookup.getHomeLegacy(Card.class)).createLegacy()));
+                return ((Card[]) findReverseRelated(new Card()));
 	}*/
 
 

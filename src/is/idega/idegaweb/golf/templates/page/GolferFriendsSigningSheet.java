@@ -252,9 +252,9 @@ public class GolferFriendsSigningSheet extends Block {
 
     RadioButton yesButton = new RadioButton(yesOrNoButtonName, yesValue);
     RadioButton noButton = new RadioButton(yesOrNoButtonName, noValue);
-    noButton.setToDisableOnClick(appearNameInput,true);
+    noButton.setToDisableOnClick(appearNameInput, true);
     noButton.setSelected();
-    yesButton.setToDisableOnClick(appearNameInput,false);
+    yesButton.setToDisableOnClick(appearNameInput, false);
     yesButton.setOnClick("this.form."+appearNameInputName+".value = this.form."+nameInputName+".value");
 
     RadioButton amountRadioButton1 = new RadioButton( amountRadioButtonName, amountButtonValue1);
@@ -540,39 +540,39 @@ public class GolferFriendsSigningSheet extends Block {
 
   }
 
-  private String getPaymentAmount(IWContext iwc){
+  private String getPaymentAmount(IWContext modinfo){
     String amount ="";
 
-    if (iwc.isParameterSet(amountRadioButtonName)){
-//      System.err.println("ARRRRRRG ÞETTA Á AÐ VERA JÁ " + iwc.isParameterSet(amountRadioButtonName)+"    og parameterinn er " +iwc.getParameter(amountRadioButtonName));
-      if (iwc.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue1)) amount = "1000";
-      else if (iwc.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue2)) amount = "2000";
-      else if (iwc.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue3)) amount = "3000";
-      else if (iwc.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue4)) amount = "4000";
+    if (modinfo.isParameterSet(amountRadioButtonName)){
+//      System.err.println("ARRRRRRG ÞETTA Á AÐ VERA JÁ " + modinfo.isParameterSet(amountRadioButtonName)+"    og parameterinn er " +modinfo.getParameter(amountRadioButtonName));
+      if (modinfo.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue1)) amount = "1000";
+      else if (modinfo.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue2)) amount = "2000";
+      else if (modinfo.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue3)) amount = "3000";
+      else if (modinfo.getParameter(amountRadioButtonName).equalsIgnoreCase(amountButtonValue4)) amount = "4000";
       amount = amount+" or ";
     }
     else amount="";
-    return amount+iwc.getParameter(anotherAmountInputName);
+    return amount+modinfo.getParameter(anotherAmountInputName);
   }
 
-  private String getPaymentDuration(IWContext iwc){
+  private String getPaymentDuration(IWContext modinfo){
     String duration ="";
 
-    if (iwc.isParameterSet(durationRadioButtonName)){
-//      System.err.println("ARRRRRRG ÞETTA Á AÐ VERA JÁ " + iwc.isParameterSet(durationRadioButtonName)+"    og parameterinn er " +iwc.getParameter(durationRadioButtonName));
-      if (iwc.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue1)) duration = "1";
-      else if (iwc.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue2)) duration = "2";
-      else if (iwc.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue3)) duration = "3";
-      else if (iwc.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue4)) duration = "4";
+    if (modinfo.isParameterSet(durationRadioButtonName)){
+//      System.err.println("ARRRRRRG ÞETTA Á AÐ VERA JÁ " + modinfo.isParameterSet(durationRadioButtonName)+"    og parameterinn er " +modinfo.getParameter(durationRadioButtonName));
+      if (modinfo.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue1)) duration = "1";
+      else if (modinfo.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue2)) duration = "2";
+      else if (modinfo.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue3)) duration = "3";
+      else if (modinfo.getParameter(durationRadioButtonName).equalsIgnoreCase(durationButtonValue4)) duration = "4";
       duration = duration+" months or ";
     }
     else duration="";
-    return duration+iwc.getParameter(anotherDurationInputName);
+    return duration+modinfo.getParameter(anotherDurationInputName);
   }
 
-  private void viewChooser(IWContext iwc){
+  private void viewChooser(IWContext modinfo){
     String[] parameterValues;
-    parameterValues = iwc.getParameterValues(submitButtonName);
+    parameterValues = modinfo.getParameterValues(submitButtonName);
 
     if (parameterValues.length == 1){
       //Changes possible here, hence. what window to get when submitted the form.
@@ -593,20 +593,20 @@ public class GolferFriendsSigningSheet extends Block {
         String appearName;
         String billingAdress;
 
-        name = iwc.getParameter(nameInputName);
-        sSNumber = iwc.getParameter(sSNumberInputName);
-        adress = iwc.getParameter(adressAreaName);
+        name = modinfo.getParameter(nameInputName);
+        sSNumber = modinfo.getParameter(sSNumberInputName);
+        adress = modinfo.getParameter(adressAreaName);
         email = "";  //temporarily
-        cardType = iwc.getParameter(cardTypeMenuName);
-        cardNumber = iwc.getParameter(creditCardNumberInputName);
-        cardExpDate = iwc.getParameter(creditCardExpDateInputName);
-        nameAppearance = (iwc.getParameter(yesOrNoButtonName) == yesValue);
-        paymentDuration = getPaymentDuration(iwc);
-        paymentAmount = getPaymentAmount(iwc);
-        billingName = iwc.getParameter(billingNameInputName);
-        billingNameSSN = iwc.getParameter(billingNameSSNInputName);
-        appearName = iwc.getParameter(appearNameInputName);
-        billingAdress = iwc.getParameter(billingAdressAreaName);
+        cardType = modinfo.getParameter(cardTypeMenuName);
+        cardNumber = modinfo.getParameter(creditCardNumberInputName);
+        cardExpDate = modinfo.getParameter(creditCardExpDateInputName);
+        nameAppearance = (modinfo.getParameter(yesOrNoButtonName) == yesValue);
+        paymentDuration = getPaymentDuration(modinfo);
+        paymentAmount = getPaymentAmount(modinfo);
+        billingName = modinfo.getParameter(billingNameInputName);
+        billingNameSSN = modinfo.getParameter(billingNameSSNInputName);
+        appearName = modinfo.getParameter(appearNameInputName);
+        billingAdress = modinfo.getParameter(billingAdressAreaName);
 
         System.err.println("Virði billingAdress er "+billingAdress+" !!!!!!!!!!!!!");
         System.err.println("Virði name er "+name+" !!!!!!!!!!!!!");
@@ -620,7 +620,7 @@ public class GolferFriendsSigningSheet extends Block {
           GolferFriendsDataBusiness.insertFriendsData(name, sSNumber, email, adress,
            cardType, cardNumber, cardExpDate, nameAppearance, paymentAmount,
            paymentDuration, billingAdress, billingName, billingNameSSN, appearName,
-           (String) iwc.getSessionAttribute("fullGolferName"));
+           (String) modinfo.getSessionAttribute("fullGolferName"));
         }
         catch (Exception ex) {
 
@@ -644,17 +644,17 @@ public class GolferFriendsSigningSheet extends Block {
     return isAdmin;
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext modinfo) {
 
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
+      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException E) {    }
 
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
 
-    viewChooser(iwc);
+    viewChooser(modinfo);
     earlyWarningMessages();
 
   }

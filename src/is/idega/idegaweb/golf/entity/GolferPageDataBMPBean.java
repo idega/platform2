@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class GolferPageDataBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.golf.entity.GolferPageData {
+public class GolferPageDataBMPBean extends GenericEntity implements GolferPageData {
   public static final String MEMBER_ID = "MEMBER_ID";
   public static final String NEWS_READER_ID = "NEWS_READER_ID";
   public static final String PROFILE_ID = "PROFILE_ID";
@@ -22,14 +22,6 @@ public class GolferPageDataBMPBean extends com.idega.data.GenericEntity implemen
   public static final String STATISTICS_ID = "STATISTICS_ID";
   public static final String SUPPORTERS_ID = "SUPPORTERS_ID";
   public static final String SUPPORTER_PRE_SIGNING_ID = "SUPPORTER_PRE_SIGNING_ID";
-
-  public GolferPageDataBMPBean() {
-
-  }
-
-  public GolferPageDataBMPBean(int id) throws SQLException{
-    super(id);
-  }
 
   public void initializeAttributes() {
     this.addAttribute( MEMBER_ID, "member_id", true, false, Integer.class, "one_to_many", is.idega.idegaweb.golf.entity.UnionMemberInfo.class);

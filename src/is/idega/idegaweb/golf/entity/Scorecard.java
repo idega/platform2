@@ -17,6 +17,8 @@ public interface Scorecard extends is.idega.idegaweb.golf.entity.GolfEntity
  public int getSlope();
  public int getTeeColorID();
  public int getTotalPoints();
+ public boolean getForeignRound();
+ public String getForeignCourseName();
  public is.idega.idegaweb.golf.entity.TournamentRound getTournamentRound();
  public int getTournamentRoundId();
  public java.lang.String getUpdateHandicap();
@@ -37,4 +39,6 @@ public interface Scorecard extends is.idega.idegaweb.golf.entity.GolfEntity
  public void setTournamentRoundId(int p0);
  public void setUpdateHandicap(boolean p0);
  public void setUpdateHandicap(java.lang.String p0);
+ public void setForeignRound(boolean p0);
+ public void setForeignCourseName(String p0);
 }

@@ -2,7 +2,7 @@ package is.idega.idegaweb.golf.entity;
 
 import javax.ejb.*;
 
-public interface Member extends com.idega.data.genericentity.Member
+public interface Member extends GolfEntity
 {
  public void delete()throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.Address[] getAddress()throws java.sql.SQLException;
@@ -16,9 +16,10 @@ public interface Member extends com.idega.data.genericentity.Member
  public float getHandicap()throws java.sql.SQLException;
  public com.idega.jmodule.image.data.ImageEntity getImage();
  public int getImageId();
+ public int getAge();
  public java.lang.String getJob();
  public java.lang.String getLastName();
- public is.idega.idegaweb.golf.entity.Union getMainUnion()throws java.sql.SQLException;
+ public is.idega.idegaweb.golf.entity.Union getMainUnion()throws javax.ejb.FinderException, java.sql.SQLException;
  public int getMainUnionID()throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.MemberInfo getMemberInfo();
  public java.lang.String getMiddleName();
@@ -53,4 +54,5 @@ public interface Member extends com.idega.data.genericentity.Member
  public void setWorkPlace(java.lang.String p0);
  public void setimage_id(java.lang.Integer p0);
  public void setimage_id(int p0);
+ public is.idega.idegaweb.golf.block.login.data.LoginType[] getLoginType() throws java.sql.SQLException;
 }

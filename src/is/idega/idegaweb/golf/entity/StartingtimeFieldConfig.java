@@ -25,4 +25,9 @@ public interface StartingtimeFieldConfig extends is.idega.idegaweb.golf.entity.G
  public void setOpenTime(java.sql.Timestamp p0);
  public void setPublicRegistration(boolean p0);
  public void setTournamentID(int p0);
+
+ public boolean getNonMemberRegistration();
+ public void setNonMemberRegistration(boolean value);
+ public int getDaysShownNonMember();
+ public void setDaysShownNonMember( Integer days_shown);
 }

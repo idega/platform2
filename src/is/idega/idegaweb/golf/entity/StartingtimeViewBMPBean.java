@@ -3,15 +3,11 @@
 package is.idega.idegaweb.golf.entity;
 
 import java.sql.*;
-import com.idega.data.IDOLegacyEntity;
+import com.idega.data.GenericEntity;
 
-public class StartingtimeViewBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.golf.entity.StartingtimeView {
+public class StartingtimeViewBMPBean extends GenericEntity implements StartingtimeView{
 
-	public StartingtimeViewBMPBean(){
-		super();
-	}
-
-        public String getEntityName(){
+  public String getEntityName(){
 		return "startingtime_view";
 	}
 
@@ -28,8 +24,14 @@ public class StartingtimeViewBMPBean extends com.idega.data.GenericEntity implem
 		addAttribute("abbrevation", "Skammstöfun", true, true, "java.lang.String");
 		addAttribute("handicap","Leikforgjöf",true,true,"java.lang.Float");
 		addAttribute("union_id","númer meðlims",true,true,"java.lang.Integer");
+		// gimmi 10 JUNE 2003	
+		addAttribute("paid", "Greitt", true, true, "java.lang.Boolean");
 	}
 
+
+	public boolean getPaid() {
+		return getBooleanColumnValue("paid");	
+	}
 
         public int getId() {
             return getStartingtimeId();

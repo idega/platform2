@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class GolferPageFriendsDataBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.golf.entity.GolferPageFriendsData {
+public class GolferPageFriendsDataBMPBean extends GenericEntity implements GolferPageFriendsData {
 
   public static final String FRIENDS_DATA_NAME = "FRIENDS_DATA_NAME";
   public static final String FRIENDS_DATA_EMAIL = "FRIENDS_DATA_EMAIL";
@@ -41,13 +41,6 @@ public class GolferPageFriendsDataBMPBean extends com.idega.data.GenericEntity i
   public static final String FRIENDS_DATA_NAME_TO_VIEW = "FRIENDS_NAME_TO_VIEW";
   public static final String FRIENDS_DATA_GOLFER_NAME = "FRIENDS_GOLFER_NAME";
 
-
-  public GolferPageFriendsDataBMPBean() {
-  }
-
-  public GolferPageFriendsDataBMPBean(int iD) throws SQLException{
-    super(iD);
-  }
 
   public void setName(String name){
     setColumn(FRIENDS_DATA_NAME, name);

@@ -8,7 +8,7 @@ public interface Address extends is.idega.idegaweb.golf.entity.GolfEntity
  public is.idega.idegaweb.golf.entity.Country getCountry();
  public int getCountryId();
  public java.lang.String getExtraInfo();
- public is.idega.idegaweb.golf.entity.Member getMember()throws java.sql.SQLException;
+ public is.idega.idegaweb.golf.entity.Member getMember()throws javax.ejb.FinderException;
  public java.lang.String getName();
  public java.lang.String getSeason();
  public java.lang.String getStreet();

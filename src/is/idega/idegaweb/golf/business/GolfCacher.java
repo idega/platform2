@@ -3,6 +3,8 @@ package is.idega.idegaweb.golf.business;
 import com.idega.presentation.ui.DropdownMenu;
 import is.idega.idegaweb.golf.entity.Union;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+
 import is.idega.idegaweb.golf.entity.Union;
 
 import java.util.List;
@@ -30,7 +32,7 @@ public class GolfCacher {
 
   private static void initializeUnions(){
     try{
-    Union union = is.idega.idegaweb.golf.entity.UnionBMPBean.getStaticInstance();
+    Union union = (Union) IDOLookup.instanciateEntity(Union.class);
     Unions = EntityFinder.findAll(union,"Select * from " +union.getEntityName() + " order by abbrevation");
     }catch(SQLException e){
       e.printStackTrace();
