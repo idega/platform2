@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.34 2004/02/27 10:30:42 aron Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.35 2004/02/27 10:35:04 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import com.idega.util.CalendarMonth;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.34 2004/02/27 10:30:42 aron Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.35 2004/02/27 10:35:04 aron Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -285,7 +285,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.append("P."+COLUMN_REG_SPEC_TYPE_ID);
 		
 		//System.out.println(sql.toString());
-		logSQL(sql.toString());
+		
 		return idoFindPKsBySQL(sql.toString());
 	}
 
