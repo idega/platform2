@@ -75,7 +75,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			switch(signedEntity.getAction()){
 				case NBSSignedEntity.ACTION_INIT:
 					NBSSigningApplet applet = new NBSSigningApplet(initSignContract(iwc, toBeSigned));
-					//applet.setHiddenInputs(_hiddenInputs);
+					applet.setHiddenInputs(_hiddenInputs);
 					add(applet);
 					break;
 										
