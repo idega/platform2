@@ -59,6 +59,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private Regulation _currentRegulation = null;
 	private Collection _searchResult = null;
 	private SchoolCategory _currentSchoolCategory = null;
+	private SchoolType _currentSchoolType = null;
 	private String[] _currentPosting = null;
 	private School _currentSchool = null;
 	private Date _validDate = null;
@@ -151,8 +152,8 @@ public class RegulationSearchPanel extends AccountingBlock {
 					try{
 						RegulationsBusiness regBiz = (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 						PostingBusiness postingBiz = (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
-						SchoolType type = regBiz.getSchoolType(_currentRegulation);
-						_currentPosting = postingBiz.getPostingStrings(getCurrentSchoolCategory(iwc), type, ((Integer) _currentRegulation.getRegSpecType().getPrimaryKey()).intValue(), new Provider(_currentSchool), _validDate);	
+						_currentSchoolType = regBiz.getSchoolType(_currentRegulation);
+						_currentPosting = postingBiz.getPostingStrings(getCurrentSchoolCategory(iwc), _currentSchoolType, ((Integer) _currentRegulation.getRegSpecType().getPrimaryKey()).intValue(), new Provider(_currentSchool), _validDate);	
 					}catch (RemoteException ex){
 						ex.printStackTrace();
 					}catch (PostingException ex){
@@ -446,6 +447,13 @@ public class RegulationSearchPanel extends AccountingBlock {
 		SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),	SchoolBusiness.class);
 		String opField = getSession().getOperationalField();
 		return schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField).getPrimaryKey().toString();					
+	}
+
+	/**
+	 * @return
+	 */
+	public SchoolType getCurrentSchoolType() {
+		return _currentSchoolType;
 	}
 		
 	
