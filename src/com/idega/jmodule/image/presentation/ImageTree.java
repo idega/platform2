@@ -22,9 +22,10 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
 
     ImageCatagory[] catagory = (ImageCatagory[]) (new ImageCatagory()).findAll("Select * from image_catagory where parent_id = -1");
     ImageEntity[] images;
-    //Debug
-    Vector items = (Vector) modinfo.getServletContext().getAttribute("image_tree_vector");
-    //Vector items = null;
+    Vector items = null;
+
+    items = (Vector) modinfo.getServletContext().getAttribute("image_tree_vector");
+
     Integer[] intArr = new Integer[3];
     int pos;
 
@@ -150,6 +151,7 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
 
         if (!openCat.equals(Integer.toString(id))) {
           openLink.addParameter("open_catagory_id",""+id);
+
         }
         else {
           idLink.addParameter("open_catagory_id",""+id);
@@ -170,21 +172,28 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
         ++row;
         image = new ImageEntity(id);
 
-        String extrainfo = "";
-        if ( ( image.getWidth()!=null)&& ( image.getHeight()!=null) ) extrainfo = " ("+image.getWidth()+"*"+image.getHeight()+")";
+        StringBuffer extrainfo = new StringBuffer("");
+        extrainfo.append("&nbsp;");
+        extrainfo.append(image.getName());
 
-        text = new Text("&nbsp;"+image.getName()+extrainfo);
-          text.setFontSize(1);
+        if ( ( image.getWidth()!=null)&& ( image.getHeight()!=null) ){
+          extrainfo.append(" (");
+          extrainfo.append(image.getWidth());
+          extrainfo.append("*");
+          extrainfo.append(image.getHeight());
+          extrainfo.append(")");
+        }
 
-//        openLink = new Link(more,URI);
+        text = new Text(extrainfo.toString());
+        text.setFontSize(1);
+
         idLink = new Link(text,URI);
         idLink.setFontColor("#FFFFFF");
         idLink.setAttribute("style","text-decoration:none");
         if (preCatId != -1 ) {
-//          openLink.addParameter("open_catagory_id",""+pre_cat_id);
           idLink.addParameter("open_catagory_id",""+preCatId);
         }
-//        openLink.addParameter("open_image_id",""+id);
+
         table.mergeCells(pos,row,depth,row);
         table.setHeight(row,"21");
 
@@ -200,8 +209,6 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
             table.addText("",a,row);
           }
         }
-
-  //      table.add(openLink,pos,row);
 
           idLink.addParameter("image_id",""+id);
 
@@ -298,7 +305,7 @@ public void main(ModuleInfo modinfo)throws Exception{
   //this.isAdmin=this.isAdministrator(modinfo);
   //setSpokenLanguage(modinfo);
 
-  if( refresh ) refresh(modinfo);
+  if(refresh) refresh(modinfo);
 
   String tempImageId = modinfo.getParameter("image_id");
   String tempCatagoryId = modinfo.getParameter("catagory_id");

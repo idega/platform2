@@ -23,6 +23,7 @@ import com.idega.jmodule.client.imageModule;
 import com.idega.jmodule.image.data.*;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.servlet.IWCoreServlet;
+import com.idega.io.ImageSave;
 
 
 /**
@@ -347,156 +348,46 @@ private float getQuality(){
 }
 
 public com.idega.jmodule.object.Image getModifiedImageAsImageObject(ModuleInfo modinfo) throws Exception{
-
-  modifiedImageURL = modinfo.getServletContext().getRealPath("/")+"/pics/ModifiedImagetemp.jpg";
+  String seperator = System.getProperty("file.separator");
+  modifiedImageURL = modinfo.getServletContext().getRealPath(seperator)+seperator+"pics"+seperator+modinfo.getSession().getId()+"ModifiedImagetemp.jpg";
   writeModifiedImageToFile(modifiedImageURL);//temporary storage
   //InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
-return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.getImageName(),this.getModifiedWidth(),this.getModifiedHeight());
+return new com.idega.jmodule.object.Image("/pics/"+modinfo.getSession().getId()+"ModifiedImagetemp.jpg",getImageName(),getModifiedWidth(),getModifiedHeight());
 
 }
 
 
 
-public void writeModifiedImageToDatabase() throws Exception{
-
+public void writeModifiedImageToDatabase(boolean update) throws Exception{
+  Connection Conn=null;
   writeModifiedImageToFile(modifiedImageURL);//temporary storage
 
-  //debug change so that more than one can use this at once
-  InputStream input = new FileInputStream(modifiedImageURL);
-  ImageEntity entity = new ImageEntity();
-
-  Connection Conn = null;
-  String dataBaseType = "";
   try{
+    InputStream input = new FileInputStream(modifiedImageURL);
+    String dataBaseType = "";
+    Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
+    if (Conn!=null) dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
+    else dataBaseType="oracle";
 
-    Conn = (entity).getConnection();
-    dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
-    modifiedImageId = getNewImageID(Conn);
-    String statement = "insert into image (image_id,image_value,content_type,image_name,from_file,parent_id,width,height) values("+ modifiedImageId +",?,?,?,'N','"+ getImageId() +"',"+ getModifiedWidth() +","+ getModifiedHeight() +")";
-    PreparedStatement myPreparedStatement = Conn.prepareStatement ( statement );
-
-  if( !(dataBaseType.equals("oracle")) ) {
-    //Conn.setAutoCommit(false);
-//content type er lesið í imageModule
-//fileName með entity
-
-    myPreparedStatement = Conn.prepareStatement(statement);
-    myPreparedStatement.setBinaryStream(1, input, input.available() );
-    myPreparedStatement.setString(2, getContentType() );
-    myPreparedStatement.setString(3, getImageName() );
-    myPreparedStatement.execute();
-    myPreparedStatement.close();
-    //Conn.commit();
+    if( dataBaseType.equals("oracle") ) {
+      if(update){
+        ImageSave.saveImageToOracleDB(getImageId(),-1,input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), false);
+      }
+      else ImageSave.saveImageToOracleDB(-1,getImageId(),input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), true);
+    }
+    else {
+      if(update){
+        ImageSave.saveImageToDB(getImageId(),-1,input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), false);
+      }
+      else ImageSave.saveImageToDB(-1,getImageId(),input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), true);
+    }
   }
-  //ORACLE SPECIFIC STARTS
-  else {
-	oracle.sql.BLOB blob;
-	Conn.setAutoCommit(false);
-	myPreparedStatement = Conn.prepareStatement ( statement );
-        myPreparedStatement.setString(1, "00000001");//i stað hins venjulega empty_blob()
-        myPreparedStatement.setString(2, getContentType() );
-        myPreparedStatement.setString(3, getImageName() );
-        myPreparedStatement.execute();
-        myPreparedStatement.close();
-
-        Conn.commit();
-
-        int Start;
-	int Finish;
-	int StartID;
-	int FinishID;
-	int StartColumn;
-	int FinishColumn;
-
-        String ID;
-	String tableName;
-	String smaller="";
-	String smaller2="";
-	String cmd;
-	String columnName;
-
-	int doUpdate = statement.indexOf("update");
-	//is an update statement
-
-  if( doUpdate!=-1 ){
-
-	//update file_ set file_value=?,content_type=?,file_name=? where file_id="+file_id+"
-	  Start = doUpdate+7;
-	  Finish = statement.indexOf("set")-1;
-
-	  StartColumn = statement.indexOf("where")+6;
-	  smaller2 = statement.substring(StartColumn,statement.length());
-	  FinishColumn = smaller2.indexOf("=");
-	  StartColumn = 0;
-
-        StartID = FinishColumn+1;
-	smaller = smaller2.substring(StartID,smaller2.length());
-	FinishID = smaller.length();
-	StartID = 0;
-
-  }//end of if update
-  else{
-  //insert into file_ (file_id,file_value,content_type,file_name,date_added,from_file) values("+file_id+",?,?,?,'"+dags.getTimestampRightNow().toString()+"','N')")
-
-  Start = statement.indexOf("into")+5;
-  Finish = statement.indexOf("(")-1;
-
-  StartColumn = Finish +2;
-  smaller2 = statement.substring(StartColumn,statement.length());
-  FinishColumn = smaller2.indexOf(",");
-  StartColumn = 0;
-
-  StartID = statement.indexOf("values(")+7;
-  smaller = statement.substring(StartID,statement.length());
-  FinishID = smaller.indexOf(",");
-  StartID=0;
-
-  }//end of else
-
-  tableName = statement.substring(Start,Finish);
-  columnName = smaller2.substring(StartColumn,FinishColumn);
-  ID = smaller.substring(StartID,FinishID);
-
-  cmd = "SELECT * FROM "+tableName+"  WHERE "+columnName+" ='"+ID+"' FOR UPDATE";
-  System.out.println("CMD = "+cmd);
-
-//do the filling
-        Conn.setAutoCommit(false);
-        Statement stmt2 = Conn.createStatement();
-        ResultSet rest = stmt2.executeQuery(cmd);
-
-        rest.next();
-        blob = ((OracleResultSet)rest).getBLOB(3);
-
-                // write the array of binary data to a BLOB
-        OutputStream     outstream = blob.getBinaryOutputStream();
-
-        int size = blob.getBufferSize();
-        byte[] buffer = new byte[size];
-        int length = -1;
-
-        while ((length = input.read(buffer)) != -1)
-            outstream.write(buffer, 0, length );
-
-      outstream.flush();
-      outstream.close();
-      input.close();
-
-      Conn.commit();
-
-}//ORACLE SPECIFIC ENDS
-
-}
-  catch (SQLException E){
-    System.out.println(E.toString());
-  }
-  catch (Exception E){
-    System.out.println(E.toString());
+  catch(SQLException e){
+    e.printStackTrace(System.err);
   }
   finally{
-   entity.freeConnection(Conn);
+    if(Conn != null ) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
   }
-
 }
 
 public void writeModifiedImageToFile(String filename) throws Exception{
@@ -504,17 +395,16 @@ public void writeModifiedImageToFile(String filename) throws Exception{
   if ( filename.equalsIgnoreCase("")) filename = getImageName();
   OutputStream output = new FileOutputStream(filename);
 
-  JPEGEncodeParam jpgParam = new JPEGEncodeParam();
-  jpgParam.setQuality(getQuality());
+  ImageEncoder imageEncoder;
 
-/*
-for BMP support
-    ImageEncoder tEncoder = ImageCodec.createImageEncoder("BMP", tOutput, null);
-
-*/
-
-  //here we need to specify different types of images.
-  ImageEncoder imageEncoder = ImageCodec.createImageEncoder("JPEG",output,jpgParam);
+  if( getContentType().indexOf("bmp") != -1 ){
+    imageEncoder = ImageCodec.createImageEncoder("BMP", output, null);
+  }
+  else{
+    JPEGEncodeParam jpgParam = new JPEGEncodeParam();
+    jpgParam.setQuality(getQuality());
+    imageEncoder = ImageCodec.createImageEncoder("JPEG",output,jpgParam);
+  }
 
   PlanarImage modified = getModifiedImage();
 
@@ -525,33 +415,6 @@ for BMP support
   output.close();
 }
 
-
-
-
-public int getNewImageID(Connection Conn)throws SQLException{
-
-String dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
-
-Statement Stmt = Conn.createStatement();
-ResultSet RS;
-int imageId;
-
-  if( !(dataBaseType.equals("oracle")) ) {
-	RS = Stmt.executeQuery("select gen_id(image_gen,1) from rdb$database");
-  }
-  else{		//oracle
-	RS = Stmt.executeQuery("select image_seq.nextval from dual");
-  }
-
-  RS.next();
-  imageId = RS.getInt(1);
-
-  Stmt.close();
-  RS.close();
-//  getSession().setAttribute("imageId",image_id);
-
-return imageId;
-}
 
 public static PlanarImage convertColorToGray(PlanarImage src, int brightness) {
    PlanarImage dst = null;

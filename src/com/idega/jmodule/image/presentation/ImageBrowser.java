@@ -54,6 +54,13 @@ private ImageViewer viewer = new ImageViewer();
 
     String mode = modinfo.getParameter("mode");
     String edit = modinfo.getParameter("edit");//so it doesn't conflict with imageviewer
+    String action = modinfo.getParameter("action");//so it doesn't conflict with imageviewer
+
+    if ( refresh ) {
+      tree.refresh();
+      viewer.refresh();
+    }
+
       if ( mode == null ) { mode = "image"; }
 
     Form categoryForm = new Form();
@@ -96,22 +103,22 @@ private ImageViewer viewer = new ImageViewer();
 
       tree.setWidth(treeWidth);
       tree.setShowAll(showAll);
-      if ( refresh ) {
-        tree.refresh();
-        viewer.refresh();
-      }
 
-    imageTable.add(tree,1,1);
-
-    if ( mode.equalsIgnoreCase("image") || (edit!=null) ) {
+    if ( mode.equalsIgnoreCase("image") || (edit!=null)  || (action!=null) ) {
       viewer.limitImageWidth(true);
       viewer.setNumberOfDisplayedImages(9);
       viewer.setHeaderFooterColor("#336699");
       viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
       imageTable.add(viewer,3,1);
+      //debug because of refresh problem could solve with an invisible businenss class that is added first
+      if( (!"delete".equalsIgnoreCase(action)) && (!"save".equalsIgnoreCase(action)) && (!"savenew".equalsIgnoreCase(action)) ){
+        System.err.println("TRAAAAAAAAAAAAAVERSE");
+        imageTable.add(tree,1,1);
+      }
     }
     else if( mode.equalsIgnoreCase("search") ){
       imageTable.add(getSearchResults(modinfo),3,1);
+      imageTable.add(tree,1,1);
     }
 
     myTable.add(getToolbar(),1,1);

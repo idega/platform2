@@ -11,6 +11,10 @@ import com.idega.data.DatastoreInterface;
 import com.idega.data.EntityFinder;
 //import com.idega.idegaweb.*;
 import com.idega.jmodule.image.data.*;
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.textObject.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.oreilly.servlet.multipart.*;
 
 /**
  * Title: ImageBusiness
@@ -22,7 +26,7 @@ import com.idega.jmodule.image.data.*;
  *
  */
 
-//public class ImageBusiness extends JModule  {
+
 public class ImageBusiness  {
 
 public static Properties getBundleProperties(ModuleInfo modinfo) throws FileNotFoundException,IOException{
@@ -95,9 +99,11 @@ return ImageId;
 
 public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws Exception{
 
-  String action = modinfo.getRequest().getParameter("action");
-  String scaling = modinfo.getRequest().getParameter("scale.x");
-  int ImageId = handler.getOriginalImageId();
+  String action = modinfo.getParameter("action");
+  String scaling = modinfo.getParameter("scale.x");
+  String imageId2 = modinfo.getParameter("image_id");
+
+  int imageId = (handler!=null)? handler.getOriginalImageId() : Integer.parseInt(imageId2);
 
   if ( action != null){
         if ( action.equalsIgnoreCase("Grayscale") ) handler.convertModifiedImageToGrayscale();
@@ -105,19 +111,39 @@ public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws E
         else if ( action.equalsIgnoreCase("Invert") ) handler.invertModifiedImage();
         else if ( action.equalsIgnoreCase("Sharpen") ) handler.sharpenModifiedImage();
         else if( action.equalsIgnoreCase("Save") ){
-          handler.writeModifiedImageToDatabase();
+          System.out.println("ImageBusiness: Saving");
+          handler.writeModifiedImageToDatabase(true);
+        }
+        else if( action.equalsIgnoreCase("Savenew") ){
+          System.out.println("ImageBusiness: Saving new image");
+          handler.writeModifiedImageToDatabase(false);
         }
         else if( action.equalsIgnoreCase("Undo") ){
           handler.setModifiedImageAsOriginal();
         }
         else if( action.equalsIgnoreCase("delete") ){
+          try{
+            ImageEntity image = new ImageEntity( imageId );
+            ImageEntity[] childs = (ImageEntity[]) image.findAllByColumn("parent_id",imageId);
+            //brake childs from parent
+            if( (childs!=null) && (childs.length>0)) {
+              for (int i = 0; i < childs.length; i++) {
+                childs[i].setParentId(image.getParentId());
+                childs[i].update();
+              }
+            }
 
-          ImageEntity image = new ImageEntity( handler.getImageId() );
-          image.delete();
-          modinfo.removeSessionAttribute("image_in_session");
-          modinfo.removeSessionAttribute("handler");
-          handler=null;
+            image.removeFrom(GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageCatagory"));
 
+            image.delete();
+
+            modinfo.removeSessionAttribute("image_in_session");
+            modinfo.removeSessionAttribute("handler");
+          }
+          catch(Exception e){
+            e.printStackTrace(System.err);
+            System.out.println(e.getMessage());
+          }
         }
   }
 
@@ -263,12 +289,142 @@ public void makeDefaultSizes(){
 
         }
 
-
-
-
-
-//      }
+//}
     }
+
+
+  public Form Upload(Connection Conn, ModuleInfo modinfo)throws IOException,SQLException{
+    Form newImageForm = new Form();
+   // MultipartRequest multi=null;
+
+    try {
+
+     // multi = new MultipartRequest(modinfo.getRequest(),Conn,".", 5 * 1024 * 1024);
+
+      ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
+      DropdownMenu category = new DropdownMenu("category");
+      for (int i = 0 ; i < imgCat.length ; i++ ) {
+        category.addMenuElement(imgCat[i].getID(),imgCat[i].getImageCatagoryName());
+      }
+
+
+      Table UploadDoneTable = new Table(2,3);
+      UploadDoneTable.mergeCells(1,1,2,1);
+      UploadDoneTable.mergeCells(1,2,2,2);
+      UploadDoneTable.setBorder(0);
+      newImageForm.add(UploadDoneTable);
+
+      UploadDoneTable.add(category,2,3);
+
+      UploadDoneTable.add(new Text("Hér er myndin eins og hún kemur út á vefnum. Veldu aftur ef eitthvað fór úrskeiðis"),1,1);
+      UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSessionAttribute("image_id")) ),1,2);
+
+      UploadDoneTable.add(new SubmitButton("submit","Ný mynd"),1,3);
+      UploadDoneTable.add(new SubmitButton("submit","Vista"),1,3);
+      /*	newImageForm.add(new SubmitButton("submit","Ný mynd"));
+      newImageForm.add(new SubmitButton("submit","Vista"));
+      newImageForm.setMethod("GET");
+      *///	UploadDoneTable.add(newImageForm,1,3);
+      //	add(UploadDoneTable);
+
+  }
+  catch (Exception e) {
+    e.printStackTrace();
+  }
+  return newImageForm;
+}
+
+  private int SaveImage(ImageProperties ip){
+    try{
+      java.sql.Connection conn = com.idega.util.database.ConnectionBroker.getConnection();
+      FileInputStream fin = new FileInputStream(ip.getRealPath() );
+      int id = com.idega.io.ImageSave.saveImageToDB(conn,-1,fin,ip.getContenType(),ip.getName(),true);
+      ip.setId(id);
+      fin.close();
+      com.idega.util.database.ConnectionBroker.freeConnection(conn);
+      return id;
+    }
+    catch(Exception e){ip.setId(-1); return -1;}
+  }
+
+
+
+  private void doUpload(ModuleInfo modinfo){
+    String sep = System.getProperty("file.separator");
+    String realPath = modinfo.getServletContext().getRealPath(sep);
+    String webPath = sep+"pics"+sep;
+    String realFile = "";
+    ImageProperties  ip = null;
+
+    try {
+    MultipartParser mp = new MultipartParser(modinfo.getRequest(), 10*1024*1024); // 10MB
+    Part part;
+    File dir = null;
+    String value = null;
+    while ((part = mp.readNextPart()) != null) {
+      String name = part.getName();
+      if(part.isParam()){
+        ParamPart paramPart = (ParamPart) part;
+        value = paramPart.getStringValue();
+        //debug
+        System.out.println(name+" : "+value+Text.getBreak());
+
+      }
+      else if (part.isFile()) {
+        // it's a file part
+        FilePart filePart = (FilePart) part;
+        String fileName = filePart.getFileName();
+        if (fileName != null) {
+          webPath += fileName;
+          realFile =  realPath+webPath;
+          File file = new File(realFile);
+          long size = filePart.writeTo(file);
+          ip = new ImageProperties(fileName,filePart.getContentType(),realFile,webPath,size);
+          modinfo.setSessionAttribute("im_ip",ip);
+          //modinfo.getSession().removeAttribute("bm_ip");
+        }
+      }
+    }
+    boolean multi = true;
+    modinfo.getSession().setAttribute("isMultiPart",new Boolean(multi));
+  }
+   catch (Exception s) {
+    s.printStackTrace();
+  }
+/*
+      int iImageId = -1;
+      int id = -1;
+
+      iImageId = SaveImage(ip);
+
+      if(imageid != -1){
+        this.addImage(new Image(imageid));
+        try {
+          ImageEntity im = new ImageEntity(imageid);
+          ImageProperties ip = new ImageProperties(im.getImageName(),im.getContentType(),"","",0);
+          ip.setId(imageid);
+          modinfo.getSession().setAttribute("im_ip",ip);
+        }
+        catch (SQLException ex) {     }
+      }
+      else
+      this.addSave(new SubmitButton("submit","Save"));
+    }
+    else{
+      if(ip !=null){
+        if(ip.getId() != -1)
+          this.addImage(new Image(ip.getId()));
+        else
+         this.addImage(new Image(ip.getWebPath()));
+        }
+    }
+
+  }
+  catch (Exception s) {
+    s.printStackTrace();
+  }
+  */
+}
 
 }//end of class
 

@@ -48,6 +48,8 @@ private String headerText = "";
 private Image footerBackgroundImage;
 private Image headerBackgroundImage;
 private ImageEntity[] entities;
+private String percent = "100";
+private Link continueRefresh = new Link("Click here to continue...");
 
 
 private Text textProxy = new Text();
@@ -62,6 +64,7 @@ private Image save;
 private Image cancel;
 private Image newImage;
 private Image newCategory;
+private Image text;
 
 private String language = "IS";
 
@@ -76,13 +79,16 @@ private int attributeId = 3;
 
 public ImageViewer(){
 //  business = new ImageBusiness();
+  continueRefresh.addParameter("refresh","true");
 }
 
 public ImageViewer(int categoryId){
+  this();
   this.categoryId=categoryId;
 }
 
 public ImageViewer(ImageEntity[] entities){
+  this();
   this.entities=entities;
 }
 
@@ -124,7 +130,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
-  isAdmin= isAdministrator(modinfo);
+  //isAdmin= isAdministrator(modinfo);
+   isAdmin= true;
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
@@ -143,14 +150,12 @@ public void main(ModuleInfo modinfo)throws Exception{
   copy = new Image("/pics/jmodules/image/"+language+"/copy.gif","Copy this image");
   cut = new Image("/pics/jmodules/image/"+language+"/cut.gif","Cut this image");
   edit = new Image("/pics/jmodules/image/"+language+"/edit.gif","Edit this image");
+  text = new Image("/pics/jmodules/image/"+language+"/text.gif","Edit this image's text");
 
   save = new Image("/pics/jmodules/image/"+language+"/save.gif","Edit this image");
   cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif","Edit this image");
   newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Edit this image");
   newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit this image");
-
-  String imageId = modinfo.getParameter("image_id");
-  String imageCategoryId = modinfo.getParameter("image_catagory_id");
 
   outerTable.setColor(1,1,headerFooterColor);
   outerTable.setColor(1,3,headerFooterColor);
@@ -176,9 +181,11 @@ public void main(ModuleInfo modinfo)throws Exception{
   if ( headerBackgroundImage != null ) outerTable.setBackgroundImage(1,1,headerBackgroundImage);
   if ( footerBackgroundImage != null ) outerTable.setBackgroundImage(1,3,footerBackgroundImage);
 
-
-
+  String imageId = modinfo.getParameter("image_id");
+  String imageCategoryId = modinfo.getParameter("image_catagory_id");
+  percent = modinfo.getParameter("percent");
   String edit = modinfo.getParameter("edit");
+  String action = modinfo.getParameter("action");
 
   if(edit!=null){
     try{
@@ -187,30 +194,62 @@ public void main(ModuleInfo modinfo)throws Exception{
       add(outerTable);
     }
     catch(Throwable e){
-    e.printStackTrace(System.err);
-
-
+      e.printStackTrace(System.err);
     }
   }
   else{
     if(imageId != null){
       try{
-        limitImageWidth = false;
-        image[0] = new ImageEntity(Integer.parseInt(imageId));
-        Text imageName = new Text(image[0].getName());
-        imageName.setBold();
-        imageName.setFontColor(textColor);
-        imageName.setFontSize(3);
-        outerTable.add(imageName,1,1);
-        outerTable.add(displayImage(image[0]),1,2);
-        Text backtext = new Text("Bakka <<");
-        backtext.setBold();
-        Link backLink = new Link(backtext);
-        backLink.setFontColor(textColor);
-        backLink.setAsBackLink();
-        links.add(backLink,1,1);
-        outerTable.add(links,1,3);
-        add(outerTable);
+        if( action == null){
+          limitImageWidth = false;
+          image[0] = new ImageEntity(Integer.parseInt(imageId));
+          Text imageName = new Text(image[0].getName());
+          imageName.setBold();
+          imageName.setFontColor(textColor);
+          imageName.setFontSize(3);
+          outerTable.add(imageName,1,1);
+          outerTable.add(displayImage(image[0]),1,2);
+          Text backtext = new Text("Bakka <<");
+          backtext.setBold();
+          Link backLink = new Link(backtext);
+          backLink.setFontColor(textColor);
+          backLink.setAsBackLink();
+          links.add(backLink,1,1);
+          outerTable.add(links,1,3);
+          add(outerTable);
+        }
+        else{
+          System.out.println("ImageViewer: action but not editing!");
+          Text texti;
+          ImageHandler handler = null;
+          if( "delete".equalsIgnoreCase(action) ){
+             texti = new Text("Image deleted.");
+          }
+          else if( "save".equalsIgnoreCase(action) ){
+             texti = new Text("Image saved.");
+             handler = (ImageHandler) modinfo.getSessionAttribute("handler");
+
+          }
+          else if( "savenew".equalsIgnoreCase(action) ){
+             texti = new Text("Image saved as a new image.");
+             handler = (ImageHandler) modinfo.getSessionAttribute("handler");
+          }
+          else texti = new Text("NO ACTION?");
+
+          ImageBusiness.handleEvent(modinfo,handler);
+
+          texti.setBold();
+          texti.setFontColor("#FFFFFF");
+          texti.setFontSize(3);
+          outerTable.add(texti,1,2);
+          outerTable.add(Text.getBreak(),1,2);
+          outerTable.add(Text.getBreak(),1,2);
+          continueRefresh.setFontColor("#FFFFFF");
+          continueRefresh.setFontSize(3);
+          outerTable.add(continueRefresh,1,2);
+
+          add(outerTable);
+        }
        }
       catch(NumberFormatException e) {
         add(new Text("ImageId must be a number"));
@@ -256,7 +295,11 @@ public void main(ModuleInfo modinfo)throws Exception{
 
             if( limitNumberOfImages ) {
 
-
+              int too = (ifirst+numberOfDisplayedImages);
+              if( numberOfDisplayedImages >= imageEntity.length){
+                 too = imageEntity.length;
+                 numberOfDisplayedImages = too;
+              }
               Text leftText = new Text("Fyrri myndir <<");
               leftText.setBold();
 
@@ -266,8 +309,7 @@ public void main(ModuleInfo modinfo)throws Exception{
               if( iback<0 ) ifirst = 0;
               back.addParameter("iv_first",iback);
               back.addParameter("image_catagory_id",category.getID());
-
-              String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
+              String middle = (ifirst+1)+" til "+too+" af "+(imageEntity.length-1);
               Text middleText = new Text(middle);
               middleText.setBold();
               middleText.setFontColor(textColor);
@@ -330,7 +372,7 @@ return table;
 
 private Table displayImage( ImageEntity image ) throws SQLException
 {
-  String text = image.getText();
+  String texti = image.getText();
   int imageId = image.getID();
   Table imageTable = new Table(1, 2);
 
@@ -347,8 +389,8 @@ private Table displayImage( ImageEntity image ) throws SQLException
 
   imageTable.add(bigger, 1, 1);
 
-  if ( text!=null){
-    Text imageText = new Text(text);
+  if ( texti!=null){
+    Text imageText = new Text(texti);
     getTextProxy().setFontSize(1);
    // getTextProxy().setFontColor("#FFFFFF");
     imageText = setTextAttributes( imageText );
@@ -376,6 +418,9 @@ private Table displayImage( ImageEntity image ) throws SQLException
     Link imageEdit6 = new Link(edit);
     imageEdit6.addParameter("image_id",imageId);
     imageEdit6.addParameter("edit","true");
+    Link imageEdit7 = new Link(text,new Window("Edit text",300,200));
+    imageEdit7.addParameter("image_id",imageId);
+    imageEdit7.addParameter("action","text");
 
 
 
@@ -387,6 +432,8 @@ private Table displayImage( ImageEntity image ) throws SQLException
     editTable.add(imageEdit4,4,1);
     editTable.add(imageEdit5,5,1);
     editTable.add(imageEdit6,2,1);
+
+    editTable.add(imageEdit7,3,1);
 
     imageTable.add(editTable, 1, 2);
   }
@@ -543,17 +590,30 @@ public void refresh(){
   this.refresh = true;
 }
 
-public void refresh(ModuleInfo modinfo){
+private void refresh(ModuleInfo modinfo) throws SQLException{
   modinfo.removeSessionAttribute("image_previous_catagory_id");
-  modinfo.removeSessionAttribute("image_entities");
+  ImageCatagory[] catagories = (ImageCatagory[])(new ImageCatagory()).findAll();
+
+  if (catagories != null) {
+    if (catagories.length > 0 ) {
+      for (int i = 0 ; i < catagories.length ; i++ ) {
+        modinfo.getServletContext().removeAttribute("image_entities_"+catagories[i].getID());
+      }
+    }
+  }
+
 }
 
 public void setCallingModule(String callingModule){
   this.callingModule = callingModule;
 }
 
-
-public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modinfo) throws Throwable{
+private Table getImageInfoTable(){
+ Table table = new Table();
+ table.setColor("");
+return table;
+}
+private Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modinfo) throws Exception{
 
   Table toolbarBelow = new Table(4,2);
   Table toolbarRight = new Table(2,5);
@@ -561,31 +621,20 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   Form form = new Form();
   form.setMethod("GET");
 
-  Link delete = new Link(new Image("/pics/jmodules/image/buttons/delete.gif","Delete the image"));
-  delete.addParameter("action","delete");
-  delete.addParameter("edit","true");
-  delete.addParameter("refresh","true");
-
-  toolbarBelow.add(delete,1,1);
-
   Link gray = new Link(new Image("/pics/jmodules/image/buttons/grayscale.gif","Convert the image to grayscale"));
-  gray.addParameter("action","Grayscale");
-  gray.addParameter("edit","true");
+  setAction(gray,"grayscale");
   toolbarBelow.add(gray,1,1);
 
   Link emboss = new Link(new Image("/pics/jmodules/image/buttons/emboss.gif","Emboss the image"));
-  emboss.addParameter("action","emboss");
-  emboss.addParameter("edit","true");
+  setAction(emboss,"emboss");
   toolbarBelow.add(emboss,1,1);
 
   Link sharpen = new Link(new Image("/pics/jmodules/image/buttons/sharpen.gif","Sharpen the image"));
-  sharpen.addParameter("action","sharpen");
-  sharpen.addParameter("edit","true");
+  setAction(sharpen,"sharpen");
   toolbarBelow.add(sharpen,1,1);
 
   Link invert = new Link(new Image("/pics/jmodules/image/buttons/invert.gif","Invert the image"));
-  invert.addParameter("action","Invert");
-  invert.addParameter("edit","true");
+  setAction(invert,"invert");
   toolbarBelow.add(invert,1,1);
 
   Text widthtext = new Text("Width:"+Text.getBreak());
@@ -615,71 +664,89 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   toolbarBelow.add(constrained,3,2);
   toolbarBelow.add(new SubmitButton(new Image("/pics/jmodules/image/buttons/scale.gif"),"scale","true"),4,2);
   toolbarBelow.add(new HiddenInput("edit","true"),4,2);
+
   Link undo = new Link(new Image("/pics/jmodules/image/buttons/undo.gif","Undo the last changes"));
-  undo.addParameter("action","undo");
-  undo.addParameter("edit","true");
+  setAction(undo,"undo");
   toolbarBelow.add(undo,3,1);
-  Link save = new Link(new Image("/pics/jmodules/image/buttons/save.gif","Save the Image"));
+
+  Link save = new Link(new Image("/pics/jmodules/image/buttons/save.gif","Save the image"));
   save.addParameter("action","save");
-  save.addParameter("edit","true");
-  save.addParameter("refresh","true");
+  save.addParameter("image_id",ImageId);
   toolbarBelow.add(save,4,1);
 
-/*
+  Link savenew = new Link(new Image("/pics/jmodules/image/buttons/savenew.gif","Save as a new image"));
+  savenew.addParameter("action","savenew");
+  savenew.addParameter("image_id",ImageId);
+  toolbarBelow.add(savenew,4,1);
+
   Link brightness = new Link(new Image("/pics/jmodules/image/buttons/brightness.gif","Adjust the brightness of the image"));
-  brightness.addParameter("action","brightness");
+  setAction(brightness,"brightness");
   toolbarRight.add(brightness,1,1);
 
   Link contrast = new Link(new Image("/pics/jmodules/image/buttons/contrast.gif","Adjust the contrast of the image"));
-  contrast.addParameter("action","contrast");
+  setAction(contrast,"contrast");
   toolbarRight.add(contrast,1,2);
 
   Link color = new Link(new Image("/pics/jmodules/image/buttons/color.gif","Adjust the color of the image"));
-  color.addParameter("action","color");
+  setAction(color,"color");
   toolbarRight.add(color,1,3);
 
   Link quality = new Link(new Image("/pics/jmodules/image/buttons/quality.gif","Adjust the quality of the image"));
-  quality.addParameter("action","quality");//quality( + _low/_med/_high/_max)
+  setAction(quality,"quality");
   toolbarRight.add(quality,1,4);
 
   Link revert = new Link(new Image("/pics/jmodules/image/buttons/revert.gif","Revert to the last saved version of the image"));
-  revert.addParameter("action","revert");
+  setAction(revert,"revert");
   toolbarRight.add(revert,2,1);
 
   Link rotate = new Link(new Image("/pics/jmodules/image/buttons/rotate.gif","Rotate the image CCW/CW"));
-  rotate.addParameter("action","rotate");
+  setAction(rotate,"rotate");
   toolbarRight.add(rotate,2,2);
 
   Link horizontal = new Link(new Image("/pics/jmodules/image/buttons/horizontal.gif","Flip the image horizontaly"));
-  horizontal.addParameter("action","horizontal");
+  setAction(horizontal,"horizontal");
   toolbarRight.add(horizontal,2,3);
 
   Link vertical = new Link(new Image("/pics/jmodules/image/buttons/vertical.gif","Flip the image verticaly"));
-  vertical.addParameter("action","vertical");
+  setAction(vertical,"vertical");
   toolbarRight.add(vertical,2,4);
 
 
-  imageTable.add(toolbarRight,2,1);*/
-
+  imageTable.add(toolbarRight,1,1);
   imageTable.add(toolbarBelow,1,2);
   imageTable.mergeCells(1,2,2,2);
+  imageTable.setWidth("100%");
+  imageTable.setHeight("100%");
+  imageTable.setAlignment(1,1,"left");
+  imageTable.setAlignment(2,1,"left");
+  imageTable.setAlignment(1,2,"center");
+  imageTable.setVerticalAlignment(1,1,"top");
+  imageTable.setVerticalAlignment(2,1,"middle");
+
 
   if( handler != null) {
   //debug
     Image myndin = handler.getModifiedImageAsImageObject(modinfo);
-    int percent = 100;
+
     String percent2  = modinfo.getParameter("percent");
-    if (percent2!=null) percent = Integer.parseInt(percent2);
+    if (percent2!=null) percent = TextSoap.findAndReplace(percent2,"%","");
+    int iPercent = 100;
+    try{
+      iPercent = Integer.parseInt(percent);
+    }
+    catch (NumberFormatException n) {
+      iPercent = 100;
+      percent = "100";
+    }
+    myndin.setWidth( (myndin.getWidth()* iPercent)/100  );
+    myndin.setHeight( (myndin.getHeight()* iPercent)/100 );
 
-    myndin.setWidth( (myndin.getWidth()* percent)/100  );
-    myndin.setHeight( (myndin.getHeight()* percent)/100 );
-
-    imageTable.add( myndin ,1,1);
+    imageTable.add( myndin ,2,1);
 
     Text percentText = new Text(Text.getBreak()+"Percent:"+Text.getBreak());
     percentText.setFontSize(1);
     imageTable.add(percentText,1,1);
-    TextInput percentInput = new TextInput("percent",""+percent);
+    TextInput percentInput = new TextInput("percent",percent+"%");
     percentInput.setSize(4);
     imageTable.add(percentInput,1,1);
 
@@ -694,13 +761,18 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   toolbarBelow.setAlignment(4,2,"left");
   toolbarBelow.setAlignment(3,1,"right");
   toolbarBelow.setAlignment(4,1,"right");
-  imageTable.setVerticalAlignment(2,1,"bottom");
 
 
   form.add(imageTable);
 
   return form;
   }
+
+private void setAction(Link theLink, String action){
+  theLink.addParameter("action",action);
+  theLink.addParameter("edit","true");
+  theLink.addParameter("percent",percent);
+}
 
 private Form getEditForm(){
   Form frameForm = new Form();
@@ -766,51 +838,7 @@ private Form getEditForm(){
 }
 
 
-public void Upload(Connection Conn, ModuleInfo modinfo)throws IOException,SQLException{
 
-  Form newImageForm = new Form();
-  newImageForm.setMethod("GET");
-
-  MultipartRequest multi=null;
-
-  try {
-
-    multi = new MultipartRequest(modinfo.getRequest(),Conn,".", 5 * 1024 * 1024);
-
-  ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
-  DropdownMenu category = new DropdownMenu("category");
-  for (int i = 0 ; i < imgCat.length ; i++ ) {
-  category.addMenuElement(imgCat[i].getID(),imgCat[i].getImageCatagoryName());
-  }
-
-
-  Table UploadDoneTable = new Table(2,3);
-      UploadDoneTable.mergeCells(1,1,2,1);
-  UploadDoneTable.mergeCells(1,2,2,2);
-  UploadDoneTable.setBorder(0);
-  newImageForm.add(UploadDoneTable);
-
-  UploadDoneTable.add(category,2,3);
-
-  UploadDoneTable.add(new Text("Hér er myndin eins og hún kemur út á vefnum. Veldu aftur ef eitthvað fór úrskeiðis"),1,1);
-  UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSessionAttribute("image_id")) ),1,2);
-
-  UploadDoneTable.add(new SubmitButton("submit","Ný mynd"),1,3);
-  UploadDoneTable.add(new SubmitButton("submit","Vista"),1,3);
-  /*	newImageForm.add(new SubmitButton("submit","Ný mynd"));
-  newImageForm.add(new SubmitButton("submit","Vista"));
-  newImageForm.setMethod("GET");
-  *///	UploadDoneTable.add(newImageForm,1,3);
-  //	add(UploadDoneTable);
-  add(newImageForm);
-
-
-  }
-  catch (Exception e) {
-    e.printStackTrace();
-  }
-
-}
 
 public void drawUploadTable(String image_id,boolean replace){
 	Form MultipartForm = new Form();
@@ -884,7 +912,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
 
 
 ////
-
+/*
  try {
 
   Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
@@ -953,7 +981,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
     if( Conn!=null) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
   }
 
-
+*/
 
 
 
