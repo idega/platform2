@@ -15,6 +15,8 @@ import com.idega.data.IDOQuery;
  * tables realted to the regulation ("regelverk"). Since the data for the regulation is entered 
  * when the system is installed, we need this mapping to be able to reffer to specifics like 
  * "check" or "Childcare". This table needs to be updated at installation to reflect this. 
+ * 
+ * Probably depricated (joakim@idega.com)
  */
 public class KeyMappingBMPBean extends GenericEntity implements KeyMapping, IDOLegacyEntity {
 	private static final String ENTITY_NAME = "cacc_key_mapping";
