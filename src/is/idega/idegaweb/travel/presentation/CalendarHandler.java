@@ -30,8 +30,10 @@ public class CalendarHandler extends TravelManager {
   private IWResourceBundle iwrb;
   private Supplier _supplier;
 
+  private String backgroundColor = super.backgroundColor;
+
   private String colorForAvailableDay = TravelManager.ORANGE;
-  private String colorForAvailableDayText = TravelManager.backgroundColor;
+  private String colorForAvailableDayText = backgroundColor;
   private String colorForInquery = TravelManager.YELLOW;
   private String colorForFullyBooked = TravelManager.RED;
   private String colorForFullyBookedText = TravelManager.WHITE;
@@ -69,22 +71,22 @@ public class CalendarHandler extends TravelManager {
     sm = new SmallCalendar();
       sm.T.setBorder(1);
       sm.T.setCellpadding(2);
-      sm.T.setBorderColor(super.backgroundColor);
       sm.useNextAndPreviousLinks(true);
-      sm.setBackgroundColor(super.backgroundColor);
       sm.setTextColor("WHITE");
       sm.setDaysAsLink(true);
       sm.showNameOfDays(true);
       sm.setHeaderTextColor(super.textColor);
       sm.setDayTextColor(super.textColor);
-      sm.setHeaderColor(super.backgroundColor);
-      sm.setDayCellColor(super.backgroundColor);
+      sm.T.setBorderColor(this.backgroundColor);
+      sm.setBackgroundColor(this.backgroundColor);
+      sm.setHeaderColor(this.backgroundColor);
+      sm.setDayCellColor(this.backgroundColor);
       sm.setBodyColor("#8484D6");
       sm.setInActiveCellColor("#666666");
       sm.setColorToday(colorForToday);
       sm.setSelectedHighlighted(false);
 
-      sm.setDayFontColor(idegaTimestamp.RightNow(),super.backgroundColor);
+      sm.setDayFontColor(idegaTimestamp.RightNow(),this.backgroundColor);
   }
 
   private void timeframeCheck() {
@@ -116,14 +118,11 @@ public class CalendarHandler extends TravelManager {
       sm.setTimestamp(_fromStamp);
       this.timeframeCheck();
 
-      for (int i = 0; i < parameterName.size(); i++) {
-        sm.addParameterToLink((String) parameterName.get(i), (String) parameterValue.get(i));
-      }
 
 
       Table table = new Table(4,6);
           table.setBorder(0);
-          table.setColor(TravelManager.backgroundColor);
+          table.setColor(this.backgroundColor);
           table.setAlignment("center");
 
 
@@ -224,6 +223,23 @@ public class CalendarHandler extends TravelManager {
         lDec.addParameter("year",_fromStamp.getYear());
         lDec.addParameter("month",12);
         lDec.addParameter("day",_fromStamp.getDate());
+
+      for (int i = 0; i < parameterName.size(); i++) {
+        sm.addParameterToLink((String) parameterName.get(i), (String) parameterValue.get(i));
+        lJan.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lFeb.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lMar.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lApr.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lMay.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lJun.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lJul.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lAug.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lSep.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lOct.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lNov.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+        lDec.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+      }
+
 
       table.add(lJan,1,1);
       table.add(lFeb,2,1);
@@ -421,6 +437,18 @@ public class CalendarHandler extends TravelManager {
   public void addParameterToLink(String name, String value) {
     parameterName.add(name);
     parameterValue.add(value);
+  }
+
+  public void setBackgroundColor(String color) {
+    this.backgroundColor = color;
+      sm.T.setBorderColor(this.backgroundColor);
+      sm.setBackgroundColor(this.backgroundColor);
+      sm.setHeaderColor(this.backgroundColor);
+      sm.setDayCellColor(this.backgroundColor);
+  }
+
+  public void setDayCellColor(String color) {
+    sm.setInActiveCellColor(color);
   }
 
   }

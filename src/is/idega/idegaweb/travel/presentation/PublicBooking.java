@@ -44,6 +44,8 @@ public class PublicBooking extends Block  {
   private DecimalFormat df = new DecimalFormat("0.00");
   private Text text = new Text("");
   private Text boldText = new Text("");
+  private String backgroundColor = "#1A4B8E";
+
 
 
   public PublicBooking() {
@@ -133,11 +135,12 @@ public class PublicBooking extends Block  {
 
       Image background = bundle.getImage("images/sb_background.gif");
       table.setBackgroundImage(1, 2, background);
-      table.setRowColor(3, TravelManager.backgroundColor);
-      table.setColor(2, 1, TravelManager.backgroundColor);
+      table.setRowColor(3, backgroundColor);
+      table.setColor(2, 1, backgroundColor);
       table.mergeCells(2, 1, 2, 2);
       table.setVerticalAlignment(1,1,"top");
       table.setVerticalAlignment(1,2,"top");
+      table.setVerticalAlignment(2,1,"top");
       table.setHeight(1, "20");
       table.setHeight(3, "20");
       table.setWidth(2, "20");
@@ -164,15 +167,32 @@ public class PublicBooking extends Block  {
 
 
   private Table right(IWContext iwc)  {
-    Table table = new Table(1,2);
+    Table table = new Table(1,4);
       table.setVerticalAlignment(1,1,"top");
       table.setVerticalAlignment(1,2,"top");
+      table.setVerticalAlignment(1,3,"top");
+      table.setVerticalAlignment(1,4,"top");
+      table.setAlignment(1,1,"center");
+      table.setAlignment(1,2,"center");
+      table.setAlignment(1,3,"center");
+      table.setAlignment(1,4,"center");
+
+    Image arrow = bundle.getImage("images/white_arrow.gif");
+    Image bookNow = iwrb.getImage("images/book_here.gif");
+    Text checkAvail = getBoldTextWhite(iwrb.getLocalizedString("travel.check_availability","Check availability and select date by the calendar below"));
+
+    table.add(bookNow,1,1);
+    table.add(checkAvail,1,2);
+    table.add(arrow,1,3);
 
     try {
       CalendarHandler ch = new CalendarHandler(iwc);
         ch.setProduct(product);
+        ch.setBackgroundColor(this.backgroundColor);
+        ch.setDayCellColor("#6666CC");
         ch.addParameterToLink(this.parameterProductId, productId);
-      table.add(ch.getCalendarTable(iwc));
+        ch.setClassToLinkTo(PublicBooking.class);
+      table.add(ch.getCalendarTable(iwc),1,4);
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
@@ -182,14 +202,14 @@ public class PublicBooking extends Block  {
 
   private Form leftTop(IWContext iwc) {
     Form form = new Form();
-//    Table table = new Table();
-//    form.add(table);
+    Table table = new Table();
+    form.add(table);
 
 
     try {
-      ServiceOverview so = new ServiceOverview(iwc);
-        form.add(so.getProductInfoTable(iwc, iwrb, product));
-/*
+//      ServiceOverview so = new ServiceOverview(iwc);
+//        form.add(so.getProductInfoTable(iwc, iwrb, product));
+
       table.setWidth("95%");
       table.setAlignment("center");
       table.setBorder(1);
@@ -297,7 +317,7 @@ public class PublicBooking extends Block  {
       table.mergeCells(2,5,3,5);
       table.setWidth(1,"138");
       table.setWidth(1,"238");
-*/
+
 
     }catch (Exception e) {
       e.printStackTrace(System.err);
