@@ -118,8 +118,14 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		}
 		ImplementorRepository implementorRepository =  ImplementorRepository.getInstance();
 		otherCoachesNameField = (AttendantChooser) implementorRepository.newInstanceOrNull(AttendantChooser.class, this.getClass());
+		if (otherCoachesNameField == null) {
+			throw new RuntimeException("[CreateLedgerWindow] Implementation of AttendChooser could not be found. Implementing bundle was not loaded.");
+		}
 		otherCoachesNameField.setChooserParameter(otherCoachesFieldParameterName);
 		groupNameField = (AttendantChooser) implementorRepository.newInstanceOrNull(AttendantChooser.class, this.getClass());
+		if (groupNameField == null) {
+			throw new RuntimeException("[CreateLedgerWindow] Implementation of AttendChooser could not be found. Implementing bundle was not loaded.");
+		}
 		groupNameField.setChooserParameter(groupFieldParameterName);
 		/* prior version:
 		otherCoachesNameField = new GroupChooser(otherCoachesFieldParameterName);

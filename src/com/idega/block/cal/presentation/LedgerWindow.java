@@ -448,8 +448,11 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				}
 				
 				CalPropertyWindow propertyWindow = (CalPropertyWindow) ImplementorRepository.getInstance().newInstanceOrNull(CalPropertyWindow.class, this.getClass());
-				aLink.setWindowToOpen(propertyWindow.getClass());
-				aLink.addParameter(propertyWindow.getIdParameter(), user.getPrimaryKey().toString());
+				if (propertyWindow == null) {
+					logWarning("[LedgerWindow] Implementation of CalPropertyWindow could not be found. Implementing bundle was not loaded."); 
+					aLink.setWindowToOpen(propertyWindow.getClass());
+					aLink.addParameter(propertyWindow.getIdParameter(), user.getPrimaryKey().toString());
+				}
 				/* prior version:
 				aLink.setWindowToOpen(UserPropertyWindow.class);
 				aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
