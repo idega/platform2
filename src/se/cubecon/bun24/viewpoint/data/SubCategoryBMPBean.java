@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.user.data.*;
 
 /**
- * Last modified: $Date: 2002/11/29 07:02:35 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/12 10:33:25 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -31,7 +31,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
         final String [][] startData = {
             { "Anordnare", "Barnomsorg", "Myndighetsgruppen" },
             { "Betalningar", "Barnomsorg", "Ekonomi" },
-            { "Kötid", "Barnomsorg", "Anordnare" },
+            { "Kötid", "Barnomsorg", "Kundvalsgruppen" },
             { "Regelverk", "Barnomsorg", "Kundvalsgruppen" },
             { "Taxan", "Barnomsorg", "Kundvalsgruppen" },
             { "Övrigt", "Barnomsorg", "Kundvalsgruppen" },
@@ -41,7 +41,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
             { "Modersmål", "Skola", "Myndighetsgruppen" },
             { "Regelverk", "Skola", "Kundvalsgruppen" },
             { "Skolskjuts", "Skola", "Myndighetsgruppen" },
-            { "Skolval", "Skola", "Anordnare" },
+            { "Skolval", "Skola", "Kundvalsgruppen" },
             { "Övrigt", "Skola", "Kundvalsgruppen" },
             { "Elevvård", "Gymnasieskola", "Myndighetsgruppen" },
             { "Inackorderingsbidrag", "Gymnasieskola", "Myndighetsgruppen" },
