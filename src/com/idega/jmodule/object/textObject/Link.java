@@ -531,10 +531,12 @@ public void print(ModuleInfo modinfo)throws IOException{
 
   public void setToFormSubmit(Form form) {
       this.setOnClick("document."+form.getID()+".submit()");
+      this.setURL("#");
   }
 
   public void setAsBackLink(int backUpHowManyPages) {
       this.setOnClick("history.go(-"+backUpHowManyPages+")");
+      this.setURL("#");
   }
 
   public void  setAsBackLink() {
