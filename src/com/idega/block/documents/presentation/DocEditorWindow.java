@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Locale;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.builder.presentation.IBPageChooser;
@@ -19,7 +18,7 @@ import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.business.FolderBlockBusiness;
-import com.idega.idegaweb.block.business.FolderBlockBusinessBean;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
