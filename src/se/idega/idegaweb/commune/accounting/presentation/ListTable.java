@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.1 2003/08/19 10:22:15 anders Exp $
+ * $Id: ListTable.java,v 1.2 2003/08/19 21:20:06 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/19 10:22:15 $
+ * Last modified: $Date: 2003/08/19 21:20:06 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ListTable extends AccountingBlock {
 
@@ -95,7 +95,7 @@ public class ListTable extends AccountingBlock {
 	/**
 	 * Adds (skips) an empty cell to the list.
 	 * The column position is automatically increased and rows
-	 * are automatically wrapped when the current column is full.
+	 * are automatically wrapped when the current row is full.
 	 */
 	public void skip(){
 		col++;
@@ -113,7 +113,7 @@ public class ListTable extends AccountingBlock {
 	/**
 	 * Adds (skips) an empty cell to the list.
 	 * The column position is automatically increased and rows
-	 * are automatically wrapped when the current column is full.
+	 * are automatically wrapped when the current row is full.
 	 * @param nrOfColumns the number of columns to skip
 	 */
 	public void skip(int nrOfColumns){
