@@ -237,9 +237,9 @@ public class CampusFinanceHandler implements FinanceHandler {
 		long valfr = con.getValidFrom().getTime();
 		long valto = con.getValidTo().getTime();
 		double ret = getFactor(begin,endin,valfr,valto);
-		//if(ret<1){
-		//	System.out.println("factor for contract "+con.getContractId()+" aprt:"+con.getApartmentId() +" start:"+(new java.util.Date(begin)).toGMTString()+" ("+begin+")  end: "+(new java.util.Date(endin)).toGMTString()+" ("+endin+") factor: "+ret);
-		//}
+		
+		//if(ret<1)System.out.println("factor for contract "+con.getContractId() +" start:"+(new java.util.Date(begin)).toString()+" end: "+(new java.util.Date(endin)).toString()+" from"+(new java.util.Date(valfr)).toString()+" to"+(new java.util.Date(valto)).toString()+" factor: "+ret);
+		
 		return ret;
 	}
 	
