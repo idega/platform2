@@ -497,7 +497,7 @@ public class UserEditor extends Block {
 		String type,
 		String reverseType,Integer editorPageID) {
 		SubmitButton button = new SubmitButton(display);
-		URLUtil URL = new URLUtil(iwc.getServerURL()+Window.getWindowURL(connectorWindowClass, iwc));
+		URLUtil URL = new URLUtil(Window.getWindowURL(connectorWindowClass, iwc));
 		//String URL = Window.getWindowURL(connectorWindowClass, iwc);
 		URL.addParameter(UserRelationConnector.PARAM_USER_ID ,roleUserID.toString());
 		//URL += "&" + UserRelationConnector.PARAM_USER_ID + "=" + roleUserID.toString();
