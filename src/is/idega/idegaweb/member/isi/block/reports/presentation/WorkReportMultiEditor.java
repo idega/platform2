@@ -72,7 +72,7 @@ public class WorkReportMultiEditor extends Block {
   private static final String REGIONAL_UNION_ABBR = IWMemberConstants.META_DATA_CLUB_ABRV;
 	private static final String REPORT_STATUS = "STATUS";
 	private static final String MEMBER_COUNT = WorkReport.class.getName()+".TOTAL_MEMBERS";
-  
+	private static final String PLAYER_COUNT = WorkReport.class.getName()+".TOTAL_PLAYERS";
 
   
   private boolean editable = true;
@@ -183,7 +183,8 @@ public class WorkReportMultiEditor extends Block {
 			REGIONAL_UNION_ABBR, metaConverter,
 			INACTIVE, inActiveConverter,
 			REPORT_STATUS, reportStatusDropDownMenuConverter,
-			MEMBER_COUNT,null
+			MEMBER_COUNT,null,
+			PLAYER_COUNT,null
 		};
       
       
