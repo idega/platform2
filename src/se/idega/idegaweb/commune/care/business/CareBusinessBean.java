@@ -1,5 +1,5 @@
 /*
- * $Id: CareBusinessBean.java,v 1.5 2004/10/21 10:57:27 thomas Exp $
+ * $Id: CareBusinessBean.java,v 1.6 2004/10/21 11:10:19 thomas Exp $
  * Created on Oct 13, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheckHome;
 import se.idega.idegaweb.commune.care.data.CurrentSchoolSeason;
@@ -30,20 +29,22 @@ import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/10/21 10:57:27 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/21 11:10:19 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
 	private SchoolBusiness schoolBusiness = null;
+	private UserBusiness userBusiness = null;
 	
 	public School getProviderForUser(User user) throws FinderException, RemoteException {
 		Group primaryGroup = user.getPrimaryGroup();
@@ -111,19 +112,12 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		return (SchoolSeasonHome) this.getIDOHome(SchoolSeason.class);
 	}
 	
-	private SchoolBusiness getSchoolBusiness() throws RemoteException {
-		if (schoolBusiness == null) {
-			schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
-		}
-		return schoolBusiness;
-	}
-
 
 	public Map getStudentList(Collection students) throws RemoteException {
 		HashMap coll = new HashMap();
 
 		if (!students.isEmpty()) {
-			Collection users = getCommuneUserBusiness().getUsers(this.getUserIDsFromClassMembers(students));
+			Collection users = getUserBusiness().getUsers(this.getUserIDsFromClassMembers(students));
 			User user;
 
 			Iterator iter = users.iterator();
@@ -153,8 +147,19 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		return null;
 	}
 	
-	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
-		return (CommuneUserBusiness) getServiceInstance( CommuneUserBusiness.class);
+	private SchoolBusiness getSchoolBusiness() throws RemoteException {
+		if (schoolBusiness == null) {
+			schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
+		}
+		return schoolBusiness;
 	}
+
+	private UserBusiness getUserBusiness() throws RemoteException {
+		if (userBusiness == null) {
+			userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
+		}
+		return userBusiness;
+	}
+
 
 }
