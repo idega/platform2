@@ -187,15 +187,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		}
 		else {
 			StringBuffer select = new StringBuffer("select distinct s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id in (");
-			Iterator iter = typeIds.iterator();
-			int count = 0;
-			while (iter.hasNext()) {
-				if (count != 0) {
-					select.append(", ");
-				}
-				select.append(iter.next().toString());
-				++count;
-			}
+			select.append(getIDOUtil().convertListToCommaseparatedString(typeIds));
 			select.append(") and m.sch_school_id = s.sch_school_id");
 			select.append(" order by s.").append(NAME);
 			return super.idoFindPKsBySQL(select.toString());
@@ -321,15 +313,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(" and s.sch_school_id = m.sch_school_id ");
 		if (types != null && !types.isEmpty()) {
 			sql.append(" and t.sch_school_type_id in (");
-			Iterator it = types.iterator();
-			SchoolType type = null;
-			while (it.hasNext()) {
-				type = (SchoolType) it.next();
-				Integer pk = (Integer) type.getPrimaryKey();
-				sql.append(pk);
-				if (it.hasNext())
-					sql.append(",");					
-			}
+			sql.append(getIDOUtil().convertListToCommaseparatedString(types));
 			sql.append(") ");
 		}
 		sql.append(" and a.sch_school_area_id = ");
