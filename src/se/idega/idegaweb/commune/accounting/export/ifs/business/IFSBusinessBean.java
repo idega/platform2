@@ -743,17 +743,17 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						//Posttyp
 						bWriter.write("60");
 						//Filler etc
-						bWriter.write(empty.substring(0, 22));
+						bWriter.write(empty.substring(0, 21));
 						//Perioden
-						if (periodText.length() < 20) {
+						if (periodText.length() < 21) {
 							StringBuffer p = new StringBuffer(periodText);
-							while (p.length() < 20)
+							while (p.length() < 21)
 								p.append(' ');
 
 							periodText = p.toString();
 						}
-						else if (periodText.length() > 20) {
-							periodText = periodText.substring(0, 20);
+						else if (periodText.length() > 21) {
+							periodText = periodText.substring(0, 21);
 						}
 						bWriter.write(periodText);
 						//Kundnrtyp
