@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.29 2004/01/12 08:54:42 laddi Exp $
+ * $Id: RegulationBMPBean.java,v 1.30 2004/02/18 17:17:47 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.29 2004/01/12 08:54:42 laddi Exp $
+ * $Id: RegulationBMPBean.java,v 1.30 2004/02/18 17:17:47 aron Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -401,9 +401,11 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		}
 		if (sortByID == 2) {
 			sql.appendOrderBy(COLUMN_NAME);
+			sql.appendOrderBy(COLUMN_PERIOD_FROM);
 		}
 		else {
 			sql.appendOrderBy(COLUMN_PERIOD_FROM);
+			sql.appendOrderBy(COLUMN_NAME);
 		}
 		return idoFindPKsBySQL(sql.toString());
 	}
