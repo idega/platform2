@@ -71,6 +71,9 @@ public static final String COOKIE_NAME = "idegaAD_";
         }
         banner.setAttribute(attribute);
       }
+      else {
+      		banner.setAttribute("BLANK_VALUE");
+      }
 
       if ( update ) {
         try {
