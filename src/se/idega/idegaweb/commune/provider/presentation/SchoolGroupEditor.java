@@ -49,8 +49,9 @@ import com.idega.user.presentation.UserChooser;
  */
 public class SchoolGroupEditor extends ProviderBlock {
 
-	public final String PARAMETER_ACTION = "sge_action";
+	public final String PARAMETER_ACTION = "sge_action";	
 	private final String PARAMETER_GROUP_ID = "sge_group_id";
+	private final String PARAMETER_GROUP_STRING_ID = "sge_group_str_id";
 	private final String PARAMETER_GROUP_NAME ="sge_group_name";
 	private final String PARAMETER_SCHOOL_YEARS ="sge_school_years";
 	private final String PARAMETER_TEACHERS ="sge_teachers";
@@ -71,10 +72,18 @@ public class SchoolGroupEditor extends ProviderBlock {
 	
 	private boolean showStudyPaths = false;
 	private boolean useStyleNames = false;
+	private boolean useGroupStringId = false;
 
 	//public final String PARAMETER_PROVIDER_ID = "Goran please fix this, ACTION_VIEW and PARAMETER_ACTION";
 	
+	public boolean getUseGroupStringId() {
+		return useGroupStringId;
+	}
 
+	public void setUseGroupStringId(boolean b) {
+		useGroupStringId = b;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#_main(com.idega.presentation.IWContext)
 	 */
@@ -331,6 +340,18 @@ public class SchoolGroupEditor extends ProviderBlock {
 		int row = 1;
 		SelectorUtility util = new SelectorUtility();
 		
+		if (useGroupStringId) {
+			table.add(getSmallHeader(localize("group_string_id", "Group ID") + ":"), 1, row);			
+			table.setNoWrap(1, row);
+			TextInput groupStringId = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_STRING_ID));
+			if (_group != null && _group.getGroupStringId() != null)
+				groupStringId.setContent(_group.getGroupStringId());
+			if (useStyleNames) {
+				table.setCellpaddingLeft(1, row, 12);
+			}
+			groupStringId.setAsNotEmpty(localize("group_id_not_empty", "Group ID must be entered."));
+			table.add(groupStringId, 3, row++);
+		}
 		table.add(getSmallHeader(localize("group_name", "Name") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_NAME));
@@ -569,6 +590,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	}
 	
 	private void saveGroup(IWContext iwc) {
+		String groupStringId = iwc.getParameter(PARAMETER_GROUP_STRING_ID);
 		String name = iwc.getParameter(PARAMETER_GROUP_NAME);
 		String[] years = iwc.getParameterValues(PARAMETER_SCHOOL_YEARS);
 		String[] studyPaths = iwc.getParameterValues(PARAMETER_STUDY_PATHS);
@@ -589,7 +611,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		
 		try {
-			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getProviderID(), typeID, seasonID, years, teachers, studyPaths);
+			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getProviderID(), typeID, seasonID, years, teachers, studyPaths, groupStringId);
 			schoolClass.setIsSubGroup(isSubGroup);
 			schoolClass.store();
 		}
