@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/23 08:25:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/26 07:46:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -981,7 +981,6 @@ public class ViewpointForm extends CommuneBlock {
                 final String email = context.getParameter (PARAM_EMAIL).trim ();
                 final String name = context.getParameter (PARAM_NAME).trim ();
                 if (email.length () > 0 && name.length () > 0) {
-                    System.err.println ("setting attributes");
                     session.setAttribute (EMAIL_KEY, email);
                     session.setAttribute (NAME_KEY, name);
                     result = true;

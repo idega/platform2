@@ -12,10 +12,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2003/05/23 08:25:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/26 07:46:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -97,9 +97,6 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         final String messageSubject
                 = getLocalizedString (CONFIRMSUBJECT_KEY,
                                       CONFIRMSUBJECT_DEFAULT);
-        System.err.println ("\nTo: " + userEmail);
-        System.err.println ("Subject: " + messageSubject);
-        System.err.println ('\n' + messageBody + '\n');
     }
 
     public Viewpoint [] findUnhandledViewpointsInGroups
@@ -149,18 +146,22 @@ public class ViewpointBusinessBean extends CaseBusinessBean
                 + (questionLine.length () > 400
                    ? (questionLine.substring (0, 397) + "...")
                    : questionLine) + "\n";
+        final MessageBusiness messageBusiness = (MessageBusiness)
+                IBOLookup.getServiceInstance (getIWApplicationContext(),
+                                              MessageBusiness.class);
         final Integer userId = viewpoint.getUserId ();
+        final String email = viewpoint.getUserEmail ();
+        final String subject = "Re: " + viewpoint.getSubject ();
         if (null != userId) {
-            final MessageBusiness messageBusiness
-                    = (MessageBusiness) IBOLookup.getServiceInstance
-                    (getIWApplicationContext(), MessageBusiness.class);
             final Message message = messageBusiness.createUserMessage
-                    (userId.intValue (), "Re: " + viewpoint.getSubject (),
-                     messageBody);
+                    (userId.intValue (), subject, messageBody);
             message.setParentCase(viewpoint);
             message.store();
+        } else if (null != email) {
+            messageBusiness.sendMessage (email, subject, messageBody);
         } else {
-            // todo: implement answer to email
+            throw new RemoteException ("No user id and no email from user"
+                                       + " in viewpoint " + viewpointId);
         }
 
         // 3. save answer and set 'closed' status on case
