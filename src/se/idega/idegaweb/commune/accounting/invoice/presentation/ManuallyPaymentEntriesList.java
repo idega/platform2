@@ -11,6 +11,7 @@ import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -255,16 +256,22 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		pay.setTotalAmount(amountPrMonth);
 		
 		pay.setNotes(iwc.getParameter(PAR_REMARK));
-//			pay.setPlacing(iwc.getParameter(PAR_PLACING));
+		inv.setNotes(iwc.getParameter(PAR_REMARK));
+		pay.setPaymentText(iwc.getParameter(PAR_PLACING));
 		pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+		pay.setDateCreated(new Date(System.currentTimeMillis()));
 
 //			pay.setUser(getUser(iwc));
-		pay.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+		int vatType = new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
+		pay.setVATType(vatType);
+		inv.setVATType(vatType);
 		
 		try{
 			PostingBlock p = new PostingBlock(iwc);			
 			pay.setOwnPosting(p.getOwnPosting());
+			inv.setOwnPosting(p.getOwnPosting());
 			pay.setDoublePosting(p.getDoublePosting());
+			inv.setDoublePosting(p.getDoublePosting());
 		} catch (PostingParametersException e) {
 			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
 		}	
@@ -413,8 +420,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		regSearchPanel.setPlacingIfNull(getValue(iwc, PAR_PLACING));
 		regSearchPanel.setSchoolIfNull(getSchool(iwc));
 		
-
-		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_SEEK_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
+	
+		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
 		
 		regSearchPanel.setParameter(PAR_EDIT_FROM_SCREEN, " ");
 		table.mergeCells(1, row, 10, row);
