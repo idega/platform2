@@ -9,9 +9,14 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
+import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
@@ -358,5 +363,34 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		sql.appendAnd().append("r."+COLUMN_INVOICE_HEADER+" = h.cacc_invoice_header_id");
 		return idoGetNumberOfRecords(sql);
 	}
-	
-}
+
+	/** Gets the number of handled children for the specified school types and period
+	 * @param schoolTypes
+	 * @param month
+	 * @return number of handled children
+	 */
+	public int ejbHomeGetNumberOfHandledChildrenForSchoolTypesAndPeriod(Collection schoolTypes, CalendarMonth month) throws IDOException {
+		// get the first date of the month
+		Date firstDate = month.getFirstDateOfMonth();
+		Date lastDate = month.getLastDateOfMonth();
+		IDOQuery sql = idoQuery();
+		// select count (distinct mem.ic_user_id) from
+		sql.append("select count (distinct mem.").append(SchoolClassMemberBMPBean.MEMBER).append(" ) ").appendFrom();
+		// sch_class_member mem, cacc_invoice_record rec
+		sql.append(SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER).append(" mem, ").append(getEntityName()).append(" rec ");
+		// where mem.sch_class_member_id = rec.sch_class_member_id
+		sql.appendWhere();
+		sql.append("mem.").append(COLUMN_SCHOOL_CLASS_MEMBER_ID).appendEqualSign().append("rec.").append(COLUMN_SCHOOL_CLASS_MEMBER_ID);
+		// and
+		sql.appendAnd();
+		//  rec.period_start_check <= '2003-11-30' and rec.period_end_check >= '2003-11-01'
+		sql.append("rec.").append(COLUMN_PERIOD_START_CHECK).appendLessThanOrEqualsSign().append(lastDate);
+		sql.appendAnd();
+		sql.append("rec.").append(COLUMN_PERIOD_END_CHECK).appendGreaterThanOrEqualsSign().append(firstDate);
+		// and
+		sql.appendAnd();
+		// rec.sch_school_type_id in (4,2,3) 
+		sql.append(" rec.").append(COLUMN_SCHOOL_TYPE_ID).appendInCollection(schoolTypes);
+		return idoGetNumberOfRecords(sql);
+	}
+}		

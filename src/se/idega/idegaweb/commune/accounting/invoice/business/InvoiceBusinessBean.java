@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -55,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/06 17:47:07 $ by $Author: thomas $
+ * Last modified: $Date: 2004/01/07 16:00:03 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.78 $
+ * @version $Revision: 1.79 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -243,6 +244,16 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return getPaymentRecordHome().getTotAmountForSchoolCategoryAndPeriod(schoolCategoryID, period);
 	}
 	
+	public int getNumberOfHandledChildren(BatchRun batchRun) throws RemoteException, IDOException {
+		// get the period of the month
+		CalendarMonth period = batchRun.getMonth();
+		String schoolCategoryID = batchRun.getSchoolCategoryID();
+		SchoolBusiness schoolBusiness = getSchoolBusiness();
+		Collection schoolTypes = schoolBusiness.findAllSchoolTypesInCategory(schoolCategoryID);
+		InvoiceRecordHome invoiceRecordHome = getInvoiceRecordHome();
+		return invoiceRecordHome.getNumberOfHandledChildrenForSchoolTypesAndPeriod(schoolTypes, period);
+	}
+		
 	/**
 	 * Retreives an array of all InvoiceHeaders where the user given is either
 	 * custodian or the child and in the period. If any of the dates
@@ -680,4 +691,15 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			throw new IBORuntimeException(e);
 		}
 	}
+	
+	protected SchoolBusiness getSchoolBusiness() {
+		try {
+			return (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+		
+	
 }
