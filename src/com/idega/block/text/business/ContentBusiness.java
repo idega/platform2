@@ -68,7 +68,7 @@ public class ContentBusiness{
         for (int i = 0; i < L.size(); i++) {
           file = (ICFile) L.get(i);
           file.removeFrom(eContent);
-          file.delete();
+          //file.delete();
         }
       }
       eContent.delete();
