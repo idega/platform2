@@ -171,7 +171,7 @@ public class GolfCardPage extends GolfMainJSPModulePage{
         insuranceLink.addParameter("text_id",730);
       Link infoLink = new Link(info,"/card/text.jsp");
         infoLink.addParameter("text_id",731);
-      Link applyLink = new Link(apply,"http://www.europay.is");
+      Link applyLink = new Link(apply,"http://www.europay.is/form/kort.htm");
         applyLink.setTarget("_blank");
 
       Image offersImage = new Image("/pics/golfcard/icons/tilbod_manadarins.gif","",17,18);
