@@ -48,6 +48,15 @@ public class RoomSubType extends GenericEntity {
   public void setName(String name){
     setColumn("name",name);
   }
+  public int getRoomTypeId(){
+    return getIntColumnValue("room_type_id");
+  }
+  public void setRoomTypeId(int room_type_id){
+    setColumn("room_type_id",room_type_id);
+  }
+  public void setRoomTypeId(Integer room_type_id){
+    setColumn("room_type_id",room_type_id);
+  }
   public String getInfo(){
     return getStringColumnValue("info");
   }
