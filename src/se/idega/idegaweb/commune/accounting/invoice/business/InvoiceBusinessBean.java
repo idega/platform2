@@ -77,11 +77,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/10/20 17:05:09 $ by $Author: thomas $
+ * Last modified: $Date: 2005/03/02 11:00:34 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.134 $
+ * @version $Revision: 1.135 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness, CareInvoiceBusiness {
@@ -268,7 +268,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		try {
 			transaction = getSessionContext().getUserTransaction();
 			transaction.begin();
-			if (header.getStatus() == ConstantStatus.PRELIMINARY);
+			if (header.getStatus() == ConstantStatus.PRELIMINARY)
 			{
 				recordIter = getInvoiceRecordHome().findByInvoiceHeader(header).iterator();
 				while (recordIter.hasNext()) {
