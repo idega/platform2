@@ -86,10 +86,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/15 09:23:49 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 09:45:11 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.116 $
+ * @version $Revision: 1.117 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1818,7 +1818,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			col += 2;
 		}
 		final String recordId = record.getPrimaryKey ().toString ();
-		final boolean isManualRecord = isManualRecord (record);
+		//final boolean isManualRecord = isManualRecord (record);
 		//final String [][] editLinkParameters = getRecordLinkParameters
 		//(isManualRecord ? ACTION_SHOW_EDIT_RECORD_FORM
 		//: ACTION_SHOW_RECORD_DETAILS, recordId);
@@ -2024,11 +2024,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return createMainTable (localize (headerKey, headerDefault), content);
 	}
 	
-	private static boolean isManualRecord (final InvoiceRecord record) {
+	/*private static boolean isManualRecord (final InvoiceRecord record) {
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
-	}
+	}*/
 	
 	private Text getSmallSignature (final String string) {
 		final StringBuffer result = new StringBuffer ();
