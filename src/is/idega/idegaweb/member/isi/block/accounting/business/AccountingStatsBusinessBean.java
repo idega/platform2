@@ -971,7 +971,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String paymentTypeString = null;
 			String tariffTypeString = null;
 			//String dateOfEntryString = new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy");
-			String dateOfEntryString = TextSoap.findAndCut((new IWTimestamp()).getLocaleDate(currentLocale, IWTimestamp.LONG),"GMT");
+			String dateOfEntryString = TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.LONG),"GMT");
 			division = financeEntry.getDivision();
 			if (division != null)
 				divisionString = division.getName();
