@@ -62,7 +62,7 @@ public void setParam(String name,String value){
 
 public String getParams(){
   StringBuffer paramString = new StringBuffer();
-  Iterator iter = params.entrySet().iterator();
+  Iterator iter = params.keySet().iterator();
   String key;
   while( iter.hasNext() ){
     key = (String)iter.next();
