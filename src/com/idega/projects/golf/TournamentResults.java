@@ -21,6 +21,7 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.projects.golf.*;
+import com.idega.projects.golf.business.*;
 import com.idega.data.*;
 import com.idega.projects.golf.service.*;
 import com.idega.projects.golf.entity.*;
@@ -46,23 +47,22 @@ private Text differenceText;
 private String categoryText = "#000000";
 private String headerText = "#000000";
 private boolean showHeader = true;
-private String gender;
+private int tournament_group_id = 0;
+private String groupSQLString = "";
 
-  public TournamentResults(int tournament_id,String gender) {
+  public TournamentResults(int tournament_id, int tournament_group_id) {
     this.tournament_id=tournament_id;
-    this.gender=gender;
+    this.tournament_group_id=tournament_group_id;
+  }
+
+  public TournamentResults(int tournament_id) {
+    this.tournament_id=tournament_id;
   }
 
   public void main(ModuleInfo modinfo) throws SQLException {
 
-    if ( gender.equalsIgnoreCase("b") ) {
-      gender = "";
-    }
-    if ( gender.equalsIgnoreCase("f") ) {
-      gender = "and gender='F' ";
-    }
-    if ( gender.equalsIgnoreCase("m") ) {
-      gender = "and gender='M' ";
+    if ( tournament_group_id != 0 ) {
+     groupSQLString = "and tournament_group_id = "+tournament_group_id+" ";
     }
 
     tournament = new Tournament(tournament_id);
@@ -209,35 +209,13 @@ private String gender;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      String queryString = "select display_scores.* from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id "+gender+"order by strokes_with_handicap,first_name,last_name,middle_name";
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
+      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"strokes_with_handicap");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
       }
 
       for ( int a = 0; a < numberOfGolfers; a++ ) {
-
-        /*for ( int b = 0; b < tournamentRounds.length; b++ ) {
-          TournamentScorecard memberScorecard = new TournamentScorecard().getScorecard(tournamentRounds[b].getID(),strokesScores[a].getMemberID());
-
-          if ( a == 0 ) {
-            Text roundText = new Text((b+1)+"");
-              roundText.setFontSize(1);
-              roundText.setBold();
-              roundText.setFontColor(categoryText);
-
-            myTable.add(roundText,b+4,1);
-          }
-
-          Window scorecardWindow = new Window("Skoða skorkort",650,475,"/handicap/handicap_skor.jsp?");
-          Text scorecardText = new Text(memberScorecard.getStrokesWithoutHandicap()+"");
-
-          Link scorecardLink = new Link(scorecardText,scorecardWindow);
-                  scorecardLink.addParameter("scorecard_id",memberScorecard.getScorecardID());
-
-          myTable.add(scorecardLink,b+4,a+2);
-        }*/
 
         Text memberName = new Text(strokesScores[a].getName());
 
@@ -292,35 +270,13 @@ private String gender;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      String queryString = "select display_scores.* from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id "+gender+"order by strokes_without_handicap,first_name,last_name,middle_name";
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
+      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"strokes_without_handicap");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
       }
 
       for ( int a = 0; a < numberOfGolfers; a++ ) {
-
-        /*for ( int b = 0; b < tournamentRounds.length; b++ ) {
-          TournamentScorecard memberScorecard = new TournamentScorecard().getScorecard(tournamentRounds[b].getID(),strokesScores[a].getMemberID());
-
-          if ( a == 0 ) {
-            Text roundText = new Text((b+1)+"");
-              roundText.setFontSize(1);
-              roundText.setBold();
-              roundText.setFontColor(categoryText);
-
-            myTable.add(roundText,b+4,1);
-          }
-
-          Window scorecardWindow = new Window("Skoða skorkort",650,475,"/handicap/handicap_skor.jsp?");
-          Text scorecardText = new Text(memberScorecard.getStrokesWithoutHandicap()+"");
-
-          Link scorecardLink = new Link(scorecardText,scorecardWindow);
-                  scorecardLink.addParameter("scorecard_id",memberScorecard.getScorecardID());
-
-          myTable.add(scorecardLink,b+4,a+2);
-        }*/
 
         Text memberName = new Text(strokesScores[a].getName());
 
@@ -376,35 +332,13 @@ private String gender;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      String queryString = "select display_scores.* from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id "+gender+"order by total_points desc,first_name,last_name,middle_name";
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
+      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"total_points");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
       }
 
       for ( int a = 0; a < numberOfGolfers; a++ ) {
-
-        /*for ( int b = 0; b < tournamentRounds.length; b++ ) {
-          TournamentScorecard memberScorecard = new TournamentScorecard().getScorecard(tournamentRounds[b].getID(),strokesScores[a].getMemberID());
-
-          if ( a == 0 ) {
-            Text roundText = new Text((b+1)+"");
-              roundText.setFontSize(1);
-              roundText.setBold();
-              roundText.setFontColor(categoryText);
-
-            myTable.add(roundText,b+4,1);
-          }
-
-          Window scorecardWindow = new Window("Skoða skorkort",650,475,"/handicap/handicap_skor.jsp?");
-          Text scorecardText = new Text(memberScorecard.getStrokesWithoutHandicap()+"");
-
-          Link scorecardLink = new Link(scorecardText,scorecardWindow);
-                  scorecardLink.addParameter("scorecard_id",memberScorecard.getScorecardID());
-
-          myTable.add(scorecardLink,b+4,a+2);
-        }*/
 
         Text memberName = new Text(strokesScores[a].getName());
 

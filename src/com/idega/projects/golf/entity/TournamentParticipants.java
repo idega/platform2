@@ -36,6 +36,7 @@ public class TournamentParticipants extends GolfEntity{
 		addAttribute("total_points","Heildarpunktar",true,true,"java.lang.Integer");
 		addAttribute("total_par","Par vallarins",true, true , "java.lang.Integer");
 		addAttribute("difference","par",true,true, "java.lang.Integer");
+		addAttribute("group_name","Ráshópsnafn",true,true, "java.lang.String");
 	}
 
 	public int getMemberID() {
@@ -136,6 +137,10 @@ public class TournamentParticipants extends GolfEntity{
 	public int getDifference(){
 		return getIntColumnValue("difference");
 	}
+
+        public String getGroupName() {
+          return(getStringColumnValue("group_name"));
+        }
 
         public static com.idega.projects.golf.entity.TournamentParticipants getTournamentParticipants(int member_id,int tournament_id) {
             com.idega.projects.golf.entity.TournamentParticipants returner = null;

@@ -187,4 +187,99 @@ private double grunn;
       e.printStackTrace();
     }
   }
+
+  public static int calculatePointsWithoutUpdate(Stroke[] strokes, int playHandicap) {
+    int leik = playHandicap;
+    int leikpunktar = leik + 36;
+    int punktar = leikpunktar/18;
+    int afgangur = leikpunktar%18;
+    int punktar2 = punktar + 1;
+    int punktar3 = 0;
+    int heildarpunktar = 0;
+    int hole_handicap = 0;
+    int hole_par = 0;
+
+    try {
+      for (int c = 0 ; c < strokes.length; c++ ) {
+        hole_handicap = (int) strokes[c].getHoleHandicap();
+        hole_par = strokes[c].getHolePar();
+
+        int strokes2 = strokes[c].getStrokeCount();
+
+        if (hole_handicap > afgangur) {
+          punktar3 = hole_par + punktar - strokes2;
+        }
+
+        if (hole_handicap <= afgangur) {
+          punktar3 = hole_par + punktar2 - strokes2;
+        }
+
+        if (punktar2 < 0) {
+          punktar3 = 0;
+        }
+
+        if (punktar3 < 0) {
+          punktar3 = 0;
+        }
+
+        if (strokes2 == 0) {
+          punktar3 = 0;
+        }
+
+        heildarpunktar += punktar3;
+
+      }
+
+      if ( strokes.length == 9 ) {
+        heildarpunktar += 18;
+      }
+
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+
+    return heildarpunktar;
+
+  }
+
+  public static int getTotalPoints(int scorecard_id, float grunnHandicap) {
+
+    int totalPoints = 0;
+
+    try {
+      Scorecard scorecard = new Scorecard(scorecard_id);
+      Handicap handicap = new Handicap((double) grunnHandicap);
+      Field field = new Field(scorecard.getFieldID());
+
+      int leikHandicap = handicap.getLeikHandicap((double) scorecard.getSlope(),(double) scorecard.getCourseRating(), (double) field.getFieldPar());
+
+      totalPoints = getTotalPoints(scorecard_id,leikHandicap);
+
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+
+    return totalPoints;
+
+  }
+
+  public static int getTotalPoints(int scorecard_id, int leikHandicap) {
+
+    int totalPoints = 0;
+
+    try {
+      Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumnOrdered("scorecard_id",scorecard_id+"","tee_id");
+
+      totalPoints = calculatePointsWithoutUpdate(stroke,leikHandicap);
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+
+    return totalPoints;
+
+  }
+
 }

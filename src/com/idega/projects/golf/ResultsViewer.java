@@ -30,7 +30,13 @@ public class ResultsViewer extends JModuleObject {
 private int tournament_id = 0;
 private int numberOfGolfers = 10;
 private boolean showHeader = true;
+private boolean groups = false;
 
+
+  public ResultsViewer(int tournament_id,boolean groups) {
+    this.tournament_id=tournament_id;
+    this.groups=groups;
+  }
 
   public ResultsViewer(int tournament_id) {
     this.tournament_id=tournament_id;
@@ -42,8 +48,8 @@ private boolean showHeader = true;
 
   private Table getResultsTable(ModuleInfo modinfo) throws Exception {
 
-   String[] gender = getGenderInTournament();
    Tournament tournament = new Tournament(tournament_id);
+   TournamentGroup[] tournamentGroup = tournament.getTournamentGroups();
 
    Table myTable = new Table();
     myTable.setWidth("100%");
@@ -52,39 +58,39 @@ private boolean showHeader = true;
     tournamentName.setBold();
     tournamentName.setFontSize(4);
 
-    if ( showHeader ) {
-      myTable.add(tournamentName,1,1);
-    }
+   int a = 1;
 
-   for ( int a = 0; a < gender.length; a++ ) {
+   if ( showHeader ) {
+      myTable.add(tournamentName,1,a);
+      a++;
+   }
 
-    Table genderTable = new Table(1,2);
-      genderTable.setWidth("100%");
+   if ( groups ) {
+    for ( int b = 0; b < tournamentGroup.length; b++ ) {
+     Text groupName = new Text(tournamentGroup[b].getName());
+      groupName.setFontSize(3);
+      groupName.setBold();
 
-    Text genderText = new Text();
-      if ( gender[a].equalsIgnoreCase("m") ) {
-        genderText.setText("Karlar:");
-      }
-      else if ( gender[a].equalsIgnoreCase("f") ) {
-        genderText.setText("Konur:");
-      }
+     Table groupTable = new Table(1,2);
+      groupTable.setWidth("100%");
 
-      if ( gender.length == 1 ) {
-        genderText.setText("Opin flokkur");
-      }
-
-      genderText.setBold();
-      genderText.setFontSize(3);
-
-    TournamentResults results = new TournamentResults(tournament_id,gender[a]);
+     TournamentResults results = new TournamentResults(tournament_id,tournamentGroup[b].getID());
       results.setShowHeader(false);
       results.setNumberOfGolfers(numberOfGolfers);
 
-    genderTable.add(genderText,1,1);
-    genderTable.add(results,1,2);
+     groupTable.add(groupName,1,1);
+     groupTable.add(results,1,2);
+     myTable.add(groupTable,1,a);
+     a++;
+    }
+   }
 
-    myTable.add(genderTable,1,a+2);
+   else {
+     TournamentResults results = new TournamentResults(tournament_id);
+      results.setShowHeader(false);
+      results.setNumberOfGolfers(numberOfGolfers);
 
+     myTable.add(results,1,a);
    }
 
    return myTable;

@@ -93,11 +93,15 @@ private String headerTextColor = "#FFFFFF";
 
 	private void fillTable(ModuleInfo modinfo) throws IOException,SQLException {
 
-		String[] dates = getDates(modinfo);
+		Member member = new Member(Integer.parseInt(this.member_id));
+                MemberInfo memberInfo = member.getMemberInfo();
+
+                String[] dates = getDates(modinfo);
 
 		Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
+                Scorecard[] scoreCardsBefore = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+dates[0]+"' order by scorecard_date desc");
 
-		myTable = new Table();
+                myTable = new Table();
 			myTable.setWidth("100%");
 			myTable.setBorder(0);
 			myTable.setCellpadding(4);
@@ -199,6 +203,37 @@ private String headerTextColor = "#FFFFFF";
 			Handicap leik = new Handicap(grunn);
 				leik_forgjof = leik.getLeikHandicap(slope, course_rating, field_par);
 
+
+                        float realHandicap = 0;
+
+                        if ( a == 0 ) {
+                          if ( scoreCardsBefore.length > 0 ) {
+                            realHandicap = scoreCardsBefore[0].getHandicapAfter();
+                          }
+                          else {
+                            realHandicap = memberInfo.getFirstHandicap();
+                          }
+                        }
+                        else {
+                          realHandicap = scoreCards[a-1].getHandicapAfter();
+                        }
+                        System.out.println("RealHandicap: "+realHandicap);
+
+                        Handicap realLeik = new Handicap((double)realHandicap);
+                        int realPlayHandicap = realLeik.getLeikHandicap(slope, course_rating, field_par);
+
+                        boolean isOverHandicap = false;
+
+                        if ( scoreCards[a].getTournamentRoundId() > 1 ) {
+                          isOverHandicap = true;
+                        }
+
+                        int realPoints = 0;
+                        if ( isOverHandicap ) {
+                          realPoints = Handicap.getTotalPoints(scoreCards[a].getID(),realPlayHandicap);
+                        }
+                        System.out.println("Heildarpunktar: "+realPoints);
+
                         String grunn2 = scale_decimals(String.valueOf(grunn),1);
                         String ny_grunn3 = scale_decimals(String.valueOf(ny_grunn),1);
 
@@ -216,16 +251,37 @@ private String headerTextColor = "#FFFFFF";
 				slope2.setFontSize("1");
 			Text leik_forgjof2 = new Text(String.valueOf(leik_forgjof));
 				leik_forgjof2.setFontSize("1");
+                        Text realLeikForgjof = new Text();
+                          if ( isOverHandicap ) {
+                            realLeikForgjof.setText("&nbsp;/&nbsp;"+realPlayHandicap);
+                          }
+                          realLeikForgjof.setFontSize(1);
+	                  realLeikForgjof.setFontColor("#8ab490");
 			Text heildarpunktar2 = new Text(String.valueOf(heildarpunktar));
 				heildarpunktar2.setFontSize("1");
+                        Text realHeildarPunktar = new Text();
+                          if ( isOverHandicap ) {
+                            realHeildarPunktar.setText("&nbsp;/&nbsp;"+realPoints);
+                          }
+                          realHeildarPunktar.setFontSize(1);
+	                  realHeildarPunktar.setFontColor("#8ab490");
 			Text mispunktar = new Text(String.valueOf(heildarpunktar - grunn_punktar));
 				mispunktar.setFontSize("1");
+                        Text realMisPunktar = new Text();
+                          if ( isOverHandicap ) {
+                            realMisPunktar.setText("&nbsp;/&nbsp;"+String.valueOf(realPoints - grunn_punktar));
+                          }
+                          realMisPunktar.setFontSize(1);
+	                  realMisPunktar.setFontColor("#8ab490");
 			Text grunn3 = new Text(grunn2);
 				grunn3.setFontSize("1");
+                        Text realGrunn = new Text();
+                          if ( isOverHandicap ) {
+                            realGrunn.setText("&nbsp;/&nbsp;"+scale_decimals(String.valueOf(realHandicap),1));
+                          }
+                          realGrunn.setFontSize(1);
+                          realGrunn.setFontColor("#8ab490");
 			Text ny_grunn2 = new Text(ny_grunn3);
-				if ( scoreCards[a].getUpdateHandicap().equalsIgnoreCase("N") || grunn2.equalsIgnoreCase(ny_grunn3)) {
-                                  ny_grunn2.setText("-");
-				}
                                 ny_grunn2.setFontSize("1");
 			Text tee_text = new Text(tee_name);
 				tee_text.setFontSize(1);
@@ -245,10 +301,22 @@ private String headerTextColor = "#FFFFFF";
 			myTable.add(tee_text,4,a+3);
 			myTable.add(slope2,5,a+3);
 			myTable.add(leik_forgjof2,6,a+3);
+                        if ( isOverHandicap ) {
+                          myTable.add(realLeikForgjof,6,a+3);
+                        }
 			myTable.add(heildarpunktar2,7,a+3);
+                        if ( isOverHandicap ) {
+                          myTable.add(realHeildarPunktar,7,a+3);
+                        }
 			myTable.add(mispunktar,8,a+3);
+                        if ( isOverHandicap ) {
+                          myTable.add(realMisPunktar,8,a+3);
+                        }
 
 			myTable.add(grunn3,9,a+3);
+                        if ( isOverHandicap ) {
+                          myTable.add(realGrunn,9,a+3);
+                        }
 			if ( Double.toString(grunn) != null ) {
 			myTable.add(ny_grunn2,10,a+3);
 			}
@@ -279,13 +347,20 @@ private String headerTextColor = "#FFFFFF";
 
 			myTable.add(tengill,11,a+3);
 			myTable.addText("&nbsp;",11,a+3);
-			if ( canWrite && tournament_name.length() == 0 ) {
+
+                        if ( isAdmin ) {
                           myTable.add(update,11,a+3);
-			}
-                        if ( !isAdmin && tournament_name.length() > 0 ) {
-                          myTable.add(update2,11,a+3);
                         }
-			if ( isAdmin || member_id.equalsIgnoreCase("1") ) {
+                        else {
+                          if ( canWrite && tournament_name.length() == 0 ) {
+                            myTable.add(update,11,a+3);
+                          }
+                          if ( tournament_name.length() > 0 ) {
+                            myTable.add(update2,11,a+3);
+                          }
+                        }
+
+                        if ( isAdmin || member_id.equalsIgnoreCase("1") ) {
 				myTable.addText("&nbsp;",11,a+3);
 				myTable.add(eyda,11,a+3);
 			}
@@ -317,14 +392,25 @@ private String headerTextColor = "#FFFFFF";
 
 		}
 
-		myTable.mergeCells(1,1,11,1);
+		int rows = myTable.getRows()+1;
+                myTable.mergeCells(1,1,11,1);
 		myTable.setAlignment(1,1,"right");
 		myTable.setRowColor(1,headerColor);
 		myTable.setRowColor(2,headerColor);
                 myTable.setHeight(1,"20");
                 myTable.setHeight(2,"20");
-                myTable.setHeight(myTable.getRows(),"100%");
+                myTable.setHeight(rows+1,"100%");
 		getForm();
+
+                Window recalculate = new Window("Endurreikna",350,200,"/handicap/recalculate.jsp?");
+
+                Link recalculateLink = new Link(new Image("/pics/formtakks/uppfaera.gif","Uppfæra forgjöf",76,19),recalculate);
+                        recalculateLink.addParameter("member_id",member_id);
+
+                myTable.mergeCells(1,rows,11,rows);
+                myTable.setAlignment(1,rows,"right");
+                myTable.add(recalculateLink,1,rows);
+
 	}
 
 	private void getForm() throws IOException {

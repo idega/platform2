@@ -852,6 +852,141 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     return isOnlineRegistration(tournament, idegaTimestamp.RightNow());
   }
 
+  public static DisplayScores[] getDisplayScores(String SQLConditions,String order) throws SQLException {
+
+    DisplayScores[] tournParticipants = getDisplayScores(SQLConditions,order,"");
+    return tournParticipants;
+
+  }
+
+  public static DisplayScores[] getDisplayScores(String SQLConditions,String order,String having) throws SQLException {
+
+    if ( order.equalsIgnoreCase("tournament_handicap") ) {
+      order = "9";
+    }
+    if ( order.equalsIgnoreCase("holes_played") ) {
+      order = "10";
+    }
+    if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
+      order = "11";
+    }
+    if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
+      order = "12";
+    }
+    if ( order.equalsIgnoreCase("total_points") ) {
+      order = "13";
+    }
+    if ( order.equalsIgnoreCase("difference") ) {
+      order = "14";
+    }
+
+    String queryString = "select m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, t.tournament_id, tm.tournament_group_id, sum(cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))) / count(tournament_round_id) as tournament_handicap, count(stroke_count) as holes_played, sum(stroke_count) as strokes_without_handicap, sum(stroke_count) - (sum(cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))) / count(stroke_count) * count(distinct tournament_round_id)) as strokes_with_handicap, sum(point_count) as total_points, sum(stroke_count) - sum(hole_par) as difference from scorecard s, stroke str, tournament_round tr, tournament t, field f, member m, union_ u, tournament_member tm"+
+    " where s.scorecard_id = str.scorecard_id and s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id and s.field_id = f.field_id and s.member_id = m.member_id and s.member_id = tm.member_id and t.tournament_id = tm.tournament_id and tm.union_id = u.union_id"+
+    " and "+SQLConditions+
+    " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, t.tournament_id, tm.tournament_group_id, s.handicap_before, s.slope, s.course_rating, f.field_par "+
+    having+" order by "+order;
+
+    DisplayScores[] tournParticipants = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
+
+   return tournParticipants;
+
+  }
+
+  public static TournamentParticipants[] getTournamentParticipants(String column_name,String column_value,String order) throws SQLException {
+
+    if ( order.equalsIgnoreCase("holes_played") ) {
+      order = "13";
+    }
+    if ( order.equalsIgnoreCase("round_handicap") ) {
+      order = "14";
+    }
+    if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
+      order = "15";
+    }
+    if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
+      order = "16";
+    }
+    if ( order.equalsIgnoreCase("total_points desc") ) {
+      order = "18 desc";
+    }
+    if ( order.equalsIgnoreCase("difference") ) {
+      order = "19";
+    }
+
+    String queryString = "select m.member_id, m.social_security_number, m.first_name, m.middle_name,"+
+    " m.last_name, u.abbrevation,tm.tournament_id, tm.tournament_group_id,s.scorecard_id,"+
+    " s.scorecard_date, tr.tournament_round_id, tr.round_number, count(str.stroke_count) holes_played,"+
+    " cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))round_handicap,"+
+    " sum(str.stroke_count) strokes_without_handicap, sum(str.stroke_count) - cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ))as numeric (4,0)) strokes_with_handicap,"+
+    " s.total_points, sum(str.hole_par) total_par, sum(str.stroke_count) - sum(str.hole_par) difference, tg.group_name"+
+    " from tournament_round tr,"+
+    " member_info mi, member m, field f, union_ u, tournament_member tm, tournament t, tournament_group tg"+
+    " scorecard s left join stroke str on str.scorecard_id = s.scorecard_id,"+
+    " where s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id"+
+    " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.tournament_group_id = tg.tournament_group_id and tm.member_id = mi.member_id"+
+    " and mi.member_id = s.member_id and s.member_id = m.member_id and s.field_id = f.field_id"+
+    " and "+column_name+" = "+column_value+
+    " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, tm.tournament_id, tm.tournament_group_id,s.scorecard_id, s.scorecard_date, f.field_par,tr.tournament_round_id, tr.round_number, s.total_points, s.handicap_before, s.slope, s.course_rating"+
+    " order by "+order;
+
+    TournamentParticipants[] tournParticipants = (TournamentParticipants[]) (new TournamentParticipants()).findAll(queryString);
+
+   return tournParticipants;
+
+  }
+
+  public static TournamentRoundParticipants[] getTournamentRoundParticipants(String column_name,String column_value,String order) throws SQLException {
+
+    if ( order.equalsIgnoreCase("holes_played") ) {
+      order = "13";
+    }
+    if ( order.equalsIgnoreCase("round_handicap") ) {
+      order = "14";
+    }
+    if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
+      order = "15";
+    }
+    if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
+      order = "16";
+    }
+    if ( order.equalsIgnoreCase("total_par") ) {
+      order = "18";
+    }
+    if ( order.equalsIgnoreCase("difference") ) {
+      order = "19";
+    }
+
+    String queryString = "select m.member_id, m.social_security_number, m.first_name, m.middle_name,"+
+    " m.last_name, u.abbrevation,tm.tournament_id, tm.tournament_group_id,s.scorecard_id,"+
+    " s.scorecard_date, tr.tournament_round_id, tr.round_number, count(str.stroke_count) as holes_played,"+
+    " cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0)) as round_handicap,"+
+    " sum(str.stroke_count) as strokes_without_handicap, sum(str.stroke_count) - cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ))as numeric (4,0)) as strokes_with_handicap,"+
+    " s.total_points, sum(str.hole_par) as total_par, sum(str.stroke_count) - sum(str.hole_par) as difference, start.grup_num, tg.name as group_name"+
+    " from tournament_round tr,"+
+    " member_info mi, member m, field f, union_ u, tournament_member tm, tournament t,tournament_group tg, startingtime start, tournament_startingtime ts,"+
+    " scorecard s left join stroke str on str.scorecard_id = s.scorecard_id"+
+    " where s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id"+
+    " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.member_id = mi.member_id"+
+    " and mi.member_id = s.member_id and s.member_id = m.member_id and s.field_id = f.field_id"+
+    " AND t.tournament_id = ts.tournament_id AND ts.startingtime_id = start.startingtime_id"+
+    " AND start.field_id = t.field_id AND start.startingtime_date >= cast (tr.round_date as date)"+
+    " AND start.startingtime_date <= cast (tr.round_end_date as date) AND m.member_id = start.member_id and tm.tournament_group_id = tg.tournament_group_id"+
+    " and "+column_name+" = "+column_value+
+    " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, tm.tournament_id, tm.tournament_group_id,s.scorecard_id, s.scorecard_date, f.field_par,tr.tournament_round_id, tr.round_number, s.total_points, s.handicap_before, s.slope, s.course_rating, start.grup_num, tg.name"+
+    " order by "+order;
+
+    TournamentRoundParticipants[] tournParticipants = (TournamentRoundParticipants[]) (new TournamentRoundParticipants()).findAll(queryString);
+
+   return tournParticipants;
+
+  }
+
+  public static int getInt() {
+
+   return 4;
+
+  }
+
   public static boolean isOnlineRegistration(Tournament tournament, idegaTimestamp dateToCheck) {
       boolean returner = false;
       if (tournament.getIfRegistrationOnline()) {
