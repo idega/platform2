@@ -5,6 +5,7 @@ import com.idega.util.idegaTimestamp;
 import java.util.*;
 import java.util.Comparator;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import java.sql.SQLException;
 
@@ -23,7 +24,7 @@ public class ProductComparator implements Comparator {
   public static final int NUMBER = 2;
   public static final int DEPARTURETIME = 3;
   public static final int DEPARTURETIME_NAME = 4;
-//  public static final int TOFROMDATE = 4;
+  public static final int PRICE = 5;
 
 
   private int sortBy;
@@ -53,6 +54,8 @@ public class ProductComparator implements Comparator {
         case DEPARTURETIME   : result = departureTimeSort(o1, o2);
         break;
         case DEPARTURETIME_NAME   : result = departureTimeNameSort(o1, o2);
+        break;
+        case PRICE : result = priceSort(o1, o2);
         break;
       }
 
@@ -110,6 +113,19 @@ public class ProductComparator implements Comparator {
 
   }
 
+  private int priceSort(Object o1, Object o2) {
+    Product p1 = (Product) o1;
+    Product p2 = (Product) o2;
+
+    ProductPrice[] prices1 = ProductPrice.getProductPrices(p1.getID(), false);
+    ProductPrice[] prices2 = ProductPrice.getProductPrices(p2.getID(), false);
+
+    /**
+     * @todo implementa ...
+     */
+
+    return 0;
+  }
 
   public boolean equals(Object obj) {
     /**@todo: Implement this java.util.Comparator method*/
