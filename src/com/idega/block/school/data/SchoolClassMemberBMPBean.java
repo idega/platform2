@@ -77,7 +77,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     .appendWhere().append(" mb."+MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
     .appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(((Integer)season.getPrimaryKey()).intValue())
     .appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     return (Integer)this.idoFindOnePKBySQL(sql.toString());
   }
 
