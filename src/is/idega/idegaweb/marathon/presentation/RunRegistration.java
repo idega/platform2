@@ -273,7 +273,7 @@ public class RunRegistration extends Block {
 			nationalityField = (DropdownMenu) util.getSelectorFromIDOEntities(nationalityField, countries, "getName");
 			countryField = (DropdownMenu) util.getSelectorFromIDOEntities(countryField, countries, "getName");
 		}
-		if (iwc.getCurrentLocale().getLanguage().equals("is_IS")) {
+		if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
 			nationalityField.setSelectedElement("104");
 			countryField.setSelectedElement("104");
 		}
@@ -440,7 +440,8 @@ public class RunRegistration extends Block {
 
 		t.setHeight(row++, 8);
 
-		t.add(nationalityText, column, row++);
+		t.add(nationalityText, column, row);
+		t.add(redStar, column, row++);
 		t.setHeight(row++, 3);
 		t.add(nationalityField, column, row++);
 
