@@ -462,6 +462,8 @@ public class JournalTexts extends EHealthBlock {
 		GenericButton print = getButton(new GenericButton("print", localize(prmPrint, "Print")));
 		GenericButton openinWindow = getButton(new GenericButton("open", localize(keyOpenNewWindow, "Open in new window")));
 		
+		openinWindow.setWindowToOpen(FassPage.class);
+		
 		table.add(print, 3, 1);
 		table.add(openinWindow, 5, 1);
 		

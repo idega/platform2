@@ -594,13 +594,13 @@ public class MyMessages extends EHealthBlock {
 		table.setWidth(2, 1, "10");
 		table.setWidth(4, 1, "10");
 		
-		GenericButton reply = getButton(new GenericButton("reply", localize(prmReply, "Reply")));
+		//GenericButton reply = getButton(new GenericButton("reply", localize(prmReply, "Reply")));
 		GenericButton clear = getButton(new GenericButton("clear", localize(prmClear, "Clear")));
-		GenericButton send = getButton(new GenericButton("send", localize(prmSend, "Send")));
+		//GenericButton send = getButton(new GenericButton("send", localize(prmSend, "Send")));
 				
-		table.add(reply, 1, 1);
-		table.add(clear, 3, 1);
-		table.add(send, 5, 1);
+		//table.add(reply, 1, 1);
+		table.add(clear, 1, 1);
+		//table.add(send, 5, 1);
 		
 		return table;
 		
