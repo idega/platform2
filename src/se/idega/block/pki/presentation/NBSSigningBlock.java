@@ -6,6 +6,9 @@
  */
 package se.idega.block.pki.presentation;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,6 +43,7 @@ import com.idega.presentation.ui.Parameter;
  */
 public class NBSSigningBlock extends Block implements Builderaware{
 
+	private final static String SIGNED_TEXT = "se.idega.block.pki.presentation.NBSSigningBlock.SIGNED_TEXT";
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";	
 	
@@ -66,7 +70,11 @@ public class NBSSigningBlock extends Block implements Builderaware{
 				return;
 			}
 			NBSSignedEntity signedEntity = getNBSSignedEntity(iwc);
-			String toBeSigned = signedEntity.getText();
+			
+			DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, iwc.getCurrentLocale());
+						
+			String toBeSigned = signedEntity.getText() + "\n\n\nDOCUMENT SIGNED: " + dateFormat.format(new Date());
+			iwc.setSessionAttribute(SIGNED_TEXT, toBeSigned);
 			//TODO: (roar) TBD:
 			System.out.println("### ToBeSigned: " + toBeSigned);
 			
@@ -144,7 +152,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		NBSServerHttp server = getNBSServer(iwc);
 		HttpMessage httpReq = new HttpMessage();
 		ServletUtil.servletRequestToHttpMessage(iwc.getRequest(), httpReq);
-		NBSMessageResult result =  (NBSMessageResult) server.doSign(breakString(toBeSigned, 60), httpReq);	
+		NBSMessageResult result =  (NBSMessageResult) server.doSign(toBeSigned, httpReq);	
 				
 		if (result != null)
 		{
@@ -156,54 +164,6 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}
 	
 
-//	public static void main(String[] args){
-//		String page = "This   string\n"+
-//			"\n"+
-//			"is\n"+
-//			"made just for the purpose of testing the breakString\n"+
-//			"method. This method is supposed to break a looooooooong\n"+
-//			"string into lines of max length specified by a parameter. If\n"+
-//			"the String cotains linebreaks, this should be taken into\n"+
-//			"account.";
-////		System.out.println(breakString(page, 60));
-//		
-//	}
-
-	
-	private String breakString(String page, int maxLineLength) {
-		StringBuffer pageWrapped = new StringBuffer();
-		StringBuffer line = new StringBuffer();
-		StringTokenizer stLine = new StringTokenizer(page, "\n", true);	
-		while (stLine.hasMoreTokens())
-		{	
-			String readLine = stLine.nextToken();
-//			System.out.println("Token: " + readLine);
-			if (readLine.equals("\n")){
-				pageWrapped.append(line.toString().trim());
-				pageWrapped.append("\n");
-				line = new StringBuffer();					
-			}else{
-				StringTokenizer stWord = new StringTokenizer(readLine, " ", true);
-				while (stWord.hasMoreTokens()) {
-					String word = stWord.nextToken();
-					if (line.length() + word.length() > maxLineLength){
-						String trimmedLine = line.toString().trim();
-						if (trimmedLine.length() > 0){
-							pageWrapped.append(trimmedLine);
-							pageWrapped.append("\n");
-						}
-						line = new StringBuffer();						
-					}
-					line.append(word);
-
-				}
-			}
-		}
-		pageWrapped.append(line.toString().trim());
-		
-		return pageWrapped.toString();
-	}
-	
 	
 	public void processSignContract(IWContext iwc) throws NBSException, Exception{
 		if (iwc.getCurrentUser() == null){
@@ -223,6 +183,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			entity.setSignedFlag(true);	
 			entity.setSignedBy(((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue());
 			entity.setSignedDate(new java.sql.Date( java.lang.System.currentTimeMillis()));
+			entity.setText((String) iwc.getSessionAttribute(SIGNED_TEXT));
 			entity.store();
 		} catch(ClassCastException ex){
 			ex.printStackTrace();
