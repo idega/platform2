@@ -25,6 +25,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
     addAttribute(NAME,"Name",true,true,String.class,3);
     addAttribute(INFO,"Info",true,true,String.class);
     addAttribute(AGE,"Age",true,true,Integer.class);
+    setNullable(NAME,false);
     setUnique(NAME,true);
   }
 
