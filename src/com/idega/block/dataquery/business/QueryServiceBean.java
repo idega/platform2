@@ -117,7 +117,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 	}
 	
 	private GenericEntity getEntity(Class entityClass){
-			return (GenericEntity) GenericEntity.getStaticInstance(entityClass);
+			return (GenericEntity) GenericEntity.getStaticInstanceIDO(entityClass);
 		}
 		
 	public QueryEntityPart getEntityTree(QueryHelper helper,int level){
