@@ -367,10 +367,8 @@ public class ProductCatalog extends CategoryBlock{
     Link productLink;
     if (_productIsLink) {
       if (useAnchor) {
-        debug("getting anchorLink");
         productLink = new AnchorLink(nameText, getAnchorString(product.getID()));
       }else {
-        debug("getting normal");
         productLink = new Link(nameText);
       }
 
@@ -385,6 +383,21 @@ public class ProductCatalog extends CategoryBlock{
       return null;
     }
   }
+
+  Link getProductEditorLink(Product product) {
+    Link link = new Link(this.iEdit);
+      link.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
+      link.setWindowToOpen(ProductEditorWindow.class);
+    return link;
+  }
+
+  Link getProductCategoryEditorLink(ICCategory productCategory) {
+    Link link = new Link(this.iDetach);
+      link.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, productCategory.getID());
+      link.setWindowToOpen(ProductCategoryEditor.class);
+    return link;
+  }
+
 
   Product getSelectedProduct(IWContext iwc) {
     String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
@@ -412,8 +425,16 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   void sortList(List products) {
+    sortList(products, this._orderProductsBy);
+  }
+
+  void sortList(List products, int orderBy) {
+    /**
+     * @todo Caching....
+     */
+
     if (this._orderProductsBy != -1) {
-      Collections.sort(products, new ProductComparator(this._orderProductsBy, this._currentLocaleId));
+      Collections.sort(products, new ProductComparator(orderBy, this._currentLocaleId));
     }
   }
 }

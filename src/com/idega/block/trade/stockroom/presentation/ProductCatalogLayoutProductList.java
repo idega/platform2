@@ -36,6 +36,8 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     String sOrderBy = iwc.getParameter(this.PARAMETER_ORDER_BY);
     if (sOrderBy != null) {
       orderBy = Integer.parseInt(sOrderBy);
+    }else {
+      orderBy = productCatalog._orderProductsBy;
     }
 
 
@@ -47,10 +49,6 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
     List products = new Vector();
 
-    /**
-     * @todo hondla ad ekkert category sé valið
-     */
-
     if (productCategories != null && productCategories.size() > 0) {
       products = _productCatalog.getProducts(productCategories, false);
     }else {
@@ -58,7 +56,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     }
 
     int manyProducts = products.size();
-    Collections.sort(products, new ProductComparator(orderBy));
+    _productCatalog.sortList(products, orderBy);
 
     int totalPages = manyProducts / _productCatalog.productsPerPage;
     if (manyProducts % _productCatalog.productsPerPage != 0) {
@@ -96,15 +94,38 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     Link lPrice = new Link(_productCatalog.getCategoryText(_iwrb.getLocalizedString("price","Price")));
       lPrice.addParameter(this.PARAMETER_ORDER_BY, ProductComparator.PRICE);
 
-    table.add(number, 1,row);
+    if (productCategories != null && productCategories.size() > 0)
+    if (_productCatalog._hasEditPermission) {
+      ICCategory pCat;
+      table.mergeCells(1, row, 2, row);
+      table.add(_productCatalog.getCategoryText(_productCatalog.iwrb.getLocalizedString("categories_in_use","Prodct categories in use :")), 1 ,row);
+      for (int i = 0; i < productCategories.size(); i++) {
+        ++row;
+        pCat = (ICCategory) productCategories.get(i);
+        table.add(_productCatalog.getText(pCat.getName()), 2, row);
+        table.add(Text.NON_BREAKING_SPACE, 2,row);
+        table.add(_productCatalog.getProductCategoryEditorLink(pCat), 2, row);
+      }
+      ++row;
+    }
+
+
+    if (_productCatalog._showNumber) {
+      table.add(number, 1,row);
+      table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_BOTTOM);
+    }
     table.add(name, 2,row);
-    table.add(lPrice, 3,row);
+    table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_BOTTOM);
+    if (_productCatalog._showPrice) {
+      table.add(lPrice, 3,row);
+      table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_BOTTOM);
+    }
     if (_productCatalog._showImage) {
       table.add(_productCatalog.getCategoryText(_iwrb.getLocalizedString("thumbnail","Thumbnail")), 4,row);
+      table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_BOTTOM);
     }
 
     for (int i = startProductId; i < stopProductId; i++) {
-//    for (int i = 0; i < products.size(); i++) {
       ++row;
       try {
         product = (Product) products.get(i);
@@ -119,29 +140,14 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
           table.add(_productCatalog.getAnchor(product.getID()), 1, row);
         }
 
-        table.add(_productCatalog.getText(product.getNumber()), 1,row);
-/*
-        nameText = _productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId));
-
-        if (_productCatalog._productIsLink) {
-          if (_productCatalog._useAnchor) {
-            productLink = new AnchorLink(nameText, _productCatalog.getAnchorString(product.getID()));
-          }else {
-            productLink = new Link(nameText);
-          }
-          productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-
-          if (_productCatalog._productLinkPage != null) {
-            productLink.setPage(_productCatalog._productLinkPage);
-          }else if (_productCatalog._viewerInWindow) {
-            productLink.setWindowToOpen(ProductViewerWindow.class);
-          }
-          table.add(productLink, 2,row);
-        }else {
-          table.add(nameText, 2,row);
-        }*/
-          table.add(_productCatalog.getNamePresentationObject(product), 2, row);
-//        table.add(ProductCatalog.getText(ProductBusiness.getProductName(product)), 2,row);
+        if (_productCatalog._showNumber) {
+          table.add(_productCatalog.getText(product.getNumber()), 1,row);
+        }
+        if (_productCatalog._hasEditPermission) {
+          table.add(_productCatalog.getProductEditorLink(product), 2, row);
+          table.add(Text.NON_BREAKING_SPACE, 2, row);
+        }
+        table.add(_productCatalog.getNamePresentationObject(product), 2, row);
 
         if (fileId != -1) {
           if (_productCatalog._showImage) {
@@ -151,17 +157,29 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
           }
         }
 
-        if (price != 0) {
-          table.add(_productCatalog.getText(Integer.toString((int) price)), 3, row);
-        }else {
-          table.add(_productCatalog.getText("0"), 3, row);
+        if (_productCatalog._showPrice) {
+          if (price != 0) {
+            table.add(_productCatalog.getText(Integer.toString((int) price)), 3, row);
+          }else {
+            table.add(_productCatalog.getText("0"), 3, row);
+          }
+        }
+
+        if (_productCatalog._showDescription && _productCatalog._showTeaser) {
+          table.mergeCells(4, row, 4 ,row +2);
+        }else if (_productCatalog._showDescription || _productCatalog._showTeaser) {
+          table.mergeCells(4, row, 4 ,row +1);
         }
 
         if (_productCatalog._showTeaser) {
-          table.mergeCells(4, row, 4, ++row);
+          ++row;
           table.add(_productCatalog.getText(ProductBusiness.getProductTeaser(product, _productCatalog._currentLocaleId)), 2, row);
         }
 
+        if (_productCatalog._showDescription) {
+          ++row;
+          table.add(_productCatalog.getText(ProductBusiness.getProductDescription(product, _productCatalog._currentLocaleId)), 2, row);
+        }
 
       }catch (Exception e) {
         table.add("Villa", 1, row);
