@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.5 2001/06/28 13:07:45 palli Exp $
+ * $Id: Application.java,v 1.6 2001/07/09 17:49:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -218,83 +218,83 @@ public class Application extends GenericEntity {
   }
 
   public Integer getAppApplicationId() {
-    return((Integer)getColumnValue(applicationId_));
+    return(getIntegerColumnValue(applicationId_));
   }
 
   public Integer getCurrentResidenceId() {
-    return((Integer)getColumnValue(currentResidenceId_));
+    return(getIntegerColumnValue(currentResidenceId_));
   }
 
   public Integer getSpouseOccupationId() {
-    return((Integer)getColumnValue(spouseOccupationId_));
+    return(getIntegerColumnValue(spouseOccupationId_));
   }
 
   public Integer getStudyBeginMonth() {
-    return((Integer)getColumnValue(studyBeginMonth_));
+    return(getIntegerColumnValue(studyBeginMonth_));
   }
 
   public Integer getStudyBeginYear() {
-    return((Integer)getColumnValue(studyBeginYear_));
+    return(getIntegerColumnValue(studyBeginYear_));
   }
 
   public Integer getStudyEndMonth() {
-    return((Integer)getColumnValue(studyEndMonth_));
+    return(getIntegerColumnValue(studyEndMonth_));
   }
 
   public Integer getStudyEndYear() {
-    return((Integer)getColumnValue(studyEndYear_));
+    return(getIntegerColumnValue(studyEndYear_));
   }
 
   public String getFaculty() {
-    return((String)getColumnValue(faculty_));
+    return(getStringColumnValue(faculty_));
   }
 
   public String getStudyTrack() {
-    return((String)getColumnValue(studyTrack_));
+    return(getStringColumnValue(studyTrack_));
   }
 
   public String getSpouseName() {
-    return((String)getColumnValue(spouseName_));
+    return(getStringColumnValue(spouseName_));
   }
 
   public String getSpouseSSN() {
-    return((String)getColumnValue(spouseSSN_));
+    return(getStringColumnValue(spouseSSN_));
   }
 
   public String getSpouseSchool() {
-    return((String)getColumnValue(spouseSchool_));
+    return(getStringColumnValue(spouseSchool_));
   }
 
   public String getSpouseStudyTrack() {
-    return((String)getColumnValue(spouseStudyTrack_));
+    return(getStringColumnValue(spouseStudyTrack_));
   }
 
   public Integer getSpouseStudyBeginMonth() {
-    return((Integer)getColumnValue(spouseStudyBeginMonth_));
+    return(getIntegerColumnValue(spouseStudyBeginMonth_));
   }
 
   public Integer getSpouseStudyBeginYear() {
-    return((Integer)getColumnValue(spouseStudyBeginYear_));
+    return(getIntegerColumnValue(spouseStudyBeginYear_));
   }
 
   public Integer getSpouseStudyEndMonth() {
-    return((Integer)getColumnValue(spouseStudyEndMonth_));
+    return(getIntegerColumnValue(spouseStudyEndMonth_));
   }
 
   public Integer getSpouseStudyEndYear() {
-    return((Integer)getColumnValue(spouseStudyEndYear_));
+    return(getIntegerColumnValue(spouseStudyEndYear_));
   }
 
   public String getChildren() {
-    return((String)getColumnValue(children_));
+    return(getStringColumnValue(children_));
   }
 
   public Integer getIncome() {
-    return((Integer)getColumnValue(income_));
+    return(getIntegerColumnValue(income_));
   }
 
   public Integer getSpouseIncome() {
-    return((Integer)getColumnValue(spouseIncome_));
+    return(getIntegerColumnValue(spouseIncome_));
   }
 
   public Date getHousingFrom() {
@@ -302,7 +302,7 @@ public class Application extends GenericEntity {
   }
 
   public boolean getOnWaitinglist() {
-    String tmp = (String)getColumnValue(onWaitinglist_);
+    String tmp = getStringColumnValue(onWaitinglist_);
     if (tmp.equalsIgnoreCase("y"))
       return(true);
     else
@@ -310,7 +310,7 @@ public class Application extends GenericEntity {
   }
 
   public boolean getWantFurniture() {
-    String tmp = (String)getColumnValue(wantFurniture_);
+    String tmp = getStringColumnValue(wantFurniture_);
     if (tmp.equalsIgnoreCase("y"))
       return(true);
     else
@@ -318,15 +318,15 @@ public class Application extends GenericEntity {
   }
 
   public String getContactPhone() {
-    return((String)getColumnValue(contactPhone_));
+    return(getStringColumnValue(contactPhone_));
   }
 
   public String getOtherInfo() {
-    return((String)getColumnValue(otherInfo_));
+    return(getStringColumnValue(otherInfo_));
   }
 
   public String getEmail() {
-    return((String)getColumnValue(email_));
+    return(getStringColumnValue(email_));
   }
 
   public void setCurrentResidenceId(Integer id) {

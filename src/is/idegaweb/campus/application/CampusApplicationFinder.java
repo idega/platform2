@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.2 2001/07/09 13:35:48 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.3 2001/07/09 17:49:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -71,6 +71,16 @@ public abstract class CampusApplicationFinder {
     }
   }
 
+  public static List listOfAppliedInApplication(int id){
+    try {
+      Applied A = new Applied();
+      return(EntityFinder.findAllByColumn(A,A.getApplicationIdColumnName(),id));
+    }
+    catch(SQLException e){
+      return(null);
+    }
+  }
+
   public static List listOfNewApplicationHolders(){
     List A = listOfNewApplied();
     List B = listOfNewCampusApplication();
@@ -95,8 +105,8 @@ public abstract class CampusApplicationFinder {
       len =  B.size();
       Hashtable HB = new Hashtable(len);
       for (int i = 0; i < len; i++) {
-        Application application = (Application) B.get(i);
-        HB.put(new Integer(application.getID()),application);
+        Application campusapplication = (Application) B.get(i);
+        HB.put(new Integer(campusapplication.getID()),campusapplication);
       }
 
       if(A != null){
@@ -109,8 +119,10 @@ public abstract class CampusApplicationFinder {
         V = new Vector();
         Vector vApplied = null;
         int appliedAppId = -1;
+
         for (int i = 0; i < iLen; i++) {
-          applied = (Applied) A.get(i);
+          applied =  (is.idegaweb.campus.entity.Applied)(A.get(i));
+
           if(appliedAppId == applied.getApplicationId().intValue()){
             if(vApplied != null)
               vApplied.add(applied);
@@ -118,13 +130,13 @@ public abstract class CampusApplicationFinder {
           else{
             vApplied = new Vector();
             vApplied.add(applied);
-            campusApplication = (Application)HC.get((applied.getApplicationId()));
-            application = (com.idega.block.application.data.Application)HB.get((campusApplication.getAppApplicationId()));
-            applicant = (Applicant)HD.get(new Integer(application.getApplicantId()));
+            campusApplication = (is.idegaweb.campus.entity.Application) HB.get((applied.getApplicationId()));
+            application = (com.idega.block.application.data.Application) HC.get((campusApplication.getAppApplicationId()));
+            applicant = (com.idega.block.application.data.Applicant)HD.get(new Integer(application.getApplicantId()));
             AH = new CampusApplicationHolder(application,applicant,campusApplication,vApplied);
             V.add(AH);
           }
-          appliedAppId = applied.getApplicationId().intValue();
+          appliedAppId = (applied.getApplicationId()).intValue();
         }
 
       }

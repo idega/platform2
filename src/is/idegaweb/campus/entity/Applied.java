@@ -1,5 +1,5 @@
 /*
- * $Id: Applied.java,v 1.3 2001/06/25 18:05:18 palli Exp $
+ * $Id: Applied.java,v 1.4 2001/07/09 17:49:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ public class Applied extends GenericEntity {
   }
 
   public Integer getComplexId() {
-    return((Integer)getColumnValue(complexId_));
+    return(getIntegerColumnValue(complexId_));
   }
 
   public void setApartmentTypeId(int id) {
@@ -81,7 +81,7 @@ public class Applied extends GenericEntity {
   }
 
   public Integer getApartmentTypeId() {
-    return((Integer)getColumnValue(apartmentTypeId_));
+    return(getIntegerColumnValue(apartmentTypeId_));
   }
 
   public void setApplicationId(int id) {
@@ -93,7 +93,7 @@ public class Applied extends GenericEntity {
   }
 
   public Integer getApplicationId() {
-    return((Integer)getColumnValue(applicationId_));
+    return(getIntegerColumnValue(applicationId_));
   }
 
   public void setOrder(int order) {
@@ -105,6 +105,6 @@ public class Applied extends GenericEntity {
   }
 
   public Integer getOrder() {
-    return((Integer)getColumnValue(order_));
+    return(getIntegerColumnValue(order_));
   }
 }

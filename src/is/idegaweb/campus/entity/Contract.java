@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.2 2001/06/25 22:57:18 palli Exp $
+ * $Id: Contract.java,v 1.3 2001/07/09 17:49:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -78,7 +78,7 @@ public class Contract extends GenericEntity {
   }
 
   public Integer getUserId() {
-    return((Integer)getColumnValue(userId_));
+    return(getIntegerColumnValue(userId_));
   }
 
   public void setApartmentId(int id) {
@@ -90,7 +90,7 @@ public class Contract extends GenericEntity {
   }
 
   public Integer getApartmentId() {
-    return((Integer)getColumnValue(apartmentId_));
+    return(getIntegerColumnValue(apartmentId_));
   }
 
   public void setValidFrom(Date date) {
