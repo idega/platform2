@@ -657,7 +657,7 @@ public class Emailer extends Block {
         L.addParameter(prmEmailDelete, email.getID());
         L.addParameter(prmListId, mlist.getID());
         L.addParameter(prmLists, "true");
-        L.setToolTip(iwrb.getLocalizedString("tooltip.delete_letter","Delete letter"));
+        L.setToolTip(iwrb.getLocalizedString("tooltip.remove_email","Remove email"));
         return L;
     }
 
