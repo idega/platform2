@@ -575,6 +575,49 @@ public class TournamentController{
         return form;
     }
 
+    public static int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound) {
+        int counter = -1;
+        try {
+            boolean done = false;
+            Startingtime[] startingtimes;
+            com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
+            com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundEndDate());
+
+            while (!done) {
+                startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE >= '"+startStamp.toSQLString()+"' AND STARTINGTIME_DATE <= '"+endStamp.toSQLString()+"' AND field_id="+tournament.getFieldId()+" AND grup_num="+counter);
+
+                if (startingtimes.length < tournament.getNumberInGroup()) {
+                    done = true;
+                }
+                else {
+                    ++counter;
+                }
+
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+
+        return counter;
+    }
+
+
+    public static List getStartingtimeOrder(Tournament tournament, TournamentRound tournamentRound) {
+        List members = null;
+        try {
+            com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tournamentRound.getRoundDate());
+            com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tournamentRound.getRoundEndDate());
+
+            members = EntityFinder.findAll(new com.idega.projects.golf.entity.Member(),"SELECT member.* from startingtime, member, tournament_startingtime where tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND startingtime.field_id = "+tournament.getFieldId()+" AND STARTINGTIME.STARTINGTIME_DATE >= '"+startStamp.toSQLString()+"' AND STARTINGTIME.STARTINGTIME_DATE <= '"+endStamp.toSQLString()+"' order by grup_num");
+        }
+        catch (Exception ex) {
+            ex.printStackTrace(System.err);
+        }
+        return members;
+
+    }
 
 
 
