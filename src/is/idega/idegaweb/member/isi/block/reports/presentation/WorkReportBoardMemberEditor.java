@@ -62,8 +62,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
   private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
+  private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
+  private static final String NO_LEAGUE_VALUE = "no_league_value";
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
@@ -122,6 +124,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   private String parseAction(IWContext iwc) {
     String action = "";
+    // does the user want to cancel something?
+    if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
+      return action;
+      // !! do nothing else !!
+      // do not modify entry
+      // do not create an entry
+      // do not delete an entry
+    }
     // does the user want to delete an existings entries?
     if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
       List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
@@ -197,6 +207,11 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
         throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve leagues.");
       }
+      // special case: leagues is empty
+      if (leagues.isEmpty())  {
+        WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(NO_LEAGUE_VALUE, member);
+        list.add(helper);
+      }
       Iterator leagueIterator = leagues.iterator();
       while (leagueIterator.hasNext())  {
         WorkReportGroup league = (WorkReportGroup) leagueIterator.next();
@@ -217,7 +232,13 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     Comparator comparator = new Comparator()  {
       public int compare(Object first, Object second) {
         String firstLeague = (String) ((WorkReportBoardMemberHelper) first).getColumnValue(LEAGUE);
+        if (NO_LEAGUE_VALUE.equals(firstLeague))  {
+          firstLeague = "";
+        }
         String secondLeague = (String) ((WorkReportBoardMemberHelper) second).getColumnValue(LEAGUE);
+        if (NO_LEAGUE_VALUE.equals(secondLeague))  {
+          secondLeague = "";
+        }
         return firstLeague.compareTo(secondLeague);
       }
     };
@@ -230,9 +251,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
       getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
     PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-    Table buttonTable = new Table(2,1);
+    PresentationObject cancelButton = getCancelButton(resourceBundle);
+    // add buttons
+    Table buttonTable = new Table(3,1);
     buttonTable.add(newEntryButton,1,1);
     buttonTable.add(deleteEntriesButton,2,1);
+    buttonTable.add(cancelButton, 3,1);
     mainTable.add(buttonTable,1,2);
     return mainTable;
     
@@ -259,6 +283,13 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return button;
   }    
  
+  private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
+    String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
+    SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }     
+
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
@@ -368,6 +399,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
           optionMap.put(name, display);
           }
         }
+        // add default value: no league (because main board members are not assigned to a league)
+        optionMap.put(NO_LEAGUE_VALUE, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
         return optionMap;
       }
     };     
@@ -512,6 +545,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       Object previousValue = valueContainer.getPreviousValue();
       String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
       String newWorkGroupName = value.toString();
+      if (NO_LEAGUE_VALUE.equals(newWorkGroupName)) {
+        // the entry shall not reference a league, set name to null 
+        newWorkGroupName = null;
+      }
       int year = getYear();
       try {
         workReportBusiness.changeWorkReportGroupOfEntity(oldWorkGroupName, year, newWorkGroupName, year, member);
