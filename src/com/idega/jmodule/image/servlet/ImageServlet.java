@@ -13,11 +13,9 @@ import com.idega.servlet.IWCoreServlet;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.image.data.ImageEntity;
 
-//public class ImageServlet extends IWCoreServlet{
+public class ImageServlet extends IWCoreServlet{
 
-public class ImageServlet extends HttpServlet{
-
-private boolean cacheImagesToFiles = true;
+//private boolean cacheImagesToFiles = true;
 //private HashTable imageEntityHash = new Hashtable();
 //private Hashtable scorecardHash = new Hashtable();
 
@@ -71,9 +69,9 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
     }
 
 
-    if(cacheImagesToFiles) cacheImageToFile(imageId);
+  //  if(cacheImagesToFiles) cacheImageToFile(imageId);
 
-    output.flush();
+ //   output.flush();
     output.close();
     myInputStream.close();
 
