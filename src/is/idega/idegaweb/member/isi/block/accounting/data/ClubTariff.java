@@ -7,6 +7,8 @@ public interface ClubTariff extends com.idega.data.IDOEntity
  public com.idega.user.data.Group getClub();
  public int getClubID();
  public boolean getDeleted();
+ public com.idega.user.data.Group getDivision();
+ public int getDivisionID();
  public com.idega.user.data.Group getGroup();
  public int getGroupId();
  public java.sql.Date getPeriodFrom();
@@ -18,6 +20,8 @@ public interface ClubTariff extends com.idega.data.IDOEntity
  public void setClub(com.idega.user.data.Group p0);
  public void setClubID(int p0);
  public void setDeleted(boolean p0);
+ public void setDivision(com.idega.user.data.Group p0);
+ public void setDivisionID(int p0);
  public void setGroup(com.idega.user.data.Group p0);
  public void setGroupId(int p0);
  public void setPeriodFrom(java.sql.Date p0);

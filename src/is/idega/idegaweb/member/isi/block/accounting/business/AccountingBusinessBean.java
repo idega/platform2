@@ -20,9 +20,12 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -40,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * @author palli
  */
 public class AccountingBusinessBean extends IBOServiceBean implements AccountingBusiness {
-	public boolean doAssessment(String name, Group club, Group division, String groupId, User user, boolean includeChildren, String tariffs[]) {
+	public boolean doAssessment(String name, Group club, Group division, String groupId, User user, boolean includeChildren, String tariffs[], Timestamp paymentDate, Timestamp runOnDate) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -59,7 +62,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 
 		IWTimestamp now = IWTimestamp.RightNow();
-		AssessmentRound round = insertAssessmentRound(name, club, division, group, user, now.getTimestamp(), null, includeChildren);
+		AssessmentRound round = insertAssessmentRound(name, club, division, group, user, now.getTimestamp(), null, includeChildren, paymentDate, runOnDate);
 
 		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext(), Arrays.asList(tariffs));
 		assRoundThread.start();
@@ -77,7 +80,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
-	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to, boolean applyToChildren) {
+	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to, boolean applyToChildren, String skip) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -115,29 +118,46 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (Exception e) {
 		}
 
-		return insertTariff(club, group, type, text, am, from, to, applyToChildren);
+		return insertTariff(club, group, type, text, am, from, to, applyToChildren, skip, null);
 	}
 
-	public boolean insertTariff(Group club, Group group, ClubTariffType type, String text, float amount, Date from, Date to, boolean applyToChildren) {
+	public boolean insertTariff(Group club, Group group, ClubTariffType type, String text, float amount, Date from, Date to, boolean applyToChildren, String skipList, List skip) {
+		if (skip == null || skip.isEmpty()) {
+			skip = new ArrayList();
+		
+			StringTokenizer tok = new StringTokenizer(skipList, ";");
+			while (tok.hasMoreElements()) {
+				String str = (String) tok.nextElement();
+				skip.add(str);
+			}
+			
+			Iterator it = skip.iterator();
+			while (it.hasNext()) {
+				System.out.println((String)it.next());
+			}
+		}
+		
 		ClubTariff eTariff;
 		try {
-			eTariff = getClubTariffHome().create();
-			eTariff.setClub(club);
-			eTariff.setGroup(group);
-			eTariff.setTariffType(type);
-			eTariff.setText(text);
-			eTariff.setAmount(amount);
-			eTariff.setPeriodFrom(from);
-			eTariff.setPeriodTo(to);
-
-			eTariff.store();
+			if (!skip.contains(group.getGroupType())) {
+				eTariff = getClubTariffHome().create();
+				eTariff.setClub(club);
+				eTariff.setGroup(group);
+				eTariff.setTariffType(type);
+				eTariff.setText(text);
+				eTariff.setAmount(amount);
+				eTariff.setPeriodFrom(from);
+				eTariff.setPeriodTo(to);
+					
+				eTariff.store();
+			}
 
 			if (applyToChildren) {
 				Iterator children = group.getChildren();
 				if (children != null) {
 					while (children.hasNext()) {
 						Group child = (Group) children.next();
-						boolean ret = insertTariff(club, child, type, text, amount, from, to, applyToChildren);
+						boolean ret = insertTariff(club, child, type, text, amount, from, to, applyToChildren, skipList, skip);
 						if (!ret)
 							return ret;
 					}
@@ -328,7 +348,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
-	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user, Timestamp start, Timestamp end, boolean includeChildren) {
+	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user, Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Timestamp runOnDate) {
 		AssessmentRound round = null;
 		try {
 			round = getAssessmentRoundHome().create();

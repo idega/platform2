@@ -70,6 +70,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private static final String HELP_TEXT_KEY = "cashier_window";
 
 	private Group _group;
+	private Group _div;
 	private User _user;
 	private IWResourceBundle _iwrb;
 	private IWBundle _iwb;
@@ -108,6 +109,22 @@ public class CashierWindow extends StyledIWAdminWindow {
 			}
 		}
 
+		String sDivId = iwc.getParameter(PARAMETER_DIVISION_ID);
+		if (sDivId != null) {
+			try {
+				_div = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sDivId).intValue());
+			}
+			catch (NumberFormatException e1) {
+				e1.printStackTrace();
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 		String sUserId = iwc.getParameter(PARAMETER_USER_ID);
 		if (sUserId != null) {
 			try {
@@ -145,7 +162,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			editTariffType.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			editTariffType.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer editTariff = new LinkContainer();
 		editTariff.setStyleClass(styledLink);
 		editTariff.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.edit_tariff", "Edit club tariff list (A.12)")));
@@ -154,7 +174,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			editTariff.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			editTariff.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer autoAss = new LinkContainer();
 		autoAss.setStyleClass(styledLink);
 		autoAss.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.auto_assessment", "Automatic assessment (A.15)")));
@@ -163,7 +186,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			autoAss.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			autoAss.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer ccContract = new LinkContainer();
 		ccContract.setStyleClass(styledLink);
 		ccContract.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.cc_contract", "Edit creditcard company contract (A.24)")));
@@ -172,7 +198,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			ccContract.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			ccContract.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer selectUser = new LinkContainer();
 		selectUser.setStyleClass(styledLink);
 		selectUser.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.select_user", "Select user to work with")));
@@ -181,7 +210,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			selectUser.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			selectUser.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer manAss = new LinkContainer();
 		manAss.setStyleClass(styledLink);
 		manAss.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.manual_assessment", "Manual assessment (A.14)")));
@@ -190,7 +222,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			manAss.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			manAss.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer insertContract = new LinkContainer();
 		insertContract.setStyleClass(styledLink);
 		insertContract.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.insert_contract", "Insert/edit member contract (new/A.10)")));
@@ -199,7 +234,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			insertContract.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			insertContract.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer registerPayment = new LinkContainer();
 		registerPayment.setStyleClass(styledLink);
 		registerPayment.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.payment", "Register payment (A.11)")));
@@ -208,7 +246,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			registerPayment.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			registerPayment.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer paymentHistory = new LinkContainer();
 		paymentHistory.setStyleClass(styledLink);
 		paymentHistory.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.paymentHistory", "Payment history (3.11)")));
@@ -217,7 +258,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			paymentHistory.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			paymentHistory.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer memberCreditCard = new LinkContainer();
 		memberCreditCard.setStyleClass(styledLink);
 		memberCreditCard.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.memberCreditCard", "Member credit card info (A.10)")));
@@ -226,7 +270,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_user != null) {
 			memberCreditCard.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
 		}
-
+		if (_div != null) {
+			memberCreditCard.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		
 		//reports
 		LinkContainer paymentStatus = new LinkContainer();
 		paymentStatus.setStyleClass(styledLink);
@@ -401,16 +448,20 @@ public class CashierWindow extends StyledIWAdminWindow {
 			addTitle(actionTitle.toString(), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			
 			if (subWindow != null) {
-				subWindow.setClub(_group);
-				if (_user != null)
-					subWindow.setUser(_user);
-				table.add(subWindow, 2, 1);
 				Table helpTable = new Table(1, 1);
 				helpTable.setWidth(Table.HUNDRED_PERCENT);
 				helpTable.setHeight(15);
 				helpTable.setAlignment(1, 1, "right");
 				helpTable.add(getHelpWithGrayImage(helpTextKey, false), 1, 1);
 				table.add(helpTable, 2, 1);
+				
+				subWindow.setClub(_group);
+				if (_user != null)
+					subWindow.setUser(_user);
+				if (_div != null)
+					subWindow.setDivision(_div);
+				
+				table.add(subWindow, 2, 1);
 			}
 		}
 

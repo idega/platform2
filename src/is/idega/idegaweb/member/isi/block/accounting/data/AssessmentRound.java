@@ -17,6 +17,8 @@ public interface AssessmentRound extends com.idega.data.IDOEntity
  public int getGroupId();
  public boolean getIncludeChildren();
  public java.lang.String getName();
+ public java.sql.Timestamp getPaymentDate();
+ public java.sql.Timestamp getRunOnDate();
  public java.sql.Timestamp getStartTime();
  public void setClub(com.idega.user.data.Group p0);
  public void setClubId(int p0);
@@ -31,5 +33,7 @@ public interface AssessmentRound extends com.idega.data.IDOEntity
  public void setGroupId(int p0);
  public void setIncludeChildren(boolean p0);
  public void setName(java.lang.String p0);
+ public void setPaymentDate(java.sql.Timestamp p0);
+ public void setRunOnDate(java.sql.Timestamp p0);
  public void setStartTime(java.sql.Timestamp p0);
 }

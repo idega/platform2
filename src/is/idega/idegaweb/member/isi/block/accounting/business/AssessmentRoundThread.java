@@ -87,7 +87,11 @@ public class AssessmentRoundThread extends Thread {
 
 	private void assessGroup(Group group, boolean includeChildren, ClubTariffType tariffType) {
 		try {
-			Collection tariffs = ((ClubTariffHome) IDOLookup.getHome(ClubTariff.class)).findByGroupAndTariffType(group, tariffType);
+			IWTimestamp runOnDate = null;
+			if (_round.getRunOnDate() != null) {
+				runOnDate = new IWTimestamp(_round.getRunOnDate());
+			}
+			Collection tariffs = ((ClubTariffHome) IDOLookup.getHome(ClubTariff.class)).findByGroupAndTariffType(group, tariffType, runOnDate);
 			if (tariffs != null && !tariffs.isEmpty()) {
 				Collection users = getUserBusiness().getUsersInGroup(group);
 				if (users != null && !users.isEmpty()) {

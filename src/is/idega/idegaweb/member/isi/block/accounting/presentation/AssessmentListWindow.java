@@ -12,6 +12,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRoundHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -33,13 +34,12 @@ import com.idega.util.IWTimestamp;
 public class AssessmentListWindow extends StyledIWAdminWindow {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	
-//	protected static final String LABEL_CLUB = "isi_acc_alw_club";
-//	protected static final String LABEL_DIVISION = "isi_acc_alw_div";
+	protected static final String LABEL_DIVISION = "isi_acc_alw_div";
 	protected static final String LABEL_GROUP = "isi_acc_alw_group";
+	protected static final String LABEL_TARIFF_TYPE = "isi_acc_alw_tariff_type";
 	protected static final String LABEL_USER = "isi_acc_alw_user";
 	protected static final String LABEL_DATE = "isi_acc_alw_date";
 	protected static final String LABEL_AMOUNT = "isi_acc_alw_amount";
-//	protected static final String LABEL_STATUS = "isi_acc_alw_status";
 	protected static final String LABEL_ROUND_NAME = "isi_acc_alw_round_name";
 	protected static final String LABEL_EXECUTED_BY = "isi_acc_alw_executed_by";
 	protected static final String LABEL_SUM = "isi_acc_alw_sum";
@@ -87,10 +87,14 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		t.setStyleClass(borderTableStyle);
 		
 		int row = 1;
+		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
+		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelTariffType = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
+		labelTariffType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDate = new Text(iwrb.getLocalizedString(LABEL_DATE, "Date"));
 		labelDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT, "Amount"));
@@ -105,12 +109,16 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 //		Text labelStatus = new Text(iwrb.getLocalizedString(LABEL_STATUS, "Status"));
 //		labelStatus.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
-		t.add(labelGroup, 1, row);
-		t.add(labelUser, 2, row);
-//		t.add(labelDate, 3, row);
-		t.add(labelAmount, 3, row);
+		t.add(labelDiv, 1, row);		
+		t.add(labelGroup, 2, row);
+		t.add(labelUser, 3, row);
+		t.add(labelTariffType, 4, row);
+		t.add(labelAmount, 5, row);
 //		t.add(labelStatus, 5, row++);
 		row++;
+		
+		NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
+		nf.setMaximumFractionDigits(0);
 		
 		try {
 			AssessmentRound round = getAssessmentRoundHome().findByPrimaryKey(new Integer(id));
@@ -123,25 +131,29 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 			heading.add(round.getName(), 1, headingRow);
 			heading.add(round.getExecutedBy().getName(), 2, headingRow);
 			IWTimestamp ex = new IWTimestamp(round.getStartTime());
-			heading.add(ex.getDateString("dd-MMM-yyyy"), 3, headingRow);
+			heading.add(ex.getDateString("dd.MM.yyyy"), 3, headingRow);
 			
 			if (col != null && !col.isEmpty()) {
 				Iterator it = col.iterator();
 				double sum = 0;
 				while (it.hasNext()) {
 					FinanceEntry entry = (FinanceEntry) it.next();
-					t.add(entry.getGroup().getName(), 1, row);
-					t.add(entry.getUser().getName(), 2, row);
-//					t.add(entry.getDateOfEntry().toString(), 3, row);
-					t.add(Double.toString(entry.getAmount()), 3, row);
+					if (entry.getDivision() != null)
+						t.add(entry.getDivision().getName(), 1, row);
+					t.add(entry.getGroup().getName(), 2, row);
+					t.add(entry.getUser().getName(), 3, row);
+					if (entry.getTariffType() != null)
+						t.add(entry.getTariffType().toString(), 4, row);
+					t.add(nf.format(entry.getAmount()), 5, row);
+					t.setAlignment(5, row, "RIGHT");
 					sum += entry.getAmount();
-//					t.add(entry.get)
 					row++;
 				}
-				t.mergeCells(2,row,3,row);
-				t.add("<hr>",2,row++);
-				t.add(labelSum, 2, row);
-				t.add(Double.toString(sum), 3, row);
+				t.mergeCells(1,row,5,row);
+				t.add("<hr>",1,row++);
+				t.add(labelSum, 4, row);
+				t.add(nf.format(sum), 5, row);
+				t.setAlignment(5, row, "RIGHT");
 			}
 		}
 		catch (NumberFormatException e) {

@@ -24,11 +24,13 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.presentation.GroupChooser;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -38,18 +40,21 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 	
 	protected static final String ACTION_SUBMIT = "aa_submit";
 	protected static final String ACTION_DELETE = "aa_delete";
+	protected static final String ACTION_REFRESH = "aa_refresh";
 	
 	protected static final String LABEL_NAME = "isi_acc_aa_name";
-//	protected static final String LABEL_CLUB = "isi_acc_aa_club";
-//	protected static final String LABEL_DIVISION = "isi_acc_aa_div";
+	protected static final String LABEL_DIVISION = "isi_acc_aa_div";
 	protected static final String LABEL_GROUP = "isi_acc_aa_group";
 	protected static final String LABEL_START = "isi_acc_aa_start";
 	protected static final String LABEL_END = "isi_acc_aa_end";
 	protected static final String LABEL_USER = "isi_acc_aa_user";
 	protected static final String LABEL_INCLUDE_CHILDREN = "isi_acc_aa_incl_children";
 	protected static final String LABEL_TARIFF_TYPE = "isi_acc_aa_tariff_type";
+	protected static final String LABEL_PAYMENT_DATE = "isi_acc_aa_payment_date";
+	protected static final String LABEL_RUN_ON_DATE = "isi_acc_aa_run_on_date";
 	
 	protected static final String LABEL_DELETE = "isi_acc_aa_delete";
+	protected static final String LABEL_REFRESH = "isi_acc_aa_refresh";
 	
 	public AutomaticAssessment() {
 		super();
@@ -59,6 +64,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		String name = iwc.getParameter(LABEL_NAME);
 		String group = iwc.getParameter(LABEL_GROUP);
 		String tariffs[] = iwc.getParameterValues(LABEL_TARIFF_TYPE);
+		String paymentDate = iwc.getParameter(LABEL_PAYMENT_DATE);
+		String runOnDate = iwc.getParameter(LABEL_RUN_ON_DATE);
 		
 		boolean includeChildren = false;
 		if (iwc.isParameterSet(LABEL_INCLUDE_CHILDREN))
@@ -68,8 +75,34 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			group = group.substring(group.indexOf("_")+1);
 		}
 		
+		IWTimestamp paymentDateTimestamp = null;
+		IWTimestamp runOnDateTimestamp = null;
+		
 		try {
-			getAccountingBusiness(iwc).doAssessment(name, getClub(), getDivision(), group, iwc.getCurrentUser(), includeChildren, tariffs);
+			paymentDateTimestamp = new IWTimestamp(paymentDate);
+		}
+		catch (IllegalArgumentException e) {
+			paymentDateTimestamp = new IWTimestamp(Long.parseLong(paymentDate));
+			paymentDateTimestamp.setHour(0);
+			paymentDateTimestamp.setMinute(0);
+			paymentDateTimestamp.setSecond(0);
+			paymentDateTimestamp.setMilliSecond(0);
+		}
+		
+		try {
+			runOnDateTimestamp = new IWTimestamp(runOnDate);
+		}
+		catch (IllegalArgumentException e) {
+			runOnDateTimestamp = new IWTimestamp(Long.parseLong(runOnDate));
+			runOnDateTimestamp.setHour(0);
+			runOnDateTimestamp.setMinute(0);
+			runOnDateTimestamp.setSecond(0);
+			runOnDateTimestamp.setMilliSecond(0);
+		}
+		
+		
+		try {
+			getAccountingBusiness(iwc).doAssessment(name, getClub(), getDivision(), group, iwc.getCurrentUser(), includeChildren, tariffs, paymentDateTimestamp.getTimestamp(), runOnDateTimestamp.getTimestamp());
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -106,10 +139,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		int row = 1;
 		Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
 		labelName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-//		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
-//		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
+		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
@@ -122,12 +153,22 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelIncludeChildren = new Text(iwrb.getLocalizedString(LABEL_INCLUDE_CHILDREN, "Incl. child."));
 		labelIncludeChildren.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-
+		Text labelPaymentDate = new Text(iwrb.getLocalizedString(LABEL_PAYMENT_DATE, "Payment date"));
+		labelPaymentDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelRunOnDate = new Text(iwrb.getLocalizedString(LABEL_RUN_ON_DATE, "Run on date"));
+		labelRunOnDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		
 		TextInput nameInput = new TextInput(LABEL_NAME);
+		nameInput.setLength(10);
 		GroupChooser groupInput = new GroupChooser(LABEL_GROUP);
+		groupInput.setInputLength(10);
 		CheckBox includeChildrenInput = new CheckBox(LABEL_INCLUDE_CHILDREN,"true");
+		DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE);
+		DatePicker runOnDateInput = new DatePicker(LABEL_RUN_ON_DATE);
+		
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-
+		SubmitButton refresh = new SubmitButton(iwrb.getLocalizedString(LABEL_REFRESH, "Refresh"), ACTION_REFRESH, "refresh");
+		
 		Collection tariffType = null;
 		try {
 			if (getClub() != null) {
@@ -151,27 +192,31 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		inputTable.add(labelName, 1, row);
 		inputTable.add(labelGroup, 2, row);
 		inputTable.add(labelTariff, 3, row);
-		inputTable.add(labelIncludeChildren, 4, row++);
+		inputTable.add(labelIncludeChildren, 4, row);
+		inputTable.add(labelPaymentDate, 5, row);
+		inputTable.add(labelRunOnDate, 6, row++);
 		
 		inputTable.add(nameInput, 1, row);
 		inputTable.add(groupInput, 2, row);
 		inputTable.add(tariffTypeInput, 3, row);
 		inputTable.add(includeChildrenInput, 4, row);
-		inputTable.add(submit, 5, row);
+		inputTable.add(paymentDateInput, 5, row);
+		inputTable.add(runOnDateInput, 6, row);
+		inputTable.add(submit, 7, row);
+		inputTable.add(refresh, 8, row);
 		
 		row = 1;
 		t.add(labelName, 2, row);
 //		t.add(labelClub, 3, row);
-//		t.add(labelDiv, 4, row);
-		t.add(labelGroup, 3, row);
-		t.add(labelStart, 4, row);
-		t.add(labelEnd, 5, row);
-		t.add(labelUser, 6, row);
-		t.add(labelIncludeChildren, 7, row++);
+		t.add(labelDiv, 3, row);
+		t.add(labelGroup, 4, row);
+		t.add(labelStart, 5, row);
+		t.add(labelEnd, 6, row);
+		t.add(labelUser, 7, row);
+		t.add(labelIncludeChildren, 8, row++);
 		
 		Collection col = null;
 		try {
-			System.out.println("AutomaticAssessment.getClub() = " + getClub());
 			if (getClub() != null) {
 				col = getAccountingBusiness(iwc).findAllAssessmentRoundByClubAndDivision(getClub(), getDivision());
 			}
@@ -198,31 +243,34 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 					nameLink.setWindowToOpen(AssessmentListWindow.class);
 					t.add(nameLink, 2, row);
 				}
-//				t.add(round.getClub().getName(), 3, row);
-//				if (round.getDivision() != null)
-//					t.add(round.getDivision().getName(), 4, row);
+				if (round.getDivision() != null)
+					t.add(round.getDivision().getName(), 3, row);
 				if (round.getGroup() != null)
-					t.add(round.getGroup().getName(), 3, row);
-				t.add(round.getStartTime().toString(), 4, row);
-				if (round.getEndTime() != null)
-					t.add(round.getEndTime().toString(), 5, row);
-				t.add(round.getExecutedBy().getName(), 6, row);
+					t.add(round.getGroup().getName(), 4, row);
+				IWTimestamp startTime = new IWTimestamp(round.getStartTime());
+				t.add(startTime.getDateString("dd.MM.yyyy HH:mm:ss"), 5, row);
+				if (round.getEndTime() != null) {
+					IWTimestamp endTime = new IWTimestamp(round.getEndTime());
+					t.add(endTime.getDateString("dd.MM.yyyy HH:mm:ss"), 6, row);
+				}
+				t.add(round.getExecutedBy().getName(), 7, row);
 				CheckBox children = (CheckBox)show.clone();
 				if (round.getIncludeChildren())
 					children.setChecked(true);
-				t.add(children, 7, row);
+				t.add(children, 8, row);
 				row++;
 			}
 			
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 			delete.setToEnableWhenChecked(LABEL_DELETE);
-			t.add(delete, 7, row);
-			t.setAlignment(7, row, "RIGHT");
+			t.add(delete, 8, row);
+			t.setAlignment(8, row, "RIGHT");
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		
 		f.add(inputTable);
 		f.add(t);

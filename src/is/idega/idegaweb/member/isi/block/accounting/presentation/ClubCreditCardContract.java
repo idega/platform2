@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2003 Idega software. All Rights Reserved.
- *
- * This software is the proprietary information of Idega software.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega software. Use is
+ * subject to license terms.
+ *  
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
@@ -37,13 +37,14 @@ import com.idega.user.data.Group;
 public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
 	protected static final String ACTION_DELETE = "etl_delete";
-	
-//	protected static final String LABEL_CLUB = "isi_acc_cccc_club";
+
+	//	protected static final String LABEL_CLUB = "isi_acc_cccc_club";
 	protected static final String LABEL_DIVISION = "isi_acc_cccc_division";
 	protected static final String LABEL_CONTRACT_NUMBER = "isi_acc_cccc_cont_nr";
 	protected static final String LABEL_CARD_TYPE = "isi_acc_cccc_card_type";
 	protected static final String LABEL_DELETE = "isi_acc_cccc_delete";
-	
+
+	protected static final String ELEMENT_ALL_DIVISIONS = "isi_acc_cccc_all_divisions";
 	/**
 	 *  
 	 */
@@ -57,16 +58,16 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		String type = iwc.getParameter(LABEL_CARD_TYPE);
 
 		try {
-			getAccountingBusiness(iwc).insertCreditCardContract(getClub(),div,number,type); 
+			getAccountingBusiness(iwc).insertCreditCardContract(getClub(), div, number, type);
 		}
-		catch (RemoteException e) { 
+		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void deleteContract(IWContext iwc) {
 		String delete[] = iwc.getParameterValues(LABEL_DELETE);
-		
+
 		try {
 			getAccountingBusiness(iwc).deleteContract(delete);
 		}
@@ -74,7 +75,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
 			saveContract(iwc);
@@ -92,8 +93,8 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		inputTable.setCellpadding(5);
 
 		int row = 1;
-//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
+		//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
 		labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelContractNumber = new Text(iwrb.getLocalizedString(LABEL_CONTRACT_NUMBER, "Contract number"));
@@ -101,15 +102,14 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		Text labelCardType = new Text(iwrb.getLocalizedString(LABEL_CARD_TYPE, "Card type"));
 		labelCardType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-//		inputTable.add(labelClub, 1, row);
+		//		inputTable.add(labelClub, 1, row);
 		inputTable.add(labelDivision, 1, row);
 		inputTable.add(labelContractNumber, 2, row);
 		inputTable.add(labelCardType, 3, row++);
-		
+
 		Collection col = null;
 		Collection types = null;
 		try {
-			System.out.println("ClubCreditCardContract.getClub() = " + getClub());
 			if (getClub() != null) {
 				col = getAccountingBusiness(iwc).findAllCreditCardContractByClub(getClub());
 				types = getAccountingBusiness(iwc).findAllCreditCardType();
@@ -118,11 +118,11 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
-				
+
 		DropdownMenu divInput = new DropdownMenu(LABEL_DIVISION);
 		ArrayList divisions = new ArrayList();
 		getClubDivisions(divisions, getClub());
-		divInput.addMenuElement("-1", " ");
+		divInput.addMenuElement("-1", iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"));
 		if (divisions != null && !divisions.isEmpty()) {
 			Iterator it = divisions.iterator();
 			while (it.hasNext()) {
@@ -138,32 +138,32 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		}
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
-//		inputTable.add(getClub().getName(), 1, row);
+		//		inputTable.add(getClub().getName(), 1, row);
 		inputTable.add(divInput, 1, row);
 		inputTable.add(numberInput, 2, row);
 		inputTable.add(typeInput, 3, row);
 		inputTable.add(submit, 4, row);
-		
+
 		row = 1;
-//		t.add(labelClub, 2, row);
+		//		t.add(labelClub, 2, row);
 		t.add(labelDivision, 2, row);
 		t.add(labelContractNumber, 3, row);
 		t.add(labelCardType, 4, row++);
-		
+
 		if (col != null && !col.isEmpty()) {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				CreditCardContract cont = (CreditCardContract) it.next();
 				CheckBox delete = new CheckBox(LABEL_DELETE, cont.getPrimaryKey().toString());
 				t.add(delete, 1, row);
-//				t.add(getClub().getName(),2,row);
+				//				t.add(getClub().getName(),2,row);
 				Group div = cont.getDivision();
 				if (div != null)
 					t.add(div.getName(), 2, row);
 				t.add(cont.getContractNumber(), 3, row);
 				t.add(cont.getCardType().getName(), 4, row++);
 			}
-			
+
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 			delete.setToEnableWhenChecked(LABEL_DELETE);
 			t.add(delete, 4, row);
@@ -173,7 +173,8 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
-
+		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
+		
 		f.add(inputTable);
 		f.add(t);
 		add(f);
@@ -189,12 +190,12 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 		return null;
 	}
-	
+
 	private void getClubDivisions(Collection divisions, Group group) {
 		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
 			divisions.add(group);
 		}
-		
+
 		Iterator it = group.getChildren();
 		if (it != null) {
 			while (it.hasNext()) {

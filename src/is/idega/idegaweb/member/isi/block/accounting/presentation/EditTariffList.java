@@ -12,6 +12,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -40,9 +41,9 @@ import com.idega.util.IWTimestamp;
 public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
 	protected static final String ACTION_DELETE = "etl_delete";
-	
-//	protected static final String LABEL_CLUB = "isi_acc_etl_club";
-//	protected static final String LABEL_DIVISION = "isi_acc_etl_div";
+
+	//	protected static final String LABEL_CLUB = "isi_acc_etl_club";
+	protected static final String LABEL_DIVISION = "isi_acc_etl_div";
 	protected static final String LABEL_GROUP = "isi_acc_etl_group";
 	protected static final String LABEL_TARIFF_TYPE = "isi_acc_etl_tariff_type";
 	protected static final String LABEL_TEXT = "isi_acc_etl_text";
@@ -51,7 +52,9 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String LABEL_TO = "isi_acc_etl_to";
 	protected static final String LABEL_CHILDREN = "isi_acc_etl_appl_children";
 	protected static final String LABEL_DELETE = "isi_acc_etl_delete";
-	
+
+	protected static final String PROPERTY_SKIP = "isi_acc_skip_assessment";
+
 	/**
 	 *  
 	 */
@@ -69,12 +72,12 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		String children = iwc.getParameter(LABEL_CHILDREN);
 
 		if (group != null) {
-			group = group.substring(group.indexOf("_")+1);
+			group = group.substring(group.indexOf("_") + 1);
 		}
-		
+
 		IWTimestamp fromTimestamp = null;
 		IWTimestamp toTimestamp = null;
-		
+
 		try {
 			fromTimestamp = new IWTimestamp(from);
 		}
@@ -85,7 +88,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			fromTimestamp.setSecond(0);
 			fromTimestamp.setMilliSecond(0);
 		}
-		
+
 		try {
 			toTimestamp = new IWTimestamp(to);
 		}
@@ -96,23 +99,25 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			toTimestamp.setSecond(0);
 			toTimestamp.setMilliSecond(0);
 		}
-		
+
 		boolean applChildren = false;
 		if (children != null) {
 			applChildren = Boolean.valueOf(children).booleanValue();
 		}
-		
+
+		String skip = getBundle(iwc).getProperty(PROPERTY_SKIP, "");
+
 		try {
-			getAccountingBusiness(iwc).insertTariff(getClub(),group,type,text,amount,fromTimestamp.getDate(), toTimestamp.getDate(), applChildren); 
+			getAccountingBusiness(iwc).insertTariff(getClub(), group, type, text, amount, fromTimestamp.getDate(), toTimestamp.getDate(), applChildren, skip);
 		}
-		catch (RemoteException e) { 
+		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void deleteTariffEntry(IWContext iwc) {
 		String delete[] = iwc.getParameterValues(LABEL_DELETE);
-		
+
 		try {
 			getAccountingBusiness(iwc).deleteTariff(delete);
 		}
@@ -120,7 +125,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
 			saveTariffEntry(iwc);
@@ -137,9 +142,9 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		t.setCellpadding(5);
 		inputTable.setCellpadding(5);
 
-		int row = 1;		
-//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		int row = 1;
+		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
+		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelType = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
@@ -154,7 +159,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		labelTo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelChildren = new Text(iwrb.getLocalizedString(LABEL_CHILDREN, "Apply to children"));
 		labelChildren.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		
+
 		inputTable.add(labelGroup, 1, row);
 		inputTable.add(labelType, 2, row);
 		inputTable.add(labelText, 3, row);
@@ -162,7 +167,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		inputTable.add(labelFrom, 5, row);
 		inputTable.add(labelTo, 6, row);
 		inputTable.add(labelChildren, 7, row++);
-		
+
 		Collection col = null;
 		Collection types = null;
 		try {
@@ -175,7 +180,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+
 		GroupChooser groupInput = new GroupChooser(LABEL_GROUP);
 		groupInput.setInputLength(10);
 		DropdownMenu typeInput = new DropdownMenu(LABEL_TARIFF_TYPE);
@@ -190,56 +195,63 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		DatePicker fromInput = new DatePicker(LABEL_FROM);
 		DatePicker toInput = new DatePicker(LABEL_TO);
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-		CheckBox children = new CheckBox(LABEL_CHILDREN,"true");
+		CheckBox children = new CheckBox(LABEL_CHILDREN, "true");
 
 		inputTable.add(groupInput, 1, row);
-		inputTable.add(typeInput, 2,row);
+		inputTable.add(typeInput, 2, row);
 		inputTable.add(textInput, 3, row);
 		inputTable.add(amountInput, 4, row);
 		inputTable.add(fromInput, 5, row);
 		inputTable.add(toInput, 6, row);
 		inputTable.add(children, 7, row);
 		inputTable.add(submit, 8, row);
-		
+
 		row = 1;
-//		t.add(labelClub, 2, row);
-		t.add(labelGroup, 2, row);
-		t.add(labelType, 3, row);
-		t.add(labelText, 4, row);
-		t.add(labelAmount, 5, row);
-		t.add(labelFrom, 6, row);
-		t.add(labelTo, 7, row++);
-		
+		t.add(labelDiv, 2, row);
+		t.add(labelGroup, 3, row);
+		t.add(labelType, 4, row);
+		t.add(labelText, 5, row);
+		t.add(labelAmount, 6, row);
+		t.add(labelFrom, 7, row);
+		t.add(labelTo, 8, row++);
+
+		NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
+		nf.setMaximumFractionDigits(0);
+
 		if (col != null && !col.isEmpty()) {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				ClubTariff tariff = (ClubTariff) it.next();
 				CheckBox delete = new CheckBox(LABEL_DELETE, tariff.getPrimaryKey().toString());
 				t.add(delete, 1, row);
-				
-//				t.add(tariff.getClub().getName(), 2, row);
+
+				if (tariff.getDivision() != null)
+					t.add(tariff.getDivision().getName(), 2, row);
 				Group group = tariff.getGroup();
 				if (group != null)
-					t.add(group.getName(), 2, row);
+					t.add(group.getName(), 3, row);
 
 				ClubTariffType type = tariff.getTariffType();
-				t.add(type.getName(), 3, row);
-				t.add(tariff.getText(), 4, row);
-				t.add(Float.toString(tariff.getAmount()), 5, row);
-				t.add(tariff.getPeriodFrom().toString(), 6, row);
-				t.add(tariff.getPeriodTo().toString(), 7, row++);
+				t.add(type.getName(), 4, row);
+				t.add(tariff.getText(), 5, row);
+				
+				t.add(nf.format(tariff.getAmount()), 6, row);
+				t.setAlignment(6, row, "RIGHT");
+				t.add(tariff.getPeriodFrom().toString(), 7, row);
+				t.add(tariff.getPeriodTo().toString(), 8, row++);
 			}
-			
+
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 			delete.setToEnableWhenChecked(LABEL_DELETE);
-			t.add(delete, 7, row);
-			t.setAlignment(7, row, "RIGHT");
+			t.add(delete, 8, row);
+			t.setAlignment(8, row, "RIGHT");
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
-		
+		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
+
 		f.add(inputTable);
 		f.add(t);
 		add(f);

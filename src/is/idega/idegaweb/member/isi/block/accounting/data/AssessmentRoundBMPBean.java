@@ -34,6 +34,8 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	protected final static String COLUMN_END_TIME = "end_time";
 	protected final static String COLUMN_INCLUDE_CHILDREN = "include_children";
 	protected final static String COLUMN_DELETED = "deleted";
+	protected final static String COLUMN_PAYMENT_DATE = "payment_date";
+	protected final static String COLUMN_RUN_ON_DATE = "run_on_date";
 
 	/*
 	 * (non-Javadoc)
@@ -62,6 +64,8 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		addAttribute(COLUMN_INCLUDE_CHILDREN, "Include children", true, true, Boolean.class);
 		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
 		addManyToManyRelationShip(ClubTariffType.class);
+		addAttribute(COLUMN_PAYMENT_DATE, "The payment date for the entries", true, true, Timestamp.class);
+		addAttribute(COLUMN_RUN_ON_DATE, "The date the batch is run on", true, true, Timestamp.class);
 	}
 
 	public void addTariffType(ClubTariffType tariffType) throws IDOAddRelationshipException {
@@ -124,6 +128,14 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		setColumn(COLUMN_DELETED, deleted);
 	}
 
+	public void setPaymentDate(Timestamp time) {
+		setColumn(COLUMN_PAYMENT_DATE, time);
+	}
+	
+	public void setRunOnDate(Timestamp time) {
+		setColumn(COLUMN_RUN_ON_DATE, time);
+	}
+	
 	public String getName() {
 		return getStringColumnValue(COLUMN_NAME);
 	}
@@ -180,6 +192,14 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		return getBooleanColumnValue(COLUMN_DELETED, false);
 	}
 
+	public Timestamp getPaymentDate() {
+		return (Timestamp) getColumnValue(COLUMN_PAYMENT_DATE);
+	}
+	
+	public Timestamp getRunOnDate() {
+		return (Timestamp) getColumnValue(COLUMN_RUN_ON_DATE);
+	}
+	
 	public Collection ejbFindAllByClubAndDivision(Group club, Group div) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
@@ -194,6 +214,7 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		sql.append(COLUMN_DELETED);
 		sql.append(" is null");
 		sql.appendRightParenthesis();
+		sql.appendOrderByDescending(getIDColumnName());
 		
 
 		return idoFindPKsByQuery(sql);

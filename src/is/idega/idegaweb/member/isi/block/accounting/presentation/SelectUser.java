@@ -76,7 +76,8 @@ public class SelectUser extends CashierSubWindowTemplate {
 			f.add(new HiddenInput(CashierWindow.PARAMETER_USER_ID, selectedUser));
 		else
 			f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
-
+		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
+		
 		add(f);
 	}
 	
