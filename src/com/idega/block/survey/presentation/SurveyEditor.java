@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.block.survey.business.SurveyBusiness;
 import com.idega.block.survey.business.SurveyBusinessBean;
 import com.idega.block.survey.data.SurveyAnswer;
@@ -63,6 +64,7 @@ public class SurveyEditor extends FolderBlock {
 
 
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.survey";
+	public static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	protected IWResourceBundle _iwrb;
 	protected IWBundle _iwb;
 	protected IWBundle _iwbSurvey;
@@ -1014,6 +1016,13 @@ public class SurveyEditor extends FolderBlock {
 		clone._prmValues = new HashMap();
 		clone.prmVector = new Vector();
 		return clone;
+	}
+	public Help getHelp(String helpTextKey) {
+		Help help = new Help();
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(helpTextKey);
+		help.setLinkText("help");
+		return help;
 	}
 
 }
