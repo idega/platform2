@@ -1,5 +1,7 @@
 package com.idega.block.boxoffice.presentation;
 
+import com.idega.util.idegaTimestamp;
+import com.idega.util.text.TextSoap;
 import com.idega.block.IWBlock;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -28,9 +30,13 @@ private int _layout = -1;
 public final static int BOX_VIEW = 1;
 public final static int CATEGORY_VIEW = 2;
 
+public final static String BOX_VIEW_STRING = "BOX VIEW";
+public final static String CATEGORY_VIEW_STRING = "CATEGORY VIEW";
+
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
+protected IWBundle _iwbBox;
 private Image _deleteImage;
 private Image _createImage;
 private Image _editImage;
@@ -74,6 +80,7 @@ public Box(String attribute){
 
   public void main(IWContext iwc) throws Exception {
     _iwrb = getResourceBundle(iwc);
+    _iwbBox = getBundle(iwc);
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
     _createImage = _iwb.getImage("shared/create.gif");
@@ -145,11 +152,11 @@ public Box(String attribute){
       row++;
     }
 
-    _myTable.add(getBox(box),1,row);
+    _myTable.add(getBox(box,iwc),1,row);
     add(_myTable);
   }
 
-  private Table getBox(BoxEntity box) {
+  private Table getBox(BoxEntity box,IWContext iwc) {
     setStyles();
 
     Table boxTable = new Table();
@@ -163,7 +170,8 @@ public Box(String attribute){
           getBoxView(box,categories,boxTable);
           break;
         case CATEGORY_VIEW:
-          getCategoryView(categories,boxTable);
+          boxTable.setWidth(_boxWidth);
+          getCategoryView(box,categories,boxTable,iwc);
           break;
       }
     }
@@ -248,8 +256,85 @@ public Box(String attribute){
     }
   }
 
-  private void getCategoryView(BoxCategory[] categories,Table boxTable) {
-    boxTable.add("Category!!!");
+  private void getCategoryView(BoxEntity box,BoxCategory[] categories,Table boxTable,IWContext iwc) {
+    BoxCategory category = BoxFinder.getCategory(_boxCategoryID);
+    int row = 1;
+
+    Table categoryTable = new Table(2,categories.length);
+      categoryTable.setCellpadding(1);
+      categoryTable.setCellspacing(0);
+      categoryTable.setWidth(2,"100%");
+
+    for ( int a = 0; a < categories.length; a++ ) {
+      String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
+      if ( categoryString == null ) {
+        categoryString = "$language$";
+      }
+
+      Text categoryText = new Text(categoryString);
+        categoryText.setFontStyle(_categoryStyle);
+
+      Image categoryImage = _iwbBox.getImage("shared/category.gif");
+
+      Link categoryImageLink = new Link(categoryImage);
+        categoryImageLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
+      Link categoryLink = new Link(categoryText);
+        categoryLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
+
+      categoryTable.add(categoryImageLink,1,a+1);
+      categoryTable.add(categoryLink,2,a+1);
+    }
+
+    boxTable.add(categoryTable,1,row);
+    row++;
+    boxTable.setHeight(1,row,"5");
+    row++;
+
+    if ( _boxCategoryID != -1 ) {
+      int linkRow = 1;
+
+      BoxLink[] links = BoxFinder.getLinksInBox(box,category);
+      if ( links != null && category != null ) {
+        Table linksTable = new Table();
+          linksTable.setCellpadding(0);
+          linksTable.setCellspacing(1);
+          linksTable.setWidth("100%");
+          linksTable.setWidth(1,"100%");
+
+        Text documentNameText = new Text(_iwrb.getLocalizedString("document_name","Document name"));
+          documentNameText.setFontStyle(_linkStyle+" font-weight: bold;");
+        linksTable.add(documentNameText,1,linkRow);
+
+        Text documentDateText = new Text(_iwrb.getLocalizedString("document_date","Date"));
+          documentDateText.setFontStyle(_linkStyle+" font-weight: bold;");
+        linksTable.add(documentDateText,2,linkRow);
+        linkRow++;
+
+        for ( int b = 0; b < links.length; b++ ) {
+          Link link = getLink(links[b]);
+          idegaTimestamp stamp = new idegaTimestamp(links[b].getCreationDate());
+
+          if ( link != null ) {
+            linksTable.add(link,1,linkRow);
+
+            Text dateText = new Text(TextSoap.addZero(stamp.getDay())+"."+TextSoap.addZero(stamp.getMonth())+"."+Integer.toString(stamp.getYear()));
+              dateText.setFontStyle(_linkStyle);
+            linksTable.add(dateText,2,linkRow);
+
+            if ( _isAdmin ) {
+              linksTable.add(getEditLink(links[b].getID()),3,linkRow);
+              linksTable.add(getDeleteLink(links[b].getID()),3,linkRow);
+            }
+            linkRow++;
+          }
+        }
+        boxTable.add(linksTable,1,row);
+        row++;
+      }
+    }
+    if ( _isAdmin && _boxCategoryID != -1 ) {
+      boxTable.add(getAddLink(category.getID()),1,row);
+    }
   }
 
   private Table getAdminPart() {
