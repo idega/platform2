@@ -197,6 +197,10 @@ public class RunResultViewer extends Block {
 					Run run = (Run) runIter.next();
 					row = insertRunIntoTable(table, row, run, num);
 					num++;
+					
+					if (!runIter.hasNext()) {
+						table.setHeight(row, 2);
+					}
 				}
 			}
 		}
