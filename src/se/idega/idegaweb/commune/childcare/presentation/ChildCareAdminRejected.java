@@ -163,7 +163,8 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 					else
 						table.setRowColor(row, getZebraColor2());
 				}
-//// email to parent
+
+				//// email to parent
 				try {
 					Collection parents = getMemberFamilyLogic(iwc).getCustodiansFor(child);
 					
@@ -175,15 +176,15 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 							try {
 								email = getCommuneUserBusiness(iwc).getUsersMainEmail(parent);
 								if (email != null && email.getEmailAddress() != null && !email.getEmailAddress().equals(" ")) {
-								//if (email != null && email.getEmailAddress() != null) {
 									emailLink = this.getSmallLink(email.getEmailAddress());
 									if (emails != null)
 										emails = emails + "; " + email.getEmailAddress();
 									else										
-									emails = email.getEmailAddress();																		
+									emails = email.getEmailAddress();
+									
+									emailLink.setURL("mailto:" + emails);
 								}
-								
-								emailLink.setURL("mailto:" + emails);
+																
 							}
 							catch (NoEmailFoundException nef) {
 								log(nef);
@@ -194,8 +195,6 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				}catch (NoCustodianFound ncf) {
 				}
 				
-				
-				////
 				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 				if (emailLink != null){
 					emailLink.setText(name);
