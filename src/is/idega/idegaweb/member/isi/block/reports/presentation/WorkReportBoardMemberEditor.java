@@ -324,6 +324,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     if (newMemberMessage != null) {
       Text text = new Text(newMemberMessage);
       text.setBold();
+      text.setFontColor("#FF0000");
       add(text);
     }
     // get error message
@@ -331,6 +332,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
       text.setBold();
+      text.setFontColor("#FF0000");
       add(text);
     }
 

@@ -392,12 +392,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
       text.setBold();
+      text.setFontColor("#FF0000");
       add(text);
     }
     if (memberAlreadyExist) {
       String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number does already exist");
       Text text = new Text(message);
       text.setBold();
+      text.setFontColor("#FF0000");
       add(text);
     }
     // put browser into a table

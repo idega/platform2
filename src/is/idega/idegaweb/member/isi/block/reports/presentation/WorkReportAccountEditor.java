@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -93,7 +95,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private Map specialFieldColorMap;
   private boolean editable = true;
   private boolean isReadOnly = false;
-  private boolean accountOutOfBalance = false;
+  private List leaguesWhereTheAccountIsOutOfBalance = null;
   
   // this number format is shared by the converters
   NumberFormat currencyNumberFormat = null;
@@ -172,8 +174,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     String action = "";
     // does the user want to close the report?
     if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
-      accountOutOfBalance = isAccountOutOfBalance();
-      if (! accountOutOfBalance) {
+      leaguesWhereTheAccountIsOutOfBalance = getLeaguesWhereTheAccountIsOutOfBalance();
+      if (leaguesWhereTheAccountIsOutOfBalance.isEmpty()) {
         setWorkReportAsFinished(true, iwc);
       }
       return action;
@@ -431,19 +433,33 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // iterate over leagues
     Collection workReportAccountGroupHelpers = new ArrayList();
     Iterator leagueIterator = workReportLeagues.iterator();
+    SortedSet leagueNamesWhereTheAccountIsOutOfBalance = new TreeSet();
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
       String groupName = group.getShortName();
       Integer groupId = (Integer) group.getPrimaryKey();
+      if (leaguesWhereTheAccountIsOutOfBalance != null && leaguesWhereTheAccountIsOutOfBalance.contains(groupId))  {
+        leagueNamesWhereTheAccountIsOutOfBalance.add(groupName);
+      }
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
     
     // add error message
-    if (accountOutOfBalance) {
+    if (! leagueNamesWhereTheAccountIsOutOfBalance.isEmpty()) {
       String message = resourceBundle.getLocalizedString("wr_account_editor_account_out_of_balance", "Account is out of balance");
-      Text text = new Text(message);
+      StringBuffer buffer = new StringBuffer(message);
+      buffer.append(":");
+      String comma = " ";
+      Iterator nameIterator = leagueNamesWhereTheAccountIsOutOfBalance.iterator();
+      while (nameIterator.hasNext())  {
+        buffer.append(comma);
+        buffer.append((String) nameIterator.next());
+        comma = ", ";
+      }
+      Text text = new Text(buffer.toString());
       text.setBold();
+      text.setFontColor("#FF0000");
       add(text);
     }
     
@@ -704,13 +720,15 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   }
   
   
-  private boolean isAccountOutOfBalance()  {
+  private List getLeaguesWhereTheAccountIsOutOfBalance()  {
     // assertion: league key matrix must be initialized
     List assetIds = (List) specialFieldAccountKeyIdsPlus.get(ASSET);
     List debtIds = (List) specialFieldAccountKeyIdsPlus.get(DEBT);
+    List workReportGroupIdsOutOfBalance = new ArrayList();
     Iterator iterator = leagueKeyMatrix.firstKeySet().iterator();
     while (iterator.hasNext()) {
-      Map keyRecordMap = leagueKeyMatrix.get(iterator.next());
+      Integer workReportGroupId = (Integer) iterator.next();
+      Map keyRecordMap = leagueKeyMatrix.get(workReportGroupId);
       Iterator keyRecordIterator = keyRecordMap.entrySet().iterator();
       float result = 0;
       while (keyRecordIterator.hasNext()) {
@@ -726,10 +744,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         }
       }
       if (result != 0)  {
-        return true;
+        workReportGroupIdsOutOfBalance.add(workReportGroupId);
       }
     }
-    return false;
+    return workReportGroupIdsOutOfBalance;
   }
 
   private NumberFormat getCurrencyNumberFormat(IWContext iwc) {
