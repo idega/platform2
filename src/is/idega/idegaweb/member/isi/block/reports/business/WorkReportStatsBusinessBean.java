@@ -2885,7 +2885,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
-							//TODO ADD FAKE SUM column and league sum row	
 							divDataSum.addData(income, new Integer(0));
 							divDataSum.addData(expenses, new Integer(0));
 							divDataSum.addData(incomeMinusExpenses,new Integer(0));
@@ -2903,23 +2902,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
 							
 							
-							//sum for layout
-
-							divDataSum.addData(incomeSum, new Integer(0));
-							divDataSum.addData(expensesSum, new Integer(0));
-							divDataSum.addData(incomeMinusExpensesSum,new Integer(0));
-							divDataSum.addData(rollingMoneySum, new Integer(0));
-							divDataSum.addData(rigidMoneySum, new Integer(0));
-							divDataSum.addData(debtsSum, new Integer(0));
-							divDataSum.addData(rollingMoneyMinusDebtsSum,new Integer(0));
 							
-							divDataSum.addData(comparingIncomeSum, new Integer(0));
-							divDataSum.addData(comparingExpensesSum, new Integer(0));
-							divDataSum.addData(comparingIncomeMinusExpensesSum,new Integer(0));
-							divDataSum.addData(comparingRollingMoneySum, new Integer(0));
-							divDataSum.addData(comparingRigidMoneySum, new Integer(0));
-							divDataSum.addData(comparingDebtsSum, new Integer(0));
-							divDataSum.addData(comparingRollingMoneyMinusDebtsSum,new Integer(0));
 							
 						
 							divDataSum.addData(dummyOrderingField,"C");
@@ -2939,22 +2922,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
 						addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
 						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
-						
-						//sum stuff
-						addToIntegerCountFromFieldInAnotherReportableData(incomeSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(expensesSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpensesSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneySum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rigidMoneySum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(debtsSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebtsSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingExpensesSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpensesSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneySum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoneySum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingDebtsSum,divDataSum,regData);
-						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebtsSum,divDataSum,regData);
 						
 						
 						recordsMapKeyedByLeagueIdentifierAndClubsName.put(divMapKey,divDataSum);
@@ -3034,49 +3001,62 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						divDataSum.addData(comparingRigidMoney, new Integer(0));
 						divDataSum.addData(comparingDebts, new Integer(0));
 						divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						
+									//sum for layout
+
+						divDataSum.addData(incomeSum, new Integer(0));
+						divDataSum.addData(expensesSum, new Integer(0));
+						divDataSum.addData(incomeMinusExpensesSum,new Integer(0));
+						divDataSum.addData(rollingMoneySum, new Integer(0));
+						divDataSum.addData(rigidMoneySum, new Integer(0));
+						divDataSum.addData(debtsSum, new Integer(0));
+						divDataSum.addData(rollingMoneyMinusDebtsSum,new Integer(0));
+						
+						divDataSum.addData(comparingIncomeSum, new Integer(0));
+						divDataSum.addData(comparingExpensesSum, new Integer(0));
+						divDataSum.addData(comparingIncomeMinusExpensesSum,new Integer(0));
+						divDataSum.addData(comparingRollingMoneySum, new Integer(0));
+						divDataSum.addData(comparingRigidMoneySum, new Integer(0));
+						divDataSum.addData(comparingDebtsSum, new Integer(0));
+						divDataSum.addData(comparingRollingMoneyMinusDebtsSum,new Integer(0));
+						
 
 						divDataSum.addData(dummyOrderingField,"E");
 					}
 
-					addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
-					
-					
+					addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);					
 					addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
-					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
 
-
+//sum stuff
+					addToIntegerCountFromFieldInAnotherReportableData(incomeSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(expensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rigidMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(debtsSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebtsSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingExpensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingDebtsSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebtsSum,divDataSum,regData);
+					
+					
 					recordsMapKeyedByLeagueIdentifierAndClubsName.put(allSumKey,divDataSum);
-
-					
-
-					
-					
-					
-					
 				}
 				
 			}
