@@ -2076,7 +2076,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				contract.addFileToContract(contractFile);
 
 				application.setContractId(contractID);
-				application.setFromDate(validFrom.getDate());
+				if(validFrom!=null)
+				    application.setFromDate(validFrom.getDate());
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
 
 				String defaultContractCreatedBody = hasBankId ? "Your child care contract for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
