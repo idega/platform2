@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.extra.data;
+package se.idega.idegaweb.commune.care.resource.data;
 
 
 public interface ResourceClassMember extends com.idega.data.IDOEntity
@@ -7,7 +7,7 @@ public interface ResourceClassMember extends com.idega.data.IDOEntity
  public java.sql.Date getEndDate();
  public int getMemberFK();
  public int getRegistratorId();
- public se.idega.idegaweb.commune.accounting.extra.data.Resource getResource();
+ public se.idega.idegaweb.commune.care.resource.data.Resource getResource();
  public int getResourceFK();
  public com.idega.block.school.data.SchoolClassMember getSchoolClassMember();
  public java.sql.Date getStartDate();

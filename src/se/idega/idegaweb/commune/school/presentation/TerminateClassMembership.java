@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourceClassMember;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourceClassMemberHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
+import se.idega.idegaweb.commune.care.resource.data.ResourceClassMemberHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
@@ -36,10 +36,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/10/07 17:10:21 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/14 14:54:49 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb

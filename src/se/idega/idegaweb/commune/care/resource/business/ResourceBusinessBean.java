@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package se.idega.idegaweb.commune.accounting.extra.business;
+package se.idega.idegaweb.commune.care.resource.business;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
@@ -21,12 +21,12 @@ import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import se.idega.idegaweb.commune.accounting.extra.data.Resource;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourceClassMember;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourceClassMemberHome;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourceHome;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourcePermission;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourcePermissionHome;
+import se.idega.idegaweb.commune.care.resource.data.Resource;
+import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
+import se.idega.idegaweb.commune.care.resource.data.ResourceClassMemberHome;
+import se.idega.idegaweb.commune.care.resource.data.ResourceHome;
+import se.idega.idegaweb.commune.care.resource.data.ResourcePermission;
+import se.idega.idegaweb.commune.care.resource.data.ResourcePermissionHome;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;

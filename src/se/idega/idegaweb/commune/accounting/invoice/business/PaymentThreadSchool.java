@@ -13,8 +13,6 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.extra.business.ResourceBusiness;
-import se.idega.idegaweb.commune.accounting.extra.data.ResourceClassMember;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
@@ -40,6 +38,8 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.care.resource.business.ResourceBusiness;
+import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
 import se.idega.util.ErrorLogger;
 
 import com.idega.block.school.data.School;
@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/10/14 11:42:34 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/14 14:54:15 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.138 $
+ * @version $Revision: 1.139 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool

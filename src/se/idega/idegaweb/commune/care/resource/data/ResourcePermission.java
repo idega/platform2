@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.extra.data;
+package se.idega.idegaweb.commune.care.resource.data;
 
 
 public interface ResourcePermission extends com.idega.data.IDOEntity

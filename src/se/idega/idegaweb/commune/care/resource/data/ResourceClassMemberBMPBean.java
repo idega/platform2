@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package se.idega.idegaweb.commune.accounting.extra.data;
+package se.idega.idegaweb.commune.care.resource.data;
 
 import java.sql.Date;
 import java.util.Collection;
