@@ -406,9 +406,9 @@ public Calendar(idegaTimestamp timestamp){
       editLink.addParameter(CalendarBusiness.PARAMETER_IC_CAT,getCategoryId());
     table.add(editLink,1,1);
     Link deleteLink = new Link(deleteImage);
-      deleteLink.setWindowToOpen(CalendarEditor.class);
-      deleteLink.addParameter(CalendarBusiness.PARAMETER_ENTRY_ID,entryID);
-      deleteLink.addParameter(CalendarBusiness.PARAMETER_MODE_DELETE,CalendarBusiness.PARAMETER_TRUE);
+      deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
+      deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID ,entryID);
+      deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE ,CalendarBusiness.PARAMETER_TRUE);
     table.add(deleteLink,2,1);
 
     return table;
