@@ -1019,6 +1019,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findClassMemberInSchool(int studentID, int schoolID) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findByStudentAndSchool(studentID, schoolID);
+		}
+		catch (FinderException fe) {
+			return new Vector();
+		}
+	}
+
 	public Collection findStudentsInClass(int studentClassID) throws RemoteException {
 		try {
 			return getSchoolClassMemberHome().findBySchoolClass(studentClassID);
@@ -1040,6 +1049,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) throws RemoteException {
 		try {
 			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date);
+		}
+		catch (FinderException e) {
+			return new Vector();
+		}
+	}
+
+	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date, boolean showNotYetActive) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date, showNotYetActive);
 		}
 		catch (FinderException e) {
 			return new Vector();
