@@ -356,9 +356,12 @@ public class Tournament extends GolfEntity{
 
 
     public boolean isTournamentFinished(){
+      return getIsClosed();
+      /*
       idegaTimestamp stampNow = new idegaTimestamp(idegaTimestamp.getTimestampRightNow());
       idegaTimestamp stampTournBegin = new idegaTimestamp(getStartTime());
       return stampNow.isLaterThan(stampTournBegin);
+      */
     }
 
     public boolean isTournamentOngoing(){
