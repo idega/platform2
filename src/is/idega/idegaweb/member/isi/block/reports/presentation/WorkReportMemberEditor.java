@@ -98,12 +98,11 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    initializeFieldList(iwc);
-    IWResourceBundle resourceBundle = getResourceBundle(iwc);
-    
     if (this.getWorkReportId() != -1) {
       //sets this step as bold, if another class calls it this will be overwritten 
       setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+      initializeFieldList(iwc);
+      IWResourceBundle resourceBundle = getResourceBundle(iwc);
       String action = parseAction(iwc);
       Form form = new Form();
       PresentationObject pres = getContent(iwc, resourceBundle, form, action);
