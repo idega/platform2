@@ -125,21 +125,21 @@ public class CampusAllocator extends ModuleObjectContainer{
           int iContractId = Integer.parseInt(modinfo.getParameter("change"));
           Frame.add( getFreeApartments(iTypeId,iComplexId,-1,iContractId),3,1 );
           //Frame.add( getContractTable(iContractId),3,1 );
-          Frame.add( getWaitingList(iTypeId,iComplexId),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,1 );
         }
         else if(modinfo.getParameter("save_allocation")!=null){
           if(saveAllocation(modinfo))
             System.err.println("vistadist");
           else
              System.err.println("vistadist ekki");
-          Frame.add( getWaitingList(iTypeId,iComplexId),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
         }
         else if(modinfo.getParameter("delete_allocation")!=null){
           deleteAllocation(modinfo);
-          Frame.add( getWaitingList(iTypeId,iComplexId),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
         }
         else
-          Frame.add( getWaitingList(iTypeId,iComplexId),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
 
       }
       else
@@ -291,18 +291,23 @@ public class CampusAllocator extends ModuleObjectContainer{
     return L;
   }
 
-  private ModuleObject getWaitingList(int aprtTypeId,int cmplxId){
+  private ModuleObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId){
     Table Frame = new Table();
     int row = 1;
-    Frame.add(boldText(iwrb.getLocalizedString("number","Number")),1,row);
-    Frame.add(boldText(iwrb.getLocalizedString("allocate","Allocate")),2,row);
-    Frame.add(boldText(iwrb.getLocalizedString("name","Name")),3,row);
-    Frame.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),4,row);
-    Frame.add(boldText(iwrb.getLocalizedString("residence","Residence")),5,row);
-    Frame.add(boldText(iwrb.getLocalizedString("legal_residence","Legal residence")),6,row);
-    Frame.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),7,row);
-    Frame.add(boldText(iwrb.getLocalizedString("residence_phone","Residence phone")),8,row);
-    Frame.add(boldText(iwrb.getLocalizedString("application","Application")),9,row);
+    int col = 1;
+    boolean ifLong = ContractId < 0? true:false;
+
+    Frame.add(boldText(iwrb.getLocalizedString("nr","Nr")),col++,row);
+    Frame.add(boldText(iwrb.getLocalizedString("a","A")),col++,row);
+    Frame.add(boldText(iwrb.getLocalizedString("name","Name")),col++,row);
+    Frame.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
+    Frame.add(boldText(iwrb.getLocalizedString("residence","Residence")),col++,row);
+    if(ifLong)
+      Frame.add(boldText(iwrb.getLocalizedString("legal_residence","Legal residence")),col++,row);
+    Frame.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
+    Frame.add(boldText(iwrb.getLocalizedString("phone","Phone")),col++,row);
+    if(ifLong)
+      Frame.add(boldText(iwrb.getLocalizedString("application","Application")),col++,row);
 
     List L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
@@ -312,28 +317,42 @@ public class CampusAllocator extends ModuleObjectContainer{
     if(L!=null){
       int len = L.size();
       row = 2;
+      String TempColor = "#000000";
+      boolean redColorSet = false;
       for (int i = 0; i < len; i++) {
+        col = 1;
         WaitingList WL = (WaitingList)L.get(i);
         try{
+
           Applicant A = new Applicant(WL.getApplicantId().intValue());
-          Frame.add(formatText(WL.getOrder().intValue()),1,row);
-          Frame.add(formatText(A.getFullName()),3,row);
-          Frame.add(formatText(A.getSSN()),4,row);
-          Frame.add(formatText(A.getResidence()),5,row);
-          Frame.add(formatText(A.getLegalResidence()),6,row);
-          Frame.add(formatText(A.getResidencePhone()),8,row);
-          Frame.add(formatText(A.getMobilePhone()),7,row);
-          Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),9,row);
+
+          Frame.add(formatText(WL.getOrder().intValue()),col++,row);
+
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){
             Contract C = (Contract) HT.get(new Integer(A.getID()));
-
+            if(C.getID() == ContractId){
+              TempColor = TextFontColor;
+              TextFontColor = "FF0000";
+              redColorSet = true;
+            }
             //Frame.add(formatText(getApartmentString(C)),4,i+1);
-            Frame.add(getChangeLink(C.getID()),2,row);
+            Frame.add(getChangeLink(C.getID()),col++,row);
           }
           else{
-            Frame.add(getAllocateLink(A.getID()),2,row);
+            Frame.add(getAllocateLink(A.getID()),col++,row);
           }
+          Frame.add(formatText(A.getFullName()),col++,row);
+          Frame.add(formatText(A.getSSN()),col++,row);
+          Frame.add(formatText(A.getResidence()),col++,row);
+          if(ifLong)
+          Frame.add(formatText(A.getLegalResidence()),col++,row);
+          Frame.add(formatText(A.getMobilePhone()),col++,row);
+          Frame.add(formatText(A.getResidencePhone()),col++,row);
+          if(ifLong)
+          Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),col,row);
 
+          if(redColorSet)
+            TextFontColor = TempColor;
         }
         catch(SQLException sql){}
          row++;
@@ -347,12 +366,14 @@ public class CampusAllocator extends ModuleObjectContainer{
     Frame.setHorizontalZebraColored(lightBlue,WhiteColor);
     Frame.setRowColor(1,blueColor);
     Frame.setRowColor(row,redColor);
-    Frame.mergeCells(1,row,9,row);
+
+    Frame.mergeCells(1,row,col,row);
     Frame.setWidth(1,"15");
     Frame.add(formatText(" "),1,row);
     Frame.setHeight(row,bottomThickness);
     Frame.setWidth("100%");
     Frame.setColumnAlignment(2,"center");
+    if(ifLong)
     Frame.setColumnAlignment(9,"center");
     return Frame;
   }
