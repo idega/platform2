@@ -1289,7 +1289,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			if (application.getContractId() == childcareContract.getContractID()) {
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
-				// application.store();
 			}
 			verifyApplication(childcareContract, application, null, performer, schoolType, schoolClass);
 			application.store();
@@ -1344,16 +1343,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, int schoolTypeId, int schoolClassId) throws RemoteException {
 		try {
-			// Collection archives =
-			// getChildCareContractArchiveHome().findLatestByApplication(((Integer)
-			// application.getPrimaryKey()).intValue(),2);
-			// Iterator iter = archives.iterator();
-			// ChildCareContract lastContract =
-			// iter.hasNext()?(ChildCareContract)iter.next():null;
 			if (lastContract == null)
 				lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
-			// ChildCareContract firstContract =
-			// iter.hasNext()?(ChildCareContract)iter.next():lastContract;
+
 			ChildCareContract firstContract = getChildCareContractArchiveHome().findFirstContractByApplication(((Integer) application.getPrimaryKey()).intValue());
 
 			application.setFromDate(firstContract.getValidFromDate());
@@ -1369,15 +1361,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setApplicationStatus(getStatusCancelled());
 				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), performer);
 			}
+			
 			// update school class member with correct dates
 			SchoolClassMember placement = lastContract.getSchoolClassMember();
 			if (placement != null) {
 				Collection contractPlacements = getChildCareContractArchiveHome().findAllBySchoolClassMember(placement);
 				// only allow update when only one contract linked to the classmember
 				// or the one being changed is the first contract
-				if (contractPlacements.size() == 1) {// ||
-																							// lastContract.getPrimaryKey().equals(firstContract.getPrimaryKey())
-																							// ) {
+				if (contractPlacements.size() == 1) {
 					placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
 					if (lastContract.getTerminatedDate() != null) {
 						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
@@ -1391,11 +1382,32 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (schoolClassId > 0) {
 						placement.setSchoolClassId(schoolClassId);
 					}
-
 					placement.store();
+
+					//Alter start/end dates for log entries connected to placement.
+					try {
+						Collection logs = getSchoolBusiness().getSchoolClassMemberLogHome().findAllBySchoolClassMember(placement);
+						boolean first = true;
+						Iterator iter = logs.iterator();
+						while (iter.hasNext()) {
+							SchoolClassMemberLog element = (SchoolClassMemberLog) iter.next();
+							if (first) {
+								element.setStartDate(lastContract.getValidFromDate());
+								element.store();
+								first = false;
+							}
+							if (!iter.hasNext()) {
+								element.setEndDate(lastContract.getTerminatedDate());
+								element.store();
+							}
+						}
+					}
+					catch (FinderException fe) {
+						//No logs found
+					}
 				}
 				// create new placement and attach to archive
-				else if (schoolTypeId > 0 && schoolClassId > 0 && (placement.getSchoolTypeId() != schoolTypeId || placement.getSchoolClassId() != schoolClassId)) {
+				else if (schoolTypeId > 0 && schoolClassId > 0 && placement.getSchoolTypeId() != schoolTypeId) {
 					SchoolClassMember newPlacement = createNewPlacement(new Integer(lastContract.getChildID()), new Integer(schoolTypeId), new Integer(schoolClassId), placement, new IWTimestamp(lastContract.getValidFromDate()), performer);
 					lastContract.setSchoolClassMember(newPlacement);
 					if (lastContract.getTerminatedDate() != null) {
@@ -2253,12 +2265,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 			
+			createNewStudent = false;
 			boolean createNew = false;
 			if (oldCareTime != null && !oldCareTime.equals(childCareTime)) {
 				oldContractFileID = -1;
 			}
 			if (oldSchoolTypeID != -1 && schoolTypeId != -1 && oldSchoolTypeID != schoolTypeId) {
 				oldContractFileID = -1;
+				createNewStudent = true;
 			}
 			if (oldContractFileID == -1) {
 				createNew = true;
@@ -3187,10 +3201,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			int applicationID = ((Integer) application.getPrimaryKey()).intValue();
 			if (contractFileID != -1) {
-				if (createNew)
+				if (createNew) {
 					archive = getChildCareContractArchiveHome().create();
-				else
+				}
+				else {
 					archive = getChildCareContractArchiveHome().findByContractFileID(contractFileID);
+				}
 			}
 			
 			if (archive == null) {
@@ -3198,8 +3214,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			archive.store();
 
-			if (oldArchiveID > 0)
+			if (oldArchiveID > 0) {
 				oldArchive = getChildCareContractArchiveHome().findByPrimaryKey(new Integer(oldArchiveID));
+			}
 
 			if (oldArchiveID != ((Integer) archive.getPrimaryKey()).intValue()) {
 				archive.setChildID(application.getChildId());
@@ -3207,30 +3224,34 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				archive.setCreatedDate(new IWTimestamp().getDate());
 				archive.setValidFromDate(validFrom);
 				archive.setCareTime(application.getCareTime());
-				if (employmentTypeID != -1)
+				if (employmentTypeID != -1) {
 					archive.setEmploymentType(employmentTypeID);
+				}
 			}
 			
 			archive.setContractFileID(application.getContractFileId());
-			if (contractID != -1)
+			if (contractID != -1) {
 				archive.setContractID(contractID);
-			if (application.getRejectionDate() != null)
+			}
+			if (application.getRejectionDate() != null) {
 				archive.setTerminatedDate(application.getRejectionDate());
+			}
 
-			if (invoiceReceiverId > 0)
+			if (invoiceReceiverId > 0) {
 				archive.setInvoiceReceiverID(invoiceReceiverId);
-			else if (oldArchive != null && oldArchive.getInvoiceReceiverID() > 0 && oldArchive.getChildID() == application.getChildId())
+			}
+			else if (oldArchive != null && oldArchive.getInvoiceReceiverID() > 0 && oldArchive.getChildID() == application.getChildId()) {
 				archive.setInvoiceReceiverID(oldArchive.getInvoiceReceiverID());
+			}
+			
 			if (application.getApplicationStatus() != getStatusContract()) {
-				int oldSchoolClassID = -1;
 				try {
 					SchoolClassMember student = null;
 					if (oldStudent == null && oldArchive != null) {
 						oldStudent = oldArchive.getSchoolClassMember();
 					}
 					if (oldStudent != null) {
-						oldSchoolClassID = oldStudent.getSchoolClassId();
-						if (schoolClassId > 0 && oldSchoolClassID != schoolClassId) {
+						if (schoolClassId > 0) {
 							IWTimestamp endDate = new IWTimestamp(validFrom);
 							endDate.addDays(-1);
 							SchoolClass oldSchoolClass = oldStudent.getSchoolClass();
@@ -3239,7 +3260,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					}
 					if (oldStudent == null) {
 						oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
-						oldSchoolClassID = oldStudent.getSchoolClassId();
 					}
 					if (createNewStudent && oldStudent != null && oldStudent.getSchoolTypeId() != schoolTypeId) {
 						// end old placement with the chosen date -1 and create new
@@ -3265,7 +3285,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (schoolClassId != -1) {
 							student.setSchoolClassId(schoolClassId);
 							student.store();
-							if (createNewStudent && oldSchoolClassID != -1 && schoolClassId != oldSchoolClassID) {
+							if (createNewStudent) {
 								try {
 									SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
 									getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
@@ -3290,6 +3310,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					throw new NoPlacementFoundException(e);
 				}
 			}
+			
 			// test also for futurecontracts if oldContract is provided
 			// IWTimestamp fromDate = new IWTimestamp(validFrom);
 			if (oldArchive != null && !oldArchive.equals(archive) && hasFutureContracts(applicationID)) {
@@ -3308,12 +3329,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					}
 					earliestFutureStartDate.addDays(-1);
 					terminateContract(archive, earliestFutureStartDate.getDate(), false);
-					// archive.setTerminatedDate(earliestFutureStartDate.getDate());
-					// fromDate.addDays(-1);
-
 				}
 				catch (FinderException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
