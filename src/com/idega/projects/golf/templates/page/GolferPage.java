@@ -98,7 +98,9 @@ public class GolferPage extends Page{
 
 
     Maintable.setWidth("100%");
-    Maintable.setWidth(1,"251");
+    Maintable.setWidth(1,1,"251");
+    Maintable.setWidth(1,2,"251");
+    Maintable.setWidth(1,3,"251");
     Maintable.setHeight(1,"74");
 //    Maintable.setWidth(1,1,"12");
 //    Maintable.setWidth(1,2,"120");
