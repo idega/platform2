@@ -1,17 +1,15 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.sql.Date;
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import com.idega.block.school.data.SchoolClassMember;
-
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.util.IWTimestamp;
+import java.sql.Date;
+import java.util.Collection;
+import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 
 /**
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
@@ -26,7 +24,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public static final String COLUMN_PAYMENT_RECORD_ID = "payment_record_id";
 	public static final String COLUMN_PROVIDER_ID = "provider_id";
 	public static final String COLUMN_SCHOOL_CLASS_MEMBER_ID = "sch_class_member_id";
+	public static final String COLUMN_SCHOOL_TYPE_ID = "sch_school_type_id";
 	public static final String COLUMN_INVOICE_TEXT = "invoice_text";
+	public static final String COLUMN_INVOICE_TEXT_2 = "invoice_text_2";
 	public static final String COLUMN_RULE_TEXT = "rule_text";
 	public static final String COLUMN_DAYS = "days";
 	public static final String COLUMN_PERIOD_START_CHECK = "period_start_check";
@@ -53,6 +53,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_INVOICE_TEXT, "", true, true, java.lang.String.class, 1000);
+		addAttribute(COLUMN_INVOICE_TEXT_2, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_RULE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DAYS, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD_START_CHECK, "", true, true, java.sql.Date.class);
@@ -74,6 +75,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_RECORD_ID, PaymentRecord.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_CLASS_MEMBER_ID, SchoolClassMember.class);
+		addManyToOneRelationship(COLUMN_SCHOOL_TYPE_ID, SchoolType.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
 		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);
 		
@@ -94,7 +96,16 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public SchoolClassMember getSchoolClassMember() {
 		return (SchoolClassMember) getColumnValue(COLUMN_SCHOOL_CLASS_MEMBER_ID);
 	}
+	public int getSchoolTypeId() {
+		return getIntColumnValue(COLUMN_SCHOOL_TYPE_ID);
+	}
+	public SchoolType getSchoolType () {
+		return (SchoolType) getColumnValue(COLUMN_SCHOOL_TYPE_ID);
+	}
 	public String getInvoiceText() {
+		return getStringColumnValue(COLUMN_INVOICE_TEXT);
+	}
+	public String getInvoiceText2() {
 		return getStringColumnValue(COLUMN_INVOICE_TEXT);
 	}
 	public String getRuleText() {
@@ -180,7 +191,16 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setSchoolClassMember(SchoolClassMember scm) {
 		setColumn(COLUMN_SCHOOL_CLASS_MEMBER_ID, scm);
 	}
+	public void setSchoolTypeId(int i) {
+		setColumn(COLUMN_SCHOOL_TYPE_ID, i);
+	}
+	public void setSchoolType (SchoolType st) {
+		setColumn(COLUMN_SCHOOL_TYPE_ID, st);
+	}
 	public void setInvoiceText(String s) {
+		setColumn(COLUMN_INVOICE_TEXT, s);
+	}
+	public void setInvoiceText2(String s) {
 		setColumn(COLUMN_INVOICE_TEXT, s);
 	}
 	public void setRuleText(String s) {

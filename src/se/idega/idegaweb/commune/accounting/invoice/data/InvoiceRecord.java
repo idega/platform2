@@ -13,6 +13,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public java.lang.String getDoublePosting();
  public int getInvoiceHeader();
  public java.lang.String getInvoiceText();
+ public java.lang.String getInvoiceText2();
  public java.lang.String getNotes();
  public int getOrderId();
  public java.lang.String getOwnPosting();
@@ -27,6 +28,8 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public java.lang.String getRuleText();
  public int getSchoolClassMemberId();
  public com.idega.block.school.data.SchoolClassMember getSchoolClassMember();
+ public int getSchoolTypeId();
+ public com.idega.block.school.data.SchoolType getSchoolType();
  public int getVATType();
  public void initializeAttributes();
  public void setAmount(float p0);
@@ -40,6 +43,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0);
  public void setInvoiceHeader(int p0);
  public void setInvoiceText(java.lang.String p0);
+ public void setInvoiceText2(java.lang.String p0);
  public void setNotes(java.lang.String p0);
  public void setOrderId(int p0);
  public void setOwnPosting(java.lang.String p0);
@@ -56,5 +60,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setRuleText(java.lang.String p0);
  public void setSchoolClassMember(com.idega.block.school.data.SchoolClassMember p0);
  public void setSchoolClassMemberId(int p0);
+ public void setSchoolType (com.idega.block.school.data.SchoolType p0);
+ public void setSchoolTypeId(int p0);
  public void setVATType(int p0);
 }
