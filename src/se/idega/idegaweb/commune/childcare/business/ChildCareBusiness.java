@@ -837,7 +837,12 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getQueueTotalByProvider
 	 */
 	public int getQueueTotalByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) throws java.rmi.RemoteException;
-
+	
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getQueueTotalBeforeUpdate
+	 */
+	public int getQueueTotalBeforeUpdate(int providerID) throws java.rmi.RemoteException;
+	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getQueueByProvider
 	 */
@@ -1132,7 +1137,12 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getProviderStats
 	 */
 	public Collection getProviderStats(Locale sortLocale) throws FinderException, java.rmi.RemoteException;
-
+	
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getProviderStatsBeforeUpdate
+	 */
+	public Collection getProviderStatsBeforeUpdate(Locale sortLocale) throws FinderException, java.rmi.RemoteException;
+	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getPlacementHelper
 	 */

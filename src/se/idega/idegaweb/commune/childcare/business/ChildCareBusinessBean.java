@@ -3507,6 +3507,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public int getQueueTotalBeforeUpdate(int providerID) {
+		try {
+			IWTimestamp to = IWTimestamp.RightNow();
+			to.addYears(10);
+			Date toDate = to.getDate();
+			return getChildCareQueueHome().getNumberInQueue(providerID, toDate);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+	
 	public int getBruttoQueueTotalByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
 			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, from, to, isOnlyFirstHand);
@@ -4578,7 +4590,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private String getSQL() {
 //		return "" + " select sch.sch_school_id,sch.school_name," + " pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS," + " pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY," + " count(c.child_id) " + " from comm_childcare c , proc_case p ,sch_school sch, comm_childcare_prognosis pr,sch_school_sch_school_type m,sch_school_type st,ic_commune comm" + " WHERE c.COMM_CHILDCARE_ID=p.proc_case_id " + " and c.provider_id = sch.sch_school_id" + " and sch.commune = comm.ic_commune_id" + " and pr.provider_id = sch.sch_school_id" + " and m.sch_school_id = sch.sch_school_id" + " and m.sch_school_type_id = st.sch_school_type_id" + " and comm.default_commune = 'Y'" + " and st.school_category = 'CHILD_CARE'" + " AND p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR')" + " group by sch.sch_school_id,sch.school_name," + " pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS," + " pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY";
-//		return "select sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY, count(c.child_id), pr.VACANCIES from  sch_school_sch_school_type m,sch_school_type st,ic_commune comm, sch_school sch left join comm_childcare_prognosis pr on sch.sch_school_id=pr.provider_id left join comm_childcare c on sch.sch_school_id=c.provider_id left join proc_case p on c.COMM_CHILDCARE_ID=p.proc_case_id where sch.commune = comm.ic_commune_id and m.sch_school_id = sch.sch_school_id and m.sch_school_type_id = st.sch_school_type_id and comm.default_commune = 'Y' and st.school_category = 'CHILD_CARE' AND (p.case_status is null or p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR')) group by sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY,pr.VACANCIES";
+		return "select sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY, count(c.child_id), pr.VACANCIES from  sch_school_sch_school_type m,sch_school_type st,ic_commune comm, sch_school sch left join comm_childcare_prognosis pr on sch.sch_school_id=pr.provider_id left join comm_childcare c on sch.sch_school_id=c.provider_id left join proc_case p on c.COMM_CHILDCARE_ID=p.proc_case_id where sch.commune = comm.ic_commune_id and m.sch_school_id = sch.sch_school_id and m.sch_school_type_id = st.sch_school_type_id and comm.default_commune = 'Y' and st.school_category = 'CHILD_CARE' AND (p.case_status is null or p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR')) group by sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY,pr.VACANCIES";
+	//	return "select sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY, count(c.child_id), pr.VACANCIES from  sch_school_sch_school_type m,sch_school_type st,ic_commune comm, sch_school sch left join comm_childcare_prognosis pr on sch.sch_school_id=pr.provider_id left join comm_childcare c on sch.sch_school_id=c.provider_id where sch.commune = comm.ic_commune_id and m.sch_school_id = sch.sch_school_id and m.sch_school_type_id = st.sch_school_type_id and comm.default_commune = 'Y' and st.school_category = 'CHILD_CARE' group by sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY,pr.VACANCIES";
+	}
+	
+	private String getSQLProviders() {
 		return "select sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY, count(c.child_id), pr.VACANCIES from  sch_school_sch_school_type m,sch_school_type st,ic_commune comm, sch_school sch left join comm_childcare_prognosis pr on sch.sch_school_id=pr.provider_id left join comm_childcare c on sch.sch_school_id=c.provider_id where sch.commune = comm.ic_commune_id and m.sch_school_id = sch.sch_school_id and m.sch_school_type_id = st.sch_school_type_id and comm.default_commune = 'Y' and st.school_category = 'CHILD_CARE' group by sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY,pr.VACANCIES";
 	}
 
@@ -4595,6 +4611,55 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			conn = ConnectionBroker.getConnection();
 			String s = getSQL();
+			Stmt = conn.prepareStatement(s);
+			ResultSet RS = Stmt.executeQuery();
+
+			while (RS.next()) {
+				ProviderStat bean = new ProviderStat();
+				bean.setProviderID(new Integer(RS.getInt(1)));
+				bean.setProviderName(RS.getString(2));
+				bean.setPrognosisID(new Integer(RS.getInt(3)));
+				bean.setLastUpdate(RS.getDate(4));
+				bean.setThreeMonthsPrognosis(new Integer(RS.getInt(5)));
+				bean.setOneYearPrognosis(new Integer(RS.getInt(6)));
+				bean.setThreeMonthsPriority(new Integer(RS.getInt(7)));
+				bean.setOneYearPriority(new Integer(RS.getInt(8)));
+				bean.setProviderCapacity(new Integer(RS.getInt(9)));
+				bean.setQueueTotal(new Integer(RS.getInt(10)));
+				bean.setVacancies(new Integer(RS.getInt(11)));
+				vector.add(bean);
+			}
+			RS.close();
+
+		}
+		catch (SQLException sqle) {
+			throw new FinderException(sqle.getMessage());
+		}
+		finally {
+			if (Stmt != null) {
+				try {
+					Stmt.close();
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				ConnectionBroker.freeConnection(conn);
+			}
+		}
+		Collections.sort(vector, new ProviderStatComparator(sortLocale));
+		return vector;
+
+	}
+	
+	public Collection getProviderStatsBeforeUpdate(Locale sortLocale) throws FinderException {
+		Connection conn = null;
+		PreparedStatement Stmt = null;
+		Vector vector = new Vector();
+		try {
+			conn = ConnectionBroker.getConnection();
+			String s = getSQLProviders();
 			Stmt = conn.prepareStatement(s);
 			ResultSet RS = Stmt.executeQuery();
 
