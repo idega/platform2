@@ -23,8 +23,8 @@ public class AddressBMPBean extends GenericEntity implements Address{
 		addAttribute("extra_info", "Auka uppl.", true, true, "java.lang.String");
 		addAttribute("country_id", "Land id", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Country");
 
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Member","member_address");
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Union","union_address");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Member.class,"member_address");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_address");
 
 
         }

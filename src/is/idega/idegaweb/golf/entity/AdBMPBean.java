@@ -21,7 +21,7 @@ public class AdBMPBean extends GenericEntity implements Ad{
 		addAttribute("url","url",true,true,"java.lang.String");
 		addAttribute("max_hits", "max_hits", true, true, "java.lang.Integer");
 
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.AdCatagory","ad_ad_catagory");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.AdCatagory.class,"ad_ad_catagory");
 
 	}
 

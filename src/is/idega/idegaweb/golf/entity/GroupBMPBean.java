@@ -16,7 +16,7 @@ public class GroupBMPBean extends com.idega.data.genericentity.GroupBMPBean impl
 
       public void initializeAttributes(){
           super.initializeAttributes();
-          addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Union","union_group");
+          addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_group");
       }
 
         public static String getClassName(){

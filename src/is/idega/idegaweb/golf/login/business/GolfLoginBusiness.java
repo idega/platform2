@@ -20,6 +20,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.genericentity.Group;
 import com.idega.event.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.event.IWPresentationEvent;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
@@ -34,7 +35,7 @@ import com.idega.presentation.IWContext;
  */
 
 
-public class GolfLoginBusiness implements IWEventListener{
+public class GolfLoginBusiness implements IWPageEventListener{
 
 
   public static String UserAttributeParameter="member_login";
@@ -67,7 +68,7 @@ public class GolfLoginBusiness implements IWEventListener{
 
 
 
-  public void actionPerformed(IWContext modinfo)throws IWException{
+  public boolean actionPerformed(IWContext modinfo)throws IWException{
     try{
 
       if(isLoggedOn(modinfo)){
@@ -116,7 +117,10 @@ public class GolfLoginBusiness implements IWEventListener{
     catch(Exception ex){
 	ex.printStackTrace(System.err);
 	//throw (IdegaWebException)ex.fillInStackTrace();
+	return false;
     }
+    
+    return true;
 
   }
 

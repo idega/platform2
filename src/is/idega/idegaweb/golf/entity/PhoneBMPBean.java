@@ -15,8 +15,8 @@ public class PhoneBMPBean extends GenericEntity implements Phone{
                 addAttribute("phone_type","Tegund",true,true,"java.lang.String");
                 addAttribute("phone_type_id","Tegund",true,true,"java.lang.Integer");
 
-                addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Member","member_phone");
-                addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Union","union_phone");
+                addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Member.class,"member_phone");
+                addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_phone");
 
 	}
 

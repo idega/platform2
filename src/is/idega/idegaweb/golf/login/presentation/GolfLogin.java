@@ -73,7 +73,7 @@ protected IWBundle iwb;
 		loginWidth="148";
 		loginHeight="89";
 		userText = "Notandi";
-		passwordText = "Lykilorð";
+		passwordText = "LykilorÝ";
 	}
 
 	public void setVertical() {
@@ -163,7 +163,7 @@ protected IWBundle iwb;
 	private void isNotSignedOn(String what) {
 
 		Form myForm = new Form();
-                myForm.setEventListener("is.idega.idegaweb.golf.login.business.LoginBusiness");
+                myForm.setEventListener(GolfLoginBusiness.class);
 
 		Table TveirTable = new Table(1,1);
 			if (!(color.equals(""))) {
@@ -256,7 +256,7 @@ protected IWBundle iwb;
           passwordImageUrl = "password.gif";
 
 		Form myForm = new Form();
-                myForm.setEventListener("is.idega.idegaweb.golf.login.business.LoginBusiness");
+                myForm.setEventListener(GolfLoginBusiness.class);
 
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
@@ -498,7 +498,7 @@ private void isLoggedOn(IWContext modinfo){
 
 
 		Form myForm = new Form();
-                  myForm.setEventListener("is.idega.idegaweb.golf.login.business.LoginBusiness");
+                  myForm.setEventListener(GolfLoginBusiness.class);
 
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
@@ -717,7 +717,7 @@ private void isLoggedOn(IWContext modinfo){
 
 
 		Form myForm = new Form();
-                 myForm.setEventListener("is.idega.idegaweb.golf.login.business.LoginBusiness");
+                 myForm.setEventListener(GolfLoginBusiness.class);
 
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();

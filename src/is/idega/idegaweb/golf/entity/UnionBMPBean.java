@@ -43,9 +43,9 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
 		addAttribute("number", "Númer", true, true, "java.lang.Integer");
 		addAttribute("union_type", "Tegund", true, true, "java.lang.String");
 
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Address","union_address");
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Phone","union_phone");
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Group","union_group");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Address.class,"union_address");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Phone.class,"union_phone");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Group.class,"union_group");
 
 	}
 

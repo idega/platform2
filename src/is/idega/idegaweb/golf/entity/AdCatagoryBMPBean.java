@@ -13,7 +13,7 @@ public class AdCatagoryBMPBean extends GenericEntity implements AdCatagory {
 		addAttribute(getIDColumnName());
 		addAttribute("ad_catagory_name","banner_nafn",true,true,"java.lang.String");
 
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Ad","ad_ad_catagory");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Ad.class,"ad_ad_catagory");
 	}
 	public String getEntityName(){
 		return "ad_catagory";

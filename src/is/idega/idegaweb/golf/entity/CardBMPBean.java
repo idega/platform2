@@ -20,7 +20,7 @@ public class CardBMPBean extends GenericEntity implements Card{
 		addAttribute("card_company","Kortafyrirtæki",true,true,"java.lang.String");
 		addAttribute("card_type","Tegund korts",true,true,"java.lang.String");
 
-                      addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Member","member_card");
+                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Member.class,"member_card");
 	}
 
 	public String getEntityName(){

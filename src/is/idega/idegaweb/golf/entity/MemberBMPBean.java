@@ -35,10 +35,10 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addAttribute("job","Starfsheiti",true,true,"java.lang.String");
     addAttribute("full_name","Fullt nafn",true,true,"java.lang.String");
 
-    addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Address","member_address");
-    addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Card","member_card");
-    addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Phone","member_phone");
-    addManyToManyRelationShip("is.idega.idegaweb.golf.entity.Group","group_member");
+    addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Address.class,"member_address");
+    addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Card.class,"member_card");
+    addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Phone.class,"member_phone");
+    addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Group.class,"group_member");
 
 
   }
@@ -521,7 +521,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
   }
 
   public static com.idega.data.genericentity.Member getStaticInstance(){
-    return (com.idega.data.genericentity.Member)getStaticInstance("is.idega.idegaweb.golf.entity.Member");
+    return (com.idega.data.genericentity.Member)getStaticInstance(is.idega.idegaweb.golf.entity.Member.class);
   }
 
   public void insert() throws SQLException{
