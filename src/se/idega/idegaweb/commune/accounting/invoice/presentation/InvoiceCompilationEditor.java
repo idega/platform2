@@ -1,9 +1,11 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import com.idega.block.school.business.SchoolBusiness;
+//import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
@@ -39,6 +41,7 @@ import java.awt.Color;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -53,14 +56,17 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -75,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/01 09:55:55 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 11:32:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.73 $
+ * @version $Revision: 1.74 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -535,16 +541,50 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String searchString = context.getParameter (RULE_TEXT_KEY);
         final java.sql.Date period = header.getPeriod ();
         final String categoryId =  header.getSchoolCategoryID ();
+        final Collection regulations = new ArrayList ();
+        final Provider provider
+                = (Provider) context.getSessionAttribute (PROVIDER_KEY);
         if (null != searchString && null != period && null != categoryId
-            && actionId.intValue ()
+            && null != provider && actionId.intValue ()
             == ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT) {
             final RegulationHome home = getRegulationHome ();
-            final Collection regulations
-                    = home.findRegulationsByNameNoCaseDateAndCategory
-                    (searchString, period, categoryId);
-            add ("regulations=" + regulations);
+            try {
+                regulations.addAll
+                        (home.findRegulationsByNameNoCaseDateAndCategory
+                         (searchString + '%', period, categoryId));
+            } catch (FinderException e) {
+                // no problem, no regulation found
+            }
+        } 
+        if (1 == regulations.size ()) {
+            final Regulation regulation
+                    = (Regulation) regulations.iterator ().next ();
+            final String regulationName = regulation.getName ();
+            final Integer regSpecTypeId
+                    = (Integer) regulation.getRegSpecType ().getPrimaryKey ();
+            final VATRule vatRule = regulation.getVATRegulation ();
+            final SchoolCategory category = header.getSchoolCategory ();
+            final RegulationsBusiness regulationsBusiness
+                    = getRegulationsBusiness (context);
+            final SchoolType schoolType
+                    = regulationsBusiness.getSchoolType (regulation);
+            final PostingBusiness postingBusiness
+                    = getPostingBusiness (context);
+            try {
+                final String [] postings = postingBusiness.getPostingStrings
+                        (category, schoolType, regSpecTypeId.intValue (),
+                         provider, period);	
+                add ("own=" + postings [0]);
+                add ("double=" + postings [1]);
+            } catch (PostingException e) {
+                e.printStackTrace ();
+            }
         } else {
-            inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY));
+            if (!regulations.isEmpty ()) {
+                add (regulations);                
+            }
+            inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
+                                                       searchString));
             inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
             inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
             inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
@@ -2086,6 +2126,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final SchoolClassMember [] placements
                 = business.getSchoolClassMembers (header);
 
+        context.setSessionAttribute (PROVIDER_KEY, null);
         if (1 == placements.length) {
             final Table table = createTable (1);
             final SchoolClassMember placement = placements [0];
@@ -2093,13 +2134,28 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                         placement.getPrimaryKey () + ""), 1, 1);
             addSmallText (table, getProviderName (placement), 1, 1);
             result = table;
+            context.setSessionAttribute
+                    (PROVIDER_KEY,
+                     new Provider (placement.getSchoolClass ().getSchool ())); 
         } else if (1 < placements.length) {
+            final Integer oldPlacementId = getIntegerParameter (context,
+                                                                PLACEMENT_KEY);
             final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
                     (new DropdownMenu (PLACEMENT_KEY));
             for (int i = 0; i < placements.length; i++) {
                 final SchoolClassMember placement = placements [i];
-                dropdown.addMenuElement (placement.getPrimaryKey () + "",
+                final Integer placementId
+                        = (Integer) placement.getPrimaryKey ();
+                dropdown.addMenuElement (placementId + "",
                                          getProviderName (placement));
+                if (null == context.getSessionAttribute (PROVIDER_KEY) ||
+                    (null != oldPlacementId
+                     && placementId.equals (oldPlacementId))) {
+                    dropdown.setSelectedElement (placementId + "") ;
+                    context.setSessionAttribute
+                            (PROVIDER_KEY, new Provider
+                             (placement.getSchoolClass ().getSchool ())); 
+                }
             }
             result = dropdown;
         }
@@ -2149,5 +2205,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         (final IWContext context) throws RemoteException {
 		return (PostingBusiness) IBOLookup.getServiceInstance
                 (context, PostingBusiness.class);	
+	}
+
+	private static RegulationsBusiness getRegulationsBusiness
+        (final IWContext context) throws RemoteException {
+		return (RegulationsBusiness) IBOLookup.getServiceInstance
+                (context, RegulationsBusiness.class);	
 	}
 }
