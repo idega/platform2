@@ -542,9 +542,9 @@ public class ReportQueryBuilder extends Block {
 			fields = iwc.getParameterValues(PARAM_FIELDS);
 		}
 		// allow to select from the left box only ( no ordering ), shortcut !
-		else if (iwc.isParameterSet(PARAM_FIELDS + "_left")) {
-			fields = iwc.getParameterValues(PARAM_FIELDS + "_left");
-		}
+//		else if (iwc.isParameterSet(PARAM_FIELDS + "_left")) {
+//			fields = iwc.getParameterValues(PARAM_FIELDS + "_left");
+//	}
 		if (fields != null) {
 			for (int i = 0; i < fields.length; i++) {
 				QueryFieldPart part = QueryFieldPart.decode(fields[i]);
@@ -1160,7 +1160,7 @@ public class ReportQueryBuilder extends Block {
 		table.setColor(2,row, "#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
 		table.setColor(3,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 4, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 4, row);
 		table.setColor(4,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 5, row);
 		table.setColor(5,row,"#dfdfdf");
@@ -1186,7 +1186,7 @@ public class ReportQueryBuilder extends Block {
 				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(part.getField());
 				if (field != null) {
 					table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 3, row);
-					table.add(field.getDisplay(), 4, row);
+					table.add(field.getName(), 4, row);
 				}
 				table.add(part.getId(), 2, row);
 				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 5, row);
