@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 /**
  * enclosing_type
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: CCConstants.java,v 1.4 2003/04/25 16:37:03 roar Exp $
+ * @version $Id: CCConstants.java,v 1.5 2003/05/08 16:08:20 roar Exp $
  * @since 14.2.2003 
  */
 interface CCConstants {
@@ -12,6 +12,9 @@ interface CCConstants {
 	final static String NO_NEW_DATE = "2";
 	final static String NO = "3";	
 	
+	final static String[] OK = {"cc_ok", "OK"};	
+	final static String[] CANCEL = {"cc_cancel", "Cancel"};	
+		
 	final static String[] TEXT_OFFER_ACCEPTED_SUBJECT = 
 		new String[]{"cc_oas", "Offer accepted"};
 	final static String[] TEXT_OFFER_ACCEPTED_MESSAGE = 
@@ -31,9 +34,12 @@ interface CCConstants {
 		new String[]{"cc_from", "From"};
 		
 	final static String APPID = "APPID";
+	final static String PROVIDER_ID = "PROVIDER_ID";
+	final static String USER_ID = "USER_ID";
 	final static String ACCEPT_OFFER = "ACCEPT_OFFER";	
 	final static String KEEP_IN_QUEUE = "KEEP_IN_QUEUE";
 	final static String NEW_DATE = "NEW_DATE";
+
 	
 	final static String SESSION_ACCEPTED_STATUS = "SESSION_ACCEPTED_STATUS";
 	final static String SESSION_KEEP_IN_QUEUE = "SESSION_KEEP_IN_QUEUE";
@@ -49,5 +55,7 @@ interface CCConstants {
 //	final static int ACTION_SUBMIT_3 = 6;	
 	final static int ACTION_CANCEL_3 = 7;		
 	final static int ACTION_REQUEST_INFO = 8;
+	final static int ACTION_DELETE = 9;
+	final static int ACTION_NEW_CARE_TIME = 10;
 
 }
