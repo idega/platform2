@@ -117,10 +117,10 @@ public class ContractEditor extends ChildCareBlock {
 			boolean success = false;
 			if ( dFromDate != null && iCareTime > 0) {
 				success = getBusiness().alterContract(contract, iCareTime, dFromDate, dToDate, iwc.getCurrentLocale(), iwc.getCurrentUser());
-				if (iEmpType > 0) {
+				//if (iEmpType > 0) {
 					contract.setEmploymentType(iEmpType);
 					contract.store();
-				}
+				//}
 			}
 			
 			add(getLocalizedSmallHeader("child_care.update_success", "Update success"));
