@@ -40,6 +40,16 @@ public class Finder  {
     catch(SQLException e){}
     return tariffs;
   }
+
+  public static List listOfTariffs(){
+
+    try{
+      return EntityFinder.findAll(new Tariff());
+
+    }
+    catch(SQLException e){return null;}
+  }
+
   public static TariffKey[] findTariffKeys(){
    TariffKey[] keys = new TariffKey[0];
     try{
@@ -68,4 +78,6 @@ public class Finder  {
     catch(SQLException e){}
     return keys;
   }
+
+
 }// class AccountKeyEditor

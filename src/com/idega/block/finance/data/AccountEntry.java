@@ -22,96 +22,110 @@ public class AccountEntry extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("account_id", "Reikningur", true, true, "java.lang.Integer","many-to-one","com.idega.block.finance.data.Account");
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("info","Upplýsingar",true,true,"java.lang.String");
-    addAttribute("tariff_key_id","GjaldaLiður",true,true,"java.lang.Integer");
-    addAttribute("account_key_id","Bókhaldslykill",true,true,"java.lang.Integer");
-    addAttribute("entry_key_id","Færslutegund",true,true,"java.lang.String");
-    addAttribute("price", "Upphæð", true, true, "java.lang.Integer");
-    addAttribute("payment_date","Greiðsludagur",true,true,"java.sql.Timestamp");
-    addAttribute("last_updated","Síðast Breytt",true,true,"java.sql.Timestamp");
-    addAttribute("cashier_id","Gjaldkeri",true,true,"java.lang.Integer");
+    addAttribute(getAccountIdColumnName(), "Account", true, true, "java.lang.Integer","many-to-one","com.idega.block.finance.data.Account");
+    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
+    addAttribute(getAccountKeyIdColumnName(),"Account key",true,true,"java.lang.Integer");
+    addAttribute(getEntryKeyIdColumnName(),"Entry key",true,true,"java.lang.String");
+    addAttribute(getPriceColumnName(), "Amount", true, true, "java.lang.Integer");
+    addAttribute(getPaymentDateColumnName(),"Payment date",true,true,"java.sql.Timestamp");
+    addAttribute(getLastUpdatedColumnName(),"Last updated",true,true,"java.sql.Timestamp");
+    addAttribute(getCashierIdColumnName(),"Cashier",true,true,"java.lang.Integer");
+    addAttribute(getRoundIdColumnName(),"Round",true,true,"java.lang.Integer");
   }
+
+  public static String getEntityTableName(){return "ACCOUNT_ENTRY";}
+  public static String getAccountIdColumnName(){return "ACCOUNT_ID";}
+  public static String getNameColumnName(){return "NAME";}
+  public static String getInfoColumnName(){return "INFO";}
+  public static String getAccountKeyIdColumnName(){return "ACCOUNT_KEY_ID";}
+  public static String getEntryKeyIdColumnName(){return "ENTRY_KEY_ID";}
+  public static String getPriceColumnName(){return "ENTRY_KEY_ID";}
+  public static String getPaymentDateColumnName() {return "PAYMENT_DATE";}
+  public static String getLastUpdatedColumnName() {return "LAST_UPDATED";}
+  public static String getCashierIdColumnName() {return "CASHIER_ID";}
+  public static String getRoundIdColumnName() {return "ASSESSMENT_ROUND_ID";}
+
+
   public String getEntityName() {
-    return "account_entry";
+    return getEntityTableName();
   }
   public int getAccountId(){
-    return getIntColumnValue("account_id");
+    return getIntColumnValue(getAccountIdColumnName());
   }
   public void setAccountId(Integer account_id){
-    setColumn("account_id", account_id);
+    setColumn(getAccountIdColumnName(), account_id);
   }
   public void setAccountId(int account_id){
-    setColumn("account_id", account_id);
+    setColumn(getAccountIdColumnName(), account_id);
   }
   public int getEntryKeyId(){
-    return getIntColumnValue("entry_key_id");
+    return getIntColumnValue(getEntryKeyIdColumnName());
   }
   public void setEntryKeyId(Integer entry_key_id){
-    setColumn("entry_key_id", entry_key_id);
+    setColumn(getEntryKeyIdColumnName(), entry_key_id);
   }
   public void setEntryKeyId(int entry_key_id){
-    setColumn("entry_key_id", entry_key_id);
+    setColumn(getEntryKeyIdColumnName(), entry_key_id);
   }
   public int getAccountKeyId(){
-    return getIntColumnValue("account_key_id");
+    return getIntColumnValue(getAccountKeyIdColumnName());
   }
   public void setAccountKeyId(Integer account_key_id){
-    setColumn("account_key_id", account_key_id);
+    setColumn(getAccountKeyIdColumnName(), account_key_id);
   }
   public void setAccountKeyId(int account_key_id){
-    setColumn("account_key_id", account_key_id);
-  }
-  public int getTariffKeyId(){
-    return getIntColumnValue("tariff_key_id");
-  }
-  public void setTariffKeyId(Integer tariff_key_id){
-    setColumn("tariff_key_id", tariff_key_id);
-  }
-  public void setTariffKeyId(int tariff_key_id){
-    setColumn("tariff_key_id", tariff_key_id);
+    setColumn(getAccountKeyIdColumnName(), account_key_id);
   }
   public Timestamp getPaymentDate(){
-    return (Timestamp) getColumnValue("payment_date");
+    return (Timestamp) getColumnValue(getPaymentDateColumnName());
   }
   public void setPaymentDate(Timestamp payment_date){
-    setColumn("payment_date", payment_date);
+    setColumn(getPaymentDateColumnName(), payment_date);
   }
   public Timestamp getLastUpdated(){
-    return (Timestamp) getColumnValue("last_updated");
+    return (Timestamp) getColumnValue(getLastUpdatedColumnName());
   }
   public void setLastUpdated(Timestamp last_updated){
-    setColumn("last_updated", last_updated);
+    setColumn(getLastUpdatedColumnName(), last_updated);
   }
   public int getCashierId(){
-    return getIntColumnValue("cashier_id");
+    return getIntColumnValue(getCashierIdColumnName());
   }
   public void setCashierId(Integer member_id){
-    setColumn("cashier_id", member_id);
+    setColumn(getCashierIdColumnName(), member_id);
   }
   public void setCashierId(int member_id){
-    setColumn("cashier_id", member_id);
+    setColumn(getCashierIdColumnName(), member_id);
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getNameColumnName());
   }
   public void setName(String name){
-    setColumn("name", name );
+    setColumn(getNameColumnName(), name );
   }
   public String getInfo(){
-    return getStringColumnValue("info");
+    return getStringColumnValue(getInfoColumnName());
   }
   public void setInfo(String info){
-    setColumn("info", info);
+    setColumn(getInfoColumnName(), info);
   }
   public int getPrice(){
-    return getIntColumnValue("price");
+    return getIntColumnValue(getPriceColumnName());
   }
   public void setPrice(Integer price){
-    setColumn("price", price);
+    setColumn(getPriceColumnName(), price);
   }
   public void setPrice(int price){
-    setColumn("price", price);
+    setColumn(getPriceColumnName(), price);
+  }
+  public int getRound(){
+    return getIntColumnValue(getRoundIdColumnName());
+  }
+  public void setRound(Integer round){
+    setColumn(getRoundIdColumnName(), round);
+  }
+  public void setRound(int round){
+    setColumn(getRoundIdColumnName(), round);
   }
 }
