@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/04 20:07:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/05 14:39:46 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.81 $
+ * @version $Revision: 1.82 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1265,7 +1265,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final PdfPTable table = new PdfPTable (fields.length + 1);
         table.setWidthPercentage (100f);
         table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-        table.getDefaultCell ().setBorder (0);
         for (int i = 0; i < fields.length; i++) {
             addPhrase (table, fields [i].getFieldTitle ());
         }
@@ -1297,7 +1296,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
 		table.setWidthPercentage (100f);
         table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-        table.getDefaultCell ().setBorder (0);
         for (int i = 0; i < columnNames.length; i++) {
             addPhrase (table, columnNames [i]);
         }

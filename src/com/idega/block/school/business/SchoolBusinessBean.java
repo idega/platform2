@@ -2077,13 +2077,16 @@ public void storeSchoolDepartment(String description, String phone, int schoolID
 		return l;
 	}
 	
-	public Collection findAllSchoolsByCategory(String categoryString){
+	public Collection findAllSchoolsByCategory (final String categoryString){
+        final Collection result = new ArrayList ();
 		try {
-			SchoolCategory schoolCategory = getSchoolCategoryHome().findByPrimaryKey(categoryString);
-			return getSchoolHome().findAllByCategory(schoolCategory);
+            final SchoolCategory schoolCategory
+                    = getSchoolCategoryHome().findByPrimaryKey (categoryString);
+            result.addAll (getSchoolHome ().findAllByCategory (schoolCategory));
 		} catch (Exception e) {
-			return new ArrayList();
+            e.printStackTrace ();
 		}
+        return result;
 	}
 	
 	public String getProperty(School school, String propertyName) {

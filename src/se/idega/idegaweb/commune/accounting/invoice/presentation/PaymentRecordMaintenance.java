@@ -58,17 +58,18 @@ import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/04 21:12:34 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/05 14:39:46 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -77,8 +78,6 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
 public class PaymentRecordMaintenance extends AccountingBlock {
     public static final String PREFIX = "cacc_payrec_";
     
-    private static final String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
-    private static final String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
     private static final String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
     private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
@@ -86,8 +85,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String ADJUSTMENT_SIGNATURE_KEY = PREFIX + "adjustment_signature";
     private static final String AMOUNT_DEFAULT = "Belopp";
     private static final String AMOUNT_KEY = PREFIX + "amount";
+    private static final String BANKGIRO_DEFAULT = "Bankgiro";
+    private static final String BANKGIRO_KEY = PREFIX + "bankgiro";
     private static final String CHECK_AMOUNT_DEFAULT = "Checkbelopp";
     private static final String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
+    private static final String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
+    private static final String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
@@ -115,10 +118,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String MANAGEMENT_TYPE_KEY = PREFIX + "management_type";
     private static final String NAME_DEFAULT = "Namn";
     private static final String NAME_KEY = PREFIX + "name";
-    public static final String NOTE_DEFAULT = "Anmärkning";
-    public static final String NOTE_KEY = PREFIX + "note";
-    public static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
-    public static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
     private static final String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
     private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
     private static final String NUMBER_OF_PLACEMENTS_DEFAULT = "Placeringar";
@@ -127,20 +126,18 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PAYMENT_HEADER_DEFAULT = "Utbetalning";
     private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
+    private static final String PAYMENT_RECORDS_KEY = PREFIX + "payment_records";
     private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
     private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
-    private static final String PAYMENT_RECORDS_KEY = PREFIX + "payment_records";
     private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
     private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
     private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
-    public static final String PERIOD_DEFAULT = "Period";
-    public static final String PERIOD_KEY = PREFIX + "period";
     private static final String PIECE_AMOUNT_DEFAULT = "Styckepris";
     private static final String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
-    public static final String PLACEMENT_DEFAULT = "Placering";
-    public static final String PLACEMENT_KEY = PREFIX + "placement";
     private static final String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
+    private static final String POSTGIRO_DEFAULT = "Postgiro";
+    private static final String POSTGIRO_KEY = PREFIX + "postgiro";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
@@ -162,6 +159,21 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
+    private static final String TRANSACTION_DATE_DEFAULT = "Bokföringsdag";
+    private static final String TRANSACTION_DATE_KEY = PREFIX + "transaction_date";
+    private static final String VAT_AMOUNT_DEFAULT = "Momsbelopp";
+    private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
+    private static final String VAT_RULE_DEFAULT = "Momstyp";
+    private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
+
+    public static final String NOTE_DEFAULT = "Anmärkning";
+    public static final String NOTE_KEY = PREFIX + "note";
+    public static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
+    public static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
+    public static final String PERIOD_DEFAULT = "Period";
+    public static final String PERIOD_KEY = PREFIX + "period";
+    public static final String PLACEMENT_DEFAULT = "Placering";
+    public static final String PLACEMENT_KEY = PREFIX + "placement";
     public static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
     public static final String TOTAL_AMOUNT_INDIVIDUALS_DEFAULT = "Totalt antal individer";
     public static final String TOTAL_AMOUNT_INDIVIDUALS_KEY = PREFIX + "total_amount_individuals";
@@ -172,12 +184,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     public static final String TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT = "Totalbelopp, exklusive moms";
     public static final String TOTAL_AMOUNT_VAT_EXCLUDED_KEY = PREFIX + "total_amount_vat_excluded";
     public static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
-    private static final String TRANSACTION_DATE_DEFAULT = "Bokföringsdag";
-    private static final String TRANSACTION_DATE_KEY = PREFIX + "transaction_date";
-    private static final String VAT_AMOUNT_DEFAULT = "Momsbelopp";
-    private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
-    private static final String VAT_RULE_DEFAULT = "Momstyp";
-    private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
     
     private static final String ACTION_KEY = PREFIX + "action_key";
     private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
@@ -295,7 +301,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 (new float [] { 1.0f, 1.0f, 5.0f, 1.5f, 1.5f, 3.0f });
 		table.setWidthPercentage (100f);
         table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-        table.getDefaultCell ().setBorder (0);
         for (int i = 0; i < columnNames.length; i++) {
             addPhrase (table, localize (columnNames [i][0],
                                         columnNames [i][1]));
@@ -312,6 +317,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addPhrase (outerTable, "\n");
         final PdfPTable summaryTable = getRecordsSummaryPdfTable(context);
         outerTable.addCell (summaryTable);
+        addPhrase (outerTable, "\n");
+        addPhrase (outerTable,
+                   localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
+        final PdfPTable postingTable
+                = getOwnPostingPdfTable (context, records, lightBlue);
+        outerTable.addCell (postingTable);
         document.add (outerTable);        
         
         // close and store document
@@ -328,7 +339,38 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                               CHECK_AMOUNT_LIST_DEFAULT, viewLink));
     }
     
-    private PdfPTable getRecordsHeaderPdfTable (final IWContext context) throws RemoteException {
+	private PdfPTable getOwnPostingPdfTable
+        (final IWContext context, final PaymentRecord [] records,
+         final Color lightBlue) throws RemoteException {
+		final PostingField [] fields = getCurrentPostingFields (context);
+        final PdfPTable table = new PdfPTable (fields.length + 1);
+        table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        for (int i = 0; i < fields.length; i++) {
+            addPhrase (table, fields [i].getFieldTitle ());
+        }
+        addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
+        for (int i = 0; i < records.length; i++) {
+            final PaymentRecord record = records [i];
+            final String postingString = record.getOwnPosting ();
+            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
+                                                        : lightBlue);
+            int offset = 0;
+            for (int j = 0; j < fields.length; j++) {
+                final PostingField field = fields [j];
+                final int endPosition = min (offset + field.getLen (),
+                                             postingString.length ());
+                addPhrase (table, postingString.substring
+                           (offset, endPosition).trim ());
+                offset = endPosition;
+            }
+            addPhrase (table, ((long)record.getTotalAmount ()) + "");
+        }
+		return table;
+	}
+
+    private PdfPTable getRecordsHeaderPdfTable (final IWContext context)
+        throws RemoteException {
 		final Integer providerId
 				= (Integer) context.getSessionAttribute (PROVIDER_KEY);
 		final String schoolCategoryId
@@ -340,10 +382,26 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                    localize (MAIN_ACTIVITY_KEY, MAIN_ACTIVITY_DEFAULT) + ": ");
         addPhrase (headerTable, getSchoolCategoryName (context,
                                                        schoolCategoryId));
-        addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
-                   + ": ");
-        addPhrase (headerTable, getSchoolBusiness (context).getSchool
-                   (providerId).getName ());
+        try {
+            final School school
+                    = getSchoolBusiness (context).getSchool (providerId);
+            addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
+                       + ": ");
+            addPhrase (headerTable, school.getName ());
+            final Provider provider = new Provider (school);
+            addPhrase (headerTable, localize (BANKGIRO_KEY, BANKGIRO_DEFAULT)
+                       + ": ");
+            final String bankgiro = provider.getBankgiro ();
+            addPhrase (headerTable, bankgiro != null ? bankgiro : "");
+            addPhrase (headerTable, localize (POSTGIRO_KEY, POSTGIRO_DEFAULT)
+                       + ": ");
+            final String postgiro = provider.getBankgiro ();
+            addPhrase (headerTable, postgiro != null ? postgiro : "");
+            
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
+
 		return headerTable;
 	}
 
@@ -860,12 +918,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                     = home.findByPaymentRecord (records [i]);
             for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
                 final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
-                final Integer placementId
-                        = new Integer (invoiceRecord.getSchoolClassMemberId ());
-                final SchoolClassMember placement
-                        = placementHome.findByPrimaryKey (placementId);
-                final User user = placement.getStudent ();
-                individuals.add (user.getPrimaryKey ());
+                try {
+                    final Integer placementId = new Integer
+                            (invoiceRecord.getSchoolClassMemberId ());
+                    final SchoolClassMember placement
+                            = placementHome.findByPrimaryKey (placementId);
+                    final User user = placement.getStudent ();
+                    individuals.add (user.getPrimaryKey ());
+                } catch (Exception e) {
+                    e.printStackTrace ();
+                }
             }
         }
         
@@ -1609,8 +1671,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void addSmallHeader
         (final Table table, final int col, final int row, final String key,
          final String defaultString, final String suffix) {
-        final String localizedString = localize (key, defaultString) + suffix;
-        table.add (getSmallHeader (localizedString), col, row);
+        if (null != key) {
+            final String localizedString
+                    = localize (key, defaultString) + suffix;
+            table.add (getSmallHeader (localizedString), col, row);
+        }
     }
     
     private SubmitButton getSubmitButton (final String action, final String key,
