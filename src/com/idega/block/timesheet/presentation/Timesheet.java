@@ -23,7 +23,13 @@ import com.idega.util.idegaCalendar;
 
 import com.idega.util.text.*;
 
+import com.idega.idegaweb.*;
+
 public class Timesheet extends JModuleObject{
+    private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.timesheet";
+    private IWResourceBundle iwrb;
+    private IWBundle iwb;
+
     private boolean bookAllAtOnce = true;
     private boolean displayReportButton = true;
     private boolean allowCorrection = false;
@@ -210,7 +216,7 @@ public class Timesheet extends JModuleObject{
           }
           else {    // ef íslenska
               report_string = "Skýrslur";
-              day_string = "Dagsetning";
+              day_string = "Dags";
               resource_string = "Forði";
               project_string = "Verk";
               quantity_string = "Eining";
@@ -310,8 +316,8 @@ public class Timesheet extends JModuleObject{
 		extraLines = number_if_extra_lines;
 	}
 
-	public void setWidth(int width) {
-		table_width = Integer.toString(width);
+	public void setWidth(String width) {
+		table_width = width;
 	}
 
 	public void setHeight(int height) {
@@ -353,13 +359,21 @@ public class Timesheet extends JModuleObject{
     this.isAdmin = AccessControl.isAdmin(modinfo);
     user = LoginBusiness.getUser(modinfo);
 
+    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(modinfo);
 
+    this.save_image_url = iwrb.getImage("save.gif").getURL();
 
     dagar(modinfo);
     calculate(modinfo);
     setStrings(modinfo);
 
   }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
 
   public void main(ModuleInfo modinfo) throws  SQLException, IOException, Exception{
     initialize(modinfo);
@@ -424,7 +438,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("undirskyrsla")) {
                   undirskyrsla(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("undirskyrsla"));
+                      //add(getPrintableLink("undirskyrsla"));
                   }
                   else {
                       add(getPrintButton());
@@ -434,7 +448,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("hreyfingStarfsmann")) {
                   hreyfingStarfsmann(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("hreyfingStarfsmann"));
+                      //add(getPrintableLink("hreyfingStarfsmann"));
                   }
                   else {
                       add(getPrintButton());
@@ -444,7 +458,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("hreyfingVerk")) {
                   hreyfingVerk(modinfo);
                   if (!isPrintable) {
-                  add(getPrintableLink("hreyfingVerk"));
+                  //add(getPrintableLink("hreyfingVerk"));
                   }
                   else {
                       add(getPrintButton());
@@ -453,7 +467,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("hreyfingVerkAll")) {
                   hreyfingVerkAll(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("hreyfingVerkAll"));
+                     // add(getPrintableLink("hreyfingVerkAll"));
                   }
                   else {
                       add(getPrintButton());
@@ -462,7 +476,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("hour_pr_employee")) {
                   reportHourPrEmployee(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("hour_pr_employee"));
+                      //add(getPrintableLink("hour_pr_employee"));
                   }
                   else {
                       add(getPrintButton());
@@ -471,7 +485,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("hour_pr_project")) {
                   reportHourPrProject(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("hour_pr_project"));
+                     // add(getPrintableLink("hour_pr_project"));
                   }
                   else {
                       add(getPrintButton());
@@ -481,7 +495,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("hour_pr_project_all")) {
                   reportHourPrProjectAll(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("hour_pr_project_all"));
+                      //add(getPrintableLink("hour_pr_project_all"));
                   }
                   else {
                       add(getPrintButton());
@@ -490,7 +504,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("unbooked")) {
                 showUnBooked(modinfo,false);
                   if (!isPrintable) {
-                      add(getPrintableLink("unbooked"));
+                     // add(getPrintableLink("unbooked"));
                   }
                   else {
                       add(getPrintButton());
@@ -499,7 +513,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("booked")) {
                 showBooked(modinfo);
                   if (!isPrintable) {
-                      add(getPrintableLink("booked"));
+                     // add(getPrintableLink("booked"));
                   }
                   else {
                       add(getPrintButton());
@@ -522,7 +536,7 @@ public class Timesheet extends JModuleObject{
         else if (edit.equals("checkPreviousEntries")) {
                 showUnBooked(modinfo,true);
                   if (!isPrintable) {
-                      add(getPrintableLink("checkPreviousEntries"));
+                      //add(getPrintableLink("checkPreviousEntries"));
                   }
                   else {
                       add(getPrintButton());
@@ -1044,7 +1058,10 @@ public class Timesheet extends JModuleObject{
   		  myTable.add(back,2,current_row);
                 }
                 else {
-                  Link back = new Link(previous_week_string,URI);
+                  Text previous_week_text = new Text(previous_week_string);
+                  if (this.header_text_color != null)
+                    previous_week_text.setFontColor(header_text_color);
+                  Link back = new Link(previous_week_text,URI);
                     setLink(back,"",0,0,-daysShown-1);
        	  	    myTable.add(back,2,current_row);
 
@@ -1057,7 +1074,10 @@ public class Timesheet extends JModuleObject{
                   myTable.add( new Link(todayImg,URI),2,current_row);
                 }
                 else {
-                  myTable.add( new Link(today_string,URI),2,current_row);
+                  Text today_text = new Text(today_string);
+                  if (this.header_text_color != null)
+                    today_text.setFontColor(header_text_color);
+                  myTable.add( new Link(today_text,URI),2,current_row);
                 }
 
 
@@ -1071,14 +1091,20 @@ public class Timesheet extends JModuleObject{
   		    myTable.add(forward,2,current_row);
                 }
                 else {
-                  Link forward = new Link(next_week_string,URI);
+                  Text next_week_text = new Text(next_week_string);
+                  if (this.header_text_color != null)
+                    next_week_text.setFontColor(header_text_color);
+                  Link forward = new Link(next_week_text,URI);
                     setLink(forward,"",0,0,daysShown +1);
   		    myTable.add(forward,2,current_row);
                 }
 
                 if (this.displayReportButton) {
                     if (report_image_url == null) {
-                      Link reports = new Link(report_string,URI);
+                      Text report_text = new Text(report_string);
+                      if (this.header_text_color != null)
+                        report_text.setFontColor(header_text_color);
+                      Link reports = new Link(report_text,URI);
                         setLink(reports,"undirskyrsla",0,0,0);
                       myTable.add(reports,5,current_row);
                     }
@@ -1988,7 +2014,12 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
             double totalDay = 0;
             double totalOverhour = 0;
 
-            int tableWidth = (int) ( 2 *(Integer.parseInt(table_width) / 3) );
+            String tableWidth = "0";
+            try {
+              tableWidth = Integer.toString( 2  *(Integer.parseInt(table_width) / 3) );
+            } catch (NumberFormatException n) {
+              tableWidth = "70%";
+            }
 
             Table headerTable = this.getHeaderTable();
                   headerTable.setWidth(tableWidth);
@@ -3242,10 +3273,13 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
             Link link = null;
             if (!isPrintable) {
                   if (this.previous_image_url != null) {
-                      link = new Link(new Image(previous_image_url,"Fyrri mánuður"),this.URI);
+                      link = new Link(new Image(previous_image_url,previous_month_string),this.URI);
                   }
                   else {
-                      link = new Link("Fyrri mánuður",this.URI);
+                    Text textinn = new Text(previous_month_string);
+                    if (this.header_text_color != null)
+                      textinn.setFontColor(header_text_color);
+                      link = new Link(textinn,this.URI);
                   }
                   this.dagur = 1;
                   setLink(link,edit,0,-1,0);
@@ -3257,10 +3291,13 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
             Link link = null;
             if (!isPrintable) {
                 if (this.next_image_url != null) {
-                    link = new Link(new Image(next_image_url,"Næsti mánuður"),this.URI);
+                    link = new Link(new Image(next_image_url,next_month_string),this.URI);
                 }
                 else {
-                    link = new Link("Næsti mánuður",this.URI);
+                    Text textinn = new Text(next_month_string);
+                    if (this.header_text_color != null)
+                      textinn.setFontColor(header_text_color);
+                    link = new Link(textinn,this.URI);
                 }
                 this.dagur = 1;
                 setLink(link,edit,0,1,0);
