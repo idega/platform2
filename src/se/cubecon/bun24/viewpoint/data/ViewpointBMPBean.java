@@ -4,20 +4,24 @@ import com.idega.block.process.data.*;
 import com.idega.user.data.*;
 import java.util.*;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.block.pointOfView.data.PointOfView;
 
 /**
- * Last modified: $Date: 2004/05/17 14:19:01 $ by $Author: roar $
+ * Last modified: $Date: 2004/09/29 11:33:24 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
-public class ViewpointBMPBean extends AbstractCaseBMPBean
-    implements Viewpoint, Case {
+public class ViewpointBMPBean extends AbstractCaseBMPBean implements Viewpoint, PointOfView, Case {
+	
+	public static final String CASE_CODE_KEY = "SYMESYN";
+	public static final String STATUSKEY_ANSWERED = "ASWD";
+	
     private static final String ENTITY_NAME = "vp_viewpoint";
     private static final String CASE_CODE_DESCRIPTION = "User viewpoint";
 	private static final String [] CASE_STATUS_DESCRIPTIONS = { "Answered" };
 	private static final String [] CASE_STATUS_KEYS =
-    { Viewpoint.STATUSKEY_ANSWERED };
+    { STATUSKEY_ANSWERED };
 
 	private static final String COLUMN_CATEGORY = "CATEGORY";
 	private static final String COLUMN_USER_ID = "USER_ID";
@@ -35,7 +39,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 	}
 
 	public String getCaseCodeKey() {
-		return Viewpoint.CASE_CODE_KEY;
+		return CASE_CODE_KEY;
 	}
 
     public String getCaseCodeDescription () {

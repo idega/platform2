@@ -1,6 +1,7 @@
 package se.cubecon.bun24.viewpoint.data;
 
 import java.util.Date;
+import se.idega.idegaweb.commune.block.pointOfView.data.PointOfView;
 
 import com.idega.block.process.data.Case;
 import com.idega.data.IDOEntity;
@@ -8,14 +9,13 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
- * Last modified: $Date: 2003/11/10 19:01:56 $ by $Author: laddi $
+ * Last modified: $Date: 2004/09/29 11:33:24 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
-public interface Viewpoint extends IDOEntity, Case {
-    String CASE_CODE_KEY = "SYMESYN";
-    String STATUSKEY_ANSWERED = "ASWD";
+public interface Viewpoint extends IDOEntity, Case, PointOfView {
+ 
 
     Group getHandlerGroup ();
     String getCategory ();
