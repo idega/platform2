@@ -23,9 +23,9 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
 	Date getFrom();
 	Date getTo();
 	String getPlacing();
-	int getUserId();
-	int getRegSpecTypeId();
-	int getProviderId(); 
+	User getUser();
+	RegulationSpecType getRegSpecType();
+	School getProvider(); 
 	String getOwnPosting();
 	String getDoublePosting();
 	float getAmount();

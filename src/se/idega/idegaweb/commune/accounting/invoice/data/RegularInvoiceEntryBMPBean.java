@@ -102,24 +102,24 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getUser()
 	 */
-	public int getUserId() {
-		return getIntColumnValue(COLUMN_USER_ID);
+	public User getUser() {
+		return (User) getColumnValue(COLUMN_USER_ID);
 	}
 
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getRegSpecType()
 	 */
-	public int getRegSpecTypeId() {
-		return getIntColumnValue(COLUMN_REG_SPEC_TYPE_ID);
+	public RegulationSpecType getRegSpecType() {
+		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID);
 	}
 
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getProvider()
 	 */
-	public int getProviderId() {
-		return getIntColumnValue(COLUMN_SCHOOL_ID);
+	public School getProvider() {
+		return (School) getColumnValue(COLUMN_SCHOOL_ID);
 	}
 
 
