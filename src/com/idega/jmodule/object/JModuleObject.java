@@ -18,7 +18,7 @@ import com.idega.idegaweb.IWCacheManager;
 public class JModuleObject extends ModuleObjectContainer{
 
   private static Map permissionKeyMap = new Hashtable();
-  private String cacheKey;
+  private String cacheKey = null;
   private boolean cacheable=false;
   private long cacheInterval;
 
@@ -65,9 +65,8 @@ public class JModuleObject extends ModuleObjectContainer{
   /**
    * <H2>Unimplemented</H2>
    */
-  public boolean hasPermission(String permissionType,ModuleInfo modinfo,ModuleObject obj)throws Exception{
-  //  return AccessControl.hasPermission(permissionType,modinfo,obj);
-    return false;
+  public boolean hasPermission(String permissionType, ModuleObject obj, ModuleInfo modinfo)throws Exception{
+    return com.idega.core.accesscontrol.business.AccessControl.hasPermission(permissionType,obj,modinfo);
   }
 
 /* public boolean hasPermission(String permissionType,ModuleInfo modinfo)throws Exception{
@@ -358,13 +357,26 @@ public class JModuleObject extends ModuleObjectContainer{
   public synchronized Object _clone(ModuleInfo modinfo, boolean askForPermission){
     if(askForPermission){
       if(com.idega.core.accesscontrol.business.AccessControl.hasViewPermission(this,modinfo)){
-        return this.clone(modinfo,false);
+        return this.clone();
       } else {
         return NULL_CLONE_OBJECT;
       }
     } else {
       return this.clone();
     }
+  }
+
+  public synchronized Object clone(){
+    JModuleObject obj = (JModuleObject)super.clone(null,false);
+
+    obj.cacheable = this.cacheable;
+    obj.cacheInterval = this.cacheInterval;
+
+    if(this.cacheKey != null){
+      obj.cacheKey = this.cacheKey;
+    }
+
+    return obj;
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.21 2001/09/19 01:06:19 palli Exp $
+ * $Id: Page.java,v 1.22 2001/09/19 12:39:49 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -391,7 +391,7 @@ public class Page extends ModuleObjectContainer {
   public synchronized Object _clone(ModuleInfo modinfo, boolean askForPermission){
     return this.clone(modinfo,true);
   /*    if(com.idega.core.accesscontrol.business.AccessControl.hasViewPermission(this,modinfo)){
-      return this.clone(modinfo);
+      return this.clone(modinfo,askForPermission);
     } else {
       return NULL_CLONE_PAGE;
     }
