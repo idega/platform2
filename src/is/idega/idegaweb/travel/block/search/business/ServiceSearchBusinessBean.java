@@ -271,28 +271,28 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					product = pHome.findByPrimaryKey(iter.next());
 					bf = getServiceHandler().getBookingForm(iwc, product);
 					prices = ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+					productIsValid = true;
 
 					if (prices != null && prices.length > 0) { 
 						/** Not inserting product without proper price categories */
 						tmp = new IWTimestamp(from);
-						productIsValid = true;
 						while ( tmp.isEarlierThan(to) && productIsValid) {
 							/** Checking if day is available */
 							productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
 							
 							if (productIsValid) {
-								productIsValid = bf.isFullyBooked(iwc, product, tmp);
+								productIsValid = !bf.isFullyBooked(iwc, product, tmp);
 							}
 							if (productIsValid) {
-								productIsValid = bf.isUnderBooked(iwc, product, tmp);
+								productIsValid = !bf.isUnderBooked(iwc, product, tmp);
 							}
 							//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
 							//productIsValid = bus.getIfDay(iwc, product, tmp);
 							tmp.addDays(1);
 						}
-						map.put(product.getPrimaryKey(), new Boolean(productIsValid));
 						
 					}
+					map.put(product.getPrimaryKey(), new Boolean(productIsValid));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
