@@ -9,7 +9,7 @@ import java.sql.SQLException;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
+ * @author       idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
  * @version 1.0
  */
 
@@ -28,7 +28,7 @@ public class ProductCategory extends GenericEntity {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(getCategoryNameColumnName(),"Nafn",true,true,String.class,255);
     this.addAttribute(getDescriptionColumnName(),"Lýsing",true,true,String.class,1000);
-    this.addAttribute(this.getIsValidColumnName(),"í notkun",true,true,Boolean.class);
+    this.addAttribute(getIsValidColumnName(),"í notkun",true,true,Boolean.class);
     this.addAttribute(getExtraInfoColumnName(),"Aukaupplýsingar",true,true,String.class,1000);
     this.addTreeRelationShip();
   }

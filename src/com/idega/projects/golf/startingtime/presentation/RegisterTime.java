@@ -492,10 +492,26 @@ public void main(ModuleInfo modinfo) throws Exception {
     this.setTitle(this.iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
 
 
-    if(modinfo.getParameter(closeParameterString+".x") != null || modinfo.getParameter(closeParameterString) != null){
+
+    //Check if the Close button was pressed
+    boolean doingClose=false;
+    String closeValue = modinfo.getParameter(closeParameterString);
+    String closeValueX = modinfo.getParameter(closeParameterString+".x");
+    if(closeValue!=null && closeValueX != null){
+      if(closeValue!=null){
+        if(!closeValue.equals("")){
+          doingClose=true;
+        }
+      }
+      else{
+        doingClose=true;
+      }
+
+    }
+
+    if(doingClose){
       this.close();
     }else{
-
       boolean keepOn = true;
       try{
         String date = modinfo.getSession().getAttribute("date").toString();

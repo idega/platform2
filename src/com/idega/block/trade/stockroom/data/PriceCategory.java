@@ -27,6 +27,8 @@ public class PriceCategory extends GenericEntity{
     addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class, 255);
     addAttribute(getColumnNameType(),"Type",true,true,String.class,255);
     addAttribute(getColumnNameExtraInfo(), "Aðrar upplysingar", true, true, String.class, 255);
+    addAttribute(getColumnNameSupplierId(),"supplier_id (owner)", true, true, Integer.class, "many_to_one", Supplier.class);
+
     this.addTreeRelationShip();
   }
 
@@ -71,10 +73,19 @@ public class PriceCategory extends GenericEntity{
     setColumn(getColumnNameType(),type);
   }
 
+  public void setSupplierId(int id){
+    setColumn(getColumnNameSupplierId(), id);
+  }
+
+  public int getSupplierId(){
+    return getIntColumnValue(getColumnNameSupplierId());
+  }
+
   public static String getColumnNameName() {return "CATEGORY_NAME";}
   public static String getColumnNameDescription() {return "DESCRIPTION";}
   public static String getColumnNameType(){return "CATEGORY_TYPE";}
   public static String getColumnNameExtraInfo() {return "EXTRA_INFO";}
+  public static String getColumnNameSupplierId() {return "SUPPLIER_ID";}
 
 
 

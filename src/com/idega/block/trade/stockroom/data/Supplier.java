@@ -28,11 +28,11 @@ public class Supplier extends GenericEntity{
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameName(), "Name", true, true, String.class);
     addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class,500);
-    addAttribute(getColumnNameGroupID(),"Hópur", true, true, Integer.class, "many_to_one", EmployeeGroup.class);
+    addAttribute(getColumnNameGroupID(),"Hópur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
 
     this.addManyToManyRelationShip(Address.class,"SR_SUPPLIER_IC_ADDRESS");
     this.addManyToManyRelationShip(Phone.class,"SR_SUPPLIER_IC_PHONE");
-    this.addManyToManyRelationShip(PriceCategory.class, "SR_SUPPLIER_PRICE_CATEGORY");
+//    this.addManyToManyRelationShip(PriceCategory.class, "SR_SUPPLIER_PRICE_CATEGORY");
     this.addManyToManyRelationShip(ProductCategory.class, "SR_SUPPLIER_PRODUCT_CATEGORY" );
   }
 
