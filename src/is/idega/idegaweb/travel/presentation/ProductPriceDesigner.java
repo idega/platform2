@@ -184,7 +184,10 @@ public class ProductPriceDesigner extends TravelWindow {
   }
 
   public Form getPriceCategoryForm(IWContext iwc, Product product, String submitParameterName, String submitParameterValue) throws RemoteException{
-    Form form = new Form();
+		return getPriceCategoryForm(iwc, product, submitParameterName, submitParameterValue, new Form());
+  }
+	
+  public Form getPriceCategoryForm(IWContext iwc, Product product, String submitParameterName, String submitParameterValue, Form form) throws RemoteException{
     _product = product;
     FORM_ACTION = submitParameterName;
     FORM_ACTION_SAVE = submitParameterValue;
