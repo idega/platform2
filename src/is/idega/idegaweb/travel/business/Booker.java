@@ -657,65 +657,64 @@ public class Booker {
     int index = mainIndex;
     boolean cont = true;
 
+    idegaTimestamp tempStamp = new idegaTimestamp(booking.getBookingDate());
 
     if (mainIndex == 0) {
       while (cont) {
         ++index;
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(booking.getBookingDate()), new idegaTimestamp(book.getBookingDate()));
+        betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
         if (betw != numberOfDays) {
           list = list.subList(mainIndex, index-1);
           cont = false;
         }
         if (index == list.size()-1) cont = false;
+        tempStamp = new idegaTimestamp(book.getBookingDate());
       }
     }else if (mainIndex == list.size() -1) {
       while (cont) {
         --index;
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), new idegaTimestamp(booking.getBookingDate()));
+        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
         if (betw != numberOfDays) {
           list = list.subList(index+1, mainIndex);
           cont = false;
         }
         if (index == 0) cont = false;
+        tempStamp = new idegaTimestamp(book.getBookingDate());
       }
     }else {
-      //System.err.println("Booker : list.size() = "+list.size());
       while (cont) {
         --index;
-        //System.err.println("Booker : --index = "+index);
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), new idegaTimestamp(booking.getBookingDate()));
+        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
         if (betw != numberOfDays) {
-          //System.err.println("Booker : getting subList("+(index+1)+", "+(list.size()-1)+"");
           list = list.subList(index+1, list.size()-1);
           cont = false;
         }
 
         if (index == 0) cont = false;
+        tempStamp = new idegaTimestamp(book.getBookingDate());
       }
 
       index = 0;
       if (list.size() == 1 ) {
         cont=false;
       }else {
+        tempStamp = new idegaTimestamp(((Booking) list.get(index)).getBookingDate());
         cont=true;
       }
 
-      //System.err.println("Booker : list.size() = "+list.size());
       while (cont) {
         ++index;
-        //System.err.println("Booker : ++index = "+index);
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(booking.getBookingDate()), new idegaTimestamp(book.getBookingDate()));
+        betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
         if (betw != numberOfDays) {
-          //System.err.println("Booker : getting subList("+(index+1)+", "+(list.size()-1)+"");
           list = list.subList(0, index-1);
-//          list = list.subList(mainIndex, index-1);
           cont = false;
         }
         if (index == list.size()-1) cont = false;
+        tempStamp = new idegaTimestamp(book.getBookingDate());
       }
     }
 

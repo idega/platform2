@@ -418,7 +418,6 @@ public class TourBusiness extends TravelStockroomBusiness {
           idegaTimestamp tFrom = new idegaTimestamp(frames[i].getFrom());
           idegaTimestamp tTo = new idegaTimestamp(frames[i].getTo());
 
-
           idegaTimestamp from = null;
           if (fromStamp != null) from = new idegaTimestamp(fromStamp);
           idegaTimestamp to = null;
@@ -442,7 +441,8 @@ public class TourBusiness extends TravelStockroomBusiness {
           from.addDays(-1);
           to.addDays(1);
 
-          if (yearly) {
+
+         if (yearly) {
             int fromYear = tFrom.getYear();
             int toYear   = tTo.getYear();
             int fromY = from.getYear();
@@ -467,7 +467,6 @@ public class TourBusiness extends TravelStockroomBusiness {
 
             yearsBetween = to.getYear() - toY;
           }
-
 
         idegaTimestamp stamp = new idegaTimestamp(from);
         idegaTimestamp temp;
@@ -547,13 +546,13 @@ public class TourBusiness extends TravelStockroomBusiness {
  */
 
     try {
-
       int nod = tour.getNumberOfDays();
       if (nod < 1) nod = 1;
       int teljari = 0;
 
-      while (teljari++ < 8) {
-        stamp.addDays(nod);
+
+      while (teljari++ < nod) {
+        stamp.addDays(1);
         if (TravelStockroomBusiness.getIfDay(iwc,product, stamp)) {
           found = true;
           break;

@@ -80,6 +80,7 @@ public class ServiceViewer extends Window {
   public ServiceViewer(){
     super.setWidth(windowWidth);
     super.setHeight(windowHeight);
+    super.setScrollbar(true);
     this.setAllMargins(4);
     //setAllMargins(0);
   }
