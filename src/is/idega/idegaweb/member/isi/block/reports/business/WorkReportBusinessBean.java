@@ -699,6 +699,23 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					e1.printStackTrace();
 				}
 			}
+			
+			Collection records = getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(reportId);
+			Iterator iter2 = records.iterator();
+
+			while (iter2.hasNext()) {
+				WorkReportDivisionBoard record = (WorkReportDivisionBoard)iter.next();
+				try {
+					record.remove();
+				}
+				catch (EJBException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoveException e1) {
+					e1.printStackTrace();
+				}
+			}
+
 
 		}
 		catch (FinderException e) {
@@ -727,23 +744,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				}
 			}
 			
-			records = getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(reportId);
-			System.out.println("!!!!!!!!!!records == " + records.size());
-			iter = records.iterator();
-
-			while (iter.hasNext()) {
-				WorkReportDivisionBoard record = (WorkReportDivisionBoard)iter.next();
-				try {
-					record.remove();
-				}
-				catch (EJBException e1) {
-					e1.printStackTrace();
-				}
-				catch (RemoveException e1) {
-					e1.printStackTrace();
-				}
-			}
-
 		}
 		catch (FinderException e) {
 			//do nothing because its empty

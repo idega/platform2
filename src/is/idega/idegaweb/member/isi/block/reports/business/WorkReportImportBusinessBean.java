@@ -171,6 +171,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				accKey = Integer.toString((int)cell.getNumericCellValue());
 			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 				accKey = cell.getStringCellValue();
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
+//				WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+				throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+			}
 			else
 				accKey = null;
 
@@ -226,6 +230,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					accKey = Integer.toString((int)cell.getNumericCellValue());
 				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					accKey = cell.getStringCellValue();
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
+//					WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+					throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+				}
 				else
 					accKey = null;
 
@@ -279,6 +287,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				accKey = Integer.toString((int)cell.getNumericCellValue());
 			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 				accKey = cell.getStringCellValue();
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
+//				WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+				throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+			}
 			else
 				accKey = null;
 
@@ -334,6 +346,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					accKey = Integer.toString((int)cell.getNumericCellValue());
 				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					accKey = cell.getStringCellValue();
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
+//					WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+					throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+				}
 				else
 					accKey = null;
 
@@ -585,7 +601,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					report.addLeague(group);
 				}
 				catch (IDORelationshipException e5) {
-					e5.printStackTrace();
 				}
 
 				String status = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STATUS);
@@ -695,7 +710,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					report.addLeague(group);
 				}
 				catch (IDORelationshipException e5) {
-					e5.printStackTrace();
 				}
 
 				String homePage = getStringValueFromExcelNumberOrStringCell(row, (short)2);
