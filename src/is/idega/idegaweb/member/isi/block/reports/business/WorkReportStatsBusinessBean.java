@@ -2784,7 +2784,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								//fill with data -> only do this once!
 								leagueData = new ReportableData();
 								leagueData.addData(leagueString, leagueIdentifier);
-								leagueData.addData(clubName, groupName);
+								leagueData.addData(clubName, "");
 								leagueData.addData(regionalUnionAbbreviation, "Samtals");
 								leagueData.addData(clubType, "");
 	
