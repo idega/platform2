@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.posting.business;
 
 import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,14 +10,16 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldHome;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingString;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingStringHome;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingParametersHome;
 
 /**
  * @author Joakim
- *
+ * @author Kjell Lindman
  * 
  * 
  */
-public class PostingBusinessBean {
+public class PostingBusinessBean extends com.idega.business.IBOServiceBean implements PostingBusiness  {
 	
 	public static final int JUSTIFY_LEFT = 0;
 	public static final int JUSTIFY_RIGHT = 1;
@@ -68,6 +71,57 @@ public class PostingBusinessBean {
 		}
 		return ret.toString();
 	}
+
+	/**
+	 * Gets posting parameters for a certain periode
+	 * @param from periode (4 digits)
+	 * @param to periode (4 digits)
+	 * @return collection of posting parameters
+	 * @author Kjell
+	 */
+	public Collection findPostingParametersByPeriode(String from, String to) {
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			return home.findPostingParametersByPeriode(from, to);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
+	/**
+	 * Gets all posting parameters
+	 * @return collection of posting parameters
+	 * @author Kjell
+	 */
+	public Collection findAllPostingParameters() {
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			return home.findAllPostingParameters();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+	
+	/**
+	 * Gets a posting parameter by the ID
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters; 
+	 * @return PostingParameters
+	 * @author Kjell
+	 */
+	public Object findPostingParameter(int id) throws FinderException {
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			return home.findPostingParameter(id);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}
 	
 	/**
 	 * Pads the string according to the rules in Posting field
@@ -108,6 +162,12 @@ public class PostingBusinessBean {
 			ret = in.substring(i,postingField.getLen());
 		}
 		return ret;
+	}
+
+
+
+	protected PostingParametersHome getPostingParametersHome() throws RemoteException {
+		return (PostingParametersHome) com.idega.data.IDOLookup.getHome(PostingParameters.class);
 	}
 	
 	protected PostingStringHome getPostingStringHome() throws RemoteException
