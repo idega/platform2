@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.38 2001/08/29 16:20:10 bjarni Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.39 2001/09/04 22:51:53 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -123,20 +123,20 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.add(Languages(),1,1);
 
     HeaderTable sponsorBox = Sponsors();
-    sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
-    leftTable.add(sponsorBox, 1,3);
+    //sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
+    leftTable.add(JModuleObject.getCacheableObject(sponsorBox,"SponsorBox",86400000), 1,3);
 
     HeaderTable newsBox = clubNews();
-    newsBox.setCacheable("NewsBox",3600000);//60*60*1000 1 hour
-    leftTable.add(newsBox,1,5);
+    //newsBox.setCacheable("NewsBox",3600000);//60*60*1000 1 hour
+    leftTable.add(JModuleObject.getCacheableObject(newsBox,"NewsBox",3600000),1,5);
 
     TournamentBox tBox = new TournamentBox();
     tBox.setCacheable("TournamentBox",1800000);
     leftTable.add(tBox,1,7);
 
     HeaderTable chatBox = getChat();
-    chatBox.setCacheable("ChatBox",3600000);
-    leftTable.add(chatBox,1,9);
+    //chatBox.setCacheable("ChatBox",3600000);
+    leftTable.add(JModuleObject.getCacheableObject(chatBox,"ChatBox",3600000),1,9);
 
     BoxReader bLinks = getLinks(modinfo);
     bLinks.setCacheable("Miscbox",86400000);//1000*60*60*24 = 24 hours
@@ -571,23 +571,23 @@ public class GolfMainJSPModulePage extends MainPage {
 
           rightTable.setColumnAlignment(1, "center");
           HeaderTable proGolfers = getProGolfers();
-          proGolfers.setCacheable("proGolfers",86400000);//24 hour
+          //proGolfers.setCacheable("proGolfers",86400000);//24 hour
 
-          rightTable.add(proGolfers,1,1);
+          rightTable.add(JModuleObject.getCacheableObject(proGolfers,"proGolfers",86400000),1,1);
           //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
 
 
           HeaderTable poll = getPollVoter();
-          poll.setCacheable("poll",3600000);//1 hour
-          rightTable.add(poll,1,3);//1,5
+          //poll.setCacheable("poll",3600000);//1 hour
+          rightTable.add(JModuleObject.getCacheableObject(poll,"poll",3600000),1,3);//1,5
 
           HeaderTable asses = getGSIAssociates();
-          asses.setCacheable("asses",86400000);//24 hour
-          rightTable.add(asses,1,5);//1,7
+          //asses.setCacheable("asses",86400000);//24 hour
+          rightTable.add(JModuleObject.getCacheableObject(asses,"asses",86400000),1,5);//1,7
 
           HeaderTable gLinks = getGolfLinks();
-          gLinks.setCacheable("gLinks",86400000);//24 hour
-          rightTable.add(gLinks,1,7);//1,9
+          //gLinks.setCacheable("gLinks",86400000);//24 hour
+          rightTable.add(JModuleObject.getCacheableObject(gLinks,"gLinks",86400000),1,7);//1,9
 
           JModuleObject yellow = new JModuleObject();
           yellow.add(getYellowLine());

@@ -346,4 +346,12 @@ public class JModuleObject extends ModuleObjectContainer{
 
   }
 
+  public static JModuleObject getCacheableObject(ModuleObject objectToCache, String cacheKey, long millisecondsInterval) {
+      JModuleObject obj = new JModuleObject();
+        obj.add(objectToCache);
+        obj.setCacheable(cacheKey, millisecondsInterval);
+      return obj;
+    }
+
+
 }
