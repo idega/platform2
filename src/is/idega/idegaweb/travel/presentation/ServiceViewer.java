@@ -30,6 +30,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.text.DecimalFormat;
 
 /**
  * Title: com.idega.idegaweb.travel.presentation.ServiceViewer
@@ -50,6 +51,7 @@ public class ServiceViewer extends Window {
   private static final String IW_TRAVEL_ADD_BUY_BUTTON = "iw_tr_add_buy_button";
   private static final String IW_TRAVEL_ADD_MORE_BUTTON = "iw_tr_add_more_button";
 
+  private DecimalFormat df = new DecimalFormat("0.00");
 
   private IWBundle iwb;
   private IWResourceBundle iwrb;
@@ -261,9 +263,9 @@ public class ServiceViewer extends Window {
           duration.setText(getServiceDurationString(serv));
           content.add(duration,++x,y);
         //Price
-          Text price = (Text) text.clone();
+          Table price = getServicePrice(iwc, serv, true);/*(Text) text.clone();
           //price.setText(getServicePrice(serv, timeframe.getID()));
-          price.setText(getServicePrice(serv,true));
+          price.setText(getServicePrice(serv,true));*/
 
           content.add(price,++x,y);
         //Info and buy buttons
@@ -344,7 +346,7 @@ public class ServiceViewer extends Window {
         Text price = (Text) boldText.clone();
         price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
 //        Text prices = new Text(getServicePrice(service, timeframe.getID()));
-        Text prices = new Text(getServicePrice(service,false));
+        Table prices = getServicePrice(iwc, service,false);
         content.add(price,1,++y);
         content.add(prices,2,y);
 
@@ -428,41 +430,99 @@ public class ServiceViewer extends Window {
   }
 
 
-  private String getServicePrice(Service service, boolean cutOff){
-    StringBuffer price = new StringBuffer();
-    /**
-     * @todo replace...
-     */
-    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
+  private Text getBoldText(String content) {
+    Text texti = getText(content);
+      texti.setBold();
+    return texti;
+  }
+
+  private Text getText(String content) {
+    Text texti = (Text) text.clone();
+      texti.setText(content);
+    return texti;
+  }
+
+  private Table getServicePrice(IWContext iwc, Service service, boolean cutOff){
+    Table pTable = new Table();
+      pTable.setColor("#FFFFFF");
+    int pRow = 1;
+
+    try {
+
+    Text departureFromTextBold = getBoldText("");
+    Text timeframeTextBold = getBoldText("");
+    Text priceText = getBoldText("");
+    Text currencyText = getBoldText("");
+
+    Text nameOfCategory = getText("");
+
+    Product product = new Product(service.getID());
+    Address[] depAddresses = ProductBusiness.getDepartureAddresses(product);
+    Timeframe[] timeframes = product.getTimeframes();
+    ProductPrice[] prices = null;
 //    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), timeframeId, false);
     Currency currency;
 
-    for (int j = 0; j < prices.length; j++) {
-      try {
-        if ((j>0)){
-           price.append(Text.BREAK);
-        }
-        currency = new Currency(prices[j].getCurrencyId());
-        price.append(prices[j].getPriceCategory().getName());
-        price.append(Text.NON_BREAKING_SPACE);
-        price.append(TextSoap.decimalFormat(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID(),prices[j].getCurrencyId(),idegaTimestamp.getTimestampRightNow()),2));
-        price.append(Text.NON_BREAKING_SPACE);
-        price.append(currency.getCurrencyAbbreviation());
-        if(cutOff){
-          price.append("...");
-           break;
-        }
+    String stampTxt1 = "";
+    String stampTxt2 = "";
 
-      }catch (Exception e) {
-        price.append("An error occurred please contact gimmi@idega.is .");
-        e.printStackTrace(System.err);
+
+      for (int l = 0; l < depAddresses.length; l++) {
+        departureFromTextBold = getBoldText(depAddresses[l].getStreetName());
+          departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+        pTable.add(departureFromTextBold, 1, pRow);
+        for (int i = 0; i < timeframes.length; i++) {
+          prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
+          stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+          stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+          if (timeframes[i].getIfYearly()) {
+            try {
+              stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+              stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+            }catch (NumberFormatException n) {}
+          }
+          timeframeTextBold = getText("");
+            timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+          pTable.add(timeframeTextBold,2,pRow);
+
+          if (prices.length == 0) {
+            ++pRow;
+          }
+          for (int j = 0; j < prices.length; j++) {
+            currency = new Currency(prices[j].getCurrencyId());
+            nameOfCategory = getText(prices[j].getPriceCategory().getName());
+              nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+            try {
+              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              currencyText = getBoldText(currency.getCurrencyAbbreviation());
+              pTable.add(currencyText,5,pRow);
+            }catch (ProductPriceException p) {
+              priceText.setText("T - rangt upp sett");
+            }
+
+            pTable.add(nameOfCategory,3,pRow);
+            pTable.add(priceText,4,pRow);
+            ++pRow;
+          }
+
+        }
       }
 
-      /*if (prices[j].getPriceType() != ProductPrice.PRICETYPE_DISCOUNT) {
-        priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
-      }*/
+      pTable.setColumnAlignment(1,"left");
+      pTable.setColumnAlignment(2,"left");
+      pTable.setColumnAlignment(3,"left");
+      pTable.setColumnAlignment(4,"right");
+      pTable.setColumnAlignment(5,"left");
+      pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
+
+
+
+    }catch (SQLException sql) {
+
     }
-    return price.toString();
+
+    pTable.setCellspacing(1);
+    return pTable;
   }
 
 /*

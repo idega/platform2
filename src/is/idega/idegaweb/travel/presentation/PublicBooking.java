@@ -312,6 +312,7 @@ public class PublicBooking extends Block  {
       String stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
       ProductPrice[] prices;// = ProductPrice.getProductPrices(service.getID(), true);
       Text timeframeTextBold;
+
       Table pTable = new Table();
         pTable.setCellspacing(0);
 
@@ -343,7 +344,7 @@ public class PublicBooking extends Block  {
             nameOfCategory = getText(prices[j].getPriceCategory().getName());
               nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
             try {
-              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
               currencyText = getBoldText(currency.getCurrencyAbbreviation());
               pTable.add(currencyText,5,pRow);
             }catch (ProductPriceException p) {

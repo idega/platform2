@@ -156,6 +156,7 @@ public class ServiceOverview extends TravelManager {
         table.setBorder(0);
         form.add(table);
 
+
       table.setWidth("90%");
       String sYear = iwc.getParameter("year");
       if (sYear == null) {
@@ -234,6 +235,9 @@ public class ServiceOverview extends TravelManager {
           try {
             product = (Product) products.get(i);
             contentTable = getProductInfoTable(iwc,iwrb,product);
+            ServiceViewer sv = new ServiceViewer();
+              sv.setService(new Service(product.getID()));
+            table.add(sv);
 
             ++row;
             table.mergeCells(1,row,5,row);
@@ -386,6 +390,7 @@ public class ServiceOverview extends TravelManager {
         Table contentTable;
         int contRow = 0;
         contentTable = new Table();
+
 
       DecimalFormat df = new DecimalFormat("0.00");
       int[] dayOfWeek = new int[] {};
