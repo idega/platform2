@@ -140,7 +140,17 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
         iwc.removeSessionAttribute("image_props");
       }
       if(ip !=null){
-        int i = ImageBusiness.SaveImage(ip);
+        String mmProp = iwc.getApplication().getSettings().getProperty(com.idega.block.media.servlet.MediaServlet.USES_OLD_TABLES);
+        int i = -1;
+        if(mmProp!=null) {
+          i = ImageBusiness.SaveImage(ip);
+        }
+        else{
+          com.idega.block.media.business.ImageProperties ip2 =
+          new com.idega.block.media.business.ImageProperties( ip.getName(),ip.getContentType(),ip.getRealPath(),ip.getWebPath(),ip.getSize());
+          i = com.idega.block.media.business.ImageBusiness.SaveImage(ip2);
+        }
+
         iwc.setSessionAttribute(sessImageParameter,String.valueOf(i));
         setParentToReload();
         try {
