@@ -9,6 +9,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.SupplyPool;
 import com.idega.block.trade.stockroom.data.SupplyPoolDay;
 import com.idega.block.trade.stockroom.data.SupplyPoolDayBMPBean;
@@ -17,6 +18,7 @@ import com.idega.block.trade.stockroom.data.SupplyPoolDayPK;
 import com.idega.block.trade.stockroom.data.SupplyPoolHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -241,7 +243,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.add(back, 1, row);
 		table.add(save, 2, row);
 		table.setRowColor(row++, TravelManager.GRAY);
-		
+
 		return form;
 	}
 	
@@ -252,9 +254,10 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.setWidth("400");
 		table.setColor(TravelManager.WHITE);
 		table.setCellspacing(1);
+
+		SupplyPool pool = null;
 		int row = 1;
 		try {
-			SupplyPool pool = null;
 			Object poolPK = null;
 			try {
 				pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
@@ -324,6 +327,41 @@ public class SupplyPoolEditor extends TravelBlock {
 		catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
+
+		try {
+			if (pool != null) {
+				Table table2 = new Table();
+				table2.setWidth("400");
+				table2.setColor(TravelManager.WHITE);
+				table2.setCellspacing(1);
+				form.add(Text.getBreak());
+				form.add(table2);
+				Collection products = getProductBusiness(iwc).getProductHome().findBySupplyPool(pool);
+				if (products != null) {
+					Iterator iter = products.iterator();
+					int count = 0;
+					Product product;
+					while (iter.hasNext()) {
+						product = (Product) iter.next();
+						table2.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, count+2);
+						table2.setRowColor(count+2, TravelManager.GRAY);
+						++count;
+					}
+					table2.add(getHeaderText(iwrb.getLocalizedString("travel.products_using_this_pool", "Products using this pool")+" : "+count), 1, 1);
+					table2.setRowColor(1, TravelManager.backgroundColor);
+				}
+			}
+		}
+		catch (IDORelationshipException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+				
 		return form;
 	}
 	
