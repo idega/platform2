@@ -520,8 +520,9 @@ private Form getEditForm(){
 
 
   List catagories = ImageBusiness.getAllImageCatagories();
+  int catagorieslength = (catagories != null) ? catagories.size() : 0;
 
-  Table contentTable = new Table(3,catagories.size()+2);
+  Table contentTable = new Table(3,catagorieslength+2);
   contentTable.setCellpadding(0);
   contentTable.setCellspacing(0);
 
@@ -529,7 +530,7 @@ private Form getEditForm(){
   String catagoriTextInputName = "catagory";
   String deleteTextInputName = "delete";
 
-  for (int i = 0; i < catagories.size(); i++) {
+  for (int i = 0; i < catagorieslength; i++) {
     TextInput catagoryInput = new TextInput(catagoriTextInputName,((ImageCatagory)catagories.get(i)).getImageCatagoryName());
     catagoryInput.setLength(textInputLenth);
     contentTable.add(catagoryInput,1,i+2);
@@ -545,7 +546,7 @@ private Form getEditForm(){
 
   TextInput catagoryInput = new TextInput(catagoriTextInputName);
   catagoryInput.setLength(textInputLenth);
-  contentTable.add(catagoryInput,1,catagories.size()+2);
+  contentTable.add(catagoryInput,1,catagorieslength+2);
 
   frameTable.add(contentTable,1,1);
 

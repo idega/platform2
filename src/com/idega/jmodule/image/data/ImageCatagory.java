@@ -17,7 +17,7 @@ public class ImageCatagory extends GenericEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("image_catagory_name","Image Category Name",true,true,"java.lang.String");
-                addAttribute("parent_id","Image Category parent",true,true,"java.lang.Integer");
+                addAttribute(getParentIdColumnName(),"Image Category parent",true,true,"java.lang.Integer");
 	}
 
 	public String getEntityName(){
@@ -37,12 +37,20 @@ public class ImageCatagory extends GenericEntity{
           return getImageCatagoryName();
         }
 
+        public static String getParentIdColumnName(){
+          return "parent_id";
+        }
+
         public void setParentId(int parent_id) {
-          setColumn("parent_id",new Integer(parent_id));
+          setColumn(getParentIdColumnName(),new Integer(parent_id));
         }
 
         public int getParentId() {
-          return getIntColumnValue("parent_id");
+          return getIntColumnValue(getParentIdColumnName());
+        }
+
+        public static ImageCatagory getStaticImageCatagoryInstance(){
+          return (ImageCatagory)ImageCatagory.getStaticInstance("com.idega.jmodule.image.data.ImageCatagory");
         }
 
 

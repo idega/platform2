@@ -6,6 +6,8 @@ import java.sql.*;
 import javax.servlet.http.HttpServlet;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.servlet.*;
+import com.idega.data.EntityFinder;
+//import com.idega.idegaweb.*;
 import com.idega.jmodule.image.data.*;
 
 /**
@@ -69,6 +71,9 @@ public static void saveImageToCatagories(int imageId, String[] categoryId)throws
  */
 public void makeDefaultSizes(){
 
+
+
+
 //  try{
 //   Properties prop = getBundleProperties(getModuleInfo());
 //
@@ -88,5 +93,26 @@ public void makeDefaultSizes(){
 
 
 */
+
+
+    public static List getImageCatagories(int parentID){
+      try {
+        if (parentID > 0){
+          return EntityFinder.findAll(ImageCatagory.getStaticImageCatagoryInstance(),"Select * from " + ImageCatagory.getStaticImageCatagoryInstance().getEntityName() + " Where " + ImageCatagory.getStaticImageCatagoryInstance().getParentIdColumnName() + " = '" + parentID + "'");
+        }else{
+          return EntityFinder.findAll(ImageCatagory.getStaticImageCatagoryInstance());
+        }
+      }
+      catch (Exception ex) {
+        return null;
+      }
+
+    }
+
+    public static List getAllImageCatagories(){
+      return ImageBusiness.getImageCatagories(-1);
+    }
+
+
 }//end of class
 
