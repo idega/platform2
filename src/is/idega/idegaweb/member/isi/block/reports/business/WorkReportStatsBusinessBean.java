@@ -2472,7 +2472,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubType.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_TYPE, "Club type"), currentLocale);
 		reportCollection.addField(clubType);
 		
-		ReportableField dummyOrderingField = new ReportableField(FIELD_NAME_CLUB_TYPE, String.class);
+		ReportableField dummyOrderingField = new ReportableField("dummyField", String.class);
 		reportCollection.addField(dummyOrderingField);
 		
 		//selected year stuff
