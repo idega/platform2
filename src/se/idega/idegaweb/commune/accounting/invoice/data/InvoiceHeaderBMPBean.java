@@ -188,7 +188,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         final String H_ = "h."; // sql alias for invoice header
         final String U_ = "u."; // sql alias for user
         final String R_ = "r."; // sql alias for invoice record
-        final String M_ = "m."; // sql alias for school class member
+        final String M_ = "m."; // sql alias for schoolclassmember
         final String T_ = "t."; // sql alias for school type
         final Date fromPeriod = getPeriod (fromDate, 0);
         final Date toPeriod = getPeriod (toDate, 1);
@@ -275,5 +275,12 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 
     }
 
+	public Collection ejbFindByStatusAndCategory(String status, String schoolCategory) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsWithSingleQuotes(COLUMN_STATUS,status);
+		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategory);
+		
+		return idoFindPKsByQuery(sql);
+	}
 }
-

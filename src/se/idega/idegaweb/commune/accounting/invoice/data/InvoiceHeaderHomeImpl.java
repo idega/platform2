@@ -20,7 +20,7 @@ public InvoiceHeader findByCustodian(com.idega.user.data.User p0)throws javax.ej
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findByCustodianOrChild(String p0,com.idega.user.data.User p1,java.util.Collection p2,java.util.Date p3,java.util.Date p4)throws javax.ejb.FinderException{
+public java.util.Collection findByCustodianOrChild(java.lang.String p0,com.idega.user.data.User p1,java.util.Collection p2,java.util.Date p3,java.util.Date p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByCustodianOrChild(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);
@@ -37,6 +37,13 @@ public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.Finder
 public java.util.Collection findByMonthAndSchoolCategory(java.sql.Date p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByMonthAndSchoolCategory(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByStatusAndCategory(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByStatusAndCategory(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
