@@ -398,15 +398,24 @@ public class Tournament extends GolfEntity{
 
                         //if there is registered data to the tournament (scorecard)
                         //this should fail and throw an SQLException
-			TournamentRound[] rounds = getTournamentRounds();
+			Scorecard[] scorecards;
+                        TournamentRound[] rounds = getTournamentRounds();
+
                         if(rounds!=null){
                           for(int i=0;i<rounds.length;i++){
-                                   rounds[i].delete();
+                              scorecards = (Scorecard[]) this.findAllByColumn("TOURNAMENT_ROUND_ID",rounds[i].getID());
+                              if (scorecards != null) {
+                                  for (int j = 0; j < scorecards.length; j++) {
+                                      scorecards[j].delete();
+                                  }
+                              }
+                              rounds[i].delete();
                           }
                         }
 
                         conn = getConnection();
 			Stmt = conn.createStatement();
+
                         Member member = new Member();
 			Stmt.executeUpdate("delete from "+getNameOfMiddleTable(this,member)+" where "+getIDColumnName()+"='"+getID()+"'");
 			Stmt.close();
@@ -414,9 +423,7 @@ public class Tournament extends GolfEntity{
 			TournamentDay[] days = this.getTournamentDays();
                         if(days!=null){
                           for(int i=0;i<days.length;i++){
-
                                   days[i].delete();
-
                           }
                         }
 
@@ -457,7 +464,6 @@ public class Tournament extends GolfEntity{
                             }
 
                         }
-
 
 			super.delete();
 		}
