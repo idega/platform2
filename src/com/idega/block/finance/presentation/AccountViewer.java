@@ -79,6 +79,8 @@ public class AccountViewer extends Finance {
 		FinanceAccount account = (FinanceAccount) iter.next();
 		while (iter.hasNext()) {
 			FinanceAccount acc = (FinanceAccount) iter.next();
+			System.out.println("acc = " + acc);
+			System.out.println("accountID = " + accountID);
 			if (acc.getAccountId().intValue() == accountID.intValue()) {
 				account = acc;
 				break;
