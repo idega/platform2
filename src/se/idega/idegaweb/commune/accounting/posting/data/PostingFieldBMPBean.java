@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.4 2003/09/08 17:06:33 laddi Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.5 2003/09/30 10:41:43 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,9 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 
 /**
- * Holds information about fields in strings holding accounting information, sent to external accounting systems
+ * Holds descriptive information about fields in strings holding accounting information, 
+ * sent to external accounting systems.
+ * 
  * From Kravspecifikation Check & Peng 13.3
  * @author Joakim
  * @see PostingField
