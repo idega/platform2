@@ -48,7 +48,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		//    this.addAttribute(this.getIDColumnName());
 		addGeneralCaseRelation();
 		this.addAttribute(COLUMN_SUBJECT, "Message subject", String.class);
-		this.addAttribute(COLUMN_BODY, "Message body", String.class, 1000);
+		this.addAttribute(COLUMN_BODY, "Message body", String.class, 4000);
 		this.addAttribute(COLUMN_MESSAGE_TYPE, "Message type", String.class, 20);
 		this.addManyToOneRelationship(COLUMN_MESSAGE_DATA, "Message data", ICFile.class);
 		this.addAttribute(COLUMN_LETTER_TYPE, "Message SubType", String.class, 4);
