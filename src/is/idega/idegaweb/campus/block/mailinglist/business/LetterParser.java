@@ -187,7 +187,7 @@ public class LetterParser implements ContentParsable {
             // Application part
             if(holder.getApplication()!=null){
               if (tag.equals(reference_number)) {
-                  int id = holder.getApplication().getID();
+                  int id = new Integer(holder.getApplication().getPrimaryKey().toString()).intValue();
                   String refnum = ReferenceNumberFinder.getInstance(iwac).lookup(id);
                   System.err.println(reference_number+" = "+refnum);
                   return refnum;

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.9 2004/06/04 17:35:54 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.10 2004/06/05 07:45:01 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,7 +20,9 @@ import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.data.Apartment;
+import com.idega.data.IDOBoolean;
 import com.idega.data.IDOException;
+import com.idega.data.IDORelationshipException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -249,7 +251,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 		(status.equalsIgnoreCase(statusDenied))||
         (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
-      setStatusDate(IWTimestamp.RightNow().getSQLDate());
+      setStatusDate(new Date(System.currentTimeMillis()));
     }
     else
       throw new IllegalStateException("Undefined state : " + status);
@@ -287,16 +289,57 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public void setStatusStorage(){
 	  setStatus(statusStorage);
  }
- public java.util.Collection ejbFindByApplicant(Integer ID) throws FinderException{
+
+ 
+ public Collection ejbFindByApplicantID(Integer ID) throws FinderException{
  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()));
  }
  
- public Collection ejbFindByApartmentAndRented(Integer apartment,Boolean rented)throws FinderException{
- 	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),apartment).appendAndEquals(getRentedColumnName(),rented.booleanValue()));
- }
- 
- public Collection ejbFindByApplicantAndStatus(Integer applicant,String status)throws FinderException{
- 	return super.idoFindPKsByQuery(super.idoQueryGetSelectCount().appendWhereEquals(getApplicantIdColumnName(),applicant).appendAndEqualsQuoted(getStatusColumnName(),status));
+ public Collection ejbFindByUserID(Integer ID) throws FinderException{
+	 return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(),ID.intValue()));
+  }
+  
+  public Collection ejbFindByApartmentAndUser(Integer AID,Integer UID) throws FinderException{
+	  return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(),UID.intValue()).appendAndEquals(getApartmentIdColumnName(),AID.intValue()));
+   }
+  
+  public Collection ejbFindByUserAndRented(Integer ID,Boolean rented) throws FinderException{
+	   return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getRentedColumnName(),IDOBoolean.toString(rented.booleanValue())));
+	}
+  
+  	public Collection ejbFindByApartmentID(Integer ID) throws FinderException{
+	   return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),ID.intValue()).appendOrderByDescending(getValidToColumnName()));
+	}
+	
+	public Collection ejbFindByApartmentAndStatus(Integer ID,String status)throws FinderException{
+			return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getStatusColumnName(),status).appendOrderByDescending(getValidToColumnName()));
+		}
+
+	public Collection ejbFindByApplicantAndStatus(Integer ID,String status)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getStatusColumnName(),status));
+	}
+	
+	public Collection ejbFindByApplicantAndRented(Integer ID,Boolean rented)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getRentedColumnName(),IDOBoolean.toString(rented.booleanValue())));
+	}
+	
+	public Collection ejbFindByApartmentAndRented(Integer ID,Boolean rented)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getRentedColumnName(),IDOBoolean.toString(rented.booleanValue())));
+	}
+	
+	public Collection ejbFindByStatus(String status)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEqualsQuoted(getStatusColumnName(),status));
+	}
+	public Collection ejbFindAll() throws FinderException{
+		return super.idoFindAllIDsBySQL();
+	}
+	
+	public Collection ejbFindBySQL(String sql) throws FinderException{
+		return super.idoFindPKsBySQL(sql);
+	}
+
+ public java.util.Collection ejbFindByApplicant(Integer ID) throws FinderException{
+ 	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()));
  }
  
  public Collection ejbFindByApplicantInCreatedStatus(Integer applicant)throws FinderException{
@@ -373,5 +416,45 @@ private String getSearchConditionSQL(String status, Integer complexId, Integer b
        sql.append(order);
      }
 	return sql.toString();
+}
+
+public Collection ejbFindByComplexAndBuildingAndApartmentName(Integer complexID,Integer buildingID,String apartmentName) throws FinderException{
+	 StringBuffer sql = new StringBuffer("select con.* ");
+	    sql.append(" from bu_apartment a, bu_floor f, bu_building b, cam_contract con ");
+	    sql.append(" where a.bu_floor_id = f.bu_floor_id ");
+	    sql.append(" and f.bu_building_id = b.bu_building_id ");
+	    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+	    sql.append(" and b.bu_complex_id  = ");
+	    sql.append(complexID);
+	    sql.append(" and b.bu_building_id = ");
+	    sql.append(buildingID);
+	    sql.append(" and a.name = '");
+			sql.append(apartmentName);
+			sql.append("'");
+		return super.idoFindPKsBySQL(sql.toString());
+}
+public Collection ejbFindByPersonalID(String ID)throws FinderException{
+	StringBuffer sql = new StringBuffer("select c.* ");
+    sql.append(" from cam_contract c, app_applicant a where ");
+    sql.append(" c.app_applicant_id = a.app_applicant_id and a.ssn like '");
+    sql.append(ID);
+    sql.append("'");
+    return super.idoFindPKsBySQL(sql.toString());
+}
+
+public Collection ejbHomeGetUnsignedApplicants(String personalID)throws FinderException{
+	 try {
+		StringBuffer sql = new StringBuffer("select a.* ");
+		 sql.append(" from app_applicant a ");
+		 sql.append(" where a.app_applicant_id ");
+		 sql.append(" not in (select c.app_applicant_id from cam_contract c) ");
+		 sql.append(" and ssn like '");
+		 sql.append(personalID);
+		 sql.append("'");
+		 return idoGetRelatedEntitiesBySQL(Applicant.class,sql.toString());
+	} catch (IDORelationshipException e) {
+		throw new FinderException(e.getMessage());
+	}  
+	
 }
 }

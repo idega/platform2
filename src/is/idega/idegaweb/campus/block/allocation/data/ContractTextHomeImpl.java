@@ -7,37 +7,23 @@ public class ContractTextHomeImpl extends com.idega.data.IDOFactory implements C
   return ContractText.class;
  }
 
+
  public ContractText create() throws javax.ejb.CreateException{
-  return (ContractText) super.idoCreate();
+  return (ContractText) super.createIDO();
  }
 
- public ContractText createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public ContractText findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ContractText) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByLanguage(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractTextBMPBean)entity).ejbFindByLanguage(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ContractText findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ContractText) super.idoFindByPrimaryKey(pk);
+  return (ContractText) super.findByPrimaryKeyIDO(pk);
  }
 
- public ContractText findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

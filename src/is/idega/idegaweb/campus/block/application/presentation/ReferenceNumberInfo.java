@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.33 2004/05/24 14:21:41 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.34 2004/06/05 07:41:34 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,24 +11,28 @@
 package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusReferenceNumberInfoHelper;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 import is.idega.idegaweb.campus.presentation.CampusColors;
 
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.business.ReferenceNumberHandler;
@@ -36,15 +40,16 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.data.ApplicationHome;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.Building;
+import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.ComplexHome;
+import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -64,7 +69,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class ReferenceNumberInfo extends PresentationObjectContainer {
+public class ReferenceNumberInfo extends CampusBlock {
 	public static final String SESSION_REFERENCE_NUMBER = "session_ref_num";
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 	private IWResourceBundle _iwrb = null;
@@ -73,6 +78,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	private Integer allocatedComplexID = new Integer(-1);
 	private Integer allocatedWaitinglistID = null;
 	private DateFormat dateFormat,dateTimeFormat;
+	private ApplicationService applicationService;
 	private int row = 1;
 	/**
 	 *
@@ -83,7 +89,8 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	/**
 	 *
 	 */
-	protected void control(IWContext iwc) {
+	protected void control(IWContext iwc) throws RemoteException{
+		applicationService = getApplicationService(iwc);
 		//debugParameters(iwc);
 		//System.err.println("referencenumbering");
 		 dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
@@ -97,7 +104,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		}
 	}
 
-	private void addReferenceNumberLookupResults(IWContext iwc) {
+	private void addReferenceNumberLookupResults(IWContext iwc)throws RemoteException{
 		String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
 		
 		int aid = 0;
@@ -108,7 +115,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			aid = 0;
 		}
 		
-		holder = CampusApplicationFinder.getApplicationInfo(aid);
+		holder = applicationService.getApplicationInfo(aid);
 		
 		String update = iwc.getParameter("updatePhoneEmail");
 		String confirm = iwc.getParameter("confirmWL");
@@ -146,7 +153,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		}
 	}
 
-	private void addWaitingListForm(IWContext iwc, CampusApplicationHolder holder, Table refTable) {
+	private void addWaitingListForm(IWContext iwc, CampusApplicationHolder holder, Table refTable) throws RemoteException{
 		Form form = new Form();
 		Applicant applicant = holder.getApplicant();
 		Application app = holder.getApplication();
@@ -209,11 +216,18 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			Contract c = holder.getContract();
 			
 			if(c!=null && c.getStatus().equals(ContractBMPBean.statusCreated)){
-				Apartment allocatedApartment = BuildingCacher.getApartment(c.getApartmentId().intValue());
-				Floor allocatedFloor = BuildingCacher.getFloor(allocatedApartment.getFloorId());
-				Building allocatedBuilding = BuildingCacher.getBuilding(allocatedFloor.getBuildingId());
-				allocatedTypeID = new Integer(allocatedApartment.getApartmentTypeId());
-				allocatedComplexID = new Integer(allocatedBuilding.getComplexId());
+				try {
+					ApartmentView allocatedApartment = applicationService.getBuildingService().getApartmentViewHome().findByPrimaryKey(c.getApartmentId());
+					
+					allocatedTypeID = (allocatedApartment.getTypeID());
+					allocatedComplexID = (allocatedApartment.getComplexID());
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
 			}
 					
 			Vector wl = holder.getWaitingList();
@@ -255,64 +269,74 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			if(choices!=null){
 			Iterator it = choices.iterator();
 			
+			ApartmentTypeHome ath =applicationService.getBuildingService().getApartmentTypeHome();
+			ComplexHome cxh =applicationService.getBuildingService().getComplexHome();
 			while (it.hasNext()) {
-				Applied applied = (Applied) it.next();
-				pos++;
-				ApartmentType aType = BuildingCacher.getApartmentType(applied.getApartmentTypeId().intValue());
-				Complex complex = BuildingCacher.getComplex(applied.getComplexId().intValue());
-				Text appType = new Text(aType.getName() + " (" + complex.getName() + ")");
-		
-				appliedTable.add(appType, 1, pos);
-		
-				// find the corresponding waitinglist entry
-				WaitingList wait = null;
-				if (wl != null) {
-					Iterator it1 = wl.iterator();
-					while (it1.hasNext()) {
-						wait = (WaitingList) it1.next();
-						if ((wait.getApartmentTypeId().intValue() == aType.getID()) && (wait.getComplexId().intValue() == complex.getID()))
-							break;
-						else
-							wait = null;
+				try {
+					Applied applied = (Applied) it.next();
+					pos++;
+					ApartmentType aType = ath.findByPrimaryKey(applied.getApartmentTypeId());
+					Complex complex = cxh.findByPrimaryKey(applied.getComplexId());
+					Text appType = new Text(aType.getName() + " (" + complex.getName() + ")");
+
+					appliedTable.add(appType, 1, pos);
+
+					// find the corresponding waitinglist entry
+					WaitingList wait = null;
+					if (wl != null) {
+						Iterator it1 = wl.iterator();
+						while (it1.hasNext()) {
+							wait = (WaitingList) it1.next();
+							if ((wait.getApartmentTypeId().intValue() == aType.getID()) && (wait.getComplexId().intValue() == complex.getID()))
+								break;
+							else
+								wait = null;
+						}
+					}
+
+					// we have a waitinglist entry and the applicant wishes to stay on it
+					if (wait != null && !wait.getRemovedFromList()) {
+							appliedTable.add(new Text(wait.getOrder().toString()), 2, pos);
+							appliedTable.setAlignment(2, pos, "center");
+							
+							if(wait.getNumberOfRejections()>0){
+								appliedTable.addText(wait.getNumberOfRejections(),5,pos);
+								appliedTable.setAlignment(5, pos, "center");
+							}
+							
+//						// if we have a norejected contract, check if this is the one
+							if( !wait.getRejectFlag()	&& allocatedComplexID.intValue() == wait.getComplexId().intValue() && allocatedTypeID.intValue() == wait.getApartmentTypeId().intValue()){
+									Text allocatedText = new Text(_iwrb.getLocalizedString("appAllocated","Allocated"));
+									appliedTable.add(allocatedText,3,pos);
+									// if not already denied
+								
+									allocatedWaitinglistID = (Integer) wait.getPrimaryKey();
+								
+							}
+							else{
+							// we add confirmation checkboxes
+							CheckBox check = new CheckBox("confirm" + applied.getOrder().toString(), "true");
+							HiddenInput hidden = new HiddenInput("wl" + applied.getOrder().toString(), wait.getPrimaryKey().toString());
+							form.add(hidden);
+							check.setChecked(true);
+							appliedTable.add(check, 3, pos);
+							}
+							appliedTable.setAlignment(3, pos, "center");
+							
+							appliedTable.add(dateTimeFormat.format(wait.getLastConfirmationDate()),4,pos);
+					}
+					// no waitinglist entries
+					else{
+						appliedTable.mergeCells(2,pos,4,pos);
+						appliedTable.addText(_iwrb.getLocalizedString("appNoWaitingList","Not on waitinglist"),2,pos);
+						appliedTable.setAlignment(2,pos,Table.HORIZONTAL_ALIGN_CENTER);
 					}
 				}
-		
-				// we have a waitinglist entry and the applicant wishes to stay on it
-				if (wait != null && !wait.getRemovedFromList()) {
-						appliedTable.add(new Text(wait.getOrder().toString()), 2, pos);
-						appliedTable.setAlignment(2, pos, "center");
-						
-						if(wait.getNumberOfRejections()>0){
-							appliedTable.addText(wait.getNumberOfRejections(),5,pos);
-							appliedTable.setAlignment(5, pos, "center");
-						}
-						
-//						// if we have a norejected contract, check if this is the one
-						if( !wait.getRejectFlag()	&& allocatedComplexID.intValue() == wait.getComplexId().intValue() && allocatedTypeID.intValue() == wait.getApartmentTypeId().intValue()){
-								Text allocatedText = new Text(_iwrb.getLocalizedString("appAllocated","Allocated"));
-								appliedTable.add(allocatedText,3,pos);
-								// if not already denied
-							
-								allocatedWaitinglistID = (Integer) wait.getPrimaryKey();
-							
-						}
-						else{
-						// we add confirmation checkboxes
-						CheckBox check = new CheckBox("confirm" + applied.getOrder().toString(), "true");
-						HiddenInput hidden = new HiddenInput("wl" + applied.getOrder().toString(), wait.getIDInteger().toString());
-						form.add(hidden);
-						check.setChecked(true);
-						appliedTable.add(check, 3, pos);
-						}
-						appliedTable.setAlignment(3, pos, "center");
-						
-						appliedTable.add(dateTimeFormat.format(wait.getLastConfirmationDate()),4,pos);
+				catch (EJBException e) {
+					e.printStackTrace();
 				}
-				// no waitinglist entries
-				else{
-					appliedTable.mergeCells(2,pos,4,pos);
-					appliedTable.addText(_iwrb.getLocalizedString("appNoWaitingList","Not on waitinglist"),2,pos);
-					appliedTable.setAlignment(2,pos,Table.HORIZONTAL_ALIGN_CENTER);
+				catch (FinderException e) {
+					e.printStackTrace();
 				}
 			}
 		
@@ -359,13 +383,14 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				Application application = ( (ApplicationHome) IDOLookup.getHome(Application.class)).findByPrimaryKey(AID);
 				application.setStatus(ApplicationBMPBean.STATUS_GARBAGE);
 				application.store();
-				ContractBusiness.deleteFromWaitingList(new Integer(application.getApplicantId()));
+				ContractService service = getContractService(iwc);
+				service.deleteFromWaitingList(application.getApplicant());
 				Collection contracts = ((ContractHome) IDOLookup.getHome(Contract.class)).findByApplicant(new Integer(application.getApplicantId()));
 				if(contracts!=null && !contracts.isEmpty()){
 					for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 						Contract con = (Contract) iter.next();
 						if(con.getStatus().equalsIgnoreCase(ContractBMPBean.statusCreated)){
-							ContractBusiness.doGarbageContract(((Integer)con.getPrimaryKey()).intValue());
+							service.doGarbageContract(((Integer)con.getPrimaryKey()));
 						}
 					}
 				}
@@ -383,6 +408,9 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				e.printStackTrace();
 			}
 			catch (FinderException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
@@ -463,7 +491,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		}
 	}
 	
-	private void addAllocationDenialTable(Table refTable){
+	private void addAllocationDenialTable(Table refTable)throws RemoteException{
 		if(holder!=null && allocatedWaitinglistID!=null){
 			Contract contract = holder.getContract();
 			if(contract!=null ){
@@ -484,7 +512,13 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				dTable.add(tAcceptance,3,1);
 				
 				dTable.addText(dateFormat.format(contract.getValidFrom())+" - "+dateFormat.format(contract.getValidTo()),2,2);
-				dTable.addText(getApartmentString(contract),1,2);
+				try {
+					ApartmentView apv =applicationService.getBuildingService().getApartmentViewHome().findByPrimaryKey(contract.getApartmentId());
+					dTable.addText(apv.getApartmentString(" "),1,2);
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
 				dTable.setAlignment(3,2,Table.HORIZONTAL_ALIGN_RIGHT);
 				SubmitButton deny = new SubmitButton("denyAllocation", _iwrb.getLocalizedString("denyAllotion", "No thanks"));
 				String message = (_iwrb.getLocalizedString("denyAllocationWarning","Do you really want to deny this apartment ?"));
@@ -502,23 +536,10 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		}
 	}
 	
-	private String getApartmentString(Contract eContract) {
-			Apartment A = BuildingCacher.getApartment(eContract.getApartmentId().intValue());
-			Floor F = BuildingCacher.getFloor(A.getFloorId());
-			Building B = BuildingCacher.getBuilding(F.getBuildingId());
-			Complex C = BuildingCacher.getComplex(B.getComplexId());
-			StringBuffer sb = new StringBuffer(A.getName());
-			sb.append(" ");
-			sb.append(F.getName());
-			sb.append(" ");
-			sb.append(B.getName());
-			sb.append(" ");
-			sb.append(C.getName());
-			return sb.toString();
-		}
+	
 
 	
-	private CampusApplicationHolder confirmWaitingList(IWContext iwc, int aid, CampusApplicationHolder holder) {
+	private CampusApplicationHolder confirmWaitingList(IWContext iwc, int aid, CampusApplicationHolder holder) throws RemoteException {
 		String confirm1 = iwc.getParameter("confirm1");
 		String confirm2 = iwc.getParameter("confirm2");
 		String confirm3 = iwc.getParameter("confirm3");
@@ -562,7 +583,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			}
 		}
 		
-		holder = CampusApplicationFinder.getApplicationInfo(aid);
+		holder = applicationService.getApplicationInfo(aid);
 		return holder;
 	}
 
@@ -673,8 +694,14 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	public void main(IWContext iwc) {
 		//debugParameters(iwc);
 		_iwrb = getResourceBundle(iwc);
-		control(iwc);
+		try {
+			control(iwc);
+		}
+		catch (RemoteException e) {
+			add("Service is unavailable please come back later");
+		}
 	}
+
 
 	public boolean clearLoginChanged(int icUserId) {
 		try {

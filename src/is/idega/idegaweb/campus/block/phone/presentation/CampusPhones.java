@@ -4,19 +4,29 @@ import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
+import javax.ejb.FinderException;
+
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentCategoryHome;
+import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.block.building.data.ApartmentView;
+import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.block.building.data.Building;
+import com.idega.block.building.data.BuildingEntity;
+import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexHome;
 import com.idega.block.building.data.Floor;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLegacyEntity;
+import com.idega.block.building.data.FloorHome;
+import com.idega.data.IDOLookup;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
@@ -47,7 +57,7 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
   private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessCt="s_ct",sessTp="s_tp",sessOrder="s_or";
   private String[] prmArray = { prmCx ,prmBu ,prmFl,prmCt,prmTp,prmOrder};
   private String[] sessArray = {sessCx ,sessBu ,sessFl,sessCt,sessTp,sessOrder};
-  private String[] sValues = {sCLBU,sCLFL,sCLCX,sCLCT,sCLTP,sORDER};
+  private Integer[] iValues = {Integer.valueOf(sCLBU),Integer.valueOf(sCLFL),Integer.valueOf(sCLCX),Integer.valueOf(sCLCT),Integer.valueOf(sCLTP)};
   protected boolean isAdmin = false;
   private boolean fetch = false;
 
@@ -69,20 +79,36 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
     fetch = false;
     for (int i = 0; i < prmArray.length; i++) {
       if(iwc.getParameter(prmArray[i])!=null){
-        sValues[i] = (iwc.getParameter(prmArray[i]));
-        iwc.setSessionAttribute(sessArray[i],sValues[i]);
+        iValues[i] = Integer.valueOf((iwc.getParameter(prmArray[i])));
+        iwc.setSessionAttribute(sessArray[i],iValues[i]);
         fetch = true;
       }
       else if(iwc.getSessionAttribute(sessArray[i])!=null){
-        sValues[i] = ((String)iwc.getSessionAttribute(sessArray[i]));
+        iValues[i] = ((Integer)iwc.getSessionAttribute(sessArray[i]));
         fetch = true;
       }
     }
 
     if(isAdmin){
-        add(statusForm());
+        try {
+			add(statusForm());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
         if(fetch)
-         add(getPhoneTable(iwc));
+			try {
+				add(getPhoneTable(iwc));
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
     }
     else
       add(getNoAccessObject(iwc));
@@ -95,14 +121,16 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
     return LinkTable;
   }
 
-  private Form statusForm(){
+  private Form statusForm()throws RemoteException,FinderException{
     Form myForm = new Form();
-    DropdownMenu complex = drpLodgings(Complex.class,prmArray[0],"--",sValues[0]);
-    DropdownMenu building = drpLodgings(Building.class,prmArray[1],"--",sValues[1]);
-    DropdownMenu floor = drpFloors(prmArray[2],"--",sValues[2],true);
-    DropdownMenu cat = drpLodgings(ApartmentCategory.class,prmArray[3],"--",sValues[3]);
-    DropdownMenu type = drpLodgings(ApartmentType.class,prmArray[4],"--",sValues[4]);
-    DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
+
+    DropdownMenu complex = drpLodgings(((ComplexHome)IDOLookup.getHome(Complex.class)).findAll(),prmArray[0],"--",iValues[0].toString());
+    DropdownMenu building = drpLodgings(((BuildingHome)IDOLookup.getHome(Building.class)).findAll(),prmArray[1],"--",iValues[1].toString());
+    DropdownMenu floor = drpFloors(prmArray[2],"--",iValues[2].toString(),true);
+    DropdownMenu cat = drpLodgings(((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findAll(),prmArray[3],"--",iValues[3].toString());
+    DropdownMenu type = drpLodgings(((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll(),prmArray[4],"--",iValues[4].toString());
+    DropdownMenu order = orderDrop(prmArray[5],"--",iValues[5].toString());
+
     //Edit.setStyle(status);
     
     Table T = new Table();
@@ -129,52 +157,45 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
     return myForm;
   }
 
-  private DropdownMenu drpLodgings(Class lodgings,String name,String display,String selected) {
-    List L = null;
-    try{
-      L = EntityFinder.getInstance().findAll(lodgings);
-    }
-    catch(Exception e){}
+
+  private DropdownMenu drpLodgings(Collection buildingEntities,String name,String display,String selected) {
+   
+
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
       drp.addDisabledMenuElement("-1",display);
-    if(L != null){
-      int len = L.size();
-      if(len > 0){
-        for(int i = 0; i < len ; i++){
-          IDOLegacyEntity ge = (IDOLegacyEntity) L.get(i);
-          drp.addMenuElement(ge.getID(),ge.getName());
+    if(buildingEntities != null){
+    	for (Iterator iter = buildingEntities.iterator(); iter.hasNext();) {
+    		BuildingEntity element = (BuildingEntity) iter.next();
+       
+          drp.addMenuElement(element.getPrimaryKey().toString(),element.getName());
         }
         if(!"".equalsIgnoreCase(selected)){
           drp.setSelectedElement(selected);
         }
       }
-    }
+    
     return drp;
   }
 
-  private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName) {
-    List L = null;
-    try{
-      L = EntityFinder.getInstance().findAll(Floor.class);
-    }
-    catch(Exception e){}
+  private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName)throws RemoteException,FinderException {
+   Collection floors = ((FloorHome)IDOLookup.getHome(Floor.class)).findAll();
+   BuildingHome bh =(BuildingHome) IDOLookup.getHome(Building.class);
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
       drp.addDisabledMenuElement("-1",display);
-    if(L!= null){
-      int len = L.size();
-      for(int i = 0; i < len ; i++){
-        Floor ge = (Floor) L.get(i);
+    for (Iterator iter = floors.iterator(); iter.hasNext();) {
+		Floor floor = (Floor) iter.next();
+
         if(withBuildingName){
           try{
-          drp.addMenuElement(ge.getID() ,ge.getName()+" "+(BuildingCacher.getBuilding(ge.getBuildingId()).getName()));
+          drp.addMenuElement(floor.getPrimaryKey().toString() ,floor.getName()+" "+(bh.findByPrimaryKey(new Integer(floor.getBuildingId())).getName()));
           }
           catch(Exception e){}}
         else
-          drp.addMenuElement(ge.getID() ,ge.getName());
+          drp.addMenuElement(floor.getPrimaryKey().toString() ,floor.getName());
       }
-    }
+    
     if(!"".equalsIgnoreCase(selected)){
       drp.setSelectedElement(selected);
     }
@@ -193,10 +214,11 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
   }
 
 
-  private PresentationObject getPhoneTable(IWContext iwc){
+  private PresentationObject getPhoneTable(IWContext iwc)throws RemoteException,FinderException{
     Form form = new Form();
-    int order = Integer.parseInt(sValues[5]);
-    List L = BuildingFinder.listOfApartments(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order);
+    //int order = Integer.parseInt(iValues[5]);
+    Collection apartments = ((ApartmentHome)IDOLookup.getHome(Apartment.class)).findBySearch(iValues[0],iValues[1],iValues[2],iValues[3],iValues[4],true);
+    //List L = BuildingFinder.listOfApartments(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order);
     //Map M = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],order));
     Map M = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
     CampusPhone P = null;
@@ -207,21 +229,28 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
     Table T = new Table();
     T.setCellspacing(1);
     T.setCellpadding(2);
-    if(L!=null){
+    if(apartments!=null){
 
-      int len = L.size();
+      int len = apartments.size();
       int row = 2;
       int col = 1;
-      for (int i = 0; i < len; i++) {
+      int i =0;
+      ApartmentViewHome avh =(ApartmentViewHome)IDOLookup.getHome(ApartmentView.class);
+    for (Iterator iter = apartments.iterator(); iter.hasNext();) {
+		 A = (Apartment) iter.next();
+		 try {
+		 //ApartmentView aview =avh.findByPrimaryKey(A.getPrimaryKey());
         col = 1;
-        try {
+       
 
-          A = (Apartment) L.get(i);
+        
           Integer ID = new Integer(A.getID());
           TextInput ti = new TextInput("ti_"+i);
           T.add(new HiddenInput("apid"+i,String.valueOf(A.getID())));
-          T.add(getHeader(String.valueOf(i+1)),1,row);
+
+          T.add(getText(String.valueOf(i+1)),1,row);
           T.add((getApartmentTable(A)),2,row);
+
           ti.setLength(10);
           
           T.add(ti,3,row);
@@ -232,6 +261,7 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
             T.add(new HiddenInput("phoneid"+i,String.valueOf(P.getID())),1,row);
           }
           row++;
+          i++;
           col = 1;
         }
         catch (Exception ex) {  ex.printStackTrace(); }
@@ -311,13 +341,17 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
 
   private PresentationObject getApartmentTable(Apartment A){
     Table T = new Table();
-    Floor F = BuildingCacher.getFloor(A.getFloorId());
-    Building B = BuildingCacher.getBuilding(F.getBuildingId());
-    Complex C = BuildingCacher.getComplex(B.getComplexId());
+
+   
+   
+    Floor F = A.getFloor();
+    Building B = F.getBuilding();
+    Complex C = B.getComplex();
     T.add(getText(A.getName()),1,1);
     T.add(getText(F.getName()),2,1);
     T.add(getText(B.getName()),3,1);
     T.add(getText(C.getName()),4,1);
+
     return T;
 
   }

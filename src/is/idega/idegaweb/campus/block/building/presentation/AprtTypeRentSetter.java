@@ -1,28 +1,25 @@
 package is.idega.idegaweb.campus.block.building.presentation;
+
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRent;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRentHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 
-
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
-import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -55,9 +52,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 	public String getLocalizedNameValue() {
 		return "rent";
 	}
-	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
-	}
+	
 	protected void control(IWContext iwc) {
 		//debugParameters(iwc);
 		if (isAdmin) {
@@ -73,25 +68,36 @@ public class AprtTypeRentSetter extends CampusBlock {
 			if (iwc.isParameterSet(prmATid)) {
 				add(getTypeRentForm(iwc));
 			}
-			else
-				this.add(getTypeTable());
+			else{
+				try {
+					this.add(getTypeTable());
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		else
 			this.add(getNoAccessObject(iwc));
 	}
-	public PresentationObject getTypeTable() {
+	public PresentationObject getTypeTable() throws RemoteException,FinderException{
 		DataTable T = new DataTable();
 		T.addTitle(localize("apartment_types", "Apartment types"));
 		T.setTitlesVertical(false);
-		List Types = BuildingCacher.getTypes();
-		if (Types != null) {
-			Iterator iter = Types.iterator();
+		Collection types =((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll();
+		if (types != null) {
+			Iterator iter = types.iterator();
 			ApartmentType AT;
 			T.add(getHeader(localize("apartment_type", "Apartment type")), 1, 1);
 			int row = 2;
 			while (iter.hasNext()) {
 				AT = (ApartmentType) iter.next();
-				Link link = new Link(getText(AT.getName()));
+
+				Link link = new Link(getHeader(AT.getName()));
+
 				link.addParameter(prmATid, AT.getPrimaryKey().toString());
 				T.add(link, 1, row++);
 			}
@@ -107,8 +113,9 @@ public class AprtTypeRentSetter extends CampusBlock {
 			String ATid = iwc.getParameter(prmATid);
 			String ATRid = iwc.getParameter(prmATRid);
 			if (ATid != null) {
-				int atID = Integer.parseInt(ATid);
-				ApartmentType AT = BuildingCacher.getApartmentType(atID);
+				Integer atID = Integer.valueOf(ATid);
+				
+				ApartmentType AT = ((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findByPrimaryKey(atID);
 				T.addTitle(AT.getName());
 				T.setTitlesVertical(false);
 				T.add(getHeader(localize("rent", "Rent")), 1, 1);
@@ -116,7 +123,7 @@ public class AprtTypeRentSetter extends CampusBlock {
 				T.add(getHeader(localize("to_date", "To date (D/M/Y)")), 3, 1);
 				T.add(getHeader(localize("choise", "Choice")), 4, 1);
 				int row = 2;
-				Collection atrs = getAPRHome().findByType(atID);
+				Collection atrs = getAPRHome().findByType(atID.intValue());
 				NumberFormat nf = NumberFormat.getInstance();
 				DateFormat df = DateFormat.getDateInstance(DateFormat.FULL, iwc.getCurrentLocale());
 				RadioButton rb;
@@ -124,10 +131,14 @@ public class AprtTypeRentSetter extends CampusBlock {
 					Iterator iter = atrs.iterator();
 					while (iter.hasNext()) {
 						ApartmentTypeRent theRent = (ApartmentTypeRent) iter.next();
-						T.add(getText(String.valueOf((double) theRent.getRent())), 1, row);
-						T.add(getText(df.format(theRent.getValidFrom())), 2, row);
+
+						T.add(getHeader(nf.format((double) theRent.getRent())), 1, row);
+						T.add(getHeader(df.format(theRent.getValidFrom())), 2, row);
+
 						if (theRent.getValidTo() != null)
-							T.add(getText(df.format(theRent.getValidFrom())), 3, row);
+
+							T.add(getHeader(df.format(theRent.getValidFrom())), 3, row);
+
 						rb = new RadioButton(prmATRid, theRent.getPrimaryKey().toString());
 						if(theRent.getPrimaryKey().toString().equals(ATRid))
 							rb.setSelected();
@@ -136,7 +147,9 @@ public class AprtTypeRentSetter extends CampusBlock {
 					}
 				}
 				T.add(new HiddenInput(prmATid, ATid));
-				Link btnNew = new Link(localize("btn_new","New"));
+
+				Link btnNew = new Link(getResourceBundle().getLocalizedImageButton("btn_new","New"));
+
 				btnNew.addParameter(prmATid,ATid);
 				SubmitButton edit = new SubmitButton(getResourceBundle().getLocalizedImageButton("btn_edit", "Edit"), "edit");
 				SubmitButton delete = new SubmitButton(getResourceBundle().getLocalizedImageButton("btn_delete", "Delete"), "delete");
@@ -149,10 +162,12 @@ public class AprtTypeRentSetter extends CampusBlock {
 				TextInput rent = new TextInput("apr_rent");
 				DateInput from = new DateInput("apr_from");
 				DateInput to = new DateInput("apr_to");
+
 				inputTable.add(getHeader(localize("rent", "Rent")), 1, 1);
 				inputTable.add(getHeader(localize("from_date", "From date (D/M/Y)")), 2, 1);
 				inputTable.add(getHeader(localize("to_date", "To date (D/M/Y)")), 3, 1);
-				//inputTable.add(Edit.formatText(localize("choise", "Choice")), 4, 1);
+				//inputTable.add(getHeader(localize("choise", "Choice")), 4, 1);
+
 				inputTable.add(rent, 1, 2);
 				inputTable.add(from, 2, 2);
 				inputTable.add(to, 3, 2);

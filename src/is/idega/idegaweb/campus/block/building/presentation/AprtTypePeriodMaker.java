@@ -1,25 +1,28 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
 
-
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
+import is.idega.idegaweb.campus.presentation.Edit;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Iterator;
 
-import com.idega.block.building.business.BuildingCacher;
+import javax.ejb.FinderException;
+
 import com.idega.block.building.data.ApartmentType;
-import com.idega.data.EntityFinder;
+import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.util.Edit;
 
 /**
  * Title:   idegaclasses
@@ -32,9 +35,9 @@ import com.idega.presentation.util.Edit;
 
 public class AprtTypePeriodMaker extends CampusBlock{
 
-  
+
   private boolean isAdmin = false;
- 
+
 
   public String getLocalizedNameKey(){
     return "periods";
@@ -44,9 +47,6 @@ public class AprtTypePeriodMaker extends CampusBlock{
     return "Periods";
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
   public AprtTypePeriodMaker() {
 
   }
@@ -58,31 +58,44 @@ public class AprtTypePeriodMaker extends CampusBlock{
           doUpdate(iwc);
         }
 
-        this.add(makeInputTable());
+        try {
+			this.add(makeInputTable());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 
       }
       else
-        this.add(new Text("Ekki Réttindi"));
+        this.add(getNoAccessObject(iwc));
 
   }
 
-  public PresentationObject makeInputTable(){
+  public PresentationObject makeInputTable()throws RemoteException,FinderException{
     Form F = new Form();
     DataTable T = getDataTable();
     T.addTitle(localize("apartment_periods","Apartment periods"));
     T.setTitlesVertical(false);
-    List Types = BuildingCacher.getTypes();
+   Collection types = ((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll();
     Hashtable ht = hashOfStuff();
-    if(Types != null){
-      int len = Types.size();
+    if(types != null&& !types.isEmpty()){
+      int len =types.size();
       ApartmentType AT;
 
-      T.add(Edit.formatText(localize("apartment_type","Apartment type")),1,1);
-      T.add(Edit.formatText(localize("first_date","First date (D/M)")),2,1);
-      T.add(Edit.formatText(localize("second_date","Second date (D/M)")),3,1);
+
+      T.add(getHeader(localize("apartment_type","Apartment type")),1,1);
+      T.add(getHeader(localize("first_date","First date (D/M)")),2,1);
+      T.add(getHeader(localize("second_date","Second date (D/M)")),3,1);
+
       int row = 2;
-      for (int i = 0; i < len; i++) {
-        AT = (ApartmentType) Types.get(i);
+      int i =0;
+      for (Iterator iter = types.iterator(); iter.hasNext();) {
+		 AT = (ApartmentType) iter.next();
+		
+	
         T.add(Edit.formatText(AT.getName()),1,row);
         Integer typeId = new Integer(AT.getID());
         DropdownMenu drpDayOne = dayDrop("dayone"+i);
@@ -97,7 +110,7 @@ public class AprtTypePeriodMaker extends CampusBlock{
           drpMonthOne.setSelectedElement(String.valueOf(ATP.getFirstDateMonth()));
           drpDayTwo.setSelectedElement(String.valueOf(ATP.getSecondDateDay()));
           drpMonthTwo.setSelectedElement(String.valueOf(ATP.getSecondDateMonth()));
-          id = ATP.getID();
+          id = new Integer(ATP.getPrimaryKey().toString()).intValue();
         }
         Edit.setStyle( drpDayOne);
         Edit.setStyle(drpMonthOne);
@@ -110,9 +123,12 @@ public class AprtTypePeriodMaker extends CampusBlock{
         T.add(drpDayTwo,3,row);
         T.add(drpMonthTwo,3,row);
         row++;
+        i++;
       }
       T.add(new HiddenInput("count",String.valueOf(len)));
-      SubmitButton save = (SubmitButton)getSubmitButton("save","true","Save","save");
+
+      SubmitButton save = new SubmitButton(getResourceBundle().getLocalizedImageButton("save","Save"),"save");
+
       Edit.setStyle(save);
       T.addButton(save);
 
@@ -140,20 +156,17 @@ public class AprtTypePeriodMaker extends CampusBlock{
             int monthTwo = Integer.parseInt(iwc.getParameter("monthtwo"+i));
             int typeid = Integer.parseInt(iwc.getParameter("typeid"+i));
             if(id == -1){
-              ATP = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
+              ATP = ((ApartmentTypePeriodsHome)IDOLookup.getHome(ApartmentTypePeriods.class)).create();
               update = false;
             }
             else{
-              ATP = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).findByPrimaryKeyLegacy(id);
+              ATP = ((ApartmentTypePeriodsHome)IDOLookup.getHome(ApartmentTypePeriods.class)).findByPrimaryKey(new Integer(id));
               update = true;
             }
             ATP.setApartmentTypeId(typeid);
             ATP.setFirstDate(dayOne,monthOne);
             ATP.setSecondDate(dayTwo,monthTwo);
-            if(update)
-              ATP.update();
-            else
-              ATP.insert();
+            ATP.store();
           }
         }
       }
@@ -179,26 +192,17 @@ public class AprtTypePeriodMaker extends CampusBlock{
     return drp;
   }
 
-  public List listOfStuff(){
-    List L = null;
-    try {
-     L = EntityFinder.getInstance().findAll(ApartmentTypePeriods.class);
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    return L;
-  }
 
-  public Hashtable hashOfStuff(){
+  public Hashtable hashOfStuff()throws FinderException,RemoteException{
     Hashtable ht = null;
-    List L = listOfStuff();
+   Collection L = ((ApartmentTypePeriodsHome)IDOLookup.getHome(ApartmentTypePeriods.class)).findAll();
     if(L!=null){
       int len = L.size();
       ht = new Hashtable(len);
       ApartmentTypePeriods ATP ;
-      for (int i = 0; i < len; i++) {
-        ATP = (ApartmentTypePeriods)L.get(i);
+     for (Iterator iter = L.iterator(); iter.hasNext();) {
+     	ATP = (ApartmentTypePeriods) iter.next();
+
         ht.put(new Integer(ATP.getApartmentTypeId()),ATP);
       }
 

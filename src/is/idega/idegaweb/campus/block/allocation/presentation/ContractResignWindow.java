@@ -1,12 +1,13 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+import java.rmi.RemoteException;
+
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.CampusProperties;
+import is.idega.idegaweb.campus.presentation.CampusWindow;
 import is.idega.idegaweb.campus.presentation.Edit;
-
-import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
@@ -46,15 +47,8 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class ContractResignWindow extends Window {
+public class ContractResignWindow extends CampusWindow {
 
-    protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
-
-    private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-
-    protected IWResourceBundle iwrb;
-
-    protected IWBundle iwb;
 
     private boolean isAdmin;
 
@@ -90,8 +84,6 @@ public class ContractResignWindow extends Window {
 
     protected void control(IWContext iwc) {
         //debugParameters(iwc);
-        iwrb = getResourceBundle(iwc);
-        iwb = getBundle(iwc);
 
         if (isAdmin || isLoggedOn) {
             if (iwc
@@ -107,7 +99,7 @@ public class ContractResignWindow extends Window {
             }
             add(getSignatureTable(iwc));
         } else
-            add(Edit.formatText(iwrb.getLocalizedString("access_denied",
+            add(getErrorText(localize("access_denied",
                     "Access denied")));
 
         //add(String.valueOf(iSubjectId));
@@ -128,32 +120,24 @@ public class ContractResignWindow extends Window {
         //Table T = new Table(2,8);
         DataTable T = new DataTable();
         T.setWidth("100%");
-        T.addTitle(iwrb
-                .getLocalizedString("contract_resign", "Contract resign"));
-        T.addButton(new CloseButton(iwrb.getImage("close.gif")));
-        T.addButton(new SubmitButton(iwrb.getImage("save.gif"), "save"));
+        T.addTitle(localize("contract_resign", "Contract resign"));
+        T.addButton(new CloseButton(getResourceBundle().getImage("close.gif")));
+        T.addButton(new SubmitButton(getResourceBundle().getImage("save.gif"), "save"));
 
         int row = 1;
         int col = 1;
 
         try {
             if (iContractId > 0) {
-                Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome) com.idega.data.IDOLookup
-                        .getHomeLegacy(Contract.class))
-                        .findByPrimaryKeyLegacy(iContractId);
-                Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup
-                        .getHomeLegacy(Applicant.class))
-                        .findByPrimaryKeyLegacy(eContract.getApplicantId()
-                                .intValue());
-                User user = ((com.idega.core.user.data.UserHome) com.idega.data.IDOLookup
-                        .getHomeLegacy(User.class))
-                        .findByPrimaryKeyLegacy(eContract.getUserId()
-                                .intValue());
+                Contract eContract = ((ContractHome) com.idega.data.IDOLookup
+                        .getHome(Contract.class))
+                        .findByPrimaryKey(new Integer(iContractId));
+                Applicant eApplicant = eContract.getApplicant();
+                User user = eContract.getUser();
 
                 if (user != null) {
                     boolean isContractUser = user.getID() == eUser.getID();
-                    T.add(new HiddenInput("contract_id", String
-                            .valueOf(eContract.getID())), 1, row);
+                    T.add(new HiddenInput("contract_id",(eContract.getPrimaryKey().toString())), 1, row);
                     T.add(new HiddenInput("applicant_id", eContract
                             .getApplicantId().toString()), 1, row);
                     T.add(new HiddenInput("us_id", String.valueOf(eContract
@@ -161,32 +145,30 @@ public class ContractResignWindow extends Window {
                     if (iwc.isParameterSet(prmAdmin)) {
                         T.add(new HiddenInput(prmAdmin, "true"));
                     }
-                    T.add(Edit.formatText(iwrb.getLocalizedString("name",
+                    T.add(Edit.formatText(localize("name",
                             "Name")), 1, row);
                     T.add(Edit.formatText(user.getName()), 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString("ssn",
+                    T.add(Edit.formatText(localize("ssn",
                             "SocialNumber")), 1, row);
                     T.add(Edit.formatText(eApplicant.getSSN()), 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString("apartment",
+                    T.add(Edit.formatText(localize("apartment",
                             "Apartment")), 1, row);
                     T.add(Edit
-                            .formatText(getApartmentString(BuildingCacher
-                                    .getApartment(eContract.getApartmentId()
-                                            .intValue()))), 2, row);
+                            .formatText(eContract.getApartment().getName()), 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString("valid_from",
+                    T.add(Edit.formatText(localize("valid_from",
                             "Valid from")), 1, row);
                     T.add(Edit.formatText(new IWTimestamp(eContract
                             .getValidFrom()).getLocaleDate(iwc)), 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString("valid_to",
+                    T.add(Edit.formatText(localize("valid_to",
                             "Valid to")), 1, row);
                     T.add(Edit.formatText(new IWTimestamp(eContract
                             .getValidTo()).getLocaleDate(iwc)), 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString(
+                    T.add(Edit.formatText(localize(
                             "moving_date", "Moving date")), 1, row);
 
                     //          IWTimestamp movdate = eContract.getMovingDate()!=null?new
@@ -221,13 +203,13 @@ public class ContractResignWindow extends Window {
                                     2, row);
 
                     row++;
-                    boolean DATESYNC = iwb.getProperty(
+                    boolean DATESYNC = getBundle().getProperty(
                             CampusProperties.PROP_CONTRACT_DATE_SYNC, "false")
                             .equals("true");
                     if (isAdmin) {
                         CheckBox dateSync = new CheckBox(prmDateSync, "true");
                         dateSync.setChecked(DATESYNC);
-                        T.add(Edit.formatText(iwrb.getLocalizedString(
+                        T.add(Edit.formatText(localize(
                                 "update_valid_to", "Update valid to")), 1, row);
                         T.add(dateSync, 2, row);
                         row++;
@@ -237,30 +219,30 @@ public class ContractResignWindow extends Window {
                     }
 
                     TextInput newAddress = new TextInput("new_address");
-                    newAddress.setAsNotEmpty(iwrb.getLocalizedString(
+                    newAddress.setAsNotEmpty(localize(
                             "err_new_address", "You must enter a new address"));
                     TextInput newZip = new TextInput("new_zip");
-                    newZip.setAsNotEmpty(iwrb.getLocalizedString("err_new_zip",
+                    newZip.setAsNotEmpty(localize("err_new_zip",
                             "You must enter a new zip code"));
                     TextInput newPhone = new TextInput("new_phone");
-                    newPhone.setAsNotEmpty(iwrb.getLocalizedString(
+                    newPhone.setAsNotEmpty(localize(
                             "err_new_phone", "You must enter a new phone"));
 
-                    T.add(Edit.formatText(iwrb.getLocalizedString(
+                    T.add(Edit.formatText(localize(
                             "new_address", "New address")), 1, row);
                     T.add(newAddress, 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString("new_zip",
+                    T.add(Edit.formatText(localize("new_zip",
                             "New zip")), 1, row);
                     T.add(newZip, 2, row);
                     row++;
-                    T.add(Edit.formatText(iwrb.getLocalizedString("new_phone",
+                    T.add(Edit.formatText(localize("new_phone",
                             "New phone")), 1, row);
                     T.add(newPhone, 2, row);
                     row++;
                 }
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
         }
 
         Form F = new Form();
@@ -286,7 +268,7 @@ public class ContractResignWindow extends Window {
     }
 
     private void doReSignContract(IWContext iwc) {
-        int id = Integer.parseInt(iwc.getParameter("contract_id"));
+        Integer id = Integer.valueOf(iwc.getParameter("contract_id"));
         int usid = Integer.parseInt(iwc.getParameter("us_id"));
         String sInfo = iwc.getParameter("resign_info");
         if (sInfo == null) sInfo = "";
@@ -295,16 +277,22 @@ public class ContractResignWindow extends Window {
         if (sMovDate != null && sMovDate.length() == 10)
                 movDate = new IWTimestamp(sMovDate);
         boolean datesync = iwc.getParameter(prmDateSync) != null;
-        //System.out.println("saving shit");
-        if (isAdmin) {
-            System.out.println("is admin");
-            ContractBusiness.endContract(id, movDate, sInfo, datesync);
+        try {
+			//System.out.println("saving shit");
+			if (isAdmin) {
+			    System.out.println("is admin");
+			    getContractService(iwc).endContract(id,movDate,sInfo,datesync);
+			    //ContractBusiness.endContract(id, movDate, sInfo, datesync);
 
-        } else if (eUser != null && usid == eUser.getID()) {
-            System.out.println("is other user");
-            ContractBusiness.resignContract(iwc, id, movDate, sInfo, datesync);
+			} else if (eUser != null && usid == eUser.getID()) {
+			    System.out.println("is other user");
+			    getContractService(iwc).resignContract(id,movDate,sInfo,datesync);
+			    //ContractBusiness.resignContract(id, movDate, sInfo, datesync);
 
-        }
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
         doChangeApplicantAddress(iwc);
 
         setParentToReload();
@@ -349,9 +337,9 @@ public class ContractResignWindow extends Window {
 
     private PresentationObject getApartmentTable(Apartment A) {
         Table T = new Table();
-        Floor F = BuildingCacher.getFloor(A.getFloorId());
-        Building B = BuildingCacher.getBuilding(F.getBuildingId());
-        Complex C = BuildingCacher.getComplex(B.getComplexId());
+        Floor F = A.getFloor();
+        Building B = F.getBuilding();
+        Complex C = B.getComplex();
         T.add(Edit.formatText(A.getName()), 1, 1);
         T.add(Edit.formatText(F.getName()), 2, 1);
         T.add(Edit.formatText(B.getName()), 3, 1);
@@ -361,9 +349,9 @@ public class ContractResignWindow extends Window {
 
     private String getApartmentString(Apartment A) {
         StringBuffer S = new StringBuffer();
-        Floor F = BuildingCacher.getFloor(A.getFloorId());
-        Building B = BuildingCacher.getBuilding(F.getBuildingId());
-        Complex C = BuildingCacher.getComplex(B.getComplexId());
+        Floor F = A.getFloor();
+        Building B = F.getBuilding();
+        Complex C = B.getComplex();
         S.append(A.getName());
         S.append(" ");
         S.append(F.getName());

@@ -7,37 +7,23 @@ public class MailingListHomeImpl extends com.idega.data.IDOFactory implements Ma
   return MailingList.class;
  }
 
+
  public MailingList create() throws javax.ejb.CreateException{
-  return (MailingList) super.idoCreate();
+  return (MailingList) super.createIDO();
  }
 
- public MailingList createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public MailingList findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (MailingList) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((MailingListBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public MailingList findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (MailingList) super.idoFindByPrimaryKey(pk);
+  return (MailingList) super.findByPrimaryKeyIDO(pk);
  }
 
- public MailingList findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

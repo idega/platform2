@@ -155,37 +155,37 @@ public class CampusFinanceHandler implements FinanceHandler {
 											switch (cAttribute) {
 												case BuildingCacher.CHARTYPE :
 													// Apartment type
-													if (attributeId == user.getApartmentTypeId().intValue())
+													if (attributeId == user.getApartmentTypeId())
 														Amount = insertEntry(tariff, user, roundId, paymentdate,
 																cashierId, factor);
 													break;
 												case BuildingCacher.CHARCATEGORY :
 													// Apartment category
-													if (attributeId == user.getApartmentCategoryId().intValue())
+													if (attributeId == user.getApartmentCategoryId())
 														Amount = insertEntry(tariff, user, roundId, paymentdate,
 																cashierId, factor);
 													break;
 												case BuildingCacher.CHARBUILDING :
 													// Building
-													if (attributeId == user.getBuildingId().intValue())
+													if (attributeId == user.getBuildingId())
 														Amount = insertEntry(tariff, user, roundId, paymentdate,
 																cashierId, factor);
 													break;
 												case BuildingCacher.CHARFLOOR :
 													// Floor
-													if (attributeId == user.getFloorId().intValue())
+													if (attributeId == user.getFloorId())
 														Amount = insertEntry(tariff, user, roundId, paymentdate,
 																cashierId, factor);
 													break;
 												case BuildingCacher.CHARCOMPLEX :
 													// Complex
-													if (attributeId == user.getComplexId().intValue())
+													if (attributeId == user.getComplexId())
 														Amount = insertEntry(tariff, user, roundId, paymentdate,
 																cashierId, factor);
 													break;
 												case BuildingCacher.CHARAPARTMENT :
 													// Apartment
-													if (attributeId == user.getApartmentId().intValue())
+													if (attributeId == user.getApartmentId())
 														Amount = insertEntry(tariff, user, roundId, paymentdate,
 																cashierId, factor);
 													break;
@@ -335,32 +335,32 @@ public class CampusFinanceHandler implements FinanceHandler {
 									switch (cAttribute) {
 										case BuildingCacher.CHARTYPE :
 											// Apartment type
-											if (iAttributeId == user.getApartmentTypeId().intValue())
+											if (iAttributeId == user.getApartmentTypeId())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARCATEGORY :
 											// Apartment category
-											if (iAttributeId == user.getApartmentCategoryId().intValue())
+											if (iAttributeId == user.getApartmentCategoryId())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARBUILDING :
 											// Building
-											if (iAttributeId == user.getBuildingId().intValue())
+											if (iAttributeId == user.getBuildingId())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARFLOOR :
 											// Floor
-											if (iAttributeId == user.getFloorId().intValue())
+											if (iAttributeId == user.getFloorId())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARCOMPLEX :
 											// Complex
-											if (iAttributeId == user.getComplexId().intValue())
+											if (iAttributeId == user.getComplexId())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARAPARTMENT :
 											// Apartment
-											if (iAttributeId == user.getApartmentId().intValue())
+											if (iAttributeId == user.getApartmentId())
 												addAmount(H, eTariff, factor);
 											break;
 									} // switch
@@ -429,14 +429,14 @@ public class CampusFinanceHandler implements FinanceHandler {
 		ApartmentAccountEntry aprtEntry = ((ApartmentAccountEntryHome) IDOLookup
 				.getHome(ApartmentAccountEntry.class)).create();
 		aprtEntry.setAccountEntryID((Integer) AE.getPrimaryKey());
-		aprtEntry.setApartmentID(caa.getApartmentId());
+		aprtEntry.setApartmentID(new Integer(caa.getApartmentId()));
 		aprtEntry.store();
 	}
 	
 	private void createBatchContract(ContractAccountApartment caa, AssessmentRound round )throws CreateException, IDOLookupException{
 		BatchContract batchContract = ((BatchContractHome)IDOLookup.getHome(BatchContract.class)).create();
 		batchContract.setBatchID((Integer)round.getPrimaryKey());
-		batchContract.setContractID(caa.getContractId());
+		batchContract.setContractID(new Integer(caa.getContractId()));
 		batchContract.store();
 	}
 	public Map getAttributeMap() {
@@ -480,32 +480,32 @@ public class CampusFinanceHandler implements FinanceHandler {
 							switch (cAttribute) {
 								case BuildingCacher.CHARTYPE :
 									// Apartment type
-									if (iAttributeId == account.getApartmentTypeId().intValue())
+									if (iAttributeId == account.getApartmentTypeId())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARCATEGORY :
 									// Apartment category
-									if (iAttributeId == account.getApartmentCategoryId().intValue())
+									if (iAttributeId == account.getApartmentCategoryId())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARBUILDING :
 									// Building
-									if (iAttributeId == account.getBuildingId().intValue())
+									if (iAttributeId == account.getBuildingId())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARFLOOR :
 									// Floor
-									if (iAttributeId == account.getFloorId().intValue())
+									if (iAttributeId == account.getFloorId())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARCOMPLEX :
 									// Complex
-									if (iAttributeId == account.getComplexId().intValue())
+									if (iAttributeId == account.getComplexId())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARAPARTMENT :
 									// Apartment
-									if (iAttributeId == account.getApartmentId().intValue())
+									if (iAttributeId == account.getApartmentId())
 										userTariffs.add(tariff);
 									break;
 							} // switch

@@ -188,11 +188,11 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 		String prioritySelected = "";
 
 		try {
-			item = ((WaitingListHome)IDOLookup.getHomeLegacy(WaitingList.class)).findByPrimaryKeyLegacy(id);
+			item = ((WaitingListHome)IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(new Integer(id));
 			prioritySelected = item.getPriorityLevel();
-			applicant = ((ApplicantHome)IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(item.getApplicantId().intValue());
+			applicant = ((ApplicantHome)IDOLookup.getHome(Applicant.class)).findByPrimaryKey(item.getApplicantId());
 		}
-		catch (SQLException e) {
+		catch (Exception e) {
 		}
 		
 		table.add(getText(applicant.getFullName()),2,1);

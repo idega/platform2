@@ -6,8 +6,11 @@ import is.idega.idegaweb.campus.block.application.business.CampusApplicationFind
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Vector;
+
+import javax.ejb.CreateException;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -91,7 +94,7 @@ import com.idega.presentation.ui.Window;
 
       int subid = Integer.parseInt(iwc.getParameter("app_sub_id"));
 
-      List L = CampusApplicationFinder.listOfApplicationHoldersInSubject(subid,status);
+      Collection L = CampusApplicationFinder.listOfApplicationHoldersInSubject(subid,status);
 
       boolean filewritten = CampusApplicationWriter.writePDF(L,iwrb,path);
 
@@ -107,9 +110,20 @@ import com.idega.presentation.ui.Window;
 
       int cplxid = Integer.parseInt(iwc.getParameter("cmplx_id"));
 
-      List L = CampusApplicationFinder.listOfCampusApplicationHoldersInWaitinglist(typeid,cplxid);
-
-      boolean filewritten = CampusApplicationWriter.writePDF(L,iwrb,path);
+     Collection L = null;;
+	try {
+		 L = CampusApplicationFinder.listOfCampusApplicationHoldersInWaitinglist(typeid, cplxid);
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	catch (CreateException e) {
+		e.printStackTrace();
+	}
+		
+	boolean filewritten = false;
+	if(L!=null)
+       filewritten = CampusApplicationWriter.writePDF(L,iwrb,path);
 
       if(filewritten)
 

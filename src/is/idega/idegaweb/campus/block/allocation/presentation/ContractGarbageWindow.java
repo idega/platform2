@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
-
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
+
+import java.rmi.RemoteException;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -13,8 +13,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 
 
-
-
 /**
  * Title:   idegaclasses
  * Description:
@@ -24,28 +22,53 @@ import com.idega.presentation.ui.SubmitButton;
  * @version 1.0
  */
 
+
 public class ContractGarbageWindow extends CampusWindow{
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  
-  public final static String prmContractId = "cam_contract_id";
+	
+	public final static String prmContractId = "cam_contract_id";
+	
+	private int iContractId = -1;
 
-  private int iContractId = -1;
+	/*
+	  Blár litur í topp # 27324B
+	  Hvítur litur fyrir neðan það # FFFFFF
+	  Ljósblár litur í töflu # ECEEF0
+	  Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
+	*/
 
-  /*
-    Blár litur í topp # 27324B
-    Hvítur litur fyrir neðan það # FFFFFF
-    Ljósblár litur í töflu # ECEEF0
-    Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
-  */
+	public ContractGarbageWindow() {
+		setWidth(530);
+		setHeight(370);
+		setResizable(true);
+	}
 
-  public ContractGarbageWindow() {
-    setWidth(530);
-    setHeight(370);
-    setResizable(true);
-  }
+	
+	private void init(IWContext iwc) {
+		iContractId = Integer.parseInt(iwc.getParameter(prmContractId));
+	}
 
-  protected void control(IWContext iwc){
+	
+	public PresentationObject makeLinkTable(int menuNr) {
+		Table LinkTable = new Table(6, 1);
+
+		return LinkTable;
+	}
+
+	
+
+	private boolean doGarbageContract(IWContext iwc) throws RemoteException {
+
+		int id = iContractId;
+		if (id > 0) {
+			getContractService(iwc).doGarbageContract(new Integer(id));
+			return true;
+		}
+
+		return false;
+	}
+
+  protected void control(IWContext iwc)throws RemoteException{
     //   debugParameters(iwc);
   
     init(iwc);
@@ -63,20 +86,6 @@ public class ContractGarbageWindow extends CampusWindow{
     else
       add(getHeader(localize("no_contract_to_garbage","No contract to garbage")));
 
-  }
-
-  private void init(IWContext iwc){
-    iContractId = Integer.parseInt( iwc.getParameter(prmContractId));
-  }
-
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-
-  public PresentationObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(6,1);
-
-    return LinkTable;
   }
 
   private PresentationObject getEditTable(IWContext iwc){
@@ -102,19 +111,7 @@ public class ContractGarbageWindow extends CampusWindow{
     return F;
   }
 
-  private boolean doGarbageContract(IWContext iwc){
-
-      int id = iContractId;
-      if(id>0){
-        ContractBusiness.doGarbageContract(id);
-        return true;
-      }
-
-    return false;
-  }
-
-
-
+ 
   public void main(IWContext iwc) throws Exception {
     control(iwc);
   }

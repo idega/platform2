@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.29 2004/06/04 17:36:06 aron Exp $
+ * $Id: ContractBusiness.java,v 1.30 2004/06/05 07:44:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,7 +53,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.1
  */
 public  class ContractBusiness {
-
+/*
   public static String signCampusContract(IWApplicationContext iwac,int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
                 boolean newAccount,boolean newPhoneAccount,boolean newLogin ,boolean generatePasswd,IWResourceBundle iwrb,String login,String passwd){
     Contract eContract = null;
@@ -97,6 +98,7 @@ public  class ContractBusiness {
           sendMail(iUserId,login,pass,iwrb);
         }
         */
+	/*
         //System.err.println("changing contract status ");
         eContract.setStatusSigned();
         //eContract.setIsRented(true);
@@ -158,7 +160,7 @@ public  class ContractBusiness {
       while(I.hasNext()){
         Application A = (Application) I.next();
         A.setStatusSigned();
-        A.update();
+        A.store();
       }
 
     }
@@ -166,7 +168,7 @@ public  class ContractBusiness {
   
 
   public static void deleteFromWaitingList(Integer applicantID){
-    List L = WaitingListFinder.listOfWaitingList(WaitingListFinder.APPLICANT,applicantID.intValue(),0,0);
+    Collection L = WaitingListFinder.listOfWaitingList(WaitingListFinder.APPLICANT,applicantID.intValue(),0,0);
       if(L!=null){
         Iterator I = L.iterator();
         while(I.hasNext()){
@@ -179,7 +181,7 @@ public  class ContractBusiness {
         }
       }
   }
-/*
+
   public static void sendMail(int iUserId,String login,String pass,IWResourceBundle iwrb){
   	
     List lEmails = UserBusiness.listOfUserEmails(iUserId);
@@ -214,7 +216,7 @@ public  class ContractBusiness {
       }
     }
   }
-*/
+
   public static Contract endContract(int iContractId,IWTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKey(new Integer(iContractId) );
@@ -347,7 +349,7 @@ public  class ContractBusiness {
       ex.printStackTrace();
       return false;
     }
-    */
+    *//*
   }
 
   public static IWTimestamp[] getContractStampsForApartment(int apartmentId){
@@ -432,4 +434,5 @@ public  class ContractBusiness {
     }
     return true;
   }
+  */
 }

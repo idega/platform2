@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.9 2004/05/24 14:21:40 palli Exp $
+ * $Id: CampusAllocation.java,v 1.10 2004/06/05 07:36:20 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,20 +36,15 @@ import com.idega.presentation.IWContext;
  * @version 1.0
  */
 
-public class CampusAllocation extends Block{
+public class CampusAllocation extends CampusBlock{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
+
   public final static String FRAME_NAME = "cal_rightFrame";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
   public static String prmClass = "alloc_clss";
   private List objects = null;
 
    public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    SysPropsSetter.isSysPropsInMemoryElseLoad(iwc);
-
+  
     BlockMenu menu = new BlockMenu();
     menu.setClassParameterName(prmClass);
     addStandardObjects();

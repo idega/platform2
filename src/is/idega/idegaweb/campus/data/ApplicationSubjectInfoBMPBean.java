@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubjectInfoBMPBean.java,v 1.2 2004/05/24 14:21:41 palli Exp $
+ * $Id: ApplicationSubjectInfoBMPBean.java,v 1.3 2004/06/05 07:34:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,10 @@ package is.idega.idegaweb.campus.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 /**
  * Title:
@@ -21,7 +25,7 @@ import java.sql.Timestamp;
  * @version 1.0
  */
 
-public class ApplicationSubjectInfoBMPBean extends com.idega.data.GenericEntity implements ApplicationSubjectInfo {
+public class ApplicationSubjectInfoBMPBean extends com.idega.data.GenericView implements ApplicationSubjectInfo {
 
 /*
 CREATE VIEW V_APP_SUBJECT_INFO(
@@ -66,8 +70,10 @@ group by app1.app_subject_id, sub.description,app1.status;
 
   public void initializeAttributes() {
     addAttribute(SUBJECTID,"Subjed Id",true,true,Integer.class);
+    setAsPrimaryKey(SUBJECTID,true);
     addAttribute(NAME,"Name",true,true,String.class);
     addAttribute(STATUS,"status",true,true,String.class);
+    setAsPrimaryKey(STATUS,true);
     addAttribute(NUMBER,"Number",true,true,Integer.class);
     addAttribute(LASTSUBMISSION,"LASTSUBMISSION",true,true,Timestamp.class);
     addAttribute(FIRSTSUBMISSION,"FIRSTSUBMISSION",true,true,Timestamp.class);
@@ -107,5 +113,35 @@ group by app1.app_subject_id, sub.description,app1.status;
   }
   public void delete()throws SQLException{
   }
+  public Collection ejbFindAll() throws FinderException{
+	   return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+	 }
+
+	/* (non-Javadoc)
+	 * @see com.idega.data.IDOView#getCreationSQL()
+	 */
+	public String getCreationSQL() {
+		StringBuffer sql =new StringBuffer();
+		sql.append("CREATE VIEW V_APP_SUBJECT_INFO( ");
+		sql.append(" SUBJECT_ID, ");
+		sql.append(" NAME, ");
+		sql.append(" STATUS, ");
+		sql.append(" NUMBER, ");
+		sql.append(" LAST_SUBMISSION, ");
+		sql.append(" FIRST_SUBMISSION, ");
+		sql.append(" LAST_CHANGE, ");
+		sql.append(" FIRST_CHANGE) ");
+		sql.append(" AS ");
+		sql.append(" select app1.app_subject_id subject_id, sub.description name, app1.status, ");
+		sql.append(" count(app1.status) number, ");
+		sql.append(" max(app1.submitted) last_submission, ");
+		sql.append(" min(app1.submitted) first_submission, ");
+		sql.append(" max(app1.status_changed ) last_change, ");
+		sql.append(" min(app1.status_changed ) first_change ");
+		sql.append(" from app_application app1,app_subject sub ");
+		sql.append(" where app1.app_subject_id = sub.app_subject_id ");
+		sql.append(" group by app1.app_subject_id, sub.description,app1.status; ");
+		return sql.toString();
+	}
 
 }

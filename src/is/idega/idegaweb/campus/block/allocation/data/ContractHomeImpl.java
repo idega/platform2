@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class ContractHomeImpl extends com.idega.data.IDOFactory implements ContractHome
 {
@@ -75,4 +79,126 @@ public java.sql.Date getLastValidToForApartment(java.lang.Integer p0)throws java
 }
 
 
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#ejbFindAll()
+	 */
+	public Collection findAll() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByApartmentAndStatus(java.lang.Integer, java.lang.String)
+	 */
+	public Collection findByApartmentAndStatus(Integer ID, String status) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApartmentAndStatus(ID,status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByApartmentAndUser(java.lang.Integer, java.lang.Integer)
+	 */
+	public Collection findByApartmentAndUser(Integer AID, Integer UID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApartmentAndUser(AID,UID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByApartmentID(java.lang.Integer)
+	 */
+	public Collection findByApartmentID(Integer ID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApartmentID(ID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByApplicantAndRented(java.lang.Integer, java.lang.Boolean)
+	 */
+	public Collection findByApplicantAndRented(Integer ID, Boolean rented) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApplicantAndRented(ID,rented);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByApplicantID(java.lang.Integer)
+	 */
+	public Collection findByApplicantID(Integer ID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApplicantID(ID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findBySQL(java.lang.String)
+	 */
+	public Collection findBySQL(String sql) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindBySQL(sql);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByStatus(java.lang.String)
+	 */
+	public Collection findByStatus(String status) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByStatus(status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByUserAndRented(java.lang.Integer, java.lang.Boolean)
+	 */
+	public Collection findByUserAndRented(Integer ID, Boolean rented) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByUserAndRented(ID,rented);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByUserID(java.lang.Integer)
+	 */
+	public Collection findByUserID(Integer ID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByUserID(ID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByComplexAndBuildingAndApartmentName(java.lang.Integer, java.lang.Integer, java.lang.String)
+	 */
+	public Collection findByComplexAndBuildingAndApartmentName(Integer complexID, Integer buildingID,
+			String apartmentName) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByComplexAndBuildingAndApartmentName(complexID,buildingID,apartmentName);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByPersonalID(java.lang.String)
+	 */
+	public Collection findByPersonalID(String ID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByPersonalID(ID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#getUnsignedApplicants(java.lang.String)
+	 */
+	public Collection getUnsignedApplicants(String personalID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbHomeGetUnsignedApplicants(personalID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -1,22 +1,18 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
 
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
 
 import com.idega.block.application.data.Applicant;
-import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.ApartmentView;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.user.data.User;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -28,6 +24,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -60,13 +57,17 @@ public class ContractRenewWindow extends CampusWindow{
   private IWTimestamp lastDate = null;
   private Integer contractId = new Integer(-1);
   private boolean save = false;
+
+  private ContractService ContractBusiness;
+
   private String errMsg = "";
 
+
   /*
-    Blár litur í topp # 27324B
-    Hvítur litur fyrir neðan það # FFFFFF
-    Ljósblár litur í töflu # ECEEF0
-    Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
+    Bl?r litur ? topp # 27324B
+    Hv?tur litur fyrir ne?an ?a? # FFFFFF
+    Lj?sbl?r litur ? t?flu # ECEEF0
+    Auka litur ?rl?ti? dekkri (? lagi a? nota l?ka) # CBCFD3
   */
 
   public ContractRenewWindow() {
@@ -99,12 +100,14 @@ public class ContractRenewWindow extends CampusWindow{
     contractId = Integer.valueOf( iwc.getParameter(prmContractId));
    if(contractId.intValue() > 0 && !save){
       try{
-      	ContractHome cHome = getCampusService(iwc).getContractService().getContractHome();
+
+      	ContractHome cHome = getContractService(iwc).getContractHome();
       contract = cHome.findByPrimaryKey(contractId);
       applicant = contract.getApplicant();
       contractUser  = contract.getUser();
       newContracts = cHome.findByApplicantInCreatedStatus(contract.getApplicantId());
       java.sql.Date d = cHome.getLastValidToForApartment(contract.getApartmentId());
+
       lastDate = d!=null?new IWTimestamp(d):new IWTimestamp();
       }
       catch(Exception ex){
@@ -142,20 +145,28 @@ public class ContractRenewWindow extends CampusWindow{
         boolean isContractUser = contractUser.getID() == eUser.getID();
 
         if(contractUser !=null){
+
           T.add(new HiddenInput(prmContractId,contract.getPrimaryKey().toString()),1,row);
           T.add(getHeader(localize("name","Name")),1,row);
           T.add(getText(contractUser.getName()),2,row);
+
           row++;
           T.add(getHeader(localize("ssn","SocialNumber")),1,row);
           T.add(getText(applicant.getSSN()),2,row);
           row++;
+
           T.add(getHeader(localize("apartment","Apartment")),1,row);
-          T.add(getText(BuildingCacher.getApartmentString((contract.getApartmentId().intValue()))),2,row);
+          T.add(getText(contract.getApartment().getName()),2,row);
+
           row++;
 
           IWTimestamp today = IWTimestamp.RightNow();
+
+          IWTimestamp[] stamps = ContractBusiness.getContractStampsForApartment(contract.getApartmentId());
+
           IWTimestamp fromDate = new IWTimestamp(contract.getValidFrom());
           IWTimestamp toDate = new IWTimestamp(contract.getValidTo());
+
           
           T.add(getHeader(localize("status_changed","Status changed")),1,row);
           DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
@@ -235,6 +246,7 @@ public class ContractRenewWindow extends CampusWindow{
 
   private boolean doSaveContract(IWContext iwc){
     try{
+      Contract eContract = ContractBusiness.getContractHome().findByPrimaryKey(contractId);
 
       IWTimestamp from = null,to = null,move = null;
       String sfrom = iwc.getParameter("from_date");
@@ -252,15 +264,18 @@ public class ContractRenewWindow extends CampusWindow{
       	
       }
 
-      if(endOld)
-      	contract  = getCampusService(iwc).getContractService().endContract((Integer)contract.getPrimaryKey(),move,"",syncDates);
-
+      if(endOld){
+      	 ContractBusiness.endContract((Integer)contract.getPrimaryKey(),move,"",syncDates);
+      }
 
 //      if(eContract.getStatus().equals(ContractBMPBean.statusSigned) && !endOld)
 //        return false;
+
+     
       if(from !=null && to !=null)
       	if(from.isLaterThan(new IWTimestamp(contract.getValidTo()))){
-      		return ContractBusiness.makeNewContract(iwc,contractUser,applicant,contract.getApartmentId().intValue(),from,to);
+      		Contract c=  ContractBusiness.createNewContract((Integer)contractUser.getPrimaryKey(),(Integer)applicant.getPrimaryKey(),contract.getApartmentId(),from.getDate(),to.getDate());
+      		return c!=null;
       	}
       	else{
       		this.errMsg = localize("contracts_overlap","Contracts overlap");
@@ -275,18 +290,32 @@ public class ContractRenewWindow extends CampusWindow{
     return false;
   }
 
-  private void doAddEmail( int iUserId ,IWContext iwc){
+  private void doAddEmail( int iUserId ,IWContext iwc)throws RemoteException{
     String sEmail = iwc.getParameter("new_email");
-    UserBusiness.addNewUserEmail(iUserId,sEmail);
+    getUserService(iwc).addNewUserEmail(iUserId,sEmail);
+  }
+  
+  private String getApartmentString(ApartmentView A){
+  	StringBuffer S = new StringBuffer();
+  	
+  	S.append(A.getApartmentName());S.append(" ");
+  	S.append(A.getFloorName());S.append(" ");
+  	S.append(A.getBuildingName());S.append(" ");
+  	S.append(A.getComplexName());
+  	return S.toString();
   }
 
 
   public void main(IWContext iwc) throws Exception {
-    eUser = iwc.getUser();
+    eUser = iwc.getCurrentUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     //isAdmin = iwc.hasEditPermission(this);
-    isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc);
+    isLoggedOn = iwc.isLoggedOn();
+    ContractBusiness = getContractService(iwc);
     control(iwc);
   }
+  
+  
+  
 
 }

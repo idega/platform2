@@ -2,6 +2,10 @@ package is.idega.idegaweb.campus.block.application.data;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 /**
  * A specific application for the campus system.
@@ -496,4 +500,12 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity imple
     sql.append(id);
     return super.idoFindIDsBySQL(sql.toString());
   }
+  
+  public Collection ejbFindAll() throws FinderException {
+	 return super.idoFindAllIDsBySQL();
+   }
+   
+   public Collection ejbFindBySQL(String sql)throws FinderException{
+		 return super.idoFindPKsBySQL(sql);
+	   }
 }

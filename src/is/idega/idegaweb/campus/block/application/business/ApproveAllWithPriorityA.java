@@ -9,8 +9,8 @@ package is.idega.idegaweb.campus.block.application.business;
  * @version 1.0
  */
 
+import java.util.Collection;
 import java.util.Vector;
-import java.util.List;
 import java.util.Iterator;
 import java.sql.ResultSet;
 import java.sql.Connection;
@@ -18,6 +18,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.block.application.data.*;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+
 import is.idega.idegaweb.campus.block.application.data.*;
 import is.idega.idegaweb.campus.block.mailinglist.business.*;
 
@@ -59,22 +62,23 @@ public class ApproveAllWithPriorityA {
     }
 
     try {
+    MailingListService MailingListBusiness = (MailingListService) IBOLookup.getServiceInstance(iwac,MailingListService.class);
     if (v != null) {
     Iterator it2 = v.iterator();
     while (it2.hasNext()) {
       int id = ((Integer)it2.next()).intValue();
-      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+      Application A = ((ApplicationHome)com.idega.data.IDOLookup.getHome(Application.class)).findByPrimaryKey(new Integer(id));
       A.setStatus("A");
-      A.update();
-      Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
+      A.store();
+      Applicant Appli = ((ApplicantHome)com.idega.data.IDOLookup.getHome(Applicant.class)).findByPrimaryKey(new Integer(A.getApplicantId()));
 
-      MailingListBusiness.processMailEvent(iwac,new EntityHolder(Appli),LetterParser.APPROVAL);
+      MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
 
       CampusApplicationHome CAHome = null;
       CampusApplication CA = null;
 
       CAHome = (CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class);
-      java.util.Collection coll = CAHome.findAllByApplicationId(((Integer)A.getPrimaryKeyValue()).intValue());
+      java.util.Collection coll = CAHome.findAllByApplicationId(((Integer)A.getPrimaryKey()).intValue());
       if (coll != null) {
         java.util.Iterator it = coll.iterator();
         if (it.hasNext())
@@ -82,22 +86,22 @@ public class ApproveAllWithPriorityA {
       }
 
       if (CA != null) {
-        List L = CampusApplicationFinder.listOfAppliedInApplication(CA.getID());
+        Collection L = ((AppliedHome)IDOLookup.getHome(Applied.class)).findByApplicationID( ((Integer)CA.getPrimaryKey()));
         java.util.Iterator it = L.iterator();
         if (it != null) {
           while (it.hasNext()) {
             Applied applied = (Applied)it.next();
 
-            WaitingList wl = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
+            WaitingList wl = ((WaitingListHome)com.idega.data.IDOLookup.getHome(WaitingList.class)).create();
             wl.setApartmentTypeId(applied.getApartmentTypeId());
             wl.setComplexId(applied.getComplexId().intValue());
 //            wl.setType(new String("A"));
             wl.setTypeApplication();
-            wl.setApplicantId(Appli.getID());
+            wl.setApplicantId(((Integer)Appli.getPrimaryKey()).intValue());
             wl.setOrder(0);
             wl.setChoiceNumber(applied.getOrder());
-            wl.insert();
-            wl.setOrder(wl.getID());
+            wl.store();
+            wl.setOrder(((Integer)wl.getPrimaryKey()).intValue());
             String level = CA.getPriorityLevel();
             if (level.equals("A"))
               wl.setPriorityLevelA();
@@ -107,7 +111,7 @@ public class ApproveAllWithPriorityA {
               wl.setPriorityLevelC();
             else if (level.equals("D"))
               wl.setPriorityLevelD();
-            wl.update();
+            wl.store();
           }
         }
       }

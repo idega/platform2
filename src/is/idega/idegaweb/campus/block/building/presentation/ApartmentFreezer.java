@@ -1,16 +1,23 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
+
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
 import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentHome;
+import com.idega.block.building.data.ApartmentView;
+import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Floor;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -34,11 +41,11 @@ import com.idega.util.IWTimestamp;
 
 public class ApartmentFreezer extends CampusBlock {
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
+
+  private final String strAction = "fin_action";
+
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+  
 
   public String getLocalizedNameKey(){
     return "apartment_freezer";
@@ -58,7 +65,18 @@ public class ApartmentFreezer extends CampusBlock {
           T.add(makeResultTable(searchId,iwc),1,2);
         }
         else if( iwc.getParameter("apartment_id")!= null){
-          T.add(makeEditTable(Integer.parseInt(iwc.getParameter("apartment_id")),iwc),1,3);
+          try {
+			T.add(makeEditTable(Integer.valueOf(iwc.getParameter("apartment_id")),iwc),1,3);
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
         }
         else if(iwc.getParameter("freeze")!=null){
           T.add(this.freezeApartment(iwc),1,3);
@@ -92,9 +110,12 @@ public class ApartmentFreezer extends CampusBlock {
     Frame.add(Right,3,1);
 
     Table T = new Table(2,1);
+
     TextInput SearchInput = getTextInput("ap_search");
-    SubmitButton SearchButton = (SubmitButton) getSubmitButton("search","true","Search","search");
     
+    SubmitButton SearchButton = new SubmitButton("search","Search");
+    
+
     T.add(SearchInput,1,1);
     T.add(SearchButton,2,1);
     Form F = new Form();
@@ -116,39 +137,82 @@ public class ApartmentFreezer extends CampusBlock {
       Right.setCellspacing(0);
     Frame.add(Left,1,1);
     Frame.add(Right,3,1);
-    List L = BuildingFinder.searchApartment(searchName);
-    if(L != null){
 
-      int len = L.size();
+    try {
+		Collection apartmentViews =((ApartmentViewHome)IDOLookup.getHome(ApartmentViewHome.class)).findByApartmentName(searchName);
+		
+		if(apartmentViews != null &&!apartmentViews.isEmpty()){
 
-      Table T = new Table();
-      for (int i = 0; i < len; i++) {
-        Apartment A = (Apartment) L.get(i);
-        Floor F = BuildingCacher.getFloor( A.getFloorId());
-        Building B = BuildingCacher.getBuilding( F.getBuildingId());
-        Link l = new Link(A.getName());
-        l.addParameter("apartment_id",A.getID());
-        T.add(l,1,i+1);
-        T.add(getText(F.getName()),2,i+1);
-        T.add(getText(B.getName()),3,i+1);
-        if(A.getUnavailableUntil()!=null)
-          T.add(getText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,i+1);
-        else
-          T.add(getText("Unfrozen"),4,i+1);
-      }
-      Right.add(T);
-    }
+		 
+		  Table T = new Table();
+		  int row = 1;
+		  ApartmentHome aph = (ApartmentHome)IDOLookup.getHome(Apartment.class);
+		 for (Iterator iter = apartmentViews.iterator(); iter.hasNext();) {
+			ApartmentView apView = (ApartmentView) iter.next();
+			Apartment ap =aph.findByPrimaryKey(apView.getApartmentID());
+		   
+		    Link l = new Link(apView.getApartmentName());
+		    l.addParameter("apartment_id",apView.getApartmentID().toString());
+		    T.add(l,1,row);
+		    T.add(getText(apView.getFloorName()),2,row);
+		    T.add(getText(apView.getBuildingName()),3,row);
+		    if(ap.getUnavailableUntil()!=null)
+		      T.add(getText((new IWTimestamp(ap.getUnavailableUntil())).getLocaleDate(iwc)),4,row);
+		    else
+		      T.add(getText("Unfrozen"),4,row);
+		    row++;
+		  }
+		  Right.add(T);
+		}
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+
+    try {
+		Collection L = getBuildingService(iwc).getApartmentHome().findByName(searchName);
+		if(L != null){
+
+		  Table T = new Table();
+		  int row = 1;
+		  for (Iterator iter = L.iterator(); iter.hasNext();) {
+			Apartment A = (Apartment) iter.next();
+		    Floor F = A.getFloor();
+		    Building B = F.getBuilding();
+		    Link l = new Link(A.getName());
+		    l.addParameter("apartment_id",A.getPrimaryKey().toString());
+		    T.add(l,1,row);
+		    T.add(getText(F.getName()),2,row);
+		    T.add(getText(B.getName()),3,row);
+		    if(A.getUnavailableUntil()!=null)
+		      T.add(getText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,row);
+		    else
+		      T.add(getText("Unfrozen"),4,row);
+		    row++;
+		  }
+		  Right.add(T);
+		}
+	} catch (RemoteException e1) {
+		e1.printStackTrace();
+	} catch (EJBException e1) {
+		e1.printStackTrace();
+	} catch (FinderException e1) {
+		e1.printStackTrace();
+	}
+
     return Frame;
   }
 
-  private PresentationObject makeEditTable(int id,IWContext iwc){
+  private PresentationObject makeEditTable(Integer id,IWContext iwc)throws RemoteException,FinderException{
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
-    Apartment A = BuildingCacher.getApartment(id);
-    Floor F = BuildingCacher.getFloor( A.getFloorId());
-    Building B = BuildingCacher.getBuilding( F.getBuildingId());
-
+    ApartmentView aView = ((ApartmentViewHome)IDOLookup.getHome(ApartmentView.class)).findByPrimaryKey(id);
+    Apartment A =((ApartmentHome)IDOLookup.getHome(Apartment.class)).findByPrimaryKey(id);
+    
     DateInput DI = new DateInput("frozen_date",true);
     DI.setIWContext(iwc);
     if(A.getUnavailableUntil()!=null)
@@ -158,12 +222,16 @@ public class ApartmentFreezer extends CampusBlock {
     
     HiddenInput hid = new HiddenInput("app_id",String.valueOf(id));
     SubmitButton sb = new SubmitButton("freeze","Freeze");
-      
+
+   
+
     Form myForm = new Form();
     Table T = new Table();
-    T.add(getText(A.getName()),1,1);
-    T.add(getText(F.getName()),2,1);
-    T.add(getText(B.getName()),3,1);
+
+    T.add(getText(aView.getApartmentName()),1,1);
+    T.add(getText(aView.getFloorName()),2,1);
+    T.add(getText(aView.getBuildingName()),3,1);
+
     T.add(DI,4,1);
     T.add(sb,5,1);
     T.add(hid,5,1);
@@ -179,11 +247,11 @@ public class ApartmentFreezer extends CampusBlock {
 
     try{
       if(frozenDate != null && frozenDate.length()==10){
-      int id = Integer.parseInt(appId);
-      Apartment A = BuildingCacher.getApartment(id);
+      Integer id = Integer.valueOf(appId);
+      Apartment A = ((ApartmentHome)IDOLookup.getHome(Apartment.class)).findByPrimaryKey(id);
       IWTimestamp iT = new IWTimestamp(frozenDate);
       A.setUnavailableUntil(iT.getSQLDate());
-      A.update();
+      A.store();
       }
     }
     catch(Exception e){}
@@ -196,8 +264,6 @@ public class ApartmentFreezer extends CampusBlock {
   }
 
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);

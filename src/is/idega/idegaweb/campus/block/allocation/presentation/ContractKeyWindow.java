@@ -2,9 +2,33 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.presentation.Edit;
+
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentView;
+import com.idega.block.building.data.ApartmentViewHome;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.business.IBOLookup;
+import com.idega.core.data.GenericGroup;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 import is.idega.idegaweb.campus.presentation.CampusWindow;
+
 
 import java.util.List;
 
@@ -15,10 +39,15 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
 
-import com.idega.core.user.data.User;
+
+
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DataTable;
@@ -26,6 +55,21 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+
+import com.idega.presentation.ui.Window;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
+
 import com.idega.util.IWTimestamp;
 
 /**
@@ -44,10 +88,10 @@ public class ContractKeyWindow extends CampusWindow{
   public static String prmContractId = "contract_id";
 
   /*
-    Blár litur í topp # 27324B
-    Hvítur litur fyrir neðan það # FFFFFF
-    Ljósblár litur í töflu # ECEEF0
-    Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
+    Bl?r litur ? topp # 27324B
+    Hv?tur litur fyrir ne?an ?a? # FFFFFF
+    Lj?sbl?r litur ? t?flu # ECEEF0
+    Auka litur ?rl?ti? dekkri (? lagi a? nota l?ka) # CBCFD3
   */
 
   public ContractKeyWindow() {
@@ -57,7 +101,7 @@ public class ContractKeyWindow extends CampusWindow{
     setResizable(true);
   }
 
-  protected void control(IWContext iwc){
+  protected void control(IWContext iwc)throws RemoteException{
 
     if(iwc.isLoggedOn()){
       //add(iwrb.getLocalizedString("manual","Instructions"));
@@ -87,13 +131,15 @@ public class ContractKeyWindow extends CampusWindow{
   private PresentationObject getSignatureTable(IWContext iwc){
     int iContractId = Integer.parseInt( iwc.getParameter(prmContractId));
     try {
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKey(new Integer(iContractId));
-      List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),true);
+
+      ContractHome contractHome = (ContractHome) IDOLookup.getHome(Contract.class);
+      Contract eContract =contractHome.findByPrimaryKey(new Integer(iContractId));
+      Collection listOfContracts = contractHome.findByApartmentAndRented(eContract.getApartmentId(),new Boolean(true));
       User eUser =eContract.getUser();
       Apartment apartment = eContract.getApartment();
       IWTimestamp from = new IWTimestamp(eContract.getValidFrom());
       IWTimestamp to = new IWTimestamp(eContract.getValidTo());
-      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+      Applicant eApplicant = ((ApplicantHome)com.idega.data.IDOLookup.getHome(Applicant.class)).findByPrimaryKey(eContract.getApplicantId());
       boolean apartmentReturn = eContract.getIsRented();
       DataTable T = new DataTable();
       T.setWidth("100%");
@@ -129,8 +175,10 @@ public class ContractKeyWindow extends CampusWindow{
       T.add(getHeader(localize("ssn","SocialNumber")),1,row);
       T.add(getText(eApplicant.getSSN()),2,row);
       row++;
+
       T.add(getHeader(localize("apartment","Apartment")),1,row);
       T.add(getText(getApartmentString(apartment)),2,row);
+
       row++;
       T.add(getHeader(localize("valid_from","Valid from")),1,row);
       T.add(getText(from.getLocaleDate(iwc)),2,row);
@@ -167,7 +215,9 @@ public class ContractKeyWindow extends CampusWindow{
       row++;
       boolean canSign = true;
       if(listOfContracts != null && !listOfContracts.isEmpty()){
-        Contract C = (Contract) listOfContracts.get(0);
+
+        Contract C = (Contract) listOfContracts.iterator().next();
+       
         if(!C.getPrimaryKey().toString().equals(eContract.getPrimaryKey().toString()))
           canSign = false;
       }
@@ -181,33 +231,48 @@ public class ContractKeyWindow extends CampusWindow{
     }
   }
 
-  private void doContract(IWContext iwc){
+  private void doContract(IWContext iwc)throws RemoteException{
 
-    int id = Integer.parseInt(iwc.getParameter(prmContractId));
+    Integer id = Integer.valueOf(iwc.getParameter(prmContractId));
     if(iwc.isParameterSet("val")){
       String val = iwc.getParameter("val");
       if(val.equals("return")){
-        ContractBusiness.returnKey(iwc,id);
+        //ContractBusiness.returnKey(iwc,id);
+      	getContractService(iwc).returnKey(iwc,id);
       }
       else if(val.equals("deliver")){
       	String from = iwc.getParameter("deliveredDate");
       	IWTimestamp fromStamp = new IWTimestamp(from);
 //        ContractBusiness.deliverKey(iwc,id);
-				ContractBusiness.deliverKey(iwc,id,fromStamp.getTimestamp());
+				//ContractBusiness.deliverKey(iwc,id,fromStamp.getTimestamp());
+      	getContractService(iwc).deliverKey(id,fromStamp.getTimestamp());
       }
     }
   }
 
+
+  private void doAddEmail( int iUserId ,IWContext iwc){
+    String sEmail = iwc.getParameter("new_email");
+   try {
+		 UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc,UserBusiness.class);
+		  ub.addNewUserEmail(iUserId,sEmail);
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	}
+
   private String getApartmentString(Apartment A){
     StringBuffer S = new StringBuffer();
-    Floor F = BuildingCacher.getFloor(A.getFloorId());
-    Building B = BuildingCacher.getBuilding(F.getBuildingId());
-    Complex C = BuildingCacher.getComplex(B.getComplexId());
+    Floor F = A.getFloor();
+    Building B = F.getBuilding();
+    Complex C = B.getComplex();
     S.append(A.getName());S.append(" ");
     S.append(F.getName());S.append(" ");
     S.append(B.getName());S.append(" ");
     S.append(C.getName());
     return S.toString();
+
   }
 
   private String getStatus(String status){
@@ -224,7 +289,7 @@ public class ContractKeyWindow extends CampusWindow{
     return r;
   }
 
-  public void main(IWContext iwc){
+  public void main(IWContext iwc)throws RemoteException{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     control(iwc);
   }

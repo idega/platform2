@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.15 2004/06/04 17:36:43 aron Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.16 2004/06/05 07:43:04 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,25 +9,32 @@
  */
 package is.idega.idegaweb.campus.block.application.business;
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
+import com.idega.block.contract.business.ContractService;
+import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.user.data.User;
-import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
+
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -38,35 +45,35 @@ public class CampusReferenceNumberInfoHelper {
     Applicant applicant = (Applicant)holder.getApplicant();
     applicant.setResidencePhone(phone);
     try {
-      applicant.update();
+      applicant.store();
     }
-    catch(SQLException e) {
+    catch(Exception e) {
       e.printStackTrace();
     }
 
     CampusApplication application = holder.getCampusApplication();
     application.setEmail(email);
     try {
-      application.update();
+      application.store();
     }
-    catch(SQLException e) {
+    catch(Exception e) {
       e.printStackTrace();
     }
   }
 
   public static boolean stayOnWaitingList(int waitingListId, boolean stayOnList) {
     try {
-      WaitingList li = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).findByPrimaryKeyLegacy(waitingListId);
+      WaitingList li = ((WaitingListHome)IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(new Integer(waitingListId));
       if (stayOnList) {
         li.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
         li.setLastConfirmationDate(IWTimestamp.getTimestampRightNow());
       }
       else
         li.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.YES);
-      li.update();
+      li.store();
       return(true);
     }
-    catch(SQLException e) {
+    catch(Exception e) {
       e.printStackTrace();
       return(false);
     }
@@ -78,20 +85,25 @@ public class CampusReferenceNumberInfoHelper {
 
 
     try {
-      Applicant applicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
-      List li = EntityFinder.findAllByColumn(applicant,com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(),ref);
+      ApplicantHome aHome = (ApplicantHome) IDOLookup.getHome(Applicant.class);
+      Applicant applicant = aHome.create();
+      Collection li = aHome.findBySSN(ref);
       if (li != null && !li.isEmpty()) {
         Iterator it = li.iterator();
-        List contracts = null;
+        Collection contracts = null;
         Contract contract = null;
+        ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
         while (it.hasNext()) {
           applicant = (Applicant)it.next();
-          contracts = ContractFinder.findAllContractsByApplicant(applicant.getID());
+          
+          contracts = cHome.findByApplicant((Integer)applicant.getPrimaryKey());
           if (contracts != null && !contracts.isEmpty()) {
           	Iterator it2 = contracts.iterator();
           	while (it2.hasNext()) {
           		contract = (Contract)it2.next();
-		          //System.out.println("Contract id = " + contract.getID());
+
+		          System.out.println("Contract id = " + contract.getPrimaryKey());
+
 		          
   	  	      if (contract != null) {
     		        if (contract.getIsRented())
@@ -133,4 +145,12 @@ public class CampusReferenceNumberInfoHelper {
 
     return(l);
   }
+  
+	public ContractService getContractService(IWContext iwc) throws RemoteException{
+		return (ContractService) IBOLookup.getServiceInstance(iwc.getApplicationContext(),ContractService.class);
+	}
+	  
+	public ApplicationService getApplicationService(IWContext iwc) throws RemoteException{
+		return (ApplicationService) IBOLookup.getServiceInstance(iwc.getApplicationContext(),ApplicationService.class);
+	}
 }

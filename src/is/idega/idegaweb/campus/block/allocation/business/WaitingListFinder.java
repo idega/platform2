@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListFinder.java,v 1.3 2002/08/06 11:27:50 palli Exp $
+ * $Id: WaitingListFinder.java,v 1.4 2004/06/05 07:44:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,15 +11,21 @@ package is.idega.idegaweb.campus.block.allocation.business;
 
 import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
+
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 import com.idega.util.database.ConnectionBroker;
 
 /**
@@ -29,22 +35,12 @@ import com.idega.util.database.ConnectionBroker;
 public abstract class WaitingListFinder {
 	public final static int APPLICANT = 1, APARTMENTTYPE = 2, COMPLEX = 4;
 
-	public static List listOfWaitinglist() {
+	
+	public static Collection listOfWaitingList(int fields, int iApplicantId, int iTypeId, int iComplexId) {
 		try {
-			return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.WaitingListHome) com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy());
+			return getWaitingListHome().findBySQL(getSQL(fields, iApplicantId, iTypeId, iComplexId));
 		}
-		catch (SQLException e) {
-			e.printStackTrace();
-
-			return null;
-		}
-	}
-
-	public static List listOfWaitingList(int fields, int iApplicantId, int iTypeId, int iComplexId) {
-		try {
-			return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.WaitingListHome) com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy(), getSQL(fields, iApplicantId, iTypeId, iComplexId));
-		}
-		catch (SQLException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 
 			return null;
@@ -86,7 +82,12 @@ public abstract class WaitingListFinder {
 		return sql.toString();
 	}
 
-	public static Hashtable getAllocationView() {
+	
+	/**
+	 * Gets a Map of AllocationView objects with apartment category as key
+	 * @return map of AllocationView objects
+	 */
+	public static Map getAllocationView() {
 		Hashtable table = new Hashtable();
 		Connection Conn = null;
 
@@ -131,5 +132,9 @@ public abstract class WaitingListFinder {
 		}
 
 		return table;
+	}
+	
+	public static WaitingListHome getWaitingListHome()throws RemoteException{
+		return (WaitingListHome) IDOLookup.getHome(WaitingList.class);
 	}
 }

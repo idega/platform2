@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.8 2004/06/04 17:32:48 aron Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.9 2004/06/05 07:37:34 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,6 @@
 package is.idega.idegaweb.campus.block.request.presentation;
 
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
@@ -21,16 +20,16 @@ import is.idega.idegaweb.campus.presentation.CampusWindow;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.Building;
-import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.ApartmentView;
+import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
@@ -70,6 +69,7 @@ public class RequestAdminViewDetails extends CampusWindow {
   protected final static String REQUEST_REPAIR = "R";
   protected final static String REQUEST_COMPUTER = "C";
 
+
   private boolean _isAdmin;
   private boolean _isLoggedOn;
 
@@ -82,18 +82,12 @@ public class RequestAdminViewDetails extends CampusWindow {
     setResizable(true);
   }
 
-  /**
-   *
-   */
-  public String getBundleIdentifier() {
-    return IW_BUNDLE_IDENTIFIER;
-  }
+ 
 
   /**
    *
    */
   protected void control(IWContext iwc) {
-   
     if (_isAdmin || _isLoggedOn){
 
       if (iwc.isParameterSet(REQUESTADMIN_SEND)) {
@@ -109,7 +103,8 @@ public class RequestAdminViewDetails extends CampusWindow {
       addMainForm(iwc);
     }
     else
-      add(getText(localize("access_denied","Access denied")));
+      add(getNoAccessObject(iwc));
+
   }
 
   /**
@@ -170,21 +165,28 @@ public class RequestAdminViewDetails extends CampusWindow {
 
     if (request != null) {
       Contract contract = null;
-      Apartment apartment = null;
-      Floor floor = null;
-      Building building = null;
+      ApartmentView apartmentView = null;
+      
       Applicant applicant = null;
       try {
-        contract = ContractFinder.findByUser(request.getUserId());
+      	Collection contracts = getContractService(iwc).getContractHome().findByUserAndRented(new Integer(request.getUserId()),Boolean.TRUE);
+        contract = (Contract)contracts.iterator().next();
       }
       catch(Exception e) {
         contract = null;
       }
       if (contract != null) {
-        apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-        floor = BuildingCacher.getFloor(apartment.getFloorId());
-        building = BuildingCacher.getBuilding(floor.getBuildingId());
-        applicant = ContractFinder.getApplicant(contract);
+        try {
+			apartmentView =((ApartmentViewHome)IDOLookup.getHome(ApartmentView.class)).findByPrimaryKey(contract.getApartmentId());
+		}
+		catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+     
+        applicant = contract.getApplicant();
       }
 
       CampusApplication campusApplication = null;
@@ -195,10 +197,10 @@ public class RequestAdminViewDetails extends CampusWindow {
         campusApplication = null;
       }
 
-      if (building != null)
-        street = building.getName();
-      if (apartment != null)
-        aprt = apartment.getName();
+      if (apartmentView != null){
+        street = apartmentView.getApartmentName();
+        aprt = apartmentView.getBuildingName();
+       }
       if (applicant != null) {
         name = applicant.getFullName();
         telephone = applicant.getResidencePhone();
@@ -214,20 +216,29 @@ public class RequestAdminViewDetails extends CampusWindow {
     form.add(data);
 
     int row = 1;
-    data.add(Edit.formatText(localize(REQUEST_STREET,"Götuheiti")),1,row);
-    data.add(Edit.formatText(street),2,row);
+
+    data.add(getHeader(localize(REQUEST_STREET,"Götuheiti")),1,row);
+    data.add(getText(street),2,row);
+
     row++;
-    data.add(Edit.formatText(localize(REQUEST_APRT,"Herb./íbúð")),1,row);
-    data.add(Edit.formatText(aprt),2,row);
+    data.add(getHeader(localize(REQUEST_APRT,"Herb./íbúð")),1,row);
+    data.add(getText(aprt),2,row);
+
     row++;
-    data.add(Edit.formatText(localize(REQUEST_NAME,"Nafn")),1,row);
-    data.add(Edit.formatText(name),2,row);
+
+    data.add(getHeader(localize(REQUEST_NAME,"Nafn")),1,row);
+    data.add(getText(name),2,row);
+
     row++;
-    data.add(Edit.formatText(localize(REQUEST_TEL,"Símanúmer")),1,row);
-    data.add(Edit.formatText(telephone),2,row);
+
+    data.add(getHeader(localize(REQUEST_TEL,"Símanúmer")),1,row);
+    data.add(getText(telephone),2,row);
+
     row++;
-    data.add(Edit.formatText(localize(REQUEST_EMAIL,"email")),1,row);
-    data.add(Edit.formatText(email),2,row);
+
+    data.add(getHeader(localize(REQUEST_EMAIL,"email")),1,row);
+    data.add(getText(email),2,row);
+
     row++;
 
     if (type.equals(REQUEST_REPAIR))
@@ -242,7 +253,9 @@ public class RequestAdminViewDetails extends CampusWindow {
    *
    */
   protected void addRepair(DataTable data, int row, Request request) {
-    data.add(Edit.formatText(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
+
+    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
+
     Timestamp dateFailure = null;
     String comment = null;
     String special = null;
@@ -256,26 +269,32 @@ public class RequestAdminViewDetails extends CampusWindow {
     catch(Exception e) {
       e.printStackTrace();
     }
-    data.add(Edit.formatText(dateFailure.toString()),2,row);
+    data.add(getHeader(dateFailure.toString()),2,row);
     row++;
-    data.add(Edit.formatText(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    data.add(Edit.formatText(comment),2,row);
+
+    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
+    data.add(getHeader(comment),2,row);
+
     row++;
     RadioButton b1 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
     b1.setDisabled(true);
     if (special == null || special.equals(""))
       b1.setSelected();
     data.add(b1 ,1,row);
-    data.add(Edit.formatText(localize(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
+
+    data.add(getHeader(localize(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
+
     row++;
     RadioButton b2 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
     b2.setDisabled(true);
     if (special != null && !special.equals(""))
       b2.setSelected();
     data.add(b2,1,row);
-    data.add(Edit.formatText(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+
+    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+
     if (special != null)
-      data.add(Edit.formatText(special),2,row);
+      data.add(getHeader(special),2,row);
     row++;
     DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
@@ -288,7 +307,9 @@ public class RequestAdminViewDetails extends CampusWindow {
     Edit.setStyle(status);
     if (requestStatus != null)
       status.setSelectedElement(requestStatus);
-    data.add(Edit.formatText(localize(REQUEST_STATUS,"Staða")),1,row);
+
+    data.add(getHeader(localize(REQUEST_STATUS,"Staða")),1,row);
+
     data.add(status,2,row);
     row++;
   }
@@ -297,7 +318,8 @@ public class RequestAdminViewDetails extends CampusWindow {
    *
    */
   protected void addComputer(DataTable data, int row, Request request) {
-    data.add(Edit.formatText(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
+
+    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
     Timestamp dateFailure = null;
     String comment = null;
     String special = null;
@@ -311,19 +333,22 @@ public class RequestAdminViewDetails extends CampusWindow {
     catch(Exception e) {
       e.printStackTrace();
     }
-    data.add(Edit.formatText(dateFailure.toString()),2,row);
+    data.add(getHeader(dateFailure.toString()),2,row);
     row++;
-    data.add(Edit.formatText(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    data.add(Edit.formatText(comment),2,row);
+
+    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
+    data.add(getHeader(comment),2,row);
     row++;
     RadioButton b2 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
     b2.setDisabled(true);
     if (special != null && !special.equals(""))
       b2.setSelected();
     data.add(b2,1,row);
-    data.add(Edit.formatText(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+
+    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+
     if (special != null)
-      data.add(Edit.formatText(special),2,row);
+      data.add(getHeader(special),2,row);
     row++;
     DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
 
@@ -336,7 +361,8 @@ public class RequestAdminViewDetails extends CampusWindow {
     Edit.setStyle(status);
     if (requestStatus != null)
       status.setSelectedElement(requestStatus);
-    data.add(Edit.formatText(localize(REQUEST_STATUS,"Staða")),1,row);
+
+    data.add(getHeader(localize(REQUEST_STATUS,"Staða")),1,row);
     data.add(status,2,row);
     row++;
   }

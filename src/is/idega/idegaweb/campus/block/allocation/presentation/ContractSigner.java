@@ -1,9 +1,5 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-
-
-
-
 import com.idega.presentation.PresentationObjectContainer;
 
 /**
@@ -503,5 +499,5 @@ public class ContractSigner extends PresentationObjectContainer{
 
   }
 */
-}
 
+}

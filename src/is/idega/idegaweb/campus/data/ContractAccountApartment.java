@@ -1,24 +1,26 @@
 package is.idega.idegaweb.campus.data;
 
+import javax.ejb.*;
 
-public interface ContractAccountApartment extends com.idega.data.IDOEntity
+public interface ContractAccountApartment extends com.idega.data.IDOLegacyEntity
 {
- public java.lang.Integer getAccountId();
+ public void delete()throws java.sql.SQLException;
+ public int getAccountId();
  public java.lang.String getAccountName();
- public java.lang.Integer getAccountType();
- public java.lang.Integer getApartmentCategoryId();
- public java.lang.Integer getApartmentId();
- public java.lang.Integer getApartmentTypeId();
- public java.lang.Integer getBalance();
- public java.lang.Integer getBuildingId();
- public java.lang.Integer getComplexId();
- public java.lang.Integer getContractId();
+ public int getAccountType();
+ public int getApartmentCategoryId();
+ public int getApartmentId();
+ public int getApartmentTypeId();
+ public int getBalance();
+ public int getBuildingId();
+ public int getComplexId();
+ public int getContractId();
  public java.sql.Timestamp getDeliverTime();
- public java.lang.Integer getFloorId();
+ public int getFloorId();
  public boolean getIsRented();
  public java.sql.Timestamp getReturnTime();
  public java.lang.String getStatus();
- public java.lang.Integer getUserId();
+ public int getUserId();
  public java.sql.Date getValidFrom();
  public java.sql.Date getValidTo();
 }

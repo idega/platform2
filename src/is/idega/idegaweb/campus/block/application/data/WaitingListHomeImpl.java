@@ -13,24 +13,6 @@ public class WaitingListHomeImpl extends com.idega.data.IDOFactory implements Wa
  }
 
 
- public WaitingList createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
-
-public java.util.Collection findByApartmentTypeAndComplexForTransferType(int p0,int p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindByApartmentTypeAndComplexForTransferType(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findByApartmentTypeAndComplex(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindByApartmentTypeAndComplex(p0,p1);
@@ -45,6 +27,27 @@ public java.util.Collection findByApartmentTypeAndComplexForApplicationType(int 
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByApartmentTypeAndComplexForTransferType(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindByApartmentTypeAndComplexForTransferType(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByApplicantID(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindByApplicantID(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindBySQL(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findNextForTransferByApartmentTypeAndComplex(int p0,int p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindNextForTransferByApartmentTypeAndComplex(p0,p1,p2);
@@ -54,22 +57,6 @@ public java.util.Collection findNextForTransferByApartmentTypeAndComplex(int p0,
 
  public WaitingList findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WaitingList) super.findByPrimaryKeyIDO(pk);
- }
-
-
- public WaitingList findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (WaitingList) super.findByPrimaryKeyIDO(id);
- }
-
-
- public WaitingList findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
  }
 
 

@@ -85,14 +85,14 @@ public class SysPropsSetter extends CampusBlock{
 	    
 	    DropdownMenu financeCategories = new DropdownMenu("finance_category");
 	    financeCategories.addMenuElement("-1",localize("category","Category"));
-	    try {
+	   /* try {
 			Collection coll = CategoryBusiness.getInstance().getCategoryHome().findRootsByType(Finance.CATEGORY_TYPE);
 			financeCategories.addMenuElements(coll);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
-		}
+		}*/
 	    int row = 1;
 	    /*
 	    T.add(Edit.formatText(iwrb.getLocalizedString("contract_date","Contract date")),1,row);

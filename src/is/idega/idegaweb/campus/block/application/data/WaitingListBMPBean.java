@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.10 2004/05/24 14:21:41 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.11 2004/06/05 07:42:01 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,9 @@
  */
 package is.idega.idegaweb.campus.block.application.data;
 
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -20,7 +23,7 @@ import javax.ejb.FinderException;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class WaitingListBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.application.data.WaitingList {
+public class WaitingListBMPBean extends GenericEntity implements WaitingList {
   private static final String ENTITY_NAME = "cam_waiting_list";
   private static final String COMPLEX_ID = "bu_complex_id";
   private static final String APARTMENT_TYPE_ID = "bu_apartment_type_id";
@@ -382,4 +385,22 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
 
 		return super.idoFindIDsBySQL(sql.toString());
 	}  
+	
+	public Collection ejbFindByApplicantID(Integer ID)throws FinderException{
+		String[] orderby = {getPriorityColumnName(),getOrderColumnName()		};
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()).appendOrderBy(orderby));
+	}
+	
+	public Collection ejbFindBySQL(String sql)throws FinderException{
+		return super.idoFindPKsBySQL(sql);
+	}
+	
+	public int getCountOfRecords(String sql) throws FinderException{
+		try {
+			return super.getIntTableValue(sql);
+		}
+		catch (SQLException e) {
+			throw new FinderException(e.getMessage());
+		}
+	}
 }

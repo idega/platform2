@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.24 2004/06/04 17:37:14 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.25 2004/06/05 07:41:34 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,21 @@
  *
  */
 package is.idega.idegaweb.campus.block.application.presentation;
+
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
+import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
+import is.idega.idegaweb.campus.presentation.Edit;
+
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
@@ -18,18 +33,21 @@ import java.util.List;
 import java.util.Vector;
 
 import com.idega.block.application.business.ApplicationFinder;
+
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.presentation.ApartmentTypeViewer;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
@@ -77,78 +95,100 @@ public class CampusApplicationForm extends ApplicationForm {
 	 *
 	 */
 	protected void control(IWContext iwc) {
-		//debugParameters(iwc);
-		_iwb = getBundle(iwc);
-		List wrongParameters = new Vector();
-		String statusString = iwc.getParameter(APP_STATUS);
-		int status = 0;
+		try {
+			//debugParameters(iwc);
+			_iwb = getBundle(iwc);
+			List wrongParameters = new Vector();
+			String statusString = iwc.getParameter(APP_STATUS);
+			int status = 0;
 
-		if (statusString == null) {
-			status = _statusEnteringPage;
-		}
-		else {
-			try {
-				status = Integer.parseInt(statusString);
+			if (statusString == null) {
+				status = _statusEnteringPage;
 			}
-			catch (NumberFormatException e) {
-			}
-		}
-
-		if (status == _statusEnteringPage) {
-			List subjects = ApplicationFinder.listOfNonExpiredSubjects();
-			if (subjects == null) {
-				doSubjectError();
-				return;
+			else {
+				try {
+					status = Integer.parseInt(statusString);
+				}
+				catch (NumberFormatException e) {
+				}
 			}
 
-			addStage(1);
-			doGeneralInformation(iwc, wrongParameters);
-		}
-		else if (status == _statusGeneralInfo) {
-			wrongParameters = checkGeneral(iwc);
-			if (wrongParameters.size() > 0) {
+			if (status == _statusEnteringPage) {
+				Collection subjects = null;
+				try {
+					subjects = getApplicationService(iwc).getSubjectHome().findNonExpired();
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+				if (subjects == null) {
+					doSubjectError();
+					return;
+				}
+
 				addStage(1);
 				doGeneralInformation(iwc, wrongParameters);
 			}
-			else {
-				addStage(2);
-				CampusApplicationFormHelper.saveApplicantInformation(iwc);
-				doCampusInformation(iwc, wrongParameters);
+			else if (status == _statusGeneralInfo) {
+				wrongParameters = checkGeneral(iwc);
+				if (wrongParameters.size() > 0) {
+					addStage(1);
+					doGeneralInformation(iwc, wrongParameters);
+				}
+				else {
+					addStage(2);
+					try {
+						CampusApplicationFormHelper.saveApplicantInformation(iwc);
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					catch (CreateException e) {
+						e.printStackTrace();
+					}
+					doCampusInformation(iwc, wrongParameters);
+				}
 			}
-		}
-		else if (status == _statusCampusInfo) {
-			wrongParameters = checkCampusInfo(iwc);
-			if (wrongParameters.size() > 0) {
-				addStage(2);
-				doCampusInformation(iwc, wrongParameters);
+			else if (status == _statusCampusInfo) {
+				wrongParameters = checkCampusInfo(iwc);
+				if (wrongParameters.size() > 0) {
+					addStage(2);
+					doCampusInformation(iwc, wrongParameters);
+				}
+				else {
+					addStage(3);
+					CampusApplicationFormHelper.saveSubject(iwc);
+					CampusApplicationFormHelper.saveCampusInformation(iwc);
+					doSelectAppliedFor(iwc, wrongParameters);
+				}
 			}
-			else {
-				addStage(3);
-				CampusApplicationFormHelper.saveSubject(iwc);
-				CampusApplicationFormHelper.saveCampusInformation(iwc);
-				doSelectAppliedFor(iwc, wrongParameters);
-			}
-		}
-		else if (status == _statusSelectingApartmentTypes) {
-			addStage(3);
-			checkAparmentTypesSelected(iwc);
-			doSelectAppliedFor(iwc, wrongParameters);
-		}
-		else if (status == _statusAppliedFor) {
-			wrongParameters = checkApplied(iwc);
-			if (wrongParameters.size() > 0) {
+			else if (status == _statusSelectingApartmentTypes) {
 				addStage(3);
 				checkAparmentTypesSelected(iwc);
 				doSelectAppliedFor(iwc, wrongParameters);
 			}
-			else {
-				CampusApplicationFormHelper.saveAppliedFor(iwc);
-				String cypher = CampusApplicationFormHelper.saveDataToDB(iwc);
-				if (cypher != null)
-					doDone(cypher);
-				else
-					doError();
+			else if (status == _statusAppliedFor) {
+				wrongParameters = checkApplied(iwc);
+				if (wrongParameters.size() > 0) {
+					addStage(3);
+					checkAparmentTypesSelected(iwc);
+					doSelectAppliedFor(iwc, wrongParameters);
+				}
+				else {
+					CampusApplicationFormHelper.saveAppliedFor(iwc);
+					String cypher = CampusApplicationFormHelper.saveDataToDB(iwc);
+					if (cypher != null)
+						doDone(cypher);
+					else
+						doError();
+				}
 			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -157,142 +197,154 @@ public class CampusApplicationForm extends ApplicationForm {
 	/*
 	 *
 	 */
-	protected void doSelectAppliedFor(IWContext iwc, List wrongParameters) {
-		int id;
+	protected void doSelectAppliedFor(IWContext iwc, List wrongParameters) throws RemoteException {
+		Integer categoryID;
 		String aprtCat = (String) iwc.getSessionAttribute("aprtCat");
 		try {
-			id = Integer.parseInt(aprtCat);
+			categoryID = Integer.valueOf(aprtCat);
 		}
 		catch (Exception e) {
-			id = 0;
+			categoryID = null;
 		}
-
-		java.util.Vector vAprtType = BuildingFinder.getApartmentTypesComplexForCategory(id);
-		DropdownMenu aprtType = new DropdownMenu("aprtType");
-		if (iwc.isParameterSet("aprtType"))
-			aprtType.setSelectedElement(iwc.getParameter("aprtType"));
 		
-		DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
-		if (iwc.isParameterSet("aprtType2"))
-			aprtType2.setSelectedElement(iwc.getParameter("aprtType2"));
+		try {
+			Collection typeHelpers = getApplicationService(iwc).getComplexTypeHelpersByCategory(categoryID);
+			//Collection vAprtType = ((BuildingService)IDOLookup.getHome(ApartmentType.class)).findByCategory(categoryID);
+			//java.util.Vector vAprtType = BuildingFinder.getApartmentTypesComplexForCategory(id);
+			DropdownMenu aprtType = new DropdownMenu("aprtType");
+			if (iwc.isParameterSet("aprtType"))
+				aprtType.setSelectedElement(iwc.getParameter("aprtType"));
+			Edit.setStyle(aprtType);
+			DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
+			if (iwc.isParameterSet("aprtType2"))
+				aprtType2.setSelectedElement(iwc.getParameter("aprtType2"));
+			Edit.setStyle(aprtType2);
+			DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
+			if (iwc.isParameterSet("aprtType3"))
+				aprtType3.setSelectedElement(iwc.getParameter("aprtType3"));
+			Edit.setStyle(aprtType3);
+			aprtType.addDisabledMenuElement("-1", "");
+			aprtType2.addMenuElement("-1", "");
+			aprtType3.addMenuElement("-1", "");
+
+			for (Iterator iter = typeHelpers.iterator(); iter.hasNext();) {
+				ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) iter.next();
+				aprtType.addMenuElement(eAprtType.getKey(), eAprtType.getName());
+				aprtType2.addMenuElement(eAprtType.getKey(), eAprtType.getName());
+				aprtType3.addMenuElement(eAprtType.getKey(), eAprtType.getName());
+			}
+
+			Form form = new Form();
+			DataTable t = new DataTable();
+			Edit.setStyle(t);
+
+			String text1 = _iwrb.getLocalizedString("firstChoice", "First Choice");
+			String text2 = _iwrb.getLocalizedString("secondChoice", "Second Choice");
+			String text3 = _iwrb.getLocalizedString("thirdChoice", "Third Choice");
+
+			Image back = _iwrb.getImage("back.gif");
+			back.setMarkupAttribute("onClick", "history.go(-1)");
+
 		
-		DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
-		if (iwc.isParameterSet("aprtType3"))
-			aprtType3.setSelectedElement(iwc.getParameter("aprtType3"));
-		
-		aprtType.addDisabledMenuElement("-1", "");
-		aprtType2.addMenuElement("-1", "");
-		aprtType3.addMenuElement("-1", "");
-
-		for (int i = 0; i < vAprtType.size(); i++) {
-			ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) vAprtType.elementAt(i);
-			aprtType.addMenuElement(eAprtType.getKey(), eAprtType.getName());
-			aprtType2.addMenuElement(eAprtType.getKey(), eAprtType.getName());
-			aprtType3.addMenuElement(eAprtType.getKey(), eAprtType.getName());
-		}
-
-		Form form = new Form();
-		DataTable t = new DataTable();
 		
 
-		String text1 = _iwrb.getLocalizedString("firstChoice", "Fyrsta val");
-		String text2 = _iwrb.getLocalizedString("secondChoice", "Anna? val");
-		String text3 = _iwrb.getLocalizedString("thirdChoice", "?ri?ja val");
-
-		Image back = _iwrb.getImage("back.gif");
-		back.setMarkupAttribute("onClick", "history.go(-1)");
 //		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")), APP_STATUS, Integer.toString(_statusAppliedFor));
-		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));//, APP_STATUS, Integer.toString(_statusAppliedFor));
+			SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "Next")));//, APP_STATUS, Integer.toString(_statusAppliedFor));
 
-		form.add(t);
+			form.add(t);
 
-		t.addTitle(_iwrb.getLocalizedString("applied", "H?sn??i sem s?tt er um"));
-		Text label = getHeader(text1);
-		if (wrongParameters.contains("aprtType"))
-			label.setFontColor("#ff0000");
-		t.add(label, 1, 1);
-		t.add(getHeader(_required), 1, 1);
-		t.add(aprtType, 2, 1);
 
-		Image apartmentImage = _iwb.getImage("list.gif", _iwrb.getLocalizedString("get_apartment", "Click for information about apartment"));
-		apartmentImage.setAlignment("absmiddle");
-		apartmentImage.setHorizontalSpacing(4);
-		Link apartmentLink = new Link(apartmentImage);
-		apartmentLink.setWindowToOpen(CampusTypeWindow.class);
-		Text apartmentText = new Text(_iwrb.getLocalizedString("see_apartment", "view"));
-		apartmentText.setFontStyle("font-family:arial; font-size:9px; color:#000000");
-		Link apartmentLink2 = new Link(apartmentText);
-		apartmentLink2.setWindowToOpen(CampusTypeWindow.class);
+			t.addTitle(_iwrb.getLocalizedString("applied", "Apartment applied for"));
+			Text label = Edit.formatText(text1);
+			if (wrongParameters.contains("aprtType"))
+				label.setFontColor("#ff0000");
+			t.add(label, 1, 1);
+			t.add(Edit.formatText(_required, true), 1, 1);
+			t.add(aprtType, 2, 1);
 
-		if (_apartment1 > -1) {
-			try {
-				Link link1 = (Link) apartmentLink.clone();
-				link1.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment1);
-				Link link12 = (Link) apartmentLink2.clone();
-				link12.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment1);
-				t.add(link1, 3, 1);
-				t.add(link12, 3, 1);
+			Image apartmentImage = _iwb.getImage("list.gif", _iwrb.getLocalizedString("get_apartment", "Click for information about apartment"));
+			apartmentImage.setAlignment("absmiddle");
+			apartmentImage.setHorizontalSpacing(4);
+			Link apartmentLink = new Link(apartmentImage);
+			apartmentLink.setWindowToOpen(CampusTypeWindow.class);
+			Text apartmentText = new Text(_iwrb.getLocalizedString("see_apartment", "view"));
+			apartmentText.setFontStyle("font-family:arial; font-size:9px; color:#000000");
+			Link apartmentLink2 = new Link(apartmentText);
+			apartmentLink2.setWindowToOpen(CampusTypeWindow.class);
+
+			if (_apartment1 > -1) {
+				try {
+					Link link1 = (Link) apartmentLink.clone();
+					link1.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment1);
+					Link link12 = (Link) apartmentLink2.clone();
+					link12.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment1);
+					t.add(link1, 3, 1);
+					t.add(link12, 3, 1);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 
-		t.add(getHeader(text2), 1, 2);
-		t.add(aprtType2, 2, 2);
-		if (_apartment2 > -1) {
-			try {
-				Link link2 = (Link) apartmentLink.clone();
-				link2.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment2);
-				Link link22 = (Link) apartmentLink2.clone();
-				link22.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment2);
-				t.add(link2, 3, 2);
-				t.add(link22, 3, 2);
+			t.add(Edit.formatText(text2), 1, 2);
+			t.add(aprtType2, 2, 2);
+			if (_apartment2 > -1) {
+				try {
+					Link link2 = (Link) apartmentLink.clone();
+					link2.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment2);
+					Link link22 = (Link) apartmentLink2.clone();
+					link22.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment2);
+					t.add(link2, 3, 2);
+					t.add(link22, 3, 2);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 
-		t.add(getHeader(text3), 1, 3);
-		t.add(aprtType3, 2, 3);
-		if (_apartment3 > -1) {
-			try {
-				Link link3 = (Link) apartmentLink.clone();
-				link3.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment3);
-				Link link32 = (Link) apartmentLink2.clone();
-				link32.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment3);
-				t.add(link3, 3, 3);
-				t.add(link32, 3, 3);
+			t.add(Edit.formatText(text3), 1, 3);
+			t.add(aprtType3, 2, 3);
+			if (_apartment3 > -1) {
+				try {
+					Link link3 = (Link) apartmentLink.clone();
+					link3.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment3);
+					Link link32 = (Link) apartmentLink2.clone();
+					link32.addParameter(ApartmentTypeViewer.PARAMETER_STRING, _apartment3);
+					t.add(link3, 3, 3);
+					t.add(link32, 3, 3);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 
-		t.addButton(back);
-		t.addButton(ok);
-		
-		HiddenInput hidden = new HiddenInput(APP_STATUS,Integer.toString(_statusSelectingApartmentTypes));
-		
-		ok.setValueOnClick(APP_STATUS,Integer.toString(_statusAppliedFor));
-		form.add(hidden);
-		
-		form.add(Text.getBreak());
-		form.add(Text.getBreak());
-		form.add(Text.getBreak());
-		form.add(_info);
-		aprtType.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
-		aprtType2.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
-		aprtType3.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
-		aprtType.setToSubmit();
-		aprtType2.setToSubmit();
-		aprtType3.setToSubmit();
-		aprtType.keepStatusOnAction();
-		aprtType2.keepStatusOnAction();
-		aprtType3.keepStatusOnAction();
+			t.addButton(back);
+			t.addButton(ok);
+			
+			HiddenInput hidden = new HiddenInput(APP_STATUS,Integer.toString(_statusSelectingApartmentTypes));
+			
+			ok.setValueOnClick(APP_STATUS,Integer.toString(_statusAppliedFor));
+			form.add(hidden);
+			
+			form.add(Text.getBreak());
+			form.add(Text.getBreak());
+			form.add(Text.getBreak());
+			form.add(_info);
+			aprtType.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
+			aprtType2.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
+			aprtType3.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
+			aprtType.setToSubmit();
+			aprtType2.setToSubmit();
+			aprtType3.setToSubmit();
+			aprtType.keepStatusOnAction();
+			aprtType2.keepStatusOnAction();
+			aprtType3.keepStatusOnAction();
 //		form.maintainParameter(APP_STATUS);
-		add(form);
+			add(form);
+
+		
+		}catch(Exception e){}
+		
 	}
 
 	protected void addStage(int stage) {
@@ -307,8 +359,11 @@ public class CampusApplicationForm extends ApplicationForm {
 	 *
 	 */
 	protected void doCampusInformation(IWContext iwc, List wrongParameters) {
-		List subjects = ApplicationFinder.listOfNonExpiredSubjects();
-		List categories = BuildingFinder.listOfApartmentCategory();
+		Collection subjects = null;
+		try {
+			subjects = getApplicationService(iwc).getSubjectHome().findNonExpired();
+		
+		Collection categories = getApplicationService(iwc).getBuildingService().getApartmentCategoryHome().findAll();
 		Text textTemplate = new Text();
 		IWTimestamp today = IWTimestamp.RightNow();
 		int fromYear = today.getYear() - 7;
@@ -340,8 +395,18 @@ public class CampusApplicationForm extends ApplicationForm {
 		t.add(getHeader(_required), 1, 2);
 		t.add(aprtCat, 2, 2);
 
-		List residences = CampusApplicationFinder.listOfResidences();
-		List occupations = CampusApplicationFinder.listOfSpouseOccupations();
+		Collection residences = null;
+		Collection occupations = null;
+		try {
+			residences = getApplicationService(iwc).getResidencyHome().findAll();
+			occupations = getApplicationService(iwc).getSpouseOccupationHome().findAll();
+		}
+		catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		}
 		DropdownMenu resSelect = new DropdownMenu(residences, "currentResidence");
 		
 		DropdownMenu occSelect = new DropdownMenu(occupations, "spouseOccupation");
@@ -362,8 +427,6 @@ public class CampusApplicationForm extends ApplicationForm {
 		
 		spouseStudyEnd.setToShowDay(false);
 		spouseStudyEnd.setYearRange(fromYear, toYear);
-
-		int currentYear = IWTimestamp.RightNow().getYear();
 
 		String labelStudyBegin = _iwrb.getLocalizedString("studyBegin", "N?m hafi? vi? H? (m?n./?r)");
 		String labelStudyEnd = _iwrb.getLocalizedString("studyEnd", "??tlu? n?mslok (m?n./?r)");
@@ -457,7 +520,11 @@ public class CampusApplicationForm extends ApplicationForm {
 		childrenTable.add(new HiddenInput("children_count", String.valueOf(children)));
 
 		TextArea inputExtraInfo = new TextArea("extra_info");
-		
+
+		Edit.setStyle(inputExtraInfo);
+		inputExtraInfo.setRows(4);
+		inputExtraInfo.setColumns(30);
+
 		inputExtraInfo.setHeight(4);
 		inputExtraInfo.setWidth(30);
 
@@ -465,7 +532,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		if (iwc.isParameterSet("wantHousingFrom")) {
 			String sdate = iwc.getParameter("wantHousingFrom");
 			if (sdate != null && !"".equals(sdate))
-				input16.setDate(new IWTimestamp(sdate).getSQLDate());
+				input16.setDate(new IWTimestamp(sdate).getDate());
 		}
 		input16.setToCurrentDate();
 
@@ -576,6 +643,13 @@ public class CampusApplicationForm extends ApplicationForm {
 		form.add(_info);
 		form.add(new HiddenInput(APP_STATUS, Integer.toString(_statusCampusInfo)));
 		add(form);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -594,20 +668,27 @@ public class CampusApplicationForm extends ApplicationForm {
 		String key3 = (String) iwc.getParameter("aprtType3");
 
 		try {
+			ApartmentTypeHome ath =getApplicationService(iwc).getBuildingService().getApartmentTypeHome();
 			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
-			ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
-			_apartment1 = room.getID();
+
+			ApartmentType room = ath.findByPrimaryKey(new Integer(type));
+			_apartment1 = ((Integer) room.getPrimaryKey()).intValue();
+
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
 				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
-				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
-				_apartment2 = room.getID();
+
+				room =  ath.findByPrimaryKey(new Integer(type));
+				_apartment2 = ((Integer) room.getPrimaryKey()).intValue();
+
 			}
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
 				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
-				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
-				_apartment3 = room.getID();
+
+				room =  ath.findByPrimaryKey(new Integer(type));
+				_apartment3 = ((Integer) room.getPrimaryKey()).intValue();
+
 			}
 		}
 		catch (Exception e) {
@@ -629,7 +710,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		TextInput textInputTemplate = new TextInput();
 		Form form = new Form();
 		DataTable t = new DataTable();
-		BackButton back = new BackButton(_iwrb.getImage("back.gif"));
+		//BackButton back = new BackButton(_iwrb.getImage("back.gif"));
 		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("okk", "?fram")));
 		ok.setName("ok");
 
@@ -664,7 +745,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		
 
 		TextInput ssn = (TextInput) textInputTemplate.clone();
-		ssn.setAsIcelandicSSNumber();
+		ssn.setAsIcelandicSSNumber(_iwrb.getLocalizedString("provide_icelandic_ss","Please provide a valid Icelandic personal ID"));
 		ssn.setName(APP_SSN);
 		if (iwc.isParameterSet(APP_SSN))
 			ssn.setContent(iwc.getParameter(APP_SSN));
@@ -860,6 +941,11 @@ public class CampusApplicationForm extends ApplicationForm {
 		return wrongParameters;
 	}
 	
+	public ApplicationService getApplicationService(IWContext iwc) throws RemoteException{
+		return (ApplicationService) IBOLookup.getServiceInstance(iwc.getApplicationContext(),ApplicationService.class);
+	}
+
+	
 	public Text getHeader(String text){
 		Text t = new Text(text);
 		t.setBold();
@@ -869,4 +955,5 @@ public class CampusApplicationForm extends ApplicationForm {
 	public Text getText(String text){
 		return new Text(text);
 	}
+
 }

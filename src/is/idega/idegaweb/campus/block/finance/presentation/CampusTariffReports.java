@@ -1,12 +1,12 @@
 package is.idega.idegaweb.campus.block.finance.presentation;
 
+
 import is.idega.idegaweb.campus.business.CampusSettings;
 import is.idega.idegaweb.campus.data.AccountEntriesReportBMPBean;
 import is.idega.idegaweb.campus.data.AccountEntryReport;
 import is.idega.idegaweb.campus.data.AccountEntryReportBMPBean;
 import is.idega.idegaweb.campus.data.EntryReport;
 import is.idega.idegaweb.campus.data.EntryReportBMPBean;
-import is.idega.idegaweb.campus.presentation.Campus;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,14 +16,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Building;
+import com.idega.block.building.data.BuildingHome;
 import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.AccountKeyHome;
 import com.idega.block.finance.presentation.Finance;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -421,16 +423,27 @@ public class CampusTariffReports extends Finance {
 
   public DropdownMenu getBuildingsDrop(String name)throws java.rmi.RemoteException{
     DropdownMenu drp = new DropdownMenu(name);
-    List buildings = BuildingCacher.getBuildings();
-    if(buildings!=null&&!buildings.isEmpty()){
-      Iterator iter = buildings.iterator();
-      Building building;
-      drp.addMenuElement(-100,iwrb.getLocalizedString("all_buildings","All buildings"));
-      while(iter.hasNext()){
-        building = (Building) iter.next();
-        drp.addMenuElement(building.getPrimaryKey().toString(),building.getName());
-      }
-    }
+    try {
+		Collection buildings = ((BuildingHome)IDOLookup.getHome(Building.class)).findAll();
+		if(buildings!=null&&!buildings.isEmpty()){
+		  Iterator iter = buildings.iterator();
+		  Building building;
+		  drp.addMenuElement(-100,iwrb.getLocalizedString("all_buildings","All buildings"));
+		  while(iter.hasNext()){
+		    building = (Building) iter.next();
+		    drp.addMenuElement(building.getPrimaryKey().toString(),building.getName());
+		  }
+		}
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (EJBException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
     return drp;
   }
 

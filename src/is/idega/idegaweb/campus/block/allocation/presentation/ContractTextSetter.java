@@ -1,6 +1,13 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+import com.idega.data.SimpleQuerier;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
@@ -10,6 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.idega.data.EntityFinder;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -22,7 +30,20 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.Edit;
+
+import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.block.allocation.data.ContractText;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
+import is.idega.idegaweb.campus.presentation.Edit;
+
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * Title:   idegaclasses
@@ -69,19 +90,19 @@ public class ContractTextSetter extends CampusBlock{
       //add(getPDFLink(iwb.getImage("print.gif")));
       if(iwc.getParameter("savetitle")!=null){
           updateTitleForm(iwc);
-          add(getMainTable());
+          add(getMainTable(iwc));
 
       }
       else if(iwc.getParameter("savetext")!=null){
         updateForm(iwc);
-        add(getMainTable());
+        add(getMainTable(iwc));
       }
       else if( iwc.getParameter("delete")!= null){
         add (ConfirmDelete(iwc));
       }
       else if(iwc.getParameter("conf_delete")!=null){
         deleteText(iwc);
-        add(getMainTable());
+        add(getMainTable(iwc));
       }
       else if(iwc.getParameter("text_id")!=null || iwc.getParameter("new_text")!=null){
         add(getSetupForm(iwc));
@@ -93,7 +114,7 @@ public class ContractTextSetter extends CampusBlock{
         add(getTitleForm(iwc));
       }
       else {
-        add(getMainTable());
+        add(getMainTable(iwc));
       }
 
     }
@@ -103,17 +124,17 @@ public class ContractTextSetter extends CampusBlock{
 
   }
 
-  private PresentationObject getMainTable(){
+  private PresentationObject getMainTable(IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
-    List L = listOfTexts();
-    ContractText Title = getTitle();
+    Collection L = listOfTexts(iwc);
+    ContractText Title = getTitle(iwc);
     String sTitle = "";
     Link newTitleLink = new Link();
     if(Title != null){
       sTitle = Title.getText();
-      newTitleLink.addParameter("title_id",String.valueOf(Title.getID()));
+      newTitleLink.addParameter("title_id",Title.getPrimaryKey().toString());
     }
     else{
       sTitle = localize("new_title","New Title");
@@ -136,10 +157,10 @@ public class ContractTextSetter extends CampusBlock{
     if(L!=null){
       int len = L.size();
       ContractText CT;
-      for (int i = 0; i < len; i++) {
-        CT = (ContractText) L.get(i);
+      for (Iterator iter = L.iterator(); iter.hasNext();) {
+		CT = (ContractText) iter.next();
         Link link = new Link(CT.getName());
-        link.addParameter("text_id",CT.getID());
+        link.addParameter("text_id",CT.getPrimaryKey().toString());
         T.add(String.valueOf(CT.getOrdinal()),1,row);
         T.add(link,2,row);
         row++;
@@ -158,7 +179,9 @@ public class ContractTextSetter extends CampusBlock{
       T.setHeight(row,bottomThickness);
     }
     else{
+
       T.add(localize("no_texts","No text in database"),1,2);
+
     }
 
 
@@ -173,12 +196,12 @@ public class ContractTextSetter extends CampusBlock{
     String sId = iwc.getParameter("title_id");
     if(sId!=null){
      try {
-        ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sId));
+        ContractText CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).findByPrimaryKey(new Integer(sId));
         text = new TextInput("tname",CT.getText());
         HiddenInput HI = new HiddenInput("title_id",sId);
         T.add(HI);
       }
-      catch (SQLException ex) {
+      catch (Exception ex) {
         ex.printStackTrace();
       }
     }
@@ -209,7 +232,7 @@ public class ContractTextSetter extends CampusBlock{
     String sId = iwc.getParameter("text_id");
     if(sId!=null){
       try {
-        ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sId));
+        ContractText CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).findByPrimaryKey(new Integer(sId));
         name = new TextInput("name",CT.getName());
         text = getTextArea("texti",CT.getText());
 
@@ -218,7 +241,7 @@ public class ContractTextSetter extends CampusBlock{
         HiddenInput HI = new HiddenInput("text_id",sId);
         T.add(HI);
       }
-      catch (SQLException ex) {
+      catch (Exception ex) {
         ex.printStackTrace();
       }
     }
@@ -226,10 +249,10 @@ public class ContractTextSetter extends CampusBlock{
       try {
         name = new TextInput("name");
         text = getTextArea("texti","");
-        int max = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy().getMaxColumnValue(is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName())+1;
+        int max = 1+ SimpleQuerier.executeIntQuery("select max("+ContractTextBMPBean.getOrdinalColumnName()+") from "+ContractTextBMPBean.getEntityTableName() );
         intDrop.setSelectedElement(String.valueOf(max));
        }
-      catch (SQLException ex) {
+      catch (Exception ex) {
         ex.printStackTrace();
       }
     }
@@ -245,9 +268,12 @@ public class ContractTextSetter extends CampusBlock{
 
     Table bottomTable = new Table();
     bottomTable.setWidth("100%");
+	bottomTable.add(Edit.formatText(localize("order","Order")),1,1);
     bottomTable.add(intDrop,1,1);
+    bottomTable.add(Edit.formatText(localize("set_to_parse","Parse ? ")),2,1);
     bottomTable.add(CB,2,1);
     bottomTable.add(save,3,1);
+	bottomTable.add(Edit.formatText(localize("tag","Tag:")),4,1);
     bottomTable.add(tagDrop,4,1);
     bottomTable.add(delete,5,1);
 
@@ -296,10 +322,10 @@ public class ContractTextSetter extends CampusBlock{
     if(sTextId !=null){
       try {
         int id = Integer.parseInt(sTextId);
-        ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(id);
-        CT.delete();
+        ContractText CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).findByPrimaryKey(new Integer(id));
+        CT.remove();
       }
-      catch (SQLException ex) {
+      catch (Exception ex) {
       }
     }
   }
@@ -312,19 +338,12 @@ public class ContractTextSetter extends CampusBlock{
     String sUseTags = iwc.getParameter("usetags");
 
     ContractText CT = null;
-    boolean bInsert = true;
+	try{
     if(sTextId != null){
-      try{
-
-        CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sTextId));
-        bInsert = false;
-      }
-      catch(SQLException ex){ex.printStackTrace();}
+        CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).findByPrimaryKey(new Integer(sTextId));
     }
     else{
-
-      CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
-      bInsert = true;
+      CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).create();
     }
     if(CT !=null){
       CT.setName(sName);
@@ -336,16 +355,13 @@ public class ContractTextSetter extends CampusBlock{
       else
         CT.setUseTags(false);
 
-      try {
-        if(bInsert)
-          CT.insert();
-        else
-          CT.update();
-      }
-      catch (SQLException ex) {
+        CT.store();
+      }}
+      
+      catch (Exception ex) {
         ex.printStackTrace();
       }
-    }
+    
   }
 
    private void updateTitleForm(IWContext iwc){
@@ -353,18 +369,12 @@ public class ContractTextSetter extends CampusBlock{
     String sText = iwc.getParameter("tname");
 
     ContractText CT = null;
-    boolean bInsert = true;
+	try{
     if(sTextId != null){
-      try{
-        CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sTextId));
-        bInsert = false;
-      }
-      catch(SQLException ex){ex.printStackTrace();}
+        CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).findByPrimaryKey(new Integer(sTextId));
     }
     else{
-
-      CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
-      bInsert = true;
+      CT = ((ContractTextHome)IDOLookup.getHome(ContractText.class)).create();
     }
     if(CT !=null){
       CT.setName("title");
@@ -372,39 +382,35 @@ public class ContractTextSetter extends CampusBlock{
       CT.setOrdinal(-1);
       CT.setLanguage(TIS);
       CT.setUseTags(false);
-
-      try {
-        if(bInsert)
-          CT.insert();
-        else
-          CT.update();
+       CT.store();
       }
-      catch (SQLException ex) {
+	}
+      catch (Exception ex) {
         ex.printStackTrace();
       }
-    }
   }
 
-  private List listOfTexts(){
-    List L = null;
+  private Collection listOfTexts(IWContext iwc){
+    Collection texts = null;
 
     try {
-
-      L = EntityFinder.getInstance().findAllByColumnOrdered(ContractText.class,ContractTextBMPBean.getLanguageColumnName(),IS,ContractTextBMPBean.getOrdinalColumnName());
+	  texts = getContractService(iwc).getContractTextHome().findByLanguage(IS);
+      //L = EntityFinder.getInstance().findAllByColumnOrdered(ContractText.class,ContractTextBMPBean.getLanguageColumnName(),IS,ContractTextBMPBean.getOrdinalColumnName());
     }
     catch (Exception ex) {
 
     }
-    return L;
+    return texts;
   }
 
-  private ContractText getTitle(){
-    List L = null;
+  private ContractText getTitle(IWContext iwc){
+	Collection texts = null;
 
     try {
-      L = EntityFinder.getInstance().findAllByColumnOrdered(ContractText.class,ContractTextBMPBean.getLanguageColumnName(),TIS,ContractTextBMPBean.getOrdinalColumnName());
-      if(L!= null)
-        return (ContractText) L.get(0);
+		texts = getContractService(iwc).getContractTextHome().findByLanguage(TIS);
+      
+      if(texts!= null && !texts.isEmpty())
+        return (ContractText) texts.iterator().next();
       else
         return null;
     }
@@ -462,5 +468,7 @@ public class ContractTextSetter extends CampusBlock{
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
+  
+
 
 }

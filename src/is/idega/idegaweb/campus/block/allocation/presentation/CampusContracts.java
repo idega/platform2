@@ -1,22 +1,25 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+
+
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
 import com.idega.block.application.data.Applicant;
-import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
-import com.idega.core.user.data.User;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.EntityFinder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -27,6 +30,7 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.User;
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company:
  * 
@@ -48,6 +52,9 @@ public class CampusContracts extends CampusBlock {
 	//private String sessConPrm = "sess_con_status";
 	private String sizePrm = "global_size";
 	//private String sessSizePrm = "sess_global_size";
+	
+	private BuildingService buildingService = null;
+	
 	public String getLocalizedNameKey() {
 		return "contracts";
 	}
@@ -237,7 +244,7 @@ public class CampusContracts extends CampusBlock {
 		Collection contracts = null;
 		int contractCount = 0;
 		try {
-			ContractHome cHome = getCampusService(iwc).getContractService().getContractHome();
+			ContractHome cHome =getContractService(iwc).getContractHome();
 			contracts = cHome.findBySearchConditions(sGlobalStatus, CLCX, CLBU, CLFL, CLTP, CLCT, null,
 					this.iGlobalSize, index.intValue());
 			contractCount = cHome.countBySearchConditions(sGlobalStatus, CLCX, CLBU, CLFL, CLTP, CLCT, null);
@@ -387,14 +394,20 @@ public class CampusContracts extends CampusBlock {
 		return T;
 	}
 	private void doGarbageContract(IWContext iwc) {
-		int id = Integer.parseInt(iwc.getParameter("garbage"));
-		ContractBusiness.doGarbageContract(id);
+		try {
+			Integer id = Integer.valueOf(iwc.getParameter("garbage"));
+			getContractService(iwc).doGarbageContract(id);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 	private PresentationObject getApartmentTable(Apartment A) {
 		Table T = new Table();
-		Floor F = BuildingCacher.getFloor(A.getFloorId());
-		Building B = BuildingCacher.getBuilding(F.getBuildingId());
-		Complex C = BuildingCacher.getComplex(B.getComplexId());
+		Floor F = A.getFloor();
+		Building B = F.getBuilding();
+		Complex C = B.getComplex();
 		T.add(getText(A.getName()), 1, 1);
 		T.add(getText(F.getName()), 2, 1);
 		T.add(getText(B.getName()), 3, 1);
@@ -486,6 +499,7 @@ public class CampusContracts extends CampusBlock {
 	}
 	public Link getPDFLink(PresentationObject MO, int contractId, String filename) {
 		Link L = new Link(MO);
+
 		L.setWindowToOpen(ContractFilerWindow.class);
 		L.addParameter(ContractFiler.prmOneId, contractId);
 		L.addParameter(ContractFiler.prmFileName, filename);
@@ -506,6 +520,11 @@ public class CampusContracts extends CampusBlock {
 	}
 	public void main(IWContext iwc) {
 		isAdmin = iwc.hasEditPermission(this);
+		try {
+			buildingService = (BuildingService)IBOLookup.getServiceInstance(iwc,BuildingService.class);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
 		control(iwc);
 	}
 }

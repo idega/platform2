@@ -62,13 +62,13 @@ public class CampusAccountTariffer extends AccountTariffer {
 		try {
 			ContractAccountApartment caa =getContractAccountApartmentHome().findByAccountAndRented(getAccountId(),true);
 			T.add(getHeader(localize("apartment","Apartment")),1,1);
-			Apartment apartment = getApartmentHome().findByPrimaryKey(caa.getApartmentId());
-			Building building = getBuildingHome().findByPrimaryKey(caa.getBuildingId());
+			Apartment apartment = getApartmentHome().findByPrimaryKey(new Integer(caa.getApartmentId()));
+			Building building = getBuildingHome().findByPrimaryKey(new Integer(caa.getBuildingId()));
 			T.add(getText(apartment.getName()+" ,"+building.getName()),2,1);
 			T.add(getHeader(localize("contract_period","Contract period")),1,2);
 			DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
 			T.add(getText(df.format(caa.getValidFrom())+" - "+df.format(caa.getValidTo())),2,2);
-			T.add(new HiddenInput(getExternalIDParameter(),caa.getApartmentId().toString()));
+			T.add(new HiddenInput(getExternalIDParameter(),String.valueOf(caa.getApartmentId())));
 			
 		} catch (IDOLookupException e) {
 			e.printStackTrace();

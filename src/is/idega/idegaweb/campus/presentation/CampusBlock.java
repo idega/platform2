@@ -4,6 +4,8 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.business.CampusSettings;
 
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.idega.block.building.business.BuildingService;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
@@ -546,11 +549,23 @@ public abstract class CampusBlock extends Block {
 		return (CampusService)IBOLookup.getServiceInstance(iwc,CampusService.class);
 	}
 	
+	public ApplicationService getApplicationService(IWContext iwc)throws RemoteException{
+		return (ApplicationService)IBOLookup.getServiceInstance(iwc,CampusService.class);
+	}
+	
+	public BuildingService getBuildingService(IWContext iwc)throws RemoteException{
+		return (BuildingService)IBOLookup.getServiceInstance(iwc,BuildingService.class);
+	}
+	
 	public CampusSettings getCampusSettings(IWContext iwc)throws RemoteException{
 		return getCampusService(iwc).getCampusSettings();
 	}
 	
 	public UserBusiness getUserService(IWContext iwc)throws RemoteException{
 		return (UserBusiness) IBOLookup.getServiceInstance(iwc,UserBusiness.class);
+	}
+	
+	public ContractService getContractService(IWContext iwc)throws RemoteException{
+		return (ContractService) IBOLookup.getServiceInstance(iwc,ContractService.class);
 	}
 }

@@ -10,8 +10,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.idega.block.building.business.BuildingCacher;
+import javax.ejb.FinderException;
+
+import com.idega.block.building.data.ApartmentView;
+import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.business.IBOLookup;
+
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -93,20 +102,27 @@ public class PhoneContracts extends CampusBlock {
   	Table T = new Table();
   	int row = 1;
   	if(phoneNumbers!=null){
+  		ApartmentViewHome avh =(ApartmentViewHome)IDOLookup.getHome(ApartmentView.class);
   		for (int i = 0; i < phoneNumbers.length; i++) {
 			List contracts = PhoneFinder.listOfPhoneContracts(phoneNumbers[i]);
+			
 		  	if(contracts!=null){
 		  		Contract contract;
 		  		User user;
 		  		Iterator iter = contracts.iterator();
 		  		T.add(tf.format( phoneNumbers[i],tf.HEADER),1,row++);
 		  		while(iter.hasNext()){
-		  			contract = (Contract) iter.next();
-		  			user = (User) ub.getUser(contract.getUserId().intValue());
-		  			T.add(tf.format(user.getName()),2,row);
-		  			T.add(tf.format(df.format(contract.getValidFrom())+" - "+df.format(contract.getValidTo())),3,row);
-		  			T.add(tf.format(BuildingCacher.getApartmentString(contract.getApartmentId().intValue())),4,row);
-		  			row++;
+		  			try {
+						contract = (Contract) iter.next();
+						user = (User) ub.getUser(contract.getUserId().intValue());
+						T.add(tf.format(user.getName()),2,row);
+						T.add(tf.format(df.format(contract.getValidFrom())+" - "+df.format(contract.getValidTo())),3,row);
+						T.add(tf.format(avh.findByPrimaryKey(contract.getApartmentId()).getApartmentString(" ")),4,row);
+						row++;
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
 		  		}
 		  	
 		  	}

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusApplicationWriter.java,v 1.5 2002/08/06 21:02:26 aron Exp $
+ * $Id: CampusApplicationWriter.java,v 1.6 2004/06/05 07:43:04 aron Exp $
 
  *
 
@@ -17,12 +17,16 @@
  */
 package is.idega.idegaweb.campus.block.application.business;
 import is.idega.idegaweb.campus.block.application.data.Applied;
+
 import java.io.FileOutputStream;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
@@ -42,7 +46,7 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class CampusApplicationWriter
 {
-	public static boolean writePDF(List listOfCampusApplicationHolders, IWResourceBundle iwrb, String realpath)
+	public static boolean writePDF(Collection listOfCampusApplicationHolders, IWResourceBundle iwrb, String realpath)
 	{
 		boolean returner = false;
 		try
@@ -59,9 +63,8 @@ public class CampusApplicationWriter
 				int len = listOfCampusApplicationHolders.size();
 				//System.err.println("listsize:"+len);
 				CampusApplicationHolder CAH;
-				for (int i = 0; i < len; i++)
-				{
-					CAH = (CampusApplicationHolder) listOfCampusApplicationHolders.get(i);
+				for (Iterator iter = listOfCampusApplicationHolders.iterator(); iter.hasNext();) {
+					 CAH = (CampusApplicationHolder) iter.next();
 					//System.err.println("name "+CAH.getApplicant().getFirstName());
 					//System.err.println("email "+CAH.getCampusApplication().getEmail());
 					Table datatable = new Table(4);
@@ -173,7 +176,7 @@ public class CampusApplicationWriter
 							datatable.addCell("");
 							datatable.addCell("");
 							datatable.setDefaultColspan(2);
-							datatable.addCell((String) children.get(i));
+							datatable.addCell((String) children.get(j));
 						}
 					}
 					datatable.setDefaultColspan(2);
@@ -183,10 +186,11 @@ public class CampusApplicationWriter
 					Vector applied = CAH.getApplied();
 					size = applied.size();
 					datatable.addCell("1");
+					ApartmentTypeHome aptHome =(ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class);
 					if (size >= 1)
 					{
 						Applied A = (Applied) applied.get(0);
-						datatable.addCell(BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName());
+						datatable.addCell(aptHome.findByPrimaryKey(A.getApartmentTypeId()).getName());
 					}
 					else
 						datatable.addCell("");
@@ -196,7 +200,7 @@ public class CampusApplicationWriter
 					if (size >= 2)
 					{
 						Applied A = (Applied) applied.get(1);
-						datatable.addCell(BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName());
+						datatable.addCell(aptHome.findByPrimaryKey(A.getApartmentTypeId()).getName());
 					}
 					else
 						datatable.addCell("");
@@ -206,7 +210,7 @@ public class CampusApplicationWriter
 					if (size >= 3)
 					{
 						Applied A = (Applied) applied.get(2);
-						datatable.addCell(BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName());
+						datatable.addCell(aptHome.findByPrimaryKey(A.getApartmentTypeId()).getName());
 					}
 					else
 						datatable.addCell("");

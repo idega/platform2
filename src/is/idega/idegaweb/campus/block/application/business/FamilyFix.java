@@ -2,6 +2,8 @@ package is.idega.idegaweb.campus.block.application.business;
 
 import java.sql.*;
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
+import com.idega.data.IDOLookup;
 import com.idega.util.database.ConnectionBroker;
 /**
  * Title:
@@ -126,7 +128,7 @@ public class FamilyFix {
         ssn = RS.getString(3);
         childs = RS.getString(4);
 
-        Applicant superApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(applicantId);
+        Applicant superApplicant = ((ApplicantHome)IDOLookup.getHome(Applicant.class)).findByPrimaryKey(new Integer(applicantId));
         superApplicant.setStatus("S");
         superApplicant.addChild(superApplicant);
         boolean spouse = name!=null && name.length()>0;
@@ -138,7 +140,7 @@ public class FamilyFix {
         if(children)
           createChildren(childs,superApplicant,"C");
         }
-        superApplicant.update();
+        superApplicant.store();
 
       }
       RS.close();
@@ -166,17 +168,17 @@ public class FamilyFix {
 		}
   }
 
-  public static void createApplicant(String name, String ssn, Applicant superApplicant,String status)throws SQLException{
-    Applicant spouse = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
+  public static void createApplicant(String name, String ssn, Applicant superApplicant,String status)throws Exception{
+    Applicant spouse = ((ApplicantHome)IDOLookup.getHome(Applicant.class)).create();
     spouse.setStatus(status);
     spouse.setFullName(name);
     spouse.setSSN(ssn);
-    spouse.insert();
+    spouse.store();
     if(superApplicant!=null)
     superApplicant.addChild(spouse);
   }
 
-  public static void createChildren(String children,Applicant superApplicant,String status)throws SQLException{
+  public static void createChildren(String children,Applicant superApplicant,String status)throws Exception{
     java.util.StringTokenizer st = new java.util.StringTokenizer(children,"\n");
     while(st.hasMoreTokens()){
       String all = st.nextToken();

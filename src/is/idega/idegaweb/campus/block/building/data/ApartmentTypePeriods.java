@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.building.data;
 
 
-public interface ApartmentTypePeriods extends com.idega.data.IDOLegacyEntity
+public interface ApartmentTypePeriods extends com.idega.data.IDOEntity
 {
  public int getApartmentTypeId();
  public java.sql.Date getFirstDate();
@@ -18,6 +18,6 @@ public interface ApartmentTypePeriods extends com.idega.data.IDOLegacyEntity
  public void setFirstDate(java.sql.Date p0);
  public void setFirstDate(int p0,int p1);
  public void setName(java.lang.String p0);
- public void setSecondDate(int p0,int p1);
  public void setSecondDate(java.sql.Date p0);
+ public void setSecondDate(int p0,int p1);
 }

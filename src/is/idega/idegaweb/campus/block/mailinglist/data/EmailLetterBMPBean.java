@@ -9,7 +9,19 @@ package is.idega.idegaweb.campus.block.mailinglist.data;
  * @version 1.0
  */
 
+
+import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+
 
 public class EmailLetterBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter {
 
@@ -75,7 +87,7 @@ public class EmailLetterBMPBean extends com.idega.data.GenericEntity implements 
   public void setHost(String host){
     setColumn(HOST,host);
   }
-  public String getType(){
+  public String getMailType(){
     return getStringColumnValue(TYPE);
   }
   public void setType(String type){
@@ -98,5 +110,86 @@ public class EmailLetterBMPBean extends com.idega.data.GenericEntity implements 
   public String getSubjectKey(){
     return getEmailKey()+"_subject";
   }
+  
+  public Collection getMailingLists() throws RemoteException {
+  	try {
+		return super.idoGetRelatedEntities(MailingList.class);
+	}
+	catch (IDORelationshipException e) {
+		throw new RemoteException(e.getMessage());
+	}
+  }
+  
+  public void removeMailingList(MailingList list) throws RemoteException{
+  	try {
+		super.idoRemoveFrom(list);
+	}
+	catch (IDORemoveRelationshipException e) {
+		throw new RemoteException(e.getMessage());
+	}
+  }
+  
+  public void removeMailingLists() throws RemoteException{
+	  try {
+		  super.idoRemoveFrom(MailingList.class);
+	  }
+	  catch (IDORemoveRelationshipException e) {
+		  throw new RemoteException(e.getMessage());
+	  }
+	}
+  
+  public void addMailingList(MailingList list) throws RemoteException{
+	  try {
+		  super.idoAddTo(list);
+	  }
+	  catch (IDOAddRelationshipException e) {
+		  throw new RemoteException(e.getMessage());
+	  }
+	}
+	
+  public Collection ejbFindByType(String type)throws FinderException{
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(TYPE,type));
+  }
+  
+  public Collection ejbFindAll()throws FinderException{
+		  return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendOrderBy(TYPE));
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailLetter#getCreated()
+	 */
+	public Timestamp getCreated() {
+		return (Timestamp)new Date();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailLetter#getFromAddress()
+	 */
+	public String getFromAddress() {
+		return getFrom();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailLetter#getFromName()
+	 */
+	public String getFromName() {
+		return getFrom();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailLetter#getType()
+	 */
+	public int getType() {
+		return -1;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailLetter#getIdentifier()
+	 */
+	public Integer getIdentifier() {
+		return (Integer)getPrimaryKey();
+	}
 
 }

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.presentation;
 
+
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
@@ -10,20 +11,23 @@ import is.idega.idegaweb.campus.business.HabitantsComparator;
 import is.idega.idegaweb.campus.business.HabitantsFinder;
 import is.idega.idegaweb.campus.data.Habitant;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.Building;
+import com.idega.block.building.business.BuildingService;
+import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.Floor;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
+import com.idega.block.building.data.ComplexHome;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -40,11 +44,11 @@ import com.idega.util.text.TextStyler;
  * Description:
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
  * Company:      idega
-  *@author <a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
+  *@author <a href="mailto:laddi@idega.is">??rhallur Helgason</a>
  * @version 1.1
  */
 
-public class TenantsHabitants extends Block implements Campus{
+public class TenantsHabitants extends CampusBlock implements Campus{
   private static final String NAME_KEY = "cam_habitants_view";
   private static final String DEFAULT_VALUE = "Habitant list";
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
@@ -53,9 +57,7 @@ public class TenantsHabitants extends Block implements Campus{
   private final static String APPLICATION_VARIABLE = "cam_tenants";
   private final static String APPLICATION_REFRESH_RATE = "cam_ten_refresh_rate";
 
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-
+  
   private boolean _isAdmin = false;
   private boolean _isLoggedOn = false;
   private boolean _isPublic = true;
@@ -65,19 +67,18 @@ public class TenantsHabitants extends Block implements Campus{
   private TextStyler styler;
   private Image image;
   private long refreshRate = 1000*60*60*2;
+  private BuildingService buildingService =null;
 
 
   public TenantsHabitants() {
   }
 
-  public void main(IWContext iwc){
+  public void main(IWContext iwc)throws RemoteException{
     //debugParameters(iwc);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-
-
+  		
       _isAdmin = iwc.hasEditPermission(this);
       _isLoggedOn = iwc.isLoggedOn();
+      buildingService =getBuildingService(iwc);
       if (_isLoggedOn)
         _isPublic = false;
 
@@ -91,7 +92,7 @@ public class TenantsHabitants extends Block implements Campus{
 
   }
 
-  private Table getHabitantsTable(IWContext iwc){
+  private Table getHabitantsTable(IWContext iwc)throws RemoteException{
     styler = new TextStyler();
     styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
     styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
@@ -124,51 +125,67 @@ public class TenantsHabitants extends Block implements Campus{
   public Table getLinkTable(){
     Table table = new Table();
 
-    List complexes = BuildingCacher.getComplexes();
-    int column = 1;
+    try {
+		Collection complexes = buildingService.getComplexHome().findAll();
+		int column = 1;
 
-    Complex complex = null;
-    Link link = null;
+		Complex complex = null;
+		Link link = null;
 
-    if ( complexes != null ) {
-      table.add(formatText("|"),column,1);
-      column++;
+		if ( complexes != null ) {
+		  table.add(formatText("|"),column,1);
+		  column++;
 
-      for ( int a = 0; a < complexes.size(); a++ ) {
-        complex = (Complex) complexes.get(a);
-        link = new Link(formatText(complex.getName(),"#000000",true));
-          link.addParameter(PARAMETER_CAMPUS_ID,complex.getID());
+		 for (Iterator iter = complexes.iterator(); iter.hasNext();) {
+			 complex = (Complex) iter.next();
+		
+		    link = new Link(formatText(complex.getName(),"#000000",true));
+		      link.addParameter(PARAMETER_CAMPUS_ID,complex.getID());
 //          link.addParameter(CampusMenu.getParameter(TEN_HABITANTS));
 //          link.addParameter(TabAction.sAction,22);
 
-        table.add(link,column,1);
-        column++;
-        table.add(formatText("|"),column,1);
-        column++;
-      }
-    }
+		    table.add(link,column,1);
+		    column++;
+		    table.add(formatText("|"),column,1);
+		    column++;
+		  }
+		}
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
 
     return table;
   }
 
   public List listOfComplexHabitants(int iComplexId,IWContext iwc){
     Vector vector = new Vector();
-    Building building = null;
+    //Building building = null;
     Contract contract = null;
     Applicant applicant = null;
-    Apartment apartment = null;
-    Floor floor = null;
+    //Apartment apartment = null;
+    //Floor floor = null;
     HabitantsCollector collector = null;
     CampusApplication campusApplication = null;
 
     if(!_isAdmin && !_isPublic){
-      contract = ContractFinder.findByUser(_userID);
-      if(contract !=null){
-      applicant = ContractFinder.getApplicant(contract);
-      apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-      floor = BuildingCacher.getFloor(apartment.getFloorId());
-      building = BuildingCacher.getBuilding(floor.getBuildingId());
-      }
+    	try {
+			Collection contracts = getContractService(iwc).getContractHome().findByUserAndRented(new Integer(_userID),Boolean.TRUE);
+			contract = (Contract)contracts.iterator().next();
+     if(contract !=null){
+     applicant = contract.getApplicant();
+     //apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
+     //floor = BuildingCacher.getFloor(apartment.getFloorId());
+    //building = BuildingCacher.getBuilding(floor.getBuildingId());
+     }
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
     }
 
     Map collectionMap = (Map) iwc.getApplicationAttribute(APPLICATION_VARIABLE);
@@ -221,7 +238,7 @@ public class TenantsHabitants extends Block implements Campus{
     return vector;
   }
 
-  public PresentationObject getTenantsTable(IWContext iwc){
+  public PresentationObject getTenantsTable(IWContext iwc)throws RemoteException{
     DataTable table = new DataTable();
     table.setTitlesHorizontal(true);
     table.getContentTable().setCellpadding(3);
@@ -234,17 +251,54 @@ public class TenantsHabitants extends Block implements Campus{
       table.setWidth("100%");
 
     Complex complex = null;
-    if ( _campusID != -1 )
-      complex = BuildingCacher.getComplex(_campusID);
-    else if(!_isAdmin && !_isPublic){
-      BuildingCacher bc = new BuildingCacher();
-      Contract C = ContractFinder.findByUser(_userID);
-      if(C!=null )
-        complex = bc.getComplex(bc.getBuilding(bc.getFloor(bc.getApartment(C.getApartmentId().intValue()).getFloorId()).getBuildingId()).getComplexId() );
-    }
-    else {
-      complex = BuildingCacher.getComplex();
-    }
+
+    ComplexHome cxh =getBuildingService(iwc).getComplexHome();
+    try {
+		if ( _campusID != -1 )
+		  complex = cxh.findByPrimaryKey(new Integer(_campusID));
+		else if(!_isAdmin && !_isPublic){
+		  BuildingCacher bc = new BuildingCacher();
+		  Collection contracts = getContractService(iwc).getContractHome().findByUserAndRented(new Integer(_userID),Boolean.TRUE);
+		  Contract C  = (Contract)contracts.iterator().next();
+		  //Contract C = ContractFinder.findByUser(_userID);
+		  if(C!=null && ((Integer)C.getPrimaryKey()).intValue() >0){
+		  	ApartmentView view =getBuildingService(iwc).getApartmentViewHome().findByPrimaryKey(C.getApartmentId());
+		    complex = cxh.findByPrimaryKey(view.getComplexID());
+		  }
+		}
+		else {
+		  complex = (Complex)cxh.findAll().iterator().next();
+		}
+	}
+	catch (EJBException e) {
+		e.printStackTrace();
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+
+    try {
+		if ( _campusID != -1 )
+		  complex = getBuildingService(iwc).getComplexHome().findByPrimaryKey(new Integer(_campusID));
+		else if(!_isAdmin && !_isPublic){
+		  Collection contracts = getContractService(iwc).getContractHome().findByUserAndRented(new Integer(_userID),Boolean.TRUE);
+		  Contract C = (Contract)contracts.iterator().next();//ContractFinder.findByUser(_userID);
+		  if(C!=null )
+		    complex = C.getApartment().getFloor().getBuilding().getComplex();
+		}
+		else {
+			Collection complexes = getBuildingService(iwc).getComplexHome().findAll();
+		  complex = (Complex) complexes.iterator().next();
+		}
+	} catch (RemoteException e1) {
+		e1.printStackTrace();
+	} catch (FinderException e1) {
+		e1.printStackTrace();
+	}
+
 
     if ( _campusID == -1 && complex !=null ) {
       _campusID = complex.getID();
@@ -253,28 +307,28 @@ public class TenantsHabitants extends Block implements Campus{
     if(complex !=null)
     table.addTitle(complex.getName());
 
-    Link nameLink = new Link(formatText(iwrb.getLocalizedString("name","Name")));
+    Link nameLink = new Link(formatText(localize("name","Name")));
       nameLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.NAME);
       nameLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
     table.add(nameLink,1,1);
 
-    Link apartmentLink = new Link(formatText(iwrb.getLocalizedString("address","Address")));
+    Link apartmentLink = new Link(formatText(localize("address","Address")));
       apartmentLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.ADDRESS);
       apartmentLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
     table.add(apartmentLink,2,1);
 
-    Link addressLink = new Link(formatText(iwrb.getLocalizedString("apartment","Apartment")));
+    Link addressLink = new Link(formatText(localize("apartment","Apartment")));
       addressLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.APARTMENT);
       addressLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
     table.add(addressLink,3,1);
 
-    Link floorLink = new Link(formatText(iwrb.getLocalizedString("floor","Floor")));
+    Link floorLink = new Link(formatText(localize("floor","Floor")));
       floorLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.FLOOR);
       floorLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
     table.add(floorLink,4,1);
 
-    table.add(formatText(iwrb.getLocalizedString("phone","Residence phone")),5,1);
-    //table.add(formatText(iwrb.getLocalizedString("email","E-mail")),6,1);
+    table.add(formatText(localize("phone","Residence phone")),5,1);
+    //table.add(formatText(localize("email","E-mail")),6,1);
 
 
     int row = 2;

@@ -4,6 +4,7 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.business.CampusSettings;
 
@@ -181,4 +182,10 @@ public class CampusWindow extends StyledIWAdminWindow {
 	public UserBusiness getUserService(IWContext iwc)throws RemoteException{
 		return (UserBusiness) IBOLookup.getServiceInstance(iwc,UserBusiness.class);
 	}
+	
+	public ContractService getContractService(IWContext iwac) throws RemoteException {
+		return (ContractService) IBOLookup.getServiceInstance(iwac, ContractService.class);
+	}
+
+	
 }

@@ -1,15 +1,8 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
+
 import is.idega.idegaweb.campus.presentation.CampusBlock;
 
-import java.sql.SQLException;
-import java.util.List;
-
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.Building;
-import com.idega.block.building.data.Floor;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -27,7 +20,7 @@ import com.idega.presentation.text.Text;
 
 public class ApartmentSerie extends CampusBlock {
   protected boolean isAdmin = false;
-  
+
   public String getLocalizedNameKey(){
     return "apartment_series";
   }
@@ -47,7 +40,7 @@ public class ApartmentSerie extends CampusBlock {
         add(printApartmentSerie());
       }
       else if(iwc.getParameter("reload")!=null){
-        BuildingCacher.reload();
+        //BuildingCacher.reload();
       }
       add(makeMainTable());
     }
@@ -71,7 +64,7 @@ public class ApartmentSerie extends CampusBlock {
   }
 
   public void updateApartmentSerie(){
-    List L = BuildingFinder.listOfApartment();
+   /* List L = BuildingFinder.listOfApartment();
     if(L != null){
       int len = L.size();
       for (int i = 0; i < len; i++) {
@@ -96,12 +89,12 @@ public class ApartmentSerie extends CampusBlock {
 
         }
       }
-    }
+    }*/
   }
 
   public PresentationObject printApartmentSerie(){
     //List L = BuildingCacher.getApartments();
-    List L = BuildingFinder.ListOfAparmentOrderedByFloor();
+  /*  List L = BuildingFinder.ListOfAparmentOrderedByFloor();
     if(L != null){
       Table T = new Table();
       int len = L.size();
@@ -120,7 +113,7 @@ public class ApartmentSerie extends CampusBlock {
       }
       return T;
     }
-    else return new Text("Nothing to print");
+    else */return new Text("Nothing to print");
 
   }
    public String getBundleIdentifier(){
@@ -128,7 +121,7 @@ public class ApartmentSerie extends CampusBlock {
   }
 
   public void main(IWContext iwc){
-  
+
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);

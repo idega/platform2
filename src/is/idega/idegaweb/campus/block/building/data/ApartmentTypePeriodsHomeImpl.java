@@ -7,37 +7,30 @@ public class ApartmentTypePeriodsHomeImpl extends com.idega.data.IDOFactory impl
   return ApartmentTypePeriods.class;
  }
 
+
  public ApartmentTypePeriods create() throws javax.ejb.CreateException{
-  return (ApartmentTypePeriods) super.idoCreate();
+  return (ApartmentTypePeriods) super.createIDO();
  }
 
- public ApartmentTypePeriods createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApartmentTypePeriodsBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public ApartmentTypePeriods findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ApartmentTypePeriods) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByApartmentType(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApartmentTypePeriodsBMPBean)entity).ejbFindByApartmentType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ApartmentTypePeriods findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ApartmentTypePeriods) super.idoFindByPrimaryKey(pk);
+  return (ApartmentTypePeriods) super.findByPrimaryKeyIDO(pk);
  }
 
- public ApartmentTypePeriods findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AppliedBMPBean.java,v 1.4 2004/05/24 14:21:41 palli Exp $
+ * $Id: AppliedBMPBean.java,v 1.5 2004/06/05 07:42:30 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,9 @@
 package is.idega.idegaweb.campus.block.application.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  *
@@ -106,4 +109,16 @@ public class AppliedBMPBean extends com.idega.data.GenericEntity implements is.i
   public Integer getOrder() {
     return(getIntegerColumnValue(order_));
   }
+  
+  public Collection ejbFindAll()throws FinderException{
+  	return super.idoFindAllIDsBySQL();
+  }
+  
+  public Collection ejbFindByApplicationID(Integer ID )throws FinderException{
+  	 return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(applicationId_,ID.intValue()));
+  }
+  
+  public Collection ejbFindBySQL(String sql)throws FinderException{
+	  return super.idoFindPKsBySQL(sql);
+	}	
 }

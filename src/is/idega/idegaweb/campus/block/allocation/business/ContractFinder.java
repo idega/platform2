@@ -32,9 +32,10 @@ import com.idega.util.database.ConnectionBroker;
  */
 
 public abstract class ContractFinder {
+	
    public final  static int NAME = 0,SSN=1,APARTMENT = 2,FLOOR=3,BUILDING=4,
       COMPLEX=5,CATEGORY=6,TYPE=7,CONTRACT = 8,APPLICANT = 9;
-
+/*
 
   public static Contract getContract(int id){
     if(id > 0){
@@ -337,7 +338,7 @@ public abstract class ContractFinder {
 		sql.append(sAprtName);
 		sql.append("'");
 /*    sql.append(" order by ");
-    sql.append(order);*/
+    sql.append(order);*//*
     String sSQL = sql.toString();
     System.err.println(sSQL);
     try {
@@ -464,11 +465,11 @@ public abstract class ContractFinder {
     if(count < 0)
       count = 0;
     return count;
-  }*/
+  }*//*
 
   /**
    * @deprecated Replaced by findByApplicant(int applicantId)
-   */
+   *//*
   public static Contract findApplicant(int userID){
     Contract contract = null;
     try {
@@ -607,11 +608,11 @@ public abstract class ContractFinder {
     sql.append(" and b.bu_complex_id = c.bu_complex_id ");
     sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
     sql.append(" and con.app_applicant_id = p.app_applicant_id");
-	/** @todo  which contract statuses are defined apartment as available */
+	/** @todo  which contract statuses are defined apartment as available *//*
 	// 
     sql.append(" and con.status not in ('G') ");
     // not the ones in garbage
-    /** */
+    /** *//*
     if(iComplexId > 0){
       sql.append(" and b.bu_complex_id  = ");
       sql.append(iComplexId);
@@ -631,7 +632,7 @@ public abstract class ContractFinder {
         List A = listOfNonContractApartments(iApartmentTypeId,iComplexId);
         if(A != null)
           L.addAll(A);
-      }*/
+      }*//*
 
       return L;
     }
@@ -643,7 +644,7 @@ public abstract class ContractFinder {
 
   /**
    *
-   */
+   *//*
   public static Contract findByApplicant(int applicantId){
     Contract contract = null;
     try {
@@ -661,7 +662,7 @@ public abstract class ContractFinder {
 
   /**
    *
-   */
+   *//*
   public static List findAllContractsByApplicant(int applicantId){
     Contract contract = null;
     try {
@@ -677,7 +678,7 @@ public abstract class ContractFinder {
 
   /**
    *
-   */
+   *//*
   public static Contract findByUser(int user){
     Contract contract = null;
     try {
@@ -692,9 +693,7 @@ public abstract class ContractFinder {
     return contract;
   }
 
-	/**
-	 * 
-	 */
+	
 	public static Contract findValidContractByUser(int user){
 		Contract contract = null;
 		try {

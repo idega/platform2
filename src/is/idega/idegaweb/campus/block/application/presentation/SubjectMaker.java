@@ -1,11 +1,17 @@
 package is.idega.idegaweb.campus.block.application.presentation;
 
+
+
 import is.idega.idegaweb.campus.presentation.CampusBlock;
+import is.idega.idegaweb.campus.presentation.Edit;
 
-import java.sql.SQLException;
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
-import com.idega.block.application.business.ApplicationFinder;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -15,9 +21,10 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.Edit;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
+
+
 /**
  * Title:
  * Description:
@@ -30,7 +37,10 @@ import com.idega.util.LocaleUtil;
 
 public class SubjectMaker extends CampusBlock{
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
+
+  
+  private final String strAction = "fin_action";
+
   protected boolean isAdmin = false;
   
 
@@ -55,7 +65,7 @@ public class SubjectMaker extends CampusBlock{
         else if(iwc.getParameter("delete")!= null){
           doDelete(iwc);
         }
-        this.add(makeInputTable());
+        this.add(makeInputTable(iwc));
       }
       else
         this.add(getNoAccessObject(iwc));
@@ -68,7 +78,7 @@ public class SubjectMaker extends CampusBlock{
     return LinkTable;
   }
 
-  public PresentationObject makeInputTable(){
+  public PresentationObject makeInputTable(IWContext iwc){
 
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
@@ -81,23 +91,35 @@ public class SubjectMaker extends CampusBlock{
       Right.setCellspacing(0);
     Frame.add(Left,1,1);
     Frame.add(Right,3,1);
-    List L = ApplicationFinder.listOfSubject();
+    Collection L = null;
+	try {
+		L = getApplicationService(iwc).getSubjectHome().findAll();
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}  //List L = ApplicationFinder.listOfSubject();
     Table T = new Table();
     TextInput Description = new TextInput("app_subj_desc");
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
     ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
     SubmitButton SaveButton = new SubmitButton("save","Save");
+
+  
     T.add(getHeader(localize("description", "Description")) +" :",1,1);
     T.add(getHeader(localize("expiredate", "Expiredate")) +" :",2,1);
+
     T.add(Description,1,2);
     T.add(ExpireDate,2,2);
     T.add(SaveButton,3,2);
     if(L != null){
-      int len = L.size();
+     
       int a = 3;
-      for (int i = 0; i < len; i++) {
-        ApplicationSubject AS = (ApplicationSubject) L.get(i);
-        T.add(Edit.formatText(AS.getDescription()),1,a);
+      for (Iterator iter = L.iterator(); iter.hasNext();) {
+		ApplicationSubject AS = (ApplicationSubject) iter.next();
+	    T.add(Edit.formatText(AS.getDescription()),1,a);
         T.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getLocaleDate(LocaleUtil.getIcelandicLocale())),2,a);
         T.add((getDeleteLink(AS)),3,a);
         a++;
@@ -113,15 +135,15 @@ public class SubjectMaker extends CampusBlock{
 
   public Link getDeleteLink(ApplicationSubject AS){
     Link L = new Link("X");
-    L.addParameter("delete",AS.getID());
+    L.addParameter("delete",AS.getPrimaryKey().toString());
     return L;
   }
 
   public void doDelete(IWContext iwc){
     try {
       int id = Integer.parseInt(iwc.getParameter("delete"));
-      ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(id);
-      AS.delete();
+      ApplicationSubject AS = getApplicationService(iwc).getSubjectHome().findByPrimaryKey(new Integer(id));
+      AS.remove();
     }
     catch (Exception ex) {
 
@@ -132,16 +154,19 @@ public class SubjectMaker extends CampusBlock{
   public void doUpdate(IWContext iwc){
     String sDesc= iwc.getParameter("app_subj_desc").trim();
     String sDate = iwc.getParameter("app_subj_xdate");
-    if(sDesc.length() > 0){
-      ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
-      AS.setDescription(sDesc);
-      AS.setExpires(new IWTimestamp(sDate).getSQLDate());
-      try {
-        AS.insert();
-      }
-      catch (SQLException ex) {
-
-      }
+    
+	if(sDesc.length() > 0){
+    	try {
+			getApplicationService(iwc).storeApplicationSubject(sDesc,new IWTimestamp(sDate));
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+    
+    
     }
   }
 
@@ -149,5 +174,6 @@ public class SubjectMaker extends CampusBlock{
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
+  
 
 }
