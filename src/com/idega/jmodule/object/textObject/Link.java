@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.45 2001/09/27 13:37:08 laddi Exp $
+ * $Id: Link.java,v 1.46 2001/09/27 14:24:27 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -884,6 +884,9 @@ public class Link extends Text {
           else {
             _obj.print(modinfo);
           }
+        }
+        else {
+          _obj.print(modinfo);
         }
         print("</a>");
       }

@@ -38,6 +38,7 @@ private boolean menubar;
 private boolean status;
 private boolean titlebar;
 private boolean resizable;
+private boolean fullscreen;
 
 private static Map allOpenedWindowClasses = new Hashtable();
 
@@ -139,6 +140,10 @@ public void setTitlebar(boolean ifTitlebar){
 
 public void setResizable(boolean ifResizable){
 	resizable=ifResizable;
+}
+
+public void setFullScreen(boolean ifFullScreen){
+  fullscreen=ifFullScreen;
 }
 
 
@@ -255,6 +260,12 @@ private String returnCheck(boolean checkBool){
 	}
 }
 
+private String returnFullScreen() {
+  if ( fullscreen == true )
+    return ",fullscreen";
+  else
+    return "";
+}
 
 public static String getWindowURL(Class windowClass){
   String url = IWMainApplication.windowOpenerURL;
@@ -301,7 +312,7 @@ public static String getCallingScriptString(Class windowClass,String url,boolean
       if(windowInstance==null){
           return "window.open('"+theURL+"','tempwindow','resizable=yes,toolbar=yes,location=no,directories=no,status=yes,scrollbars=yes,menubar=yes,titlebar=yes,width=500,height=500')";
       }
-      return "window.open('"+theURL+"','"+windowInstance.getTarget()+"','resizable="+windowInstance.returnCheck(windowInstance.resizable)+",toolbar="+windowInstance.returnCheck(windowInstance.toolbar)+",location="+windowInstance.returnCheck(windowInstance.location)+",directories="+windowInstance.returnCheck(windowInstance.directories)+",status="+windowInstance.returnCheck(windowInstance.status)+",scrollbars="+windowInstance.returnCheck(windowInstance.scrollbar)+",menubar="+windowInstance.returnCheck(windowInstance.menubar)+",titlebar="+windowInstance.returnCheck(windowInstance.titlebar)+",width="+windowInstance.getWidth()+",height="+windowInstance.getHeight()+"')";
+      return "window.open('"+theURL+"','"+windowInstance.getTarget()+"','resizable="+windowInstance.returnCheck(windowInstance.resizable)+",toolbar="+windowInstance.returnCheck(windowInstance.toolbar)+",location="+windowInstance.returnCheck(windowInstance.location)+",directories="+windowInstance.returnCheck(windowInstance.directories)+",status="+windowInstance.returnCheck(windowInstance.status)+",scrollbars="+windowInstance.returnCheck(windowInstance.scrollbar)+",menubar="+windowInstance.returnCheck(windowInstance.menubar)+",titlebar="+windowInstance.returnCheck(windowInstance.titlebar)+windowInstance.returnFullScreen()+",width="+windowInstance.getWidth()+",height="+windowInstance.getHeight()+"')";
 }
 
 public String getCallingScriptString(ModuleInfo modinfo,String url){
@@ -310,7 +321,7 @@ public String getCallingScriptString(ModuleInfo modinfo,String url){
             setID();
             setName(getID());
           }*/
-         return "window.open('"+url+"','"+getTarget()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+",width="+getWidth()+",height="+getHeight()+"')";
+         return "window.open('"+url+"','"+getTarget()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+returnFullScreen()+",width="+getWidth()+",height="+getHeight()+"')";
 }
 
 public String getCallingScriptString(ModuleInfo modinfo){
@@ -331,7 +342,7 @@ protected String getCallingScriptStringForForm(ModuleInfo modinfo){
             setID();
             setName(getID());
           }*/
-         return "window.open('','"+getTarget()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+",width="+getWidth()+",height="+getHeight()+"')";
+         return "window.open('','"+getTarget()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+returnFullScreen()+",width="+getWidth()+",height="+getHeight()+"')";
 }
 
 
