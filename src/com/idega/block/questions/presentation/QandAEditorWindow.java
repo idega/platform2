@@ -204,12 +204,18 @@ public class QandAEditorWindow extends IWAdminWindow {
 			table.add(answerBody,2,7);
 			
 			if(question!=null){
-				questionTitle.setContent(question.getHeadline());
-				questionBody.setContent(question.getBody());
+				String headline,body;
+				if((headline= question.getHeadline())!=null)
+					questionTitle.setContent(headline);
+				if((body=question.getBody())!=null)
+					questionBody.setContent(body);
 			}
 			if(answer!=null){
-				answerTitle.setContent(answer.getHeadline());
-				answerBody.setContent(answer.getBody());
+				String headline,body;
+				if((headline= answer.getHeadline())!=null)
+					answerTitle.setContent(headline);
+				if((body=answer.getBody())!=null)
+					answerBody.setContent(body);
 			}
 			
 			SubmitButton save = new SubmitButton(PRM_SAVE,iwrb.getLocalizedString("save","Save"));
