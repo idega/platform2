@@ -127,7 +127,7 @@ public class BuildingMaker extends JModuleObject{
         else if(name.equalsIgnoreCase("button"))       sButton = value;
         else if(name.equalsIgnoreCase("get"))          sGet = value;
         else if(name.equalsIgnoreCase("dr_id"))        sId = value;
-        //add(name+" : "+value+"<br>");
+        add(name+" : "+value+"<br>");
       }
       else if (part.isFile()) {
         // it's a file part
@@ -223,14 +223,13 @@ public class BuildingMaker extends JModuleObject{
           else if(sLodging.equalsIgnoreCase("roomtype") ){
             RoomType r = new RoomType(id);
             einfo = r.getInfo();
-            imageid = r.getImageId();
             fields = this.makeTypeFields(r.getName());
           }
           else if(sLodging.equalsIgnoreCase("room") ){
             Room r = new Room(id);
             einfo = r.getInfo();
             imageid = r.getImageId();
-            fields = this.makeRoomFields(r.getName(),String.valueOf(r.getFloorId()),String.valueOf(r.getRoomTypeId()));
+            fields = this.makeRoomFields(r.getName(),String.valueOf(r.getFloorId()),String.valueOf(r.getRoomSubTypeId()));
           }
         }
         catch(SQLException e){}
@@ -239,7 +238,7 @@ public class BuildingMaker extends JModuleObject{
         this.addImage(new Image(imageid));
         try {
           com.idega.data.genericentity.Image im = new com.idega.data.genericentity.Image(imageid);
-          ip = new ImageProperties(im.getImageName(),im.getContentType(),"","",0);
+          ImageProperties ip = new ImageProperties(im.getImageName(),im.getContentType(),"","",0);
           ip.setId(imageid);
           modinfo.getSession().setAttribute("bm_ip",ip);
         }
@@ -343,7 +342,6 @@ public class BuildingMaker extends JModuleObject{
         etype = new RoomType(id);
       etype.setName(name);
       etype.setInfo(info);
-      etype.setImageId(imageid);
       if(id != -1)
         etype.update();
       else
@@ -359,7 +357,7 @@ public class BuildingMaker extends JModuleObject{
         eroom = new Room(id);
       eroom.setName(name);
       eroom.setFloorId(Integer.parseInt( floorid));
-      eroom.setRoomTypeId(Integer.parseInt(roomtypeid));
+      eroom.setRoomSubTypeId(Integer.parseInt(roomtypeid));
       eroom.setInfo(info);
       eroom.setImageId(imageid);
       if(id != -1)
@@ -573,6 +571,21 @@ public class BuildingMaker extends JModuleObject{
     return T;
   }
   private ModuleObject makeTypeFields(String sName){
+    Table T = new Table();
+    TextInput name = new TextInput("bm_name",sName);
+    DropdownMenu roomtypes = drpLodgings(new RoomType(),"dr_id","Gerð","");
+    HiddenInput HI = new HiddenInput("bm_choice","roomtype");
+    name.setLength(30);
+    T.add(HI);
+    T.add("Sækja gerð:",1,1);
+    T.add(roomtypes,1,2);
+    T.add(new SubmitButton("get","Get"),1,2);
+    T.add("Heiti:",1,3);
+    T.add(name,1,4);
+    return T;
+  }
+
+  private ModuleObject makeSubTypeFields(String sName){
     Table T = new Table();
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu roomtypes = drpLodgings(new RoomType(),"dr_id","Gerð","");
