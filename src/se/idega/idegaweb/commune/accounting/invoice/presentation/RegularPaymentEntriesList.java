@@ -569,8 +569,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
 		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
-		searcher.maintainParameter(new Parameter(PAR_OWN_POSTING, " "));		
-		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
+//		searcher.maintainParameter(new Parameter(PAR_OWN_POSTING, " "));		
+//		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
 		searcher.setToFormSubmit(true);
 
 		try{
@@ -602,7 +602,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		} catch(NumberFormatException ex){		}
 				
 		addDropDown(formTable, PAR_SELECTED_PROVIDER, KEY_PROVIDER, getProvidersForOperationalField(iwc), selectedProvider, "getSchoolName", 1, formTableRow++);
-		
 
 		if (errorMessage != null){
 			formTable.mergeCells(2, formTableRow, 10, formTableRow);
@@ -800,7 +799,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		
 		table.mergeCells(1, row, 10, row);
-		
 		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
 		table.add(postingBlock, 1, row++);
 						
@@ -856,10 +854,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private RegularPaymentEntry getNotStoredEntry(IWContext iwc, Regulation reg, String[] posting) {
 		final IWContext _iwc = iwc;
 		final Regulation _reg = reg;
-		final String[] _posting = posting;	
-
-		
-
+		final String[] _posting = posting;		
 		
 		return new RegularPaymentEntry() {
 		
