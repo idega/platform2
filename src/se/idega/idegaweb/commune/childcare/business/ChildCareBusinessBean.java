@@ -849,18 +849,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			caseBiz.changeCaseStatus(application, getCaseStatusDenied().getStatus(), user);
 			sendMessageToParents(application, subject, message);
 			
-			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+			if (isAfterSchoolApplication(application)) {
 				Iterator iter = application.getChildren();
-				while (iter.hasNext()) {
-					Case element = (Case) iter.next();
-					if (element instanceof ChildCareApplication) {
-						application = (ChildCareApplication) element;
-						application.setApplicationStatus(getStatusSentIn());
-						caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
-
-						subject = this.getLocalizedString("after_school.application_received_subject", "");
-						message = this.getLocalizedString("after_school.application_received_body", "");
-						sendMessageToParents(application, subject, message);
+				if (iter != null) {
+					while (iter.hasNext()) {
+						Case element = (Case) iter.next();
+						if (element instanceof ChildCareApplication) {
+							application = (ChildCareApplication) element;
+							application.setApplicationStatus(getStatusSentIn());
+							caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
+	
+							subject = this.getLocalizedString("after_school.application_received_subject", "");
+							message = this.getLocalizedString("after_school.application_received_body", "");
+							sendMessageToParents(application, subject, message);
+						}
 					}
 				}
 			}
