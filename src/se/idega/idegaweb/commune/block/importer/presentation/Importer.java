@@ -1,8 +1,9 @@
 package se.idega.idegaweb.commune.block.importer.presentation;
 
+import com.idega.idegaweb.IWResourceBundle;
 import java.io.File;
 import com.idega.presentation.*;
-
+import com.idega.presentation.ui.*;
 
 /**
  * <p>Title: IdegaWeb classes</p>
@@ -16,6 +17,7 @@ import com.idega.presentation.*;
 public class Importer extends Block {
   String folderPath;
   boolean selectFiles,importFiles,selectFolder = false;
+  IWResourceBundle iwrb;
 
   private final String ACTION_PARAMETER = "se_im_ac"; //action
   private final String SELECT_FILES = "se_im_sf"; //select files action
@@ -59,6 +61,7 @@ public class Importer extends Block {
   }
 
   public void main(IWContext iwc) throws Exception {
+    iwrb = this.getResourceBundle(iwc);
 
     if( selectFiles ){
       if( this.getFolderPath()!=null ){
@@ -66,11 +69,32 @@ public class Importer extends Block {
 
         if( folder.isDirectory() ){
 
+          File[] files = folder.listFiles();
+          Table fileTable = new Table(2,files.length+1);
+          Form form = new Form();
+          form.add(fileTable);
 
+          fileTable.add(iwrb.getLocalizedString("importer.select_files","Select files to import."),1,1);
+          fileTable.add(new HiddenInput(ACTION_PARAMETER,SELECT_FILES),2,1);
+
+          for (int i = 0; i < files.length; i++) {
+            if( !files[i].isDirectory() ){
+             fileTable.add(files[i].getName(),1,i+2);
+             fileTable.add(new CheckBox(this.IMPORT_FILE_PATHS,files[i].getAbsolutePath()),2,i+2);
+            }
+            else{
+              fileTable.add(files[i].getName(),1,i+2);
+              fileTable.add(iwrb.getLocalizedString("importer.is.a.folder","Folder"),2,i+2);
+            }
+
+          }
+
+          add(form);
 
         }
         else{
-
+          add( iwrb.getLocalizedString("importer.nosuchfolder","No such folder.") );
+          add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) );
         }
 
 
@@ -78,14 +102,15 @@ public class Importer extends Block {
 
     }
     else if( selectFolder ){
+      Form form = new Form();
+      form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
+      form.add(new TextInput(this.SELECT_NEW_FOLDER, this.NEW_FOLDER_PATH ) );
+      add(form);
 
     }
     else if( importFiles ){
-
-
+      add(iwrb.getLocalizedString("importer.importing","importing..."));
     }
-
-
 
   }
 
