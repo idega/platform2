@@ -1,7 +1,10 @@
 package com.idega.block.dataquery.test;
 
+import java.rmi.RemoteException;
+
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
+import com.idega.business.IBOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
@@ -47,7 +50,8 @@ public class CreatingAndReadingQueryResultTest extends Block {
     newData.setDocument(newDocument);
     newData.store();
     // test 3 executing sql statement
-    QueryResult result = QueryToSQLBridge.executeStatement("select first_name from ic_user");
+    QueryToSQLBridge bridge = getQueryToSQLBridge(iwc);
+    QueryResult result = bridge.executeStatement("select first_name from ic_user");
     XMLElement sqlelement = result.convertToXML();
     XMLData sqldata = XMLData.getInstanceWithoutExistingFile();
     XMLDocument sqldocument = new XMLDocument(sqlelement);
@@ -58,4 +62,14 @@ public class CreatingAndReadingQueryResultTest extends Block {
     XMLDocument document4 = data4.getDocument();
     result = QueryResult.getInstanceForDocument(document4);
   }
+  
+  private QueryToSQLBridge getQueryToSQLBridge(IWContext iwc) throws RemoteException {
+    try {
+      return (QueryToSQLBridge) IBOLookup.getServiceInstance( iwc ,QueryToSQLBridge.class);
+    }
+    catch (RemoteException ex)  {
+      throw new RuntimeException(ex.getMessage());
+    }
+  }
+    
 }
