@@ -149,8 +149,9 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
         }
       }
 
+	  	Service service = ((ServiceHome) IDOLookup.getHome(Service.class)).findByPrimaryKey(returner);
+		  service.removeAllHotelPickupPlaces();
 			if (pickupIds != null && returner > 0) {
-		  	Service service = ((ServiceHome) IDOLookup.getHome(Service.class)).findByPrimaryKey(returner);
         for (int i = 0; i < pickupIds.length; i++) {
           if (!pickupIds[i].equals("-1")) {
 	          try{
@@ -276,7 +277,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           imageInserter.setImageId( _product.getFileId() );
           imageInserter.setSelected( true );
         }
-        Iterator iter = pickupCollection.iterator();
+        Collection pickupService = ppHome.findHotelPickupPlaces(_service);
+        Iterator iter = pickupService.iterator();
         while (iter.hasNext()) {
           pickups.setSelectedElement(iter.next().toString());
         }
