@@ -71,6 +71,10 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		
 		
 		addManyToManyRelationShip(WorkReportGroup.class);
+		
+		addIndex("IDX_ISI_WR_CLUB_MEMBER_1", COLUMN_NAME_REPORT_ID);
+		addIndex("IDX_ISI_WR_CLUB_MEMBER_2", new String[]{ COLUMN_NAME_REPORT_ID, COLUMN_NAME_USER_ID});
+		addIndex("IDX_ISI_WR_CLUB_MEMBER_3", new String[]{ COLUMN_NAME_REPORT_ID, COLUMN_NAME_GENDER, COLUMN_NAME_DATE_OF_BIRTH});
 	}
 	public String getEntityName() {
 		return ENTITY_NAME;
