@@ -356,6 +356,8 @@ public abstract class AbstractSearchForm extends Block{
 		formTable.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
 		//formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
 		formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
+		formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID)));
+		formTable.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
 		
 		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
 		formTable.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
@@ -376,6 +378,7 @@ public abstract class AbstractSearchForm extends Block{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		/** PriceCategories Begin
 
 		try {
