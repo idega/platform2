@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 
 import se.nexus.nbs.sdk.HttpMessage;
@@ -72,6 +73,8 @@ public class PKIServlet extends HttpServlet
 			NBSServerFactory serverGenerator = new NBSServerFactory();
 			serverGenerator.init(configFile);
 			context.setAttribute(SERVER_FACTORY, serverGenerator);
+			
+			System.out.println("PKIServlet.init() - done");
 
 		}
 		catch (Exception e)
@@ -99,6 +102,7 @@ public class PKIServlet extends HttpServlet
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
+		System.out.println("PKIServlet.doGet(...) - begins");
 		NBSMessageResult result = null;
 
 		// Get the action.
@@ -149,6 +153,7 @@ public class PKIServlet extends HttpServlet
 		{
 			printErrorMessage(res, e.getMessage());
 		}
+		System.out.println("PKIServlet.doGet(...) - done");
 	}
 
 	/**
@@ -156,6 +161,7 @@ public class PKIServlet extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
+		System.out.println("PKIServlet.doPost(...) - begins");
 		NBSResult result = null;
 
 		// Get the action.
@@ -163,6 +169,8 @@ public class PKIServlet extends HttpServlet
 
 		try
 		{
+			
+			
 			// Get the server object.
 			NBSServerHttp server = getServer(req);
 			HttpMessage httpReq = new HttpMessage();
@@ -198,7 +206,15 @@ public class PKIServlet extends HttpServlet
 				// No action specified means that a message
 				// probably has been received.
 
+				System.out.println("PKI servlet - Message received");
+
+
+				System.out.println("ib_page"+" = "+req.getParameter("ib_page"));
+				System.out.println("ib_error_page"+" = "+req.getParameter("ib_error_page"));
+
+
 				// Process the message.
+
 				result = server.handleMessage(httpReq);
 
 				// Interpret the result.
@@ -207,12 +223,15 @@ public class PKIServlet extends HttpServlet
 				switch (type)
 				{
 					case (NBSResult.TYPE_AUTH) :
+						
+						System.out.println("NBSResult = TYPE_AUTH");
 						info = getCertInfoString((NBSAuthResult) result);
 						//info += "<br>"+getXmlInfoString((NBSAuthResult)result);
 						info += postAuthentication(req, res, result);
 						printPage(res, "NBSAuthentication successful<br>" + info);
 						break;
 					case (NBSResult.TYPE_SIGN) :
+						System.out.println("NBSResult = TYPE_SIGN");
 						info = getCertInfoString((NBSAuthResult) result);
 						info += "<br>" + getXmlInfoString((NBSAuthResult) result);
 						printPage(res, "Signature successful<br>" + info);
@@ -220,9 +239,14 @@ public class PKIServlet extends HttpServlet
 					case (NBSResult.TYPE_MESSAGE) :
 						// If a new message was created, send it to
 						// the Client.
-
+						System.out.println("NBSResult = TYPE_MESSAGE");
 						NBSMessageResult msgResult = (NBSMessageResult) result;
 						NBSMessageHttp mpMsg = (NBSMessageHttp) msgResult.getMessage();
+//						String errorPageID = req.getParameter("ib_error_page");
+//						if(errorPageID != null && !errorPageID.equals("")){
+//							res.sendRedirect(req.getRequestURI()+"?ib_page"+errorPageID);
+//						}
+						//IWMainApplication.getIWMainApplication(this.getServletContext()).getTranslatedURIWithContext())
 						sendMessage(res, mpMsg.toHttpMessage());
 						break;
 					default :
@@ -233,12 +257,20 @@ public class PKIServlet extends HttpServlet
 		}
 		catch (NBSException mpse)
 		{
+			System.out.println("NBSException");
+			System.err.println(mpse.getMessage());
+			mpse.printStackTrace();
 			printErrorCode(res, mpse.getCode(), mpse.getMessage());
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();	
+			System.out.println("Exception");
 			printErrorMessage(res, e.getMessage());
 		}
+		
+		System.out.println("PKIServlet.doPost(...) - ends");
+		
 	}
 
 	/**

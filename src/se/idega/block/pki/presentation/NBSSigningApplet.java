@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import se.nexus.nbs.sdk.NBSMessageHttp;
 
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
@@ -28,7 +29,12 @@ public class NBSSigningApplet extends PresentationObject {
 		
 	NBSMessageHttp _nbsMessageHttp = null;
 	
+	private String _loggedOnPageID = null;
+	private String _errorPageID = null;
+	private String _eventListenerClassName=null;
+	
 	private final static String BIDT_JAR_PATH_PROPERTY = "bidt_jar_path";	
+
 
 	//TODO: (Roar) the jar file should be stored in the bundle		
 	private final static String DEFAULT_JAR_ARCHIVE =
@@ -64,22 +70,70 @@ public class NBSSigningApplet extends PresentationObject {
 		html = html.substring(0, start) + " ACTION=\"\" " + html.substring(end);
 
 		//Adding idegaweb session informatin to the form
-		start = html.indexOf("</FORM>");
+		start = html.indexOf("</FORM>");		
 		html =
 			html.substring(0, start)
 				+ " <INPUT  NAME=ib_page VALUE=\""
-				+ iwc.getParameter("ib_page")
+				+ ((_loggedOnPageID!=null)?_loggedOnPageID:iwc.getParameter("ib_page"))
+				+ "\" TYPE=HIDDEN>\n"
+				+ " <INPUT  NAME=ib_error_page VALUE=\""
+				+ ((_errorPageID!=null)?_errorPageID:iwc.getParameter("ib_page"))
 				+ "\" TYPE=HIDDEN>\n"
 				+ " <INPUT  NAME=idega_session_id VALUE=\""
-				+ iwc.getParameter("idega_session_id")
+				+ iwc.getSessionId()   // iwc.getParameter("idega_session_id")
 				+ "\" TYPE=HIDDEN>\n"
 				+ " <INPUT  NAME=iw_language VALUE=\""
 				+ iwc.getParameter("iw_language")
-				+ "\" TYPE=HIDDEN>\n"
+				+ "\" TYPE=HIDDEN>\n"  
+				//if some eventListenerClassName is set then a hidden input is added to the form 
+				//same as form.setEventListener(String str) 
+				+ ((_eventListenerClassName!=null)
+				? ( " <INPUT  NAME="  
+				+ IWMainApplication.IdegaEventListenerClassParameter   
+				+ " VALUE=\""
+				+ IWMainApplication.getEncryptedClassName(_eventListenerClassName)
+				+ "\" TYPE=HIDDEN>\n")
+				: (""))
 				+ html.substring(start);
 
 		print(html);
 	}
+
+	/**
+	 * @return 
+	 */
+	public String getErrorPageID() {
+		return _errorPageID;
+	}
+
+	/**
+	 * @return 
+	 */
+	public String getLoggedOnPageID() {
+		return _loggedOnPageID;
+	}
+
+	/**
+	 * @param pageID - id of the page to go to if login is not successful
+	 */
+	public void setErrorPageID(String string) {
+		_errorPageID = string;
+	}
+
+	/**
+	 * @param pageID - id of the page to go to if login is successful
+	 */
+	public void setLoggedOnPageID(String pageID) {
+		_loggedOnPageID = pageID;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setEventListenerClassName(String eventListenerClassName) {
+		_eventListenerClassName = eventListenerClassName;
+	}
+
 	
 	private String getJarFilepath(IWContext iwc){
 		String path =  getBundle(iwc).getProperty(BIDT_JAR_PATH_PROPERTY);
@@ -87,4 +141,5 @@ public class NBSSigningApplet extends PresentationObject {
 		return path != null ? path : DEFAULT_JAR_ARCHIVE;		
 		
 	}
+
 }
