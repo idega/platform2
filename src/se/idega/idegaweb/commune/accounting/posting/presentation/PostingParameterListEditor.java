@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.35 2003/10/27 10:22:18 anders Exp $
+ * $Id: PostingParameterListEditor.java,v 1.36 2003/11/05 23:28:29 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.35 2003/10/27 10:22:18 anders Exp $
+ * $Id: PostingParameterListEditor.java,v 1.36 2003/11/05 23:28:29 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -707,11 +707,11 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @return the drop down menu
 	 */
 	private DropdownMenu studyPathSelector(IWContext iwc, String name, int refIndex) {
-		
+	
 		DropdownMenu menu = null;
 		try {
 			menu = (DropdownMenu) getStyledInterface(
-				getDropdownMenuLocalized(name, getStudyPathBusiness(iwc).findAllStudyPaths(), 
+				getDropdownMenu(name, getStudyPathBusiness(iwc).findAllStudyPaths(), 
 				"getCode"));
 			menu.setSelectedElement(refIndex);
 			menu.addMenuElementFirst("0", localize(KEY_STUDY_PATH_HEADER_TWO, "Ingen"));
@@ -722,7 +722,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 		}
 		return menu;
 	}
-
+	
+	
 	private boolean hasError() {
 		return _errorText.length() == 0 ? false : true;
 	}
