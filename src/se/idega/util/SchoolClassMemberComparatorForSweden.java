@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberComparatorForSweden.java,v 1.1 2004/10/21 14:20:34 thomas Exp $
+ * $Id: SchoolClassMemberComparatorForSweden.java,v 1.2 2005/03/31 07:00:58 laddi Exp $
  * Created on Oct 21, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
  * This Comparator is used to change the behaviour of the 
  * SchoolClassMemberComparator.
  * 
- *  Last modified: $Date: 2004/10/21 14:20:34 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/31 07:00:58 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolClassMemberComparatorForSweden{
 	
@@ -47,16 +47,7 @@ public class SchoolClassMemberComparatorForSweden{
 	 private static Comparator getComparator(int sortBy, Locale locale, UserBusiness business, Map students) {
 	 	Comparator comparator = new Comparator() {
 	 		public int compare(Object o1, Object o2) {
-	 			int result = 0;
-			
-	 			boolean isFemale1 = PIDChecker.getInstance().isFemale(((User) o1).getPersonalID());
-	 			boolean isFemale2 = PIDChecker.getInstance().isFemale(((User) o2).getPersonalID());
-			
-	 			if (isFemale1 && !isFemale2)
-	 				result = -1;
-	 			if (!isFemale1 && isFemale2)
-	 				result = 1;
-	 			return result;
+	 			return ((User) o1).getGenderID() - ((User) o2).getGenderID();
 	 		}
 	 	};
 	 	return SchoolClassMemberComparator.getComparatorSortByUseGenderComparator(sortBy, comparator, locale, business, students);
