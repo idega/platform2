@@ -1258,7 +1258,6 @@ public class PaymentBooker extends com.idega.presentation.PresentationObjectCont
 
 	public void main(IWContext modinfo) throws IOException {
 		//isAdmin =
-		// com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
 		/** @todo: fixa Admin*/
 		iwrb = getResourceBundle(modinfo);
 		iwb = getBundle(modinfo);

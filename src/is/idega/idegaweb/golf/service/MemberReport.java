@@ -517,7 +517,7 @@ public class MemberReport extends GolfBlock {
 
   public void main(IWContext modinfo) {
     /* try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = 
     }
     catch(SQLException e){
       isAdmin = false;

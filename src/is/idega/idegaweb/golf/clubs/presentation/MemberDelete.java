@@ -339,7 +339,7 @@ public class MemberDelete extends Editor {
 			 * catch(SQLException ex){ if(debug) ex.printStackTrace(); }
 			 */
 			/*
-			 * try{ com.idega.jmodule.image.data.ImageEntity image = M.getImage();
+			 * try{ ImageEntity image = M.getImage();
 			 * image.delete(); } catch(SQLException ex){ if(debug)
 			 * ex.printStackTrace(); }
 			 */

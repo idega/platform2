@@ -117,7 +117,7 @@ public class ClubNewsBox extends Block {
 
     for (int a = 0; a < 5; a++) {
       if (news.length > a) {
-        News[] clubNews = (News[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAllByColumnOrdered("news_category_id",Integer.toString(news[a].getNewsCategoryId()),"news_date desc");
+        News[] clubNews = (News[]) (com.idega.data.GenericEntity.getStaticInstance("is.idega.idegaweb.golf.block.news.data.News")).findAllByColumnOrdered("news_category_id",Integer.toString(news[a].getNewsCategoryId()),"news_date desc");
         Text unionText = new Text();
         unionText.setFontSize(1);
         unionText.setFontColor("#666666");

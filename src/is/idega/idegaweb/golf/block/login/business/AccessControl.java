@@ -140,15 +140,6 @@ public class AccessControl {
 
 	}
 
-	/*
-	 * public boolean isAdmin(ModuleInfo modinfo) { try{ return
-	 * com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
-	 * }catch (SQLException E) { //out.print("SQLException: " + E.getMessage());
-	 * //out.print("SQLState: " + E.getSQLState()); //out.print("VendorError: " +
-	 * E.getErrorCode()); }catch (Exception E) { E.printStackTrace(); }finally { }
-	 * return false; }
-	 */
-
 	public static boolean isDeveloper(IWContext modinfo) {
 		if (modinfo.getSession().getAttribute("member_access") != null) {
 			if (modinfo.getSession().getAttribute("member_access").equals("developer")) {

@@ -569,7 +569,7 @@ public static String controlParameter;
 
 		Form myForm = new Form();
                 //myForm.submitTo(this);
-                myForm.setEventListener("com.idega.jmodule.login.business.LoginBusiness");
+                myForm.setEventListener(GolfLoginBusiness.class);
 
 /*		Table EinnTable = new Table(2,1);
 			EinnTable.setBorder(0);

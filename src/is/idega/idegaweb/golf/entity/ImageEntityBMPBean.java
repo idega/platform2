@@ -11,7 +11,7 @@ import com.idega.data.IDOLookup;
 
 
 /**
- * @deprecated Replaced with com.idega.jmodule.image.data.ImageEntity
+ * @deprecated Replaced with is.idega.idegaweb.golf.entity.ImageEntity
  */
 public class ImageEntityBMPBean extends GenericEntity implements ImageEntity{
 

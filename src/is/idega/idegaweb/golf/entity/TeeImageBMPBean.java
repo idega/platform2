@@ -13,7 +13,7 @@ public class TeeImageBMPBean extends GenericEntity implements TeeImage{
 		addAttribute(getIDColumnName());
 		addAttribute("field_id", "Völlur", true, true, "java.lang.Integer");
 		addAttribute("hole_number", "Holunúmer", true, true, "java.lang.Integer");
-                      addAttribute("image_id","Image",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
+                      addAttribute("image_id","Image",false,false,Integer.class,"one-to-many",ImageEntity.class);
 		//addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
 	}
 

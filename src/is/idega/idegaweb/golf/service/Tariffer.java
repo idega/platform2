@@ -2357,7 +2357,6 @@ public class Tariffer extends PresentationObjectContainer {
 
 	public void main(IWContext modinfo) throws IOException {
 		//isAdmin =
-		// com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
 		/** @todo: fixa Admin*/
 		iwrb = getResourceBundle(modinfo);
 		iwb = getBundle(modinfo);

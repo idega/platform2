@@ -21,11 +21,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
  */
 public class MemberFamilyCreator extends GolfBlock {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.jmodule.object.ModuleObject#main(com.idega.jmodule.object.ModuleInfo)
-	 */
+
 	public void main(IWContext modinfo) throws Exception {
 		if (modinfo.getRequest().getParameter("cmd") == null)
 			newFamily(modinfo);

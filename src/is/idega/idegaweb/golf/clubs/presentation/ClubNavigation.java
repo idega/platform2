@@ -22,11 +22,6 @@ import com.idega.presentation.text.Text;
  */
 public class ClubNavigation extends GolfBlock {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.jmodule.object.ModuleObject#main(com.idega.jmodule.object.ModuleInfo)
-	 */
 	public void main(IWContext modinfo) throws Exception {
 		modinfo.removeSessionAttribute("golf_union_id");
 		String URI = modinfo.getRequestURI();

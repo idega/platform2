@@ -288,7 +288,7 @@ public class GolferPage extends Page {
 		Link lGolf = new Link(iGolf, "/");
 
 		/*lHome.addParameter("text_id","753");
-		lHome.addParameter("module_object","com.idega.jmodule.text.presentation.TextReader");*/
+		lHome.addParameter("module_object","is.idega.idegaweb.golf.block.text.presentation.TextReader");*/
 		topTable.setBackgroundImage(iMenuBackground);
 		//topTable.setBorder(1);
 

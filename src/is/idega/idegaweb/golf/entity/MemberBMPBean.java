@@ -30,7 +30,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addAttribute("gender","Kyn",true,true,"java.lang.String");
     addAttribute(getSocialSecurityNumberColumnName(),"Kennitala",true,true,"java.lang.String");
     addAttribute("email","Tölvupóstur",true,true,"java.lang.String");
-    addAttribute("image_id","Mynd",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
+    addAttribute("image_id","Mynd",false,false,Integer.class,"one-to-many",ImageEntity.class);
     addAttribute("workplace","Vinnustaður",true,true,"java.lang.String");
     addAttribute("job","Starfsheiti",true,true,"java.lang.String");
     addAttribute("full_name","Fullt nafn",true,true,"java.lang.String");
@@ -431,7 +431,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
       */
 /*
       try{
-              com.idega.jmodule.image.data.ImageEntity image = this.getImage();
+              ImageEntity image = this.getImage();
               image.delete();
       }
       catch(SQLException ex){   if(debug) ex.printStackTrace(); }

@@ -1199,7 +1199,6 @@ public class TournamentController
 			CheckBox delete;
 
 			com.idega.presentation.Image rusl = new com.idega.presentation.Image("/pics/icons/trash.gif", "Skrá úr móti");
-			//            com.idega.jmodule.object.Image time;
 			//Flash time;
 			Text tTime = new Text();
 			if (forPrinting)

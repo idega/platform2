@@ -440,7 +440,7 @@ public class PriceCatalogueMaker extends com.idega.presentation.PresentationObje
   }
 
   public void main(IWContext modinfo) throws IOException {
-    //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
+    //isAdmin = 
     /** @todo: fixa Admin*/
     isAdmin = true;
     control(modinfo);

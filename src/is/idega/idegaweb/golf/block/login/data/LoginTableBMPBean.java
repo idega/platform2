@@ -11,7 +11,7 @@ import com.idega.data.*;
 
 public class LoginTableBMPBean extends GenericEntity implements LoginTable{
 
-	public static String className = "com.idega.jmodule.login.data.LoginTable";
+	public static String className = "is.idega.idegaweb.golf.block.login.data.LoginTable";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
