@@ -3,7 +3,13 @@ package com.idega.block.building.business;
 import com.idega.presentation.Block;
 
 import com.idega.block.building.data.*;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.business.TextFinder;
+import com.idega.data.IDOLookup;
+import com.idega.data.TextEntity;
+
 import java.sql.SQLException;
+import java.util.Locale;
 /**
  * Title:
  * Description:
@@ -14,16 +20,27 @@ import java.sql.SQLException;
  */
 
 public class BuildingBusiness {
+	
+	private BuildingBusiness(){}
+	public static BuildingBusiness bb= null;
+	
+  public static  BuildingBusiness  getStaticInstance(){
+  	
+  	if(bb==null)
+  		bb= new BuildingBusiness();
+  	return bb;
+  }
 
-  public static boolean saveComplex(int id,String sName,String sInfo,int imageid,int textid){
-   Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy();
+  public  boolean saveComplex(int id,String sName,String sInfo,int imageid,int textid){
+   Complex eComplex = ((ComplexHome)IDOLookup.getHomeLegacy(Complex.class)).createLegacy();
     boolean update = false;
     try{
       if(id > 0){
-        eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(id);
+        eComplex = ((ComplexHome)IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(id);
       }
       eComplex.setName(sName);
       eComplex.setInfo(sInfo);
+      if(imageid>0)
       eComplex.setImageId(imageid);
       eComplex.setTextId(textid);
       eComplex.store();
@@ -35,26 +52,25 @@ public class BuildingBusiness {
     return false;
   }
 
-  public static boolean saveBuilding(int id,String sName,String sAddress,
-    String sInfo,int imageid,int complexid,String sSerie){
-   Building ebuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy();
+  public  boolean saveBuilding(int id,String sName,String sAddress,
+    String sInfo,int imageid,int complexid,String sSerie,int textId){
+   Building ebuilding = ((BuildingHome)IDOLookup.getHomeLegacy(Building.class)).createLegacy();
     boolean update = false;
     try{
       if(complexid > 0){
         if(id > 0 ){
-          ebuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(id);
+          ebuilding = ((BuildingHome)IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(id);
           update = true;
         }
         ebuilding.setName(sName);
         ebuilding.setStreet(sAddress);
         ebuilding.setInfo(sInfo);
+        if(imageid>0)
         ebuilding.setImageId(imageid);
         ebuilding.setComplexId(complexid);
         ebuilding.setSerie(sSerie);
-        if(update)
-          ebuilding.update();
-        else
-          ebuilding.insert();
+        ebuilding.setTextId(textId);
+        ebuilding.store();
         BuildingCacher.reload();
         return true;
       }
@@ -62,22 +78,21 @@ public class BuildingBusiness {
     catch(SQLException e){}
     return false;
   }
-  public static boolean saveFloor(int id,String sName,int buildingid,String sInfo,int imageid){
-      Floor efloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy();
+  public  boolean saveFloor(int id,String sName,int buildingid,String sInfo,int imageid,int textid){
+      Floor efloor = ((FloorHome)IDOLookup.getHomeLegacy(Floor.class)).createLegacy();
       boolean update = false;
       try{
       if(id > 0){
-        efloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(id);
+        efloor = ((FloorHome)IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       efloor.setName(sName);
       efloor.setBuildingId(buildingid);
       efloor.setInfo(sInfo);
+      if(imageid>0)
       efloor.setImageId(imageid);
-      if(update)
-        efloor.update();
-      else
-        efloor.insert();
+      efloor.setTextId(textid);
+      efloor.store();
        BuildingCacher.reload();
       return true;
     }
@@ -87,21 +102,20 @@ public class BuildingBusiness {
     return false;
   }
 
-  public static boolean saveApartmentCategory(int id,String sName,String sInfo,int imageid){
+  public  boolean saveApartmentCategory(int id,String sName,String sInfo,int imageid,int textid){
     try{
       boolean update = false;
-      ApartmentCategory eACategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy();
+      ApartmentCategory eACategory = ((ApartmentCategoryHome)IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy();
       if(id >0){
-        eACategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(id);
+        eACategory = ((ApartmentCategoryHome)IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       eACategory.setName(sName);
       eACategory.setInfo(sInfo);
+      if(imageid>0)
       eACategory.setImageId(imageid);
-      if(update)
-        eACategory.update();
-      else
-        eACategory.insert();
+      eACategory.setTextId(textid);
+       eACategory.store();
       BuildingCacher.reload();
       return true;
     }
@@ -109,8 +123,8 @@ public class BuildingBusiness {
     return false;
   }
 
-  public static boolean saveApartmentType(int id,String sName,String sInfo,
-    String sExtraInfo,int planid,int imageid,int categoryid,float area,
+  public  boolean saveApartmentType(int id,String sName,String sInfo,
+    String sExtraInfo,int planid,int imageid,int categoryid,int textid,float area,
     int roomcount,int rent,boolean balcony,boolean bath,boolean kitchen,
     boolean storage,boolean study,boolean furniture,boolean loft){
      try{
@@ -124,8 +138,11 @@ public class BuildingBusiness {
           etype.setName(sName);
           etype.setInfo(sInfo);
           etype.setExtraInfo(sExtraInfo);
+          if(planid>0)
           etype.setFloorPlanId(planid);
+          if(imageid >0)
           etype.setImageId(imageid);
+          etype.setTextId(textid);
           etype.setApartmentCategoryId(categoryid);
           etype.setArea(area);
           etype.setRoomCount(roomcount);
@@ -139,12 +156,9 @@ public class BuildingBusiness {
           etype.setStudy(study);
           etype.setFurniture(furniture);
 
-          if(update){
-            etype.update();
-          }
-          else{
-            etype.insert();
-          }
+          
+            etype.store();
+          
           BuildingCacher.reload();
           return true;
         }
@@ -158,13 +172,13 @@ public class BuildingBusiness {
       }
       return false;
   }
-  public static boolean saveApartment(int id,String sName,String sInfo,
-    int floorid,int typeid,boolean rentable,int imageid,String sSerie){
+  public  boolean saveApartment(int id,String sName,String sInfo,
+    int floorid,int typeid,boolean rentable,int imageid,String sSerie,int textid){
     try{
       boolean update = false;
-      Apartment apartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy();
+      Apartment apartment = ((ApartmentHome)IDOLookup.getHomeLegacy(Apartment.class)).createLegacy();
       if(id >0){
-        apartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(id);
+        apartment = ((ApartmentHome)IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       apartment.setName(sName);
@@ -172,12 +186,12 @@ public class BuildingBusiness {
       apartment.setApartmentTypeId(typeid);
       apartment.setInfo(sInfo);
       apartment.setRentable(rentable);
+      if(imageid>0)
       apartment.setImageId(imageid);
       apartment.setSerie(sSerie);
-      if(update)
-        apartment.update();
-      else
-        apartment.insert();
+      apartment.setTextId(textid);
+      
+        apartment.store();
       BuildingCacher.reload();
       return true;
     }
@@ -185,14 +199,14 @@ public class BuildingBusiness {
     return false;
   }
 
-  public static  void deleteComplex(int id){
+  public   void deleteComplex(int id){
     try{
       ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch(SQLException sql){}
   }
-  public static void deleteBuilding(int id){
+  public  void deleteBuilding(int id){
     try {
       ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
@@ -200,7 +214,7 @@ public class BuildingBusiness {
     catch (SQLException ex) {
     }
   }
-  public static void deleteFloor(int id){
+  public  void deleteFloor(int id){
     try {
       ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
@@ -209,7 +223,7 @@ public class BuildingBusiness {
 
     }
   }
-  public static void deleteApartment(int id){
+  public  void deleteApartment(int id){
     try {
       ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
@@ -217,7 +231,7 @@ public class BuildingBusiness {
     catch (SQLException ex) {
     }
   }
-  public  static void deleteApartmentCategory(int id){
+  public  void deleteApartmentCategory(int id){
     try {
       ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
@@ -225,7 +239,7 @@ public class BuildingBusiness {
     catch (SQLException ex) {
     }
   }
-  public  static void deleteApartmentType(int id){
+  public  void deleteApartmentType(int id){
     try {
       ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
@@ -233,6 +247,21 @@ public class BuildingBusiness {
     catch (SQLException ex) {
 
     }
+  }
+  
+  public void changeNameAndInfo(TextEntity entity,Locale locale){
+  	 String infoText = "",nameText="";
+	  if(entity.getTextId()>0){
+	  		ContentHelper helper = TextFinder.getContentHelper(entity.getTextId(),locale);
+			infoText = helper.getLocalizedText()!=null? helper.getLocalizedText().getBody():"";
+			nameText = helper.getLocalizedText()!=null?helper.getLocalizedText().getHeadline():"";
+	  }
+	  if(infoText.length()>0){
+      	entity.setInfo( infoText);
+	  }
+	  if(nameText.length()>0){
+	  	entity.setName(nameText);
+	  }
   }
 
 }

@@ -9,6 +9,7 @@ import java.io.*;
 import com.idega.util.*;
 import com.idega.util.text.TextSoap;
 import com.idega.data.*;
+import com.idega.block.building.business.BuildingBusiness;
 import com.idega.block.building.business.BuildingFinder;
 //import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
@@ -106,14 +107,10 @@ public void setApartmentTypeWindowClass(Class windowClass){
         complexTable.setWidth(2,1,"20");
         complexTable.setBorder(0);
 	  
-	   String infoText = "";
-	  if(complex[a].getTextId()>0){
-	  		ContentHelper helper = TextFinder.getContentHelper(complex[a].getTextId(),iwc.getCurrentLocale());
-			infoText = helper.getLocalizedText()!=null? helper.getLocalizedText().getBody():"";
-	  }
-	  if(infoText.length()==0){
-      	infoText = complex[a].getInfo();
-	  }
+	    BuildingBusiness.getStaticInstance().changeNameAndInfo(complex[a],iwc.getCurrentLocale());
+	   String infoText = complex[a].getInfo();
+	  	String nameText=complex[a].getName();
+	 
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
       //List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
@@ -159,7 +156,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
         locationLink.setWindowToOpen(BuildingLocation.class);
         locationLink.addParameter(PARAMETER_STRING,iComplexId);
 
-      complexTable.add(getNameText(complex[a].getName()),1,1);
+      complexTable.add(getNameText(nameText),1,1);
       complexTable.add(getInfoText(infoText),1,2);
       complexTable.add(complexLink,1,4);
       complexTable.add("&nbsp;&nbsp;&nbsp;",1,4);
@@ -209,10 +206,10 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
     Table complexTable = new Table(1,types.length+1);
       complexTable.setWidth("100%");
-
+	BuildingBusiness.getStaticInstance().changeNameAndInfo(complex,iwc.getCurrentLocale());
     complexTable.add(getNameText(complex.getName()),1,1);
     for ( int a = 0; a < types.length; a++ ) {
-
+		BuildingBusiness.getStaticInstance().changeNameAndInfo(types[a],iwc.getCurrentLocale());
       Table typesTable = new Table(2,3);
         typesTable.setVerticalAlignment(2,2,"top");
         typesTable.setVerticalAlignment(1,2,"top");
@@ -225,8 +222,8 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       String typeName = formatText(types[a].getName()+" "+types[a].getArea()+"m2");
 
-      //String typeText = types[a].getInfo();
-      String typeText = types[a].getExtraInfo();
+      String typeText = types[a].getInfo();
+      //String typeText = types[a].getExtraInfo();
         typeText = TextSoap.findAndReplace(typeText,"\n","<br>");
 
       String divideText = ("<br>.........<br><br>");
@@ -237,6 +234,8 @@ public void setApartmentTypeWindowClass(Class windowClass){
         typeImage = iwrb_.getImage("/building/default.jpg");
       else{
         ImageSlideShow slide =  new ImageSlideShow();
+        slide.setDelay(1);
+        slide.setShowButtons(false);
         slide.setWidth(imageMaxSize);
         slide.setAlt(types[a].getName());
         slide.setFileId( types[a].getImageId());

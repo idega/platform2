@@ -10,6 +10,7 @@ import java.text.*;
 import com.idega.util.*;
 import com.idega.util.text.TextSoap;
 import com.idega.data.*;
+import com.idega.block.building.business.BuildingBusiness;
 import com.idega.block.building.business.BuildingFinder;
 //import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
@@ -89,6 +90,7 @@ public void setSpecialAttributes(String name,Map attributes){
     private void getApartmentType(IWContext iwc) throws SQLException {
 
       ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(apartmenttypeid);
+		BuildingBusiness.getStaticInstance().changeNameAndInfo(room,iwc.getCurrentLocale());
 
       Table roomTable = new Table(1,6);
         roomTable.setWidth("400");
