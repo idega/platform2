@@ -24,11 +24,7 @@ import com.idega.core.data.Email;
 import com.idega.core.data.EmailHome;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneHome;
-import com.idega.core.data.PhoneType;
-import com.idega.core.data.PhoneTypeHome;
-import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
-import com.idega.data.IDORemoveRelationshipException;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -49,7 +45,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	
 	
 	private static final String GENDER_MALE = "m"; 
-	private static final String GENDER_FEMALE = "f";
+
 	 
 	
 	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String email2, String address, String postal, String phone, String phone2, String comment, String adminComment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
@@ -58,9 +54,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		AddressHome addressHome = userBiz.getAddressHome();
 		AddressBusiness addressBiz = getAddressBusiness();
 		PhoneHome phoneHome = userBiz.getPhoneHome();		
-		PhoneTypeHome phoneTypeHome = (PhoneTypeHome) this.getIDOHome(PhoneType.class);
-		
-		
+	
 		//user
 		User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,pin,getGender(gender), getBirthDateFromPin(pin));
 		
@@ -471,8 +465,8 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		return list;	
 	}
   
-  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup)  {
-    return true;
+  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup)  {
+    return null;
   }
 
 }
