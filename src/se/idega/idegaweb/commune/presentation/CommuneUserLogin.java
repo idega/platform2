@@ -136,7 +136,7 @@ public class CommuneUserLogin extends CommuneBlock {
 		form.add(table);
 		
 		try {
-			Collection users = getUserBusiness(iwc).getUserHome().findUsersBySearchCondition(searchString);
+			Collection users = getUserBusiness(iwc).getUserHome().findUsersBySearchCondition(searchString, true);
 			if (!users.isEmpty()) {
 				User user;
 				RadioButton radio;

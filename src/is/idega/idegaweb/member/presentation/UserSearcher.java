@@ -266,7 +266,7 @@ public class UserSearcher extends Block {
 			|| (first != null && first.length() > 0)
 			|| (middle != null && middle.length() > 0)
 			|| (last != null && last.length() > 0)){
-			usersFound =home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true);
+			usersFound =home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true, false);
 		}
 		else{
 			user = null;
