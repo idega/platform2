@@ -123,10 +123,10 @@ public class CitizenChildren extends CommuneBlock {
 				Age age = null;
 				if (child.getDateOfBirth() != null)
 					age = new Age(child.getDateOfBirth());
-				else
+				else if (child.getPersonalID() != null)
 					age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
 				
-				if(getShowChild(iwc, child) && age.getYears() <= toAge && age.getYears() >=fromAge){
+				if(age != null && getShowChild(iwc, child) && age.getYears() <= toAge && age.getYears() >=fromAge){
 					T.add(getChildLink(child), 1, row++);
 					if (iter.hasNext())
 						T.setHeight(row++,2);
