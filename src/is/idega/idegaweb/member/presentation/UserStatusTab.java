@@ -48,21 +48,21 @@ public class UserStatusTab extends UserTab {
 	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private static final String HELP_TEXT_KEY = "user_status_tab";
 
-	private CheckBox _inactiveField;
+//	private CheckBox _inactiveField; Eiki: removed this because it has no meaning
 	private Text _groupField;
 	private SelectDropdown _statusField;
 //	private CheckBox _parent1StatusField;
 //  private CheckBox _parent2StatusField;
 	private CheckBox _parent3StatusField;
 
-	private Text _inactiveText;
+//	private Text _inactiveText;
 	private Text _groupText;
 	private Text _statusText;
 //	private Text _parent1StatusText;
 //	private Text _parent2StatusText;
 	private Text _parent3StatusText;
 
-	private String _inactiveFieldName;
+//	private String _inactiveFieldName;
 	private String _groupFieldName;
 	private String _statusFieldName;
 //	private String _parent1StatusFieldName;
@@ -85,7 +85,7 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		_inactiveFieldName = "usr_stat_inactive";
+	//	_inactiveFieldName = "usr_stat_inactive";
 		_groupFieldName = "usr_grp_status";
 		_statusFieldName = "usr_stat_status";
 //		_parent1StatusFieldName = "usr_stat_parent1_status";
@@ -98,7 +98,7 @@ public class UserStatusTab extends UserTab {
 	 */
 	public void initializeFieldValues() {
 		fieldValues = new Hashtable();
-		fieldValues.put(_inactiveFieldName, Boolean.FALSE);
+	//	fieldValues.put(_inactiveFieldName, Boolean.FALSE);
 		
 		fieldValues.put(_statusFieldName, "");
 //		fieldValues.put(_parent1StatusFieldName, Boolean.FALSE);
@@ -110,7 +110,7 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
-		_inactiveField.setChecked(((Boolean) fieldValues.get(_inactiveFieldName)).booleanValue());
+//		_inactiveField.setChecked(((Boolean) fieldValues.get(_inactiveFieldName)).booleanValue());
 		if (getGroupID() > 0) {
 			Group selectedGroup = getGroup();
 			if (selectedGroup != null) {
@@ -133,9 +133,9 @@ public class UserStatusTab extends UserTab {
 	 */
 	public void initializeFields() {
 		System.out.println("initializeFields");
-		_inactiveField = new CheckBox(_inactiveFieldName);
-		_inactiveField.setWidth("10");
-		_inactiveField.setHeight("10");
+	//	_inactiveField = new CheckBox(_inactiveFieldName);
+	//	_inactiveField.setWidth("10");
+	//	_inactiveField.setHeight("10");
 
 		_groupField = new Text(); //see initFieldContents
 
@@ -182,8 +182,8 @@ public class UserStatusTab extends UserTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active"));
-		_inactiveText.setBold();
+		//_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active"));
+		//_inactiveText.setBold();
 		
 		_groupText = new Text(iwrb.getLocalizedString(_groupFieldName, "Group"));
 		_groupText.setBold();
@@ -203,7 +203,7 @@ public class UserStatusTab extends UserTab {
 	public void lineUpFields() {
 		empty();
 
-		Table t = new Table(2, 5);
+		Table t = new Table(2, 4);
 		t.setCellpadding(5);
 		t.setCellspacing(0);
 		t.add(_groupText, 1, 1);
@@ -215,11 +215,11 @@ public class UserStatusTab extends UserTab {
 //		t.add(_parent2StatusText, 1, 5);
 //		t.add(_parent2StatusField, 2, 5);
 		t.mergeCells(1, 4, 2, 4);
-		t.add(_inactiveField, 1, 4);
-		t.add(_inactiveText, 1, 4);
-		t.mergeCells(1, 5, 2, 5);
-		t.add(_parent3StatusField, 1, 5);
-		t.add(_parent3StatusText, 1, 5);
+	//	t.add(_inactiveField, 1, 4);
+	//	t.add(_inactiveText, 1, 4);
+	//	t.mergeCells(1, 5, 2, 5);
+		t.add(_parent3StatusField, 1, 4);
+		t.add(_parent3StatusText, 1, 4);
 		add(t);
 	}
 
@@ -234,7 +234,7 @@ public class UserStatusTab extends UserTab {
 	 */
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-			String inactive = iwc.getParameter(_inactiveFieldName);
+	//		String inactive = iwc.getParameter(_inactiveFieldName);
 			String status = iwc.getParameter(_statusFieldName);
 			
 		System.out.println("Collect: status = " + status);
@@ -253,7 +253,7 @@ public class UserStatusTab extends UserTab {
 //			fieldValues.put(_parent1StatusFieldName, new Boolean(parent1Status != null));
 //			fieldValues.put(_parent2StatusFieldName, new Boolean(parent2Status != null));
 			fieldValues.put(_parent3StatusFieldName, new Boolean(parent3Status != null));
-			fieldValues.put(_inactiveFieldName, new Boolean(inactive != null));
+		//	fieldValues.put(_inactiveFieldName, new Boolean(inactive != null));
 
 			updateFieldsDisplayStatus();
 		}
@@ -289,7 +289,7 @@ public class UserStatusTab extends UserTab {
 	public void initFieldContents() {
 		IWContext iwc = IWContext.getInstance();
 		fieldValues = new Hashtable();
-		fieldValues.put(_inactiveFieldName, Boolean.FALSE);
+//		fieldValues.put(_inactiveFieldName, Boolean.FALSE);
 		
 		int status_id = -1;
 		try {
