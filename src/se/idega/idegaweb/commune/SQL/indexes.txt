@@ -35,6 +35,8 @@ create index IDX_IC_GROUP_3 on IC_GROUP(IC_GROUP_ID);
 commit;
 create index IDX_IC_GROUP_4 on IC_GROUP(GROUP_TYPE);
 commit;
+create index IDX_IC_GROUP_5 on IC_GROUP(IC_GROUP_ID,GROUP_TYPE);
+commit;
 
 ICGroupRelation
 create index IDX_IC_GROUP_REL_1 on IC_GROUP_RELATION(RELATED_IC_GROUP_ID);
