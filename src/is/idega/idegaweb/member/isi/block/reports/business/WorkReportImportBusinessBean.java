@@ -362,10 +362,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 					} else {
 						if (currRow == 21) {
 							val = expensesSubSum[i];
-						} else if (currRow == 28) {
-							val = totalExpenses[i];
 						} else {
-							val = totalIncome[i] - totalExpenses[i];
+							val = 0.0;
 						}
 					}
 
