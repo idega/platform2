@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.2 2002/07/22 10:36:30 palli Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.3 2002/07/22 15:45:54 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -19,11 +19,13 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.account.data.AccountApplication;
+
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements CitizenAccount, Case {
+public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements CitizenAccount, Case, AccountApplication {
 	private final static String ENTITY_NAME = "comm_cit_acc";
 	private final static String CASE_CODE_KEY = "MBANSKO";
 	private final static String CASE_CODE_KEY_DESC = "Request for citizen account";
@@ -97,5 +99,27 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 	 */
 	public Collection ejbFindAllCasesByStatus(String caseStatus) throws FinderException, RemoteException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
+	}
+	
+	/**
+	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#getApplicantName()
+	 */
+	public String getApplicantName() throws RemoteException {
+		User owner = this.getOwner();
+		if (owner != null)
+			return owner.getName();
+		else
+			return null;
+	}
+
+	/**
+	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#setApplicantName(String)
+	 */
+	public void setApplicantName(String name) throws RemoteException {
+		User owner = this.getOwner();
+		if (owner != null) {
+			owner.setName(name);
+			owner.store();
+		}		
 	}
 }

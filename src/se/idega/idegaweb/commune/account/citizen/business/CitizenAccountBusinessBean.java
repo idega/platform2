@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.3 2002/07/22 15:30:29 palli Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.4 2002/07/22 15:45:54 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean
 import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccountHome;
+import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -115,6 +116,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 
 		return li;
+	}
+	
+	protected AccountApplication getApplication(int applicationID) throws RemoteException, FinderException {
+		return getAccount(applicationID);
 	}
 	
 	public CitizenAccount getAccount(int id) throws RemoteException, FinderException {
