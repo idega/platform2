@@ -137,6 +137,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private CloseButton close;
 	private Form form;
+	private boolean restrictDates;
 
 
 	/**
@@ -457,38 +458,44 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		if (earliestDate != null) {
-			dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
-			dateInput.setDate(earliestDate.getDate());
-		}
-		else {
-			IWTimestamp stampNow = new IWTimestamp();
-			ChildCareContractArchive archive = getBusiness().getLatestContract(_userID);
-			if (archive != null && archive.getTerminatedDate() != null) {
-				IWTimestamp stamp = new IWTimestamp(archive.getTerminatedDate());
-				stamp.addDays(1);
-				if (stamp.isEarlierThan(stampNow)) {
-					dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
-					dateInput.setDate(stampNow.getDate());
-				}
-				else {
-					dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
-					dateInput.setDate(stamp.getDate());
-				}
+		IWTimestamp stampNow = new IWTimestamp();
+		if (restrictDates) {
+			if (earliestDate != null) {
+				dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+				dateInput.setDate(earliestDate.getDate());
 			}
 			else {
-				dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
-				if (application != null) {
-					IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-					if (fromDate.isLaterThan(stampNow))
-						dateInput.setDate(fromDate.getDate());
+				ChildCareContractArchive archive = getBusiness().getLatestContract(_userID);
+				if (archive != null && archive.getTerminatedDate() != null) {
+					IWTimestamp stamp = new IWTimestamp(archive.getTerminatedDate());
+					stamp.addDays(1);
+					if (stamp.isEarlierThan(stampNow)) {
+						dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+						dateInput.setDate(stampNow.getDate());
+					}
+					else {
+						dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+						dateInput.setDate(stamp.getDate());
+					}
+				}
+				else {
+					dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+					if (application != null) {
+						IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+						if (fromDate.isLaterThan(stampNow))
+							dateInput.setDate(fromDate.getDate());
+						else
+							dateInput.setDate(stampNow.getDate());
+					}
 					else
 						dateInput.setDate(stampNow.getDate());
 				}
-				else
-					dateInput.setDate(stampNow.getDate());
 			}
 		}
+		else {
+			dateInput.setDate(stampNow.getDate());
+		}
+		
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
@@ -560,11 +567,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(textInput, 1, row++);
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "true");
-		boolean restrictDates = true;
-		if (restrict != null) {
-			restrictDates = Boolean.valueOf(restrict).booleanValue();
-		}
 		
 		if (!restrictDates) {
 			IWTimestamp stamp = new IWTimestamp();
@@ -1171,6 +1173,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 		if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
+
+		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "true");
+		restrictDates = true;
+		if (restrict != null) {
+			restrictDates = Boolean.valueOf(restrict).booleanValue();
+		}
 	}
 	
 	private void alterCareTime(IWContext iwc) throws RemoteException {
