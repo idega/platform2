@@ -305,7 +305,7 @@ public class Tournament extends GolfEntity{
 	}
 
 	public TournamentRound[] getTournamentRounds()throws SQLException{
-		return (TournamentRound[]) (new TournamentRound()).findAllByColumn("tournament_id",this.getID());
+		return (TournamentRound[]) (new TournamentRound()).findAllByColumnOrdered("tournament_id",Integer.toString(this.getID()),"ROUND_NUMBER");
 	}
 
 	public TournamentGroup[] getTournamentGroups()throws SQLException{

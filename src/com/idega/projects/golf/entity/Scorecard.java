@@ -163,43 +163,15 @@ public class Scorecard extends GolfEntity{
 	}
 
         public void delete() throws SQLException{
-            try {
-                List strokes = EntityFinder.findAll(Stroke.getStaticInstance("com.idega.projects.golf.entity.Stroke"),"Select * from stroke where scorecard_id = "+this.getID());
-                //List strokes = EntityFinder.findAllByColumn(new Stroke(),"scorecard_id",this.getID());
-                Stroke stroke;
-                if (strokes != null) {
-                    if (strokes.size() > 0) {
-                        for (int i = 0; i < strokes.size(); i++) {
-                            stroke = (Stroke) strokes.get(0);
-                            stroke.delete();
-                        }
 
-                    }
-                }
-            }
-            catch (SQLException sql) {
-                System.err.println("Scorecard : delete : strokes");
-                sql.printStackTrace(System.err);
+            Stroke[] strokes = (Stroke[]) (Stroke.getStaticInstance("com.idega.projects.golf.entity.Stroke")).findAllByColumn("SCORECARD_ID",""+this.getID());
+            for (int i = 0; i < strokes.length; i++) {
+                strokes[i].delete();
             }
 
-            try {
-                List statistics = EntityFinder.findAll(Statistic.getStaticInstance("com.idega.projects.golf.entity.Statistic"),"Select * from statistic where scorecard_id = "+this.getID());
-                //List statistics = EntityFinder.findAllByColumn(new Statistic(),"scorecard_id",this.getID());
-                Statistic stat;
-                if (statistics != null) {
-                    if (statistics.size() > 0) {
-                        for (int i = 0; i < statistics.size(); i++) {
-                            stat = (Statistic) statistics.get(0);
-                            stat.delete();
-                        }
-
-                    }
-                }
-
-            }
-            catch (SQLException sql) {
-                System.err.println("Scorecard : delete : strokes");
-                sql.printStackTrace(System.err);
+            Statistic[] statistics = (Statistic[]) (Statistic.getStaticInstance("com.idega.projects.golf.entity.Statistic")).findAllByColumn("scorecard_id",""+this.getID());
+            for (int i = 0; i < statistics.length; i++) {
+                statistics[i].delete();
             }
 
             super.delete();

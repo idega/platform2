@@ -1,5 +1,5 @@
 /*
- * $Id: TournamentRound.java,v 1.5 2001/05/30 12:47:26 gimmi Exp $
+ * $Id: TournamentRound.java,v 1.6 2001/06/07 22:12:42 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.projects.golf.entity;
 
 import java.sql.*;
 import com.idega.data.*;
+import java.util.List;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -102,12 +103,14 @@ public class TournamentRound extends GolfEntity{
 		setColumn("decrease_handicap",new Boolean(decrease_handicap));
 	}
 
-  public void delete() {
+  public void delete() throws SQLException {
     try {
-      Scorecard[] scorecards = (Scorecard[]) this.findAllByColumn("TOURNAMENT_ROUND_ID",this.getID());
+      List scorecards = EntityFinder.findAllByColumn(new Scorecard(),"TOURNAMENT_ROUND_ID", this.getID());
+      Scorecard scorecard = null;
       if (scorecards != null) {
-        for (int j = 0; j < scorecards.length; j++) {
-          scorecards[j].delete();
+        for (int j = 0; j < scorecards.size(); j++) {
+          scorecard = (Scorecard) scorecards.get(j);
+          scorecard.delete();
         }
       }
     }
@@ -115,12 +118,7 @@ public class TournamentRound extends GolfEntity{
       e.printStackTrace();
     }
 
-    try {
-        super.delete();
-    }
-    catch (java.sql.SQLException e) {
-      e.printStackTrace();
-    }
+    super.delete();
   }
 
 }
