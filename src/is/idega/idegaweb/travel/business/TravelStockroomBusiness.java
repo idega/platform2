@@ -39,9 +39,9 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static String uniqueArrivalAddressType = "TB_TRIP_ARRIVAL_ADDRESS";
   public static String uniqueHotelPickupAddressType = "TB_HOTEL_PICKUP_ADDRESS";
 
-  private Timeframe timeframe;
+  protected Timeframe timeframe;
 
-  private TravelStockroomBusiness() {
+  public TravelStockroomBusiness() {
   }
 
   public static TravelStockroomBusiness getNewInstance(){
@@ -55,8 +55,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public void depleteSupplies(int product_id, float amount) {
     throw new java.lang.UnsupportedOperationException("Method depleteSupplies() not yet implemented.");
   }
-
-
 
   public void setSupplyStatus(int productId, float status, int period) throws SQLException {
     Supplies supplies = new Supplies();
@@ -184,154 +182,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
 
-  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception{
-    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
-  }
-
-  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
-    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
-  }
-
-  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
-
-      boolean isError = false;
-
-      /**
-       * @todo handle isError og pickupTime
-       */
-      if (timeframe == null) isError = true;
-      if (activeDays.length == 0) isError = true;
-
-      int departureAddressTypeId = AddressType.getId(uniqueDepartureAddressType);
-      int arrivalAddressTypeId = AddressType.getId(uniqueArrivalAddressType);
-      int hotelPickupAddressTypeId = AddressType.getId(uniqueHotelPickupAddressType);
-
-      Address departureAddress = null;
-      Address arrivalAddress = null;
-
-      if (tourId == -1) {
-
-        departureAddress = new Address();
-        departureAddress.setAddressTypeID(departureAddressTypeId);
-        departureAddress.setStreetName(departureFrom);
-        departureAddress.insert();
-
-        arrivalAddress = new Address();
-        arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-        arrivalAddress.setStreetName(arrivalAt);
-        arrivalAddress.insert();
-
-      }else {
-          Service service = new Service(tourId);
-          Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
-          if (tempAddresses.length > 0) {
-            arrivalAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
-            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-            arrivalAddress.setStreetName(arrivalAt);
-            arrivalAddress.update();
-          }else {
-            arrivalAddress = new Address();
-            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-            arrivalAddress.setStreetName(arrivalAt);
-            arrivalAddress.insert();
-          }
-
-          tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
-          if (tempAddresses.length > 0) {
-            departureAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
-            departureAddress.setAddressTypeID(departureAddressTypeId);
-            departureAddress.setStreetName(departureFrom);
-            departureAddress.update();
-          }else {
-            departureAddress = new Address();
-            departureAddress.setAddressTypeID(departureAddressTypeId);
-            departureAddress.setStreetName(departureFrom);
-            departureAddress.insert();
-          }
-
-      }
-
-
-      int[] departureAddressIds = {departureAddress.getID()};
-      int[] arrivalAddressIds = {arrivalAddress.getID()};
-      int[] hotelPickupPlaceIds ={};
-      if (pickupPlaceIds != null) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
-      for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
-        hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
-      }
-
-      int serviceId = -1;
-      if (tourId == -1) {
-        serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
-      }else {
-        serviceId = createService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
-      }
-
-//      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
-      if (serviceId == -1)
-      System.err.println("UpdateTour() - serviceID == -1");
-
-      if (serviceId != -1)
-      try {
-          //tm.begin();
-          Service service = new Service(serviceId);
-
-          Tour tour;
-          if (tourId == -1) {
-            tour = new Tour();
-            tour.setID(serviceId);
-          }else {
-            tour = new Tour(tourId);
-          }
-            tour.setTotalSeats(numberOfSeats.intValue());
-
-          if (arrivalAddressIds.length > 0)
-          for (int i = 0; i < arrivalAddressIds.length; i++) {
-            try {
-              service.addTo(Address.class,arrivalAddressIds[i]);
-            }catch (SQLException sql) {}
-          }
-
-
-          if(hotelPickupPlaceIds.length > 0){
-            for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
-              if (hotelPickupPlaceIds[i] != -1)
-              try{
-              service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
-              }catch (SQLException sql) {}
-            }
-            tour.setHotelPickup(true);
-          }else{
-            tour.setHotelPickup(false);
-          }
-
-          if (tourId == -1) {
-            tour.insert();
-          }else {
-            tour.update();
-          }
-
-          ServiceDay.deleteService(serviceId);
-
-          if (activeDays.length > 0) {
-            ServiceDay sDay;
-            for (int i = 0; i < activeDays.length; i++) {
-              sDay = new ServiceDay();
-                sDay.setServiceId(serviceId);
-                sDay.setDayOfWeek(activeDays[i]);
-              sDay.insert();
-            }
-          }
-
-
-          //tm.commit();
-      }catch (Exception e) {
-          e.printStackTrace(System.err);
-          //tm.rollback();
-      }
-
-      return serviceId;
-  }
 
   public void setTimeframe(idegaTimestamp from, idegaTimestamp to, boolean yearly) throws SQLException {
     setTimeframe(-1,from,to,yearly);
@@ -518,16 +368,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return timeFrame;
   }
 
-  public static Tour getTour(Product product) throws TourNotFoundException{
-    Tour tour = null;
-    try {
-      tour = new Tour(product.getID());
-    }
-    catch (SQLException sql) {
-      throw new TourNotFoundException();
-    }
-    return tour;
-  }
 
   public static HotelPickupPlace[] getHotelPickupPlaces(Service service) {
     HotelPickupPlace[] returner = null;
@@ -752,12 +592,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
   }
 
-  public static class TourNotFoundException extends Exception{
-    TourNotFoundException(){
-      super("Tour not found");
-    }
-  }
-
   /**
    * @todo skoða betur
    */
@@ -784,146 +618,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       return returner;
   }
-
-
-
-  public Reseller[] getResellers(int serviceId, idegaTimestamp stamp) {
-    Reseller[] returner = {};
-    try {
-        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
-
-        String[] many = {};
-          StringBuffer sql = new StringBuffer();
-            sql.append("Select r.* from "+Contract.getContractTableName()+" c, "+Reseller.getResellerTableName()+" r");
-            sql.append(" where ");
-            sql.append(" c."+Contract.getColumnNameServiceId()+"="+serviceId);
-            sql.append(" and ");
-            sql.append(" c."+Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
-            sql.append(" and ");
-            sql.append(" c."+Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
-            sql.append(" and ");
-            sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
-
-        returner = (Reseller[]) reseller.findAll(sql.toString());
-
-    }catch (Exception e) {
-        e.printStackTrace(System.err);
-    }
-
-    return returner;
-
-  }
-
-  public int getNumberOfTours(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
-    int returner = 0;
-    try {
-      idegaTimestamp toTemp = new idegaTimestamp(toStamp);
-
-      int counter = 0;
-
-      int[] daysOfWeek = ServiceDay.getDaysOfWeek(serviceId);
-      int fromDayOfWeek = fromStamp.getDayOfWeek();
-      int toDayOfWeek = toStamp.getDayOfWeek();
-
-      toTemp.addDays(1);
-      int daysBetween = toStamp.getDaysBetween(fromStamp, toTemp);
-
-      if (fromStamp.getWeekOfYear() != toTemp.getWeekOfYear()) {
-          daysBetween = daysBetween - (8 - fromDayOfWeek + toDayOfWeek);
-
-          for (int i = 0; i < daysOfWeek.length; i++) {
-              if (daysOfWeek[i]  >= fromDayOfWeek) {
-                ++counter;
-              }
-              if (daysOfWeek[i] <= toDayOfWeek) {
-                ++counter;
-              }
-          }
-
-          counter += ( (daysBetween / 7) * daysOfWeek.length );
-
-      }else {
-          for (int i = 0; i < daysOfWeek.length; i++) {
-              if ((daysOfWeek[i]  >= fromDayOfWeek) && (daysOfWeek[i] <= toDayOfWeek)) {
-                ++counter;
-              }
-          }
-      }
-      returner = counter;
-
-    }catch (Exception e) {
-        e.printStackTrace(System.err);
-    }
-
-    return returner;
-  }
-
-
-  public Product[] getProductsForReseller(int resellerId) throws SQLException {
-    Product[] products = {};
-
-    try {
-        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
-        Product product = (Product) (Product.getStaticInstance(Product.class));
-
-        StringBuffer sql = new StringBuffer();
-          sql.append("SELECT p.* FROM "+Reseller.getResellerTableName()+" r, "+Product.getProductEntityName()+" p, "+Contract.getContractTableName()+" c");
-          sql.append(" WHERE ");
-          sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
-          sql.append(" AND ");
-          sql.append(" c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
-          sql.append(" AND ");
-          sql.append(" r."+reseller.getIDColumnName() +" = "+resellerId);
-          sql.append(" AND ");
-          sql.append(" p."+Product.getColumnNameIsValid()+" = 'Y'");
-          sql.append(" ORDER BY p."+Product.getColumnNameProductName());
-
-        products = (Product[]) product.findAll(sql.toString());
-
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
-
-    return products;
-    //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
-  }
-
-
-  public Reseller[] getResellers(int supplierId) {
-    return getResellers(supplierId,"");
-  }
-
-  public Reseller[] getResellers(int supplierId, String orderBy) {
-    Reseller[] resellers = {};
-    try {
-        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
-        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
-
-        StringBuffer sql = new StringBuffer();
-          sql.append("Select r.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
-          sql.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
-          sql.append(" WHERE ");
-          sql.append(" s."+supplier.getIDColumnName()+" = "+supplierId);
-          sql.append(" AND ");
-          sql.append(" s."+supplier.getIDColumnName()+" = rs."+supplier.getIDColumnName());
-          sql.append(" AND ");
-          sql.append(" r."+reseller.getIDColumnName()+" = rs."+reseller.getIDColumnName());
-          sql.append(" AND ");
-          sql.append("r."+Reseller.getColumnNameIsValid()+" = 'Y'");
-          if (!orderBy.equals("")) {
-            sql.append(" ORDER BY r."+orderBy);
-          }
-
-        resellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAll(sql.toString());
-
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
-
-    return resellers;
-  }
-
-
 
 
 }

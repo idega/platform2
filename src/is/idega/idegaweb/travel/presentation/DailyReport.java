@@ -17,6 +17,7 @@ import java.util.Hashtable;
 
 import is.idega.travel.business.Booker;
 import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.travel.business.TourBusiness;
 import is.idega.travel.data.*;
 /**
  * Title:        idegaWeb TravelBooking
@@ -93,14 +94,14 @@ public class DailyReport extends TravelManager {
         if (productId != null) {
           product = new Product(Integer.parseInt(productId));
           service = tsb.getService(product);
-          tour = tsb.getTour(product);
+          tour = TourBusiness.getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+      }catch (TourBusiness.TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 

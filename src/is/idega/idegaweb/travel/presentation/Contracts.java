@@ -73,7 +73,7 @@ public class Contracts extends TravelManager {
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
 
-      resellers = tsb.getResellers(supplier.getID(),Reseller.getColumnNameName());
+      resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
 
   }
 
@@ -106,7 +106,7 @@ public class Contracts extends TravelManager {
       table.add(refNum,2,row);
 
       if (resellers == null) {
-        resellers = tsb.getResellers(supplier.getID(),Reseller.getColumnNameName());
+        resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
       }
 
       for (int i = 0; i < resellers.length; i++) {

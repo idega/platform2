@@ -12,7 +12,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.travel.business.*;
 import is.idega.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.travel.business.Booker;
@@ -79,14 +79,14 @@ public class Statistics extends TravelManager {
         if (productId != null) {
           product = new Product(Integer.parseInt(productId));
           service = tsb.getService(product);
-          tour = tsb.getTour(product);
+          tour = TourBusiness.getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+      }catch (TourBusiness.TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
@@ -313,7 +313,7 @@ public class Statistics extends TravelManager {
 
 
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;
-      int numberOfSeats = tour.getTotalSeats() * tsb.getNumberOfTours(service.getID(), fromStamp, toStamp);
+      int numberOfSeats = tour.getTotalSeats() * TourBusiness.getNumberOfTours(service.getID(), fromStamp, toStamp);
 
       int iAvail = numberOfSeats - total;
 

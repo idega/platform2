@@ -26,7 +26,8 @@ public class TourDesigner extends TravelManager {
   IWResourceBundle iwrb;
   IWBundle iwb;
   Supplier supplier;
-  TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  TourBusiness tb = new TourBusiness();
+
   String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
   String ServiceAction = ServiceDesigner.ServiceAction;
 
@@ -57,12 +58,12 @@ public class TourDesigner extends TravelManager {
       tour = new Tour(tourId);
       timeframe = service.getTimeframe();
 
-      int addressTypeId = AddressType.getId(tsb.uniqueArrivalAddressType);
+      int addressTypeId = AddressType.getId(tb.uniqueArrivalAddressType);
       Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(addressTypeId)));
       if (tempAddresses.length > 0) {
         arrAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
       }
-      addressTypeId = AddressType.getId(tsb.uniqueDepartureAddressType);
+      addressTypeId = AddressType.getId(tb.uniqueDepartureAddressType);
 
       tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(addressTypeId)));
       if (tempAddresses.length > 0) {
@@ -76,15 +77,21 @@ public class TourDesigner extends TravelManager {
     }
   }
 
-  public Form getTourDesignerForm() {
-    return getTourDesignerForm(-1);
+
+  public Form getTourDesignerForm(IWContext iwc) {
+    return getTourDesignerForm(iwc,-1);
   }
 
 
-  public Form getTourDesignerForm(int tourId) {
+  public Form getTourDesignerForm(IWContext iwc,int tourId) {
+//    System.err.println("TOUR_ID = "+tourId);
+
+
     boolean isDataValid = true;
-    if (tourId != -1)
+
+    if (tourId != -1) {
       isDataValid = setupData(tourId);
+    }
 
       Form form = new Form();
         form.setName(NAME_OF_FORM);
@@ -322,7 +329,7 @@ public class TourDesigner extends TravelManager {
       ++row;
       Text hotelPickupText = (Text) theBoldText.clone();
           hotelPickupText.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
-      SelectionBox hotels = new SelectionBox(tsb.getHotelPickupPlaces(this.supplier));
+      SelectionBox hotels = new SelectionBox(tb.getHotelPickupPlaces(this.supplier));
         hotels.setName("hotelPickupId");
         hotels.keepStatusOnAction();
 
@@ -357,8 +364,12 @@ public class TourDesigner extends TravelManager {
       table.setColumnAlignment(2,"left");
 
       if (service != null) {
-        table.add(new HiddenInput(this.parameterIsUpdate, Integer.toString(tourId)));
-        table.add(new HiddenInput(this.parameterTimeframeId, Integer.toString(timeframe.getID())));
+          Parameter par1 = new Parameter(this.parameterIsUpdate, Integer.toString(tourId));
+            par1.keepStatusOnAction();
+          table.add(par1);
+          Parameter par2 = new Parameter(this.parameterTimeframeId, Integer.toString(timeframe.getID()));
+            par2.keepStatusOnAction();
+          table.add(par2);
 
           name.setContent(service.getName());
           description.setContent(service.getDescription());
@@ -389,7 +400,7 @@ public class TourDesigner extends TravelManager {
           arrival_time.setHour(tempStamp.getHour());
           arrival_time.setMinute(tempStamp.getMinute());
 
-          HotelPickupPlace[] places = tsb.getHotelPickupPlaces(service);
+          HotelPickupPlace[] places = tb.getHotelPickupPlaces(service);
           for (int i = 0; i < places.length; i++) {
             hotels.setSelectedElement(Integer.toString(places[i].getID()));
           }
@@ -401,7 +412,6 @@ public class TourDesigner extends TravelManager {
             hotelPickupNo.setSelected();
           }
 
-          System.err.println(tour.getID() + " ----- " + tour.getTotalSeats());
           numberOfSeats.setContent(Integer.toString(tour.getTotalSeats()));
 
 
@@ -526,13 +536,14 @@ public class TourDesigner extends TravelManager {
       try {
 
         if (tourId == -1) {
-            tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-            serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+            tb.setTimeframe(activeFromStamp, activeToStamp, yearly);
+            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
         } else {
             String timeframeId = iwc.getParameter(this.parameterTimeframeId);
-            tsb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
-            serviceId = tsb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+            tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
+            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
         }
+
         /**
          * @todo TravelStockroomBusiness.removeServiceDayHashtable....
          */

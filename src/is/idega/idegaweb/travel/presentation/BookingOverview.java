@@ -7,11 +7,12 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.travel.business.*;
 import java.sql.SQLException;
 
 import is.idega.travel.business.Assigner;
@@ -91,14 +92,14 @@ public class BookingOverview extends TravelManager {
         if (productId != null) {
           product = new Product(Integer.parseInt(productId));
           service = tsb.getService(product);
-          tour = tsb.getTour(product);
+          tour = TourBusiness.getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+      }catch (TourBusiness.TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
@@ -203,7 +204,7 @@ public class BookingOverview extends TravelManager {
           trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
         }else if (reseller != null){
           try {
-            trip = new DropdownMenu(tsb.getProductsForReseller(reseller.getID()));
+            trip = new DropdownMenu(ResellerManager.getProductsForReseller(reseller.getID()));
           }catch (SQLException sql) {
             sql.printStackTrace(System.err);
             trip = new DropdownMenu();
@@ -415,7 +416,7 @@ public class BookingOverview extends TravelManager {
                           iAvailable=0;
                           iAssigned=0;
                           service = tsb.getService(products[i]);
-                          tour = tsb.getTour(products[i]);
+                          tour = TourBusiness.getTour(products[i]);
 
                           if (supplier != null) {
                               iCount = tour.getTotalSeats();
@@ -484,7 +485,7 @@ public class BookingOverview extends TravelManager {
                       }
                   }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
                     snfe.printStackTrace(System.err);
-                  }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+                  }catch (TourBusiness.TourNotFoundException tnfe) {
                     tnfe.printStackTrace(System.err);
                   }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
                     tfnfe.printStackTrace(System.err);
@@ -631,7 +632,7 @@ public class BookingOverview extends TravelManager {
           java.util.List emails;
           // ------------------ ASSIGNED -----------------------
           if (assigned > 0) {
-            Reseller[] resellers = tsb.getResellers(service.getID(), currentStamp);
+            Reseller[] resellers = ResellerManager.getResellers(service.getID(), currentStamp);
             for (int i = 0; i < resellers.length; i++) {
               ++row;
 

@@ -10,6 +10,8 @@ import com.idega.core.data.*;
 import com.idega.util.CypherText;
 import com.idega.data.SimpleQuerier;
 
+import is.idega.travel.data.Contract;
+
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -134,7 +136,95 @@ public class ResellerManager {
 
   }
 
+  public static Reseller[] getResellers(int serviceId, idegaTimestamp stamp) {
+    Reseller[] returner = {};
+    try {
+        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
 
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select r.* from "+Contract.getContractTableName()+" c, "+Reseller.getResellerTableName()+" r");
+            sql.append(" where ");
+            sql.append(" c."+Contract.getColumnNameServiceId()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(" c."+Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
+            sql.append(" and ");
+            sql.append(" c."+Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
+            sql.append(" and ");
+            sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
+
+        returner = (Reseller[]) reseller.findAll(sql.toString());
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+
+  }
+
+  public static Product[] getProductsForReseller(int resellerId) throws SQLException {
+    Product[] products = {};
+
+    try {
+        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
+        Product product = (Product) (Product.getStaticInstance(Product.class));
+
+        StringBuffer sql = new StringBuffer();
+          sql.append("SELECT p.* FROM "+Reseller.getResellerTableName()+" r, "+Product.getProductEntityName()+" p, "+Contract.getContractTableName()+" c");
+          sql.append(" WHERE ");
+          sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" r."+reseller.getIDColumnName() +" = "+resellerId);
+          sql.append(" AND ");
+          sql.append(" p."+Product.getColumnNameIsValid()+" = 'Y'");
+          sql.append(" ORDER BY p."+Product.getColumnNameProductName());
+
+        products = (Product[]) product.findAll(sql.toString());
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return products;
+    //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
+  }
+
+  public static Reseller[] getResellers(int supplierId) {
+    return getResellers(supplierId,"");
+  }
+
+  public static Reseller[] getResellers(int supplierId, String orderBy) {
+    Reseller[] resellers = {};
+    try {
+        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
+        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+
+        StringBuffer sql = new StringBuffer();
+          sql.append("Select r.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
+          sql.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
+          sql.append(" WHERE ");
+          sql.append(" s."+supplier.getIDColumnName()+" = "+supplierId);
+          sql.append(" AND ");
+          sql.append(" s."+supplier.getIDColumnName()+" = rs."+supplier.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" r."+reseller.getIDColumnName()+" = rs."+reseller.getIDColumnName());
+          sql.append(" AND ");
+          sql.append("r."+Reseller.getColumnNameIsValid()+" = 'Y'");
+          if (!orderBy.equals("")) {
+            sql.append(" ORDER BY r."+orderBy);
+          }
+
+        resellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAll(sql.toString());
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return resellers;
+  }
 
 
 }

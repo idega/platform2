@@ -7,18 +7,19 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.travel.business.*;
 import com.idega.util.text.*;
 import java.sql.SQLException;
 
 import is.idega.travel.business.Booker;
 import is.idega.travel.business.Inquirer;
 import is.idega.travel.data.*;
-import javax.swing.*;
+//import javax.swing.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -118,14 +119,14 @@ public class Booking extends TravelManager {
           productId = Integer.parseInt(sProductId);
           product = new Product(productId);
           service = tsb.getService(product);
-          tour = tsb.getTour(product);
+          tour = TourBusiness.getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+      }catch (TourBusiness.TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
@@ -196,7 +197,7 @@ public class Booking extends TravelManager {
         if (supplier != null) {
           trip = new DropdownMenu(tsb.getProducts(supplierId));
         }else if (reseller != null) {
-          trip = new DropdownMenu(tsb.getProductsForReseller(resellerId ));
+          trip = new DropdownMenu(ResellerManager.getProductsForReseller(resellerId ));
         }else if (product == null) {
           trip = new DropdownMenu(tsb.getProducts(-1));
         }

@@ -48,6 +48,8 @@ public class ServiceDesigner extends TravelManager {
   public static String NAME_OF_PRICE_CATEGORY_FORM = "service_price_category_form";
 
   private static Boolean priceCategoryCreation;
+  private String sessionNameServiceId = "tourDesignerSessionTourId";
+
 
 
   public ServiceDesigner() {
@@ -65,6 +67,11 @@ public class ServiceDesigner extends TravelManager {
       supplier = super.getSupplier();
 
       if (supplier != null) {
+        if (iwc.getParameter(super.sAction) != null) {
+          if (iwc.getParameter(super.sAction).equals(super.parameterServiceDesigner)) {
+            removeSessionServiceId(iwc);
+          }
+        }
 
         String action = iwc.getParameter(ServiceAction);
         if (action == null) {action = "";}
@@ -97,10 +104,18 @@ public class ServiceDesigner extends TravelManager {
     TourDesigner td = new TourDesigner(iwc);
 
     String id = iwc.getParameter(this.parameterUpdateServiceId);
+    if (id == null) {
+      String sServiceId = getSessionServiceId(iwc);
+      if (sServiceId != null) {
+        id  = sServiceId;
+      }
+    }
+
     if (id != null) {
-      add(td.getTourDesignerForm(Integer.parseInt(id)));
+      add(td.getTourDesignerForm(iwc, Integer.parseInt(id)));
+      setSessionServiceId(iwc, Integer.parseInt(id));
     }else {
-      add(td.getTourDesignerForm());
+      add(td.getTourDesignerForm(iwc));
     }
   }
 
@@ -111,6 +126,7 @@ public class ServiceDesigner extends TravelManager {
         TourDesigner td = new TourDesigner(iwc);
           int tourId = td.createTour(iwc);
           setService(iwc,tourId);
+          removeSessionServiceId(iwc);
       }
 
       priceCategoryCreation(iwc);
@@ -302,5 +318,16 @@ public class ServiceDesigner extends TravelManager {
 
   }
 
+  private String getSessionServiceId(IWContext iwc) {
+    return (String) iwc.getSessionAttribute(sessionNameServiceId);
+  }
+
+  private void setSessionServiceId(IWContext iwc, int serviceId) {
+    iwc.setSessionAttribute(sessionNameServiceId,Integer.toString(serviceId));
+  }
+
+  private void removeSessionServiceId(IWContext iwc) {
+    iwc.removeSessionAttribute(sessionNameServiceId);
+  }
 
 }

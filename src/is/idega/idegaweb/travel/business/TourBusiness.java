@@ -1,0 +1,249 @@
+package is.idega.travel.business;
+
+import com.idega.block.trade.stockroom.business.StockroomBusiness;
+import com.idega.block.trade.stockroom.data.*;
+import is.idega.travel.data.*;
+import java.sql.Timestamp;
+import com.idega.core.data.*;
+import is.idega.travel.data.HotelPickupPlace;
+import java.sql.SQLException;
+import com.idega.util.*;
+import java.sql.SQLException;
+import com.idega.data.EntityFinder;
+import com.idega.data.EntityControl;
+import java.util.List;
+import java.util.Map;
+import com.idega.util.datastructures.HashtableDoubleKeyed;
+import com.idega.presentation.IWContext;
+import com.idega.transaction.IdegaTransactionManager;
+import javax.transaction.TransactionManager;
+import java.sql.Date;
+import com.idega.data.SimpleQuerier;
+
+/**
+ * Title:        idegaWeb TravelBooking
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega
+ * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
+ * @version 1.0
+ */
+
+public class TourBusiness extends TravelStockroomBusiness {
+
+  public TourBusiness() {
+  }
+
+  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception{
+    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
+  }
+
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
+    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
+  }
+
+  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
+
+      boolean isError = false;
+
+      /**
+       * @todo handle isError og pickupTime
+       */
+      if (super.timeframe == null) isError = true;
+      if (activeDays.length == 0) isError = true;
+
+      int departureAddressTypeId = AddressType.getId(uniqueDepartureAddressType);
+      int arrivalAddressTypeId = AddressType.getId(uniqueArrivalAddressType);
+      int hotelPickupAddressTypeId = AddressType.getId(uniqueHotelPickupAddressType);
+
+      Address departureAddress = null;
+      Address arrivalAddress = null;
+
+      if (tourId == -1) {
+
+        departureAddress = new Address();
+        departureAddress.setAddressTypeID(departureAddressTypeId);
+        departureAddress.setStreetName(departureFrom);
+        departureAddress.insert();
+
+        arrivalAddress = new Address();
+        arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
+        arrivalAddress.setStreetName(arrivalAt);
+        arrivalAddress.insert();
+
+      }else {
+          Service service = new Service(tourId);
+          Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
+          if (tempAddresses.length > 0) {
+            arrivalAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
+            arrivalAddress.setStreetName(arrivalAt);
+            arrivalAddress.update();
+          }else {
+            arrivalAddress = new Address();
+            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
+            arrivalAddress.setStreetName(arrivalAt);
+            arrivalAddress.insert();
+          }
+
+          tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
+          if (tempAddresses.length > 0) {
+            departureAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+            departureAddress.setAddressTypeID(departureAddressTypeId);
+            departureAddress.setStreetName(departureFrom);
+            departureAddress.update();
+          }else {
+            departureAddress = new Address();
+            departureAddress.setAddressTypeID(departureAddressTypeId);
+            departureAddress.setStreetName(departureFrom);
+            departureAddress.insert();
+          }
+
+      }
+
+
+      int[] departureAddressIds = {departureAddress.getID()};
+      int[] arrivalAddressIds = {arrivalAddress.getID()};
+      int[] hotelPickupPlaceIds ={};
+      if (pickupPlaceIds != null) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
+      for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
+        hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
+      }
+
+      int serviceId = -1;
+      if (tourId == -1) {
+        serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+      }else {
+        serviceId = updateService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+      }
+
+//      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+      if (serviceId == -1)
+      System.err.println("UpdateTour() - serviceID == -1");
+
+      if (serviceId != -1)
+      try {
+          //tm.begin();
+          Service service = new Service(serviceId);
+
+          Tour tour;
+          if (tourId == -1) {
+            tour = new Tour();
+            tour.setID(serviceId);
+          }else {
+            tour = new Tour(tourId);
+          }
+            tour.setTotalSeats(numberOfSeats.intValue());
+
+          if (arrivalAddressIds.length > 0)
+          for (int i = 0; i < arrivalAddressIds.length; i++) {
+            try {
+              service.addTo(Address.class,arrivalAddressIds[i]);
+            }catch (SQLException sql) {}
+          }
+
+
+          if(hotelPickupPlaceIds.length > 0){
+            for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
+              if (hotelPickupPlaceIds[i] != -1)
+              try{
+              service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
+              }catch (SQLException sql) {}
+            }
+            tour.setHotelPickup(true);
+          }else{
+            tour.setHotelPickup(false);
+          }
+
+          if (tourId == -1) {
+            tour.insert();
+          }else {
+            tour.update();
+          }
+
+          ServiceDay.deleteService(serviceId);
+
+          if (activeDays.length > 0) {
+            ServiceDay sDay;
+            for (int i = 0; i < activeDays.length; i++) {
+              sDay = new ServiceDay();
+                sDay.setServiceId(serviceId);
+                sDay.setDayOfWeek(activeDays[i]);
+              sDay.insert();
+            }
+          }
+
+
+          //tm.commit();
+      }catch (Exception e) {
+          e.printStackTrace(System.err);
+          //tm.rollback();
+      }
+
+      return serviceId;
+  }
+
+  public static int getNumberOfTours(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+    int returner = 0;
+    try {
+      idegaTimestamp toTemp = new idegaTimestamp(toStamp);
+
+      int counter = 0;
+
+      int[] daysOfWeek = ServiceDay.getDaysOfWeek(serviceId);
+      int fromDayOfWeek = fromStamp.getDayOfWeek();
+      int toDayOfWeek = toStamp.getDayOfWeek();
+
+      toTemp.addDays(1);
+      int daysBetween = toStamp.getDaysBetween(fromStamp, toTemp);
+
+      if (fromStamp.getWeekOfYear() != toTemp.getWeekOfYear()) {
+          daysBetween = daysBetween - (8 - fromDayOfWeek + toDayOfWeek);
+
+          for (int i = 0; i < daysOfWeek.length; i++) {
+              if (daysOfWeek[i]  >= fromDayOfWeek) {
+                ++counter;
+              }
+              if (daysOfWeek[i] <= toDayOfWeek) {
+                ++counter;
+              }
+          }
+
+          counter += ( (daysBetween / 7) * daysOfWeek.length );
+
+      }else {
+          for (int i = 0; i < daysOfWeek.length; i++) {
+              if ((daysOfWeek[i]  >= fromDayOfWeek) && (daysOfWeek[i] <= toDayOfWeek)) {
+                ++counter;
+              }
+          }
+      }
+      returner = counter;
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+
+  public static Tour getTour(Product product) throws TourNotFoundException{
+    Tour tour = null;
+    try {
+      tour = new Tour(product.getID());
+    }
+    catch (SQLException sql) {
+      throw new TourNotFoundException();
+    }
+    return tour;
+  }
+
+  public static class TourNotFoundException extends Exception{
+    TourNotFoundException(){
+      super("Tour not found");
+    }
+  }
+
+
+}
