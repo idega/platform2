@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.51 2004/01/11 22:46:15 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.52 2004/01/12 07:45:21 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -242,7 +242,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(receiver);
 			boolean canSendEmail = getIfCanSendEmail();
 			//TODO:TL implement
-			boolean alwaysSendLetter=false;
+			//boolean alwaysSendLetter=false;
 			
 			if (sendToBox) {
 				message = createMessage(getTypeUserMessage(), receiver, sender, handler, subject, body, parentCase);
