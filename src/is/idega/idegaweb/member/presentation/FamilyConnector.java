@@ -46,6 +46,8 @@ public class FamilyConnector extends StyledIWAdminWindow {
 
 	private int method = -1;
 	private User user = null;
+	
+	private String mainStyleClass = "main";
 
 	public FamilyConnector() {
 		super();
@@ -57,7 +59,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		setAllMargins(0);
 		setWidth(250);
 		setHeight(200);
-		setBackgroundColor("#cfd0d2");
+//		setBackgroundColor("#cfd0d2");
 	}
 
 	public void main(IWContext iwc) throws Exception {
@@ -91,9 +93,10 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		Table frameTable = new Table(2, 3);
 		frameTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 		frameTable.mergeCells(1, 3, 2, 3);
-		frameTable.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_CENTER);
-		frameTable.setWidth("100%");
-		frameTable.setHeight("100%");
+		frameTable.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
+		frameTable.setWidth(210);
+		frameTable.setHeight(130);
+		frameTable.setStyleClass(mainStyleClass);
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
@@ -101,8 +104,13 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","Type")), 1, 2);
 		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 2, 1);
 		frameTable.add(getRelationMenu(iwc), 2, 2);
-		frameTable.add(new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel")), 1, 3);
-		frameTable.add(new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save")), 1, 3);
+		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save"));
+		submit.setAsImageButton(true);
+		frameTable.add(submit, 1, 3);
+		frameTable.add(Text.NON_BREAKING_SPACE,1,3);
+		CloseButton close = new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel"));
+		close.setAsImageButton(true);
+		frameTable.add(close, 1, 3);
 
 		form.add(frameTable);
 		add(form,iwc);
