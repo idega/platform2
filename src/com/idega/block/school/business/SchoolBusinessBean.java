@@ -2695,7 +2695,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					log.setUserTerminating(performer);
 					log.setSchoolClass(schoolClass);
 					log.setSchoolClassMember(member);
-					log.setStartDate(new IWTimestamp(member.getRemovedDate()).getDate());
+					log.setStartDate(new IWTimestamp(member.getRegisterDate()).getDate());
 					log.setEndDate(endDate);
 					log.store();
 				}
