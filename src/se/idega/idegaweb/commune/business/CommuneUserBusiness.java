@@ -28,6 +28,8 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
 	 */
  public com.idega.block.school.data.School getFirstManagingSchoolForUser(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootCitizenGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.user.data.Group getRootProtectedCitizenGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+
  public com.idega.user.data.Group getRootCommuneAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootProviderAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
@@ -66,6 +68,8 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 			
 	public boolean moveCitizenFromCommune(User user) throws RemoteException;
 	
-		public boolean moveCitizenToCommune(User user) throws RemoteException;
+	public boolean moveCitizenToCommune(User user) throws RemoteException;
+	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException;
+	
 	public int getRootAdministratorGroupID() throws RemoteException;
 }

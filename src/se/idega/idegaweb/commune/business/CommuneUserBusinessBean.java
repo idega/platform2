@@ -38,8 +38,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
 	private final String ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
+	private final String ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME = "protected_citizen_group_id";
 	private Group rootCitizenGroup;
 	private Group rootSpecialCitizenGroup;
+	private Group rootProtectedCitizenGroup;
 
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
@@ -274,6 +276,35 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootSpecialCitizenGroup.getPrimaryKey());
 		}
 		return rootSpecialCitizenGroup;
+	}
+	
+	/**
+	 * Creates (if not available) and returns the default usergroup for  all
+	 * citizens not living in the commune, read from imports. throws a
+	 * CreateException if it failed to locate or create the group.
+	 */
+	public Group getRootProtectedCitizenGroup() throws CreateException, FinderException, RemoteException {
+		//create the default group
+		if (rootProtectedCitizenGroup != null)
+			return rootProtectedCitizenGroup;
+
+		final IWApplicationContext iwc = getIWApplicationContext();
+		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		String groupId = (String) settings.getProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		if (groupId != null) {
+			final GroupHome groupHome = getGroupHome();
+			rootProtectedCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("trying to store Commune Protected Citizen Root group");
+			/**@todo this seems a wrong way to do things**/
+			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
+			final GroupType type = typeHome.create();
+			final GroupBusiness groupBusiness = getGroupBusiness();
+			rootProtectedCitizenGroup = groupBusiness.createGroup("Commune Protected Citizens", "The Commune Protected Citizen Root Group.", type.getGeneralGroupTypeString());
+			settings.setProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootProtectedCitizenGroup.getPrimaryKey());
+		}
+		return rootProtectedCitizenGroup;
 	}
 
 	/**
@@ -515,6 +546,49 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 		return true;
 	}
+	
+	
+	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException {
+		/*
+			UserTransaction transaction =  getSessionContext().getUserTransaction();
+			
+			try{
+				transaction.begin();*/
+		Group rootProtectedGroup = null;
+		try {
+			rootProtectedGroup = getRootProtectedCitizenGroup();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		
+		Group rootGroup = null;
+		try {
+			rootGroup = getRootCitizenGroup();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		Group rootSpecialGroup = null;
+		try {
+			rootSpecialGroup = getRootSpecialCitizenGroup();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+
+		rootSpecialGroup.removeUser(user);
+		rootGroup.removeUser(user);
+		
+		rootProtectedGroup.addGroup(user);
+		
+		return true;
+		
+	}
+	
 
 	public Phone getChildHomePhone(User child) throws RemoteException {
 		Address childAddress = getUsersMainAddress(child);
