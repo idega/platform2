@@ -57,7 +57,7 @@ private boolean _showInformation = false;
 
 public static final int RADIO_BUTTON_VIEW = 1;
 public static final int LINK_VIEW = 2;
-private int _layout = LINK_VIEW;
+private int _layout = RADIO_BUTTON_VIEW;
 
   public Poll(){
     setDefaultValues();
@@ -312,7 +312,7 @@ private int _layout = LINK_VIEW;
               answerTable.add(imageTable,1,row);
             }
             else {
-              answerTable.add(answerText,1,row);
+              answerTable.add(answerLink,1,row);
             }
             row++;
             answerTable.setHeight(row,"4");
