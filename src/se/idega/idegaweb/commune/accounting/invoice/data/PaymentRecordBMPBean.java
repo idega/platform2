@@ -340,12 +340,12 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		 IWTimestamp end = new IWTimestamp(start);
 		 end.addMonths(1);*/
 		Date start = month.getFirstDateOfMonth();
-		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
 		sql.append("select r.* from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
-		sql.appendWhere("r."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
-		sql.appendAnd().append("r."+COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
+		sql.appendWhere("r."+COLUMN_PERIOD).appendEqualSign().append(start);
+		//sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		//sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
 		//sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
 		//sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 		sql.appendAndEqualsQuoted("h.school_category_id", categoryId);
