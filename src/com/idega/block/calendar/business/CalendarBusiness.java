@@ -166,16 +166,16 @@ public class CalendarBusiness {
 
 		if (!update) {
 			try {
-				entry.insert();
-				returnInt = entry.getID();
-			} catch (SQLException e) {
+				entry.store();
+				returnInt = new Integer(entry.getPrimaryKey().toString()).intValue();
+			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		} else {
 			try {
-				entry.update();
-				returnInt = entry.getID();
-			} catch (SQLException e) {
+				entry.store();
+				returnInt = new Integer(entry.getPrimaryKey().toString()).intValue();
+			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		}
