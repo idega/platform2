@@ -250,6 +250,19 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 //              service2.r
 //              is.idega.idegaweb.travel.data.ServiceDayBMPBean.deleteService(serviceId);
             }
+          }else {
+            if (activeDays.length > 0) {
+              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+              ServiceDay sDayTemp = sDayHome.create();
+              ServiceDay sDay;
+              for (int i = 0; i < activeDays.length; i++) {
+                sDay = sDayHome.create();
+                sDay.setServiceId(serviceId);
+                sDay.setDayOfWeek(activeDays[i]);
+                sDay.store();
+              }
+
+            }
           }
 
 
