@@ -50,6 +50,7 @@ public class Forum extends CategoryBlock implements IWBlock {
   private String _spaceBetween = "8";
   private boolean _showOverviewLink = true;
   private boolean _showTopicName = true;
+  private boolean _showResponses = true;
 
   private int _state = ForumBusiness.FORUM_TOPICS;
   private int _initialState = ForumBusiness.FORUM_TOPICS;
@@ -273,8 +274,13 @@ public class Forum extends CategoryBlock implements IWBlock {
 	table.add(getThreadDate(iwc,thread),1,row);
 	table.add(Text.getBreak(),1,row);
 	table.add(getThreadLink(thread,_topicName),1,row);
-	table.add(formatText(Text.NON_BREAKING_SPACE),1,row);
-	table.add(getThreadResponses(thread),1,row++);
+	if ( _showResponses ) {
+	  table.add(formatText(Text.NON_BREAKING_SPACE),1,row);
+	  table.add(getThreadResponses(thread),1,row++);
+	}
+	else {
+	  row++;
+	}
 	table.setHeight(1,row++,_spaceBetween);
       }
     }
@@ -750,6 +756,10 @@ public class Forum extends CategoryBlock implements IWBlock {
 
   public void setShowTopicName(boolean showTopic) {
     _showTopicName = showTopic;
+  }
+
+  public void setShowResponses(boolean showResponses) {
+    _showResponses = showResponses;
   }
 
   public void setLayout(int layout) {
