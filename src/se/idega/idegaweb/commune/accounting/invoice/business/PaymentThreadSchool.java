@@ -184,6 +184,12 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
 										RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 												findByRegulationSpecType(postingDetail.getRuleSpecType());
+										System.out.println("Getting posting string for"+
+												" category: "+category.getCategory()+
+												"  Type "+schoolClassMember.getSchoolType()+
+												"  RegSpecType "+((Integer)regSpecType.getPrimaryKey()).intValue()+
+												"  provider "+provider.getSchool().getName()+
+												"  Date "+currentDate.toString()+"\n");
 										String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
 										System.out.println("about to create payment record");
 										createPaymentRecord(postingDetail,postings[0],postings[1]);
