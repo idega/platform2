@@ -20,14 +20,12 @@ import javax.ejb.RemoveException;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -46,6 +44,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   
   private static final int LOWER_AGE_LIMIT_DEFAULT = 0;
   private static final int UPPER_AGE_LIMIT_DEFAULT = 110;
+  private static final String DEFAULT_KEY_DATE = "01-01"; /// first of january
   
   private static final String LOWER_AGE_LIMIT_META_DATA_KEY = "lowerAgeLimit";
   private static final String UPPER_AGE_LIMIT_META_DATA_KEY = "upperAgeLimit";
@@ -197,13 +196,14 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
       // remove does not work
       group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, NULL);
     else 
+      // stored in this way <month>-<day> e.g. "04-02" (second of april)
       group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, keyDateForAge);   
   }
   
   public String getKeyDateForAge(Group group)  {
     String keyDateForAgeString = (String) group.getMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY);
     if (keyDateForAgeString == null || NULL.equals(keyDateForAgeString))
-      return "";
+      return DEFAULT_KEY_DATE;
     else
       return keyDateForAgeString; 
   }  
@@ -422,15 +422,6 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return AGE_GENDER_PLUGIN_BUSINESS_BUNDLE_IDENTIFIER;
   } 
 
-  private UserBusiness getUserBusiness() {
-    IWApplicationContext context = getIWApplicationContext();
-    try {
-      return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(context, UserBusiness.class);
-    }
-    catch (java.rmi.RemoteException rme) {
-      throw new RuntimeException(rme.getMessage());
-    }
-  } 
   
   private GroupBusiness getGroupBusiness() {
     try {
