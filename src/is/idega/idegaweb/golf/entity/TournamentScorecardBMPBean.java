@@ -3,9 +3,11 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.*;
-import com.idega.data.*;
-import java.util.*;
+import java.sql.SQLException;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
 
 
 public class TournamentScorecardBMPBean extends GenericEntity implements TournamentScorecard{

@@ -9,22 +9,23 @@ package is.idega.idegaweb.golf;
  * @version 1.0
  */
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import java.sql.*;
-import java.util.*;
-import java.math.*;
-import java.io.*;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.MemberInfoHome;
+import is.idega.idegaweb.golf.entity.Scorecard;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
+import is.idega.idegaweb.golf.entity.UnionMemberInfo;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 
 import com.idega.data.IDOLookup;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.util.*;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
-import is.idega.idegaweb.golf.*;
-import is.idega.idegaweb.golf.entity.*;
-import is.idega.idegaweb.golf.business.*;
 
 public class MemberDevelopment extends Block {
 

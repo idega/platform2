@@ -1,8 +1,9 @@
 package is.idega.idegaweb.golf.templates.page;
 
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import java.io.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 
 public class MainPage extends Page{
 

@@ -45,17 +45,9 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.HorizontalRule;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 
 /**

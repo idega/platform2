@@ -24,7 +24,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;

@@ -1,10 +1,14 @@
  package is.idega.idegaweb.golf.service;
 
- import java.util.*;
+ import is.idega.idegaweb.golf.entity.Address;
+import is.idega.idegaweb.golf.entity.Family;
+import is.idega.idegaweb.golf.entity.Group;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.Phone;
+import is.idega.idegaweb.golf.entity.Union;
 
 import com.idega.data.IDOLookup;
-
- import is.idega.idegaweb.golf.entity.*;
 
 /**
  * Title:

@@ -3,7 +3,6 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.UpdateHandicap;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentParticipants;
@@ -29,7 +28,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 
 /**
  * ScorecardSelect : Initial conversion from scorecard_select.jsp Copyright (C)

@@ -1,7 +1,6 @@
 package is.idega.idegaweb.golf.block.file.data;
 
-import java.sql.*;
-import com.idega.data.*;
+import com.idega.data.GenericEntity;
 
 
 public class FileCatagoryBMPBean extends GenericEntity{

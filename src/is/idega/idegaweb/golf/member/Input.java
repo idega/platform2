@@ -1,8 +1,7 @@
 package is.idega.idegaweb.golf.member;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.InterfaceObject;
 
 
 public class Input{

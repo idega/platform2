@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface GolferPageData extends com.idega.data.IDOLegacyEntity
 {

@@ -2,17 +2,11 @@ package is.idega.idegaweb.golf.moduleobject;
 
 
 
-import java.io.*;
-
-import java.util.*;
-
-import java.sql.*;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.ui.*;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 
 
 

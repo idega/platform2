@@ -3,8 +3,6 @@ package is.idega.idegaweb.golf.startingtime.presentation;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.Window;
 import com.idega.presentation.text.Link;
 import com.idega.util.IWTimestamp;
 

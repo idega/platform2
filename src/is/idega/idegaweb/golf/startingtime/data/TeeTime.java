@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.startingtime.data;
 
-import javax.ejb.*;
 
 public interface TeeTime extends is.idega.idegaweb.golf.entity.GolfEntity
 {

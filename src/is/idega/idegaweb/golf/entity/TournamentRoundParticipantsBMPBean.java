@@ -3,7 +3,6 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.*;
 
 
 public class TournamentRoundParticipantsBMPBean extends TournamentParticipantsBMPBean implements TournamentRoundParticipants {

@@ -20,7 +20,6 @@ import javax.ejb.FinderException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;

@@ -1,15 +1,11 @@
 package is.idega.idegaweb.golf.presentation;
 
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.Table;
 import java.sql.SQLException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 
-import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 
 /**
  * Title:        idegaWeb Classes

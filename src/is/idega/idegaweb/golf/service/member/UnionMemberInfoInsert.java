@@ -1,21 +1,27 @@
 package is.idega.idegaweb.golf.service.member;
 
-import is.idega.idegaweb.golf.entity.*;
-
-import com.idega.data.IDOLookup;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
+import is.idega.idegaweb.golf.entity.PaymentType;
+import is.idega.idegaweb.golf.entity.PriceCatalogue;
+import is.idega.idegaweb.golf.entity.UnionMemberInfo;
 import is.idega.idegaweb.golf.service.Tariffer;
-import java.util.Vector;
+
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
-import java.sql.SQLException;
-import java.io.IOException;
-import java.sql.Date;
-import java.util.GregorianCalendar;
+import java.util.Vector;
+
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.BorderTable;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:

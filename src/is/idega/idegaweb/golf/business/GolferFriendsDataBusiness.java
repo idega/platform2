@@ -1,13 +1,12 @@
 package is.idega.idegaweb.golf.business;
 
-import java.sql.Timestamp;
-import is.idega.idegaweb.golf.entity.GolferPageFriendsData;
 import is.idega.idegaweb.golf.entity.GolferPageData;
-import java.sql.Date;
-import java.lang.String;
-import com.idega.util.IWTimestamp;
-import com.idega.data.*;
+import is.idega.idegaweb.golf.entity.GolferPageFriendsData;
+
 import java.sql.SQLException;
+
+import com.idega.data.IDOLookup;
+import com.idega.util.IWTimestamp;
 
 
 /**

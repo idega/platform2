@@ -3,19 +3,18 @@
  */
 package is.idega.idegaweb.golf.legacy.business;
 
-import java.rmi.RemoteException;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.entity.MemberHome;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.entity.UnionHome;
-import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -24,7 +23,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
-import com.idega.user.data.User;
 import com.idega.user.util.Converter;
 
 

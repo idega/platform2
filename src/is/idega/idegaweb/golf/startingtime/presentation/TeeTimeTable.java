@@ -1,5 +1,17 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
+import is.idega.idegaweb.golf.GolfField;
+import is.idega.idegaweb.golf.TableInfo;
+import is.idega.idegaweb.golf.entity.Field;
+import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
+import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.TournamentRound;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
+import is.idega.idegaweb.golf.startingtime.data.TeeTime;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -10,11 +22,12 @@ import java.util.Vector;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -22,21 +35,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.GolfField;
-import is.idega.idegaweb.golf.TableInfo;
-import is.idega.idegaweb.golf.entity.Field;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.entity.Tournament;
-import is.idega.idegaweb.golf.entity.TournamentRound;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
-import is.idega.idegaweb.golf.startingtime.data.TeeTime;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
-
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 

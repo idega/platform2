@@ -1,7 +1,6 @@
 package is.idega.idegaweb.golf.entity;
 
-import com.idega.data.*;
-import java.sql.SQLException;
+import com.idega.data.GenericEntity;
 
 
 /**

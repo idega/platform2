@@ -1,11 +1,20 @@
 package is.idega.idegaweb.golf;
 
-import is.idega.idegaweb.golf.entity.*;
-import is.idega.idegaweb.golf.handicap.business.*;
-import is.idega.idegaweb.golf.*;
-import java.util.Vector;
+import is.idega.idegaweb.golf.entity.Field;
+import is.idega.idegaweb.golf.entity.FieldHome;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.MemberInfoHome;
+import is.idega.idegaweb.golf.entity.Scorecard;
+import is.idega.idegaweb.golf.entity.Stroke;
+import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.TournamentRound;
+import is.idega.idegaweb.golf.entity.TournamentRoundHome;
+import is.idega.idegaweb.golf.handicap.business.Handicap;
+
 import java.util.Iterator;
-import java.sql.SQLException;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 

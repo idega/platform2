@@ -5,7 +5,6 @@ package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.clubs.presentation.MemberCorrectWindow;
-import is.idega.idegaweb.golf.clubs.presentation.UnionCorrect;
 import is.idega.idegaweb.golf.clubs.presentation.UnionCorrectWindow;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
@@ -46,7 +45,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 

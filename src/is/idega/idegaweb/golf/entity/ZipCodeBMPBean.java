@@ -3,8 +3,6 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.SQLException;
-
 import com.idega.data.GenericEntity;
 
 public class ZipCodeBMPBean extends GenericEntity implements ZipCode{

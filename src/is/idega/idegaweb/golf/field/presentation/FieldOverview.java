@@ -13,7 +13,6 @@ import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapTable;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -36,7 +35,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 
 /**
  * @author laddi

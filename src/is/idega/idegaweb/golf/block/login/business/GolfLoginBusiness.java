@@ -14,7 +14,6 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
-import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;

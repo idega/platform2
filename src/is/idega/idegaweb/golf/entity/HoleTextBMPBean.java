@@ -3,10 +3,6 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import is.idega.idegaweb.golf.block.text.data.TextModule;
-
-import java.sql.SQLException;
-
 import com.idega.block.text.data.TxText;
 import com.idega.data.GenericEntity;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Modernus.java,v 1.1 2004/04/01 17:08:29 laddi Exp $
+ * $Id: Modernus.java,v 1.2 2004/05/24 15:56:11 palli Exp $
  *
  * Copyright (C) 2000-2003 Idega Software. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package is.idega.idegaweb.golf.moduleobject;
 import java.net.URLEncoder;
 
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Block;
 import com.idega.presentation.text.Text;
 
 /**

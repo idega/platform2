@@ -42,7 +42,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 
 /**
  * @author gimmi

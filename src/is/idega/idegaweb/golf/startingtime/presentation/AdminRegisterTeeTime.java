@@ -3,28 +3,6 @@
  */
 package is.idega.idegaweb.golf.startingtime.presentation;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.ejb.FinderException;
-
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Link;
 import is.idega.idegaweb.golf.GolfField;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Group;
@@ -35,6 +13,28 @@ import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.StartService;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 

@@ -31,7 +31,6 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Window;
 
 public class TournamentResults extends GolfBlock {
 

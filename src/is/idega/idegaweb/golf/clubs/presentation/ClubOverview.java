@@ -9,7 +9,6 @@ package is.idega.idegaweb.golf.clubs.presentation;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.UnionImage;
-import is.idega.idegaweb.golf.moduleobject.Modernus;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.presentation.GolfImage;
 

@@ -1,17 +1,22 @@
 package is.idega.idegaweb.golf.service;
 
-import java.sql.*;
-import com.idega.data.*;
+import is.idega.idegaweb.golf.entity.Field;
+import is.idega.idegaweb.golf.entity.FieldHome;
+import is.idega.idegaweb.golf.entity.Startingtime;
+import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
+import is.idega.idegaweb.golf.entity.Union;
 
-import is.idega.idegaweb.golf.entity.*;
-import com.idega.util.*;
-import com.idega.presentation.ui.*;
-import java.io.*;
-import com.idega.util.text.TextSoap;
-import com.idega.data.EntityFinder;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.ejb.FinderException;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title: Golf

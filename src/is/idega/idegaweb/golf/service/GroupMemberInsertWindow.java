@@ -1,21 +1,38 @@
 package is.idega.idegaweb.golf.service;
 
-import is.idega.idegaweb.golf.entity.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
 import is.idega.idegaweb.golf.business.GolfCacher;
-import java.util.*;
-import java.sql.*;
-import java.io.*;
+import is.idega.idegaweb.golf.entity.Group;
+import is.idega.idegaweb.golf.entity.GroupHome;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.Union;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.presentation.*;
-import com.idega.util.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HeaderTable;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 /**
  * Title:
  * Description:

@@ -4,17 +4,14 @@ package is.idega.idegaweb.golf.service;
 
 
 
-import com.idega.util.IsCollator;
-
-import java.util.*;
-
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
-import java.text.RuleBasedCollator;
-
-import java.text.ParseException;
-
-import java.text.Collator;
+import com.idega.util.IsCollator;
 
 
 

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface MembersInTournament extends is.idega.idegaweb.golf.entity.GolfEntity
 {

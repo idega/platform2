@@ -3,8 +3,6 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import is.idega.idegaweb.golf.block.image.data.ImageEntity;
-
 import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 

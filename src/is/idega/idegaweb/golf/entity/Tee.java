@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface Tee extends is.idega.idegaweb.golf.entity.GolfEntity
 {

@@ -50,7 +50,6 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.TimestampInput;
-import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 
 /**

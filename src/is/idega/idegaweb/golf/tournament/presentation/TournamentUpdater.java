@@ -3,9 +3,9 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.presentation.IWContext;
 import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
+
+import com.idega.presentation.IWContext;
 
 /**
  * @author gimmi

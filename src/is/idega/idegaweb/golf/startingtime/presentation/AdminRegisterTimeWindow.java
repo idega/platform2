@@ -5,8 +5,6 @@ package is.idega.idegaweb.golf.startingtime.presentation;
 
 import com.idega.presentation.ui.Window;
 
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
-
 
 /**
  * Title: AdminRegisterTimeWindow

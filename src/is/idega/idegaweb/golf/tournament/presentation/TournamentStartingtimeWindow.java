@@ -13,7 +13,6 @@ import javax.ejb.FinderException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Window;
 
 /**

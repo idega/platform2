@@ -14,7 +14,6 @@ import javax.ejb.RemoveException;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 

@@ -3,7 +3,10 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
-import java.math.BigDecimal;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 
@@ -11,17 +14,13 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
-
 import com.idega.util.text.TextSoap;
 
 /**

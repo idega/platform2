@@ -3,7 +3,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.idega.data.BlobWrapper;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 public class ImageEntityBMPBean extends GenericEntity implements ImageEntity {

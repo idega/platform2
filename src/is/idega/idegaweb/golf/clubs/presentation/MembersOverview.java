@@ -4,7 +4,6 @@
 package is.idega.idegaweb.golf.clubs.presentation;
 
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,11 +13,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;

@@ -3,20 +3,19 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.ejb.FinderException;
 
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.Table;

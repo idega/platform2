@@ -1,22 +1,16 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
-import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Tournament;
-import is.idega.idegaweb.golf.entity.TournamentHome;
-import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -24,12 +18,6 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
-import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
 
 /**
  * @author gimmi

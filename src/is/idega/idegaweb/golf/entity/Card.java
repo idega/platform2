@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface Card extends is.idega.idegaweb.golf.entity.GolfEntity
 {

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface StartingtimeFieldConfig extends is.idega.idegaweb.golf.entity.GolfEntity
 {

@@ -9,8 +9,6 @@
  */
 package is.idega.idegaweb.golf.handicap.data;
 
-import com.idega.data.IDORuntimeException;
-import com.idega.data.IDOPrimaryKey;
 import com.idega.data.PrimaryKey;
 
 /**

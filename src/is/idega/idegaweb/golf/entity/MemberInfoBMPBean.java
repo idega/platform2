@@ -3,8 +3,7 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.*;
-import com.idega.data.*;
+import com.idega.data.GenericEntity;
 
 
 public class MemberInfoBMPBean extends GenericEntity implements MemberInfo{

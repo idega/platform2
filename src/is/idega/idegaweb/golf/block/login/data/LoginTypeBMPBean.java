@@ -3,8 +3,7 @@
 package is.idega.idegaweb.golf.block.login.data;
 
 //import java.util.*;
-import java.sql.*;
-import com.idega.data.*;
+import com.idega.data.GenericEntity;
 
 public class LoginTypeBMPBean extends GenericEntity implements LoginType{
 

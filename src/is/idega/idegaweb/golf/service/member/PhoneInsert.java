@@ -1,20 +1,20 @@
 package is.idega.idegaweb.golf.service.member;
-import is.idega.idegaweb.golf.entity.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.*;
-import com.idega.util.text.*;
-import java.util.*;
-import java.sql.Date;
-import java.sql.*;
-import java.io.*;
+import is.idega.idegaweb.golf.entity.Country;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.Phone;
+import is.idega.idegaweb.golf.entity.PhoneType;
 
-import com.idega.presentation.*;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Vector;
 
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.golf.*;
-import com.idega.util.*;
-import com.idega.data.*;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.BorderTable;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 /**
  * Title:
  * Description:

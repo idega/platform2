@@ -1,17 +1,25 @@
 package is.idega.idegaweb.golf.block.text.presentation;
 
-import is.idega.idegaweb.golf.block.text.data.*;
+import is.idega.idegaweb.golf.block.text.data.TextModuleBMPBean;
 import is.idega.idegaweb.golf.presentation.GolfImage;
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.data.*;
-import com.idega.util.text.*;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Anchor;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
+import com.idega.util.text.TextSoap;
 
 
 public class TextReader extends Block{

@@ -2,11 +2,7 @@
 
 
 
- import com.idega.presentation.Image;
-
- import java.util.*;
-
- import is.idega.idegaweb.golf.entity.*;
+ import java.util.StringTokenizer;
 
 
 

@@ -1,17 +1,21 @@
 
 package is.idega.idegaweb.golf.service;
 
-import is.idega.idegaweb.golf.entity.*;
+import is.idega.idegaweb.golf.entity.Group;
+import is.idega.idegaweb.golf.entity.Union;
+
+import java.io.IOException;
+import java.sql.SQLException;
 
 import com.idega.data.IDOLookup;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-
-import com.idega.presentation.*;
-import com.idega.util.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HeaderTable;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 /**
  * Title:
  * Description:

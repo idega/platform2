@@ -6,11 +6,11 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 
 /**
  * @author gimmi

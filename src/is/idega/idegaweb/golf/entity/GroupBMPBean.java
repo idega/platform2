@@ -6,7 +6,6 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.*;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>

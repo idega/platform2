@@ -15,7 +15,6 @@ import java.util.List;
 
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;

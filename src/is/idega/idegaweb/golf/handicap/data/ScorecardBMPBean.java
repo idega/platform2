@@ -3,9 +3,6 @@
  */
 package is.idega.idegaweb.golf.handicap.data;
 
-import is.idega.idegaweb.golf.course.data.Course;
-import is.idega.idegaweb.golf.course.data.Hole;
-import is.idega.idegaweb.golf.course.data.HoleBMPBean;
 import is.idega.idegaweb.golf.course.data.Tee;
 import is.idega.idegaweb.golf.course.data.TeeBMPBean;
 
@@ -15,8 +12,6 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOQuery;
-import com.idega.data.IDORelationshipException;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;

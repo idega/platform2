@@ -10,8 +10,7 @@
 */
 package is.idega.idegaweb.golf.entity;
 
-import java.sql.*;
-import com.idega.data.*;
+import com.idega.data.GenericEntity;
 
 public class TournamentGroupRoundDayBMPBean extends GenericEntity implements TournamentGroupRoundDay{
 

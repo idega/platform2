@@ -1,19 +1,29 @@
 package is.idega.idegaweb.golf.service;
 
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.golf.entity. *;
+import is.idega.idegaweb.golf.entity.Group;
+import is.idega.idegaweb.golf.entity.ZipCode;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.service.*;
-import com.idega.util.*;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import java.sql.*;
-import java.util.*;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collections;
+import java.util.Vector;
 
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.*;
-import java.sql.SQLException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.FramePane;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWTimestamp;
 
 /**
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>

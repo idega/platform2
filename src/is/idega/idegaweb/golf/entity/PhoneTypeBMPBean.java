@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
-import java.sql.*;
-import com.idega.data.*;
+import com.idega.data.GenericEntity;
 /**
  * Title:
  * Description:

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface CurrentPosition extends is.idega.idegaweb.golf.entity.GolfEntity
 {

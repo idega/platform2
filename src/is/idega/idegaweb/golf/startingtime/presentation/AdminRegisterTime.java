@@ -1,17 +1,16 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.entity.TournamentRound;
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import is.idega.idegaweb.golf.startingtime.data.TeeTimeHome;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
-import is.idega.idegaweb.golf.tournament.presentation.MemberSearch;
 import is.idega.idegaweb.golf.tournament.presentation.MemberSearchWindow;
 
 import java.sql.SQLException;

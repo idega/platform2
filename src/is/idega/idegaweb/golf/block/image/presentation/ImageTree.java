@@ -8,7 +8,6 @@ import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;

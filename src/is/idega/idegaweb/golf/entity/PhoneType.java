@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface PhoneType extends com.idega.data.IDOLegacyEntity
 {

@@ -1,17 +1,16 @@
 package is.idega.idegaweb.golf.business;
 
-import com.idega.presentation.ui.DropdownMenu;
-import is.idega.idegaweb.golf.entity.Union;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-
 import is.idega.idegaweb.golf.entity.Union;
 
-import java.util.List;
-import java.util.Vector;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  * Title:        Golf

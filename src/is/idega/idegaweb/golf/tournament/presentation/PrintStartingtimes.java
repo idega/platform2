@@ -8,7 +8,6 @@ import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
 
 /**
  * @author gimmi

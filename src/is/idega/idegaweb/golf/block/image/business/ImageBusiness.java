@@ -16,7 +16,6 @@ import java.util.Properties;
 
 import com.idega.data.DatastoreInterface;
 import com.idega.data.EntityFinder;
-import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;

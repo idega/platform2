@@ -1,16 +1,16 @@
 package is.idega.idegaweb.golf.presentation;
 
-import com.idega.presentation.Block;
+import is.idega.idegaweb.golf.entity.GolferPageData;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.data.EntityFinder;
-import java.util.LinkedList;
-import java.util.List;
-import com.idega.data.IDOLegacyEntity;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import java.sql.SQLException;
-import java.lang.Integer;
-import is.idega.idegaweb.golf.entity.GolferPageData;
 
 /**
  * Title:        idegaWeb Classes

@@ -4,7 +4,6 @@
 package is.idega.idegaweb.golf.clubs.presentation;
 
 import is.idega.idegaweb.golf.business.GolfCacher;
-import is.idega.idegaweb.golf.clubs.presentation.MemberEditor.Editor.EntityInsert;
 import is.idega.idegaweb.golf.entity.Address;
 import is.idega.idegaweb.golf.entity.AddressHome;
 import is.idega.idegaweb.golf.entity.Card;

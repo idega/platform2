@@ -26,7 +26,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 

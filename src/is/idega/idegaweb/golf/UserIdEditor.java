@@ -1,16 +1,31 @@
 package is.idega.idegaweb.golf;
 
-import com.idega.data.IDOLookup;
-import com.idega.presentation.Block;
-import is.idega.idegaweb.golf.entity.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import java.util.*;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
+import is.idega.idegaweb.golf.entity.UnionMemberInfo;
+import is.idega.idegaweb.golf.entity.UserId;
+import is.idega.idegaweb.golf.entity.UserIdHome;
+import is.idega.idegaweb.golf.entity.UserIds;
+import is.idega.idegaweb.golf.entity.UserIdsHome;
+
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Hashtable;
 
 import javax.ejb.FinderException;
+
+import com.idega.data.IDOLookup;
+import com.idega.presentation.Editor;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 
 

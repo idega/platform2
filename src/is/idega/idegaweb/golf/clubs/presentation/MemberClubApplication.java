@@ -3,9 +3,15 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
+import is.idega.idegaweb.golf.entity.Subscription;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
@@ -13,12 +19,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.entity.Subscription;
-import is.idega.idegaweb.golf.entity.SubscriptionHome;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.entity.UnionHome;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 /**
  * @author laddi

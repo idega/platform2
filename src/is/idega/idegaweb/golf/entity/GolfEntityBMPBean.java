@@ -7,11 +7,7 @@ package is.idega.idegaweb.golf.entity;
 
 
 
-import java.sql.*;
-import javax.naming.*;
-//import javax.sql.*;
-import com.idega.data.*;
-import com.idega.util.database.*;
+import com.idega.data.GenericEntity;
 
 
 /**

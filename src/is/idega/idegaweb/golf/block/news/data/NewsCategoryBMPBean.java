@@ -3,9 +3,7 @@
 package is.idega.idegaweb.golf.block.news.data;
 
 //import java.util.*;
-import java.sql.*;
-//import com.idega.data.*;
-import com.idega.data.*;
+import com.idega.data.GenericEntity;
 
 public class NewsCategoryBMPBean extends GenericEntity implements NewsCategory{
 

@@ -2,7 +2,6 @@ package is.idega.idegaweb.golf.handicap.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
-import is.idega.idegaweb.golf.handicap.presentation.*;
 
 /**
  * @author gimmi

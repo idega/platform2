@@ -6,25 +6,6 @@ package is.idega.idegaweb.golf.handicap.presentation;
  * @author @version 1.0
  */
 
-import java.io.IOException;
-import java.sql.SQLException;
-
-import javax.ejb.FinderException;
-
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
@@ -33,10 +14,23 @@ import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.presentation.GolfImage;
-import is.idega.idegaweb.golf.templates.JmoduleWindowModule;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWCalendar;
 
 public class HandicapScore extends GolfBlock {

@@ -1,14 +1,20 @@
 package is.idega.idegaweb.golf.member;
 
-import com.idega.presentation.*;
-import is.idega.idegaweb.golf.entity.*;
-
-import com.idega.data.EntityFinder;
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.IDOLookup;
+import is.idega.idegaweb.golf.entity.Address;
+import is.idega.idegaweb.golf.entity.Card;
+import is.idega.idegaweb.golf.entity.CardHome;
+import is.idega.idegaweb.golf.entity.Family;
+import is.idega.idegaweb.golf.entity.FamilyHome;
+import is.idega.idegaweb.golf.entity.Group;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.Phone;
+import is.idega.idegaweb.golf.entity.UnionMemberInfo;
 
 import java.sql.SQLException;
+
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
 
 public class GolfMemberProfile {
 

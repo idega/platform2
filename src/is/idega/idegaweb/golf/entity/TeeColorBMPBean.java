@@ -5,8 +5,6 @@
 
 package is.idega.idegaweb.golf.entity;
 
-import java.sql.SQLException;
-
 import com.idega.data.GenericEntity;
 
 

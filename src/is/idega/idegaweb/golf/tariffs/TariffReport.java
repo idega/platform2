@@ -1,7 +1,5 @@
 package is.idega.idegaweb.golf.tariffs;
 
-import com.idega.presentation.*;
-import java.util.*;
 /**
  * Title:
  * Description:
