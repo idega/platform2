@@ -84,8 +84,6 @@ public class ResultDataHandler {
         String abbrevation = RS.getString("abbrevation");
         int tournamentPosition = RS.getInt("tournament_position");
 
-        System.out.println(tournamentPosition);
-
         ResultsCollector r = (ResultsCollector)hash.get(Integer.toString(member_id));
         if (r == null) {
           r = new ResultsCollector(tournamentType_);
