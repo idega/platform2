@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.5 2003/09/03 22:19:31 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.6 2003/09/23 09:23:51 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/03 22:19:31 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/23 09:23:51 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -44,7 +44,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_AGE_VALUES = KP + "age_values";
 	public final static String KEY_AGE_OVERLAP = KP + "age_overlap";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
-//	public final static String KEY_CUT_DATE_MISSING = KP + "cut_date_missing";
+	public final static String KEY_CUT_DATE_FORMAT = KP + "cut_date_format";
 	public final static String KEY_CANNOT_SAVE_AGE_REGULATION = KP + "cannot_save_age_regulation";
 	public final static String KEY_CANNOT_DELETE_AGE_REGULATION = KP + "cannot_delete_age_regulation";
 	public final static String KEY_CANNOT_FIND_AGE_REGULATION = KP + "cannot_find_age_regulation";
@@ -61,7 +61,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_AGE_VALUES = "Ålder till måste vara mindre än ålder från.";
 	public final static String DEFAULT_AGE_OVERLAP = "Åldersintervall får ej överlappa. Det finns redan en regel inom detta intervall.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "Benämning av åldersregeln måste fyllas i.";
-//	public final static String DEFAULT_CUT_DATE_MISSING = "Brytdatum måste fyllas i.";
+	public final static String DEFAULT_CUT_DATE_FORMAT = "Brytdatum måste anges p? formen ??MM.";
 	public final static String DEFAULT_CANNOT_SAVE_AGE_REGULATION = "Åldersregeln kunde inte sparas på grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_DELETE_AGE_REGULATION = "Åldersregeln kunde inte tas bort på grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_FIND_AGE_REGULATION = "Kan ej hitta åldersregeln.";
@@ -255,8 +255,10 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 		s = cutDateString.trim();
 		if (!s.equals("") && (cutDate == null)) {
 			throw new AgeException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
+		} else if (!s.equals("") && (cutDate != null) && (s.length() != 4)) {
+			throw new AgeException(KEY_CUT_DATE_FORMAT, DEFAULT_CUT_DATE_FORMAT);
 		}
-		
+ 		
 		try {
 			AgeRegulationHome home = getAgeRegulationHome();
 			AgeRegulation ar = null;
