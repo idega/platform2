@@ -269,7 +269,7 @@ public class ProviderAccountBusinessBean
 			int schTypeID = ((Integer)element.getPrimaryKey()).intValue();
 			school_types[i++]=schTypeID;
 		}
-		School school = getSchoolBusiness().createSchool(providerName,address,phone,zipcode,ziparea,school_area,school_types);
+		School school = getSchoolBusiness().createSchool(providerName,address,zipcode,ziparea,phone,school_area,school_types);
 		return school;
 	}
 
