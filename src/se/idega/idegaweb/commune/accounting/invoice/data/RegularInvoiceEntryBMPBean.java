@@ -16,7 +16,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
 import com.idega.user.data.User;
-
+import com.idega.block.school.data.SchoolCategory;
 
 /**
  * @author Roar
@@ -43,6 +43,7 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	private static final String COLUMN_PLACING = "placing";
 	private static final String COLUMN_TO = "periode_to";
 	private static final String COLUMN_FROM = "periode_from";
+	private static final String COLUMN_SCHOOL_CATEGORY_ID = "school_category_id";
 	
 	private static final String ENTITY_NAME = "cacc_regular_invoice_entry";
 	
@@ -68,10 +69,12 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_EDIT_DATE, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CREATED_NAME, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_CREATED_DATE, "", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.String.class);
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
-		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);				
+		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);	
+		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);			
 	}
 	
 
@@ -146,6 +149,13 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	public int getSchoolId() {
 		return getIntColumnValue(COLUMN_SCHOOL_ID);
 	}	
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getSchoolId()
+	 */
+	public String getSchoolCategoryId() {
+		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
+	}		
 
 
 	/* (non-Javadoc)
@@ -274,10 +284,11 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_NOTE, note);
 	}
 	
-	public Collection ejbFindByPeriodeAndUser(Date from, Date to, int userId) throws FinderException {
+	public Collection ejbFindByPeriodeAndUser(Date from, Date to, int userId, String schoolCategoryId) throws FinderException {
 		return idoFindPKsByQuery(idoQuery() 
 		.appendSelectAllFrom(this)
 		.appendWhereEquals(COLUMN_USER_ID, userId)
+		.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId)
 		.appendAnd()
 		.append(COLUMN_FROM)
 		.appendLessThanOrEqualsSign()
@@ -326,6 +337,13 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_SCHOOL_ID, schoolId);
 	}
 
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getSchoolId()
+	 */
+	public void setSchoolCategoryId(String schoolCategoryId) {
+		setColumn(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId);
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setVAT(float)
@@ -395,6 +413,10 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	public void setEditSign(String name) {
 		setColumn(COLUMN_EDIT_NAME, name);
 	}
+
+
+
+
 
 
 	

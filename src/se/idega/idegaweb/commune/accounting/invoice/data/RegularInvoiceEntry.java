@@ -29,6 +29,7 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
 	int getRegSpecTypeId();
 	School getSchool(); 
 	int getSchoolId();
+	String getSchoolCategoryId();	
 	String getOwnPosting();
 	String getDoublePosting();
 	float getAmount();
@@ -48,6 +49,7 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
 	void setRegSpecType(RegulationSpecType regType);
 	void setRegSpecTypeId(int regTypeId);
 	void setSchoolId(int schoolId);
+	void setSchoolCategoryId(String s);	
 	void setAmount(float amount);
 	void setVAT(float vat);
 	void setVatRegulation(VATRegulation vatRegulation);
@@ -60,5 +62,6 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
 	void setEditDate(Date date);
 	void setEditSign(String name);
 	
-	void delete()throws java.sql.SQLException;	
+	void delete()throws java.sql.SQLException;
+
 }

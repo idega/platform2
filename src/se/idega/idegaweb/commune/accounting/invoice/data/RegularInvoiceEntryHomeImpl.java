@@ -28,9 +28,9 @@ public class RegularInvoiceEntryHomeImpl  extends com.idega.data.IDOFactory impl
 	 return (RegularInvoiceEntry) super.createIDO();
 	}	
 	
-	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId) throws FinderException{
+	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId, String schoolCategoryId) throws FinderException{
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindByPeriodeAndUser(from, to, userId);
+		java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindByPeriodeAndUser(from, to, userId, schoolCategoryId);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
