@@ -40,6 +40,9 @@ public class TournamentResultsDetailed extends JModuleObject {
   private Text blackText;
   private Text whiteText;
 
+  private int[] allTournamentRounds_;
+
+
   private int totalPar = 0;
   private int outValue = 0;
   private int inValue = 0;
@@ -56,6 +59,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       iwb = getBundle(modinfo);
       tournament = new Tournament(tournamentId_);
       getMemberVector();
+      setMemberVectorAllRounds();
       if ( result != null ) {
       System.err.println("Test : result != null");
         if ( result.size() > 1 ) {
@@ -113,6 +117,17 @@ public class TournamentResultsDetailed extends JModuleObject {
       int inScore = 0;
       int totalStrokes = 0;
       int difference = 0;
+
+      ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,this.allTournamentRounds_,r.getMemberId());
+      Vector v = handler.getTournamentMembers();
+      if (v != null) {
+        if (v.size() > 0) {
+            ResultsCollector rip = (ResultsCollector) v.get(0);
+            if (rip != null) {
+                difference = rip.getDifference();
+            }else {System.err.println("Rip == null");}
+        }else {System.err.println("V.size = 0");}
+      }else {System.err.println("V == null");}
 
 
       myTable.setHeight(row,"20");
@@ -330,8 +345,7 @@ public class TournamentResultsDetailed extends JModuleObject {
     }
   }
 
-  private void getMemberVector() {
-    try {
+  private void setMemberVectorAllRounds() throws SQLException{
 
       TournamentRound[] rounds = tournament.getTournamentRounds();
       TournamentRound tRound = new TournamentRound(tournamentRound_);
@@ -342,18 +356,22 @@ public class TournamentResultsDetailed extends JModuleObject {
         }
       }
 
-      int[] tournamentRounds_;
       if (ids != null) {
-          tournamentRounds_ = new int[ids.size()];
+          allTournamentRounds_ = new int[ids.size()];
           for (int i = 0; i < ids.size(); i++) {
-              tournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
+              allTournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
           }
       }else {
           //int[]
-          tournamentRounds_ = new int[1];
-            tournamentRounds_[0] = tournamentRound_;
-
+          allTournamentRounds_ = new int[1];
+            allTournamentRounds_[0] = tournamentRound_;
       }
+  }
+
+  private void getMemberVector() {
+    try {
+          int[] tournamentRounds_ = new int[1];
+            tournamentRounds_[0] = tournamentRound_;
 
 
       ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,tournamentRounds_,null);

@@ -11,6 +11,7 @@ public class ResultDataHandler {
   private int tournamentType_ = -1;
   private int[] tournamentRounds_ = null;
   private String gender_ = null;
+  private int memberId_ = -1;
 
   public ResultDataHandler(int tournamentId, int tournamentType) {
     tournamentId_ = tournamentId;
@@ -61,6 +62,14 @@ public class ResultDataHandler {
     tournamentGroupId_ = tournamentGroupId;
     tournamentRounds_ = tournamentRounds;
     gender_ = gender;
+  }
+  // added by gimmi
+  public ResultDataHandler(int tournamentId, int tournamentType, int tournamentGroupId, int[] tournamentRounds, int member_id) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentGroupId_ = tournamentGroupId;
+    tournamentRounds_ = tournamentRounds;
+    memberId_ = member_id;
   }
 
   public Vector getTournamentMembers() throws SQLException {
@@ -154,6 +163,12 @@ public class ResultDataHandler {
       sql.append(" and tm.tournament_id = t.tournament_id");
       sql.append(" and tm.union_id = u.union_id");
       sql.append(" and t.tournament_id = "+Integer.toString(tournamentId_));
+
+      //added by gimmi 07.08.2001
+      if ( memberId_ != -1) {
+        sql.append(" and m.member_id = '"+memberId_+"'");
+      }
+      // gimmi done
 
       if ( gender_ != null )
         sql.append(" and gender = '"+gender_+"'");
