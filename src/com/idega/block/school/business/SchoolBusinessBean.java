@@ -359,5 +359,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
     return (UserBusiness)this.getServiceInstance(UserBusiness.class);
   }
 
+	public Collection findAllSchoolsByType(int type)
+	{
+		try
+		{
+			SchoolHome shome = getSchoolHome();
+			return shome.findAllBySchoolType(type);
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+			return new java.util.Vector();
+		}
+	}
 
 }

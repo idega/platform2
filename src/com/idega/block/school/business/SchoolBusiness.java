@@ -5,6 +5,7 @@ import javax.ejb.*;
 public interface SchoolBusiness extends com.idega.business.IBOService
 {
  public java.util.Collection findAllSchoolsByAreaAndType(int p0,int p1) throws java.rmi.RemoteException;
+ public java.util.Collection findAllSchoolsByType(int p0) throws java.rmi.RemoteException;
  public java.util.Map getSchoolRelatedSchoolYears(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public java.util.Map getSchoolRelatedSchoolTypes(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchools() throws java.rmi.RemoteException;
