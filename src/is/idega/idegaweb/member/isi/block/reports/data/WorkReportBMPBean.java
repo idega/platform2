@@ -27,7 +27,9 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";
 	protected final static String COLUMN_NAME_BOARD_DONE = "BOARD_DONE";
 	protected final static String COLUMN_NAME_STATUS = "STATUS";
-	protected final static String COLUMN_NAME_FILE_ID = "IC_FILE_ID";
+	protected final static String COLUMN_NAME_MEMBER_FILE_ID = "MEMBER_PART_FILE_ID";
+	protected final static String COLUMN_NAME_ACCOUNT_FILE_ID = "ACCOUNT_PART_FILE_ID";
+	protected final static String COLUMN_NAME_BOARD_FILE_ID = "BOARD_PART_FILE_ID";
 
 	
 	public WorkReportBMPBean() {
@@ -37,7 +39,9 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_CLUB_ID, "Group id of club",true,true,Integer.class,"many-to-one",Group.class);
-		addAttribute(COLUMN_NAME_FILE_ID, "Uploaded files id",true,true,Integer.class,"many-to-one",ICFile.class);
+		addAttribute(COLUMN_NAME_MEMBER_FILE_ID, "Members-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
+		addAttribute(COLUMN_NAME_ACCOUNT_FILE_ID, "Account-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
+		addAttribute(COLUMN_NAME_BOARD_FILE_ID, "Board-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_CLUB_NAME, "Club name",true,true,String.class);
 		addAttribute(COLUMN_NAME_CLUB_SHORT_NAME, "Club short name",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_CLUB_NUMBER, "Club number",true,true,String.class);
@@ -68,17 +72,30 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 		setColumn(COLUMN_NAME_CLUB_ID,clubId);
 	}
 	
-	public Integer getFileId(){
-		return getIntegerColumnValue(COLUMN_NAME_FILE_ID);
+	public Integer getMemberFileId(){
+		return getIntegerColumnValue(COLUMN_NAME_MEMBER_FILE_ID);
 	}
 	
-	public void setFileId(int fileId){
-		setColumn(COLUMN_NAME_FILE_ID,fileId);
+	public Integer getAccountFileId(){
+		return getIntegerColumnValue(COLUMN_NAME_ACCOUNT_FILE_ID);
 	}
 	
-	public void setFileId(Integer fileId){
-		setColumn(COLUMN_NAME_FILE_ID,fileId);
+	public Integer getBoardFileId(){
+		return getIntegerColumnValue(COLUMN_NAME_BOARD_FILE_ID);
 	}
+	
+	public void setMemberFileId(int fileId){
+		setColumn(COLUMN_NAME_MEMBER_FILE_ID,fileId);
+	}
+	
+	public void setAccountFileId(int fileId){
+			setColumn(COLUMN_NAME_ACCOUNT_FILE_ID,fileId);
+		}
+		
+	public void setBoardFileId(int fileId){
+			setColumn(COLUMN_NAME_BOARD_FILE_ID,fileId);
+	}
+		
 	
 	public String getClubName(){
 		return getStringColumnValue(COLUMN_NAME_CLUB_NAME);
