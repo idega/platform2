@@ -599,7 +599,7 @@ public class TournamentController{
 
 
             table.mergeCells(1,row,3,row);
-            table.add(numberOfMember + " meðlimir skráðir í mótið",1,row);
+            table.add("Fjöldi þátttakenda : " +numberOfMember,1,row);
 
             table.mergeCells(4,row,6,row);
             if (!viewOnly) {
