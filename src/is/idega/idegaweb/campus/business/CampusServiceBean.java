@@ -8,6 +8,7 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 
 import java.rmi.RemoteException;
+import java.util.Locale;
 
 import com.idega.block.building.business.BuildingService;
 import com.idega.block.finance.business.FinanceService;
@@ -71,6 +72,14 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 		} catch (NumberFormatException e) {
 			
 		}
+		property = bundle.getProperty(CampusSettings.PROPERTY_SYSTEM_LOCALE,getIWApplicationContext().getApplicationSettings().getDefaultLocale().toString());
+		try{
+			Locale locale = new Locale(property);
+			settings.setSystemLocale(locale);
+		}
+		catch(Exception e){
+			
+		}
 		
 		return settings;	
 	}
@@ -87,6 +96,7 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 			setBundleProperty(bundle,CampusSettings.PROPERTY_FINANCE_CATEGORY,settings.getFinanceCategoryID().toString());
 		setBundleProperty(bundle,CampusSettings.PROPERTY_SEND_EVENT_MAIL,Boolean.toString(settings.getSendEventMail()));
 		setBundleProperty(bundle,CampusSettings.PROPERTY_TRANSFER_BGR_COLOR, settings.getTransferBackgroundColor());
+		setBundleProperty(bundle,CampusSettings.PROPERTY_SYSTEM_LOCALE, settings.getSystemLocale().toString());
 	}
 	
 	private  void setBundleProperty(IWBundle bundle,String propertyKey,String propertyValue){
