@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportEditor.java,v 1.6 2005/02/15 13:12:35 anna Exp $ Created on
+ * $Id: MeetingReportEditor.java,v 1.7 2005/02/15 14:02:29 anna Exp $ Created on
  * 2.12.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 2.12.2004 15:14:55 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MeetingReportEditor extends MeetingFeeBlock {
 
@@ -109,12 +109,6 @@ public class MeetingReportEditor extends MeetingFeeBlock {
 		
 		form.maintainParameter(PARAMETER_MEETING_FEE_ID);
 		
-		form.maintainParameter(PARAMETER_MEETING_FEE_CONGREGATION);
-		form.maintainParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION);
-		form.maintainParameter(PARAMETER_MEETING_FEE_DATE);
-		form.maintainParameter(PARAMETER_MEETING_FEE_COMMENT);
-		form.maintainParameter(PARAMETER_MEETING_FEE_PARTICIPANTS);
-
 		return form;
 	}
 
