@@ -50,7 +50,7 @@ import com.idega.idegaweb.IWBundle;
       checkParameterName(iwc);
 
       getParentPage().getAssociatedScript().addFunction("callbim",getSaveImageFunction() );
-
+      add("jmodule.image");
       Table Frame = new Table();
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);

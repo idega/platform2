@@ -142,6 +142,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
       if(ip !=null){
         String mmProp = iwc.getApplication().getSettings().getProperty(com.idega.block.media.servlet.MediaServlet.USES_OLD_TABLES);
         int i = -1;
+
         if(mmProp!=null) {
           i = ImageBusiness.SaveImage(ip);
         }
@@ -151,6 +152,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
           i = com.idega.block.media.business.ImageBusiness.SaveImage(ip2);
         }
 
+        i = ImageBusiness.SaveImage(ip);
         iwc.setSessionAttribute(sessImageParameter,String.valueOf(i));
         setParentToReload();
         try {
