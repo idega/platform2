@@ -1378,16 +1378,37 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (RemoveException re) {
 		}
 	}
-
+	/**
+	 * Used by childcare placements that don't store school year
+	 */
 	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator) throws RemoteException {
-		return storeSchoolClassMember(studentID, schoolClassID, registerDate, registrator, null);
+		return storeSchoolClassMember(studentID, schoolClassID, -1, registerDate, registrator, null);
 	}
 
+	/**
+	 * Used childcare placements that don't store school year
+	 */
 	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
-		return storeSchoolClassMember(studentID, schoolClassID, registerDate, null, registrator, notes);
+		return storeSchoolClassMember(studentID, schoolClassID, -1, registerDate, null, registrator, notes);
+	}
+
+	/**
+	 * Used childcare placements that don't store school year
+	 */	
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
+		return storeSchoolClassMember(studentID, schoolClassID, -1, registerDate, null, registrator, notes);
 	}
 	
-	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
+
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, Timestamp registerDate, int registrator) throws RemoteException {
+		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, registerDate, registrator, null);
+	}
+
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, registerDate, null, registrator, notes);
+	}
+	
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
 			if (member == null)
@@ -1396,6 +1417,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			if (member != null) {
 				member.setClassMemberId(studentID);
 				member.setSchoolClassId(schoolClassID);
+				if (schoolYearID > 0)
+					member.setSchoolYear(schoolYearID);
 				member.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
 				if (registerDate != null)
 					member.setRegisterDate(registerDate);
