@@ -851,15 +851,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		//PARAMETES
 
-		//A way to set a static parameter
-		ReportableField comparingYearStat = new ReportableField("comparing_year", Integer.class) {
-			public String getLocalizedName(Locale locale) {
-				return Integer.toString(year.intValue() - 1);
-			}
-		};
-
-		reportCollection.addField(comparingYearStat); //don't forget to add the param/field
-
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
 				"workreportreport",
@@ -870,13 +861,17 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters
-		ReportableField regionalUnionAbbreviation = new ReportableField("regionalUnionAbbrev", String.class);
+		/*ReportableField regionalUnionAbbreviation = new ReportableField("regionalUnionAbbrev", String.class);
 		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name_abbrev", "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionAbbreviation);
 
 		ReportableField regionalUnionName = new ReportableField("regionalUnionName", String.class);
 		regionalUnionName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
-		reportCollection.addField(regionalUnionName);
+		reportCollection.addField(regionalUnionName);*/
+		
+		ReportableField regionalUnionFiffName = new ReportableField("regional_union_name", String.class);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionFiffName);
 
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
 		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
@@ -907,10 +902,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			ReportableData regData = (ReportableData) regionalUnionsStatsMap.get(regionalUnionIdentifier);
 			if(regData==null){//initialize
 				regData = new ReportableData();
-				String ruAbbrev = report.getRegionalUnionAbbreviation();
+				regData.addData(regionalUnionFiffName, regionalUnionIdentifier);
+				/*String ruAbbrev = report.getRegionalUnionAbbreviation();
 				regData.addData(regionalUnionAbbreviation, ruAbbrev==null?"":ruAbbrev);
 				String ruName = report.getRegionalUnionName();
-				regData.addData(regionalUnionName, ruName==null?"":ruName);
+				regData.addData(regionalUnionName, ruName==null?"":ruName);*/
 			}
 	
 			//add to counts
@@ -929,6 +925,120 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//finished return the collection
 		return reportCollection;
 	}
+
+	/*
+	 * Report B12.2.2 of the ISI Specs
+	 */
+	public ReportableCollection getGenderStatisticsForRegionalUnionsByYearAndRegionalUnionsFilter (
+			final Integer year,
+			Collection regionalUnionsFilter)
+	throws RemoteException {
+		//initialize stuff
+		int age = 16;
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+
+		//PARAMETES
+
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters
+		/*ReportableField regionalUnionAbbreviation = new ReportableField("regionalUnionAbbrev", String.class);
+		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name_abbrev", "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionAbbreviation);
+
+		ReportableField regionalUnionNumber = new ReportableField("regionalUnionNumber", String.class);
+		regionalUnionNumber.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionNumber);*/
+		
+		ReportableField regionalUnionFiffName = new ReportableField("regional_union_name", String.class);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionFiffName);
+
+		ReportableField regionalUnionPopulation = new ReportableField("regionalUnionPopulation", String.class);
+		regionalUnionPopulation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_population", "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionPopulation);
+		
+		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		reportCollection.addField(menUnderAge);
+		
+		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		reportCollection.addField(womenUnderAge);
+
+		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenOverOrEqualAgeLimit);
+	
+		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(menOverOrEqualAgeLimit);
+		
+		ReportableField bothGendersLastYear = new ReportableField("bothGendersLastYear", Integer.class);
+		bothGendersLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersLastYear"+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(bothGendersLastYear);
+
+		//Real data stuff
+		//Gathering data
+		//Get all the workreports (actually more than needed)
+		//then for each get its leagues and the count for
+		//each age and create a row and insert into an ordered map by league
+		//then iterate the map and insert into the final report collection.
+		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Map regionalUnionsStatsMap = new TreeMap();
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+	
+			//String cName = report.getGroupName();
+			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
+		
+			//fetch the stats or initialize for this regional union (i.e. the one associated with regionalUnionIdentifier)
+			ReportableData regData = (ReportableData) regionalUnionsStatsMap.get(regionalUnionIdentifier);
+			if(regData==null){//initialize
+				regData = new ReportableData();
+				regData.addData(regionalUnionFiffName, regionalUnionIdentifier);
+				/*String ruAbbrev = report.getRegionalUnionAbbreviation();
+				regData.addData(regionalUnionAbbreviation, ruAbbrev==null?"":ruAbbrev);
+				String ruNumber = report.getRegionalUnionNumber();
+				regData.addData(regionalUnionNumber, ruNumber==null?"":ruNumber);*/
+				
+				// @TODO get the population somehow
+				regData.addData(regionalUnionPopulation, "10000");
+			}
+	
+			//add to counts
+			int womenMembersUnder = getWorkReportBusiness().getCountOfFemaleMembersOfYoungerAgeAndByWorkReport(age, report);
+			int womenMembersEqualOrOver = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age, report);
+			int menMembersUnder = getWorkReportBusiness().getCountOfMaleMembersOfYoungerAgeAndByWorkReport(age, report);
+			int menMembersEqualOrOver = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age, report);
+			regData = addToIntegerCount(womenUnderAge, regData, womenMembersUnder);
+			regData = addToIntegerCount(womenOverOrEqualAgeLimit, regData, womenMembersEqualOrOver);
+			regData = addToIntegerCount(menUnderAge, regData, menMembersUnder);
+			regData = addToIntegerCount(menOverOrEqualAgeLimit, regData, menMembersEqualOrOver);
+	
+			//put it back again
+			regionalUnionsStatsMap.put(regionalUnionIdentifier,regData);
+		}
+	
+		// iterate through the ordered map and ordered lists and add to the final collection
+		reportCollection.addAll(regionalUnionsStatsMap.values());
+
+		//finished return the collection
+		return reportCollection;
+	}
+
 
 private List getGroupIdListFromWorkReportGroupCollection(Collection leaguesFilter) {
 	List leagueGroupIdList = null;
@@ -971,23 +1081,13 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 }
 
 private String getRegionalUnionIdentifier(WorkReport report) {
-	String regUniAbbr = report.getRegionalUnionAbbreviation();
-	if(regUniAbbr==null){
-		regUniAbbr = report.getRegionalUnionNumber();
-	}
-	if(regUniAbbr==null){
-		regUniAbbr = report.getRegionalUnionName();
-	}
-	if(regUniAbbr==null){
-		Integer groupId=report.getRegionalUnionGroupId();
-		if(groupId!=null){
-			regUniAbbr = groupId.toString();
-		}
-		else{
-			regUniAbbr="NONAME";
-		}
-	}
-	return regUniAbbr;
+	StringBuffer ruBuf = new StringBuffer();
+	ruBuf.append( (report.getRegionalUnionNumber()!=null)? report.getRegionalUnionNumber() : "" )
+	.append("  ")
+	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "")
+	.append("  ")
+	.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
+	return ruBuf.toString();
 }
 
 }
