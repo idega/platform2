@@ -2049,6 +2049,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear, String ccCVC) throws FinderException, RemoteException, CreditCardAuthorizationException {
 		if (bookingId > 0 && ccNumber != null && ccMonth != null && ccYear != null && !ccNumber.equals("")) {
 			String heimild;
+			CreditCardMerchant merchant = null;
 			try {
 
 				GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
@@ -2078,6 +2079,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 					currency = "ISK";	
 				}
 				CreditCardClient t = getCreditCardClient(iwc, gBooking);
+				merchant = t.getCreditCardMerchant();
 				//heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
 				heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
 				System.out.println("Ending Creditcard Payment test : "+IWTimestamp.RightNow().toString());
@@ -2098,13 +2100,13 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 		  
 			}catch(CreditCardAuthorizationException e) {
 				//e.printStackTrace(System.err);
-				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", e);
+				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e);
 
 				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
 					e.printStackTrace(System.err);
 //				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
-				sendErrorEmail("Online booking failed (unknown error)","An online booking failed.", e);
+				sendErrorEmail("Online booking failed (unknown error)","An online booking failed.", merchant, e);
 				throw new CreditCardAuthorizationException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
 			}
 		}
@@ -2140,7 +2142,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 		return -1;
 	}
 	
-	protected void sendErrorEmail(String subject, String bodyHeader, Exception e) throws CreditCardAuthorizationException {
+	protected void sendErrorEmail(String subject, String bodyHeader, CreditCardMerchant merchant, Exception e) throws CreditCardAuthorizationException {
 		String error_notify_email = this.bundle.getProperty(PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION);
 		if (error_notify_email != null) {
 			try {
@@ -2158,6 +2160,11 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 					msg.append("Localized message = "+((CreditCardAuthorizationException)e).getLocalizedMessage(iwrb)+"\n\n");
 				}
 				msg.append(bodyHeader+"\n\n ");
+				if (merchant != null) {
+					msg.append("Merchant = "+merchant.getMerchantID()+"\n\n ");
+				} else {
+					msg.append("Merchant = NULL\n\n ");
+				}
 				for ( int i = 0 ; i < ste.length ; i++) {
 					if (i != 0) {
 						msg.append("      ");
@@ -2418,7 +2425,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     boolean valid = true;
     String errorColor = "YELLOW";
     Text star = new Text(Text.NON_BREAKING_SPACE+"*");
-      star.setFontColor(errorColor);
+    star.setFontColor(errorColor);
 
 
 //    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
@@ -2426,7 +2433,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     ProductPrice[] misc = {};
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(product, _stamp, Integer.parseInt(depAddressId));
     if (tFrame != null && depAddressId != null) {
-      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
+    		prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
       misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, -1, true);
 //			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
 //			misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
