@@ -775,6 +775,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.school_class", "School class")));
 		schoolClasses.setVerticalSpaceBetween(15);
 		schoolClasses.setSpaceBetween(15);
+		schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes","No school classes"));
 		schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
 		int classID = archive.getSchoolClassMember().getSchoolClassId();
 
@@ -783,7 +784,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 			if (!types.isEmpty()) {
 				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), false,true);
+				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), false,true,localize("child_care.no_school_classes","No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
