@@ -9,10 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.block.blog.BlogBundle;
 import com.idega.block.blog.business.BlogBusiness;
 import com.idega.block.blog.business.BlogBusinessOLD;
@@ -23,7 +21,6 @@ import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
-import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.business.IBOLookup;
@@ -393,7 +390,7 @@ public class BlogEditorWindow extends FolderBlockComponentIWAdminWindowLegacy {
 		LocalizedText locText = null;
 		boolean hasContent = (contentHelper != null) ? true : false;
 		if (hasContent)
-			locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
+			locText = contentHelper.getLocalizedText(ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId));
 		boolean hasBlogEntity = (bgBlog != null) ? true : false;
 		boolean hasLocalizedText = (locText != null) ? true : false;
 

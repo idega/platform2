@@ -7,8 +7,6 @@
 package com.idega.block.user.presentation;
 
 import java.util.Locale;
-
-import com.idega.block.text.business.TextFinder;
 import com.idega.block.user.business.UserInfoBusiness;
 import com.idega.block.user.business.UserInfoBusinessBean;
 import com.idega.block.user.data.UserExtraInfo;
@@ -66,7 +64,7 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 		int iLocaleId = -1;
 		if (sLocaleId != null) {
 			iLocaleId = Integer.parseInt(sLocaleId);
-			chosenLocale = TextFinder.getLocale(iLocaleId);
+			chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
 		} else {
 			chosenLocale = currentLocale;
 			iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);

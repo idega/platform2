@@ -103,7 +103,7 @@ public PollQuestionEditor(){
 
       iLocaleId = Integer.parseInt(sLocaleId);
 
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
 
     }
 

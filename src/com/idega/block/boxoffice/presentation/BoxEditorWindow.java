@@ -4,19 +4,17 @@ package com.idega.block.boxoffice.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
-
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxLink;
 import com.idega.block.media.presentation.FileChooser;
-import com.idega.block.text.business.TextFinder;
 import com.idega.builder.presentation.IBPageChooser;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -91,7 +89,7 @@ public BoxEditorWindow(){
     int iLocaleId = -1;
     if(sLocaleId!= null){
       iLocaleId = Integer.parseInt(sLocaleId);
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
     }
     else{
       chosenLocale = currentLocale;

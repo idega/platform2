@@ -61,7 +61,7 @@ public PollQuestionChooser(){
     int iLocaleId = -1;
     if(sLocaleId!= null){
       iLocaleId = Integer.parseInt(sLocaleId);
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
     }
     else{
       chosenLocale = currentLocale;

@@ -4,14 +4,12 @@ package com.idega.block.staff.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
-
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.data.StaffEntity;
 import com.idega.block.staff.data.StaffLocalized;
 import com.idega.block.staff.data.StaffMeta;
-import com.idega.block.text.business.TextFinder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -63,7 +61,7 @@ public StaffEditor(){
     int iLocaleId = -1;
     if(sLocaleId!= null){
       iLocaleId = Integer.parseInt(sLocaleId);
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
     }
     else{
       chosenLocale = currentLocale;

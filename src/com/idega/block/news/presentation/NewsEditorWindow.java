@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.media.presentation.ImageInserter;
@@ -20,7 +19,6 @@ import com.idega.block.news.data.NwNews;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
-import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.file.data.ICFile;
@@ -500,7 +498,7 @@ private IWResourceBundle iwrb;
     LocalizedText locText = null;
     boolean hasContent = ( contentHelper != null) ? true:false;
     if(hasContent)
-      locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
+      locText = contentHelper.getLocalizedText(ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId));
     boolean hasNwNews = ( nwNews != null ) ? true: false;
     boolean hasLocalizedText = ( locText != null ) ? true: false;
 

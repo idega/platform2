@@ -3,7 +3,6 @@ package com.idega.block.calendar.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
-
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.calendar.business.CalendarFinder;
 import com.idega.block.calendar.data.CalendarEntry;
@@ -78,7 +77,7 @@ public class CalendarEditor extends IWAdminWindow {
 		int iLocaleId = -1;
 		if (sLocaleId != null) {
 			iLocaleId = Integer.parseInt(sLocaleId);
-			chosenLocale = TextFinder.getLocale(iLocaleId);
+			chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
 		} else {
 			chosenLocale = currentLocale;
 			iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);

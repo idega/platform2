@@ -9,11 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.category.data.ICCategory;
-import com.idega.block.text.business.TextFinder;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.block.trade.stockroom.data.ProductHome;
@@ -232,7 +229,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     int iLocaleId = -1;
     if(sLocaleId!= null){
       iLocaleId = Integer.parseInt(sLocaleId);
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
     }
     else{
       chosenLocale = currentLocale;

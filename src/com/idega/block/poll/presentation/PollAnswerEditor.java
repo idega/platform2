@@ -7,9 +7,7 @@ package com.idega.block.poll.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
-
 import com.idega.block.poll.business.PollBusiness;
-import com.idega.block.text.business.TextFinder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -91,7 +89,7 @@ public PollAnswerEditor(){
 
       iLocaleId = Integer.parseInt(sLocaleId);
 
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
 
     }
 

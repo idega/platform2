@@ -1,6 +1,13 @@
 package com.idega.block.text.presentation;
 
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+import javax.ejb.FinderException;
 import com.idega.block.image.presentation.ImageAttributeSetter;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.text.business.ContentBusiness;
@@ -23,21 +30,13 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.AbstractChooserWindow;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.texteditor.TextEditor;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-
-import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -148,7 +147,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
     int iLocaleId = -1;
     if(sLocaleId!= null){
       iLocaleId = Integer.parseInt(sLocaleId);
-      chosenLocale = TextFinder.getLocale(iLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
     }
     else{
       chosenLocale = currentLocale;
@@ -254,9 +253,10 @@ public class TextEditorWindow extends AbstractChooserWindow{
     boolean hasTxText = ( txText != null );
     //boolean hasLocalizedText = ( locText != null ) ? true: false;
     boolean hasContent = ( contentHelper != null);
-    if(hasContent)
-      locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
-    boolean hasLocalizedText = ( locText !=null ) ;
+    if(hasContent)	{
+      locText = contentHelper.getLocalizedText(ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId));
+    }
+    boolean hasLocalizedText = ( locText !=null );
 
     TextInput tiHeadline = new TextInput(prmHeadline);
     tiHeadline.setLength(40);
