@@ -211,6 +211,9 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		else if (status == ChildCareBusiness.STATUS_DELETED) {
 			return localize("cihld_care.status_deleted", "Deleted");
 		}
+		else if (status == ChildCareBusiness.STATUS_TIMED_OUT) {
+			return localize("cihld_care.status_timed_out", "Timed out");
+		}
 		
 		return "";
 	}
