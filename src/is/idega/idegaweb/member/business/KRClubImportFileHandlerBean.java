@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.business;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
@@ -14,6 +15,8 @@ import com.idega.core.data.AddressHome;
 import com.idega.core.data.AddressType;
 import com.idega.core.data.Country;
 import com.idega.core.data.CountryHome;
+import com.idega.core.data.*;
+import com.idega.core.data.PhoneHome;
 import com.idega.core.data.PostalCode;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
@@ -42,7 +45,9 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
   private UserBusiness biz;
   private UserHome home;
   private AddressBusiness addressBiz;
-  private MemberFamilyLogic relationBiz;
+  private PhoneHome phoneHome;
+  private EmailHome eHome;
+//  private MemberFamilyLogic relationBiz;
   private GroupHome groupHome;
   private Group rootGroup;
   private ImportFile file;
@@ -60,7 +65,13 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
   private final int COLUMN_ADDRESS = 4;
   private final int COLUMN_POSTAL_CODE = 5;
   private final int COLUMN_POSTAL_CODE_NAME = 6;
-  private final int COLUMN_MEMBER_TYPE = 8;  
+  
+  private final int COLUMN_PAYMENT_TYPE = 7;
+    
+  private final int COLUMN_MEMBER_TYPE = 8; 
+  
+  private final int COLUMN_STARTED = 9;
+     
   private final int COLUMN_HOME_PHONE_NUMBER = 10;
   private final int COLUMN_WORK_PHONE_NUMBER = 11;
   private final int COLUMN_MOBILE_PHONE_NUMBER = 12;
@@ -68,6 +79,10 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
   
   private Gender male;
   private Gender female;
+  
+  private Group A;
+  private Group B;
+  private Group C;
 	
   public KRClubImportFileHandlerBean(){}
   
@@ -83,6 +98,12 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
       biz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
       home = biz.getUserHome();
       addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
+      phoneHome = biz.getPhoneHome();
+      eHome = biz.getEmailHome();
+      
+      A = biz.getGroupBusiness().getGroupByGroupID(466);//hacks
+      B = biz.getGroupBusiness().getGroupByGroupID(467);
+      C = biz.getGroupBusiness().getGroupByGroupID(468);
 
       //if the transaction failes all the users and their relations are removed
       //transaction.begin();
@@ -154,7 +175,7 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
 		System.out.println((String) iter.next());
 	}
 	
-  	System.out.println("Import failed for these records, please fix and import again:");
+  	System.out.println("Please fix and import again");
   }
 
   protected boolean storeUserInfo() throws RemoteException{
@@ -240,34 +261,125 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
         }
         
         
+        //phone
+		//@todo look for the phone first to avoid duplicated
+		String phone = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
+		String work = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
+		String mobile = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
+		
+		
+		if( phone!=null || work!=null || mobile!=null){
+			Collection phones = user.getPhones();
+						
+			boolean addPhone1 = true;
+			boolean addPhone2 = true;
+			boolean addPhone3 = true;
+					
+			Iterator iter = phones.iterator();
+			//@todo do this with an equals method in a comparator?
+			while (iter.hasNext()) {
+				Phone tempPhone = (Phone) iter.next();
+				String temp = tempPhone.getNumber();
+				
+				if( temp.equals(phone) ) addPhone1 = false;	
+						
+				if( temp.equals(work) ) addPhone2 = false;	
+				
+				if( temp.equals(mobile) ) addPhone3 = false;
+				
+			}
+  
+			if( addPhone1 && phone != null){
+				Phone uPhone = phoneHome.create();
+				uPhone.setNumber(phone);
+				uPhone.setPhoneTypeId(1);//weeeeee...svindl
+				uPhone.store();
+				user.addPhone(uPhone);
+			}
+			
+			if( addPhone2 && work != null){
+				Phone uPhone = phoneHome.create();
+				uPhone.setNumber(work);
+				uPhone.setPhoneTypeId(2);//weeeeee...svindl
+				uPhone.store();
+				user.addPhone(uPhone);
+			}
+			
+			if( addPhone3 && mobile != null){
+				Phone uPhone = phoneHome.create();
+				uPhone.setNumber(mobile);
+				uPhone.setPhoneTypeId(3);//weeeeee...svindl
+				uPhone.store();
+				user.addPhone(uPhone);
+			}
+			
+			
+			
+		}
+        
+        
+        
+        
+        //email
+        String email = getUserProperty(COLUMN_EMAIL);
+        
+		//both this and phones is very much a stupid hack in my part. I should have used findMethods etc. or make a useful getOrCreateIfNonExisting...bleh! -Eiki
+		if( email!=null){
+			Collection emails = user.getEmails();		
+			boolean addEmail1 = true;
+	
+					
+			Iterator iter = emails.iterator();
+			//@todo do this with an equals method in a comparator?
+			while (iter.hasNext()) {
+				Email mail = (Email) iter.next();
+				String tempAddress = mail.getEmailAddress();
+				
+				if( tempAddress.equals(email) ) addEmail1 = false;	
+					
+				
+			}
+			
+			if( addEmail1 && email != null){
+				Email uEmail = eHome.create();
+				uEmail.setEmailAddress(email);
+				uEmail.store();
+				user.addEmail(uEmail);
+			}
+			
+
+			
+		}
+        
         //adda i rettan flokk herna
-        if( rootGroup!=null){ 
-        	rootGroup.addGroup(user);
-        	System.err.println("Adding to group: "+rootGroup.getName());	
+        String type = getUserProperty(COLUMN_MEMBER_TYPE);
+        if( type!=null ){//A and AC goto A
+        	if("A".equals(type) || "AC".equals(type) ){
+        		A.addGroup(user);
+        	}
+        	else {//B membership
+        		B.addGroup(user);
+        	}	
+        	
+        	
         }
-        else System.err.println(" ROOT GROUP IS NULL");
+        
 
     }
      catch(Exception e){
       e.printStackTrace();
       return false;
     }
+   }//if ends
 
-    }
+    
 
     /**
      * Save the user to the database
      */
     //user.store();
 
-    /**
-    * Main group relation
-    */
-	//adda i retta gruppu
-	
-    //nackaGroup.addUser(user);
 
-    //finished with this user
     user = null;
     return true;
   }
