@@ -39,6 +39,6 @@ public class RegularInvoiceBusinessBean extends IBOServiceBean implements Regula
 		RegulationSpecTypeHome rstHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		int lagPrimary = ((Integer)rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
 		RegularInvoiceEntryHome home =(RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
-		return home.findRegularInvoicesForPeriodeAbdCategory(date,cat.getCategory(),lagPrimary);
+		return home.findRegularInvoicesForPeriodeAndCategoryExceptType(date,cat.getCategory(),lagPrimary);
 	}
 }
