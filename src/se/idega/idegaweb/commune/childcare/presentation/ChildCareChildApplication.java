@@ -316,8 +316,16 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 			DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE + "_" + i));
 			if (application != null){
+				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+				
+				if (fromDate.isEarlierThan(stamp)) {
+					date.setEarliestPossibleDate(application.getFromDate(), localize("child_care.no_date_back_prev", "You cannot set a date before the previous start date"));	
+				}
+				else {
+					date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));	
+				}
 				date.setDate(application.getFromDate());
-				date.setEarliestPossibleDate(application.getFromDate(), localize("child_care.no_date_back_prev", "You cannot set a date before the previous start date"));
+				
 			}
 			else {
 				date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));
