@@ -240,7 +240,9 @@ public class TenantsHabitants extends Block implements Campus{
       complex = BuildingCacher.getComplex(_campusID);
     else if(!_isAdmin && !_isPublic){
       BuildingCacher bc = new BuildingCacher();
-      complex = bc.getComplex(bc.getBuilding(bc.getFloor(bc.getApartment(ContractFinder.findApplicant(_userID).getApartmentId().intValue()).getFloorId()).getBuildingId()).getComplexId() );
+      Contract C = ContractFinder.findByUser(_userID);
+      if(C!=null && C.getID() >0)
+        complex = bc.getComplex(bc.getBuilding(bc.getFloor(bc.getApartment(C.getApartmentId().intValue()).getFloorId()).getBuildingId()).getComplexId() );
     }
     else {
       complex = BuildingCacher.getComplex();

@@ -601,4 +601,25 @@ public abstract class ContractFinder {
     }
     return contract;
   }
+
+  /**
+   *
+   */
+  public static Contract findByUser(int user){
+    Contract contract = null;
+    try {
+      List L = EntityFinder.findAllByColumn(Contract.getStaticInstance(Contract.class),Contract.getUserIdColumnName(),user);
+      if(L!= null)
+        contract = (Contract) L.get(0);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      contract = null;
+    }
+    return contract;
+  }
+
+  public static Contract findByUser(User user){
+    return findByUser(user.getID());
+  }
 }
