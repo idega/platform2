@@ -209,4 +209,9 @@ public static Link getLinkToRefunderForm(IWContext iwc) {
 
   		return link;  }
   
+  public static Link getVoucherLink(String referenceNumber) {
+  		Link voucherLink = new Link();
+  		return voucherLink;
+  }
+  
 }
