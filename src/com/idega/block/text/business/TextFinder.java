@@ -1,6 +1,7 @@
 package com.idega.block.text.business;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -10,7 +11,9 @@ import com.idega.block.text.data.TxText;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDORelationshipException;
 
 /**
  * Title:
@@ -107,6 +110,10 @@ public class TextFinder {
   public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int iLocaleID){
     return getLocalizedText(entity,entity.getID(),iLocaleID);
   }
+  public static LocalizedText getLocalizedText(IDOEntity entity, int iLocaleID) {
+  	Integer i = (Integer) entity.getPrimaryKey();
+  	return getLocalizedText(entity,i.intValue(),iLocaleID);
+  }
 
   public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int entityID, int iLocaleID){
 		LocalizedText localText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
@@ -130,6 +137,35 @@ public class TextFinder {
       return null;
     }
   }
+  public static LocalizedText getLocalizedText(IDOEntity entity, int entityID, int iLocaleID){
+  	LocalizedText localText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+  	Collection list = null;
+  	try {
+  		if(entity!=null){
+  			try {
+  				list = localText.ejbFindRelatedEntities(entity);
+  			}
+  			catch (IDORelationshipException e) {
+  				list = null;
+  			}
+ // 			List list = EntityFinder.findRelated(entity,localText);
+  			if ( list != null ) {
+  				Iterator iter = list.iterator();
+  				while (iter.hasNext()) {
+  					LocalizedText item = (LocalizedText) iter.next();
+  					if ( item.getLocaleId() == iLocaleID ) {
+  						return item;
+  					}
+  				}
+  			}
+  		}
+  		return null;
+  	}
+  	catch (Exception e) {//changed from SQLException
+  		e.printStackTrace();
+  		return null;
+  	}
+  }
 
   public static String[] getLocalizedString(IDOLegacyEntity entity, int iLocaleID) {
     String[] locString = new String[3];
@@ -144,6 +180,20 @@ public class TextFinder {
     }
 
     return locString;
+  }
+  public static String[] getLocalizedString(IDOEntity entity, int iLocaleID) {
+  	String[] locString = new String[3];
+
+  	if ( entity != null ) {
+  		LocalizedText locText = TextFinder.getLocalizedText(entity,iLocaleID);
+  		if ( locText != null ) {
+  			locString[0] = locText.getHeadline();
+  			locString[1] = locText.getBody();
+  			locString[2] = locText.getTitle();
+  		}
+  	}
+
+  	return locString;
   }
 
   public static LocalizedText getLocalizedText(int iTxTextId,int iLocaleId){
