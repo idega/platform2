@@ -26,7 +26,7 @@ public class ChildCareProviderSelect extends ChildCareBlock {
 		Form form = new Form();
 		form.setEventListener(ChildCareEventListener.class);
 		
-		DropdownMenu menu = new DropdownMenu(getSession().getParameterChildCareID());
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(getSession().getParameterChildCareID()));
 		menu.addMenuElementFirst("-1", localize("child_care.select_provider","Select provider"));
 		menu.setSelectedElement(getSession().getChildCareID());
 		menu.setToSubmit();
