@@ -434,37 +434,37 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 //		System.out.println("REMOVING");
 //		rel.dumpInfo();
 		if(null!=rel.getSpouse()){
-			memFamLog.removeAsSpouseFor(user, rel.getSpouse());
+			memFamLog.removeAsSpouseFor(user, rel.getSpouse(), performer);
 		}
 		//Remove from collections
 		Iterator iter = rel.getChildren().iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
-			memFamLog.removeAsChildFor(child, user);
+			memFamLog.removeAsChildFor(child, user, performer);
 		}
 		
 		iter = rel.getIsCustodianFor().iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
-			memFamLog.removeAsCustodianFor(user, child);
+			memFamLog.removeAsCustodianFor(user, child, performer);
 		}
 		
 		iter = rel.getHasCustodians().iterator();
 		while(iter.hasNext()){
 			User custodian = (User)iter.next();
-			memFamLog.removeAsCustodianFor(custodian,user);
+			memFamLog.removeAsCustodianFor(custodian,user, performer);
 		}
 		
 		iter = rel.getParents().iterator();
 		while(iter.hasNext()){
 			User parent = (User)iter.next();
-			memFamLog.removeAsParentFor(parent,user);
+			memFamLog.removeAsParentFor(parent,user, performer);
 		}
 		
 		iter = rel.getSiblings().iterator();
 		while(iter.hasNext()){
 			User sibling = (User)iter.next();
-			memFamLog.removeAsSiblingFor(user , sibling);
+			memFamLog.removeAsSiblingFor(user , sibling, performer);
 		}
 	}
 
