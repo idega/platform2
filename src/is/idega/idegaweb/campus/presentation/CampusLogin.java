@@ -1,5 +1,5 @@
 /*
- * $Id: CampusLogin.java,v 1.3 2001/12/28 13:01:44 laddi Exp $
+ * $Id: CampusLogin.java,v 1.4 2002/01/07 17:32:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,6 +61,7 @@ public class CampusLogin extends PresentationObjectContainer {
     login.setInputLength(14);
     login.setSubmitButtonAlignment("right");
     login.addHelpButton();
+    login.setLoggedOnLink(true);
 
     ReferenceNumber ref = new ReferenceNumber();
     ref.setLayout(ReferenceNumber.LAYOUT_STACKED);
