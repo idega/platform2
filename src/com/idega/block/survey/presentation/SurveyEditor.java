@@ -377,7 +377,8 @@ public class SurveyEditor extends FolderBlock {
 		try {
 			toStamp = new IWTimestamp(sTo);
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			logWarning("SurveyEditor : toStamp was not created (ParameterValue = 	"+sTo+")");
 		}
 		
 		if (sName == null || sName.equals("")) {
@@ -497,7 +498,8 @@ public class SurveyEditor extends FolderBlock {
 		try {
 			toStamp = new IWTimestamp(sTo);
 		} catch(Exception e) {
-			e.printStackTrace();
+			logWarning("SurveyEditor : toStamp was not created (ParameterValue = 	"+sTo+")");
+			//e.printStackTrace();
 		}
 		
 		
