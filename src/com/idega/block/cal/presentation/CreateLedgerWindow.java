@@ -40,7 +40,8 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	
 	//parameter names
-	private static String coachFieldParameterName = "coach";
+//	private static String coachFieldParameterName = "coach";
+	private static String creatorFieldParameterName = "creator";
 	private static String otherCoachesFieldParameterName = "otherCoaches";
 	private static String groupFieldParameterName = "group";
 	private static String ledgerFieldParameterName ="ledger";
@@ -97,7 +98,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		coachText = new Text(iwrb.getLocalizedString(coachFieldParameterName,"Coach"));
+		coachText = new Text(iwrb.getLocalizedString(creatorFieldParameterName,"Coach"));
 		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
 		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
 		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
@@ -237,7 +238,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 			
 		}
 		coachGroupID = new Integer(coachGroupIDString);	
-		String coach = iwc.getParameter(coachFieldParameterName);
+		String coach = iwc.getParameter(creatorFieldParameterName);
 		
 		String name = iwc.getParameter(nameFieldParameterName);
 		
