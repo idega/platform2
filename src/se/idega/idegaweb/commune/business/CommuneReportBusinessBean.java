@@ -471,6 +471,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			} catch (NoCustodianFound e) {
 				//System.out.println("["+this.getClass()+"]: "+e.getMessage());
 				//e.printStackTrace();
+			} catch (EJBException e){
+				System.out.println("["+this.getClass()+"]: "+e.getMessage());
+				System.out.println("["+this.getClass()+"]: user: "+child);
+				e.printStackTrace();
 			}
 			
 			Object[][] childConditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(child, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode,reasonPrifixChild);
