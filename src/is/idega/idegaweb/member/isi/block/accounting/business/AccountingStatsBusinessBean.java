@@ -50,6 +50,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_AMOUNT_EQUALIZED = "AccountingStatsBusiness.amount_equalized";
 	private static final String LOCALIZED_TARIFF_TYPE = "AccountingStatsBusiness.tariff_type";
 	private static final String LOCALIZED_INFO = "AccountingStatsBusiness.info";
+	private static final String LOCALIZED_PAYMENT_MODE = "AccountingStatsBusiness.payment_mode";
+	private static final String LOCALIZED_SENT = "AccountingStatsBusiness.sent";
 	
 	private static final String FIELD_NAME_DIVISION_NAME = "division_name";
 	private static final String FIELD_NAME_GROUP_NAME = "group_name";
@@ -60,6 +62,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String FIELD_NAME_AMOUNT_EQUALIZED = "amount_equalized";
 	private static final String FIELD_NAME_TARIFF_TYPE = "tariff_type";
 	private static final String FIELD_NAME_INFO = "info";
+	private static final String FIELD_NAME_PAYMENT_MODE = "payment_mode";
+	private static final String FIELD_NAME_SENT = "sent";
 	
 	private AccountingBusiness accountingBiz = null;
 	private GroupBusiness groupBiz = null;
@@ -267,13 +271,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
 		reportCollection.addField(amountEqualizedField);
 		
-		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
-		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
-		reportCollection.addField(tariffTypeField);
+		ReportableField paymentModeField = new ReportableField(FIELD_NAME_PAYMENT_MODE, String.class);
+		paymentModeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_MODE, "Payment mode"), currentLocale);
+		reportCollection.addField(paymentModeField);
 		
-		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
-		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
-		reportCollection.addField(infoField);
+		ReportableField sentField = new ReportableField(FIELD_NAME_SENT, String.class);
+		sentField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SENT, "Sent"), currentLocale);
+		reportCollection.addField(sentField);
 		
 		//Gathering data	 
 		//then for each division get its financeRecords and
@@ -314,8 +318,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
 			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
-			data.addData(infoField, financeEntry.getInfo() );
-			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			data.addData(sentField, "" );
+			data.addData(paymentModeField, financeEntry.getPaymentType() );		
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
