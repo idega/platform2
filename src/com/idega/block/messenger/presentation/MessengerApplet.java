@@ -78,10 +78,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       userId = this.getParameter(USER_ID, "-1");
       userName = this.getParameter(USER_NAME, "Anonymous");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
-      hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
+      hostURL = new URL(this.getParameter(SERVER_ROOT_URL, getCodeBase().getProtocol()+"://"+getCodeBase().getHost()));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
-
-      System.out.println(getCodeBase().getProtocol()+getCodeBase().getHost());
 
       try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
@@ -103,11 +101,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void run(){
 
     while(runThread){
-      repaint();
+      System.out.println("in main thread!");
 
       //message checking is done in another thread
      try {//keep the wait insync with the performance of the machine it is on
         t.sleep(checkTimer);
+        update(getGraphics());
       }
       catch (InterruptedException e) {
         e.printStackTrace(System.err);
