@@ -352,16 +352,18 @@ public abstract class BillingThread extends Thread{
 		try {
 			batchRunLogger = ((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(category);
 			Iterator errorIter = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).findByBatchRun(batchRunLogger).iterator();
-			System.out.println("About to remobe BatchRunErrors");
+			System.out.println("About to remove BatchRunErrors");
 			while (errorIter.hasNext()) {
 				BatchRunError error = (BatchRunError) errorIter.next();
 				try {
 					System.out.println("Removing BatchRunLogError");
 					error.remove();
 				} catch (EJBException e) {
+					createNewErrorMessage("batchrun","batchrun.cannotRemoveOldBatchrunDataEJBException");
 					//If it cant be removed, it is just left... Not much to do about it.
 					e.printStackTrace();
 				} catch (RemoveException e) {
+					createNewErrorMessage("batchrun","batchrun.cannotRemoveOldBatchrunDataRemoveException");
 					//If it cant be removed, it is just left... Not much to do about it.
 					e.printStackTrace();
 				}
