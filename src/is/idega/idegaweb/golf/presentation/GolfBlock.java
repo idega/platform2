@@ -21,6 +21,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
 import com.idega.presentation.ui.InterfaceObject;
@@ -615,13 +616,14 @@ public abstract class GolfBlock extends Block {
 	}	
 
 	protected GenericButton getCloseButton(){
-		return getCloseButton(PARAM_CLOSE);
+		GenericButton button = getButton(new CloseButton(localize(LOCALIZATION_CLOSE_KEY,"Close")));
+		return button;
 	}	
 
-	protected GenericButton getCloseButton(String parameterName){
-		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_CLOSE_KEY,"Close")));
-		return button;
-	}
+//	protected GenericButton getCloseButton(String parameterName){
+//		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_CLOSE_KEY,"Close")));
+//		return button;
+//	}
 		
 		
 	protected InputContainer getInputContainer(String textKey,PresentationObject inputObject){

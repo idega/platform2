@@ -3,30 +3,6 @@
  */
 package is.idega.idegaweb.golf.startingtime.presentation;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.FinderException;
-
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.TableInfo;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Group;
 import is.idega.idegaweb.golf.entity.Member;
@@ -34,6 +10,26 @@ import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.StartService;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
@@ -71,7 +67,7 @@ public class TeeTimeFieldConfiguration extends GolfBlock {
 			
 
 			
-			if (modinfo.getRequest().getParameter("btnSkra.x") != null) {
+			if (modinfo.getRequest().getParameter("btnSkra") != null || modinfo.getRequest().getParameter("btnSkra.x") != null) {
 				Form myForm = new Form();
 				if (!storeConfig(modinfo)) {
 					setFeedBack(myForm, false);
@@ -307,11 +303,8 @@ public class TeeTimeFieldConfiguration extends GolfBlock {
 	}
 
 	public void setGraphic(Form myForm) {
-		//		String picUrl_1 = "/pics/rastima_popup/stilling.gif";
-		//		String picUrl_2 = "/pics/rastima_popup/tile.gif";
 
 		Table Header = new Table(2, 1);
-//		Header.setHeight("90");
 		Header.setWidth(1, "10");
 
 		Header.setCellpadding(0);
@@ -320,9 +313,6 @@ public class TeeTimeFieldConfiguration extends GolfBlock {
 		getParentPage().setMarginHeight(0);
 		getParentPage().setLeftMargin(0);
 		getParentPage().setTopMargin(0);
-
-		//		Header.setBackgroundImage(2, 1,getResourceBundle().getImage(picUrl_1));
-		//		Header.setBackgroundImage(1, 1,getResourceBundle().getImage(picUrl_2));
 
 		Header.setWidth("100%");
 
@@ -392,16 +382,14 @@ public class TeeTimeFieldConfiguration extends GolfBlock {
 	}
 
 	public void setFeedBack(Form myForm, boolean isOk) {
-		String btnCloseUrl = "/pics/rastimask/Takkar/TLoka1.gif";
-		String btnBackUrl = "/pics/rastimask/Takkar/Ttilbaka1.gif";
 
 		Table myTable = new Table(2, 7);
 		if (isOk) {
 			myTable.add(getLocalizedMessage("start.registration_was_successful","Registration was successful"), 2, 3);
-			myTable.add(new CloseButton(getResourceBundle().getImage(btnCloseUrl)), 2, 7);
+			myTable.add(getCloseButton(), 2, 7);
 		} else {
 			myTable.add(getLocalizedMessage("start.registration_was_not_successful","Registration was not successful"), 2, 2);
-			myTable.add(new BackButton(getResourceBundle().getImage(btnBackUrl)), 2, 7);
+			myTable.add(getButton(new BackButton()), 2, 7);
 		}
 
 		myTable.setWidth(1, "25");
@@ -480,11 +468,11 @@ public class TeeTimeFieldConfiguration extends GolfBlock {
 			}
 		}
 
-		//	 submit
-		String btnSkraUrl = "/pics/rastimask/Takkar/Tskra1.gif";
-		String btnCancelUrl = "/pics/rastimask/Takkar/Thaetta-vid1.gif";
-		firstTable.add(new SubmitButton(getResourceBundle().getImage(btnSkraUrl), "btnSkra"), 3, 9);
-		firstTable.add(new CloseButton(getResourceBundle().getImage(btnCancelUrl)), 4, 9);
+		GenericButton button = getButton(new SubmitButton(localize(GolfBlock.LOCALIZATION_SAVE_KEY,"Save"), "btnSkra","1"));
+		
+		
+		firstTable.add(button, 3, 9);
+		firstTable.add(getCloseButton(), 4, 9);
 
 
 		myForm.setMethod("post");

@@ -22,6 +22,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWCalendar;
@@ -107,7 +108,7 @@ public class TeeTimeReport extends GolfBlock {
 		dateI.setYearRange(2001, IWTimestamp.RightNow().getYear()+1);
 		dateI.setDate(stamp.getSQLDate());
 		
-		SubmitButton submit = new SubmitButton(iwrb.getImage("/buttons/choose.gif"));
+		GenericButton submit = getButton(new SubmitButton(localize("start.choose","Choose")));
 		
 		table.add(day, 1, 1);
 		table.add(" ", 1, 1);

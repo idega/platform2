@@ -18,7 +18,7 @@ public class TeeTimeReportWindow extends GolfWindow {
 
 	public TeeTimeReportWindow() {
 		super.setWidth(400);
-		super.setHeight(450);
+		super.setHeight(480);
 		super.setResizable(true);
 	}
 
@@ -28,8 +28,8 @@ public class TeeTimeReportWindow extends GolfWindow {
 		add(sr);
 	}
 	
-	public static Link getLink(IWTimestamp date, int fieldId, PresentationObject po) { 
-		Link print = new Link(po);
+	public static Link getLink(IWTimestamp date, int fieldId) { 
+		Link print = new Link();
 		print.setWindowToOpen(TeeTimeReportWindow.class);
 		print.addParameter(TeeTimeReportWindow.PARAMETER_DATE, date.toSQLDateString());
 		print.addParameter(TeeTimeReportWindow.PARAMETER_FIELD_ID, fieldId);
