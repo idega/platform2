@@ -62,6 +62,8 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Gender;
+import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 
@@ -137,6 +139,21 @@ public class InvoiceChildcareThread extends BillingThread{
 		//First option is to set it to the invoice receiver according to the contract
 		User invoiceReceiver = contract.getInvoiceReceiver();
 		User child = contract.getChild();
+		int femaleKey = -1;
+		try {
+			Gender female = ((GenderHome) IDOLookup.getHome(Gender.class)).getFemaleGender();
+			femaleKey = ((Integer)female.getPrimaryKey()).intValue();
+		} catch (IDOLookupException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (RemoteException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (FinderException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
 		
 		//If non is set in the contract, start looking for parents at the same address
 		//Select the female if several are found
@@ -152,7 +169,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					Address childAddress = userBus.getUsersMainAddress(child);
 					Address custodianAddress = userBus.getUsersMainAddress(adult);
 					if (childAddress.isEqualTo (custodianAddress)) {
-						if(invoiceReceiver == null || adult.getGenderID() == 1){
+						if(invoiceReceiver == null || adult.getGenderID() == femaleKey){
 							invoiceReceiver = adult;
 						}
 					}
