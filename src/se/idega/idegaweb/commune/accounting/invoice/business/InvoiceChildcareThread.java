@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/12/02 12:39:08 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/13 16:32:58 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.155 $
+ * @version $Revision: 1.156 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -354,7 +354,12 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated.append(getLocalizedString("invoice.Age","Age")+":"+ageInYears+" "+getLocalizedString("invoice.years","years"));
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
-					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
+					try {
+						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
+					}
+					catch (NumberFormatException nfe) {
+						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(-1)));
+					}
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL,new Integer(ageInYears)));
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
