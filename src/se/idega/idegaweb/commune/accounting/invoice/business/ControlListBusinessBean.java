@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.17 2004/02/21 09:55:31 laddi Exp $
+ * $Id: ControlListBusinessBean.java,v 1.18 2004/05/05 09:42:16 sigtryggur Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,6 +14,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.Iterator;
 import javax.ejb.FinderException;
@@ -37,11 +39,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * Last modified: $Date: 2004/02/21 09:55:31 $ by $Author: laddi $
+ * Last modified: $Date: 2004/05/05 09:42:16 $ by $Author: sigtryggur $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
@@ -106,6 +108,8 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 			schools.add (((PaymentHeader) i.next ()).getSchool ());
 		}
 		final InvoiceBusiness invoiceBusiness = getInvoiceBusiness ();
+		//optimization by Sigtryggur. Caching of MainRule strings 
+		Map mainRuleStringValues = new HashMap();
 		for (Iterator i = schools.iterator (); i.hasNext ();) {
 			final School school = (School) i.next ();
 			long currentMonthIndividualsCount = 0;
@@ -113,10 +117,10 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 			long currentMonthTotalAmount = 0;
 			long compareMonthTotalAmount = 0;
 
-			final PaymentSummary currentSummary = getPaymentSummary (invoiceBusiness, opField, school, withMonth);
+			final PaymentSummary currentSummary = getPaymentSummary (invoiceBusiness, opField, school, withMonth, mainRuleStringValues);
 			currentMonthIndividualsCount = currentSummary.getIndividualsCount ();
 			currentMonthTotalAmount = currentSummary.getTotalAmountVatExcluded ();
-			final PaymentSummary compareSummary = getPaymentSummary (invoiceBusiness, opField, school, compareMonth);
+			final PaymentSummary compareSummary = getPaymentSummary (invoiceBusiness, opField, school, compareMonth, mainRuleStringValues);
 			compareMonthIndividualsCount = compareSummary.getIndividualsCount ();
 			compareMonthTotalAmount = compareSummary.getTotalAmountVatExcluded ();
 			
@@ -135,11 +139,11 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 
 	private PaymentSummary getPaymentSummary
 		(final InvoiceBusiness invoiceBusiness, final String schoolCategory,
-		 final School school, final Date period) throws RemoteException {
+		 final School school, final Date period, Map mainRuleStringValues) throws RemoteException {
 		final PaymentRecord [] records
 				= invoiceBusiness.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
 				(schoolCategory, (Integer) school.getPrimaryKey (), period, period);
-		final PaymentSummary result = new PaymentSummary (records);
+		final PaymentSummary result = new PaymentSummary (records, mainRuleStringValues);
 		return result;		
 	}
 

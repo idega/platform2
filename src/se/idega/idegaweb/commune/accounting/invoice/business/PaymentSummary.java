@@ -3,6 +3,10 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
+import java.util.Map;
+
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -12,10 +16,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 
 /**
- * Last modified: $Date: 2004/02/20 15:35:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/05/05 09:42:16 $ by $Author: sigtryggur $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PaymentSummary {
 	private int placementCount = 0;
@@ -24,6 +28,11 @@ public class PaymentSummary {
 	private long totalAmountVat = 0;
 
 	public PaymentSummary (final PaymentRecord [] records) throws RemoteException {
+		this(records, null);
+		//Optimization by Sigtryggur New constructor with HashMap added to cache MainRule strings
+	}
+
+	public PaymentSummary (final PaymentRecord [] records, Map mainRuleStringValues) throws RemoteException {
 		// get home objects
 		final InvoiceRecordHome invoiceRecordHome
 				= (InvoiceRecordHome) IDOLookup.getHome (InvoiceRecord.class);
@@ -36,15 +45,21 @@ public class PaymentSummary {
 			placementCount += paymentRecord.getPlacements ();
 			final String regSpecTypeName = paymentRecord.getRuleSpecType ();
 			String mainRuleName = "";
-			try {
-				final	RegulationSpecType regSpecType
-						= regSpecTypeHome.findByRegulationSpecType (regSpecTypeName);
-				final MainRule mainRule = regSpecType.getMainRule ();
-				mainRuleName = mainRule.getMainRule ();
-			} catch (Exception e) {
-				System.err.println ("PaymentRecord id with incorrect reg spec type = "
-														+ paymentRecord.getPrimaryKey ());
-				e.printStackTrace ();
+			if (mainRuleStringValues != null && mainRuleStringValues.containsKey(regSpecTypeName))
+				mainRuleName = (String)mainRuleStringValues.get(regSpecTypeName);
+			else if (regSpecTypeName != null){
+				try {
+					final	RegulationSpecType regSpecType
+							= regSpecTypeHome.findByRegulationSpecType (regSpecTypeName);
+					final MainRule mainRule = regSpecType.getMainRule ();
+					mainRuleName = mainRule.getMainRule ();
+					if (mainRuleStringValues != null)
+						mainRuleStringValues.put(regSpecTypeName, mainRuleName);
+				} catch (FinderException e) {
+					System.err.println ("PaymentRecord id with incorrect reg spec type = "
+															+ paymentRecord.getPrimaryKey ());
+					e.printStackTrace ();
+				}
 			}
 			final long amountExcl = se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (paymentRecord.getTotalAmount ());
 			if (mainRuleName.equals (RegSpecConstant.MAIN_RULE_VAT)) {
