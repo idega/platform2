@@ -1,18 +1,14 @@
 package com.idega.block.building.presentation;
 
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 
-import com.idega.block.building.business.BuildingBusiness;
-import com.idega.block.building.business.BuildingFinder;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentCategoryHome;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.ComplexHome;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -44,6 +40,7 @@ private String addressStyle = "font-family:verdana; font-size: 10pt; font-weight
 private String infoStyle= "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 protected IWResourceBundle iwrb_;
 private Class apartmentTypeWindowClass = ApartmentTypeWindow.class;
+private BuildingService buildingService = null;
 
 private int imageMaxSize = 165;
 
@@ -63,6 +60,8 @@ public void setApartmentTypeWindowClass(Class windowClass){
     if ( iwrb_ == null ) {
       iwrb_ = getResourceBundle(iwc);
     }
+    
+    buildingService = (BuildingService)IBOLookup.getServiceInstance(iwc,BuildingService.class);
 
     if ( iwc.getParameter(PARAMETER_STRING) != null ) {
       try {
@@ -89,17 +88,17 @@ public void setApartmentTypeWindowClass(Class windowClass){
     this.infoStyle = "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
   }
 
-  private void getAllBuildings(IWContext iwc) throws Exception {
 
-  	java.util.Collection complexes  = EntityFinder.getInstance().findAllOrdered(Complex.class,com.idega.block.building.data.ComplexBMPBean.getNameColumnName());
-    
+  private void getAllBuildings(IWContext iwc) throws Exception {
+  	int row = 1;
+    Collection complexes = buildingService.getComplexHome().findAll();
     Table campusTable = new Table(1,complexes.size());
-    int a = -1;
     for (Iterator iter = complexes.iterator(); iter.hasNext();) {
-    	a++;
 		Complex complex = (Complex) iter.next();
-      int iComplexId = ((Integer)complex.getPrimaryKey()).intValue();
-      String[] types = BuildingFinder.findDistinctApartmentTypesInComplex(iComplexId);
+		Integer iComplexId =(Integer)complex.getPrimaryKey();
+      Collection types = buildingService.getApartmentTypeHome().findByComplex(iComplexId);
+      //String[] types = BuildingFinder.findDistinctApartmentTypesInComplex(iComplexId);
+
 
       Table complexTable = new Table(3,4);
         complexTable.mergeCells(2,1,2,4);
@@ -114,21 +113,26 @@ public void setApartmentTypeWindowClass(Class windowClass){
         complexTable.setWidth(2,1,"20");
         complexTable.setBorder(0);
 	  
-	    BuildingBusiness.getStaticInstance().changeNameAndInfo(complex,iwc.getCurrentLocale());
+
+	    //BuildingBusiness.getStaticInstance().changeNameAndInfo(complex[a],iwc.getCurrentLocale());
 	   String infoText = complex.getInfo();
 	  	String nameText=complex.getName();
+
 	 
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
       //List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
-      List L = BuildingFinder.listOfBuildingImageFiles(iComplexId);
-      if(L!=null){
+      //List L = BuildingFinder.listOfBuildingImageFiles(iComplexId);
+        Collection images = buildingService.getBuildingHome().getImageFilesByComplex(iComplexId);
+      if(images!=null){
        //ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(((Building)L.get(0)).getImageId());
         ImageSlideShow slide = new ImageSlideShow();
         //slide.setFileFolder(file);
         slide.setWidth(imageMaxSize);
+
         slide.setAlt(complex.getName());
-        slide.setFiles(L);
+        slide.setFiles(new java.util.Vector(images));
+
         complexTable.add(slide,3,2);
         /*
        Image buildingImage = new Image(((Building)L.get(0)).getImageId());
@@ -138,8 +142,11 @@ public void setApartmentTypeWindowClass(Class windowClass){
       }
 
       if ( types != null ) {
-        for ( int b = 0; b < types.length; b++ ) {
-          ApartmentCategory cat = ((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findByPrimaryKey(Integer.valueOf(types[b]));
+
+      	for (Iterator iterator = types.iterator(); iterator.hasNext();) {
+			ApartmentType type = (ApartmentType) iterator.next();
+          ApartmentCategory cat = buildingService.getApartmentCategoryHome().findByPrimaryKey(String.valueOf(type.getApartmentCategoryId()));
+
           Image image = new Image(cat.getImageId());
             image.setName("");
             image.setHorizontalSpacing(4);
@@ -157,11 +164,11 @@ public void setApartmentTypeWindowClass(Class windowClass){
       // What genius made this ??
       // Link complexLink = new Link(moreImage,iwc.getRequestURI());
       Link complexLink = new Link(moreImage);
-        complexLink.addParameter(PARAMETER_STRING,iComplexId);
+        complexLink.addParameter(PARAMETER_STRING,iComplexId.toString());
 
       Link locationLink = new Link(mapImage);
         locationLink.setWindowToOpen(BuildingLocation.class);
-        locationLink.addParameter(PARAMETER_STRING,iComplexId);
+        locationLink.addParameter(PARAMETER_STRING,iComplexId.toString());
 
       complexTable.add(getNameText(nameText),1,1);
       complexTable.add(getInfoText(infoText),1,2);
@@ -171,9 +178,11 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       String divideText = "<br>.........<br><br>";
 
-      campusTable.add(complexTable,1,a+1);
-      if ( a+1 < complexes.size() ) {
-        campusTable.add(getInfoText(divideText),1,a+1);
+
+      campusTable.add(complexTable,1,row);
+      if (row < complexes.size() ) {
+        campusTable.add(getInfoText(divideText),1,row++);
+
       }
     }
 
@@ -208,15 +217,20 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
   private void getSingleBuilding(IWContext iwc) throws Exception {
 
-    Complex complex = ((ComplexHome)com.idega.data.IDOLookup.getHome(Complex.class)).findByPrimaryKey(new Integer(building_id));
-    ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(building_id);
 
-    Table complexTable = new Table(1,types.length+1);
+    //Complex complex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(building_id);
+    //ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(building_id);
+  	Complex complex = buildingService.getComplexHome().findByPrimaryKey(String.valueOf(building_id));
+  	Collection types = buildingService.getApartmentTypeHome().findByComplex(new Integer(building_id));
+    Table complexTable = new Table(1,types.size()+1);
+
       complexTable.setWidth("100%");
-	BuildingBusiness.getStaticInstance().changeNameAndInfo(complex,iwc.getCurrentLocale());
+	//BuildingBusiness.getStaticInstance().changeNameAndInfo(complex,iwc.getCurrentLocale());
     complexTable.add(getNameText(complex.getName()),1,1);
-    for ( int a = 0; a < types.length; a++ ) {
-		BuildingBusiness.getStaticInstance().changeNameAndInfo(types[a],iwc.getCurrentLocale());
+    int row = 2;
+    for (Iterator iter = types.iterator(); iter.hasNext();) {
+		ApartmentType type = (ApartmentType) iter.next();
+		//BuildingBusiness.getStaticInstance().changeNameAndInfo(types[a],iwc.getCurrentLocale());
       Table typesTable = new Table(2,3);
         typesTable.setVerticalAlignment(2,2,"top");
         typesTable.setVerticalAlignment(1,2,"top");
@@ -227,9 +241,8 @@ public void setApartmentTypeWindowClass(Class windowClass){
         typesTable.setHeight(2,"100%");
         typesTable.setWidth(1,"100%");
 
-      String typeName = formatText(types[a].getName()+" "+types[a].getArea()+"m2");
-
-      String typeText = types[a].getInfo();
+      String typeName = formatText(type.getName()+" "+type.getArea()+"m2");
+      String typeText = type.getInfo();
       //String typeText = types[a].getExtraInfo();
         typeText = TextSoap.findAndReplace(typeText,"\n","<br>");
 
@@ -237,15 +250,15 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
 
       PresentationObject typeImage;
-      if ( types[a].getImageId() == -1 )
+      if ( type.getImageId() == -1 )
         typeImage = iwrb_.getImage("/building/default.jpg");
       else{
         ImageSlideShow slide =  new ImageSlideShow();
         slide.setDelay(1);
         slide.setShowButtons(false);
         slide.setWidth(imageMaxSize);
-        slide.setAlt(types[a].getName());
-        slide.setFileId( types[a].getImageId());
+        slide.setAlt(type.getName());
+        slide.setFileId( type.getImageId());
         typeImage = slide;
 
       }
@@ -263,7 +276,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
       Image backImage = iwrb_.getImage("/building/back.gif");
       Link typeLink = new Link(moreImage);
 				typeLink.setWindowToOpen(apartmentTypeWindowClass);
-        typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING,types[a].getID());
+        typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING,type.getPrimaryKey().toString());
 
       BackButton BB = new BackButton( backImage);
       typesTable.add(getAddressText(typeName),1,1);
@@ -273,9 +286,9 @@ public void setApartmentTypeWindowClass(Class windowClass){
       typesTable.add(typeLink,1,3);
       typesTable.add(typeImage,2,1);
 
-      complexTable.add(typesTable,1,a+2);
-      if ( a+1 < types.length ) {
-        complexTable.add(getInfoText(divideText),1,a+2);
+      complexTable.add(typesTable,1,row);
+      if ( row < types.size()+1 ) {
+        complexTable.add(getInfoText(divideText),1,row);
       }
     }
     add(complexTable);

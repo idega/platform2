@@ -7,37 +7,16 @@ public class RoomTypeHomeImpl extends com.idega.data.IDOFactory implements RoomT
   return RoomType.class;
  }
 
+
  public RoomType create() throws javax.ejb.CreateException{
-  return (RoomType) super.idoCreate();
+  return (RoomType) super.createIDO();
  }
 
- public RoomType createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
- public RoomType findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (RoomType) super.idoFindByPrimaryKey(id);
- }
 
  public RoomType findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (RoomType) super.idoFindByPrimaryKey(pk);
+  return (RoomType) super.findByPrimaryKeyIDO(pk);
  }
 
- public RoomType findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

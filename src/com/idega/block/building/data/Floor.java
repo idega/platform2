@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface Floor extends com.idega.block.text.data.TextEntity
+public interface Floor extends BuildingEntity
 {
  public java.util.Collection getApartments();
  public com.idega.block.building.data.Building getBuilding();

@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface RoomSubType extends com.idega.block.text.data.TextEntity
+public interface RoomSubType extends com.idega.data.IDOEntity
 {
  public float getArea();
  public boolean getBalcony();
@@ -21,10 +21,10 @@ public interface RoomSubType extends com.idega.block.text.data.TextEntity
  public void setArea(java.lang.Float p0);
  public void setBalcony(boolean p0);
  public void setBathRoom(boolean p0);
- public void setFloorPlanId(java.lang.Integer p0);
  public void setFloorPlanId(int p0);
- public void setImageId(java.lang.Integer p0);
+ public void setFloorPlanId(java.lang.Integer p0);
  public void setImageId(int p0);
+ public void setImageId(java.lang.Integer p0);
  public void setInfo(java.lang.String p0);
  public void setKitchen(boolean p0);
  public void setLoft(boolean p0);

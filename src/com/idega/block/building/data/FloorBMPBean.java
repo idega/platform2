@@ -4,6 +4,12 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
+
 /**
 
  * Title:
@@ -15,88 +21,78 @@ import javax.ejb.FinderException;
  */
 public class FloorBMPBean extends com.idega.block.text.data.TextEntityBMPBean  implements com.idega.block.building.data.Floor {
 	
+	protected static final String IC_IMAGE_ID = "ic_image_id";
+	protected static final String BU_FLOOR = "bu_floor";
+	protected static final String NAME = "name";
+	protected static final String INFO = "info";
+	protected static final String BU_BUILDING_ID = "bu_building_id";
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(getNameColumnName(), "Name", true, true, java.lang.String.class);
-		addAttribute(getInfoColumnName(), "Info", true, true, java.lang.String.class, 4000);
-		addAttribute(
-			getBuildingIdColumnName(),
-			"Building",
-			true,
-			true,
-			java.lang.Integer.class,
-			"many-to-one",
-			com.idega.block.building.data.Building.class);
-		addAttribute(getImageIdColumnName(), "Plan", true, true, java.lang.Integer.class);
+		addAttribute(NAME, "Name", true, true, java.lang.String.class);
+		addAttribute(INFO, "Info", true, true, java.lang.String.class, 4000);
+		addAttribute(	BU_BUILDING_ID,	"Building",	true,true,	java.lang.Integer.class,	"many-to-one",Building.class);
+		addAttribute(IC_IMAGE_ID, "Plan", true, true, java.lang.Integer.class);
 	}
 	public String getEntityName() {
-		return getNameTableName();
+		return BU_FLOOR;
 	}
-	public static String getNameTableName() {
-		return "bu_floor";
-	}
-	public static String getNameColumnName() {
-		return "name";
-	}
-	public static String getInfoColumnName() {
-		return "info";
-	}
-	public static String getBuildingIdColumnName() {
-		return "bu_building_id";
-	}
-	public static String getImageIdColumnName() {
-		return "ic_image_id";
-	}
+	
 	public String getName() {
-		return getStringColumnValue(getNameColumnName());
+		return getStringColumnValue(NAME);
 	}
 	public void setName(String name) {
-		setColumn(getNameColumnName(), name);
+		setColumn(NAME, name);
 	}
 	public String getInfo() {
-		return getStringColumnValue(getInfoColumnName());
+		return getStringColumnValue(INFO);
 	}
 	public void setInfo(String info) {
-		setColumn(getInfoColumnName(), info);
+		setColumn(INFO, info);
 	}
 	public int getBuildingId() {
-		return getIntColumnValue(getBuildingIdColumnName());
+		return getIntColumnValue(BU_BUILDING_ID);
 	}
-	
 	public Building getBuilding(){
-		return (Building )getColumnValue(getBuildingIdColumnName());
+		return (Building) getColumnValue(BU_BUILDING_ID);
 	}
 	public void setBuildingId(int building_id) {
-		setColumn(getBuildingIdColumnName(), building_id);
+		setColumn(BU_BUILDING_ID, building_id);
 	}
 	public void setBuildingId(Integer building_id) {
-		setColumn(getBuildingIdColumnName(), building_id);
+		setColumn(BU_BUILDING_ID, building_id);
 	}
 	public int getImageId() {
-		return getIntColumnValue(getImageIdColumnName());
+		return getIntColumnValue(IC_IMAGE_ID);
 	}
 	public void setImageId(int image_id) {
-		setColumn(getImageIdColumnName(), image_id);
+		setColumn(IC_IMAGE_ID, image_id);
 	}
 	public void setImageId(Integer image_id) {
-		setColumn(getImageIdColumnName(), image_id);
+		setColumn(IC_IMAGE_ID, image_id);
 	}
 	
-	public Collection getApartments(){
-		try {
-			return super.idoGetRelatedEntities(Apartment.class);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error in getApartments() : " + e.getMessage());
-		}
+	public Collection ejbFindAll()throws FinderException{
+		return idoFindAllIDsBySQL();
 	}
 	
 	public Collection ejbFindByBuilding(Integer buildingID)throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getBuildingIdColumnName(),buildingID.intValue()));
+		Table building =new Table(this);
+		SelectQuery query =new SelectQuery(building);
+		query.addColumn(new WildCardColumn(building));
+		query.addCriteria(new MatchCriteria(building,BU_BUILDING_ID,MatchCriteria.EQUALS,buildingID.intValue()));
+		return idoFindPKsBySQL(query.toString());	
 	}
 	
-	public Collection ejbFindByBuilding(Building building)throws FinderException{
-		return ejbFindByBuilding((Integer)building.getPrimaryKey());
+	
+	/* (non-Javadoc)
+	 * @see com.idega.block.building.data.Floor#getApartments()
+	 */
+	public Collection getApartments() {
+		try {
+			return idoGetRelatedEntities(Apartment.class);
+		} catch (IDORelationshipException e) {
+			
+		}
+		return null;
 	}
 }

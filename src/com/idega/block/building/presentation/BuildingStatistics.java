@@ -1,6 +1,6 @@
 package com.idega.block.building.presentation;
 
-import com.idega.block.building.business.BuildingCacher;
+
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
@@ -30,10 +30,10 @@ public class BuildingStatistics extends PresentationObjectContainer {
   public void main(IWContext iwc) {
     iwrb = this.getResourceBundle(iwc);
 		Table T = new Table();
-		int numOfComplex = BuildingCacher.getNumberOfComplexes();
-		int numOfBuildings = BuildingCacher.getNumberOfBuildings();
-		int numOfFloors = BuildingCacher.getNumberOfFloors();
-		int numOfApartments = BuildingCacher.getNumberOfApartments();
+		int numOfComplex = 0;// BuildingCacher.getNumberOfComplexes();
+		int numOfBuildings = 0;//BuildingCacher.getNumberOfBuildings();
+		int numOfFloors = 0;//BuildingCacher.getNumberOfFloors();
+		int numOfApartments = 0;//BuildingCacher.getNumberOfApartments();
 		int row = 1;
 		int col = 1;
 		int col2 = 2;

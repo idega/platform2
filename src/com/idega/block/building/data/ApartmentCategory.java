@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface ApartmentCategory extends com.idega.block.text.data.TextEntity
+public interface ApartmentCategory extends BuildingEntity
 {
  public java.util.Collection getApartmentTypes();
  public int getImageId();

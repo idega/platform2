@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface Room extends com.idega.block.text.data.TextEntity
+public interface Room extends com.idega.data.IDOEntity
 {
  public int getFloorId();
  public int getImageId();
@@ -9,8 +9,8 @@ public interface Room extends com.idega.block.text.data.TextEntity
  public java.lang.String getName();
  public boolean getRentable();
  public int getRoomSubTypeId();
- public void setFloorId(java.lang.Integer p0);
  public void setFloorId(int p0);
+ public void setFloorId(java.lang.Integer p0);
  public void setImageId(int p0);
  public void setImageId(java.lang.Integer p0);
  public void setInfo(java.lang.String p0);

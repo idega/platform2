@@ -4,6 +4,14 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.file.data.ICFile;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
+
+
 /**
  * Title:
  * Description:
@@ -14,98 +22,103 @@ import javax.ejb.FinderException;
  */
 public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean  implements com.idega.block.building.data.Building {
 	
+	protected static final String SERIE = "serie";
+	protected static final String STREET_NUMBER = "street_number";
+	protected static final String STREET = "street";
+	protected static final String IC_IMAGE_ID = "ic_image_id";
+	protected static final String BU_COMPLEX_ID = "bu_complex_id";
+	protected static final String INFO = "info";
+	protected static final String NAME = "name";
+	protected static final String BU_BUILDING = "bu_building";
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(getNameColumnName(), "Name", true, true, java.lang.String.class);
-		addAttribute(getInfoColumnName(), "Info", true, true, java.lang.String.class);
-		addAttribute(getImageIdColumnName(), "Photo", true, true, java.lang.Integer.class);
-		addAttribute(
-			getComplexIdColumnName(),
-			"Complex",
-			true,
-			true,
-			java.lang.Integer.class,
-			"many-to-one",
-			Complex.class);
-		addAttribute(getStreetColumnName(), "Street", true, true, java.lang.String.class);
-		addAttribute(getStreetNumberColumnName(), "Streetnumber", true, true, java.lang.Integer.class);
-		addAttribute(getSerieColumnName(), "Serie", true, true, java.lang.String.class, 2);
-		super.setMaxLength("info", 4000);
+		addAttribute(NAME, "Name", true, true, java.lang.String.class);
+		addAttribute(INFO, "Info", true, true, java.lang.String.class);
+		addAttribute(IC_IMAGE_ID, "Photo", true, true, java.lang.Integer.class,MANY_TO_ONE,ICFile.class);
+		addAttribute(BU_COMPLEX_ID,"Complex",true,true,java.lang.Integer.class,MANY_TO_ONE,Complex.class);
+		addAttribute(STREET, "Street", true, true, java.lang.String.class);
+		addAttribute(STREET_NUMBER, "Streetnumber", true, true, java.lang.Integer.class);
+		addAttribute(SERIE, "Serie", true, true, java.lang.String.class, 2);
+		super.setMaxLength(INFO, 4000);
 	}
 	public String getEntityName() {
-		return getNameTableName();
+		return BU_BUILDING;
 	}
-	public static String getNameTableName() {
-		return "bu_building";
-	}
-	public static String getNameColumnName() {
-		return "name";
-	}
-	public static String getInfoColumnName() {
-		return "info";
-	}
-	public static String getComplexIdColumnName() {
-		return "bu_complex_id";
-	}
-	public static String getImageIdColumnName() {
-		return "ic_image_id";
-	}
-	public static String getStreetColumnName() {
-		return "street";
-	}
-	public static String getStreetNumberColumnName() {
-		return "street_number";
-	}
-	public static String getSerieColumnName() {
-		return "serie";
-	}
+	
 	public String getName() {
-		return getStringColumnValue(getNameColumnName());
+		return getStringColumnValue(NAME);
 	}
 	public void setName(String name) {
-		setColumn(getNameColumnName(), name);
+		setColumn(NAME, name);
 	}
 	public String getInfo() {
-		return getStringColumnValue(getInfoColumnName());
+		return getStringColumnValue(INFO);
 	}
 	public void setInfo(String info) {
-		setColumn(getInfoColumnName(), info);
+		setColumn(INFO, info);
 	}
 	public int getComplexId() {
-		return getIntColumnValue(getComplexIdColumnName());
+		return getIntColumnValue(BU_COMPLEX_ID);
 	}
 	public Complex getComplex(){
-		return (Complex) getColumnValue(getComplexIdColumnName());
+		return (Complex) getColumnValue(BU_COMPLEX_ID);
 	}
 	public void setComplexId(int complex_id) {
-		setColumn(getComplexIdColumnName(), complex_id);
+		setColumn(BU_COMPLEX_ID, complex_id);
 	}
 	public int getImageId() {
-		return getIntColumnValue(getImageIdColumnName());
+		return getIntColumnValue(IC_IMAGE_ID);
 	}
 	public void setImageId(int image_id) {
-		setColumn(getImageIdColumnName(), image_id);
+		setColumn(IC_IMAGE_ID, image_id);
 	}
 	public void setImageId(Integer image_id) {
-		setColumn(getImageIdColumnName(), image_id);
+		setColumn(IC_IMAGE_ID, image_id);
 	}
 	public String getStreet() {
-		return getStringColumnValue(getStreetColumnName());
+		return getStringColumnValue(STREET);
 	}
 	public void setStreet(String street) {
-		setColumn(getStreetColumnName(), street);
+		setColumn(STREET, street);
 	}
 	public String getStreetNumber() {
-		return getStringColumnValue(getStreetNumberColumnName());
+		return getStringColumnValue(STREET_NUMBER);
 	}
 	public void setStreetNumber(String street_number) {
-		setColumn(getStreetNumberColumnName(), street_number);
+		setColumn(STREET_NUMBER, street_number);
 	}
 	public String getSerie() {
-		return getStringColumnValue(getSerieColumnName());
+		return getStringColumnValue(SERIE);
 	}
 	public void setSerie(String serie) {
-		setColumn(getSerieColumnName(), serie);
+		setColumn(SERIE, serie);
+	}
+	
+	public Collection ejbFindAll() throws FinderException{
+		return idoFindAllIDsBySQL();
+	}
+	
+	public Collection ejbFindByComplex(Integer complexID)throws FinderException{
+		Table building =new Table(this);
+		SelectQuery query =new SelectQuery(building);
+		query.addColumn(new WildCardColumn(building));
+		query.addCriteria(new MatchCriteria(building,BU_COMPLEX_ID,MatchCriteria.EQUALS,complexID.intValue()));
+		return idoFindPKsBySQL(query.toString());	
+	}
+	
+	public Collection ejbHomeGetImageFilesByComplex(Integer complexID)throws FinderException{
+		try {
+			Table building =new Table(this);
+			Table file = new Table(ICFile.class);
+			SelectQuery query =new SelectQuery(file);
+			query.addColumn(new WildCardColumn(file));
+			query.addJoin(building,file);
+			query.addCriteria(new MatchCriteria(building,IC_IMAGE_ID,MatchCriteria.EQUALS,complexID.intValue()));
+			return idoGetRelatedEntitiesBySQL(ICFile.class,query.toString());
+		}
+		catch (IDORelationshipException e) {
+			throw new FinderException(e.getMessage());
+		}
 	}
 	
 	public Collection getFloors(){
@@ -118,9 +131,6 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 		}
 	}
 	
-	public Collection ejbFindByComplex(Integer complexID) throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getComplexIdColumnName(),complexID.intValue()));
-	}
 	
 	public Collection ejbFindByComplex(Complex complex) throws FinderException{
 		return ejbFindByComplex((Integer)complex.getPrimaryKey());

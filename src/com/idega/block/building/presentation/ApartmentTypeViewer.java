@@ -1,12 +1,15 @@
 package com.idega.block.building.presentation;
 
-import java.sql.SQLException;
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.block.building.business.BuildingBusiness;
-import com.idega.block.building.business.BuildingFinder;
+import javax.ejb.FinderException;
+
+import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.ApartmentType;
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -41,6 +44,7 @@ protected IWResourceBundle iwrb_;
 protected IWBundle iwb_;
 private String specialAttributesName = null;
 private List specialAttributes = null;
+private BuildingService service = null;
 
 public ApartmentTypeViewer(){
 }
@@ -63,7 +67,7 @@ public void setSpecialAttributes(String name,List attributes){
       if ( iwb_ == null ) {
         iwb_ = getBundle(iwc);
       }
-
+      service =(BuildingService)IBOLookup.getServiceInstance(iwc,BuildingService.class);
       if ( iwc.getParameter(PARAMETER_STRING) != null ) {
         try {
           apartmenttypeid = Integer.parseInt(iwc.getParameter(PARAMETER_STRING));
@@ -88,10 +92,11 @@ public void setSpecialAttributes(String name,List attributes){
       this.infoStyle = "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
     }
 
-    private void getApartmentType(IWContext iwc) throws Exception {
-    	ApartmentType room = BuildingBusiness.getStaticInstance().getApartmentTypeHome().findByPrimaryKey(new Integer(apartmenttypeid));
-      
-		BuildingBusiness.getStaticInstance().changeNameAndInfo(room,iwc.getCurrentLocale());
+    private void getApartmentType(IWContext iwc) throws RemoteException,FinderException {
+
+      ApartmentType room = service.getApartmentTypeHome().findByPrimaryKey(new Integer(apartmenttypeid));
+		//service.switchNameAndInfo(room,iwc.getCurrentLocale());
+
 
       Table roomTable = new Table(1,6);
         roomTable.setWidth("400");
@@ -134,7 +139,7 @@ public void setSpecialAttributes(String name,List attributes){
 
     }
 
-    private Table getApartmentTable(ApartmentType room, IWContext iwc) throws SQLException {
+    private Table getApartmentTable(ApartmentType room, IWContext iwc)  {
 
        Table roomTable = new Table(2,2);
         roomTable.mergeCells(1,1,1,2);
@@ -297,10 +302,9 @@ public void setSpecialAttributes(String name,List attributes){
       return T;
     }
 
-    private Form getBuildingApartmentTypes(ApartmentType type) throws SQLException {
+    private Form getBuildingApartmentTypes(ApartmentType thetype)throws RemoteException,FinderException {
 
-      int id = BuildingFinder.getComplexIdFromTypeId(type.getID());
-      ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(id);
+      Collection types =service.getApartmentTypeHome().findFromSameComplex(thetype);
 
       Form roomForm = new Form();
 
@@ -321,10 +325,11 @@ public void setSpecialAttributes(String name,List attributes){
       DropdownMenu roomTypes = new DropdownMenu("type_id");
         roomTypes.setToSubmit();
         roomTypes.keepStatusOnAction();
-        for ( int a = 0; a < types.length; a++ ) {
-         roomTypes.addMenuElement(types[a].getID(),types[a].getName());
+        for (Iterator iter = types.iterator(); iter.hasNext();) {
+			ApartmentType type = (ApartmentType) iter.next();
+			roomTypes.addMenuElement(type.getPrimaryKey().toString(),type.getName());
         }
-        roomTypes.setSelectedElement(String.valueOf(type.getID()));
+        roomTypes.setSelectedElement(thetype.getPrimaryKey().toString());
         roomTypes.setMarkupAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
       formTable.add(appartmentText,1,1);
@@ -335,10 +340,9 @@ public void setSpecialAttributes(String name,List attributes){
 
     }
 
-     private Form getCategoryApartmentTypes(ApartmentType type) throws SQLException {
+     private Form getCategoryApartmentTypes(ApartmentType thetype)throws RemoteException,FinderException  {
 
-      ApartmentType[] types = BuildingFinder.findApartmentTypesForCategory(type.getApartmentCategoryId());
-
+      Collection types =service.getApartmentTypeHome().findByCategory(new Integer(thetype.getApartmentCategoryId()));
       Form roomForm = new Form();
 
       Text appartmentText = getBoldText(iwrb_.getLocalizedString("category_apartments","Other apartments in category")+": ");
@@ -358,10 +362,12 @@ public void setSpecialAttributes(String name,List attributes){
       DropdownMenu roomTypes = new DropdownMenu("type_id");
         roomTypes.setToSubmit();
         roomTypes.keepStatusOnAction();
-        for ( int a = 0; a < types.length; a++ ) {
-         roomTypes.addMenuElement(types[a].getID(),types[a].getName());
+       for (Iterator iter = types.iterator(); iter.hasNext();) {
+		ApartmentType type = (ApartmentType) iter.next();
+	
+         roomTypes.addMenuElement(type.getPrimaryKey().toString(),type.getName());
         }
-        roomTypes.setSelectedElement(String.valueOf(type.getID()));
+        roomTypes.setSelectedElement(String.valueOf(thetype.getPrimaryKey().toString()));
         roomTypes.setMarkupAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
       formTable.add(appartmentText,1,1);

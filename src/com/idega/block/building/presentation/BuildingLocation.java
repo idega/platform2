@@ -1,13 +1,14 @@
 package com.idega.block.building.presentation;
 
-import java.sql.SQLException;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.IWContext;
+
 import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexHome;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.CloseButton;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:
@@ -22,13 +23,13 @@ public class BuildingLocation extends Window {
 
 private static final String IW_RESOURCE_BUNDLE = "com.idega.block.building";
 protected IWResourceBundle iwrb_;
-private int complexID;
+private Integer complexID;
 
   public BuildingLocation() {
     setWidth(688);
     setHeight(500);
     setAllMargins(0);
-    complexID = 0;
+    complexID = null;
     this.setResizable(false);
     this.setScrollbar(false);
   }
@@ -38,13 +39,13 @@ private int complexID;
     setTitle(iwrb_.getLocalizedString("map","Map of the area"));
 
     try {
-      complexID = Integer.parseInt(iwc.getParameter(BuildingViewer.PARAMETER_STRING));
+      complexID = Integer.valueOf(iwc.getParameter(BuildingViewer.PARAMETER_STRING));
     }
     catch (NumberFormatException e) {
-      complexID = 0;
+      complexID = null;
     }
 
-    if ( complexID > 0 ) {
+    if ( complexID !=null) {
       getMap();
     }
     else {
@@ -59,7 +60,8 @@ private int complexID;
     Image closeImage = iwrb_.getImage("/room/close.gif");
 
     try {
-      imageID = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHome(Complex.class)).findByPrimaryKey(new Integer(complexID)).getImageId();
+
+      imageID = ((ComplexHome)com.idega.data.IDOLookup.getHome(Complex.class)).findByPrimaryKey(complexID).getImageId();
       if ( imageID != -1 )
         location = new Image(imageID);
     }

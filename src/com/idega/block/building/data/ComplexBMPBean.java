@@ -14,47 +14,44 @@ import javax.ejb.FinderException;
  */
 public class ComplexBMPBean extends com.idega.block.text.data.TextEntityBMPBean implements com.idega.block.building.data.Complex {
 	
+	protected static final String IC_IMAGE_ID = "ic_image_id";
+	protected static final String INFO = "info";
+	public static final String NAME = "name";
+	protected static final String BU_COMPLEX = "bu_complex";
+	
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(getNameColumnName(), "Name", true, true, java.lang.String.class);
-		addAttribute(getInfoColumnName(), "Info", true, true, java.lang.String.class, 4000);
-		addAttribute(getImageIdColumnName(), "Map", true, true, java.lang.Integer.class);
+		addAttribute(NAME, "Name", true, true, java.lang.String.class);
+		addAttribute(INFO, "Info", true, true, java.lang.String.class, 4000);
+		addAttribute(IC_IMAGE_ID, "Map", true, true, java.lang.Integer.class);
 	}
 	public String getEntityName() {
-		return getNameTableName();
-	}
-	public static String getNameTableName() {
-		return "bu_complex";
-	}
-	public static String getNameColumnName() {
-		return "name";
-	}
-	public static String getInfoColumnName() {
-		return "info";
-	}
-	public static String getImageIdColumnName() {
-		return "ic_image_id";
+		return BU_COMPLEX;
 	}
 	public String getName() {
-		return getStringColumnValue(getNameColumnName());
+		return getStringColumnValue(NAME);
 	}
 	public void setName(String name) {
-		setColumn(getNameColumnName(), name);
+		setColumn(NAME, name);
 	}
 	public String getInfo() {
-		return getStringColumnValue(getInfoColumnName());
+		return getStringColumnValue(INFO);
 	}
 	public void setInfo(String info) {
-		setColumn(getInfoColumnName(), info);
+		setColumn(INFO, info);
 	}
 	public int getImageId() {
-		return getIntColumnValue(getImageIdColumnName());
+		return getIntColumnValue(IC_IMAGE_ID);
 	}
 	public void setImageId(int image_id) {
-		setColumn(getImageIdColumnName(), image_id);
+		setColumn(IC_IMAGE_ID, image_id);
 	}
 	public void setImageId(Integer image_id) {
-		setColumn(getImageIdColumnName(), image_id);
+		setColumn(IC_IMAGE_ID, image_id);
+	}
+	
+	public Collection ejbFindAll() throws FinderException{
+		return idoFindAllIDsBySQL();
 	}
 	
 	public Collection getBuildings(){
@@ -67,7 +64,4 @@ public class ComplexBMPBean extends com.idega.block.text.data.TextEntityBMPBean 
 		}
 	}
 	
-	public Collection ejbFindAll() throws FinderException{
-		return super.idoFindAllIDsBySQL();
-	}
 }

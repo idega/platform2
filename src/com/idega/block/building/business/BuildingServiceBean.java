@@ -12,10 +12,14 @@ import com.idega.block.building.data.ApartmentCategoryHome;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.block.building.data.ApartmentView;
+import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
+import com.idega.block.building.data.ComplexTypeView;
+import com.idega.block.building.data.ComplexTypeViewHome;
 import com.idega.block.building.data.Floor;
 import com.idega.block.building.data.FloorHome;
 import com.idega.block.building.data.Room;
@@ -106,14 +110,14 @@ public class BuildingServiceBean extends IBOServiceBean implements BuildingServi
 	public RoomHome getRoomHome()throws RemoteException{
 		return (RoomHome) getIDOHome(Room.class);
 	}
-/*	public ApartmentViewHome getApartmentViewHome()throws RemoteException{
+	public ApartmentViewHome getApartmentViewHome()throws RemoteException{
 		return (ApartmentViewHome) getIDOHome(ApartmentView.class);
-	}*/
-	/*
+	}
+	
 	public ComplexTypeViewHome getComplexTypeViewHome() throws RemoteException{
 		return (ComplexTypeViewHome) getIDOHome(ComplexTypeView.class);
 	}
-	
+	/*
 	public void switchNameAndInfo(BuildingEntity entity, java.util.Locale locale) {
 		String infoText = "", nameText = "";
 		if (entity.getTextId() > 0) {
@@ -127,7 +131,7 @@ public class BuildingServiceBean extends IBOServiceBean implements BuildingServi
 		if (nameText.length() > 0) {
 			entity.setName(nameText);
 		}
-	}*/
+	}
 	
-	
+	*/
 }

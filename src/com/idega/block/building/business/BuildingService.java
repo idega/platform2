@@ -10,6 +10,8 @@ public interface BuildingService extends com.idega.business.IBOService
  public com.idega.block.building.data.ComplexHome getComplexHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.building.data.FloorHome getFloorHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.building.data.RoomHome getRoomHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.building.data.ApartmentViewHome getApartmentViewHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.building.data.ComplexTypeViewHome getComplexTypeViewHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void removeApartment(java.lang.Integer p0) throws java.rmi.RemoteException;
  public void removeApartmentCategory(java.lang.Integer p0) throws java.rmi.RemoteException;
  public void removeApartmentType(java.lang.Integer p0) throws java.rmi.RemoteException;

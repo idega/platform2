@@ -1,26 +1,5 @@
 package com.idega.block.building.business;
 
-import java.rmi.RemoteException;
-
-import java.util.Locale;
-
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentCategoryHome;
-import com.idega.block.building.data.ApartmentHome;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.ApartmentTypeHome;
-import com.idega.block.building.data.Building;
-import com.idega.block.building.data.BuildingHome;
-import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.ComplexHome;
-import com.idega.block.building.data.Floor;
-import com.idega.block.building.data.FloorHome;
-import com.idega.block.text.business.ContentHelper;
-import com.idega.block.text.business.TextFinder;
-import com.idega.block.text.data.TextEntity;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 /**
  * Title:
  * Description:
@@ -42,7 +21,7 @@ public class BuildingBusiness {
 			bb = new BuildingBusiness();
 		return bb;
 	}
-
+/*
 	public boolean saveComplex(int id, String sName, String sInfo, int imageid, int textid) {
 		
 		try {
@@ -195,8 +174,13 @@ public class BuildingBusiness {
 			if (imageid > 0)
 				apartment.setImageId(imageid);
 			apartment.setSerie(sSerie);
+<<<<<<< BuildingBusiness.java
+			if(textid>0)
+				apartment.setTextId(textid);
+=======
 			if(textid>0)
 			apartment.setTextId(textid);
+>>>>>>> 1.10
 
 			apartment.store();
 			BuildingCacher.reload();
@@ -296,5 +280,5 @@ public class BuildingBusiness {
 			entity.setName(nameText);
 		}
 	}
-
+*/
 }

@@ -1,28 +1,6 @@
 package com.idega.block.building.business;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
 
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentBMPBean;
-import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentHome;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.ApartmentTypeBMPBean;
-import com.idega.block.building.data.Building;
-import com.idega.block.building.data.BuildingBMPBean;
-import com.idega.block.building.data.BuildingHome;
-import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.ComplexHome;
-import com.idega.block.building.data.Floor;
-import com.idega.block.building.data.RoomType;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
 
 /**
  * Title:
@@ -37,7 +15,7 @@ public class BuildingFinder {
 
   public final  static int APARTMENT = 2,FLOOR=3,BUILDING=4,COMPLEX=5,CATEGORY=6,TYPE=7;
 
-
+/*
   public static List listOfComplex(){
     try{
       return EntityFinder.getInstance().findAll(Complex.class);
@@ -108,20 +86,14 @@ public class BuildingFinder {
 
   public static ApartmentType[] findApartmentTypesInBuilding(int iBuildingId){
     ApartmentType[] rt = new ApartmentType[0];
-    /*
-    select distinct bu_aprt_type.*
-    from bu_aprt_type p,bu_apartment a,bu_floor f
-    where p.bu_aprt_type_id = a.bu_aprt_type_id
-    and a.bu_floor_id = f.bu_floor_id
-    and f.bu_building_id = 2
-
+   
     StringBuffer sql = new StringBuffer(" select distinct bu_aprt_type.* ");
     sql.append(" from bu_aprt_type p,bu_apartment a,bu_floor f ");
     sql.append(" where p.bu_aprt_type_id = a.bu_aprt_type_id");
     sql.append(" and a.bu_floor_id = f.bu_floor_id");
     sql.append(" and f.bu_building_id = ");
     sql.append(iBuildingId);
-    */
+    
     StringBuffer sql = new StringBuffer("select distinct ");
      sql.append(com.idega.block.building.data.ApartmentTypeBMPBean.getNameTableName());
     sql.append(".* from ");
@@ -203,14 +175,7 @@ public class BuildingFinder {
 
   public static ApartmentType[] findApartmentTypesInComplex(int iComplexId){
     ApartmentType[] rt = new ApartmentType[0];
-    /*
-    select distinct bu_aprt_type.*
-    from bu_aprt_type p,bu_apartment a,bu_floor f, bu_building b
-    where p.bu_aprt_type_id = a.bu_aprt_type_id
-    and a.bu_floor_id = f.bu_floor_id
-    and f.bu_building_id = b.building_id
-    and b.bu_complex_id = 2
-    */
+   
     StringBuffer sql = new StringBuffer("select distinct ");
      sql.append(com.idega.block.building.data.ApartmentTypeBMPBean.getNameTableName());
     sql.append(".* from ");
@@ -388,7 +353,7 @@ public class BuildingFinder {
     }
     return L;
   }
-
+  
   public static List searchApartment(String searchname){
     
     List L = null;
@@ -400,7 +365,6 @@ public class BuildingFinder {
     }
     return L;
   }
-  
   public static Vector getApartmentTypesComplexForCategory(int categoryId) {
     Vector v = new Vector();
     Connection Conn = null;
@@ -520,7 +484,7 @@ public class BuildingFinder {
       count = 0;
     return count;
   }
-
+  
   public static int countRentableApartments(){
     String sql = "select count(*) from "+com.idega.block.building.data.ApartmentBMPBean.getNameTableName() +" where "+com.idega.block.building.data.ApartmentBMPBean.getRentableColumnName()+" = 'Y'";
     int count = 0;
@@ -594,5 +558,5 @@ public class BuildingFinder {
     }
     return order;
   }
-
+*/
 }// class end

@@ -1,88 +1,125 @@
 package com.idega.block.building.business;
 
 
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentCategoryHome;
+import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.Building;
+import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexHome;
 import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.FloorHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;
 
 
 
 public class BuildingCacher {
 
-  private static List Complexes,Buildings,Floors,Categories,Types,Apartments;
+  private static Collection Complexes,Buildings,Floors,Categories,Types,Apartments;
   private static Hashtable hComplexes,hBuildings,hFloors,hCategories,hTypes,hApartments;
   private static boolean setToReload = false;
   private static IWTimestamp lastReloaded = IWTimestamp.RightNow();
   private static int reloadCount = 0;
+  
+  public final static char CHARCOMPLEX = 'x';
+  public final static char CHARBUILDING = 'b';
+  public final static char CHARFLOOR = 'f';
+  public final static char CHARAPARTMENT = 'a';
+  public final static char CHARCATEGORY = 'c';
+  public final static char CHARTYPE = 't';
+  public final static char CHARALL = 'h';
+
+  private static final String score = "_";
+  public static String PREFIXCOMPLEX = String.valueOf(CHARCOMPLEX)+score;
+  public static String PREFIXBUILDING = String.valueOf(CHARBUILDING)+score;
+  public static String PREFIXFLOOR = String.valueOf(CHARFLOOR)+score;
+  public static String PREFIXAPARTMENT = String.valueOf(CHARAPARTMENT)+score;
+  public static String PREFIXCATEGORY = String.valueOf(CHARCATEGORY)+score;
+  public static String PREFIXTYPE = String.valueOf(CHARTYPE)+score;
+  public static String PREFIXALL = String.valueOf(CHARALL)+score;
 
   public BuildingCacher() {
   }
 
   private static void initializeLodgings(){
-    Complexes = BuildingFinder.listOfComplex();
-    Buildings = BuildingFinder.listOfBuilding();
-    Floors = BuildingFinder.listOfFloor();
-    Categories = BuildingFinder.listOfApartmentCategory();
-    Types = BuildingFinder.listOfApartmentType();
-    Apartments = BuildingFinder.listOfApartment();
-    if(Complexes != null){
-      int len = Complexes.size();
-      hComplexes = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        Complex C = (Complex)Complexes.get(i);
-        hComplexes.put(new Integer(C.getID()),C);
-      }
-    }
-    if(Buildings != null){
-      int len = Buildings.size();
-      hBuildings = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        Building C = (Building)Buildings.get(i);
-        hBuildings.put(new Integer(C.getID()),C);
-      }
-    }
-    if(Floors != null){
-      int len = Floors.size();
-      hFloors = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        Floor C = (Floor)Floors.get(i);
-        hFloors.put(new Integer(C.getID()),C);
-      }
-    }
-    if(Categories != null){
-      int len = Categories.size();
-      hCategories = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        ApartmentCategory C = (ApartmentCategory)Categories.get(i);
-        hCategories.put(new Integer(C.getID()),C);
-      }
-    }
-    if(Types != null){
-      int len = Types.size();
-      hTypes = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        ApartmentType C = (ApartmentType) Types.get(i);
-        hTypes.put(new Integer(C.getID()),C);
-      }
-    }
-    if(Apartments != null){
-      int len = Apartments.size();
-      hApartments = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        Apartment C = (Apartment) Apartments.get(i);
-        hApartments.put(new Integer(C.getID()),C);
-      }
-    }
+    try {
+		Complexes = ((ComplexHome)IDOLookup.getHome(Complex.class)).findAll();
+		Buildings = ((BuildingHome) IDOLookup.getHome(Building.class)).findAll();
+		Floors = ((FloorHome)IDOLookup.getHome(Floor.class)).findAll();
+		Categories = ((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findAll();
+		Types = ((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll();
+		Apartments = ((ApartmentHome)IDOLookup.getHome(Apartment.class)).findAll();
+		if(Complexes != null){
+		  int len = Complexes.size();
+		  hComplexes = new Hashtable(len);
+		 for (Iterator iter = Complexes.iterator(); iter.hasNext();) {
+			Complex C = (Complex) iter.next();
+		    hComplexes.put((Integer)(C.getPrimaryKey()),C);
+		  }
+		}
+		if(Buildings != null){
+		  int len = Buildings.size();
+		  hBuildings = new Hashtable(len);
+		  for (Iterator iter = Buildings.iterator(); iter.hasNext();) {
+		    Building C = (Building)iter.next();
+		    hBuildings.put((Integer)(C.getPrimaryKey()),C);
+		  }
+		}
+		if(Floors != null){
+		  int len = Floors.size();
+		  hFloors = new Hashtable(len);
+		  for (Iterator iter = Floors.iterator(); iter.hasNext();) {
+		    Floor C = (Floor)iter.next();
+		    hFloors.put((Integer)(C.getPrimaryKey()),C);
+		  }
+		}
+		if(Categories != null){
+		  int len = Categories.size();
+		  hCategories = new Hashtable(len);
+		  for (Iterator iter = Categories.iterator(); iter.hasNext();) {
+		    ApartmentCategory C = (ApartmentCategory)iter.next();
+		    hCategories.put((Integer)(C.getPrimaryKey()),C);
+		  }
+		}
+		if(Types != null){
+		  int len = Types.size();
+		  hTypes = new Hashtable(len);
+		  for (Iterator iter = Types.iterator(); iter.hasNext();) {
+		    ApartmentType C = (ApartmentType) iter.next();
+		    hTypes.put((Integer)(C.getPrimaryKey()),C);
+		  }
+		}
+		if(Apartments != null){
+		  int len = Apartments.size();
+		  hApartments = new Hashtable(len);
+		  for (Iterator iter = Apartments.iterator(); iter.hasNext();) {
+		    Apartment C = (Apartment) iter.next();
+		    hApartments.put((Integer)(C.getPrimaryKey()),C);
+		  }
+		}
+	} catch (IDOLookupException e) {
+		e.printStackTrace();
+	} catch (EJBException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
   }
 
   public static void reload(){
@@ -104,37 +141,37 @@ public class BuildingCacher {
     return reloadCount;
   }
 
-  public static List getBuildings(){
+  public static Collection getBuildings(){
     if(hComplexes == null || setToReload){
       reload();
     }
     return Buildings;
   }
-  public static List getComplexes(){
+  public static Collection getComplexes(){
     if(hBuildings == null || setToReload){
       reload();
     }
     return Complexes;
   }
-  public static List getFloors(){
+  public static Collection getFloors(){
     if(hFloors == null || setToReload){
       reload();
     }
     return Floors;
   }
-  public static List getTypes(){
+  public static Collection getTypes(){
     if(hTypes == null || setToReload){
       reload();
     }
     return Types;
   }
-  public static List getCategories(){
+  public static Collection getCategories(){
     if(hCategories == null || setToReload){
       reload();
     }
     return Categories;
   }
-  public static List getApartments(){
+  public static Collection getApartments(){
     if(hApartments == null || setToReload){
       reload();
     }
@@ -263,72 +300,51 @@ public class BuildingCacher {
     return string.toString();
   }
 
-  public final static char CHARCOMPLEX = 'x';
-  public final static char CHARBUILDING = 'b';
-  public final static char CHARFLOOR = 'f';
-  public final static char CHARAPARTMENT = 'a';
-  public final static char CHARCATEGORY = 'c';
-  public final static char CHARTYPE = 't';
-  public final static char CHARALL = 'h';
-
-  private static final String score = "_";
-  public static String PREFIXCOMPLEX = String.valueOf(CHARCOMPLEX)+score;
-  public static String PREFIXBUILDING = String.valueOf(CHARBUILDING)+score;
-  public static String PREFIXFLOOR = String.valueOf(CHARFLOOR)+score;
-  public static String PREFIXAPARTMENT = String.valueOf(CHARAPARTMENT)+score;
-  public static String PREFIXCATEGORY = String.valueOf(CHARCATEGORY)+score;
-  public static String PREFIXTYPE = String.valueOf(CHARTYPE)+score;
-  public static String PREFIXALL = String.valueOf(CHARALL)+score;
-
   public static Map mapOfLodgingsObjects(){
     Hashtable hashtable = new Hashtable();
-    List BuildingList = getBuildings();
-    List FloorList = getFloors();
-    List TypeList = getTypes();
-    List CategoryList = getCategories();
-    List ComplexList  = getComplexes();
+    Collection BuildingList = getBuildings();
+    Collection FloorList = getFloors();
+    Collection TypeList = getTypes();
+    Collection CategoryList = getCategories();
+    Collection ComplexList  = getComplexes();
     hashtable.put(PREFIXALL,"ALL");
     if(TypeList != null){
-      int len = TypeList.size();
       ApartmentType T;
-      for (int i = 0; i < len; i++) {
-        T = (ApartmentType) TypeList.get(i);
-        hashtable.put(PREFIXTYPE+T.getID(),T);
+      for (Iterator iter = TypeList.iterator(); iter.hasNext();) {
+        T = (ApartmentType) iter.next();
+        hashtable.put(PREFIXTYPE+T.getPrimaryKey(),T);
       }
     }
     if(CategoryList != null){
-      int len = CategoryList.size();
       ApartmentCategory C;
-      for (int i = 0; i < len; i++) {
-        C = (ApartmentCategory) CategoryList.get(i);
-        hashtable.put(PREFIXCATEGORY+C.getID(),C);
+      for (Iterator iter = CategoryList.iterator(); iter.hasNext();) {
+        C = (ApartmentCategory) iter.next();
+        hashtable.put(PREFIXCATEGORY+C.getPrimaryKey(),C);
       }
     }
 
     if(FloorList != null){
-      int len = FloorList.size();
       Floor F;
-      for (int i = 0; i < len; i++) {
-        F = (Floor) FloorList.get(i);
-        hashtable.put(PREFIXFLOOR+F.getID(),F);
+      for (Iterator iter = FloorList.iterator(); iter.hasNext();) {
+        F = (Floor) iter.next();
+        hashtable.put(PREFIXFLOOR+F.getPrimaryKey(),F);
       }
     }
 
     if(BuildingList != null){
-      int clen = BuildingList.size();
       Building B;
-      for (int i = 0; i < clen; i++) {
-        B = (Building) BuildingList.get(i);
-        hashtable.put(PREFIXBUILDING+B.getID(),B);
+      for (Iterator iter = BuildingList.iterator(); iter.hasNext();) {
+        B = (Building)iter.next();
+        hashtable.put(PREFIXBUILDING+B.getPrimaryKey(),B);
       }
     }
 
     if(ComplexList != null){
-      int clen = ComplexList.size();
+
       Complex C;
-      for (int i = 0; i < clen; i++) {
-        C = (Complex) ComplexList.get(i);
-        hashtable.put(PREFIXCOMPLEX+C.getID(),C);
+      for (Iterator iter = ComplexList.iterator(); iter.hasNext();) {
+        C = (Complex) iter.next();
+        hashtable.put(PREFIXCOMPLEX+C.getPrimaryKey(),C);
       }
     }
 
@@ -337,52 +353,47 @@ public class BuildingCacher {
 
   public static List listOfMapEntries(){
     Vector list = new Vector();
-    List BuildingList = getBuildings();
-    List FloorList = getFloors();
-    List TypeList = getTypes();
-    List CategoryList = getCategories();
-    List ComplexList  = getComplexes();
+    Collection BuildingList = getBuildings();
+    Collection FloorList = getFloors();
+    Collection TypeList = getTypes();
+    Collection CategoryList = getCategories();
+    Collection ComplexList  = getComplexes();
     if(TypeList != null){
-      int len = TypeList.size();
       ApartmentType T;
-      for (int i = 0; i < len; i++) {
-        T = (ApartmentType) TypeList.get(i);
-        list.add(PREFIXTYPE+T.getID());
+      for (Iterator iter = TypeList.iterator(); iter.hasNext();) {
+        T = (ApartmentType)iter.next();
+        list.add(PREFIXTYPE+T.getPrimaryKey().toString());
       }
     }
     if(CategoryList != null){
-      int len = CategoryList.size();
       ApartmentCategory C;
-      for (int i = 0; i < len; i++) {
-        C = (ApartmentCategory) CategoryList.get(i);
-        list.add(PREFIXCATEGORY+C.getID());
+      for (Iterator iter = CategoryList.iterator(); iter.hasNext();) {
+        C = (ApartmentCategory) iter.next();
+        list.add(PREFIXCATEGORY+C.getPrimaryKey().toString());
       }
     }
 
     if(FloorList != null){
-      int len = FloorList.size();
       Floor F;
-      for (int i = 0; i < len; i++) {
-        F = (Floor) FloorList.get(i);
-        list.add(PREFIXFLOOR+F.getID());
+      for (Iterator iter = FloorList.iterator(); iter.hasNext();) {
+        F = (Floor) iter.next();
+        list.add(PREFIXFLOOR+F.getPrimaryKey().toString());
       }
     }
 
     if(BuildingList != null){
-      int clen = BuildingList.size();
       Building B;
-      for (int i = 0; i < clen; i++) {
-        B = (Building) BuildingList.get(i);
-        list.add(PREFIXBUILDING+B.getID());
+      for (Iterator iter = BuildingList.iterator(); iter.hasNext();) {
+        B = (Building) iter.next();
+        list.add(PREFIXBUILDING+B.getPrimaryKey().toString());
       }
     }
 
     if(ComplexList != null){
-      int clen = ComplexList.size();
       Complex C;
-      for (int i = 0; i < clen; i++) {
-        C = (Complex) ComplexList.get(i);
-        list.add(PREFIXCOMPLEX+C.getID());
+      for (Iterator iter = CategoryList.iterator(); iter.hasNext();) {
+        C = (Complex) iter.next();
+        list.add(PREFIXCOMPLEX+C.getPrimaryKey().toString());
       }
     }
 
@@ -391,52 +402,47 @@ public class BuildingCacher {
 
   public static Map mapOfLodgingsNames(){
     Hashtable hashtable = new Hashtable();
-    List BuildingList = getBuildings();
-    List FloorList = getFloors();
-    List TypeList = getTypes();
-    List CategoryList = getCategories();
-    List ComplexList  = getComplexes();
+    Collection BuildingList = getBuildings();
+    Collection FloorList = getFloors();
+    Collection TypeList = getTypes();
+    Collection CategoryList = getCategories();
+    Collection ComplexList  = getComplexes();
     if(TypeList != null){
-      int len = TypeList.size();
       ApartmentType T;
-      for (int i = 0; i < len; i++) {
-        T = (ApartmentType) TypeList.get(i);
-        hashtable.put(PREFIXTYPE+T.getID(),T.getName());
+      for (Iterator iter = TypeList.iterator(); iter.hasNext();) {
+        T = (ApartmentType) iter.next();
+        hashtable.put(PREFIXTYPE+T.getPrimaryKey().toString(),T.getName());
       }
     }
     if(CategoryList != null){
-      int len = CategoryList.size();
       ApartmentCategory C;
-      for (int i = 0; i < len; i++) {
-        C = (ApartmentCategory) CategoryList.get(i);
-        hashtable.put(PREFIXCATEGORY+C.getID(),C.getName());
+      for (Iterator iter = CategoryList.iterator(); iter.hasNext();) {
+        C = (ApartmentCategory) iter.next();
+        hashtable.put(PREFIXCATEGORY+C.getPrimaryKey().toString(),C.getName());
       }
     }
 
     if(FloorList != null){
-      int len = FloorList.size();
       Floor F;
-      for (int i = 0; i < len; i++) {
-        F = (Floor) FloorList.get(i);
-        hashtable.put(PREFIXFLOOR+F.getID(),F.getName());
+      for (Iterator iter = FloorList.iterator(); iter.hasNext();) {
+        F = (Floor) iter.next();
+        hashtable.put(PREFIXFLOOR+F.getPrimaryKey().toString(),F.getName());
       }
     }
 
     if(BuildingList != null){
-      int clen = BuildingList.size();
       Building B;
-      for (int i = 0; i < clen; i++) {
-        B = (Building) BuildingList.get(i);
-        hashtable.put(PREFIXBUILDING+B.getID(),B.getName());
+      for (Iterator iter = BuildingList.iterator(); iter.hasNext();) {
+        B = (Building) iter.next();
+        hashtable.put(PREFIXBUILDING+B.getPrimaryKey().toString(),B.getName());
       }
     }
 
     if(ComplexList != null){
-      int clen = ComplexList.size();
       Complex C;
-      for (int i = 0; i < clen; i++) {
-        C = (Complex) ComplexList.get(i);
-        hashtable.put(PREFIXCOMPLEX+C.getID(),C.getName());
+      for (Iterator iter = ComplexList.iterator(); iter.hasNext();) {
+        C = (Complex) iter.next();
+        hashtable.put(PREFIXCOMPLEX+C.getPrimaryKey().toString(),C.getName());
       }
     }
 
