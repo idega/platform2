@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.13 2002/10/02 22:28:07 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.14 2002/10/08 14:11:09 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -309,13 +309,13 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public void setIfUserPreferesMessageByEmail(User user,boolean preference){
 		IWPropertyList propertyList = getUserPreferences(user);
 		propertyList.setProperty(USER_PROP_SEND_TO_EMAIL, new Boolean(preference));
-		propertyList.store();
+		//propertyList.store();
 	}
 
 	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference){
 		IWPropertyList propertyList = getUserPreferences(user);
 		propertyList.setProperty(USER_PROP_SEND_TO_MESSAGE_BOX, new Boolean(preference));
-		propertyList.store();
+		//propertyList.store();
 	}
 
 }
