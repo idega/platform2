@@ -1,0 +1,215 @@
+// idega 2000 - gimmi
+package com.idega.block.poll.presentation;
+
+import java.sql.SQLException;
+import com.idega.jmodule.object.JModuleObject;
+import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.Page;
+import com.idega.jmodule.object.Image;
+import com.idega.jmodule.object.textObject.Text;
+import com.idega.jmodule.object.textObject.Link;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.block.poll.data.*;
+import com.idega.block.poll.business.*;
+import com.idega.block.text.business.*;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.accesscontrol.business.AccessControl;
+
+
+public class Poll extends JModuleObject{
+
+private boolean _isAdmin;
+private int _pollID;
+private String _sAttribute = null;
+private int _iLocaleID;
+
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
+protected IWResourceBundle _iwrb;
+protected IWBundle _iwb;
+
+private Table _myTable;
+public static String _prmPollID = "po.poll_id";
+public static String _prmPollCollection = "po.poll_collection";
+public static String _prmShowVotes = "po.show_votes";
+public static String _prmNumberOfPolls = "po.number_of_votes";
+private boolean _newObjInst = false;
+private boolean _newWithAttribute = false;
+private String _parameterString;
+private String _styleAttribute;
+
+private String _pollWidth;
+private int _numberOfShownPolls;
+private boolean _showVotes;
+
+  public Poll(){
+    setDefaultValues();
+  }
+
+  public Poll(String sAttribute){
+    this();
+    _pollID = -1;
+    _sAttribute = sAttribute;
+  }
+
+  public Poll(int pollID){
+    this();
+    _pollID = pollID;
+  }
+
+	public void main(ModuleInfo modinfo)throws Exception{
+    _iwrb = getResourceBundle(modinfo);
+    _iwb = getBundle(modinfo);
+
+    _isAdmin = AccessControl.hasEditPermission(this,modinfo);
+    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
+    _parameterString = modinfo.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
+
+    PollEntity poll = null;
+
+    _myTable = new Table(1,2);
+      _myTable.setCellpadding(0);
+      _myTable.setCellspacing(0);
+      _myTable.setBorder(0);
+      _myTable.setWidth(_pollWidth);
+
+    if(_pollID < 0){
+      String sPollID = modinfo.getParameter(_prmPollID);
+      if(sPollID != null)
+        _pollID = Integer.parseInt(sPollID);
+      else if(getICObjectInstanceID() > 0){
+        _pollID = PollFinder.getObjectInstanceID(getICObjectInstance());
+        if(_pollID <= 0 ){
+          _newObjInst = true;
+        }
+      }
+    }
+
+    if(_pollID > 0) {
+      poll = new PollEntity(_pollID);
+    }
+    else if ( _sAttribute != null ){
+      poll = PollFinder.getPoll(_sAttribute);
+      if ( poll != null ) {
+        _pollID = poll.getID();
+      }
+      _newWithAttribute = true;
+    }
+
+    int row = 1;
+    if(_isAdmin){
+      _myTable.add(getAdminPart(_pollID,_newObjInst,_newWithAttribute),1,row);
+      row++;
+    }
+
+    _myTable.add(getPoll(modinfo, poll),1,row);
+    add(_myTable);
+	}
+
+  private Link getAdminPart(int pollID,boolean newObjInst,boolean newWithAttribute) {
+    Link adminLink = new Link(_iwrb.getImage("pollmanager.gif"));
+      adminLink.setWindowToOpen(PollAdminWindow.class);
+      adminLink.addParameter(PollAdminWindow.prmID,pollID);
+      if(newObjInst)
+        adminLink.addParameter(PollAdminWindow.prmObjInstId,getICObjectInstanceID());
+      else if(newWithAttribute)
+        adminLink.addParameter(PollAdminWindow.prmAttribute,_sAttribute);
+
+    return adminLink;
+  }
+
+  private Form getPoll(ModuleInfo modinfo, PollEntity poll) {
+    LocalizedText locText = null;
+    PollQuestion pollQuestion = PollBusiness.getQuestion(poll);
+    Image submitImage = _iwrb.getImage("vote.gif");
+    Image formerPollsImage = _iwrb.getImage("former_polls.gif");
+
+    if(pollQuestion != null){
+      locText = TextFinder.getLocalizedText(pollQuestion,_iLocaleID);
+    }
+
+    if ( locText != null ) {
+			Form form = new Form();
+        form.setWindowToOpen(PollResult.class);
+
+      Table pollTable = new Table(1,3);
+				pollTable.setCellpadding(5);
+				pollTable.setCellspacing(0);
+				pollTable.setWidth(_pollWidth);
+				pollTable.setAlignment(1,1,"center");
+				pollTable.setAlignment(1,3,"right");
+			form.add(pollTable);
+
+      Text question = new Text(locText.getHeadline());
+        question.setBold();
+        question.setFontSize(2);
+      pollTable.add(question,1,1);
+
+      RadioGroup radioGroup = new RadioGroup(PollBusiness._PARAMETER_POLL_ANSWER);
+
+      PollAnswer[] answers = PollBusiness.getAnswers(pollQuestion.getID());
+      boolean hasAnswers = false;
+
+      if ( answers != null ) {
+        for ( int a = 0; a < answers.length; a++ ) {
+          LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
+          if ( locAnswerText != null ) {
+            hasAnswers = true;
+            radioGroup.addRadioButton(answers[a].getID(),new Text(locAnswerText.getHeadline()),false);
+          }
+        }
+      }
+      else {
+        System.out.println("locText is null");
+      }
+
+      if ( hasAnswers ) {
+        radioGroup.setStyle(_styleAttribute);
+        pollTable.add(radioGroup,1,2);
+      }
+
+      pollTable.add(new SubmitButton(submitImage),1,3);
+      pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE));
+      pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestion.getID())));
+
+      return form;
+    }
+    else {
+      return new Form();
+    }
+  }
+
+  private void setDefaultValues() {
+    _pollWidth = "150";
+    _styleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt";
+    _numberOfShownPolls = 3;
+    _showVotes = true;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void setWidth(int pollWidth) {
+    _pollWidth = Integer.toString(pollWidth);
+  }
+
+  public void setWidth(String pollWidth) {
+    _pollWidth = pollWidth;
+  }
+
+  public void setStyle(String style) {
+    _styleAttribute = style;
+  }
+
+  public void setNumberOfShownPolls(int numberOfShownPolls) {
+    _numberOfShownPolls = numberOfShownPolls;
+  }
+
+  public void showVotes(boolean showVotes) {
+    _showVotes = showVotes;
+  }
+}
