@@ -391,7 +391,7 @@ public class ProjectBusiness {
         Iterator iter = participantGroups.iterator();
         while (iter.hasNext()) {
           GenericGroup oldGroup = (GenericGroup)iter.next();
-          GenericGroup newGroup = this.getReplicatedParticipantGroup(oldGroup, project, null);
+          GenericGroup newGroup = this.getReplicatedParticipantGroup(oldGroup, project, "System group");
 
           //Pages
           List pagePermissions = AccessControl.getGroupsPermissionsForPages(oldGroup,pages);

@@ -198,6 +198,8 @@ public class ParticipantList extends AbstractContentList {
     }
   //    l = UserBusiness.getUsers();
 
+
+
     if(l != null){
       String[] names = new String[3];
       names[0] = com.idega.core.user.data.UserBMPBean.getColumnNameFirstName();
@@ -214,9 +216,10 @@ public class ParticipantList extends AbstractContentList {
   }
 
   public void initColumns(IWContext iwc) throws java.lang.Exception {
-    this.setColumns(10);
+    this.setColumns(8);
     this.setWidth("688");
     this.setExtraRowsAtBeginning(1);
+    this.setMinimumNumberOfRows(6);
 
     this.setRowColor(1,"#CCCC66");
     this.setLinesBetween(false);
@@ -225,13 +228,11 @@ public class ParticipantList extends AbstractContentList {
     this.setColumnWidth(1,"4");
     this.setColumnWidth(2,"220");
     this.setColumnWidth(3,"4");
-    this.setColumnWidth(4,"100");
+    this.setColumnWidth(4,"173");
     this.setColumnWidth(5,"4");
     this.setColumnWidth(6,"69");
     this.setColumnWidth(7,"4");
-    this.setColumnWidth(8,"69");
-    this.setColumnWidth(9,"4");
-    this.setColumnWidth(10,"210");
+    this.setColumnWidth(8,"210");
 
   }
 
@@ -249,15 +250,12 @@ public class ParticipantList extends AbstractContentList {
             text.setText("Name");
             break;
           case 4:
-            text.setText("Organisation");
+            text.setText("Title");
             break;
           case 6:
             text.setText("Phone");
             break;
           case 8:
-            text.setText("Fax");
-            break;
-          case 10:
             text.setText("e-mail");
             break;
           default:
@@ -286,7 +284,9 @@ public class ParticipantList extends AbstractContentList {
             }
             break;
           case 4:
-            text.setText("");
+            if(staffHolder.getTitle() != null){
+              text.setText(staffHolder.getTitle());
+            }
             break;
           case 6:
             if(staffHolder.getWorkPhone() != null){
@@ -294,9 +294,6 @@ public class ParticipantList extends AbstractContentList {
             }
             break;
           case 8:
-            text.setText("");
-            break;
-          case 10:
             if(staffHolder.getEmail() != null){
               text.setText(staffHolder.getEmail());
             }
