@@ -4,6 +4,7 @@ package com.idega.block.school.data;
 public interface SchoolStudyPath extends com.idega.data.IDOEntity
 {
  public void addSchool(com.idega.block.school.data.School p0)throws com.idega.data.IDOAddRelationshipException;
+ public void addSchoolYear(com.idega.block.school.data.SchoolYear p0) throws com.idega.data.IDOAddRelationshipException;
  public java.lang.String getCode();
  public java.lang.String getDescription();
  public com.idega.block.school.data.SchoolType getSchoolCategory();

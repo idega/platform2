@@ -156,7 +156,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	private SchoolSeasonHome getSchoolSeasonHome() {
+	public SchoolSeasonHome getSchoolSeasonHome() {
 		try {
 			return (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
 		}

@@ -14,6 +14,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.util.Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedSchoolYearsSortedByName()throws com.idega.data.IDOException;
+ public java.util.Collection findRelatedStudyPaths()throws com.idega.data.IDORelationshipException;
  public java.lang.String getActivity();
  public int getAssistantHeadmasterGroupId();
  public boolean getCentralizedAdministration();

@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/04/02 13:39:54 $ by $Author: laddi $
- * @version $Revision: 1.109 $
+ *         Last modified: $Date: 2004/05/12 10:38:36 $ by $Author: birna $
+ * @version $Revision: 1.110 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1323,6 +1323,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public void addToGroup(SchoolClass group) throws IDOAddRelationshipException {
 		this.idoAddTo(group);
 	}
+	
+	public void addToSchoolStudyPath(SchoolStudyPath schoolStudyPath) throws IDOAddRelationshipException {
+		this.idoAddTo(schoolStudyPath);
+	}
+	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException {
+		super.idoAddTo(year);
+	}
+	
 	
 	public void removeFromGroup(SchoolClass group) throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(group);

@@ -97,6 +97,11 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		this.idoAddTo(school);
 	}
 	
+	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException {
+		super.idoAddTo(year);
+	}
+	
+	
 	public void removeSchool(School school) throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(school);
 	}
