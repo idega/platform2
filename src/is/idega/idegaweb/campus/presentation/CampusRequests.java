@@ -36,10 +36,11 @@ public class CampusRequests extends Block {
       type = Integer.parseInt(iwc.getParameter(sAction));
 
     Table T = new Table();
+    T.setWidth("100%");
     T.add(getLinks(),1,1);
     if(type > 0){
       if(iwc.isParameterSet("send")){
-        processForm(type,iwc);
+        T.add(formatText(processForm(type,iwc)),1,2);
       }
       else{
         T.add(getForm(type),1,2);
@@ -51,6 +52,7 @@ public class CampusRequests extends Block {
 
   public PresentationObject getLinks(){
     Table T = new Table();
+    T.setWidth("100%");
     T.setAlignment("center");
       T.add(getLink(REPAIR),1,1);
       T.add(getLink(COMPUTER),1,2);
@@ -183,17 +185,27 @@ public class CampusRequests extends Block {
     return T;
   }
 
-  private void processForm(int type,IWContext iwc){
-    StringBuffer info = new StringBuffer(getTenantInfo(iwc));
-    info.append(getInfo(type,iwc));
-    info.append(iwrb.getLocalizedString("sendtime","Sent :"));
-    info.append(idegaTimestamp.RightNow().getISLDate());
-    try{
-      SendMail.send("admin@campus.is",getEmail(type),"","","mail.idega.is",getSubject(type),info.toString());
+  private String processForm(int type,IWContext iwc){
+    String tenantinfo = getTenantInfo(iwc);
+    if(tenantinfo != null){
+      StringBuffer info = new StringBuffer();
+      String sinfo = getInfo(type,iwc);
+      if(info != null){
+        info.append(sinfo);
+        info.append(iwrb.getLocalizedString("sendtime","Sent :"));
+        info.append(idegaTimestamp.RightNow().getISLDate());
+        try{
+          SendMail.send("admin@campus.is",getEmail(type),"","aron@idega.is","mail.idega.is",getSubject(type),info.toString());
+          return iwrb.getLocalizedString("requestsent","Beiðni hefur verið send !");
+        }
+        catch(Exception ex){
+          ex.printStackTrace();
+        }
+        return iwrb.getLocalizedString("requestnotsent","Villa ,beiðni hefur ekki verið send !");
+      }
+      return iwrb.getLocalizedString("infoneeded2","Villa ,ekki nægar upplýsingar um leigjanda!");
     }
-    catch(Exception ex){
-      ex.printStackTrace();
-    }
+    return iwrb.getLocalizedString("infoneeded","Villa ,ekki nægar upplýsingar um leigjanda!");
   }
 
   private String getInfo(int type,IWContext iwc){
@@ -208,21 +220,33 @@ public class CampusRequests extends Block {
 
   private String getTenantInfo(IWContext iwc){
     StringBuffer info = new StringBuffer();
+    String streetname = iwc.getParameter("street");
+    if("".equals(streetname))
+      return null;
     info.append(formatText(iwrb.getLocalizedString("streetname","Götuheiti")));
     info.append(tab);
-    info.append(iwc.getParameter("street"));
+    info.append(streetname);
     info.append(newline);
+    String room = iwc.getParameter("room");
+    if("".equals(room))
+      return null;
     info.append(formatText(iwrb.getLocalizedString("streetname","Herb./Íbúð")));
     info.append(tab);
-    info.append(iwc.getParameter("room"));
+    info.append(room);
     info.append(newline);
+    String tenantname = iwc.getParameter("tenantname");
+    if("".equals(tenantname))
+      return null;
     info.append(formatText(iwrb.getLocalizedString("tenantname","Nafn Leigutaka")));
     info.append(tab);
-    info.append(iwc.getParameter("tenantname"));
+    info.append(tenantname);
     info.append(newline);
+     String phone = iwc.getParameter("phone");
+    if("".equals(phone))
+      return null;
     info.append(formatText(iwrb.getLocalizedString("phone","Símanúmer Leigutaka")));
     info.append(tab);
-    info.append(iwc.getParameter("phone"));
+    info.append(phone);
     info.append(newline);
     info.append(formatText(iwrb.getLocalizedString("email","Tölvupóstur Leigutaka")));
     info.append(tab);
