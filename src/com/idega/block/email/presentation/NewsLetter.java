@@ -65,6 +65,7 @@ public class NewsLetter extends CategoryBlock {
   private int archivePage = -1;
   private String archiveTarget = Link.TARGET_TOP_WINDOW;
 	private boolean _showCancelImage;
+	private String _bgColor = "#ffffff";
 
   /**  Constructor for the NewsLetter object */
   public NewsLetter() {
@@ -109,6 +110,7 @@ public class NewsLetter extends CategoryBlock {
     iwrb = getResourceBundle(iwc);
     Table T = new Table();
       T.setCellpaddingAndCellspacing(0);
+      T.setColor(_bgColor);
     int row = 1;
     int categoryID = getCategoryId();
 
@@ -425,6 +427,13 @@ public class NewsLetter extends CategoryBlock {
 	 */
 	public void setShowUnsubscribeButton(boolean showUnsubscribe) {
 		this._showCancelImage = showUnsubscribe;
+	}
+	/**
+	 * Sets the background color of the main table displaying the NewsLetter subscribe
+	 * @param color
+	 */
+	public void setBgColor(String color) {
+	  _bgColor = color;
 	}
 
 }
