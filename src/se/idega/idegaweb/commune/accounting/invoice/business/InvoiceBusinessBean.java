@@ -57,11 +57,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/03 10:43:39 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/04 12:52:44 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.93 $
+ * @version $Revision: 1.94 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -250,6 +250,20 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		invoiceRecord.remove();
 	}
 	
+	public void removePaymentRecord (final PaymentRecord paymentRecord)
+		throws RemoteException, RemoveException {
+		try {
+			final Collection invoiceRecords
+					= getInvoiceRecordHome ().findByPaymentRecord (paymentRecord);
+			for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
+				removeInvoiceRecord ((InvoiceRecord) i.next ());
+			}
+		} catch (FinderException e) {
+			// no invoice records connected to this payment record, it's ok
+		}
+		paymentRecord.remove ();
+	}
+
 	public boolean isHighShool(String category) throws IDOLookupException, FinderException {
 		SchoolCategory highSchool =
 				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findHighSchoolCategory();

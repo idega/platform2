@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
@@ -68,11 +69,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/29 12:55:39 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/04 12:52:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.91 $
+ * @version $Revision: 1.92 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -87,7 +88,8 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			ACTION_SHOW_EDIT_RECORD_FORM = 2,
 			ACTION_SHOW_RECORD = 3,
 			ACTION_SAVE_RECORD = 4,
-			ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 5;
+			ACTION_REMOVE_RECORD = 5,
+			ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 6;
 	
 	private static final NumberFormat integerFormatter
 		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
@@ -143,6 +145,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 					saveRecord (context);
 					break;
 					
+				case ACTION_REMOVE_RECORD:
+					removeRecord (context);
+					break;
+					
 				case ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF:
 					generateCheckAmountListPdf (context);
 					break;
@@ -186,6 +192,18 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		formTable.add (form, 1, 1);
 		add (createMainTable (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT,
 													formTable));
+	}
+
+	private void removeRecord (final IWContext context)
+		throws RemoteException, FinderException, RemoveException {
+		// find payment record
+		final PaymentRecord record = getPaymentRecord (context);
+
+		// remove record
+		getInvoiceBusiness (context).removePaymentRecord (record);
+
+		// re-render
+		showPayment (context);
 	}
 	
 	private void saveRecord (final IWContext context)
@@ -803,6 +821,14 @@ public class PaymentRecordMaintenance extends AccountingBlock
 									getFormattedAmount (record.getTotalAmount ()));
 		addSmallText (table, col++, row, note);
 		table.add (editLink, col++, row);
+		if (isRecordEditAllowed) {
+			final String [][] removeRecordLinkParameters
+					= new String [][] {{ ACTION_KEY, ACTION_REMOVE_RECORD + "" },
+														 { PAYMENT_RECORD_KEY, recordId }};
+			final Link removeLink = createIconLink (getRemoveIcon (),
+																							removeRecordLinkParameters);
+			table.add (removeLink, col++, row);
+		}			
 	}
 	
 	private PaymentRecord getPaymentRecord (final IWContext context)
@@ -1053,7 +1079,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 																	EDIT_PAYMENT_RECORD_DEFAULT));
 	}
 	
-	private Image getDeleteIcon () {
+	private Image getRemoveIcon () {
 		return getDeleteIcon (localize (DELETE_ROW_KEY, DELETE_ROW_DEFAULT));
 	}
 	
@@ -1115,7 +1141,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	private void setIconColumnWidth (final Table table) {
 		final int columnCount = table.getColumns ();
 		table.setColumnWidth (columnCount - 1, getEditIcon ().getWidth ());
-		table.setColumnWidth (columnCount, getDeleteIcon ().getWidth ());
+		table.setColumnWidth (columnCount, getRemoveIcon ().getWidth ());
 	}
 	
 	/**
