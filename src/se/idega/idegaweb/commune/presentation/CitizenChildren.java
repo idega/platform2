@@ -120,7 +120,7 @@ public class CitizenChildren extends CommuneBlock {
 		addLoggedInUser = addUser;
 	}
 
-	private PresentationObject getChildrenForm(IWContext iwc) {
+	private Form getChildrenForm(IWContext iwc) {
 		Form f = new Form();
 		Table T = new Table();
 		T.setCellpadding(0);
