@@ -531,7 +531,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     imageInsert.setHasUseBox(false);
     imageInsert.setMaxImageWidth(140);
     imageInsert.setHiddenInputName(name);
-    imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
+    //imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
     //imageInsert.setDefaultImageURL(sMemberImageURL);
     imageObject = imageInsert;
     return imageObject;

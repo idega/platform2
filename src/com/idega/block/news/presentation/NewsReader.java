@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.66 2002/01/19 00:37:36 aron Exp $
+ * $Id: NewsReader.java,v 1.67 2002/02/21 11:40:54 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -85,6 +85,7 @@ public class NewsReader extends Block implements IWBlock {
   private boolean showBackText = false;
   private boolean showMoreText = false;
   private boolean showCollectionText = true;
+  private boolean showTeaserText = false;
   private String outerTableWidth = "100%";
   private String sObjectAlign = "center";
   private String headlineImageURL;
@@ -134,33 +135,8 @@ public class NewsReader extends Block implements IWBlock {
     this.iCategoryId=iCategoryId;
     this.showAll = false;
   }
-/*
-  public NewsViewer(String date){
-    this.date=date;
-    this.showAll=true;
-  }
 
-  public NewsViewer(idegaTimestamp timestamp){
-    this.showAll=true;
-    this.date = timestamp.toSQLString();
-  }
-
-  public NewsViewer(int iCategoryId, String date){
-    this.iCategoryId=iCategoryId;
-    this.date=date;
-    this.showAll = false;
-  }
-
-  public NewsViewer(int iCategoryId, idegaTimestamp timestamp){
-    this.showAll=false;
-    this.iCategoryId=iCategoryId;
-    this.date = timestamp.toSQLString();
-  }
-*/
   private void init(){
-    //headlineProxy.setFontStyle(TextStyler.getStyle(null,Text.FONT_FACE_STYLE_BOLD,null,"10",null));
-    //informationProxy.setFontStyle(TextStyler.getStyle(null,null,"666666",null,null));
-    //textProxy.setFontStyle(TextStyler.getDefaultStyle());
     headlineProxy.setBold();
     informationProxy.setFontColor("#666666");
     textProxy.setFontSize(1);
@@ -189,6 +165,7 @@ public class NewsReader extends Block implements IWBlock {
   }
 
   private void control(IWContext iwc){
+    //debugParameters(iwc);
     if(moreImage == null)
       moreImage = iwrb.getImage("more.gif");
     if(backImage == null)
@@ -516,6 +493,8 @@ public class NewsReader extends Block implements IWBlock {
       checkFromPage(collectionLink);
       collectionLink.addParameter(prmNewsCategoryId,iCategoryId);
       collectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"true");
+    if(viewPageId > 0)
+      collectionLink.setPage(viewPageId);
     return collectionLink;
   }
 
@@ -540,9 +519,11 @@ public class NewsReader extends Block implements IWBlock {
 
     String sNewsBody = "";
     String sHeadline = "";
+    String sTeaser = "";
 
     if(locText!=null){
       sHeadline = locText.getHeadline();
+      sTeaser = locText.getTitle();
     }
     // shortening headlinestext
     if(!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters ){
@@ -550,11 +531,13 @@ public class NewsReader extends Block implements IWBlock {
     }
 
     Text headLine = new Text(sHeadline);
+    Text teaser = new Text(sTeaser);
 
     Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime,showTimeFirst);
     if(newsInfo !=null)
       newsInfo = setInformationAttributes(newsInfo);
     headLine = setHeadlineAttributes(headLine);
+    teaser = setTextAttributes(teaser);
 
 
     // Check if using single_line_layout
@@ -569,10 +552,10 @@ public class NewsReader extends Block implements IWBlock {
       if ( alignWithHeadline ){
         if(headlineImage !=null) {
           headlineImage.setHorizontalSpacing(3);
-            T.add(headlineImage, 1, row);
+            T.add(getMoreLink(headlineImage,news.getID(),iwc), 1, row);
         }
         if(headlineImageURL!=null)
-          T.add(iwb.getImage(headlineImageURL), 1, row);
+          T.add(getMoreLink(iwb.getImage(headlineImageURL),news.getID(),iwc), 1, row);
       }
 
       if ( headlineAsLink ) {
@@ -585,7 +568,10 @@ public class NewsReader extends Block implements IWBlock {
       T.setHeight(row,String.valueOf(iSpaceBetweenNewsAndBody));
       row++;
       /////////// BODY PART //////////
-
+      if(showTeaserText && sTeaser.length()> 0 && !showAll){
+        T.add(teaser,1,row);
+      }
+      else
       if(locText!=null && !collection){
         sNewsBody =  locText.getBody();
 
@@ -925,6 +911,9 @@ public class NewsReader extends Block implements IWBlock {
   public void setNumberOfExpandedNews(int numberOfExpandedNews){
     this.numberOfExpandedNews = Math.abs(numberOfExpandedNews);
   }
+  public void setShowTeaser(boolean showTeaser){
+    this.showTeaserText = showTeaser;
+  }
   public void setShowBackText(boolean showText){
     this.showBackText = showText;
   }
@@ -1053,6 +1042,7 @@ public class NewsReader extends Block implements IWBlock {
         obj.newobjinst = newobjinst;
         obj.showBackText = showBackText;
         obj.showMoreText = showMoreText;
+        obj.showTeaserText = showTeaserText;
         // Strings :
         obj.outerTableWidth = outerTableWidth;
         obj.sObjectAlign = sObjectAlign;

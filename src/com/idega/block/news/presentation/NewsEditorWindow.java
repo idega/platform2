@@ -52,6 +52,7 @@ private int defaultPublishDays = 50;
 private int SAVECATEGORY = 1,SAVENEWS = 2;
 
 private static String prmHeadline = "nwep_headline";
+private static String prmTeaser = "nwep_teaser";
 private static String prmAuthor = "nwep_author";
 private static String prmSource = "nwep_source";
 private static String prmDaysshown = "nwep_daysshown";
@@ -85,7 +86,7 @@ private int iCategoryId = -1;
 
 
 
-private String sEditor,sHeadline,sNews,sCategory,sAuthor,sSource,sDaysShown,sImage,sLocale,sPublisFrom,sPublisTo;
+private String sEditor,sHeadline,sTeaser,sNews,sCategory,sAuthor,sSource,sDaysShown,sImage,sLocale,sPublisFrom,sPublisTo;
 
 private int attributeId = 3;
 private IWBundle iwb,core;
@@ -101,6 +102,7 @@ private IWResourceBundle iwrb;
   private void init(){
     sHeadline = iwrb.getLocalizedString("headline","Headline");
     sLocale =  iwrb.getLocalizedString("locale","Locale");
+    sTeaser = iwrb.getLocalizedString("teaser","Teaser");
     sNews = iwrb.getLocalizedString("news","News");
     sCategory = iwrb.getLocalizedString("category","Category");
     sAuthor = iwrb.getLocalizedString("author","Author");
@@ -291,6 +293,7 @@ private IWResourceBundle iwrb;
   private void saveNews(IWContext iwc,String sNwNewsId,String sLocalizedTextId,String sCategoryId){
 
     String sHeadline = iwc.getParameter( prmHeadline );
+    String sTeaser = iwc.getParameter( prmTeaser);
     String sBody = iwc.getParameter(prmBody );
     String sImageId = iwc.getParameter(prmImageId);
     String sLocaleId = iwc.getParameter(prmLocale);
@@ -325,7 +328,7 @@ private IWResourceBundle iwrb;
 
       //System.err.println(pubFrom.toSQLString());
       //System.err.println(pubTo.toString());
-      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,"",sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
+      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,sTeaser,sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
       sNewsId = String.valueOf(news.getID());
     }
   }
@@ -489,6 +492,7 @@ private IWResourceBundle iwrb;
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
     TextArea taBody = new TextArea(prmBody,65,18);
+    TextArea taTeaser = new TextArea(prmTeaser,65,2);
 
     TextInput tiAuthor = new TextInput(prmAuthor);
     tiAuthor.setLength(22);
@@ -511,6 +515,9 @@ private IWResourceBundle iwrb;
     if ( hasLocalizedText ) {
       if ( locText.getHeadline() != null ) {
         tiHeadline.setContent(locText.getHeadline());
+      }
+      if ( locText.getTitle() != null ) {
+        taTeaser.setContent(locText.getTitle());
       }
       if ( locText.getBody() != null ) {
         taBody.setContent(locText.getBody());
@@ -563,7 +570,7 @@ private IWResourceBundle iwrb;
       ImageInserter imageInsert = new ImageInserter();
       imageInsert.setImSessionImageName(prmImageId);
       imageInsert.setUseBoxParameterName(prmUseImage);
-      imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
+      //imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
       imageInsert.setMaxImageWidth(130);
       imageInsert.setHasUseBox(false);
       imageInsert.setSelected(false);
@@ -616,6 +623,7 @@ private IWResourceBundle iwrb;
 
     addLeft(sHeadline,tiHeadline,true);
     addLeft(sLocale, LocaleDrop,true);
+    addLeft(sTeaser,taTeaser,true);
     addLeft(sNews,taBody,true);
     addLeft(sPublisFrom, publishFrom,true);
     addLeft(sPublisTo,publishTo,true);
