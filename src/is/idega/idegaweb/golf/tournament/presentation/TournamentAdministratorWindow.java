@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import javax.ejb.FinderException;
+
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
@@ -205,19 +207,26 @@ public class TournamentAdministratorWindow extends GolfWindow {
 			this.addMenuLink(lModifyTournament);
 			this.addMenuLink(lCreateTournament);
 
-			
-			/** Adding selected tournament */
-			String tournament_id = (String) iwc.getSessionAttribute("tournament_id");
-			String tournamentName;
-			if (tournament_id != null) {
-				Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
+		}
+		super._main(iwc);
+	}
+	
+	public void main(IWContext iwc) throws FinderException {
+		/** Adding selected tournament */
+		String tournament_id = (String) iwc.getSessionAttribute("tournament_id");
+		String tournamentName;
+		if (tournament_id != null) {
+			int tourID = Integer.parseInt(tournament_id);
+			if (tourID > 0) {
+				Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(tourID);
 				tournamentName = tournament.getName()+" : "+selectedTabText;
 			} else {
 				tournamentName = iwrb.getLocalizedString("tournament.no_tournament_selected", "No tournament selected")+" : "+selectedTabText;
 			}
-			addHeading(tournamentName);
+		} else {
+			tournamentName = iwrb.getLocalizedString("tournament.no_tournament_selected", "No tournament selected")+" : "+selectedTabText;
 		}
-		super._main(iwc);
+		addHeading(tournamentName);
 	}
 
 
