@@ -5,9 +5,11 @@ import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -1147,4 +1149,44 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException {
 		return moveCitizenToProtectedCitizenGroup(user,IWTimestamp.getTimestampRightNow());
 	}
- }
+	
+	public Collection findUsersBySearchString(String searchString) {
+		try {
+			Collection users = new ArrayList();
+			StringTokenizer tokenizer = new StringTokenizer(searchString, " ");
+			while (tokenizer.hasMoreElements()) {
+				String element = (String) tokenizer.nextElement();
+				Collection results = this.getUserHome().findUsersBySearchCondition(trimSearchString(element), true);
+				if (results != null) {
+					if (users.isEmpty())
+						users.addAll(results);
+					else
+						users.retainAll(results);
+				}
+			}
+			return users;
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+		catch (RemoteException re) {
+			re.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	private String trimSearchString(String string) {
+		String temp = string;
+		temp = TextSoap.findAndCut(temp, "-");
+		try {
+			Long.parseLong(temp);
+			return temp;
+		}
+		catch (NumberFormatException nfe) {
+			if (temp.indexOf("TF") != -1)
+				return temp;
+			return string;
+		}
+	}
+}

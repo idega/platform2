@@ -1,6 +1,8 @@
 package se.idega.idegaweb.commune.business;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+
 import javax.ejb.*;
 
 import com.idega.core.contact.data.Email;
@@ -121,4 +123,6 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	 * CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootDeceasedCitizensGroup() throws CreateException, FinderException, RemoteException;
+
+	public Collection findUsersBySearchString(String searchString) throws RemoteException;
 }
