@@ -45,7 +45,7 @@ public interface WorkReportBusiness extends com.idega.business.IBOService,is.ide
  public java.lang.String getWorkReportSentText(int p0) throws java.rmi.RemoteException;
  public boolean importAccountPart(int p0,int p1)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
  public boolean importBoardPart(int p0,int p1)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
- public boolean importMemberPart(int p0,int p1)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
+ public boolean importMemberPart(int p0,int p1,java.lang.String p2)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
  public boolean isBoardMissingForDivisionWithMembersOrYearlyAccount(int p0) throws java.rmi.RemoteException;
  public boolean isThereAYearlyAccountForAnEmptyDivision(int p0) throws java.rmi.RemoteException;
  public boolean isWorkReportReadOnly(int p0) throws java.rmi.RemoteException;

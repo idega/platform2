@@ -33,7 +33,8 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
 			try {
-				boolean success = getWorkReportBusiness(iwc).importMemberPart(getWorkReportFileId(),getWorkReportId());
+				String mainBoardName = getBundle(iwc).getProperty("ISI_MAIN_BOARD_NAME");
+				boolean success = getWorkReportBusiness(iwc).importMemberPart(getWorkReportFileId(),getWorkReportId(),mainBoardName);
 				if(success){
 					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
 				}

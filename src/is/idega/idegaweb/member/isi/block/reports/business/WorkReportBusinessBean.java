@@ -751,7 +751,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return excel;
 	}
 
-	public boolean importMemberPart(int workReportFileId, int workReportId) throws WorkReportImportException {
+	public boolean importMemberPart(int workReportFileId, int workReportId,String mainBoardName) throws WorkReportImportException {
 		int memberCount = 0;
 		int playerCount = 0;
 		HashMap divPlayerCount = new HashMap();
@@ -764,7 +764,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//clear the table first
 		deleteWorkReportMembersForReport(workReportId);
 
-		WorkReportImportMemberHome membHome = getWorkReportImportMemberHome();
+		WorkReportMemberHome membHome = getWorkReportMemberHome();
 		WorkReport report = getWorkReportById(workReportId);
 		int year = report.getYearOfReport().intValue();
 
@@ -837,10 +837,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 						WorkReportGroup mainBoard = null;
 						try {
-							/**
-							 * @todo Palli: Must remove this hardcoding. This should be put in a property somewhere.
-							 */
-							mainBoard = getWorkReportGroupHome().findWorkReportGroupByNameAndYear("AÐA", year);
+							mainBoard = getWorkReportGroupHome().findWorkReportGroupByNameAndYear(mainBoardName, year);
 						}
 						catch (FinderException e1) {
 							throw new WorkReportImportException("workreportimportexception.main_board_not_found");
@@ -946,7 +943,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		deleteWorkReportBoardMembersForReport(workReportId);
 
-		WorkReportImportBoardMemberHome membHome = getWorkReportImportBoardMemberHome();
+		WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
 		WorkReport report = getWorkReportById(workReportId);
 		int year = report.getYearOfReport().intValue();
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -1015,7 +1012,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				String streetName = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
 
-				WorkReportImportBoardMember member;
+				WorkReportBoardMember member;
 
 				try {
 					//the user must already exist in the database
@@ -1164,7 +1161,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		deleteWorkReportAccountRecordsForReport(workReportId);
 
 		WorkReportAccountKeyHome accKeyHome = getWorkReportAccountKeyHome();
-		WorkReportImportClubAccountRecordHome clubRecordHome = getWorkReportImportClubAccountRecordHome();
+		WorkReportClubAccountRecordHome clubRecordHome = getWorkReportClubAccountRecordHome();
 		WorkReport report = getWorkReportById(workReportId);
 		int year = report.getYearOfReport().intValue();
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
