@@ -58,17 +58,6 @@ public class Tournament extends GolfEntity{
 		addAttribute("closed","Gert upp",true,true,"java.lang.Boolean");
 		addAttribute("closed_date","Gert upp hvenær",true,true,"java.sql.Timestamp");
 
-                // added 3.4.2001
-                addAttribute("direct_registration","Skrá beint í rástima",true,true,"java.lang.Boolean");
-                addAttribute("number_in_group","Fjöldi í holli",true,true,"java.lang.Integer");
-                addAttribute("interval","Bið milli ráshopa",true,true,"java.lang.Integer");
-
-                // added 25.4.2001
-                addAttribute("FIRST_REGISTRATION_DATE","Fyrsti skráningardagur",true,true,"java.sql.Timestamp");
-                addAttribute("max_handicap","Hámarksforgjöf karla",true,true,"java.lang.Float");
-                // added 27.4.2001
-                addAttribute("max_female_handicap","Hámarksforgjöf kvenna",true,true,"java.lang.Float");
-
                 // added  31.9.2001
                 addManyToManyRelationShip(TournamentGroup.class,"tournament_tournament_group");
                 addManyToManyRelationShip(TeeColor.class,"tournament_tee_color");
