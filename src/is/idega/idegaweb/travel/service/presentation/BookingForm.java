@@ -14,7 +14,6 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.presentation.TravelManager;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -22,12 +21,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.mail.MessagingException;
-
 import com.idega.block.creditcard.business.CreditCardAuthorizationException;
 import com.idega.block.creditcard.business.CreditCardClient;
 import com.idega.block.creditcard.data.CreditCardMerchant;
@@ -2092,6 +2089,8 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 				}
 			
 				System.out.println("Starting Creditcard Payment : "+IWTimestamp.RightNow().toString());
+				ccNumber = ccNumber.replaceAll(" ", "");
+				ccNumber = ccNumber.replaceAll("-", "");
 				//float price = this.getOrderPrice(iwc, _product, _stamp, true);
 				currency = getCurrencyForBooking(gBooking);
 				System.out.println("  Price = "+price+" "+currency);
@@ -2103,7 +2102,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 				merchant = t.getCreditCardMerchant();
 				//heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
 				heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
-				System.out.println("Ending Creditcard Payment test : "+IWTimestamp.RightNow().toString());
+				System.out.println("Ending Creditcard Payment : "+IWTimestamp.RightNow().toString());
 				Iterator iter = bookings.iterator();
 				while (iter.hasNext()) {
 					tBook = (GeneralBooking) iter.next();

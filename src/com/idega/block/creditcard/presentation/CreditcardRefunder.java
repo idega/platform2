@@ -358,6 +358,8 @@ public class CreditcardRefunder extends Block {
         }*/
 
         // TODO bæta vi› CVC dóti
+        number = number.replaceAll(" ", "");
+        number = number.replaceAll("-", "");
         
         String heimild = t.doRefund(number,month,year, null, Float.parseFloat(amount),"ISK", null, null);
         System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());

@@ -370,6 +370,8 @@ public class BookingRefunder extends TravelBlock {
 	  			throw e;
 	  		}
 	    System.out.println("Starting CreditCard test : "+IWTimestamp.RightNow().toString());
+      number = number.replaceAll(" ", "");
+      number = number.replaceAll("-", "");
 	    String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getPrimaryKey(), ccAuthEntry.getExtraField());
 	    //booking.setCreditcardAuthorizationNumber(heimild);
 //	    booking.setIsValid(false);
