@@ -93,6 +93,9 @@ private Table resultTable;
           }
         }
       }
+      else {
+        showAllGroups = true;
+      }
 
     String tournamentRounds_ = modinfo.getParameter("tournament_round_id");
       if ( tournamentRounds_ != null ) {
