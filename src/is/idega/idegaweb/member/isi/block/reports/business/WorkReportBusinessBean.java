@@ -34,8 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -54,6 +52,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.core.data.Address;
 import com.idega.core.data.Email;
+import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneType;
 import com.idega.core.data.PostalCode;
@@ -552,7 +552,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public boolean importMemberPart(int workReportFileId, int workReportId) throws WorkReportImportException {
-
+		int memberCount = 0;
+		int playerCount = 0;
+		HashMap divPlayerCount = new HashMap();
 		System.out.println("Starting member importing from excel file for workreportid: " + workReportId);
 
 		//Check to see if the work report is read only
@@ -630,6 +632,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						}
 
 						member.store();
+						
+						memberCount++;
 
 						WorkReportGroup mainBoard = null;
 						try {
@@ -657,6 +661,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 										try {
 											league.addEntity(member);
 											mainBoard.addEntity(member);
+											playerCount++;
+											Integer count = (Integer)divPlayerCount.get(new Integer(j));
+											if (count == null) 
+												count = new Integer(1);
+											else
+												count = new Integer(count.intValue()+1);
+												
+											divPlayerCount.put(new Integer(j),count);
 										}
 										catch (IDOAddRelationshipException e5) {
 											e5.printStackTrace();
@@ -684,6 +696,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				}
 			}
 		}
+
+		report.setNumberOfMembers(memberCount);
+		report.setNumberOfPlayers(playerCount);
+		report.store();
+
+		//Store work-report division thingie........ HOW!!!???!!!		
+//		getWork
 
 		return true;
 	}
@@ -1119,46 +1138,89 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			catch (CreateException e1) {
 				e1.printStackTrace();
+				throw new WorkReportImportException("workreportimportexception.unable_to_create_excel_file");
 			}
 		}		
 		
 		if (export != null) {
-//			try {
-//					// Create the ZIP file
-//					String outFilename = "outfile.zip";
-//					ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
-//
-//					// Compress the files
-//					for (int i=0; i<filenames.length; i++) {
-//							FileInputStream in = new FileInputStream(filenames[i]);
-//
-//							// Add ZIP entry to output stream.
-//							out.putNextEntry(new ZipEntry(filenames[i]));
-//
-//							// Transfer bytes from the file to the ZIP file
-//							int len;
-//							while ((len = in.read(buf)) > 0) {
-//									out.write(buf, 0, len);
-//							}
-//
-//							// Complete the entry
-//							out.closeEntry();
-//							in.close();
-//					}
-//
-//					// Complete the ZIP file
-//					out.close();
-//			} 
-//			catch (IOException e) {
-//			}
+			HSSFWorkbook workbook = getExcelWorkBookFromFileId(templateId);
+			String fileName = Integer.toString(regionalUnionId) + "_"  + Integer.toString(year) + ".xls";
+			try {
+				FileOutputStream out = new FileOutputStream(fileName);
+				workbook.write(out);
+				out.close();
+				
+				ICFile icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
+				icfile.setFileValue(new FileInputStream(fileName));
+				icfile.setName(fileName);
+				icfile.store();
 
-			return -1;			
-//			return export.getFileId();
+				export.setGroupId(regionalUnionId);
+				export.setYear(year);
+				export.setFile(icfile);
+				export.store();
+			}
+			catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (CreateException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+				//			try {
+				//					// Create the ZIP file
+				//					String outFilename = "outfile.zip";
+				//					ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
+				//
+				//					// Compress the files
+				//					for (int i=0; i<filenames.length; i++) {
+				//							FileInputStream in = new FileInputStream(filenames[i]);
+				//
+				//							// Add ZIP entry to output stream.
+				//							out.putNextEntry(new ZipEntry(filenames[i]));
+				//
+				//							// Transfer bytes from the file to the ZIP file
+				//							int len;
+				//							while ((len = in.read(buf)) > 0) {
+				//									out.write(buf, 0, len);
+				//							}
+				//
+				//							// Complete the entry
+				//							out.closeEntry();
+				//							in.close();
+				//					}
+				//
+				//					// Complete the ZIP file
+				//					out.close();
+				//			} 
+				//			catch (IOException e) {
+				//			}
+
+			return export.getFileId();
 		}
 		else {
 			return -1;
 		}
 	}
+
+	protected MemberUserBusiness getMemberUserBusiness() {
+		MemberUserBusiness mub = null;
+			try {
+				mub = (MemberUserBusiness) getServiceInstance(MemberUserBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		
+		return mub;
+	}
+
 
 	/**
 	 * @param year of report
