@@ -174,7 +174,7 @@ public class Doc extends FolderBlock implements Builderaware {
 		InformationFolder folder = null;
 
 		if (_folderID < 0) {
-			folder = this.getWorkingFolder();
+			folder = this.getWorkFolder();
 			if (folder != null) {
 				_folderID = folder.getID();
 			}
@@ -188,7 +188,7 @@ public class Doc extends FolderBlock implements Builderaware {
 		_myTable = new Table(1, 2);
 		_myTable.setCellpadding(0);
 		_myTable.setCellspacing(0);
-		_myTable.setBorder(1);
+		//_myTable.setBorder(1);
 		
 		
 		//toolbar

@@ -1,5 +1,6 @@
 package com.idega.block.documents.presentation;
 
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Locale;
 
@@ -7,6 +8,7 @@ import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.builder.presentation.IBPageChooser;
+import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.category.data.InformationCategory;
@@ -17,6 +19,7 @@ import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.business.FolderBlockBusiness;
+import com.idega.idegaweb.block.business.FolderBlockBusinessBean;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -116,7 +119,7 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *@exception  Exception  Description of the Exception
 	 */
 	public void main(IWContext iwc) throws Exception {
-		business = FolderBlockBusiness.getInstance();
+		business = (FolderBlockBusiness) IBOLookup.getServiceInstance(iwc,FolderBlockBusiness.class);
 		_hasEditpermission = true;
 		//AccessControl.hasEditPermission(this,iwc);
 		_iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
@@ -439,7 +442,7 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *@param  iLocaleId   Description of the Parameter
 	 *@param  instanceId  Description of the Parameter
 	 */
-	private void lineUpElements() {
+	private void lineUpElements() throws RemoteException {
 		//    DocLink link = DocFinder.getLink(_linkID);
 		//    /**
 		//     * @todo: localice
@@ -537,7 +540,7 @@ public class DocEditorWindow extends IWAdminWindow {
 	 *@param  iwc        Description of the Parameter
 	 *@return            Description of the Return Value
 	 */
-	private boolean saveDocLink(IWContext iwc) {
+	private boolean saveDocLink(IWContext iwc) throws RemoteException {
 		int fileID = -1;
 		int pageID = -1;
 		String linkUrl = null;

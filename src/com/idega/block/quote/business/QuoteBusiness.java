@@ -40,22 +40,25 @@ public class QuoteBusiness {
 		return instance;
 	}
 
-	public QuoteHolder getRandomQuote(IWApplicationContext iwc, int localeID, int objectID) {
+	public QuoteHolder getRandomQuote(IWApplicationContext iwc, int localeID, int objectID, boolean fetchFromDatabase) {
 		QuoteHolder holder = null;
 		QuoteHolder newHolder = null;
 		String date = null;
 		String dateNow = new IWTimestamp().toSQLDateString();
-
-		try {
-			holder = (QuoteHolder) iwc.getApplicationAttribute(PARAMETER_QUOTE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID));
+		
+		if(!fetchFromDatabase){
+			try {
+				holder = (QuoteHolder) iwc.getApplicationAttribute(PARAMETER_QUOTE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID));
+			}
+			catch (Exception e) {
+				holder = null;
+			}
+		
+			date = (String) iwc.getApplicationAttribute(PARAMETER_QUOTE_DATE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID));
 		}
-		catch (Exception e) {
-			holder = null;
-		}
-
-		date = (String) iwc.getApplicationAttribute(PARAMETER_QUOTE_DATE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID));
-
-		if (date != null && holder != null && date.equalsIgnoreCase(dateNow))
+		
+		
+		if (!fetchFromDatabase && date != null && holder != null && date.equalsIgnoreCase(dateNow))
 			return holder;
 		else {
 			newHolder = getQuoteHolder(getRandomQuote(localeID));
@@ -64,8 +67,10 @@ public class QuoteBusiness {
 					newHolder = getQuoteHolder(getRandomQuote(localeID));
 			}
 			if (newHolder != null) {
-				iwc.setApplicationAttribute(PARAMETER_QUOTE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID), newHolder);
-				iwc.setApplicationAttribute(PARAMETER_QUOTE_DATE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID), dateNow);
+				if(!fetchFromDatabase){
+					iwc.setApplicationAttribute(PARAMETER_QUOTE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID), newHolder);
+					iwc.setApplicationAttribute(PARAMETER_QUOTE_DATE + "_" + Integer.toString(localeID) + "_" + String.valueOf(objectID), dateNow);
+				}
 				return newHolder;
 			}
 			return null;

@@ -56,6 +56,8 @@ public class Quote extends Block implements Builderaware {
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.quote";
 	protected IWResourceBundle _iwrb;
 	protected IWBundle _iwb;
+	
+	private boolean _alwaysFetchFromDatabase = false;
 
 	public Quote() {
 		setDefaultValues();
@@ -75,7 +77,7 @@ public class Quote extends Block implements Builderaware {
 		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
 		drawTable();
-		QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc, _iLocaleID, _objectID);
+		QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc, _iLocaleID, _objectID, _alwaysFetchFromDatabase);
 		if (quote != null)
 			_quoteID = quote.getQuoteID();
 
@@ -336,4 +338,10 @@ public class Quote extends Block implements Builderaware {
 	/** @deprecated */
 	public void setQuoteAuthorFace(String face) {
 	}
+	
+
+	public void setToGetNewQuoteOnEveryReload(boolean fetchFromDatabase) {
+		_alwaysFetchFromDatabase = fetchFromDatabase;
+	}
+
 }
