@@ -59,6 +59,8 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -124,6 +126,7 @@ public class CarRentalBookingForm extends BookingForm {
 
 		Table table = new Table();
 		table.setBorder(0);
+		table.setVerticalAlignment(Table.VERTICAL_ALIGN_TOP);
 		form.add(table);
 
 	  if (supplier != null) {
@@ -164,7 +167,7 @@ public class CarRentalBookingForm extends BookingForm {
 		  misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, false);
 		}
 	
-		if (prices.length > 0) {
+		if (prices.length == 1) {
 	
 			int row = 1;
 			int textInputSizeLg = 38;
@@ -381,7 +384,9 @@ public class CarRentalBookingForm extends BookingForm {
 	
 			Text pPriceCatNameText;
 			ResultOutput pPriceText;
-			TextInput pPriceMany;
+//			RadioButton pPriceMany;
+			//TextInput pPriceMany;
+			InterfaceObject pPriceMany;
 			PriceCategory category;
 			Text txtPrice;
 			Text txtPerPerson = (Text) theText.clone();
@@ -393,6 +398,15 @@ public class CarRentalBookingForm extends BookingForm {
 			  TotalPassTextInput.setSize(5);
 			ResultOutput TotalTextInput = new ResultOutput("total","0");
 			  TotalTextInput.setSize(8);
+			/*try {
+				String sPrice = Float.toString(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), _service.getID(),prices[0].getPriceCategoryID(),prices[0].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId));
+				TotalPassTextInput = new ResultOutput("total_pass",sPrice);
+				  TotalPassTextInput.setSize(5);
+				TotalTextInput = new ResultOutput("total",sPrice);
+				  TotalTextInput.setSize(8);
+			} catch (SQLException e) {
+				
+			}*/
 	
 			++row;
 			table.add(Text.NON_BREAKING_SPACE, 1,row);
@@ -437,7 +451,7 @@ public class CarRentalBookingForm extends BookingForm {
 			for (int i = 0; i < miscLength; i++) {
 			  pPrices[i+pricesLength] = misc[i];
 			}
-	
+			int mainPrice = 0;
 			for (int i = 0; i < pPrices.length; i++) {
 				try {
 					++row;
@@ -449,9 +463,12 @@ public class CarRentalBookingForm extends BookingForm {
 	
 					pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
 					  pPriceText.setSize(8);
-	
-					pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
-					  pPriceMany.setSize(5);
+//					pPriceMany = new RadioButton("priceCategory","0");
+//					pPriceMany = new RadioButton("priceCategory"+pPrices[i].getID() ,"0");
+//					pPriceMany.setValue("0");
+//					pPriceMany.setValueOnClick(pPriceMany, "1");
+					  //pPriceMany.setSize(5);
+					pPriceMany = new HiddenInput("priceCategory"+pPrices[i].getID() ,"1");
 	
 					if (i == pricesLength) {
 					  Text tempTexti = (Text) theBoldText.clone();
@@ -459,7 +476,9 @@ public class CarRentalBookingForm extends BookingForm {
 	//					table.mergeCells(1, row, 2, row);
 					  table.add(tempTexti, 1, row);
 					  ++row;
-					}else if (i == 0) {
+					}
+					/* Removed because price categories are not displayed
+					else if (i == 0) {
 					  Text tempTexti = (Text) theBoldText.clone();
 						tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
 						tempTexti.setUnderline(true);
@@ -467,8 +486,13 @@ public class CarRentalBookingForm extends BookingForm {
 					  table.add(tempTexti, 1, row);
 					  ++row;
 					}
+					*/
 					if (i >= pricesLength) {
-					  pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
+						pPriceMany = new TextInput("miscPriceCategory"+pPrices[i].getID());
+					  //pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
+						((TextInput) pPriceMany).setSize(5);					  
+					}else {
+						mainPrice = price;
 					}
 	
 					if (_booking != null) {
@@ -506,32 +530,42 @@ public class CarRentalBookingForm extends BookingForm {
 					  }
 					}
 	
-					pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
-					pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
-					TotalPassTextInput.add(pPriceMany);
-					TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
-					TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
 	
-	
-	
-					table.add(pPriceCatNameText, 1,row);
-	
-					txtPrice = (Text) theText.clone();
-					  txtPrice.setText(Integer.toString(price));
 		//                  table.add(Text.NON_BREAKING_SPACE,2,row);
+					if (pPriceMany instanceof TextInput ) {
+						pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+						TotalTextInput.add(pPriceMany ,ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						TotalPassTextInput.add(pPriceMany);
+
+						table.add(pPriceCatNameText, 1,row);
 	
-					pTable = new Table(4,1);
-					  pTable.setWidth(1, Integer.toString(pWidthLeft));
-					  pTable.setWidth(2, Integer.toString(pWidthCenter));
-					  pTable.setWidth(3, Integer.toString(pWidthRight));
-					  pTable.setCellpaddingAndCellspacing(0);
-					  pTable.add(pPriceMany,1,1);
-					  pTable.add(txtPrice,2,1);
-					  pTable.add(pPriceText, 3,1);
-	
-	
-		//                    pTable.add();
-					table.add(pTable, 2, row);
+						txtPrice = (Text) theText.clone();
+						  txtPrice.setText(Integer.toString(price));
+
+						pTable = new Table(4,1);
+						  pTable.setWidth(1, Integer.toString(pWidthLeft));
+						  pTable.setWidth(2, Integer.toString(pWidthCenter));
+						  pTable.setWidth(3, Integer.toString(pWidthRight));
+						  pTable.setCellpaddingAndCellspacing(0);
+						  pTable.add(pPriceMany,1,1);
+						  pTable.add(txtPrice,2,1);
+						  pTable.add(pPriceText, 3,1);
+		
+		
+			//                    pTable.add();
+						table.add(pTable, 2, row);
+					} else {
+						--row;
+						//pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+price);
+						//TotalTextInput.add(pPriceMany ,ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						//TotalTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+Integer.toString(price));
+						//pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						//TotalPassTextInput.add(ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+//						TotalPassTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"1");
+
+						table.add(pPriceMany, 1, row);
+					}
 	
 				}catch (SQLException sql) {
 				  sql.printStackTrace(System.err);
@@ -545,10 +579,21 @@ public class CarRentalBookingForm extends BookingForm {
 	
 			table.add(totalText,1,row);
 	
+			// TODO reppis peppis
+
 			if (_booking != null) {
 			  TotalPassTextInput.setContent(Integer.toString(totalCount));
 			  TotalTextInput.setContent(Integer.toString(totalSum * bookingDays));
 			}
+			else {
+				TotalPassTextInput.setContent("1");
+				TotalTextInput.setContent(Integer.toString(mainPrice));
+			}
+			
+			TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+			TotalTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"(myForm."+manyDays.getName()+".value"+ResultOutput.OPERATOR_MULTIPLY+Integer.toString(mainPrice)+")");
+			TotalPassTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"1");
+			
 			pTable = new Table(3,1);
 			  pTable.setWidth(1, Integer.toString(pWidthLeft));
 			  pTable.setWidth(2, Integer.toString(pWidthCenter));
@@ -593,45 +638,6 @@ public class CarRentalBookingForm extends BookingForm {
 			  table.add(comment, 2, row);
 	
 				row = addCreditcardInputForm(table, row);
-			// Virkar, vantar HTTPS
-	
-			/*  TextInput ccNumber = new TextInput(this.parameterCCNumber);
-				ccNumber.setMaxlength(16);
-				ccNumber.setLength(20);
-				ccNumber.setAsNotEmpty("T - vantar cc númer");
-				ccNumber.setAsIntegers("T - cc númer rangt");
-			  TextInput ccMonth = new TextInput(this.parameterCCMonth);
-				ccMonth.setMaxlength(2);
-				ccMonth.setLength(3);
-				ccMonth.setAsNotEmpty("T - vantar cc manuð");
-				ccMonth.setAsIntegers("T - cc manuður rangur");
-			  TextInput ccYear = new TextInput(this.parameterCCYear);
-				ccYear.setMaxlength(2);
-				ccYear.setLength(3);
-				ccYear.setAsNotEmpty("T - vantar cc ár");
-				ccYear.setAsIntegers("T - cc ár rangt");
-	
-			  Text ccText = (Text) theText.clone();
-				ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-	
-			  Text ccMY = (Text) theText.clone();
-				ccMY.setText(iwrb.getLocalizedString("travel.month_year","month / year"));
-	
-			  Text ccSlash = (Text) theText.clone();
-				ccSlash.setText(" / ");
-	
-			  ++row;
-			  table.add(ccText,1,row);
-			  table.add(ccNumber,2,row);
-	
-			  ++row;
-			  table.add(ccMY,1,row);
-			  table.add(ccMonth,2,row);
-			  table.add(ccSlash,2,row);
-			  table.add(ccYear,2,row);
-			*/
-	
-	
 	
 			if (_booking != null) {
 			  form.addParameter(this.parameterBookingId,_booking.getID());
@@ -675,9 +681,18 @@ public class CarRentalBookingForm extends BookingForm {
 			}
 			table.add(new HiddenInput(this.BookingAction,this.BookingParameter),2,row);
 			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		}else {
-		  if (supplier != null || _reseller != null)
-			table.add(iwrb.getLocalizedString("travel.pricecategories_not_set_up_right","Pricecategories not set up right"));
+		}	else if (prices.length > 2) {
+			Text text = (Text) theText.clone();
+			text.setText(iwrb.getLocalizedString("travel.too_many_price_categories","Too many price categories, should be only 1."));
+			table.add(text);
+			table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		} else {
+		  if (supplier != null || _reseller != null) {
+				Text text = (Text) theText.clone();
+				text.setText(iwrb.getLocalizedString("travel.too_few_price_categories","Too few price categories, should be 1."));
+			  table.add(text);
+			  table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		  }
 		}
 	
 		return form;
@@ -892,7 +907,7 @@ public class CarRentalBookingForm extends BookingForm {
 	
 			  Text pPriceCatNameText;
 			  ResultOutput pPriceText;
-			  TextInput pPriceMany;
+			  InterfaceObject pPriceMany;
 			  PriceCategory category;
 			  Text txtPrice;
 			  Text txtPerPerson = (Text) theBoldText.clone();
@@ -959,11 +974,10 @@ public class CarRentalBookingForm extends BookingForm {
 			  for (int i = 0; i < miscLength; i++) {
 				pPrices[i+pricesLength] = misc[i];
 			  }
-	
+				int mainPrice = 0;
 			  for (int i = 0; i < pPrices.length; i++) {
 				  try {
 					  ++row;
-					  pTable = (Table) pTableToClone.clone();
 	//					++pRow;
 					  category = pPrices[i].getPriceCategory();
 					  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, -1);
@@ -974,9 +988,8 @@ public class CarRentalBookingForm extends BookingForm {
 					  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
 						pPriceText.setSize(8);
 	
-					  pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
-						pPriceMany.setSize(5);
-	
+						pPriceMany = new HiddenInput("priceCategory"+pPrices[i].getID(), "1");
+						
 					  if (i == pricesLength) {
 						Text tempTexti = (Text) theBoldText.clone();
 						  tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
@@ -984,7 +997,9 @@ public class CarRentalBookingForm extends BookingForm {
 						table.setAlignment(1, row, "RIGHT");
 						table.add(tempTexti, 1, row);
 						++row;
-					  }else if (i == 0) {
+					  }
+					  /*
+					  else if (i == 0) {
 						Text tempTexti = (Text) theBoldText.clone();
 						  tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
 						  tempTexti.setUnderline(true);
@@ -992,50 +1007,75 @@ public class CarRentalBookingForm extends BookingForm {
 						table.setAlignment(1, row, "RIGHT");
 						table.add(tempTexti, 1, row);
 						++row;
-					  }
+					  }*/
 					  if (i >= pricesLength) {
-						pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
-					  }
+							pPriceMany = new TextInput("miscPriceCategory"+pPrices[i].getID() ,"0");
+							  ((TextInput) pPriceMany).setSize(5);
+							//pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
+					  }else {
+					  	mainPrice = price;
+				  	}
 	
 					  if (_booking != null) {
-						if (entries != null) {
-						  for (int j = 0; j < entries.length; j++) {
-							if (entries[j].getProductPriceId() == pPrices[i].getID()) {
-							  pPri = entries[j].getProductPrice();
-							  currentCount = entries[j].getCount();
-							  currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, -1));
-	
-							  totalCount += currentCount;
-							  totalSum += currentSum;
-							  pPriceMany.setContent(Integer.toString(currentCount));
-							  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
-								pPriceText.setSize(8);
+							if (entries != null) {
+							  for (int j = 0; j < entries.length; j++) {
+									if (entries[j].getProductPriceId() == pPrices[i].getID()) {
+									  pPri = entries[j].getProductPrice();
+									  currentCount = entries[j].getCount();
+									  currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, -1));
+			
+									  totalCount += currentCount;
+									  totalSum += currentSum;
+									  pPriceMany.setContent(Integer.toString(currentCount));
+									  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
+										pPriceText.setSize(8);
+									}
+							  }
 							}
-						  }
-						}
+					  }
+
+					  System.out.println("Instance "+pPriceMany.getClassName());
+	
+					  if (pPriceMany instanceof TextInput ) {
+						  pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+						  TotalTextInput.add(pPriceMany ,ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						  pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						  TotalPassTextInput.add(pPriceMany);
+
+				//		pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+				//		pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+				//		TotalPassTextInput.add(pPriceMany);
+				//		TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+				//		TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+	
+							pTable = (Table) pTableToClone.clone();
+	
+							table.add(pPriceCatNameText, 1,row);
+							pTable.add(pPriceMany,1,1);
+							pTable.add(pPriceText, 3,1);
+		
+							txtPrice = (Text) theText.clone();
+							  txtPrice.setText(Integer.toString(price));
+							pTable.add(txtPrice, 2,1);
+		  //					table.add(txtPerPerson,3,row);
+							table.setAlignment(1,row,"right");
+							table.setAlignment(2,row,"left");
+							table.setAlignment(3,row,"left");
+			  //                    pTable.add();
+						  table.add(pTable, 2, row);
+					  } else {
+						  --row;
+						  //pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+price);
+						  //TotalTextInput.add(pPriceMany ,ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						  //TotalTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+Integer.toString(price));
+						  //pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY, ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+						  //TotalPassTextInput.add(ResultOutput.OPERATOR_MULTIPLY+Integer.toString(price));
+//						  TotalPassTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"1");
+
+						  table.add(pPriceMany, 1, row);
 					  }
 	
-	
-					  pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
-					  pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
-					  TotalPassTextInput.add(pPriceMany);
-					  TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
-					  TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
-	
-	
-					  table.add(pPriceCatNameText, 1,row);
-					  pTable.add(pPriceMany,1,1);
-					  pTable.add(pPriceText, 3,1);
-	
-					  txtPrice = (Text) theText.clone();
-						txtPrice.setText(Integer.toString(price));
-					  pTable.add(txtPrice, 2,1);
-	//					table.add(txtPerPerson,3,row);
-	
-					  table.add(pTable, 2, row);
-					  table.setAlignment(1,row,"right");
-					  table.setAlignment(2,row,"left");
-					  table.setAlignment(3,row,"left");
+
 	
 				  }catch (SQLException sql) {
 					sql.printStackTrace(System.err);
@@ -1046,12 +1086,29 @@ public class CarRentalBookingForm extends BookingForm {
 	
 			  ++row;
 	//			++pRow;
-	
+	// TODO PREPPS
 			  table.add(totalText,1,row);
+			  if (_booking != null) {
+					TotalPassTextInput.setContent(Integer.toString(totalCount));
+					TotalTextInput.setContent(Integer.toString(totalSum));
+			  }
+
 			  if (_booking != null) {
 				TotalPassTextInput.setContent(Integer.toString(totalCount));
 				TotalTextInput.setContent(Integer.toString(totalSum));
+//				TotalTextInput.setContent(Integer.toString(totalSum * bookingDays));
 			  }
+			  else {
+				  TotalPassTextInput.setContent("1");
+				  TotalTextInput.setContent(Integer.toString(mainPrice));
+			  }
+			
+			  TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+			  TotalTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"(myForm."+manyDays.getName()+".value"+ResultOutput.OPERATOR_MULTIPLY+Integer.toString(mainPrice)+")");
+			  TotalPassTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"1");
+
+
+
 			  pTable = (Table) pTableToClone.clone();
 			  pTable.add(TotalPassTextInput,1,1);
 			  pTable.add(TotalTextInput,3,1);
