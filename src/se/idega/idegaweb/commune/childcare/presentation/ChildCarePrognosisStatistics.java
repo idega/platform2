@@ -154,15 +154,18 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 				int queueWithin3Months = -1;
 				int queueWithin12Months = -1;
 			    stat = (ProviderStat)iter.next();
+			    int providerID = -1;
+			    providerID = stat.getProviderID().intValue();
 				column = 1;
 				if (row % 2 == 0)
 					table.setRowColor(row, getZebraColor1());
 				else
 					table.setRowColor(row, getZebraColor2());
-
+				
 				table.add(getSmallText(stat.getProviderName()), column++, row);
 				//table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
-				table.add(getSmallText(String.valueOf(stat.getQueueTotal())), column++, row);
+				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID, null, null, false))), column++, row);
+				
 				if (stat.hasPrognosis()) {
 					if (useVacancies)
 						table.add(getSmallText(String.valueOf(stat.getVacancies())), column++, row);
