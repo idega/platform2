@@ -477,7 +477,11 @@ public class StaffBrowser extends Block implements IWBlock {
 
 		int index = -1;
 
-		List users = StaffFinder.getAllUsers(iwc);
+		List users = null;
+		if (_group != null)
+			users = StaffFinder.getAllUsersInGroup(_group);
+		else
+			users = StaffFinder.getAllUsers(iwc);
 		if (users != null) {
 			GenericUserComparator comparator = new GenericUserComparator(GenericUserComparator.NAME);
 			Collections.sort(users, comparator);

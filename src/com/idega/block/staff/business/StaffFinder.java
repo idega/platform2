@@ -21,6 +21,7 @@ import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 
@@ -191,6 +192,10 @@ public class StaffFinder {
 
     }
 
+  }
+  
+  public static List getAllUsersInGroup(Group group) {
+  	return UserBusiness.getUsersInGroup(((Integer)group.getPrimaryKey()).intValue());
   }
 
 
