@@ -21,7 +21,7 @@ import java.applet.AudioClip;
 public class MessageDialog extends Frame implements ActionListener{
   Panel panel = new Panel();
   Label senderNameLabel = new Label();
-  TextArea messageArea = new TextArea();
+  TextArea messageArea = new TextArea("",1,1,TextArea.SCROLLBARS_VERTICAL_ONLY);
   TextField replyMessage = new TextField();
   Button sendButton = new Button();
   Message message;
@@ -74,6 +74,9 @@ public class MessageDialog extends Frame implements ActionListener{
     messageArea.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
     messageArea.setBackground(Color.white);
     messageArea.setForeground(Color.blue);
+
+
+
     replyMessage.requestFocus();
     replyMessage.setBounds(new Rectangle(6, 217, 278, 29));
     replyMessage.addActionListener(this);
