@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.8 2003/05/27 15:54:27 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.9 2003/05/28 05:25:01 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -75,8 +75,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	addAttribute(statusDate_,"Status changed",true,true,java.sql.Date.class);
     addAttribute(status_,"Status",true,true,java.lang.String.class,1);
 	addAttribute(created_,"Created",true,true,java.sql.Date.class);
-	addAttribute(text_, "Text", true, true, java.lang.String.class);
-	addAttribute(signedData_,"XML Signed Data", true, true, java.lang.String.class, 8000);
+	addAttribute(text_, "Text", true, true, java.lang.String.class,30000);
+	addAttribute(signedData_,"XML Signed Data", true, true, java.lang.String.class, 30000);
 	addAttribute(signedFlag_,"Signed Flag", true, true, java.lang.Boolean.class);	
 	addAttribute(signedDate_,"Signed Date", true, true, java.sql.Date.class);	
 			
