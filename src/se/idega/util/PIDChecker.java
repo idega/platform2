@@ -132,7 +132,7 @@ public class PIDChecker {
 	
 	public static void main(String blabla[]) {
 		PIDChecker checker = PIDChecker.getInstance();
-		
+		if(blabla.length>0){
 		System.out.println("Checking ssn = " + blabla[0]);
 		if (checker.isValid(blabla[0])) {
 			System.out.println(blabla[0] + " is valid");
@@ -143,6 +143,13 @@ public class PIDChecker {
 		}
 		else
 			System.out.println(blabla[0] + " is not valid");
+		}
+		else
+		{
+			System.out.println("Generating a random PersonalID:");
+			String pid = checker.getRandomValidPID();
+			System.out.println("Random valid PID : "+pid);
+		}
 	}
 	
 	/**
@@ -171,5 +178,40 @@ public class PIDChecker {
 			return stamp.getDate();
   	}
   	return null;
+	}
+	
+	/** 
+	 * Get a random valid PersonalID as string representation of in the form XXXXXX-XXXX
+	 */
+	public  String getRandomValidPID(){
+		String tryString = "";
+		while(true){
+			tryString = getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+"-"+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString();
+			//System.out.println("Trying: "+tryString);
+			if(isValid(tryString)){
+				return tryString;
+			}
+		}
+		//throw new RuntimeException("No valid PID found");	
+	}
+
+	/**
+	 * Gets a random int on the range from 0-9 as a String
+	 * @return
+	 */
+	public String getRandomIntDecimalString(){
+		return Integer.toString(getRandomIntDecimal());
+	}
+
+	/**
+	 * Gets a random int on the range from 0-9
+	 * @return
+	 */
+	public  int getRandomIntDecimal(){
+		int theReturn = (int)Math.round(10*Math.random());
+		while(theReturn>9){
+			theReturn = (int)Math.round(10*Math.random());
+		}
+		return theReturn;
 	}
 }
