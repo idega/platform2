@@ -34,6 +34,7 @@ public class ReportableField implements IDOReportableField, JRField {
 	private JRField _jrField = null;
 	private IDOEntityField _idoField = null;
 	private String _customMadeFiledName = null;
+	private Class _customMadeValueClass = null;
 	
 	/**
 	 * @param field
@@ -104,12 +105,21 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getValueClass()
 	 */
 	public Class getValueClass() {
-		switch (_typeOfContainedField) {
-			case CONTAINED_FIELD_TYPE_JRFIELD :
-				return _jrField.getValueClass();
-			default :
-				return _idoField.getDataTypeClass();
+		if(_customMadeValueClass != null){
+			return _customMadeValueClass;
+		} else {
+			switch (_typeOfContainedField) {
+				case CONTAINED_FIELD_TYPE_JRFIELD :
+					return _jrField.getValueClass();
+				default :
+					return _idoField.getDataTypeClass();
+			}
 		}
+		
+	}
+	
+	public void setValueClass(Class valClass){
+		_customMadeValueClass = valClass;
 	}
 
 	/* (non-Javadoc)

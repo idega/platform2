@@ -30,9 +30,9 @@ public class ClassDescription extends XMLElement {
 	private static final String ATTRIBUTE_NAME = "name"; // NMTOKEN
 	private static final String ATTRIBUTE_CLASS = "class"; // NMTOKEN #REQUIRED
 	private static final String ATTRIBUTE_DEFAULT_DISPLAY_NAME = "default_display_name";  // NMTOKEN #REQUIRED
-	private static final String ATTRIBUTE_TYPE = "type"; // ( Class | IDOEntityBean | IBOSessionBean | IBOServeceBean) "Class"	
+	private static final String ATTRIBUTE_TYPE = "type"; // ( Class | IDOEntityHome | IBOSessionBean | IBOServeceBean) "Class"	
 	public static final String VALUE_TYPE_CLASS = "Class";
-	public static final String VALUE_TYPE_IDO_ENTITY_BEAN = "IDOEntityBean";
+	public static final String VALUE_TYPE_IDO_ENTITY_HOME = "IDOEntityHome";
 	public static final String VALUE_TYPE_IDO_SESSION_BEAN = "IBOSessionBean";
 	public static final String VALUE_TYPE_IDO_SERVICE_BEAN = "IBOServeceBean";	
 	private List _localizedNames = new ArrayList();

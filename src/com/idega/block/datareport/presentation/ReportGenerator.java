@@ -46,7 +46,10 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOSession;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.BusyBar;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -56,6 +59,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
@@ -63,6 +67,7 @@ import com.idega.presentation.ui.TimestampInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLException;
+
 
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
@@ -96,6 +101,7 @@ public class ReportGenerator extends Block {
 	private Table _fieldTable = null;
 	private JasperDesign _design = null;
 	HashMap _parameterMap = new HashMap();
+	private BusyBar _busy = null;
 	
 	private String _reportName = "Report";
 	
@@ -104,6 +110,7 @@ public class ReportGenerator extends Block {
 	 */
 	public ReportGenerator() {
 		super();
+		_busy = new BusyBar("busy_generating_report");
 	}
 	
 	public String getBundleIdentifier() {
@@ -164,9 +171,7 @@ public class ReportGenerator extends Block {
 				while (iter.hasNext()) {
 					ReportableField field = (ReportableField)iter.next();
 					String name = field.getName();
-					_parameterMap.put(name,field.getLocalizedName(currentLocale));  //TMP
-					//TODO - Temporary datatype is set to String not field.getDataTypeClass()
-					//designTemplate.addField(name,String.class,columnWidth);
+					_parameterMap.put(name,field.getLocalizedName(currentLocale));
 					designTemplate.addField(name,field.getValueClass(),columnWidth);
 				}
 			} else {
@@ -175,9 +180,7 @@ public class ReportGenerator extends Block {
 						QueryFieldPart element = (QueryFieldPart)iter.next();
 						ReportableField field = new ReportableField(element.getIDOEntityField());
 						String name = field.getName();
-						_parameterMap.put(name,field.getLocalizedName(currentLocale));  //TMP
-						//TODO - Temporary datatype is set to String not field.getDataTypeClass()
-						//designTemplate.addField(name,String.class,columnWidth);
+						_parameterMap.put(name,field.getLocalizedName(currentLocale)); 
 						designTemplate.addField(name,field.getValueClass(),columnWidth);
 					} catch (IDOLookupException e) {
 						e.printStackTrace();
@@ -252,21 +255,21 @@ public class ReportGenerator extends Block {
 					}
 					 
 				
-					
+					Object forInvocationOfMethod = null;
 					if(ClassDescription.VALUE_TYPE_IDO_SESSION_BEAN.equals(type)){
-						IBOSession ibos = IBOLookup.getSessionInstance(iwc,mainClass);
-						MethodFinder mf = MethodFinder.getInstance();
-						
-						Method method = mf.getMethodWithNameAndParameters(mainClass,methodName,paramTypes);
-						_dataSource = (JRDataSource)method.invoke(ibos,prmVal);
-						
+						forInvocationOfMethod = IBOLookup.getSessionInstance(iwc,mainClass);						
 					} else if(ClassDescription.VALUE_TYPE_IDO_SERVICE_BEAN.equals(type)){
-						System.out.println("["+this.getClassName()+"]: not implemented yet for this classType: "+type);
-					} else if(ClassDescription.VALUE_TYPE_IDO_ENTITY_BEAN.equals(type)){
-						System.out.println("["+this.getClassName()+"]: not implemented yet for this classType: "+type);
+						forInvocationOfMethod = IBOLookup.getServiceInstance(iwc,mainClass);
+					} else if(ClassDescription.VALUE_TYPE_IDO_ENTITY_HOME.equals(type)){
+						forInvocationOfMethod = IDOLookup.getHome(mainClass);//System.out.println("["+this.getClassName()+"]: not implemented yet for this classType: "+type);
 					} else { //ClassDescription.VALUE_TYPE_CLASS.equals(type))
-						System.out.println("["+this.getClassName()+"]: not implemented yet for this classType: "+type);
+						forInvocationOfMethod = mainClass.newInstance();
 					}
+					
+					MethodFinder mf = MethodFinder.getInstance();
+						
+					Method method = mf.getMethodWithNameAndParameters(mainClass,methodName,paramTypes);
+					_dataSource = (JRDataSource)method.invoke(forInvocationOfMethod,prmVal);
 				}
 			}
 			
@@ -394,36 +397,38 @@ public class ReportGenerator extends Block {
 	/**
 	 * 
 	 */
-	private void lineUpElements(IWResourceBundle iwrb, IWContext iwc) {
+	private void lineUpElements(IWResourceBundle iwrb, IWContext iwc) {		
+		IWMainApplication iwma = iwc.getApplicationContext().getApplication();		
+		IWBundle coreBundle = iwma.getBundle(this.IW_CORE_BUNDLE_IDENTIFIER);
+		
 		_fieldTable =new Table();
 		//_fieldTable.setBorder(1);
 		
+		int row = 0;
 		
+		row++;
+		_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name","report_name"))+":",1,row);
+		_fieldTable.add(getFieldInputObject("report_name",null,String.class),2,row);
+
+		//TODO Let Reportable field and ClassDescription impliment the same interface (IDODynamicReportableField) to decrease code duplications
 		if(_queryPK != null){
 			if(_dynamicFields.size()>0){
 			
 				Iterator iterator = _dynamicFields.iterator();
-				int row = 0;
+				
 				while (iterator.hasNext()) {
 					ReportableField element = (ReportableField)iterator.next();
 					row++;
-					_fieldTable.add(getFieldLabel("SomeText-"+element.getLocalizedName(iwc.getCurrentLocale()))+":",1,row);
+					_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale()))+":",1,row);
 					_fieldTable.add(getFieldInputObject(element.getName(),null,element.getValueClass()),2,row);
 				}
 			
-				_fieldTable.add(getSubmitButton(iwrb.getLocalizedString("generate_report"," Generate ")),1,++row);
-				_fieldTable.mergeCells(1,row,2,row);
-				_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
-				_fieldTable.setColumnAlignment(2,Table.HORIZONTAL_ALIGN_LEFT);
-			} else {
-				_fieldTable.add(getSubmitButton(iwrb.getLocalizedString("generate_report"," Generate ")));
 			}
 		} else {
 
 			if(_dynamicFields.size()>0){
 				
 				Iterator iterator = _dynamicFields.iterator();
-				int row = 0;
 				while (iterator.hasNext()) {
 					try {
 						ClassDescription element = (ClassDescription)iterator.next();
@@ -436,16 +441,23 @@ public class ReportGenerator extends Block {
 					}
 				}
 				
-				_fieldTable.add(getSubmitButton(iwrb.getLocalizedString("generate_report"," Generate ")),1,++row);
-				_fieldTable.mergeCells(1,row,2,row);
-				_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
-				_fieldTable.setColumnAlignment(2,Table.HORIZONTAL_ALIGN_LEFT);
-			} else {
-				_fieldTable.add(getSubmitButton(iwrb.getLocalizedString("generate_report"," Generate ")));
 			}
 			
 			
 		}
+		
+		InterfaceObject generateButton = (InterfaceObject)getSubmitButton(iwrb.getLocalizedString("generate_report"," Generate "));
+		_fieldTable.add(generateButton,1,++row);
+		_fieldTable.mergeCells(1,row,2,row);
+		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+		
+		_busy.addDisabledObject(generateButton);
+		_busy.addBusyObject(generateButton);
+	 	_busy.setBusyBarUrl(coreBundle.getImage("loading.gif").getURL());
+		_fieldTable.add(generateButton,1,++row);
+		_fieldTable.mergeCells(1,row,2,row);
+		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+
 		
 	}
 	
