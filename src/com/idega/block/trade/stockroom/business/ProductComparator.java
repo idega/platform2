@@ -1,18 +1,20 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
-
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.IsCollator;
@@ -36,6 +38,7 @@ public class ProductComparator implements Comparator {
   public static final int CREATION_DATE = 6;
   public static final int SUPPLIER = 7; 
 
+  private Locale locale = null;
   private int localeId = -1;
   private int sortBy;
   private StockroomBusiness stockroomBusiness;
@@ -44,20 +47,20 @@ public class ProductComparator implements Comparator {
   private PriceCategory priceCategoryToSortBy;
   private int currencyId;
   private IWTimestamp time;
-  private IWContext iwc;
+  private Collator collator;
 
-  public ProductComparator() {
-    this(1);
-  }
-
-  public ProductComparator(int toSortBy) {
-    this(toSortBy, IWContext.getInstance().getCurrentLocaleId());
-  }
-
-  public ProductComparator(int toSortBy, int localeId) {
+  public ProductComparator(int toSortBy, Locale locale) {
       sortBy = toSortBy;
-      this.localeId = localeId;
-      iwc = IWContext.getInstance();
+      this.locale = locale;
+      this.localeId = ICLocaleBusiness.getLocaleId(locale);
+      try {
+      		collator = Collator.getInstance(locale);
+      		if (collator == null) {
+      			collator = IsCollator.getIsCollator();
+      		}
+      } catch (Exception e) {
+      		collator = IsCollator.getIsCollator();
+      }
   }
 
   public void sortBy(int toSortBy) {
@@ -96,8 +99,8 @@ public class ProductComparator implements Comparator {
 
     String one = p1.getProductName(localeId)!=null?p1.getProductName(localeId):"";
     String two = p2.getProductName(localeId)!=null?p2.getProductName(localeId):"";
-
-    return IsCollator.getIsCollator().compare(two,one);
+    Collator.getInstance(locale);
+    return collator.compare(two,one);
   }
   
   private int supplierSort(Object o1, Object o2) throws RemoteException {
@@ -106,7 +109,7 @@ public class ProductComparator implements Comparator {
 
     String one = p1.getSupplier().getName() != null ? p1.getSupplier().getName(): "";
     String two = p2.getSupplier().getName() != null ? p2.getSupplier().getName(): "";
-    return IsCollator.getIsCollator().compare(two, one);
+    return collator.compare(two, one);
   	
   }
 
@@ -117,7 +120,7 @@ public class ProductComparator implements Comparator {
     String one = p1.getNumber()!=null?p1.getNumber():"";
     String two = p2.getNumber()!=null?p2.getNumber():"";
 
-    return IsCollator.getIsCollator().compare(one,two);
+    return collator.compare(one,two);
   }
 /*
   private int departureTimeNameSort(Object o1, Object o2) {

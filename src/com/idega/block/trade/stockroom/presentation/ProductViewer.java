@@ -164,7 +164,7 @@ public class ProductViewer extends Block {
 					if (categoryList != null) {
 						List products = getProductBusiness(iwc).getProducts(categoryList);
 						if (products != null && products.size() > 0) {
-							Collections.sort(products, new ProductComparator(ProductComparator.CREATION_DATE));
+							Collections.sort(products, new ProductComparator(ProductComparator.CREATION_DATE, iwc.getCurrentLocale()));
 							this._product = (Product) products.get(0);
 							this._productId = ((Integer) _product.getPrimaryKey()).intValue();
 						}

@@ -579,7 +579,7 @@ public class ProductCatalog extends CategoryBlock {
 		 * @todo Caching....
 		 */
 		if (this._orderProductsBy != -1 && products != null) {
-			Collections.sort(products, new ProductComparator(orderBy, this._currentLocaleId));
+			Collections.sort(products, new ProductComparator(orderBy, this._currentLocale));
 		}
 	}
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
