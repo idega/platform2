@@ -109,7 +109,6 @@ public class SchoolUserEditor extends Block {
   		int textFormatType = 1;
   		while ( iter.hasNext() ) {
   			++row;
-  			try {
 					school = (School)(iter.next());
 	  			link = getLink(_tFormat.format(_iwrb.getLocalizedString("school.edit","edit"),TextFormat.NORMAL), ACTION_VIEW_SCHOOL, false);
 	  			link.addParameter(this.PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString());
@@ -120,9 +119,6 @@ public class SchoolUserEditor extends Block {
 						textFormatType = TextFormat.NORMAL;
 					}
 	  			table.add(_tFormat.format(school.getName(),textFormatType), 2, row);
-				} catch (FinderException e) {
-					e.printStackTrace(System.err);
-				}
   		}
   	}
 
