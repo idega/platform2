@@ -430,7 +430,7 @@ public class TourBookingForm extends TravelManager {
           Text pleaseFindAnotherDay = (Text) theText.clone();
             pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
 
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
 
 
           if (isDay) {
@@ -491,10 +491,10 @@ public class TourBookingForm extends TravelManager {
 
 
           ++row;
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
           table.add(hr,1,row);
           ++row;
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
           subHeader = (Text) theBoldText.clone();
             subHeader.setFontColor(WHITE);
             subHeader.setText(iwrb.getLocalizedString("travel.personal_information","Personal information"));
@@ -507,6 +507,7 @@ public class TourBookingForm extends TravelManager {
           table.add(surname,2,row);
           table.add(lastnameText,3,row);
           table.add(lastname,4,row);
+          table.mergeCells(4,row,6,row);
 
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
@@ -523,6 +524,7 @@ public class TourBookingForm extends TravelManager {
           table.setAlignment(2,row,"left");
           table.setAlignment(3,row,"right");
           table.setAlignment(4,row,"left");
+          table.mergeCells(4,row,6,row);
 
           ++row;
           table.add(cityText,1,row);
@@ -534,6 +536,7 @@ public class TourBookingForm extends TravelManager {
           table.setAlignment(2,row,"left");
           table.setAlignment(3,row,"right");
           table.setAlignment(4,row,"left");
+          table.mergeCells(4,row,6,row);
 
           ++row;
           table.add(emailText,1,row);
@@ -545,14 +548,15 @@ public class TourBookingForm extends TravelManager {
           table.setAlignment(2,row,"left");
           table.setAlignment(3,row,"right");
           table.setAlignment(4,row,"left");
+          table.mergeCells(4,row,6,row);
 
 
           if (_tour.getIsHotelPickup()) {
               ++row;
-              table.mergeCells(1,row,4,row);
+              table.mergeCells(1,row,6,row);
               table.add(hr,1,row);
               ++row;
-              table.mergeCells(1,row,4,row);
+              table.mergeCells(1,row,6,row);
               subHeader = (Text) theBoldText.clone();
                 subHeader.setFontColor(WHITE);
                 subHeader.setText(iwrb.getLocalizedString("travel.booking_choose_hotel","If you choose to be picked up at your hotel, select it from the list below"));
@@ -583,6 +587,7 @@ public class TourBookingForm extends TravelManager {
               table.setAlignment(2,row,"left");
               table.setAlignment(3,row,"right");
               table.setAlignment(4,row,"left");
+              table.mergeCells(4,row,6,row);
           }
 
           Text pPriceCatNameText;
@@ -601,10 +606,10 @@ public class TourBookingForm extends TravelManager {
             TotalTextInput.setSize(8);
 
           ++row;
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
           table.add(hr,1,row);
           ++row;
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
           subHeader = (Text) theBoldText.clone();
             subHeader.setFontColor(WHITE);
             subHeader.setText(iwrb.getLocalizedString("travel.booking_passenger_info","Passenger infomation"));
@@ -612,8 +617,17 @@ public class TourBookingForm extends TravelManager {
           table.add(subHeader,1,row);
           table.setAlignment(1,row,"left");
           ++row;
+
 //          ++row;
 //          table.add(Text.NON_BREAKING_SPACE,1,row);
+            Text count = (Text) super.theSmallBoldText.clone();
+              count.setText(iwrb.getLocalizedString("travel.count","Count"));
+            Text amount = (Text) super.theSmallBoldText.clone();
+              amount.setText(iwrb.getLocalizedString("travel.amount","Amount"));
+            table.add(count,2,row);
+            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+            table.add(amount,2,row);
+
 
           BookingEntry[] entries = null;
           ProductPrice pPri = null;
@@ -701,18 +715,18 @@ public class TourBookingForm extends TravelManager {
             TextInput ccNumber = new TextInput(this.parameterCCNumber);
               ccNumber.setMaxlength(16);
               ccNumber.setLength(20);
-              ccNumber.setAsNotEmpty("T - vantar cc númer");
-              ccNumber.setAsIntegers("T - cc númer rangt");
+              //ccNumber.setAsNotEmpty("T - vantar cc númer");
+              //ccNumber.setAsIntegers("T - cc númer rangt");
             TextInput ccMonth = new TextInput(this.parameterCCMonth);
               ccMonth.setMaxlength(2);
               ccMonth.setLength(3);
-              ccMonth.setAsNotEmpty("T - vantar cc manuð");
-              ccMonth.setAsIntegers("T - cc manuður rangur");
+              //ccMonth.setAsNotEmpty("T - vantar cc manuð");
+              //ccMonth.setAsIntegers("T - cc manuður rangur");
             TextInput ccYear = new TextInput(this.parameterCCYear);
               ccYear.setMaxlength(2);
               ccYear.setLength(3);
-              ccYear.setAsNotEmpty("T - vantar cc ár");
-              ccYear.setAsIntegers("T - cc ár rangt");
+              //ccYear.setAsNotEmpty("T - vantar cc ár");
+              //ccYear.setAsIntegers("T - cc ár rangt");
 
             Text ccText = (Text) theText.clone();
               ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
@@ -724,10 +738,10 @@ public class TourBookingForm extends TravelManager {
               ccSlash.setText(" / ");
 
           ++row;
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
           table.add(hr,1,row);
           ++row;
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,6,row);
           subHeader = (Text) theBoldText.clone();
             subHeader.setFontColor(WHITE);
             subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
@@ -736,31 +750,45 @@ public class TourBookingForm extends TravelManager {
           table.setAlignment(1,row,"left");
           ++row;
 
+
+            Text month = (Text) super.theSmallBoldText.clone();
+              month.setText(iwrb.getLocalizedString("travel.month","Month"));
+            Text year = (Text) super.theSmallBoldText.clone();
+              year.setText(iwrb.getLocalizedString("travel.year","Year"));
+            table.add(month,4,row);
+            table.add(ccSlash,5,row);
+            table.add(year,6,row);
+
+            table.setBorder(0);
+//            table.setWidth(4,"2");
+            table.setAlignment(4,row,"right");
+            table.setWidth(5,"2");
+
             ++row;
             table.add(ccText,1,row);
             table.add(ccNumber,2,row);
-
             table.add(ccMY,3,row);
+
             table.add(ccMonth,4,row);
-            table.add(ccSlash,4,row);
-            table.add(ccYear,4,row);
+            table.add(ccSlash,5,row);
+            table.add(ccYear,6,row);
 
             table.setAlignment(1,row,"right");
             table.setAlignment(2,row,"left");
             table.setAlignment(3,row,"right");
-            table.setAlignment(4,row,"left");
+            table.setAlignment(4,row,"right");
 
             ++row;
-            table.mergeCells(1,row,4,row);
+            table.mergeCells(1,row,6,row);
             table.add(hr,1,row);
 
             ++row;
             if (_booking != null) {
-              table.add(new SubmitButton(iwrb.getImage("buttons/update.gif")),4,row);
+              table.add(new SubmitButton(iwrb.getImage("buttons/update.gif")),6,row);
             }else {
-              table.add(new SubmitButton(iwrb.getImage("buttons/book.gif")),4,row);
+              table.add(new SubmitButton(iwrb.getImage("buttons/book.gif")),6,row);
             }
-            table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
+            table.add(new HiddenInput(this.BookingAction,this.BookingParameter),6,row);
 
             //table.setColumnAlignment(1,"right");
             //table.setColumnAlignment(2,"left");
@@ -770,9 +798,9 @@ public class TourBookingForm extends TravelManager {
               starText.setFontColor(WHITE);
               starText.setText(iwrb.getLocalizedString("travel.fields_marked_with_a_star","* Fields marked with a star must be filled."));
 
-            table.mergeCells(1,row,3,row);
+            table.mergeCells(1,row,5,row);
             table.add(starText,1,row);
-            table.setAlignment(4,row,"right");
+            table.setAlignment(6,row,"right");
 
 
           }

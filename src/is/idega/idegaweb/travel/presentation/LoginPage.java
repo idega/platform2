@@ -96,7 +96,7 @@ public class LoginPage extends TravelManager {
           fexTable.setWidth("300");
           fexTable.setBorder(0);
 
-          Text leText = (Text) theBigBoldText.clone();
+          Text leText = (Text) theBoldText.clone();
             leText.setText(iwrb.getLocalizedString("travel.please_select_language","Please select language"));
             leText.setFontColor(super.BLACK);
 

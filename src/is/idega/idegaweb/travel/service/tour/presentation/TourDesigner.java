@@ -210,7 +210,7 @@ public class TourDesigner extends TravelManager {
             imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
           }
       }
-        imageInserter.setWindowToReload(true);
+        //imageInserter.setWindowToReload(true);
 
 
       table.setVerticalAlignment(1,row,"top");
@@ -508,12 +508,16 @@ public class TourDesigner extends TravelManager {
         if (activeYearly.equals("Y")) yearly = true;
       }
 
-      if (estSeats == null) {
-        estSeats = "0";
+      int iEstSeats = 0;
+      if (estSeats != null) {
+        try {
+          iEstSeats = Integer.parseInt(estSeats);
+        }catch(NumberFormatException n){}
       }
 
-      if (discountType == null) {
-        discountType = Integer.toString(Product.DISCOUNT_TYPE_ID_PERCENT);
+      int iDiscountType = Product.DISCOUNT_TYPE_ID_PERCENT;
+      if (discountType != null) {
+        iDiscountType = Integer.parseInt(discountType);
       }
 
       Integer iImageId = null;
@@ -619,7 +623,7 @@ public class TourDesigner extends TravelManager {
 
         if (tourId == -1) {
             tb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
+            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, iEstSeats, iDiscountType);
         } else {
             String timeframeId = iwc.getParameter(this.parameterTimeframeId);
             tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);

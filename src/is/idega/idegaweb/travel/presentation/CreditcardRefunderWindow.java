@@ -31,6 +31,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
   private String parameterAmount = "ccrAmount";
 
   public CreditcardRefunderWindow() {
+    this.setTitle("idegaWeb Travel");
   }
 
   public void main(IWContext iwc){
@@ -87,13 +88,13 @@ public class CreditcardRefunderWindow extends TravelWindow {
     ++row;
     ++row;
     table.add(ccNumber, 1, row);
-    table.add(ccYear, 2, row);
-    table.add(ccMonth, 3, row);
+    table.add(ccMonth, 2, row);
+    table.add(ccYear, 3, row);
 
     ++row;
     table.add(ccNumberInp, 1, row);
-    table.add(ccYearInp, 2, row);
-    table.add(ccMonthInp, 3, row);
+    table.add(ccMonthInp, 2, row);
+    table.add(ccYearInp, 3, row);
 
     ++row;
     ++row;
@@ -152,6 +153,18 @@ public class CreditcardRefunderWindow extends TravelWindow {
       error = true;
     }
 
+    ++row;
+    table.add(ccMonth,2,row);
+    table.add(month,3,row);
+    table.setAlignment(3, row, "right");
+    try {
+      if (Integer.parseInt(month) < 1 || Integer.parseInt(month) > 12) {
+        throw new NumberFormatException();
+      }
+    }catch (NumberFormatException n) {
+      table.add(notANumber,4,row);
+      error = true;
+    }
 
     ++row;
     table.add(ccYear,2,row);
@@ -160,22 +173,10 @@ public class CreditcardRefunderWindow extends TravelWindow {
     try {
       Integer.parseInt(year);
     }catch (NumberFormatException n) {
-      //table.add(getText(Text.NON_BREAKING_SPACE),3,row);
       table.add(notANumber,4,row);
       error = true;
     }
 
-    ++row;
-    table.add(ccMonth,2,row);
-    table.add(month,3,row);
-    table.setAlignment(3, row, "right");
-    try {
-      Integer.parseInt(month);
-    }catch (NumberFormatException n) {
-      //table.add(getText(Text.NON_BREAKING_SPACE),3,row);
-      table.add(notANumber,4,row);
-      error = true;
-    }
 
     ++row;
     ++row;
