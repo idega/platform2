@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.data.IDOLookup;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -22,7 +22,6 @@ import com.idega.presentation.text.Text;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -41,16 +40,77 @@ public class MemberOverview extends Block {
 		User user = iwc.getCurrentUser();
 		_iwrb = getResourceBundle(iwc);
 		_data = new MemberGroupData(user);
-		Text regText = new Text(_iwrb.getLocalizedString("member_overview_registration", "Skraningar"));
+		add(getMemberInfo(user));
+		addBreak();
+		addBreak();
+		Text regText = new Text(_iwrb.getLocalizedString("member_overview_registration", "Membership status"));
 		add(regText);
 		add(getMemberRegistrationStatus());
 		addBreak();
-		Text histText = new Text(_iwrb.getLocalizedString("member_overview_history", "Saga"));
+		Text histText = new Text(_iwrb.getLocalizedString("member_overview_history", "Membership history"));
 		add(histText);
 		add(getMemberHistory(user));
 	}
 	
-	public PresentationObject getMemberHistory(User user) {
+	private PresentationObject getMemberInfo(User user) {
+		String name = emptyIfNull(user.getName());
+		String nameLabel = _iwrb.getLocalizedString("member_overview_name", "Name: ");
+		String pNum = emptyIfNull(user.getPersonalID());
+		String pNumLabel = _iwrb.getLocalizedString("member_overview_pn", "Person number: ");
+		String address = getInfoFromCollection(user.getAddresses());
+		String addressLabel = _iwrb.getLocalizedString("member_overview_address", "Address: ");
+		String phone = getInfoFromCollection(user.getPhones());
+		String phoneLabel = _iwrb.getLocalizedString("member_overview_phone", "Phone: ");
+		String text = emptyIfNull(user.getDescription());
+		String textLabel = _iwrb.getLocalizedString("member_overview_more_info", "More: ");
+		
+		user.getSystemImageID();
+		
+		int imageId = user.getSystemImageID();
+		ImageInserter image = null;
+		if(imageId != -1) {
+			image = new ImageInserter(_iwrb.getLocalizedString("member_overview_imag_text", "User picture"));
+			image.setImageId(imageId);
+		} else {
+			System.out.println("No image found for user " + user.getName());
+		}
+		
+		Table table = new Table();
+		int row = 1;
+		if(image!=null) {
+			table.mergeCells(2, 1, 2, 5);
+			table.setAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+			table.add(image, 2, row++);
+		}
+		table.add(nameLabel + name, 1, row++);
+		table.add(pNumLabel + pNum, 1, row++);
+		table.add(addressLabel + address, 1, row++);
+		table.add(phoneLabel + phone, 1, row++);
+		if(text!=null && text.length()>0) {
+			table.add(textLabel, 1, row++);
+			table.add(text);
+		}
+		return table;
+	}
+	
+	private String getInfoFromCollection(Collection col) {
+		StringBuffer buf = new StringBuffer();
+		if(col!=null && !col.isEmpty()) {
+			Iterator iter = col.iterator();
+			boolean first = true;
+			while(iter.hasNext()) {
+				if(first) {
+					buf.append(", ");
+					first = false;
+				}
+				buf.append(iter.next().toString());
+				first = false;
+			}
+		}
+		return buf.length()==0?_iwrb.getLocalizedString("member_overview_no_info", "N/A"):buf.toString();
+	}
+	
+	private PresentationObject getMemberHistory(User user) {
 		Collection history = null;
 		int rows = 0;
 		try {
@@ -92,7 +152,7 @@ public class MemberOverview extends Block {
 		}
 	}
 	
-	public PresentationObject getMemberRegistrationStatus() {
+	private PresentationObject getMemberRegistrationStatus() {
 		try {
 			List memberInfo = _data.getMemberInfo();
 			Table table = new Table(1, memberInfo.size());
@@ -110,6 +170,10 @@ public class MemberOverview extends Block {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public String emptyIfNull(String str) {
+		return str==null?"":str;
 	}
 
 	public String getBundleIdentifier() {
