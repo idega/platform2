@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.10 2003/08/26 09:18:55 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.11 2003/08/27 07:38:03 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParamException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 
 
 /**
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParamExcepti
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.10 2003/08/26 09:18:55 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.11 2003/08/27 07:38:03 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -107,6 +107,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_PERIODE_FROM = "pp_edit_periode_from";
 	private final static String PARAM_PERIODE_TO = "pp_edit_periode_to";
 	private final static String PARAM_SIGNED = "pp_edit_signed";
+	private final static String PARAM_MODE_COPY = "mode_copy";
 
 	private final static String PARAM_DOUBLE_ACCOUNT = "pp_double_edit_account";
 	private final static String PARAM_DOUBLE_LIABILITY = "pp_double_edit_liability";
@@ -123,7 +124,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_COM_BELONGING = "selector_com_belonging";
 
 	private IBPage _responsePage;
-
+	private String _errorText = ""
+	;
 	public void setResponsePage(IBPage page) {
 		_responsePage = page;
 	}
@@ -143,12 +145,16 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_DEFAULT :
-					viewMainForm(iwc);
+					viewMainForm(iwc, "");
 					break;
 				case ACTION_SAVE :
-					saveData(iwc);
+					if(!saveData(iwc)) {
+						viewMainForm(iwc, _errorText);
+					}
+					break;
 				case ACTION_CANCEL :
 					closeMe(iwc);
+					break;
 			}
 		}
 		catch (Exception e) {
@@ -156,7 +162,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		}
 	}
 		 
-	private void saveData(IWContext iwc) {
+	private boolean saveData(IWContext iwc) {
 		
 			try {
 				getPostingBusiness(iwc).savePostingParameter(iwc.getParameter(PARAM_EDIT_ID),
@@ -184,13 +190,16 @@ public class PostingParameterListEditor extends AccountingBlock {
 				iwc.getParameter(PARAM_DOUBLE_PROJECT),
 				iwc.getParameter(PARAM_DOUBLE_OBJECT)
 				);
-			} catch (PostingParamException e) {
-				super.add(new ExceptionWrapper(e, this));
+			} catch (PostingParametersException e) {
+				_errorText = localize(e.getTextKey(), e.getDefaultText());
+				return false;
 			} catch (RemoteException e) {
 				super.add(new ExceptionWrapper(e, this));
+				return false;
 			}
 			
 			closeMe(iwc);
+			return true;
 	}
 
 	private void closeMe(IWContext iwc) {
@@ -214,7 +223,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	/*
 	 * Adds the default form to the block.
     */	
-	private void viewMainForm(IWContext iwc) {
+	private void viewMainForm(IWContext iwc, String error) {
 		ApplicationForm app = new ApplicationForm(this);
 		PostingParameters pp = getThisPostingParameter(iwc);
 		
@@ -230,6 +239,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 		app.setMainPanel(postingForm);
 		app.setButtonPanel(buttonPanel);
 		add(app);		
+		if(error.length() != 0) {
+			add(getSmallErrorText(error));
+		}
 	}
 
 	/*
@@ -263,7 +275,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
 		table.add(""+userName, 4, 2);
 		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
-		
+		if(iwc.isParameterSet(PARAM_EDIT_ID) && !iwc.isParameterSet(PARAM_MODE_COPY)) {
+			table.add(new HiddenInput(PARAM_EDIT_ID, ""+iwc.getParameter(PARAM_EDIT_ID)));
+		}
 		return table;	
 	}
 	
@@ -310,7 +324,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		list1.add(getTextInput(PARAM_DOUBLE_ENTRY_CODE, pp != null ? pp.getPostingDoubleEntry() : "", 60, 6));
 		list1.add(getTextInput(PARAM_ACTIVITY_FIELD, pp != null ? pp.getPostingActivity() : "", 80, 20));
 		list1.add(getTextInput(PARAM_PROJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
-		list1.add(getTextInput(PARAM_OBJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
+		list1.add(getTextInput(PARAM_OBJECT, pp != null ? pp.getPostingObject() : "", 80, 20));
 
 		list2.add(getTextInput(PARAM_DOUBLE_ACCOUNT, pp != null ? pp.getDoublePostingAccount() : "", 60, 6));
 		list2.add(getTextInput(PARAM_DOUBLE_LIABILITY, pp != null ? pp.getDoublePostingLiability() : "", 60, 10));
@@ -319,7 +333,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		list2.add(getTextInput(PARAM_DOUBLE_DOUBLE_ENTRY_CODE, pp != null ? pp.getDoublePostingDoubleEntry() : "", 60, 6));
 		list2.add(getTextInput(PARAM_DOUBLE_ACTIVITY_FIELD, pp != null ? pp.getDoublePostingActivity() : "", 80, 20));
 		list2.add(getTextInput(PARAM_DOUBLE_PROJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
-		list2.add(getTextInput(PARAM_DOUBLE_OBJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
+		list2.add(getTextInput(PARAM_DOUBLE_OBJECT, pp != null ? pp.getDoublePostingObject() : "", 80, 20));
 
 		try {
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
@@ -339,7 +353,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			selectors.add(getLocalizedLabel(KEY_COMMUNE_BELONGING, "Kommuntillhörighet:"), 1, 4);
 			selectors.add(communeBelongingSelector(iwc, PARAM_SELECTOR_COM_BELONGING, 
 											Integer.parseInt(pp != null ? 
-											pp.getCompanyType().getPrimaryKey().toString() : "0")), 2, 4);
+											pp.getCommuneBelonging().getPrimaryKey().toString() : "0")), 2, 4);
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}	

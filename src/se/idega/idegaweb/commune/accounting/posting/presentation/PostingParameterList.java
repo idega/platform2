@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.9 2003/08/26 09:18:40 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.10 2003/08/27 07:38:03 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.9 2003/08/26 09:18:40 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.10 2003/08/27 07:38:03 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -71,12 +71,14 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_REMOVE = "posting_parm_list.remove";
 	private final static String KEY_CANCEL = "posting_parm_list.cancel";
 	private final static String KEY_CONFIRM_REMOVE_MESSAGE = "posting_parm_list.confirm_remove_message";
+	private final static String KEY_DEFAULT_BLANK = "posting_parm_list.blank";
 
 	private final static String PARAM_SEARCH = "button_search";
 	private final static String PARAM_COPY = "button_copy";
 	private final static String PARAM_NEW = "button_new";
 	private final static String PARAM_REMOVE = "button_remove";
 
+	private final static String PARAM_MODE_COPY = "mode_copy";
 	private final static String PARAM_CHECKED_FOR_DELETE = "param_checked_for_delete";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
@@ -108,7 +110,7 @@ public class PostingParameterList extends AccountingBlock {
 	 */
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
-
+		deletePosts(iwc);
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
@@ -116,8 +118,7 @@ public class PostingParameterList extends AccountingBlock {
 					viewForm(iwc);
 					break;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
 	}
@@ -131,9 +132,24 @@ public class PostingParameterList extends AccountingBlock {
 	}
 
 	/*
+	 * Delete posts marked with the checkbox 
+	 */
+	private void deletePosts(IWContext iwc) {
+		String[] ids = iwc.getParameterValues(PARAM_POSTING_ID);
+		if(ids != null) {
+			for(int i = 0; i < ids.length; i++){
+				try {
+					getPostingBusiness(iwc).deletePostingParameter(Integer.parseInt(ids[i]));
+				} catch ( Exception e) {
+					super.add(new ExceptionWrapper(e, this));
+				}
+			}
+		}
+	}
+
+	/*
 	 * Adds the default form to the block.
 	 */	
-	 
 	private void viewForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		
@@ -160,12 +176,12 @@ public class PostingParameterList extends AccountingBlock {
 		ButtonPanel buttonPanel = new ButtonPanel(this);
 		buttonPanel.addLocalizedButton(PARAM_NEW, KEY_NEW, "Ny", _editPage);
 		buttonPanel.addLocalizedConfirmButton(
-								PARAM_REMOVE, 
-								KEY_REMOVE, 
-								"Ta bort",
-								PARAM_POSTING_ID, 
-								KEY_CONFIRM_REMOVE_MESSAGE,
-								"Vill du verkligen ta bort markerade poster?");
+				PARAM_REMOVE, 
+				KEY_REMOVE, 
+				"Ta bort",
+				PARAM_POSTING_ID, 
+				KEY_CONFIRM_REMOVE_MESSAGE,
+				"Vill du verkligen ta bort markerade poster?");
 		return buttonPanel;
 	}
 	
@@ -202,14 +218,33 @@ public class PostingParameterList extends AccountingBlock {
 					link.setPage(_editPage);
 					list.add(link);
 
-					list.add(p.getActivity().getTextKey(), p.getActivity().getTextKey());
-					list.add(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey());
-					list.add(p.getCompanyType().getTextKey(), p.getCompanyType().getTextKey());
-					list.add(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey());
-
+					if(p.getActivity() == null) {
+						list.add(KEY_DEFAULT_BLANK, "");					
+					} else {
+						list.add(p.getActivity().getTextKey(), p.getActivity().getTextKey());
+					}
+					if(p.getRegSpecType() == null) {
+						list.add(KEY_DEFAULT_BLANK, "");					
+					} else {
+						list.add(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey());
+					}
+					if(p.getCompanyType() == null) {
+						list.add(KEY_DEFAULT_BLANK, "");					
+					} else {
+						list.add(p.getCompanyType().getTextKey(), p.getCompanyType().getTextKey());
+					}
+					if(p.getCommuneBelonging() == null) {
+						list.add(KEY_DEFAULT_BLANK, "");					
+					} else {
+						list.add(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey());
+					}
 					list.add(p.getPostingAccount());
 					list.add(p.getDoublePostingAccount());
-					list.add("");
+					Link copy = new Link(getEditIcon(localize(KEY_COPY, "Kopiera")));
+					copy.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
+					copy.addParameter(PARAM_MODE_COPY, "1");
+					copy.setPage(_editPage);
+					list.add(copy);
 					list.add(getCheckBox(PARAM_POSTING_ID, p.getPrimaryKey().toString()));
 				}
 			}			
@@ -228,7 +263,6 @@ public class PostingParameterList extends AccountingBlock {
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setWidth("75%");
 
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 1);
