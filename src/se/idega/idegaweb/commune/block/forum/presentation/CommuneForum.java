@@ -8,17 +8,26 @@
  */
 package se.idega.idegaweb.commune.block.forum.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
+
+import se.idega.idegaweb.commune.block.forum.business.CommuneForumBusiness;
 
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.data.ForumData;
 import com.idega.block.forum.presentation.Forum;
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.block.presentation.CategoryWindow;
+import com.idega.business.IBOLookup;
 import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.user.data.User;
 
 /**
  * @author palli
@@ -63,11 +72,16 @@ public class CommuneForum extends Forum {
 			Text numberOfThreadsText = null;
 			Text lastUpdatedText = null;
 			ICCategory topic;
+			User user;
 			int row = 2;
 
 			for (int a = 0; a < list.size(); a++) {
 				topic = (ICCategory) list.get(a);
-
+				try {
+				user = getCommuneForumBusiness(iwc).getModerator(topic);
+				}catch (RemoteException r) {
+					throw new RuntimeException(r.getMessage());
+				}
 				if (topic != null) {
 					topicLink = new Link(topic.getName());
 					topicLink.setStyle(_topicName);
@@ -90,11 +104,21 @@ public class CommuneForum extends Forum {
 					if (lastUpdatedText != null)
 						table.add(lastUpdatedText, 3, row);
 
-					table.add(new Text("Jón Jónsson"),4,row);
+					if (user != null) {
+						table.add(formatText(user.getName(), _textStyle), 4, row);	
+					}
+					//table.add(new Text("Jón Jónsson"),4,row);
 
-					Link file = new Link(Integer.toString(row));
-					file.setWindowToOpen(CommuneForumTopicFiles.class);
-					table.add(file,5,row);
+					Link file;
+					try {
+						file = new Link(formatText(Integer.toString(getCommuneForumBusiness(iwc).getFileCount(topic)), _textStyle));
+						file.setWindowToOpen(CommuneForumTopicFiles.class);
+						file.addParameter(CommuneForumTopicFiles.prmTopicId, topic.getID());
+						table.add(file,5,row);
+					} catch (RemoteException e) {
+						e.printStackTrace(System.err);
+						throw new RuntimeException(e.getMessage());
+					}
 					row++;
 				}
 			}
@@ -105,7 +129,7 @@ public class CommuneForum extends Forum {
 	}
 	
 	protected Table getAdminPart(IWContext iwc) {
-		System.out.println("Commune business getAdminPart()");
+		//System.out.println("Commune business getAdminPart()");
 		Table adminTable = new Table(2, 1);
 		adminTable.setCellpadding(0);
 		adminTable.setCellspacing(0);
@@ -123,8 +147,7 @@ public class CommuneForum extends Forum {
 	 *  for this intance
 	 */
 	public Link getCategoryLink(String type){
-		
-		System.out.println("Getting category link in commune forum");
+		//System.out.println("Getting category link in commune forum");
 		
 		Link L = new Link();
 		L.addParameter(CategoryWindow.prmCategoryId,getCategoryId());
@@ -145,5 +168,41 @@ public class CommuneForum extends Forum {
 		L.setWindowToOpen(CommuneCategoryWindow.class);
 		return L;
 	}
+	
+	protected int addBelowTopic(IWContext iwc, ICCategory cat, Table table, int row) {
+		//System.out.println("adding below topic in commune forum");
+		try {
+			Collection pkColl = cat.getFiles();
+			Collection coll = getCommuneForumBusiness(iwc).convertFilePKsToFileCollection(pkColl);
+			
+			Table t = new Table();
+			t.setCellpaddingAndCellspacing(0);
+			t.setWidth("100%");
+			int r = 1;
+			
+			ICFile file;
+			if (coll != null && !coll.isEmpty()) {
+				t.add(formatText(_iwrb.getLocalizedString("attached_documents","Attached documents")+" :", _headingStyle), 1, r);
+				Iterator iter = coll.iterator();
+				while (iter.hasNext()) {
+					file = (ICFile) iter.next();
+					Link preview = new Link(formatText(file.getName(), _textStyle));
+					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getApplication()));
+					preview.setTarget(Link.TARGET_NEW_WINDOW);
+					t.add(preview, 2, r++);
+				}
+				t.add(formatText(Text.BREAK, _headingStyle), 1, row);
+			}
+			table.add(t, 1, row++);
+			return ++row;
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		} 
+		return row;
+	}
+	
+	protected CommuneForumBusiness getCommuneForumBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneForumBusiness) IBOLookup.getServiceInstance(iwc, CommuneForumBusiness.class);
+	}	
 	
 }

@@ -9,16 +9,22 @@
 package se.idega.idegaweb.commune.block.forum.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.block.forum.business.CommuneForumBusiness;
+
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.presentation.CategoryWindow;
+import com.idega.business.IBOLookup;
 import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICCategoryHome;
 import com.idega.core.data.ICCategoryTranslation;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -29,6 +35,8 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.user.presentation.UserChooserBrowser;
 
 /**
@@ -38,13 +46,21 @@ import com.idega.user.presentation.UserChooserBrowser;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CommuneCategoryWindow extends CategoryWindow {
+	protected String prmUserId = "usrBrwsrId";
+	protected CommuneForumBusiness cfb;
+	
 	public CommuneCategoryWindow() {
 		super();
 		setName("CommuneCategoryWindow");
 	}
+	
+	public void main(IWContext iwc) throws Exception{
+			cfb = getCommuneForumBusiness(iwc);
+			super.main(iwc);
+	}
 
 	protected void getCategoryFields(IWContext iwc, int iCategoryId) throws RemoteException {
-		System.out.println("Commune getCategoryFields()");
+		//System.out.println("Commune getCategoryFields()");
 		int parent = iwc.isParameterSet(prmParentID) ? Integer.parseInt(iwc.getParameter(prmParentID)) : -1;
 
 		Link newLink = new Link(core.getImage("/shared/create.gif"));
@@ -150,7 +166,7 @@ public class CommuneCategoryWindow extends CategoryWindow {
 	}
 
 	protected void fillTable(Iterator iter, Table T, int chosenId, Collection coll, TextInput name, TextInput info, TextInput order, int level) throws RemoteException {
-		System.out.println("Commune fillTable()");
+		//System.out.println("Commune fillTable()");
 		if (iter != null) {
 
 			ICCategory cat;
@@ -160,10 +176,12 @@ public class CommuneCategoryWindow extends CategoryWindow {
 			RadioButton rad;
 			Link deleteLink;
 			int id;
+			int ownerGroupId = -1;
 			int iOrder = 0;
 			while (iter.hasNext()) {
 				cat = (ICCategory) iter.next();
 				id = ((Integer) cat.getPrimaryKey()).intValue();
+				ownerGroupId = cat.getOwnerGroupId();
 				try {
 					trans = catServ.getCategoryTranslationHome().findByCategoryAndLocale(id, iLocaleId);
 				}
@@ -207,7 +225,19 @@ public class CommuneCategoryWindow extends CategoryWindow {
 					}
 					T.add(new HiddenInput(prmCategoryId, String.valueOf(id)));
 					formAdded = true;
-					T.add(new UserChooserBrowser("browser"),7,row);
+					UserChooserBrowser ucb = new UserChooserBrowser(prmUserId);
+					if (ownerGroupId > 0) {
+						try {
+							UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+							User user;
+							user = uHome.findByPrimaryKey(new Integer(ownerGroupId));
+							ucb.setSelectedUser(Integer.toString(ownerGroupId), user.getName());
+						} catch (FinderException e) {
+							ucb.setSelectedUser("-1", "User not found");
+							e.printStackTrace(System.err);
+						}
+					}
+					T.add(ucb,7,row);
 				}
 				else {
 					Link Li = new Link(formatText(catName));
@@ -229,7 +259,11 @@ public class CommuneCategoryWindow extends CategoryWindow {
 					}
 					T.add(childLink, 5, row);
 					T.add(deleteLink, 6, row);
-					T.add(new UserChooserBrowser("browser"),7,row);
+					User user = cfb.getModerator(cat);
+					if (user != null) {
+						T.add(formatText(user.getName()), 7, row);
+					}
+					//T.add(new UserChooserBrowser("browser"),7,row);
 
 				}
 				if (multi) {
@@ -252,4 +286,31 @@ public class CommuneCategoryWindow extends CategoryWindow {
 			trans = null;
 		}
 	}
+	
+	protected void postSave(IWContext iwc, int iCategoryId) throws RemoteException {
+		//System.out.println("Commune postSave()");
+		String sUsrId = iwc.getParameter(prmUserId);
+		try {
+			int userId = Integer.parseInt(sUsrId);
+			try {
+				ICCategoryHome cHome = (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
+				ICCategory cat = cHome.findByPrimaryKey(new Integer(iCategoryId));
+				if (userId > 0) {
+					cat.setOwnerGroupId(userId);
+					cat.update();	
+				}
+
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+			} catch (SQLException e) {
+				e.printStackTrace(System.err);
+			}
+		}catch (NumberFormatException n) {}
+
+	}
+	
+	protected CommuneForumBusiness getCommuneForumBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneForumBusiness) IBOLookup.getServiceInstance(iwc, CommuneForumBusiness.class);
+	}
+
 }
