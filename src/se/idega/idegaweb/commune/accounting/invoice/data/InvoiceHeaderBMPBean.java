@@ -30,6 +30,12 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_CHANGED_BY = "changed_by";
 	private static final String COLUMN_OWN_POSTING = "own_postiong";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
+	
+	private static final char STATUS_BASE = 'U';		//Underlag
+	private static final char STATUS_PRELIMINARY = 'P';
+	private static final char STATUS_TEST = 'T';
+	private static final char STATUS_LOCKED = 'L';
+	private static final char STATUS_HISTORY = 'H';
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -143,6 +149,22 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		setColumn(COLUMN_DOUBLE_POSTING, s);
 	}
 	
+	public char getStatusBase(){
+		return STATUS_BASE;
+	}
+	public char getStatusPreliminary(){
+		return STATUS_PRELIMINARY;
+	}
+	public char getStatusTest(){
+		return STATUS_TEST;
+	}
+	public char getStatusLocked(){
+		return STATUS_LOCKED;
+	}
+	public char getStatusHistory(){
+		return STATUS_HISTORY;
+	}
+
 	public Integer ejbFindByCustodian(User custodian) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodian.getPrimaryKey());
