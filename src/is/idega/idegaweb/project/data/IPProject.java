@@ -3,6 +3,7 @@ package is.idega.idegaweb.project.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.builder.dynamicpagetrigger.data.PageLink;
 
 
 /**
@@ -41,6 +42,7 @@ public class IPProject extends GenericEntity{
       addAttribute(_COLUMN_CREATION_DATE,"creationdate",true,true,"java.sql.Date");
       addAttribute(_COLUMN_PARENT_ID,"yfirverk",true,true,"java.lang.Integer");
       this.addManyToManyRelationShip(IPCategory.class,"ip_project_category");
+      this.addManyToManyRelationShip(PageLink.class,"ip_project_dpt_page_link");
     }
 
 

@@ -32,7 +32,8 @@ public class ProjectFilter extends Block implements IFrameContainer{
   boolean nameSet = false;
   IFrame iframe = null;
   int IFrameWithSubtraction = 16;
-
+  public static final String _PRM_PROJECT_CATEGORY_ID = EntityNavigationList._SELECTED_ENTITY_ID;
+  public static final String _PRM_CAT_TYPE_ID = "ip_cat_type_id";
 
   public ProjectFilter(){
     super();
@@ -85,6 +86,10 @@ public class ProjectFilter extends Block implements IFrameContainer{
       this.add(PFcontent);
     }
     UseIFrameLastValue=UseIFrame;
+  }
+
+  public void addListener(String listenerKey){
+    //
   }
 
   public void setBorder(int border){
@@ -151,7 +156,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
     if(this.equals(source)){
       return PFcontent.changeState(PFcontent,iwc);
     }else{
-      return null;
+      return PFcontent.changeState(source,iwc);
     }
   }
 
@@ -167,16 +172,19 @@ public class ProjectFilter extends Block implements IFrameContainer{
     PresentationObject ownerInstance = null;
     boolean isInIFrame = true;
 
+
+    public ProjectFilterContent() {
+      super();
+      this.setAddLinkBefore(true);
+    }
+
+
     public void setOwnerInstance(PresentationObject obj){
       ownerInstance = obj;
     }
 
     public PresentationObject getOwnerInstance(){
       return ownerInstance;
-    }
-
-    public ProjectFilterContent() {
-      super();
     }
 
 
@@ -251,33 +259,18 @@ public class ProjectFilter extends Block implements IFrameContainer{
     }
 
     protected void addParameters(IWContext iwc, GenericEntity item, Link link){
-      //super.addParameters(iwc,item,link);
-      link.addParameter("filter_id",item.getID());
-      /*String instanceIdprm = iwc.getParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER);
-      if(instanceIdprm != null){
-        link.addParameter("from_instance_id", instanceIdprm);
-      }
-      */
+      super.addParameters(iwc,item,link);
+      link.addParameter(_PRM_CAT_TYPE_ID, this.categoryTypeId);
+
       link.addIWPOListener(this.getOwnerInstance());
+      /**
+       * @todo implement chooser
+       */
+      link.addIWPOListener("9_22");
       if(isInIFrame()){
         link.setTarget(Link.TARGET_PARENT_WINDOW);
         link.setURL(IWMainApplication.BUILDER_SERVLET_URL);
       }
-
-      /*String instanceIdprm = iwc.getParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER);
-      if(instanceIdprm != null){
-        link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER,instanceIdprm);
-      }*/
-      /*if(getURl(iwc) != null){
-        link.setURL(getURl(iwc));
-      } else {
-        if(instanceIdprm != null){
-          link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER,instanceIdprm);
-        }
-      }
-      if(targetName != null){
-        link.setTarget(targetName);
-      }*/
 
     }
 

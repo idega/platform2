@@ -15,6 +15,9 @@ import com.idega.presentation.IWContext;
 
 public class EntityNavigationListState extends GenericState {
 
+  public static final int SelectedElementPos = 0;
+  protected static final int ENLSmaxPosValue = SelectedElementPos; // value that subclasses can start from
+
   public EntityNavigationListState(PresentationObject obj, IWContext iwc ) {
     super(obj,iwc);
   }

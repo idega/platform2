@@ -49,6 +49,7 @@ public abstract class EntityNavigationList extends Block {
   protected boolean linesBeetween = true;
   protected boolean bottomLine = true;
   protected boolean topLine = false;
+  boolean addLinkBefore = false;
 
 
   protected String separator = " ";
@@ -63,16 +64,21 @@ public abstract class EntityNavigationList extends Block {
 
   public static final String _SELECTED_ENTITY_ID = "enav_selentid";
 
+  private Object FirstDisplayText = "Allt";
+
   public EntityNavigationList() {
+    super();
     table = new Table();
     rowTemplateTable = new Table();
     linkColumns = new String[0];
     this.add(table);
+    initDefaultState();
+  }
 
+  public void initDefaultState(){
     EntityNavigationListState defState = new EntityNavigationListState(this);
     defState.setSelectedElementID(-1);
     this.setDefaultState(defState);
-
   }
 
   public void setMinimumNumberOfRows(int number){
@@ -124,50 +130,71 @@ public abstract class EntityNavigationList extends Block {
   }
 
   protected void addParameters(IWContext iwc, GenericEntity item, Link link){
-    link.addParameter(_SELECTED_ENTITY_ID,item.getID());
+    if( item != null){
+      link.addParameter(_SELECTED_ENTITY_ID,item.getID());
+    }else{
+      link.addParameter(_SELECTED_ENTITY_ID,-1);
+    }
   }
 
   private Object getDisplayedText(GenericEntity item){
-    if(linkColumns != null){
-      if(linkColumns.length == 1){
-        Object toReturn = null;
-        toReturn = item.getColumnValue(linkColumns[0]);
-        if(toReturn instanceof PresentationObject || toReturn instanceof String){
-          return toReturn;
-        }else if(toReturn instanceof Integer){
-          return ((Integer)toReturn).toString();
-        }else{
-          System.err.print(this+": datatype not instance of presentationObject, java.lang.String");
-          return "link";
-        }
-      }else {
-        String returnString = "";
-        for (int i = 0; i < linkColumns.length; i++) {
-          if(i!= 0){
-            returnString += separator;
-          }
-          if(item.getStorageClassType(linkColumns[i]) == EntityAttribute.TYPE_JAVA_LANG_STRING){
-            returnString += (String)item.getColumnValue(linkColumns[i]);
-          } else if (item.getStorageClassType(linkColumns[i]) == EntityAttribute.TYPE_JAVA_LANG_INTEGER){
-            returnString += ((Integer)item.getColumnValue(linkColumns[i])).toString();
+    if(item != null){
+      if(linkColumns != null){
+        if(linkColumns.length == 1){
+          Object toReturn = null;
+          toReturn = item.getColumnValue(linkColumns[0]);
+          if(toReturn instanceof PresentationObject || toReturn instanceof String){
+            return toReturn;
+          }else if(toReturn instanceof Integer){
+            return ((Integer)toReturn).toString();
           }else{
-            System.err.println(this+": datatype not supported in multivalue mode");
+            System.err.print(this+": datatype not instance of presentationObject, java.lang.String");
+            return "link";
           }
+        }else {
+          String returnString = "";
+          for (int i = 0; i < linkColumns.length; i++) {
+            if(i!= 0){
+              returnString += separator;
+            }
+            if(item.getStorageClassType(linkColumns[i]) == EntityAttribute.TYPE_JAVA_LANG_STRING){
+              returnString += (String)item.getColumnValue(linkColumns[i]);
+            } else if (item.getStorageClassType(linkColumns[i]) == EntityAttribute.TYPE_JAVA_LANG_INTEGER){
+              returnString += ((Integer)item.getColumnValue(linkColumns[i])).toString();
+            }else{
+              System.err.println(this+": datatype not supported in multivalue mode");
+            }
+          }
+          if(returnString.equals("")){
+            returnString = "link";
+          }
+          return returnString;
         }
-        if(returnString.equals("")){
-          returnString = "link";
-        }
-        return returnString;
+      } else {
+        System.err.println(this+": entitycolumns are not defined ");
+        return "link";
       }
-    } else {
-      System.err.println(this+": entitycolumns are not defined ");
-      return "link";
+    }else{
+      return FirstDisplayText;
     }
   }
 
   public void initializeInMain(IWContext iwc) throws Exception{
     super.initializeInMain(iwc);
     this.initColumns(iwc);
+    if(addLinkBefore){
+      extraRows += 1;
+      initSelectedElement = 1;
+      iterStartIndex += 1;
+    }
+  }
+
+  public void setAddLinkBefore(boolean value){
+    addLinkBefore = value;
+  }
+
+  public void setFirstLinkFace(Object face){
+    FirstDisplayText = face;
   }
 
   public void main(IWContext iwc) throws Exception {
@@ -177,17 +204,43 @@ public abstract class EntityNavigationList extends Block {
     //System.err.println("table.empty()");
     //initColumns(iwc);
     int selectedElement = -1;
+    int selectedItem = state.getSelectedElementID();
+    PresentationObject firstT = null;
+
+    if(addLinkBefore){
+        Object tObj = getDisplayedText(null);
+        if(selectedItem <=0 && initSelectedElement == 1){
+          selectedElement = 1;
+          if (tObj instanceof String){
+            firstT = new Text((String)tObj);
+            ((Text)firstT).setFontSize(1);
+          } else {
+            firstT = (PresentationObject)tObj;
+          }
+        } else {
+          if (tObj instanceof String){
+            firstT = new Link((String)tObj);
+          } else {
+            firstT = new Link((PresentationObject)tObj);
+          }
+          ((Link)firstT).setFontSize(1);
+          addParameters(iwc, null, (Link)firstT);
+        }
+
+    }
 
     List projects = getEntityList(iwc);
 
     if( projects != null && projects.size() > 0){
-      int selectedItem = state.getSelectedElementID();
       //System.err.println("table.resize("+columns+","+Math.max(projects.size()+extraRows,minimumNumberOfRows)+")");
       table.resize(columns,Math.max(projects.size()+extraRows,minimumNumberOfRows));
       //System.err.println("table.getColuns()="+table.getColumns()+" table.getRows()="+table.getRows());
       selectedElement = (projects.size()>=initSelectedElement)?initSelectedElement:-1;
       ListIterator lIter = projects.listIterator();
       int toAddToIndex = (extraRows<iterStartIndex)?iterStartIndex-1:extraRows;
+      if(addLinkBefore){
+        table.add(firstT,nameColumn,1);
+      }
       while (lIter.hasNext()) {
         int index = (lIter.nextIndex()+1)+toAddToIndex;
         GenericEntity lItem = (GenericEntity)lIter.next();
@@ -196,7 +249,7 @@ public abstract class EntityNavigationList extends Block {
         }
         PresentationObject t = null;
         Object tObj = getDisplayedText(lItem);
-        if(selectedElement > 0 && (selectedElement+toAddToIndex == index)){
+        if(selectedElement > 0 && (selectedElement == index)){
           if (tObj instanceof String){
             t = new Text((String)tObj);
             ((Text)t).setFontSize(1);
@@ -217,11 +270,15 @@ public abstract class EntityNavigationList extends Block {
 
       table.setHorizontalZebraColored(this.sebracolor1,this.sebracolor2);
       if(selectedElement > 0){
-        table.setRowColor(selectedElement+toAddToIndex,this.selectedColor);
+        table.setRowColor(selectedElement,this.selectedColor);
       }
 
     } else {
-      table.resize(columns,minimumNumberOfRows);
+      int min = Math.max(1,minimumNumberOfRows);
+      table.resize(columns,min);
+      if(addLinkBefore){
+        table.add(firstT,nameColumn,1);
+      }
       table.setHorizontalZebraColored(this.sebracolor1,this.sebracolor2);
     }
     table.setCellpadding(this.cellpadding);

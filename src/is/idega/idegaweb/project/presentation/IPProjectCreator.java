@@ -35,6 +35,7 @@ public class IPProjectCreator extends IWAdminWindow {
   protected final static String projectNumberFieldName = "ip_p_number";
   protected final static String projectDescriptionFieldName = "ip_p_description";
   protected final static String projectCategoryFieldName = "ip_p_category";
+  public final static String _PRM_INSTANCE_ID = "ic_inst_id";
 
   private Form myForm;
 
@@ -182,6 +183,7 @@ public class IPProjectCreator extends IWAdminWindow {
 
   public void main(IWContext iwc) throws Exception {
     myForm.empty();
+    myForm.maintainParameter(_PRM_INSTANCE_ID);
     this.add(myForm);
     business = ProjectBusiness.getInstance();
 
@@ -226,7 +228,19 @@ public class IPProjectCreator extends IWAdminWindow {
               }
             }
 
-            business.createIPProject(name,pNumber,description,parentId,categoryIds);
+            int projectId = business.createIPProject(name,pNumber,description,parentId,categoryIds);
+
+            String instID = iwc.getParameter(_PRM_INSTANCE_ID);
+            int instanceId = 0;
+            if(instID != null && !instID.equals("")){
+              instanceId = Integer.parseInt(instID);
+            }
+
+            boolean triggerPage = true;
+            if(triggerPage && instanceId != 0){
+              business.createPageLink(iwc,instanceId, projectId,name);
+            }
+
             succeeded = true;
           }
           catch (Exception ex) {
