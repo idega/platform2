@@ -73,11 +73,11 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 	// getters
 	// /////////////////////////////////////////////////
 	public Date getFromDate() {
-		return (Date) getColumnValue(COLUMN_FROM_DATE);
+		return getDateColumnValue(COLUMN_FROM_DATE);
 	}
 
 	public Date getToDate() {
-		return (Date) getColumnValue(COLUMN_TO_DATE);
+		return getDateColumnValue(COLUMN_TO_DATE);
 	}
 
 	public int getOrdinaryWorkingHours() {
@@ -89,7 +89,7 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 	}
 
 	public Date getCreatedDate() {
-		return (Date) getColumnValue(COLUMN_CREATED_DATE);
+		return getDateColumnValue(COLUMN_CREATED_DATE);
 	}
 
 	public User getUser() {
@@ -97,11 +97,11 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 	}
 
 	public Date getGrantedDate() {
-		return (Date) getColumnValue(COLUMN_GRANTED_DATE);
+		return getDateColumnValue(COLUMN_GRANTED_DATE);
 	}
 
 	public Date getRejectedDate() {
-		return (Date) getColumnValue(COLUMN_REJECTED_DATE);
+		return getDateColumnValue(COLUMN_REJECTED_DATE);
 	}
 
 	public User getDecisionBy() {

@@ -125,12 +125,8 @@ public class VacationApplication extends VacationBlock {
 		form.add(new Break());
 		form.add(getReasonTable(iwc));
 		form.add(new Break());
-		form.addParameter(PARAMETER_ACTION, ACTION_PAGE_THREE);// hvernig kemst
-																														// ma›ur í raun
-																														// hé›an og á næstu
-																														// sí›u e›a
-																														// tilbaka??
-		form.add(getCancelButton());// e›a Cancel
+		form.addParameter(PARAMETER_ACTION, ACTION_PAGE_THREE);
+		form.add(getCancelButton());
 		form.add(getNextButton());
 		form.maintainParameter(PARAMETER_VACATION_FROM_DATE);
 		form.maintainParameter(PARAMETER_VACATION_TO_DATE);
@@ -419,7 +415,6 @@ public class VacationApplication extends VacationBlock {
 		return menu;
 	}
 
-	// hér vantar a› ákvar›a hva› á a› s‡na, metadata vantar inn! Hjálp, Laddi!
 	private Table showVacationRequest(IWContext iwc) {
 		Table table = new Table();
 		table.setColumns(9);
