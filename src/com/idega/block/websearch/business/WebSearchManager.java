@@ -94,7 +94,7 @@ public final class WebSearchManager {
 				e.printStackTrace();
 			}}*/
 		catch (Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			System.out.println("WebSearch: Error reading config file, pointing index to http://localhost by default");
 			String localhost = new String("http://localhost/");
 			
