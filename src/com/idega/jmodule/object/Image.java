@@ -11,6 +11,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.image.data.ImageEntity;
+import com.idega.util.caching.BlobCacher;
 
 
 /**
@@ -67,18 +68,6 @@ public Image(String name,String url, String overImageUrl){
 
 }
 
-
-private String getImageURL(ImageEntity image, ModuleInfo modinfo){
-  //String URIString = com.idega.util.caching.BlobCacher.getCachedUrl(image, modinfo ,"image_value");
-  //if( URIString == null ){
-
-    String URIString ;
-    URIString = IWMainApplication.IMAGE_SERVLET_URL;
-    URIString += image.getID()+"image?image_id="+image.getID();
-  //}else useCached = true;
-  return URIString;
-}
-
 /*
 public Image(String name,int image_id, int over_image_id){
 	super();
@@ -123,7 +112,7 @@ public Image(String url,String name,int width,int height){
 	setBorder(0);
 }
 /**
-*Fetches an image from the database through the imageservlet
+*Fetches an image from the database through the imageservlet or blobcache
 */
 
 public Image(int image_id) throws SQLException{
@@ -132,6 +121,51 @@ public Image(int image_id) throws SQLException{
   setBorder(0);
 
 }
+
+
+public Image(int image_id, String name) throws SQLException{
+  super();
+  this.imageId = image_id;
+  setBorder(0);
+  setName(name);
+}
+
+public Image(int image_id, int width, int height) throws SQLException{
+  super();
+  this.imageId = image_id;
+  setBorder(0);
+  setWidth(width);
+  setHeight(height);
+}
+
+public Image(int image_id, String name, int width, int height) throws SQLException{
+  super();
+  this.imageId = image_id;
+  setBorder(0);
+  setName(name);
+  setWidth(width);
+  setHeight(height);
+}
+
+
+
+private String getImageURL(ModuleInfo modinfo){
+  StringBuffer URIBuffer;
+  String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",imageId, modinfo ,"image_value");
+
+  if( URIString == null ){
+    useCached = false;
+    URIBuffer = new StringBuffer(IWMainApplication.IMAGE_SERVLET_URL);
+    URIBuffer.append(imageId);
+    URIBuffer.append("image?image_id=");
+    URIBuffer.append(imageId);
+    URIString = URIBuffer.toString();
+  }else useCached = true;
+
+  return URIString;
+}
+
+
 
 
   public void setProperty(String key, String values[]) {
@@ -147,6 +181,7 @@ public Image(int image_id) throws SQLException{
       setHeight(Integer.parseInt(values[0]));
     }
   }
+
 
 public void setBorder(String s){
 	setAttribute("border",s);
@@ -277,16 +312,14 @@ private String getHTMLString(){
 private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
     ImageEntity image = null;
-    image = new ImageEntity(imageId);
-    String URIString = getImageURL(image,modinfo);
+
+    String URIString = getImageURL(modinfo);
     setURL(URIString);
-/*
+
     if( useCached ){
         print(getHTMLString());
     }
-    else image = new ImageEntity(imageId);*/
-
-
+    else image = new ImageEntity(imageId);
 
     if( (image!=null) && (image.getID()!=-1) ){//begin debug
       String texti = image.getText();
@@ -452,8 +485,6 @@ public void print(ModuleInfo modinfo)throws IOException{
 		}
 	//}
 }
-
-
 
 }
 
