@@ -393,19 +393,17 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	throws FinderException {
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
-		String[] ordering = { COLUMN_DIVISION_ID, COLUMN_GROUP_ID , COLUMN_DATE_OF_ENTRY };
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
+		sql.appendWhere().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
 		if  (types != null && types.length>0)
-			sql.appendWhere().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
-		sql.appendAnd().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
+			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
 		if (club != null)
 			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
 		if  (divisions != null && divisions.size()>0)
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
-		sql.appendOrderBy(ordering);
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
