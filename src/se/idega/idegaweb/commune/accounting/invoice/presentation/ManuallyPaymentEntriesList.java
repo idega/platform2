@@ -231,23 +231,33 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		InvoiceRecord inv = null;
 
 		try{
-			pay = getPaymentRecordHome().create();
 			payhdr = getPaymentHeaderHome().create();
-			inv = getInvoiceRecordHome().create();
 		}catch(CreateException ex2){
 			ex2.printStackTrace();
 			return;
 		}			
+		
+		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
+			payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+		}
+				
+		payhdr.store();			
 
+		try{
+			pay = getPaymentRecordHome().create();
+			inv = getInvoiceRecordHome().create();
+		}catch(CreateException ex2){
+			ex2.printStackTrace();
+			return;
+		}
+		
 		pay.setPaymentHeader(payhdr);
 		pay.setTotalAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
 		
 		pay.setNotes(iwc.getParameter(PAR_REMARK));
 //			pay.setPlacing(iwc.getParameter(PAR_PLACING));
 		pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
-			payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
-		}
+
 		
 //			pay.setUser(getUser(iwc));
 		pay.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
@@ -259,20 +269,15 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		} catch (PostingParametersException e) {
 			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
 		}	
-					
-		pay.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-		pay.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 	
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, errorMessages);	
 		}else{		
-
-			payhdr.store();		
+	
 			pay.store();		
 			inv.store();		
 			//TODO return to calling page
 		}
-						
 	}
 
 
