@@ -73,6 +73,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private boolean _showMobilePhone;
 	private boolean _showEmail;
 	private boolean _allowUserEdit= false;
+	private boolean _showPictureInList = false;
 
 	private String _imageWidth;
 	private String _imageHeight;
@@ -184,6 +185,7 @@ public class StaffBrowser extends Block implements Builderaware {
 		Text titleText = null;
 		Text phoneText = null;
 		StaffHolder holder = null;
+		Image image = null;
 		int column = 1;
 		int emailColumn = -1;
 
@@ -213,30 +215,72 @@ public class StaffBrowser extends Block implements Builderaware {
 				else
 					phoneText = new Text("");
 				phoneText.setFontStyle(_textStyle);
-
-				if (isShowDetails())
-					table.add(userLink, column++, staffRow);
-				else
-					table.add(userName, column++, staffRow);
 				
-				if (_showListTitle) {
-					if (_titleWidth != null)
-						table.setWidth(column, _titleWidth);
-					table.add(titleText, column++, staffRow);
-				}
-				if (_showListWorkPhone) {
-					if (_workPhoneWidth != null)
-						table.setWidth(column, _workPhoneWidth);
-					table.add(phoneText, column++, staffRow);
-				}
-				if (emailLink != null) {
-					if (_emailWidth != null)
-						table.setWidth(column, _emailWidth);
-					if (_emailAlignment != null) {
-						emailColumn = column;
-						table.setAlignment(column, staffRow, _emailAlignment);
+				if(!_showPictureInList){
+					if (isShowDetails())
+						table.add(userLink, column++, staffRow);
+					else
+						table.add(userName, column++, staffRow);
+				
+					if (_showListTitle) {
+						if (_titleWidth != null)
+							table.setWidth(column, _titleWidth);
+						table.add(titleText, column++, staffRow);
 					}
-					table.add(emailLink, column++, staffRow);
+					if (_showListWorkPhone) {
+						if (_workPhoneWidth != null)
+							table.setWidth(column, _workPhoneWidth);
+						table.add(phoneText, column++, staffRow);
+					}
+					if (emailLink != null) {
+						if (_emailWidth != null)
+							table.setWidth(column, _emailWidth);
+						if (_emailAlignment != null) {
+							emailColumn = column;
+							table.setAlignment(column, staffRow, _emailAlignment);
+						}
+						table.add(emailLink, column++, staffRow);
+					}
+				}
+				else{
+					column = 2;
+					int imageStartRow = staffRow;
+					if (holder.getImageID() != -1) {
+						try {
+							image = new Image(holder.getImageID());
+							if (_imageWidth != null)
+								image.setWidth(_imageWidth);
+							if (_imageHeight != null)
+								image.setHeight(_imageHeight);
+							image.setBorder(1);
+							image.setVerticalSpacing(3);
+							image.setHorizontalSpacing(10);
+						}
+						catch (Exception e) {
+							image = null;
+						}
+
+						if (image != null) {
+							table.add(image, 1, staffRow);
+						}
+					}
+					staffRow++;
+					if (isShowDetails())
+						table.add(userLink, column, ++staffRow);
+					else
+						table.add(userName, column, ++staffRow);
+					
+					if (_showListTitle) {
+						table.add(titleText, column, ++staffRow);
+					}
+					if (_showListWorkPhone) {
+						table.add(phoneText, column, ++staffRow);
+					}
+					if (emailLink != null) {
+						table.add(emailLink, column, ++staffRow);
+					}
+					table.mergeCells(1,imageStartRow,1,staffRow);
+					column++;
 				}
 
 				if (_isAdmin || (_allowUserEdit && iwc.getUserId() == holder.getUserID())) {
