@@ -5,6 +5,7 @@ package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.ui.PageIncluder;
 
 
@@ -20,6 +21,12 @@ public class ClubPageIncluder extends PageIncluder {
     public static String PARAM_ROOT_CLUB_ID = "RO_CL_ID";
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
     
+	private Page parentPage;
+	private String coolMenuScript = "coolmenus4.js";
+	private String menuStyleScript = "coolStyle.css";
+	private String coolMenuSrc;
+	private String menuStyleSrc;
+	
     public ClubPageIncluder() {
         super();
     }
@@ -28,6 +35,21 @@ public class ClubPageIncluder extends PageIncluder {
         super(URL);
     }
     
+    public void main(IWContext iwc) throws Exception {
+    	super.main(iwc);
+    	
+    	parentPage = this.getParentPage();
+		coolMenuSrc = scriptSource(coolMenuScript, iwc);
+		menuStyleSrc = scriptSource(menuStyleScript, iwc);
+		parentPage.addJavascriptURL(coolMenuSrc);
+		parentPage.addStyleSheetURL(menuStyleSrc);
+    }
+    
+    private String scriptSource(String fileName, IWContext iwc){
+		String url = iwc.getIWMainApplication().getCoreBundle().getResourcesURL();
+		url = url + "/" + fileName;
+		return url;
+	}
     
     protected String finalizeLocationString(String location, IWContext iwc) {
         IWBundle bundle = this.getBundle(iwc);
