@@ -37,10 +37,14 @@ public class TournamentRoundParticipants extends TournamentParticipants{
 		addAttribute("total_par","Par vallarins",true, true , "java.lang.Integer");
 		addAttribute("difference","par",true,true, "java.lang.Integer");
 		addAttribute("grup_num","Ráshópur",true,true, "java.lang.Integer");
+		addAttribute("group_name","Ráshópsnafn",true,true, "java.lang.String");
 	}
 
 	public int getGroupNumber() {
-		return getIntColumnValue("grup_num");
+		return getIntColumnValue("group_num");
 	}
 
+  public String getGroupName() {
+    return(getStringColumnValue("group_name"));
+  }
 }
