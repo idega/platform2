@@ -3,13 +3,13 @@ package is.idega.idegaweb.campus.presentation;
 import is.idega.idegaweb.campus.block.finance.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
+import com.idega.presentation.util.TextFormat;
 import com.idega.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.database.ConnectionBroker;
 import com.idega.data.SimpleQuerier;
-import com.idega.util.text.TextFormat;
 import java.sql.*;
 
 /**
