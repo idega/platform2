@@ -1430,7 +1430,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
 		link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.maintainParameter(PARAMETER_SORT_BY, iwc);
+		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
 		link.addParameter(PARAMETER_PAGE_NR, pageNumber);
+		
 		maintainEngineSpecificParameters(link);
 		return link;
 	}
