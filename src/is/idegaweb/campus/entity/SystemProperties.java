@@ -20,36 +20,52 @@ public class SystemProperties extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getContractYearsColumnName(),"Contract Years",true,true,"java.lang.Integer");
-    addAttribute(getContractDateColumnName(),"Contract Date",true,true,"java.sql.Date");
-    addAttribute(getCypherKeyColumnName(),"Cypher Key",true,true,"java.lang.String",4000);
+    addAttribute(getColumnNameContractYears(),"Contract Years",true,true,"java.lang.Integer");
+    addAttribute(getColumnNameContractDate(),"Contract Date",true,true,"java.sql.Date");
+    addAttribute(getColumnNameCypherKey(),"Cypher Key",true,true,"java.lang.String",4000);
+    addAttribute(getColumnNameCypherKey(),"Admin email",true,true,"java.lang.String",1000);
+    addAttribute(getColumnNameCypherKey(),"email host",true,true,"java.lang.String",1000);
   }
   public String getEntityName() {
-    return getSystemPropertiesEnitityName();
+    return getEntityTableName();
   }
 
-  public static String getSystemPropertiesEnitityName(){return "CAM_SYS_PROPS";}
-  public static String getContractYearsColumnName(){return "CONTRACT_YEARS";}
-  public static String getContractDateColumnName(){return "CONTRACT_DATE";}
-  public static String getCypherKeyColumnName(){return "CYPHERKEY";}
+  public static String getEntityTableName(){return "CAM_SYS_PROPS";}
+  public static String getColumnNameContractYears(){return "CONTRACT_YEARS";}
+  public static String getColumnNameContractDate(){return "CONTRACT_DATE";}
+  public static String getColumnNameCypherKey(){return "CYPHERKEY";}
+  public static String getColumnNameAdminEmail(){return "ADMIN_EMAIL";}
+  public static String getColumnNameEmailHost(){return "EMAIL_HOST";}
 
   public void setContractYears(int years){
-    setColumn(getContractYearsColumnName(),years);
+    setColumn(getColumnNameContractYears(),years);
   }
   public int getContractYears(){
-    return getIntColumnValue(getContractYearsColumnName());
+    return getIntColumnValue(getColumnNameContractYears());
   }
   public void setContractDate(java.sql.Date date){
-    setColumn(getContractDateColumnName(),date);
+    setColumn(getColumnNameContractDate(),date);
   }
   public java.sql.Date getContractDate(){
-    return((java.sql.Date)getColumnValue(getContractDateColumnName()));
+    return((java.sql.Date)getColumnValue(getColumnNameContractDate()));
   }
   public void setCypherKey(String key){
-    setColumn(getCypherKeyColumnName(),key);
+    setColumn(getColumnNameCypherKey(),key);
   }
   public String getCypherKey(){
-    return getStringColumnValue(getCypherKeyColumnName());
+    return getStringColumnValue(getColumnNameCypherKey());
+  }
+  public void setAdminEmail(String email){
+    setColumn(getColumnNameAdminEmail(),email);
+  }
+  public String getAdminEmail(){
+    return getStringColumnValue(getColumnNameAdminEmail());
+  }
+   public void setEmailHost(String host){
+    setColumn(getColumnNameEmailHost(),host);
+  }
+  public String getEmailHost(){
+    return getStringColumnValue(getColumnNameEmailHost());
   }
   public void insert() throws java.sql.SQLException{
   }
