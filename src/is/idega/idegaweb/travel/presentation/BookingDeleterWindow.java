@@ -33,11 +33,11 @@ public class BookingDeleterWindow extends TravelWindow {
   List _bookings = new Vector();
 
   public BookingDeleterWindow() {
-//    setTitle("idegaWEB travel");
   }
 
   public void main(IWContext iwc) {
     super.main(iwc);
+    setTitle("idegaWEB travel");
     init(iwc);
 
     if (_bookings != null && _bookings.size() > 0) {

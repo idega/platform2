@@ -299,6 +299,7 @@ public class Booking extends TravelManager {
       boolean yearly = timeframe.getIfYearly();
       List depDays = null;
 
+
       if (isDayVisible) {
           table.setColor(6,row,super.backgroundColor);
           table.add(Text.BREAK ,6,row);

@@ -711,8 +711,13 @@ public class ResellerManager {
     List groups = UserBusiness.getUserGroups(user);
     boolean isReseller = false;
     int number = 0;
+
+    GenericGroup group;
+    String type;
     for (int i = 0; i < groups.size(); i++) {
-      if (groups.get(i) instanceof ResellerStaffGroup) {
+      group = (GenericGroup) groups.get(i);
+      type = group.getGroupType();
+      if (type != null && type.equals(ResellerStaffGroup.GROUP_TYPE_VALUE)) {
         isReseller = true;
         number= i;
         break;
@@ -721,9 +726,10 @@ public class ResellerManager {
 
     if (isReseller) {
       Reseller[] resellers = Reseller.getValidResellers();
-      ResellerStaffGroup rGroup = (ResellerStaffGroup) groups.get(number);
+      GenericGroup rGroup = (GenericGroup) groups.get(number);
+      String name;
       for (int i = 0; i < resellers.length; i++) {
-        if (resellers[i].getName().indexOf(rGroup.getName()) != -1) {
+        if ((resellers[i].getName()+"_"+resellers[i].getID()).indexOf(rGroup.getName()) != -1) {
           return resellers[i];
         }
       }

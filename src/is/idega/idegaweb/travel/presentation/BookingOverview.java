@@ -1,6 +1,7 @@
 
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.core.user.data.User;
 import java.util.Vector;
 import java.util.List;
 import com.idega.presentation.Block;
@@ -563,7 +564,7 @@ public class BookingOverview extends TravelManager {
           Text availableText = (Text) theText.clone();
               availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
           Text hotelPickupText = (Text) theText.clone();
-              hotelPickupText.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
+              hotelPickupText.setText(iwrb.getLocalizedString("travel.booked_by","Booked by"));
 
 
           Text dateTextBold = (Text) theSmallBoldText.clone();
@@ -639,7 +640,7 @@ public class BookingOverview extends TravelManager {
 
           Text Tname;
           Text Temail;
-          Text Thotel = (Text) super.theSmallBoldText.clone();
+          Text TbookedBy = (Text) super.theSmallBoldText.clone();
           Text Tbooked;
 
           java.util.List emails;
@@ -718,38 +719,29 @@ public class BookingOverview extends TravelManager {
 //            deleteLink.addParameter(this.closerLookIdParameter, view_id);
           Link link;
           Booking[] bookings = {};
+          GeneralBooking booking;
+          int[] bNumbers;
+
           if (this.supplier != null) {
             bookings = TourBooker.getBookings(this.service.getID(), currentStamp);
           }else if (this.reseller != null) {
             bookings = TourBooker.getBookings(reseller.getID(), service.getID(), currentStamp);
           }
-          TourBooking tBooking;
+
           Object serviceType;
+          User bUser;
+          Reseller bReseller;
           for (int i = 0; i < bookings.length; i++) {
               ++row;
+              booking = new GeneralBooking(bookings[i].getID());
               serviceType = Booker.getServiceType(this.service.getID());
-              if (serviceType instanceof Tour ) {
-                try {
-                  tBooking = new TourBooking(bookings[i].getID());
-                  if (tour.getHotelPickup() && tBooking.getHotelPickupPlaceID() != -1) {
-                    HotelPickupPlace place = new HotelPickupPlace(tBooking.getHotelPickupPlaceID());
-                    Thotel = (Text) super.theSmallBoldText.clone();
-                      Thotel.setFontColor(super.BLACK);
-                    Thotel.setText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-                    Thotel.addToText(place.getName());
-                    Thotel.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-                    if (tBooking.getRoomNumber() != null)
-                    Thotel.addToText(tBooking.getRoomNumber());
-                  }else {
-                      Thotel.setText("");
-                  }
-                }catch (Exception e){
-                  e.printStackTrace(System.err);
-                  Thotel.setText("");
-                }
-              }
+
               Tname = (Text) super.theSmallBoldText.clone();
-                Tname.setText("&nbsp;&nbsp;"+bookings[i].getName());
+                Tname.setText(bookings[i].getName());
+              bNumbers = Booker.getMultipleBookingNumber(booking);
+              if ( bNumbers[0] != 0 ) {
+                Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
+              }
               Temail = (Text) super.theSmallBoldText.clone();
                 Temail.setText(bookings[i].getEmail());
               Tbooked = (Text) super.theSmallBoldText.clone();
@@ -759,19 +751,28 @@ public class BookingOverview extends TravelManager {
               Temail.setFontColor(super.BLACK);
               Tbooked.setFontColor(super.BLACK);
 
+              bUser = new User(bookings[i].getUserId());
+              bReseller = ResellerManager.getReseller(bUser);
+              TbookedBy = (Text) super.theSmallBoldText.clone();
+                TbookedBy.setFontColor(super.BLACK);
+                TbookedBy.setText(bUser.getName());
+                if (bReseller != null) {
+                  if (this.reseller != bReseller) {
+                    TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
+                  }
+                }
+
+              link = VoucherWindow.getVoucherLink(bookings[i]);
+                link.setText(Tname);
 
               table.mergeCells(2, row, 5, row);
-              table.add(Tname, 1, row);
+              table.add(link, 1, row);
               table.add(Temail, 2, row);
               table.setAlignment(3, row, "left");
               table.add(Tbooked, 6, row);
-              table.add(Thotel, 8, row);
+              table.add(TbookedBy, 8, row);
 
               table.setRowColor(row, super.GRAY);
-
-              link = VoucherWindow.getVoucherLink(bookings[i]);
-              table.add(link, 9, row);
-              table.add(Text.NON_BREAKING_SPACE,9,row);
 
               link = (Link) changeLink.clone();
                 link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);

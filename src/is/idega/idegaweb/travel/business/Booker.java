@@ -590,4 +590,20 @@ public class Booker {
     return list;
   }
 
+  /**
+   * returns int[] int[0] is number of current booking, int[1] is total bookings number
+   */
+  public static int[] getMultipleBookingNumber(GeneralBooking booking) {
+    List list = getMultibleBookings(booking);
+    int[] returner = new  int[2];
+    if (list == null || list.size() < 2 ) {
+      returner[0] = 0;
+      returner[1] = 0;
+    }else {
+      returner[0] = list.indexOf(booking) + 1;
+      returner[1] = list.size();
+    }
+    return returner;
+  }
+
 }

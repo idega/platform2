@@ -13,6 +13,8 @@ import java.sql.SQLException;
  */
 
 public class ResellerStaffGroup extends GenericGroup {
+  public static final String GROUP_TYPE_VALUE = "sr_reseller_staff";
+
 
   public ResellerStaffGroup() {
     super();
@@ -24,7 +26,7 @@ public class ResellerStaffGroup extends GenericGroup {
 
 
   public String getGroupTypeValue() {
-    return "sr_reseller_staff";
+    return GROUP_TYPE_VALUE;
   }
 
 

@@ -301,8 +301,13 @@ public class SupplierManager {
     List groups = UserBusiness.getUserGroups(user);
     boolean isSupplier = false;
     int number = 0;
+
+    GenericGroup group;
+    String type;
     for (int i = 0; i < groups.size(); i++) {
-      if (groups.get(i) instanceof SupplierStaffGroup) {
+      group = (GenericGroup) groups.get(i);
+      type = group.getGroupType();
+      if (type != null && type.equals(SupplierStaffGroup.GROUP_TYPE_VALUE)) {
         isSupplier = true;
         number= i;
         break;
@@ -313,15 +318,15 @@ public class SupplierManager {
       Supplier[] supps = Supplier.getValidSuppliers();
       SupplierStaffGroup sGroup = (SupplierStaffGroup) groups.get(number);
       for (int i = 0; i < supps.length; i++) {
-        if (supps[i].getName().indexOf(sGroup.getName()) != -1) {
+        if ((supps[i].getName()+"_"+supps[i].getID()).indexOf(sGroup.getName()) != -1) {
           return supps[i];
         }
       }
 
     }
-
     return null;
   }
+
 
   public static User getMainUser(Supplier supplier) throws SQLException  {
     List users = UserGroupBusiness.getUsersContained(new GenericGroup(supplier.getGroupId()));

@@ -535,7 +535,7 @@ public class TourBookingForm extends TravelManager {
                 pickupMenu.setSelectedElement(Integer.toString(_booking.getHotelPickupPlaceID()));
                 roomNumber.setContent(_booking.getRoomNumber());
               }catch (NullPointerException n) {
-                n.printStackTrace(System.err);
+                //n.printStackTrace(System.err);
               }
             }
 
@@ -1469,7 +1469,7 @@ public class TourBookingForm extends TravelManager {
         try {
           betw = Integer.parseInt(manyDays);
         }catch (NumberFormatException e) {
-          e.printStackTrace(System.err);
+          //e.printStackTrace(System.err);
         }
 
         int[] bookingIds = new int[betw];
@@ -1485,7 +1485,20 @@ public class TourBookingForm extends TravelManager {
             }
             lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
           }else {
-            lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
+            //handle multiple...
+            List tempBookings = Booker.getMultibleBookings(new GeneralBooking(iBookingId));
+            if (tempBookings == null || tempBookings.size() < 2) {
+              lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
+            }else {
+              GeneralBooking gBooking;
+              for (int j = 0; j < tempBookings.size(); j++) {
+                gBooking = (GeneralBooking) tempBookings.get(j);
+                TourBooker.updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
+              }
+              lbookingId = iBookingId;
+
+
+            }
           }
           bookingIds[i] = lbookingId;
         }

@@ -60,10 +60,12 @@ public class LoginPage extends TravelManager {
   protected Table getLoginTable(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
     Table table = new Table(3,4);
       table.setWidth(543);
-      table.setCellpaddingAndCellspacing(0);
+      table.setCellpadding(0);
+      table.setCellspacing(0);
       table.setColor(super.WHITE);
       table.mergeCells(1,1,3,1);
       table.mergeCells(1,4,3,4);
+      table.setBorder(1);
 
       Image banner = iwrb.getImage("images/travel_banner.gif",543, 212);
       Image welcome = iwrb.getImage("images/welcome.gif",215, 75);
