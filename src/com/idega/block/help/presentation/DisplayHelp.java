@@ -33,6 +33,14 @@ import java.util.Locale;
 public class DisplayHelp extends PresentationObjectContainer {
 	public static final String HELP_KEY = Help.HELP_KEY;
 	public static final String HELP_BUNDLE = Help.HELP_BUNDLE;
+	public static final String TITLE_STYLE = HelpTree.TITLE_STYLE;
+	public static final String TITLE_CLASS = HelpTree.TITLE_CLASS;
+	public static final String BODY_STYLE = HelpTree.BODY_STYLE;
+	public static final String BODY_CLASS = HelpTree.BODY_CLASS;
+	
+	private static final String BUNDLE_IDENTIFIER = "com.idega.block.help";
+	
+	private static final String HELP_NO_HELP_SELECTED = "hlp_no_help_available";
 
 	private String _localizedTitle = null;
 	private String _localizedHelpText = null;
@@ -46,10 +54,24 @@ public class DisplayHelp extends PresentationObjectContainer {
 	private final static String HELP_FILE_PREFIX = "hlp_";
 	
 	private XMLDocument _doc = null;
+
+	protected String _titleStyleAttribute = null;
+	protected String _titleStyleClass = null;
+	protected String _bodyStyleAttribute = null;
+	protected String _bodyStyleClass = null;
+	protected String _linkStyleAttribute = null;
+	protected String _linkStyleClass = null;
+	protected String _seeAlsoStyleAttribute = null;
+	protected String _seeAlsoStyleClass = null;
 			
 	public void main(IWContext iwc) throws Exception {
 		String key = iwc.getParameter(HELP_KEY);
 		String bundle = iwc.getParameter(HELP_BUNDLE);
+		
+		_titleStyleAttribute = iwc.getParameter(TITLE_STYLE);
+		_titleStyleClass = iwc.getParameter(TITLE_CLASS);
+		_bodyStyleAttribute = iwc.getParameter(BODY_STYLE);
+		_bodyStyleClass = iwc.getParameter(BODY_CLASS);
 		
 		Table t = null;
 		int row = 1;
@@ -64,28 +86,32 @@ public class DisplayHelp extends PresentationObjectContainer {
 		if (_localizedTitle != null) {
 			title = new Text(_localizedTitle);
 			
-//			if (_titleStyleAttribute != null)
-//				title.setStyleAttribute(_titleStyleAttribute);						
-//			else if (_titleStyleClass != null)
-//				title.setStyleClass(_titleStyleClass);
+      if (_titleStyleAttribute != null)
+				title.setStyleAttribute(_titleStyleAttribute);						
+			else if (_titleStyleClass != null)
+				title.setStyleClass(_titleStyleClass);
+  		t.add(title, 1, row++);
 		}
 
-		t.add(title, 1, row++);
 		row++;
 		
 		Text body = null;
 		if (_localizedHelpText != null) {
 			body = new Text(_localizedHelpText);
 			
-//			if (_bodyStyleAttribute != null)
-//				body.setStyleAttribute(_bodyStyleAttribute);
-//			else if (_bodyStyleClass != null)
-//				body.setStyleClass(_bodyStyleClass);
-		}
-						
-		t.add(_localizedHelpText, 1, row);
+			if (_bodyStyleAttribute != null)
+				body.setStyleAttribute(_bodyStyleAttribute);
+			else if (_bodyStyleClass != null)
+				body.setStyleClass(_bodyStyleClass);
 
-		add(t);
+			t.add(_localizedHelpText, 1, row);
+		}
+		
+		if (_localizedTitle != null || _localizedHelpText != null)				
+			add(t);	
+		else {
+			add(getResourceBundle(iwc).getLocalizedString(HELP_NO_HELP_SELECTED,"Select help item from the tree"));
+		}
 	}
 	
 	private void getHelpText(IWContext iwc, String helpKey, String bundle, Locale loc) {
@@ -107,19 +133,6 @@ public class DisplayHelp extends PresentationObjectContainer {
 		if (id == null || !id.getValue().equals(helpKey))
 			return;
 
-//		String lang = loc.getLanguage();
-//		String country = loc.getCountry();
-//		
-//		StringBuffer localeString = new StringBuffer(lang);
-//		if (!country.equals("")) {			
-//			localeString.append("_");
-//			localeString.append(country);
-//		}
-//				
-//		XMLElement localeElement = help.getChild(localeString.toString());
-//		if (localeElement == null)
-//			return;
-			
 		XMLElement title = help.getChild(XML_TITLE);
 		if (title != null) {
 			String tmp = title.getText();
@@ -161,5 +174,41 @@ public class DisplayHelp extends PresentationObjectContainer {
 		catch (Exception e) {
 			_doc = new XMLDocument(new XMLElement(XML_ROOT));
 		}
+	}	
+	
+	public void setTitleStyleAttribute(String styleAttribute) {
+		_titleStyleAttribute = styleAttribute;
+	}
+	
+	public void setTitleStyleClass(String styleClass) {
+		_titleStyleClass = styleClass;	
+	}
+	
+	public void setBodyStyleAttribute(String styleAttribute) {
+		_bodyStyleAttribute = styleAttribute;		
+	}
+	
+	public void setBodyStyleClass(String styleClass) {
+		_bodyStyleClass = styleClass;			
+	}
+	
+	public void setLinkStyleAttribute(String styleAttribute) {
+		_linkStyleAttribute = styleAttribute;
+	}
+	
+	public void setLinkStyleClass(String styleClass) {
+		_linkStyleClass = styleClass;			
+	}
+	
+	public void setSeeAlsoStyleAttribute(String styleAttribute) {
+		_seeAlsoStyleAttribute = styleAttribute;		
+	}
+	
+	public void setSeeAlsoStyleClass(String styleClass) {
+		_seeAlsoStyleClass = styleClass;			
+	}	
+	
+	public String getBundleIdentifier() {
+		return BUNDLE_IDENTIFIER;
 	}	
 }

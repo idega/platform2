@@ -411,9 +411,9 @@ public class HelpWindow extends Window {
 		_helpBundle = iwc.getParameter(HELP_BUNDLE);
 		
 		if (_helpKey == null)
-			add(_iwrb.getLocalizedString("","No help key specified"));
+			add(_iwrb.getLocalizedString(ERROR_NO_HELP_KEY,"No help key specified"));
 		else if (_helpBundle == null)
-			add(_iwrb.getLocalizedString("","No bundle for help text specified"));
+			add(_iwrb.getLocalizedString(ERROR_NO_BUNDLE,"No bundle for help text specified"));
 		else
 			control(iwc);
 	}

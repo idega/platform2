@@ -27,9 +27,23 @@ public class HelpTree extends Block {
 	public static final String HELP_KEY = Help.HELP_KEY;
 	public static final String HELP_BUNDLE = Help.HELP_BUNDLE;
 	
-	private static final String BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	public static final String TITLE_STYLE = "hlp_ttl_sty";
+	public static final String TITLE_CLASS = "hlp_ttl_cla";
+	public static final String BODY_STYLE = "hlp_bdy_sty";
+	public static final String BODY_CLASS = "hlp_bdy_cla";
+	
+	private static final String BUNDLE_IDENTIFIER = "com.idega.block.help";
 	
 	private static final String HELP_FRAME = "hlp_tree_frame";
+
+	protected String _titleStyleAttribute = null;
+	protected String _titleStyleClass = null;
+	protected String _bodyStyleAttribute = null;
+	protected String _bodyStyleClass = null;
+	protected String _linkStyleAttribute = null;
+	protected String _linkStyleClass = null;
+	protected String _seeAlsoStyleAttribute = null;
+	protected String _seeAlsoStyleClass = null;
 
 	public void main(IWContext iwc) throws Exception {
 		Table t = new Table(2,1);
@@ -41,6 +55,8 @@ public class HelpTree extends Block {
 		t.setAlignment(1, 1, "center");
 		t.setVerticalAlignment(1, 1, "top");
 		t.setVerticalAlignment(2, 1, "top");
+		
+		DisplayHelp helpDisp = new DisplayHelp();
 				
 		IFrame f = new IFrame(HELP_FRAME,DisplayHelp.class);
 		f.setStyleAttribute("width:100%;height:100%");
@@ -53,6 +69,14 @@ public class HelpTree extends Block {
 		link.setURL("#");
 		link.setNoTextObject(true);
 		link.setClassToInstanciate(DisplayHelp.class);
+		if (_titleStyleAttribute != null)
+			link.addParameter(TITLE_STYLE,_titleStyleAttribute);
+		if (_titleStyleClass != null)
+			link.addParameter(TITLE_CLASS,_titleStyleClass);
+		if (_bodyStyleAttribute != null)
+			link.addParameter(BODY_STYLE,_bodyStyleAttribute);
+		if (_bodyStyleClass != null)
+			link.addParameter(BODY_CLASS,_bodyStyleClass);
 		tree.setLinkPrototype(link);
 		
 		tree.setTarget(HELP_FRAME);
@@ -110,4 +134,36 @@ public class HelpTree extends Block {
 
 		return top;			
 	}
+	
+	public void setTitleStyleAttribute(String styleAttribute) {
+		_titleStyleAttribute = styleAttribute;
+	}
+	
+	public void setTitleStyleClass(String styleClass) {
+		_titleStyleClass = styleClass;	
+	}
+	
+	public void setBodyStyleAttribute(String styleAttribute) {
+		_bodyStyleAttribute = styleAttribute;		
+	}
+	
+	public void setBodyStyleClass(String styleClass) {
+		_bodyStyleClass = styleClass;			
+	}
+	
+	public void setLinkStyleAttribute(String styleAttribute) {
+		_linkStyleAttribute = styleAttribute;
+	}
+	
+	public void setLinkStyleClass(String styleClass) {
+		_linkStyleClass = styleClass;			
+	}
+	
+	public void setSeeAlsoStyleAttribute(String styleAttribute) {
+		_seeAlsoStyleAttribute = styleAttribute;		
+	}
+	
+	public void setSeeAlsoStyleClass(String styleClass) {
+		_seeAlsoStyleClass = styleClass;			
+	}		
 }
