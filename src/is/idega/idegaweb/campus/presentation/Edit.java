@@ -1,5 +1,5 @@
 /*
- * $Id: Edit.java,v 1.3 2002/01/23 14:48:36 palli Exp $
+ * $Id: Edit.java,v 1.4 2002/02/06 15:28:33 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package is.idega.idegaweb.campus.presentation;
 
 import com.idega.presentation.text.Text;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.InterfaceObjectContainer;
 
@@ -42,6 +43,36 @@ public class Edit {
    */
   public static Text formatText(String text) {
     return(getText(text,false,colorTextFont,textFontSize));
+  }
+
+  /**
+   *
+   */
+  public static Text formatText(String text, boolean bold) {
+    System.out.println("Calling formatText with bold = " + bold);
+    Text t = getText(text,bold,colorTextFont,textFontSize);
+
+    return(t);
+//    return(getText(text,bold,colorTextFont,textFontSize));
+  }
+
+  /**
+   *
+   */
+  public static Text formatText(Text t) {
+    t.setFontColor(colorTextFont);
+    t.setFontSize(textFontSize);
+    return(t);
+  }
+
+  /**
+   *
+   */
+  public static Text formatText(Text t, boolean bold) {
+    t.setFontColor(colorTextFont);
+    t.setFontSize(textFontSize);
+    t.setBold(bold);
+    return(t);
   }
 
   /**
@@ -104,9 +135,11 @@ public class Edit {
    *
    */
   private static Text getText(String text, boolean bold, String color, int size) {
-    Text T = new Text(text,bold,false,false);
+    Text T = new Text(text);
     T.setFontColor(color);
     T.setFontSize(size);
+    setStyle(T);
+    T.setBold(bold);
     return(T);
   }
 
@@ -115,6 +148,13 @@ public class Edit {
    */
   public static void setStyle(InterfaceObject O) {
     O.setAttribute("style",styleAttribute);
+  }
+
+  /**
+   *
+   */
+  public static void setStyle(PresentationObject p) {
+    p.setAttribute("style",styleAttribute);
   }
 
   /**
