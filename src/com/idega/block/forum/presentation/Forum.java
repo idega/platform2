@@ -238,6 +238,7 @@ public class Forum extends CategoryBlock implements IWBlock {
 	table.add(getThreadBodyTable(thread),1,row++);
       }
 
+      table.setHeight(1,row++,"16");
       table.add(getForumLinks(),1,row++);
 
       updateThreadCount(iwc);
