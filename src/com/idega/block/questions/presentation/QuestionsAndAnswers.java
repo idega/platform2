@@ -213,7 +213,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 					}
 				}
 				if(!showAllCategories){
-					Link headerLink = new Link(getStyleText( cat.getName(),STYLENAME_C_TITLE));
+					Link headerLink = new Link(getStyleText( cat.getName(currentLocale),STYLENAME_C_TITLE));
 					headerLink.addParameter(prmViewCategory,primKey);
 					T.add(headerLink,1,headerRow);
 					headerAdded = true;
@@ -225,7 +225,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}
 			
 			if(!headerAdded){
-				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(),STYLENAME_C_TITLE),"Cat"+primKey);
+				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+primKey);
 				Anchor backAncor = new Anchor();
 				T.add(anc,1,headerRow);
 				T.add(new Anchor("bc"+primKey),1,headerRow);
@@ -305,11 +305,12 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			while(iter.hasNext()){
 				Question quest = (Question)iter.next();
 				ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),currentLocale);
-				String headline = helper.getLocalizedText().getHeadline();
-				if(headline.length()>20)
-					headline = headline.substring(0,20)+"...";
-				drop.addMenuElement(quest.getPrimaryKey().toString(),headline);
-				
+				if(helper.getLocalizedText()!=null){
+					String headline = helper.getLocalizedText().getHeadline();
+					if(headline.length()>20)
+						headline = headline.substring(0,20)+"...";
+					drop.addMenuElement(quest.getPrimaryKey().toString(),headline);
+				}
 			}
 		
 		}catch(FinderException fex){
@@ -401,21 +402,22 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	private void createQuestionInfo(IWContext iwc,Question quest,Question previous,Question latter, int QuestCount,int row,Table T,Table QandATable,ICCategory cat)throws RemoteException{
 		if(quest.getQuestionID() > 0){
 			ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),currentLocale);
-			if(showQuestionListCount)
-			T.add(getStyleText((QuestCount)+".",STYLENAME_Q_COUNT),1,row);
-			if(showAll){
-				AnchorLink anc = new AnchorLink(getStyleText(helper.getLocalizedText().getHeadline(),STYLENAME_Q_TITLE),"Q"+quest.getPrimaryKey().toString());
-				if(!showAllCategories && valViewCategory!=null)
-					anc.addParameter(prmViewCategory,valViewCategory);
-				T.add(anc,2,row);
-				createQuestionsAndAnswers(iwc,helper,quest,cat,QandATable);
-			}
-			else{
-				T.add(getStyleText(helper.getLocalizedText().getHeadline(),STYLENAME_Q_TITLE),2,row);
-			}
-			if(isAdmin)
-				T.add(getQuestionForm(iwc,cat,quest,previous,latter),3,row);
-		
+			String headline = helper.getLocalizedText()!=null? helper.getLocalizedText().getHeadline():"";
+				if(showQuestionListCount)
+				T.add(getStyleText((QuestCount)+".",STYLENAME_Q_COUNT),1,row);
+				if(showAll){
+					AnchorLink anc = new AnchorLink(getStyleText(headline,STYLENAME_Q_TITLE),"Q"+quest.getPrimaryKey().toString());
+					if(!showAllCategories && valViewCategory!=null)
+						anc.addParameter(prmViewCategory,valViewCategory);
+					T.add(anc,2,row);
+					createQuestionsAndAnswers(iwc,helper,quest,cat,QandATable);
+				}
+				else{
+					T.add(getStyleText(headline,STYLENAME_Q_TITLE),2,row);
+				}
+				if(isAdmin)
+					T.add(getQuestionForm(iwc,cat,quest,previous,latter),3,row);
+			
 		}
 	}
 	
@@ -428,10 +430,14 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			T.add(getStyleText(questionPrefixText,STYLENAME_Q_PREFIX),1,row);
 		else
 			T.add(questionPrefixImage,1,row);
-		if(showQuestionTitle && quest.getLocalizedText().getHeadline().length()>0)
-			T.add(getStyleText(quest.getLocalizedText().getHeadline(),STYLENAME_Q_TITLE),2,row++);
+			
+		String headline = quest.getLocalizedText()!=null?quest.getLocalizedText().getHeadline():"";
+		String body = quest.getLocalizedText()!=null?quest.getLocalizedText().getBody():"";
+		
+		if(showQuestionTitle && headline.length()>0)
+			T.add(getStyleText(headline,STYLENAME_Q_TITLE),2,row++);
 		if(showQuestionBody){
-			T.add(getStyleText(quest.getLocalizedText().getBody(),STYLENAME_Q_BODY),2,row);
+			T.add(getStyleText(body,STYLENAME_Q_BODY),2,row);
 		}
 		row++;
 		if(answerPrefixImage==null)
@@ -440,10 +446,12 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			T.add(answerPrefixImage,1,row);
 		if(question.getAnswerID()>0){
 			ContentHelper ans = TextFinder.getContentHelper(question.getAnswerID(),currentLocale);
-			if(showQuestionTitle && ans.getLocalizedText().getHeadline().length()>0)
-				T.add(getStyleText(ans.getLocalizedText().getHeadline(),STYLENAME_A_TITLE),2,row++);
+			String aheadline = ans.getLocalizedText()!=null?ans.getLocalizedText().getHeadline():"";
+			String abody = ans.getLocalizedText()!=null?ans.getLocalizedText().getBody():"";
+			if(showQuestionTitle && aheadline.length()>0)
+				T.add(getStyleText(aheadline,STYLENAME_A_TITLE),2,row++);
 			if(showQuestionBody){
-				T.add(getStyleText(ans.getLocalizedText().getBody(),STYLENAME_A_BODY),2,row++);
+				T.add(getStyleText(abody,STYLENAME_A_BODY),2,row++);
 				if(showHomeButton && showAllCategories)
 				T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.getPrimaryKey().toString()),1,row);
 			}
@@ -489,7 +497,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 
 	
 	private void createCategoryTitle(ICCategory cat,Table QandATable)throws RemoteException{
-		Anchor anc = new Anchor(getStyleText(cat.getName(),STYLENAME_C_TITLE),"Cat"+cat.getPrimaryKey().toString());
+		Anchor anc = new Anchor(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+cat.getPrimaryKey().toString());
 		QandATable.add(anc,1,qaRow++);
 	}
 	

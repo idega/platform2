@@ -1,6 +1,9 @@
 package com.idega.block.presentation;
 import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICCategoryTranslation;
 import com.idega.core.data.ICObjectInstanceHome;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.data.IDOLookup;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -14,17 +17,25 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+
+import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.List;
 import java.util.Collection;
 import java.util.TreeMap;
 import java.util.StringTokenizer;
+
+import javax.ejb.FinderException;
+
 import com.idega.block.category.business.CategoryComparator;
+import com.idega.business.IBOLookup;
 import com.idega.core.business.Category;
 import com.idega.core.business.CategoryFinder;
-import com.idega.core.business.CategoryBusiness;
+//import com.idega.core.business.CategoryBusiness;
+import com.idega.core.business.CategoryService;
 import com.idega.io.ObjectSerializer;
 /**
  * Title:
@@ -49,6 +60,7 @@ public class CategoryWindow extends IWAdminWindow {
 	public final static String prmOrder = "iccat_order";
 	public static final String prmCacheClearKey = "iccat_cache_clear";
 	public static final String prmParentID = "iccat_parent";
+	public final static String prmLocale = "iccat_localedrp";
 	private static final String actDelete = "iccat_del";
 	private static final String actSave = "iccat_save";
 	private static final String actClose = "iccat_close";
@@ -58,8 +70,12 @@ public class CategoryWindow extends IWAdminWindow {
 	protected IWBundle iwb, core;
 	private int iObjInsId = -1;
 	private int iUserId = -1;
-	boolean formAdded = false;
-	int row = 1;
+	private boolean formAdded = false;
+	private int row = 1;
+	private CategoryService catServ = null;
+	int iLocaleId = -1;
+	int iSaveLocaleId = -1;
+	
 	public CategoryWindow() {
 		setWidth(600);
 		setHeight(400);
@@ -88,7 +104,20 @@ public class CategoryWindow extends IWAdminWindow {
 		}
 	}
 	protected void control(IWContext iwc) throws Exception {
-		//debugParameters(iwc);
+	
+	    if(iwc.isParameterSet(prmLocale)){
+	      iLocaleId = Integer.parseInt(iwc.getParameter(prmLocale));
+	    }
+	    else{
+	      iLocaleId = ICLocaleBusiness.getLocaleId( iwc.getCurrentLocale());
+	    }
+	    
+	    iSaveLocaleId = ICLocaleBusiness.getLocaleId(iwc.getApplicationSettings().getDefaultLocale());
+	    if(iSaveLocaleId == iLocaleId)
+	     	iSaveLocaleId = -1;
+	    else
+	    	iSaveLocaleId = iLocaleId;
+	    
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellspacing(0);
@@ -115,13 +144,13 @@ public class CategoryWindow extends IWAdminWindow {
 				processCategoryForm(iwc);
 			}
 			//addCategoryFields(CategoryFinder.getCategory(iCategoryId));
-			getCategoryFields(iwc, CategoryFinder.getInstance().getCategory(iCategoryId));
+			getCategoryFields(iwc, iCategoryId );
 		}
 		else {
 			add(formatText(iwrb.getLocalizedString("access_denied", "Access denied")));
 		}
 	}
-	private void processCategoryForm(IWContext iwc) {
+	private void processCategoryForm(IWContext iwc)throws RemoteException{
 		// saving :
 		if (iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave + ".x")) {
 			String sName = iwc.getParameter("name");
@@ -133,25 +162,16 @@ public class CategoryWindow extends IWAdminWindow {
 			}
 			String sType = iwc.getParameter(prmCategoryType);
 			if (sName != null && sType != null) {
-				//System.err.println("saving category :"+iCategoryId+" icoid :"+iObjectInstanceId);
 				if (iCategoryId <= 0 && sName.length() > 0) {
-					if (sOrder == null)
-						System.out.println(" sOrder == null");
-					if (CategoryBusiness.getInstance() == null)
-						System.out.println(" CategoryBusiness == null");
 					try{
-					iCategoryId =CategoryBusiness.getInstance().saveCategory(
-								iCategoryId,	
-								sName,
-								sDesc,
-								Integer.parseInt(sOrder),
-								iObjectInstanceId,
-								sType,
-								multi).getID();
+						iCategoryId =catServ.storeCategory(	iCategoryId,sName,	sDesc,Integer.parseInt(sOrder),	iObjectInstanceId,sType,	multi).getID();
+						catServ.storeCategoryTranslation(iCategoryId,sName,sDesc,iSaveLocaleId);
 					if(parent>0 && iCategoryId >0)
-					
-						CategoryBusiness.getInstance().saveCategoryToParent(iCategoryId,parent);
-					}catch(java.rmi.RemoteException ex){ex.printStackTrace();}
+						catServ.storeCategoryToParent(iCategoryId,parent);
+					}
+					catch(java.rmi.RemoteException ex){
+						ex.printStackTrace();
+					}
 				}
 				else {
 					String[] sids = iwc.getParameterValues("id_box");
@@ -160,16 +180,11 @@ public class CategoryWindow extends IWAdminWindow {
 						savedids = new int[sids.length];
 					for (int i = 0; i < savedids.length; i++) {
 						savedids[i] = Integer.parseInt(sids[i]);
-						//            	      System.err.println("save id "+savedids[i]);
+						//  System.err.println("save id "+savedids[i]);
 					}
 					if (iCategoryId > 0)
-						CategoryBusiness.getInstance().updateCategory(
-							iCategoryId,
-							sName,
-							sDesc,
-							Integer.parseInt(sOrder),
-							iObjectInstanceId);
-					CategoryBusiness.getInstance().saveRelatedCategories(iObjectInstanceId, savedids);
+						catServ.updateCategory(iCategoryId,	sName,sDesc,	Integer.parseInt(sOrder),iObjectInstanceId,iSaveLocaleId);
+						catServ.storeRelatedCategories(iObjectInstanceId, savedids);
 				}
 			}
 		}
@@ -180,7 +195,7 @@ public class CategoryWindow extends IWAdminWindow {
 		// deleting :
 		else if (iwc.isParameterSet(actDelete) || iwc.isParameterSet(actDelete + ".x")) {
 			try {
-				CategoryBusiness.getInstance().deleteCategory(iCategoryId);
+				catServ.removeCategory(iCategoryId);
 				iCategoryId = -1;
 			}
 			catch (Exception ex) {
@@ -188,7 +203,7 @@ public class CategoryWindow extends IWAdminWindow {
 			}
 		}
 	}
-	private void getCategoryFields(IWContext iwc, Category eCategory) {
+	private void getCategoryFields(IWContext iwc, int iCategoryId) throws RemoteException{
 		int parent = iwc.isParameterSet(prmParentID)?Integer.parseInt(iwc.getParameter(prmParentID)):-1;
 		
 		Link newLink = new Link(core.getImage("/shared/create.gif"));
@@ -199,7 +214,7 @@ public class CategoryWindow extends IWAdminWindow {
 		//List L = CategoryFinder.getInstance().listOfCategories(sType);
 		Collection L = null;
 		try{
-			L = CategoryBusiness.getInstance().getCategoryHome().findRootsByType(sType);
+			L = catServ.getCategoryHome().findRootsByType(sType);
 		}
 		catch(Exception ex) {}
 		if (L != null) { // Gimmi 17.08.2002
@@ -208,7 +223,7 @@ public class CategoryWindow extends IWAdminWindow {
 		}
 		Collection coll = CategoryFinder.getInstance().collectCategoryIntegerIds(iObjectInstanceId);
 		boolean edit = iwc.isParameterSet("edit");
-		int chosenId = eCategory != null && edit? eCategory.getID() : -1;
+		int chosenId = iCategoryId;
 		
 		Table T = new Table();
 		T.setCellpadding(0);
@@ -256,6 +271,10 @@ public class CategoryWindow extends IWAdminWindow {
 		}
 		addLeft(iwrb.getLocalizedString("categories", "Categories"), T, true, false);
 		addBreak();
+		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
+	    LocaleDrop.setToSubmit();
+	    LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
+	    addLeft(LocaleDrop);
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), actSave);
 		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close", "Close"), actClose);
 		addSubmitButton(save);
@@ -281,10 +300,12 @@ public class CategoryWindow extends IWAdminWindow {
 		
 	}
 	
-	private void fillTable(Iterator iter,Table T,int chosenId,Collection coll,TextInput name,TextInput info,TextInput order,int level){
+	private void fillTable(Iterator iter,Table T,int chosenId,Collection coll,TextInput name,TextInput info,TextInput order,int level)throws RemoteException{
 		if (iter != null) {
 			
-			Category cat;
+			ICCategory cat;
+			ICCategoryTranslation trans = null;
+			String catName,catInfo;
 			CheckBox box;
 			RadioButton rad;
 			Link deleteLink;
@@ -292,8 +313,19 @@ public class CategoryWindow extends IWAdminWindow {
 			int iOrder = 0;
 			while (iter.hasNext()) {
 				int col = 1;
-				cat = (Category) iter.next();
-				id = cat.getID();
+				cat = (ICCategory) iter.next();
+				id = ((Integer)cat.getPrimaryKey()).intValue();	
+				try{
+				trans = catServ.getCategoryTranslationHome().findByCategoryAndLocale(id,iLocaleId);
+				}catch(FinderException ex){}
+				if(trans!=null){
+					catName = trans.getName();
+					catInfo = trans.getDescription();
+				}
+				else{
+					catName = cat.getName();
+					catInfo = cat.getDescription();
+				}
 				if (allowOrdering) {
 					try {
 						iOrder = CategoryFinder.getInstance().getCategoryOrderNumber(cat, this.objectInstance);
@@ -312,9 +344,10 @@ public class CategoryWindow extends IWAdminWindow {
 					T.add(tree_image_L,2,row);
 				}
 				if (id == chosenId ) {
-					name.setContent(cat.getName());
-					if (cat.getDescription() != null)
-						info.setContent(cat.getDescription());
+					
+					name.setContent(catName);
+					if (catInfo != null)
+						info.setContent(catInfo);
 					T.add(name, 2, row);
 					T.add(info, 3, row);
 					if (allowOrdering) {
@@ -325,11 +358,11 @@ public class CategoryWindow extends IWAdminWindow {
 					formAdded = true;
 				}
 				else {
-					Link Li = new Link(formatText(cat.getName()));
+					Link Li = new Link(formatText(catName));
 					Li.addParameter(prmCategoryId, id);
 					Li.addParameter("edit","true");
 					T.add(Li, 2, row);
-					T.add(formatText(cat.getDescription()), 3, row);
+					T.add(formatText(catInfo), 3, row);
 					Link childLink = new Link(core.getImage("/shared/create.gif"));
 					childLink.addParameter(prmParentID,id);
 					deleteLink = new Link(core.getImage("/shared/delete.gif"));
@@ -363,6 +396,7 @@ public class CategoryWindow extends IWAdminWindow {
 				if(cat.getChildCount()>0)
 					fillTable(cat.getChildren(), T,chosenId,coll,name,info,order,level+1);
 			}
+			trans = null;
 		}
 	}
 	
@@ -376,6 +410,7 @@ public class CategoryWindow extends IWAdminWindow {
 			L.addParameter(prmMulti, "true");
 		L.addParameter(prmCategoryType, sType);
 		L.addParameter(prmObjInstId, String.valueOf(iObjectInstanceId));
+		L.addParameter(prmLocale,String.valueOf(iLocaleId));
 
 	}
 	/**
@@ -427,6 +462,7 @@ public class CategoryWindow extends IWAdminWindow {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		core = iwc.getApplication().getCoreBundle();
+		catServ = (CategoryService) IBOLookup.getServiceInstance(iwc,CategoryService.class);
 		String title = iwrb.getLocalizedString("ic_category_editor", "Category Editor");
 		tree_image_M = core.getImage("/treeviewer/ui/win/treeviewer_M_line.gif");
 		tree_image_L = core.getImage("/treeviewer/ui/win/treeviewer_L_line.gif");
