@@ -447,10 +447,10 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
 
   if (image_id!=-1){
-      System.out.println("ImageID != -1");
+      //System.out.println("ImageID != -1");
     //debug
     if ( showImages ) {
-      System.out.println("ImageID != -1 && showImages");
+      //System.out.println("ImageID != -1 && showImages");
       Table imageTable = new Table(1, 2);
       Image newsImage = new Image(image_id);
       imageTable.setAlignment("right");
