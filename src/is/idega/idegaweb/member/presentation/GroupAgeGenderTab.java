@@ -1,13 +1,11 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
-
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-
 import javax.ejb.FinderException;
-
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -381,42 +379,53 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
-
+		
 		Group group;
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
-			// get corressponding service bean
-			AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(iwc);
-
-			// validate upper and lower age limit
-			int lowerAge = ((Integer) fieldValues.get(lowerAgeLimitFieldName)).intValue();
-			int upperAge = ((Integer) fieldValues.get(upperAgeLimitFieldName)).intValue();
-			lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
-			upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
-			lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
-			if (lowerAgeTooSmall || upperAgeTooLarge || lowerAgeGreaterThanUpperAge)
-				return false;
-
-			ageGenderPluginBusiness.setLowerAgeLimit(group, lowerAge);
-			ageGenderPluginBusiness.setUpperAgeLimit(group, upperAge);
-			// set gender
-			boolean isFemale = ((Boolean) fieldValues.get(femaleFieldName)).booleanValue();
-			boolean isMale = ((Boolean) fieldValues.get(maleFieldName)).booleanValue();
-			if (isMale && !isFemale)
-				ageGenderPluginBusiness.setMale(group);
-			else if (isFemale && !isMale)
-				ageGenderPluginBusiness.setFemale(group);
-			else
-				// male and female are either both true or both false
-				ageGenderPluginBusiness.setNeutral(group);
-
-			boolean ageLimitIsStringentCondition = ((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue();
-			ageGenderPluginBusiness.setAgeLimitIsStringentCondition(group, ageLimitIsStringentCondition);
-
-			String keyDateForAge = (String) fieldValues.get(keyDateForAgeFieldName);
-			ageGenderPluginBusiness.setKeyDateForAge(group, keyDateForAge);
-
-			group.store();
+			
+			//special case because the age and gender stuff should be controlled by the club member template group
+			//for other group types it is never read only
+			boolean readOnly = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
+			if(!readOnly){
+				// get corressponding service bean
+				AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(iwc);
+				
+				// validate upper and lower age limit
+				int lowerAge = ((Integer) fieldValues.get(lowerAgeLimitFieldName)).intValue();
+				int upperAge = ((Integer) fieldValues.get(upperAgeLimitFieldName)).intValue();
+				lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
+				upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
+				lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
+				if (lowerAgeTooSmall || upperAgeTooLarge || lowerAgeGreaterThanUpperAge){
+					return false;
+				}
+				
+				ageGenderPluginBusiness.setLowerAgeLimit(group, lowerAge);
+				ageGenderPluginBusiness.setUpperAgeLimit(group, upperAge);
+				// set gender
+				boolean isFemale = ((Boolean) fieldValues.get(femaleFieldName)).booleanValue();
+				boolean isMale = ((Boolean) fieldValues.get(maleFieldName)).booleanValue();
+				if (isMale && !isFemale){
+					ageGenderPluginBusiness.setMale(group);
+				}
+				else if (isFemale && !isMale){
+					ageGenderPluginBusiness.setFemale(group);
+				}
+				else{
+					// male and female are either both true or both false
+					ageGenderPluginBusiness.setNeutral(group);
+				}
+				
+				boolean ageLimitIsStringentCondition = ((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue();
+				ageGenderPluginBusiness.setAgeLimitIsStringentCondition(group, ageLimitIsStringentCondition);
+				
+				String keyDateForAge = (String) fieldValues.get(keyDateForAgeFieldName);
+				ageGenderPluginBusiness.setKeyDateForAge(group, keyDateForAge);
+				
+				group.store();
+			}
+			
 		}
 		catch (RemoteException e) {
 			System.err.println("[GeneralGroupInfoTab] remote error store, GroupId : " + getGroupId());
@@ -428,6 +437,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
 			e.printStackTrace(System.err);
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -436,52 +446,68 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 */
 	public void initFieldContents() {
 		// get group by group id
-		Group group;
-		try {
-			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
-
-			// get corressponding service bean
-			AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(this.getEventIWContext());
-			// set gender radio buttons
-
-			// isMale, isFemale throws RemoteException and FinderException
-			boolean isFemale = ageGenderPluginBusiness.isFemale(group);
-			boolean isMale = ageGenderPluginBusiness.isMale(group);
-
-			// if isFemale and isMale are both false then the gender is neuter
-			// in this case show both checkboxes as checked
-			if (!isFemale && !isMale) {
-				isFemale = true;
-				isMale = true;
+		int groupId = getGroupId();
+		
+		if(groupId>0){
+			Group group;
+			try {
+				group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+				//special case because the age and gender stuff should be controlled by the club member template group
+				//for other group types it is never read only
+				boolean readOnly = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
+				if(readOnly){
+					femaleField.setDisabled(true);
+					maleField.setDisabled(true);
+					lowerAgeLimitField.setDisabled(true);
+					upperAgeLimitField.setDisabled(true);
+					ageLimitIsStringentConditionField.setDisabled(true);
+					keyDateForAgeField.setDisabled(true);	
+				}
+				
+				
+				// get corressponding service bean
+				AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(this.getEventIWContext());
+				// set gender radio buttons
+	
+				// isMale, isFemale throws RemoteException and FinderException
+				boolean isFemale = ageGenderPluginBusiness.isFemale(group);
+				boolean isMale = ageGenderPluginBusiness.isMale(group);
+	
+				// if isFemale and isMale are both false then the gender is neuter
+				// in this case show both checkboxes as checked
+				if (!isFemale && !isMale) {
+					isFemale = true;
+					isMale = true;
+				}
+				fieldValues.put(femaleFieldName, new Boolean(isFemale));
+				fieldValues.put(maleFieldName, new Boolean(isMale));
+	
+				// get lower age limit
+				int lowerAgeLimit = ageGenderPluginBusiness.getLowerAgeLimit(group);
+				fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
+				// get upper age limit
+				int upperAgeLimit = ageGenderPluginBusiness.getUpperAgeLimit(group);
+				fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
+	
+				boolean ageLimitIsStringentCondition = ageGenderPluginBusiness.isAgeLimitStringentCondition(group);
+				fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition));
+	
+				String keyDateForAge = ageGenderPluginBusiness.getKeyDateForAge(group);
+				fieldValues.put(keyDateForAgeFieldName, keyDateForAge);
+	
 			}
-			fieldValues.put(femaleFieldName, new Boolean(isFemale));
-			fieldValues.put(maleFieldName, new Boolean(isMale));
-
-			// get lower age limit
-			int lowerAgeLimit = ageGenderPluginBusiness.getLowerAgeLimit(group);
-			fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
-			// get upper age limit
-			int upperAgeLimit = ageGenderPluginBusiness.getUpperAgeLimit(group);
-			fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
-
-			boolean ageLimitIsStringentCondition = ageGenderPluginBusiness.isAgeLimitStringentCondition(group);
-			fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition));
-
-			String keyDateForAge = ageGenderPluginBusiness.getKeyDateForAge(group);
-			fieldValues.put(keyDateForAgeFieldName, keyDateForAge);
-
+			catch (RemoteException e) {
+				System.err.println("[GeneralGroupInfoTab] remote error initFieldContents, GroupId : " + getGroupId());
+				e.printStackTrace(System.err);
+				return;
+			}
+			catch (FinderException e) {
+				System.err.println("[GeneralGroupInfoTab] find error initFieldContents, GroupId : " + getGroupId());
+				e.printStackTrace(System.err);
+				return;
+			}
+			this.updateFieldsDisplayStatus();
 		}
-		catch (RemoteException e) {
-			System.err.println("[GeneralGroupInfoTab] remote error initFieldContents, GroupId : " + getGroupId());
-			e.printStackTrace(System.err);
-			return;
-		}
-		catch (FinderException e) {
-			System.err.println("[GeneralGroupInfoTab] find error initFieldContents, GroupId : " + getGroupId());
-			e.printStackTrace(System.err);
-			return;
-		}
-		this.updateFieldsDisplayStatus();
 
 	}
 
