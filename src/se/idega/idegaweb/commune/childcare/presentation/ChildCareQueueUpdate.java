@@ -310,6 +310,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		DateInput date;
 		HiddenInput choice;
 		
+		IWTimestamp earliestDate = new IWTimestamp(1, 6, 2003);
+		
 		for (int a = 0; a < choices.length; a++) {
 			queue = (ChildCareQueue) choiceMap.get(choices[a]);
 			provider = queue.getProvider();
@@ -318,6 +320,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			date = new DateInput(PARAMETER_DATE+"_"+(a+1));
 			date.setDate(queue.getStartDate());
 			date.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+			date.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003."));
 			choice = new HiddenInput(PARAMETER_QUEUE, choices[a]);
 			
 			table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
@@ -333,7 +336,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update","Update"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
-		update.setSubmitConfirm(localize("child_care.confirm_queue_update","Are you sure you want to update? Selection can not be altered."));
+		update.setSingleSubmitConfirm(localize("child_care.confirm_queue_update","Are you sure you want to update? Selection can not be altered."));
 		buttonTable.add(back, 1, 1);
 		buttonTable.add(update, 2, 1);
 
@@ -355,10 +358,10 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	
 	private Text getStageText() {
 		if (_hasPlacing) {
-			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage ")+_stage);
+			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
 		}
 		else {
-			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage ")+_stage);
+			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
 		}
 	}
 	
