@@ -67,11 +67,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/22 09:20:33 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/22 10:53:08 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.84 $
+ * @version $Revision: 1.85 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -567,13 +567,18 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 		// count values for summary
 		for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
 			final InvoiceRecord invoiceRecord = (InvoiceRecord) i.next ();
-			final Integer placementId
-					= new Integer (invoiceRecord.getSchoolClassMemberId ());
-			final SchoolClassMember placement
-					= home.findByPrimaryKey (placementId);
-			final User user = placement.getStudent ();
-			placements.add (placementId);
-			individuals.add (user.getPrimaryKey ());
+			try {
+				final Integer placementId
+						= new Integer (invoiceRecord.getSchoolClassMemberId ());
+				placements.add (placementId);
+				final SchoolClassMember placement = home.findByPrimaryKey (placementId);
+				final User user = placement.getStudent ();
+				individuals.add (user.getPrimaryKey ());
+			} catch (Exception e) {
+				logError ("InvoiceRecord " + invoiceRecord.getPrimaryKey ()
+									+ " has an unknown School Class Member Id");
+				e.printStackTrace ();
+			}
 			totalAmountVatExcluded += roundAmount (invoiceRecord.getAmount());
 		}
 		
