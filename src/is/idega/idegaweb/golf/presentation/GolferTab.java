@@ -55,6 +55,7 @@ public class GolferTab extends UserTab {
 	private String mainClubAbbrFromRequest;
 	private String[] subClubsAbbrFromRequest;
 	private SelectOption noMainClub = null;
+	private LoginByUUIDLink loginByUUIDLink;
 	
 	public GolferTab() {
 		super();
@@ -72,6 +73,10 @@ public class GolferTab extends UserTab {
 //		main club
 		User user = getUser();
 		uuid = user.getUniqueId();
+		
+		if(uuid!=null && loginByUUIDLink!=null){
+			loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
+		}
 		
 		String mainClubAbbreviation = (mainClubAbbrFromRequest!=null)?mainClubAbbrFromRequest : user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		List mainSelected = new ArrayList();
@@ -228,22 +233,14 @@ public class GolferTab extends UserTab {
 		this.add(table, 1, 1);
 		
 		int row = 1;
-		// UUID login
-		User user = getUser();
-		if(user!=null){
-			uuid = user.getUniqueId();
-		}
 		
-		LoginByUUIDLink loginByUUIDLink = new LoginByUUIDLink();
+		loginByUUIDLink = new LoginByUUIDLink();
 		loginByUUIDLink.setToUseCurrentUsersUUID(true);
 		//hardcoded URL hack
 		loginByUUIDLink.setText(iwrb.getLocalizedString(TAB_NAME+".handicapinfo_on_golf.is","Open handicap info on golf.is"));
 		loginByUUIDLink.setURL("http://www.golf.is/index.jsp?ib_page=36");
 		loginByUUIDLink.setTarget(Link.TARGET_NEW_WINDOW);
 		
-		if(uuid!=null){
-			loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
-		}
 		table.add(loginByUUIDLink,1,row);
 		// UUID login ends
 		
