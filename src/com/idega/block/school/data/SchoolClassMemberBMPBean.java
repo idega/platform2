@@ -8,7 +8,8 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressBMPBean;
-import com.idega.core.location.data.AddressTypeBMPBean;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.AddressTypeHome;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
@@ -54,8 +55,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/04/06 13:48:40 $ by $Author: laddi $
- * @version $Revision: 1.134 $
+ *         Last modified: $Date: 2005/04/06 16:29:12 $ by $Author: laddi $
+ * @version $Revision: 1.135 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1706,7 +1707,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			catch (IDORelationshipException ile) {
 				throw new IDOException("Tables " + address.getName() + " and " + postal.getName() + " don't have a relation.");
 			}
-			query.addCriteria(new MatchCriteria(address, AddressBMPBean.getColumnNameAddressTypeId(), MatchCriteria.EQUALS, AddressTypeBMPBean.ADDRESS_1));
+			try {
+				AddressType type = ((AddressTypeHome) IDOLookup.getHome(AddressType.class)).findAddressType1();
+				query.addCriteria(new MatchCriteria(address, AddressBMPBean.getColumnNameAddressTypeId(), MatchCriteria.EQUALS, type));
+			}
+			catch (IDOLookupException ile) {
+				throw new IDOException(ile);
+			}
+			catch (FinderException fe) {
+				throw new IDOException(fe);
+			}
 			query.addCriteria(new MatchCriteria(postal, "ic_commune_id", MatchCriteria.EQUALS, commune));
 		}
 		
