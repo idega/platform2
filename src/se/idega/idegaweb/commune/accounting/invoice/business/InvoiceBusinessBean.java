@@ -19,7 +19,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.business.IBOServiceBean;
@@ -27,12 +26,17 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 
 /**
- * Holds most of the logic for the batchjob that creates the information that is base for invoicing 
- * and payment data, that is sent to external finance system. Now moved to InvoiceThread
- * 
+ * Holds most of the logic for the batchjob that creates the information that is
+ * base for invoicing and payment data, that is sent to external finance system.
+ * Now moved to InvoiceThread
+ * <p>
+ * Last modified: $Date: 2003/10/28 13:14:49 $ by $Author: staffan $
+ *
  * @author Joakim
+ * @version $Revision: 1.23 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -139,6 +143,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		int schoolCategoryID = batchRun.getSchoolCategoryID();
 		return getPaymentRecordHome().getTotAmountForSchoolCategoryAndPeriod(schoolCategoryID,period);
 	}
+
+    public InvoiceHeader [] getInvoiceHeadersByCustodianOrChild
+        (final User user) {
+        throw new UnsupportedOperationException ("not implemented yet ["
+                                                 + user + ']');
+    }
+
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException
 	{
