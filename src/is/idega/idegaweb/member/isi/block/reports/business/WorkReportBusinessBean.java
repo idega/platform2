@@ -749,8 +749,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 */
 	public Collection getAllWorkReportsForYear(int year) {
 		try {
-			return getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
-			//TODO Eiki rada eftir numeri heradssambands og felags
+			return getWorkReportHome().findAllWorkReportsByYearOrderedByRegionalUnionNumberAndGroupNumber(year);
 		}
 		catch (FinderException e) {
 			//no report available return empty list

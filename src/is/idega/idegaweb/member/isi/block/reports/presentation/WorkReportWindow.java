@@ -342,16 +342,17 @@ public class WorkReportWindow extends IWAdminWindow {
 			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(closeReport, 1, 10);
 			}
+			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+				menu.add(createReports, 1, 11);
+			}
 
 			if (!WorkReportConstants.WR_USER_TYPE_CLUB.equals(type)  || iwc.isSuperAdmin()) {
-				menu.add(statistics, 1, 11);
+				menu.add(statistics, 1, 12);
 				menu.setRowColor(11, COLOR_MIDDLE);
-				menu.add(statsList, 1, 12);
+				menu.add(statsList, 1, 13);
 			}
 			
-			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
-				menu.add(createReports, 1, 13);
-			}
+
 			
 
 			

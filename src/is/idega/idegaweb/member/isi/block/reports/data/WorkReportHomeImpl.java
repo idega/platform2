@@ -20,6 +20,13 @@ public java.util.Collection findAllWorkReportsByYearOrderedByGroupType(int p0)th
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllWorkReportsByYearOrderedByRegionalUnionNumberAndGroupNumber(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportBMPBean)entity).ejbFindAllWorkReportsByYearOrderedByRegionalUnionNumberAndGroupNumber(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public WorkReport findWorkReportByGroupIdAndYearOfReport(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((WorkReportBMPBean)entity).ejbFindWorkReportByGroupIdAndYearOfReport(p0,p1);

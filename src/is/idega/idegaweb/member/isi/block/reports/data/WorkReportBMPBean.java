@@ -281,6 +281,17 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return (Integer) this.idoFindOnePKByQuery(sql);
 	}
 	
+	public Collection ejbFindAllWorkReportsByYearOrderedByRegionalUnionNumberAndGroupNumber(int yearOfReport) throws FinderException{
+		IDOQuery sql = idoQuery();
+		String columns[] = {COLUMN_NAME_REGIONAL_UNION_NR,COLUMN_NAME_GROUP_NUMBER};
+		
+		sql.appendSelectAllFrom(this.getEntityName());
+		sql.appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport);
+		sql.appendOrderBy(columns);
+			
+		return this.idoFindPKsByQuery(sql);
+	}
+	
 	public Collection ejbFindAllWorkReportsByYearOrderedByGroupType(int yearOfReport) throws FinderException{
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport,COLUMN_NAME_GROUP_TYPE);
 	}
