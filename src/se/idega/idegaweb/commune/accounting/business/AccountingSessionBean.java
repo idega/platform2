@@ -8,7 +8,7 @@ import com.idega.business.IBOSessionBean;
 /**
  * @author laddi
  */
-public class AccountingSessionBean extends IBOSessionBean {
+public class AccountingSessionBean extends IBOSessionBean implements AccountingSession {
 
 	protected static final String PARAMETER_OPERATIONAL_FIELD = "acc_operational_field";
 

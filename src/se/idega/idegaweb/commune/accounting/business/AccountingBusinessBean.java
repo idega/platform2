@@ -14,7 +14,7 @@ import com.idega.business.IBOServiceBean;
 /**
  * @author laddi
  */
-public class AccountingBusinessBean extends IBOServiceBean {
+public class AccountingBusinessBean extends IBOServiceBean implements AccountingBusiness {
 
 	public ExportBusiness getExportBusiness() {
 		try {
