@@ -135,25 +135,25 @@ public class UserRelationConnector extends Window {
 		mainTable.add((searcher), 1, row++);
 		mainTable.add(Text.getBreak(), 1, row++);
 
-		Text tCurrentUser = new Text(iwrb.getLocalizedString("current_user", "Current user") + " :");
+		Text tCurrentUser = new Text(iwrb.getLocalizedString("current_user", "Current user") );
 		tCurrentUser.setBold();
-		mainTable.add(tCurrentUser, 1, row);
+		mainTable.add(tCurrentUser, 1, row++);
 		Text tCurrentUserName = new Text(user.getName());
 		Text tCurrentUserPersonalID = new Text(user.getPersonalID());
-		mainTable.add(tCurrentUserPersonalID, 1, row++);
+		mainTable.add(tCurrentUserPersonalID, 1, row);
 		mainTable.add(Text.getNonBrakingSpace(), 1, row);
 		mainTable.add(Text.getNonBrakingSpace(), 1, row);
 		mainTable.add(tCurrentUserName, 1, row);
 
 		row++;
 
-		Text tRelatedUser = new Text(iwrb.getLocalizedString("relation_user", "Relation user") + " :");
+		Text tRelatedUser = new Text(iwrb.getLocalizedString("relation_user", "Relation user") );
 		tRelatedUser.setBold();
-		mainTable.add(tRelatedUser, 1, row);
+		mainTable.add(tRelatedUser, 1, row++);
 		if (relatedUser != null) {
 			Text tRelatedUserName = new Text(relatedUser.getName());
 			Text tRelatedUserPersonalID = new Text(relatedUser.getPersonalID());
-			mainTable.add(tRelatedUserPersonalID, 1, row++);
+			mainTable.add(tRelatedUserPersonalID, 1, row);
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(tRelatedUserName, 1, row);
@@ -165,6 +165,7 @@ public class UserRelationConnector extends Window {
 			mainTable.add(Text.getNonBrakingSpace(),1,row);
 			mainTable.add(Text.getNonBrakingSpace(),1,row);
 			mainTable.add(getRelationMenu(iwc),1,row);
+			row++;
 			
 			// if we have a relation we offer a remove action
 			if(user.hasRelationTo(  ( (Integer) relatedUser.getUserGroup().getPrimaryKey()).intValue() ,type) ){

@@ -143,7 +143,7 @@ public class UserEditor extends Block {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) {
-		debugParameters(iwc);
+		//debugParameters(iwc);
 		// get bundles
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
@@ -492,15 +492,19 @@ public class UserEditor extends Block {
 			// main address part
 			if(isNewValue(iwc,prm_mainaddress_street) || isNewValue(iwc,prm_mainaddress_postal)){
 				String street = iwc.getParameter(prm_mainaddress_street);
-				Integer postal = Integer.valueOf( iwc.getParameter(prm_mainaddress_postal));
-				userService.updateUsersMainAddressOrCreateIfDoesNotExist(userID,street,postal,null,null,null,null);
+				if(!"".equals(street)){
+					Integer postal = Integer.valueOf( iwc.getParameter(prm_mainaddress_postal));
+					userService.updateUsersMainAddressOrCreateIfDoesNotExist(userID,street,postal,null,null,null,null);
+				}
 			}
 			
 			// co address part
 			if(isNewValue(iwc,prm_coaddress_street) || isNewValue(iwc,prm_coaddress_postal)){
 				String street = iwc.getParameter(prm_coaddress_street);
-				Integer postal = Integer.valueOf( iwc.getParameter(prm_coaddress_postal));
-				userService.updateUsersCoAddressOrCreateIfDoesNotExist(userID,street,postal,null,null,null,null);
+				if(!"".equals(street)){
+					Integer postal = Integer.valueOf( iwc.getParameter(prm_coaddress_postal));
+					userService.updateUsersCoAddressOrCreateIfDoesNotExist(userID,street,postal,null,null,null,null);
+				}
 			}
 			
 			// phone part
