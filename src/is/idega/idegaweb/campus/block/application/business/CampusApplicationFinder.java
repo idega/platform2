@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.2 2001/12/07 12:22:33 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,11 +14,15 @@ import is.idega.idegaweb.campus.block.application.data.CurrentResidency;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationFinder;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ListIterator;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import java.util.Vector;
@@ -243,30 +247,30 @@ public abstract class CampusApplicationFinder {
   /**
    *
    */
-  public static CampusApplicationHolder getApplicantInfo(Applicant eApplicant){
-    CampusApplicationHolder CAH = null;
-    if(eApplicant !=null){
-
+  public static CampusApplicationHolder getApplicantInfo(Applicant eApplicant) {
+    CampusApplicationHolder cah = null;
+    if (eApplicant != null) {
       try {
         Application eApplication =  new Application();
-        List L = EntityFinder.findAllByColumn(eApplication,eApplication.getApplicantIdColumnName(),eApplicant.getID());
-        if(L!=null){
-          eApplication = (Application) L.get(0);
+        List l = EntityFinder.findAllByColumn(eApplication,eApplication.getApplicantIdColumnName(),eApplicant.getID());
+        if (l != null) {
+          eApplication = (Application)l.get(0);
           CampusApplication eCampusApplication = new CampusApplication();
-          L = EntityFinder.findAllByColumn(eCampusApplication,eCampusApplication.getApplicationIdColumnName(),eApplication.getID());
-          if(L!=null){
-            eCampusApplication = (CampusApplication) L.get(0);
+          l = EntityFinder.findAllByColumn(eCampusApplication,eCampusApplication.getApplicationIdColumnName(),eApplication.getID());
+          if (l != null) {
+            eCampusApplication = (CampusApplication)l.get(0);
             Applied eApplied = new Applied();
-            L = EntityFinder.findAllByColumn(eApplied,eApplied.getApplicationIdColumnName(),eCampusApplication.getID());
-            Vector V = null;
-            if(L!=null){
-              V = new Vector(L.size());
-              for (int i = 0; i < L.size(); i++) {
-                Applied A = (Applied) L.get(i);
-                V.add(A);
+            l = EntityFinder.findAllByColumn(eApplied,eApplied.getApplicationIdColumnName(),eCampusApplication.getID());
+            Vector v = null;
+            if (l != null) {
+              v = new Vector(l.size());
+              for (int i = 0; i < l.size(); i++) {
+                Applied a = (Applied)l.get(i);
+                v.add(a);
               }
             }
-            CAH = new CampusApplicationHolder(eApplication,eApplicant,eCampusApplication,V);
+
+            cah = new CampusApplicationHolder(eApplication,eApplicant,eCampusApplication,v);
           }
         }
       }
@@ -274,9 +278,12 @@ public abstract class CampusApplicationFinder {
         ex.printStackTrace();
       }
     }
-    return CAH;
+    return(cah);
   }
 
+  /**
+   *
+   */
   public static List listOfWaitinglist(int aprtTypeId,int cmplxId){
      try {
       WaitingList WL = new WaitingList();
@@ -438,7 +445,7 @@ public abstract class CampusApplicationFinder {
           ca = (CampusApplication)resultSet.get(0);
 
         Applied applied = new Applied();
-        resultSet = EntityFinder.findAllByColumn(applied,applied.getApplicationIdColumnName(),ca.getID());
+        resultSet = EntityFinder.findAllByColumnOrdered(applied,applied.getApplicationIdColumnName(),ca.getID(),applied.getOrderColumnName());
         Vector v = null;
         if (resultSet != null) {
           v = new Vector(resultSet.size());
@@ -450,7 +457,40 @@ public abstract class CampusApplicationFinder {
 
         Applicant applicant = new Applicant(a.getApplicantId());
 
-        cah = new CampusApplicationHolder(a,applicant,ca,v,null,null);
+        resultSet = ContractFinder.listOfApplicantContracts(applicant.getID());
+        Vector contracts = null;
+        if (resultSet != null)
+          contracts = new Vector(resultSet);
+
+        resultSet = listOfWaitinglist(applicant.getID());
+        Vector wl = null;
+        if (resultSet != null)
+          wl = new Vector(resultSet);
+
+        Contract contract = null;
+        if (contracts != null)
+          contract = (Contract)contracts.elementAt(0);
+
+        ListIterator it = v.listIterator(v.size());
+        while (it.hasPrevious()) {
+          WaitingList remove = null;
+          Applied app = (Applied)it.previous();
+          if (wl != null) {
+            for (int j = 0; j < wl.size(); j++) {
+              WaitingList wait = (WaitingList)wl.elementAt(j);
+              if ((wait.getApartmentTypeId().intValue() == app.getApartmentTypeId().intValue()) && (wait.getComplexId().intValue() == app.getComplexId().intValue()))
+                remove = wait;
+            }
+          }
+
+          if (remove != null) {
+            if (remove.getRemovedFromList()) {
+              it.remove();
+            }
+          }
+        }
+
+        cah = new CampusApplicationHolder(a,applicant,ca,v,contract,wl);
       }
       catch (SQLException ex) {
         ex.printStackTrace();
@@ -458,5 +498,61 @@ public abstract class CampusApplicationFinder {
     }
 
     return(cah);
+  }
+
+  /**
+   *
+   */
+  public static List listOfWaitinglist(int applicantId) {
+     try {
+      WaitingList WL = new WaitingList();
+      List li = EntityFinder.findAllByColumnOrdered(WL,WL.getApplicantIdColumnName(),String.valueOf(applicantId),WL.getOrderColumnName());
+      if (li != null) {
+        updateWatingListToRightOrder(li);
+      }
+      return(li);
+    }
+    catch(SQLException e) {
+      return(null);
+    }
+  }
+
+  /**
+   *
+   */
+  private static void updateWatingListToRightOrder(List li) {
+    Iterator it = li.iterator();
+    while (it.hasNext()) {
+      WaitingList wl = (WaitingList)it.next();
+      if ((wl.getApartmentTypeId() != null) && (wl.getComplexId() != null)) {
+        StringBuffer sql = new StringBuffer("select count(*) from ");
+        sql.append(wl.getEntityTableName());
+        sql.append(" where ");
+        sql.append(wl.getOrderColumnName());
+        sql.append(" <= ");
+        sql.append(wl.getOrder().toString());
+        sql.append(" and ");
+        sql.append(wl.getApartmentTypeIdColumnName());
+        sql.append(" = ");
+        sql.append(wl.getApartmentTypeId().toString());
+        sql.append(" and ");
+        sql.append(wl.getComplexIdColumnName());
+        sql.append(" = ");
+        sql.append(wl.getComplexId().toString());
+        int count = 0;
+
+        try {
+          count = new WaitingList().getNumberOfRecords(sql.toString());
+        }
+        catch(SQLException ex) {
+          return;
+        }
+
+        if (count < 0)
+          count = 1;
+
+        wl.setOrder(count);
+      }
+    }
   }
 }

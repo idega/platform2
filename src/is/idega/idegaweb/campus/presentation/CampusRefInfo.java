@@ -1,5 +1,5 @@
 /*
- * $Id: CampusRefInfo.java,v 1.1 2001/11/29 11:17:34 palli Exp $
+ * $Id: CampusRefInfo.java,v 1.2 2001/12/07 12:22:33 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -48,17 +48,10 @@ public class CampusRefInfo extends PresentationObjectContainer {
     T.setVerticalAlignment(1,1,"top");
     T.setVerticalAlignment(2,1,"top");
 
-    Image textImage = iwb.getImage("/text_pictures/apply.jpg");
-    textImage.setVerticalSpacing(12);
-
     T.add(new ReferenceNumberInfo(),1,1);
-    if (iwc.getParameter("status") == null || iwc.getParameter("status").equals("2")) {
-      T.add(textImage,2,1);
-    }
-    else {
-      T.mergeCells(1,1,2,1);
-      T.setWidth(1,"100%");
-    }
+    T.mergeCells(1,1,2,1);
+    T.setWidth(1,"100%");
+
     add(T);
   }
 }
