@@ -231,7 +231,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -441,7 +441,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -588,7 +588,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -715,7 +715,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -924,7 +924,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1075,7 +1075,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1170,7 +1170,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1318,7 +1318,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1457,7 +1457,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1563,7 +1563,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1699,7 +1699,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 	
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1850,7 +1850,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -2003,7 +2003,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -2156,7 +2156,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -2306,7 +2306,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 	
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
@@ -2451,7 +2451,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 		
 		//PARAMETERS and FIELDS
 		ReportableField leagueString = new ReportableField(FIELD_NAME_LEAGUE_NAME, String.class);
@@ -2637,7 +2637,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
@@ -2768,7 +2768,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
@@ -3029,7 +3029,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -3157,7 +3157,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 	
@@ -3393,7 +3393,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 
@@ -3633,7 +3633,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 
@@ -3812,7 +3812,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 
@@ -3929,7 +3929,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -3977,7 +3977,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -4032,7 +4032,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -4186,7 +4186,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				IWTimestamp.getTimestampRightNow().toGMTString());
+				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
 
 		//PARAMETERS that are also FIELDS
 		
