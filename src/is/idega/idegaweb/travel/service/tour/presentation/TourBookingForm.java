@@ -179,8 +179,10 @@ public class TourBookingForm extends BookingForm{
               country.setSize(textInputSizeMd);
               country.keepStatusOnAction();
           TextArea comment = new TextArea("comment");
-              comment.setWidth(Integer.toString(textInputSizeLg));
-              comment.setHeight("4");
+              comment.setWidth("350");
+              comment.setHeight("60");
+//              comment.setWidth(Integer.toString(textInputSizeLg));
+//              comment.setHeight("4");
               comment.keepStatusOnAction();
 
           DropdownMenu usersDrop = null;
@@ -326,7 +328,7 @@ public class TourBookingForm extends BookingForm{
           Text count = (Text) super.theSmallBoldText.clone();
             count.setText(iwrb.getLocalizedString("travel.number_of_seats","No.of seats"));
           Text unitPrice = (Text) super.theSmallBoldText.clone();
-            unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price per seats"));
+            unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price per seat"));
           Text amount = (Text) super.theSmallBoldText.clone();
             amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
 
@@ -479,10 +481,11 @@ public class TourBookingForm extends BookingForm{
           table.add(payType, 2, row);
 
 
-//          ++row;
-//          table.add(commentText, 1, row);
-//          table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-//          table.add(comment, 2, row);
+          ++row;
+          table.mergeCells(2,row,4,row);
+          table.add(commentText, 1, row);
+          table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+          table.add(comment, 2, row);
 
           // Virkar, vantar HTTPS
 
@@ -569,7 +572,7 @@ public class TourBookingForm extends BookingForm{
       return form;
   }
 
-  public Form getPublicBookingForm(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, FinderException {
+  public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
     int bookings = getTourBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
     int max = 0;
     int min = 0;
@@ -577,7 +580,7 @@ public class TourBookingForm extends BookingForm{
     try {
       ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
       ServiceDay sDay = sDayHome.create();
-        sDay = sDay.getServiceDay(this._productId, stamp);
+        sDay = sDay.getServiceDay(this._productId, _stamp);
       if (sDay != null) {
         max = sDay.getMax();
         min = sDay.getMin();
@@ -600,7 +603,7 @@ public class TourBookingForm extends BookingForm{
       _useInquiryForm = true;
     }
     try {
-      return getPublicBookingFormPrivate(iwc, product, stamp);
+      return getPublicBookingFormPrivate(iwc, product);
     }catch (ServiceNotFoundException snfe) {
       throw new FinderException(snfe.getMessage());
     }catch (TimeframeNotFoundException tnfe) {
@@ -608,7 +611,7 @@ public class TourBookingForm extends BookingForm{
     }
   }
 
-  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
+  private Form getPublicBookingFormPrivate(IWContext iwc, Product product) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
       form.addParameter(this.parameterOnlineBooking, "true");
     Table table = new Table();
@@ -618,16 +621,16 @@ public class TourBookingForm extends BookingForm{
       table.setWidth("100%");
       form.add(table);
 
-      if (stamp != null) {
-        form.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
-        form.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
-        form.addParameter(CalendarBusiness.PARAMETER_DAY,stamp.getDay());
+      if (_stamp != null) {
+        form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
+        form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       }
 
       boolean isDay = true;
 
 
-      isDay = getTourBusiness(iwc).getIfDay(iwc, _product, stamp, false);
+      isDay = getTourBusiness(iwc).getIfDay(iwc, _product, _stamp, false);
 /*
       if (isDay) {
         if (_tour.getTotalSeats() > 0)
@@ -653,7 +656,7 @@ public class TourBookingForm extends BookingForm{
 
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
-      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, stamp, addressId);
+      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
       if (tFrame != null) {
         prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
         misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, true);
@@ -672,7 +675,7 @@ public class TourBookingForm extends BookingForm{
         inquiryExplain.setText(iwrb.getLocalizedString("travel.inquiry_explain","A departure on the selected day cannot be guarenteed. By filling out this form you will send us your request and we will try to meet your requirements.\nYou can also select another day from the calendar."));
 
       Text dateText = (Text) theBoldText.clone();
-        dateText.setText(stamp.getLocaleDate(iwc));
+        dateText.setText(getLocaleDate(_stamp));
         dateText.addToText("."+Text.NON_BREAKING_SPACE);
 
       Text pleaseBook = (Text) theText.clone();
@@ -787,8 +790,8 @@ public class TourBookingForm extends BookingForm{
 //            manyDays.setSize(5);
 
           TextArea comment = new TextArea("comment");
-              comment.setWidth("60");
-              comment.setHeight("5");
+              comment.setWidth("500");
+              comment.setHeight("60");
 
           ++row;
           table.mergeCells(1,row,6,row);
@@ -1053,7 +1056,7 @@ public class TourBookingForm extends BookingForm{
           table.setAlignment(4,row,"left");
           table.mergeCells(4,row,6,row);
 
-/*          ++row;
+          ++row;
           table.add(commentText,1,row);
           table.add(comment,2,row);
           table.mergeCells(2, row, 6, row);
@@ -1061,7 +1064,7 @@ public class TourBookingForm extends BookingForm{
           table.setAlignment(1,row,"right");
           table.setVerticalAlignment(1,row,"top");
           table.setAlignment(2,row,"left");
-*/
+
 
 
           PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
@@ -1262,6 +1265,7 @@ public class TourBookingForm extends BookingForm{
       form.maintainParameter("telephone_number");
       form.maintainParameter("city");
       form.maintainParameter("country");
+      form.maintainParameter("comment");
       form.maintainParameter(parameterPickupId);
       form.maintainParameter(parameterPickupInf);
 //      form.maintainParameter("reference_number");
@@ -1449,7 +1453,7 @@ public class TourBookingForm extends BookingForm{
         try {
           ++row;
           temp = new IWTimestamp((IWTimestamp)errorDays.get(i));
-          table.add(temp.getLocaleDate(iwc), 1,row);
+          table.add(getLocaleDate(temp), 1,row);
         }catch (NullPointerException npe) {
           npe.printStackTrace(System.err);
         }
@@ -2052,9 +2056,9 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
         IWTimestamp toStamp = new IWTimestamp(fromStamp);
         if (iManyDays > 1) {
           toStamp.addDays(iManyDays);
-          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
+          table.add(getBoldTextWhite(getLocaleDate(fromStamp)+ " - "+getLocaleDate(toStamp)),2,row);
         }else {
-          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)),2,row);
+          table.add(getBoldTextWhite(getLocaleDate(fromStamp)),2,row);
         }
       }catch (NumberFormatException n) {
         table.add(star, 2,row);
@@ -2253,7 +2257,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
               valid = false;
               for (int i = 0; i < errorDays.size(); i++) {
                 ++row;
-                dayText = getBoldText(((IWTimestamp) errorDays.get(i)).getLocaleDate(iwc));
+                dayText = getBoldText(getLocaleDate(((IWTimestamp) errorDays.get(i))));
                   dayText.setFontColor(errorColor);
                 table.add(dayText, 2, row);
               }

@@ -204,8 +204,8 @@ public class HotelBookingForm extends BookingForm {
             country.setSize(textInputSizeMd);
             country.keepStatusOnAction();
         TextArea comment = new TextArea("comment");
-            comment.setWidth(Integer.toString(textInputSizeLg));
-            comment.setHeight("4");
+	          comment.setWidth("350");
+	          comment.setHeight("60");
             comment.keepStatusOnAction();
 
         DropdownMenu usersDrop = null;
@@ -346,11 +346,11 @@ public class HotelBookingForm extends BookingForm {
         table.add(pTable, 2, row);
 
         Text count = (Text) super.theSmallBoldText.clone();
-          count.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
+          count.setText(iwrb.getLocalizedString("travel.number_of_units","Number of units"));
         Text unitPrice = (Text) super.theSmallBoldText.clone();
-          unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price pr. seat"));
+          unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
         Text amount = (Text) super.theSmallBoldText.clone();
-          amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
+          amount.setText(iwrb.getLocalizedString("travel.total_price","Total price"));
 
         pTable.add(count, 1, 1);
         pTable.add(unitPrice, 2, 1);
@@ -405,7 +405,7 @@ public class HotelBookingForm extends BookingForm {
                       if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
                         pPri = entries[j].getProductPrice();
                         currentCount = entries[j].getCount();
-                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
                         currentSum = (int) (currentCount * price);
 
                         totalCount += currentCount;
@@ -572,7 +572,7 @@ public class HotelBookingForm extends BookingForm {
 	        }
 
         }
-
+        
         ++row;
         if (_booking != null) {
           table.add(new SubmitButton(iwrb.getImage("buttons/update.gif"), this.sAction, this.parameterSaveBooking),2,row);
@@ -672,7 +672,7 @@ public class HotelBookingForm extends BookingForm {
         inquiryExplain.setText(iwrb.getLocalizedString("travel.inquiry_explain","A departure on the selected day cannot be guarenteed. By filling out this form you will send us your request and we will try to meet your requirements.\nYou can also select another day from the calendar."));
 
       Text dateText = (Text) theBoldText.clone();
-        dateText.setText(stamp.getLocaleDate(iwc));
+        dateText.setText(getLocaleDate(stamp));
         dateText.addToText("."+Text.NON_BREAKING_SPACE);
 
       Text pleaseBook = (Text) theText.clone();
@@ -781,8 +781,8 @@ public class HotelBookingForm extends BookingForm {
             manyDays.setSize(5);
 
           TextArea comment = new TextArea("comment");
-              comment.setWidth("60");
-              comment.setHeight("5");
+              comment.setWidth("350");
+              comment.setHeight("60");
 
           ++row;
           table.mergeCells(1,row,6,row);
@@ -824,16 +824,16 @@ public class HotelBookingForm extends BookingForm {
 
           ++row;
 
-	        Text count = (Text) super.theSmallBoldText.clone();
-	          count.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
-	        Text unitPrice = (Text) super.theSmallBoldText.clone();
-	          unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price pr. seat"));
-//          Text count = (Text) super.theSmallBoldText.clone();
-//            count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
-//          Text unitPrice = (Text) super.theSmallBoldText.clone();
-//            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
+//	        Text count = (Text) super.theSmallBoldText.clone();
+//	          count.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
+//	        Text unitPrice = (Text) super.theSmallBoldText.clone();
+//	          unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price pr. seat"));
+          Text count = (Text) super.theSmallBoldText.clone();
+            count.setText(iwrb.getLocalizedString("travel.number_of_units","Number of units"));
+          Text unitPrice = (Text) super.theSmallBoldText.clone();
+            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
           Text amount = (Text) super.theSmallBoldText.clone();
-            amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
+            amount.setText(iwrb.getLocalizedString("travel.total_price","Total price"));
           Text space = (Text) super.theSmallBoldText.clone();
             space.setText(Text.NON_BREAKING_SPACE);
 
@@ -1039,7 +1039,7 @@ public class HotelBookingForm extends BookingForm {
           table.setAlignment(4,row,"left");
           table.mergeCells(4,row,6,row);
 
-/*          ++row;
+          ++row;
           table.add(commentText,1,row);
           table.add(comment,2,row);
           table.mergeCells(2, row, 6, row);
@@ -1047,7 +1047,7 @@ public class HotelBookingForm extends BookingForm {
           table.setAlignment(1,row,"right");
           table.setVerticalAlignment(1,row,"top");
           table.setAlignment(2,row,"left");
-*/
+
 
           PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
           Collection hotelPickup = hppHome.findHotelPickupPlaces(this._service);
@@ -1311,9 +1311,9 @@ public class HotelBookingForm extends BookingForm {
         IWTimestamp toStamp = new IWTimestamp(fromStamp);
         if (iManyDays > 1) {
           toStamp.addDays(iManyDays);
-          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
+          table.add(getBoldTextWhite(getLocaleDate(fromStamp)+ " - "+getLocaleDate(toStamp)),2,row);
         }else {
-          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)),2,row);
+          table.add(getBoldTextWhite(getLocaleDate(fromStamp)),2,row);
         }
       }catch (NumberFormatException n) {
         table.add(star, 2,row);
@@ -1518,7 +1518,7 @@ public class HotelBookingForm extends BookingForm {
               valid = false;
               for (int i = 0; i < errorDays.size(); i++) {
                 ++row;
-                dayText = getBoldText(((IWTimestamp) errorDays.get(i)).getLocaleDate(iwc));
+                dayText = getBoldText(getLocaleDate(((IWTimestamp) errorDays.get(i))));
                   dayText.setFontColor(errorColor);
                 table.add(dayText, 2, row);
               }

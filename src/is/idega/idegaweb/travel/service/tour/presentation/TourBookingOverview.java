@@ -432,6 +432,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
           }catch (SQLException sql) {sql.printStackTrace(System.err);}
           //                Temail.setText(_reseller[i].getEmail());
           Tbooked = (Text) super.theSmallBoldText.clone();
+          Tbooked.setFontColor(super.BLACK);
           Tbooked.setText(Integer.toString(getAssigner(iwc).getNumberOfAssignedSeats(product.getID(), resellers[i].getID() ,stamp)));
 
           table.mergeCells(2,row,3, row);
@@ -616,8 +617,8 @@ public class TourBookingOverview extends AbstractBookingOverview {
       daLink.addParameter(TourBookingForm.parameterDepartureAddressId, trAddress.getID());
       daLink.setPresentationObject(_iwrb.getImage("buttons/book.gif"));
       table.add(Text.NON_BREAKING_SPACE, 1, tempRow);
-      table.add(daLink, 8, tempRow);
-      table.setAlignment(8, tempRow,  Table.HORIZONTAL_ALIGN_RIGHT);
+      table.add(daLink, 9, tempRow);
+      table.setAlignment(9, tempRow,  Table.HORIZONTAL_ALIGN_RIGHT);
     }
 
     ++row;

@@ -481,13 +481,13 @@ public class InitialData extends TravelManager {
           passwordText.addToText(":");
 
       int inputSize = 40;
-      String inputSizeStr = "40";
+      String inputSizeStr = "260";
 
       TextInput name = new TextInput("supplier_name");
         name.setSize(inputSize);
       TextArea description = new TextArea("supplier_description");
         description.setWidth(inputSizeStr);
-        description.setHeight("5");
+        description.setHeight("80");
       TextInput address = new TextInput("supplier_address");
         address.setSize(inputSize);
       TextInput phone = new TextInput("supplier_phone");
@@ -625,11 +625,9 @@ public class InitialData extends TravelManager {
         table.setRowColor(row,super.GRAY);
         table.mergeCells(1,row,2,row);
       ++row;
-      if (supplier == null ) {
         table.setAlignment(1,row,"left");
         table.add(lBack,1,row);
-      }
-      if (super.isTravelAdministrator(iwc)) {
+      if (super.isInPermissionGroup) {
         table.setAlignment(2,row,"right");
         table.add(submit,2,row);
       }

@@ -268,7 +268,7 @@ public class PublicBooking extends Block  {
 //          action = "";
 //        }
         if (action == null || action.equals("")) {
-            form = bf.getPublicBookingForm(iwc, product, stamp);
+            form = bf.getPublicBookingForm(iwc, product);
             form.maintainParameter(this.parameterProductId);
 //            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
 //            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
@@ -307,7 +307,7 @@ public class PublicBooking extends Block  {
           Text dateText = new Text();
             dateText.setFontStyle(TravelManager.theBoldTextStyle);
             dateText.setFontColor(TravelManager.WHITE);
-            dateText.setText(stamp.getLocaleDate(iwc));
+            dateText.setText(getLocaleDate(stamp));
             dateText.addToText("."+Text.NON_BREAKING_SPACE);
 
           Text pleaseFindAnotherDay = new Text();
@@ -485,7 +485,7 @@ public class PublicBooking extends Block  {
               mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
               mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness(iwc).getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
 
               SendMail sm = new SendMail();
@@ -505,7 +505,7 @@ public class PublicBooking extends Block  {
               mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
               mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness(iwc).getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
               if (doubleSendSuccessful) {
                 mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
@@ -584,7 +584,9 @@ public class PublicBooking extends Block  {
     return table;
   }
 
-
+  protected String getLocaleDate(IWTimestamp stamp) {
+    return  (new IWCalendar(stamp)).getLocaleDate();
+  }
 
   protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
