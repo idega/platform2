@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.33 2004/02/24 18:49:18 aron Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.34 2004/02/27 10:30:42 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import com.idega.util.CalendarMonth;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.33 2004/02/24 18:49:18 aron Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.34 2004/02/27 10:30:42 aron Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -260,10 +260,10 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		IDOQuery sql = idoQuery();
 		sql.appendSelect().append("P.*");
 		sql.appendFrom().append(this.getTableName()).append(" P ");
-		if(opID!=null){
+		//if(opID!=null){
 			sql.append(", ");
 			sql.append(SchoolTypeBMPBean.SCHOOLTYPE).append(" T ");
-		}
+		//}
 		sql.appendWhere();
 		sql.appendOverlapPeriod("P."+COLUMN_PERIOD_FROM,"P."+COLUMN_PERIOD_TO,from,to);
 		///sql.appendWhere().append(" P.").append(COLUMN_PERIOD_FROM);
@@ -272,12 +272,11 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		//sql.appendAnd().append(" P.").append(COLUMN_PERIOD_TO);
 		//sql.appendLessThanOrEqualsSign().append("'"+to+"'");
 		//sql.appendLessThanOrEqualsSign().append(to);
-		if(opID!=null && opID.length()>0){
-		
-			sql.appendAndEquals("P."+COLUMN_ACTIVITY_ID,"T."+SchoolTypeBMPBean.SCHOOLTYPE+"_ID");
+		sql.appendAndEquals("P."+COLUMN_ACTIVITY_ID,"T."+SchoolTypeBMPBean.SCHOOLTYPE+"_ID");
+		//if(opID!=null && opID.length()>0){
 			sql.appendAndEqualsQuoted("T."+SchoolTypeBMPBean.SCHOOLCATEGORY,opID);
 			
-		}
+		//}
 		
 		sql.appendOrderByDescending(" P."+COLUMN_PERIOD_FROM);
 		sql.append(", ");
@@ -285,7 +284,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.append(", ");
 		sql.append("P."+COLUMN_REG_SPEC_TYPE_ID);
 		
-		System.out.println(sql.toString());
+		//System.out.println(sql.toString());
+		logSQL(sql.toString());
 		return idoFindPKsBySQL(sql.toString());
 	}
 
