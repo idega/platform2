@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.88 2005/02/24 13:32:10 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.89 2005/02/24 13:53:48 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -708,7 +708,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private void deleteOffer(IWContext iwc) throws RemoteException {
 		int applicationId = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
-		getChildCareBusiness(iwc).deleteOffer(applicationId, iwc.getCurrentUser());
+		getChildCareBusiness(iwc).deleteOffer(applicationId);
 	}
 	
 	/**
