@@ -2109,6 +2109,12 @@ public abstract class BookingForm extends TravelManager{
 				StackTraceElement[] ste = e.getStackTrace();
 				SendMail mail = new SendMail();
 				StringBuffer msg = new StringBuffer();
+				if (e instanceof CreditCardAuthorizationException) {
+					msg.append("Error message = "+((CreditCardAuthorizationException)e).getErrorMessage()+"\n");
+					msg.append("Error number = "+((CreditCardAuthorizationException)e).getErrorNumber()+"\n");
+					msg.append("Display error = "+((CreditCardAuthorizationException)e).getDisplayError()+"\n\n");
+					msg.append("Localized message = "+((CreditCardAuthorizationException)e).getLocalizedMessage(iwrb)+"\n\n");
+				}
 				msg.append(bodyHeader+"\n\n ");
 				for ( int i = 0 ; i < ste.length ; i++) {
 					if (i != 0) {
