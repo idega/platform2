@@ -1,9 +1,12 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoardHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubTypeDropDownMenu;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.WorkReportStatusDropDownMenu;
+import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.YesNoDropDownMenu;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
@@ -73,6 +76,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_WORK_REPORT_STATUS = "WorkReportStatsBusiness.workreport_status";
 	private static final String LOCALIZED_WORK_REPORT_STATUS_INFO = "WorkReportStatsBusiness.workreport_info";
 	private static final String LOCALIZED_WORK_REPORT_STATUS_REMARKS = "WorkReportStatsBusiness.workreport_remarks";
+	private static final String LOCALIZED_DIVISION_NAME = "WorkReportStatsBusiness.division_name";
+	private static final String LOCALIZED_ANNUAL_REPORT_STATUS = "WorkReportStatsBusiness.annual_report_status";
+	private static final String LOCALIZED_ANNUAL_REPORT_IN = "WorkReportStatsBusiness.annual_report_in";
+	private static final String LOCALIZED_ANNUAL_REPORT_MISSING = "WorkReportStatsBusiness.annual_report_missing";
 	
 	// names of reportable fields
 	private static final String FIELD_NAME_COMPARING_YEAR = "comparing_year";
@@ -88,6 +95,15 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_ALL_UNDER_AGE = "bothGendersUnderAge";
 	private static final String FIELD_NAME_ALL_OVER_OR_EQUAL_AGE = "bothGendersEqualOverAge";
 	private static final String FIELD_NAME_ALL_AGES = "bothGendersAllAge";
+	
+	private static final String FIELD_NAME_WOMEN_MEMBERS_UNDER_AGE = "womenMembersUnderAgeLimit";
+	private static final String FIELD_NAME_WOMEN_MEMBERS_OVER_OR_EQUAL_AGE = "womenMembersOverOrEqualAgeLimit";
+	private static final String FIELD_NAME_MEN_MEMBERS_UNDER_AGE = "menMembersUnderAgeLimit";
+	private static final String FIELD_NAME_MEN_MEMBERS_OVER_OR_EQUAL_AGE = "menMembersOverOrEqualAgeLimit";
+	private static final String FIELD_NAME_ALL_MEMBERS_UNDER_AGE = "bothGendersMembersUnderAge";
+	private static final String FIELD_NAME_ALL_MEMBERS_OVER_OR_EQUAL_AGE = "bothGendersMembersEqualOverAge";
+	private static final String FIELD_NAME_ALL_MEMBERS_AGES = "bothGendersMembersAllAge";
+	
 	private static final String FIELD_NAME_WOMEN_UNDER_AGE_LAST_YEAR = "womenUnderAgeLimitLastYear";
 	private static final String FIELD_NAME_WOMEN_OVER_OR_EQUAL_AGE_LAST_YEAR = "womenOverOrEqualAgeLimitLastYear";
 	private static final String FIELD_NAME_MEN_UNDER_AGE_LAST_YEAR = "menUnderAgeLimitLastYear";
@@ -99,6 +115,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_WORK_REPORT_STATUS = "workreport_status";
 	private static final String FIELD_NAME_WORK_REPORT_STATUS_INFO = "workreport_info";
 	private static final String FIELD_NAME_WORK_REPORT_STATUS_REMARKS = "workreport_remarks";
+	private static final String FIELD_NAME_DIVISION_NAME = "division_name";
+	private static final String FIELD_NAME_ANNUAL_REPORT_STATUS = "annual_report_status";
+
 
 	/**
 	 *  
@@ -2253,23 +2272,23 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData.addData(clubType, getClubTypeString(report));
 		
 			//fetch member stats stats or initialize for this club
-			int womenMembersUnder = getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReport(age, report);
-			int womenMembersEqualOrOver = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age, report);
-			int menMembersUnder = getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReport(age, report);
-			int menMembersEqualOrOver = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age, report);
-			int lastYearMemberCount = 0;
+			int womenPlayersUnder = getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReport(age, report);
+			int womenPlayersEqualOrOver = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age, report);
+			int menPlayersUnder = getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReport(age, report);
+			int menPlayersEqualOrOver = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age, report);
+			int lastYearPlayersCount = 0;
 			if(lastYearReport!=null) {
-				lastYearMemberCount = getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
+				lastYearPlayersCount = getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
 			} 
 		
-			regData.addData(womenUnderAge, new Integer(womenMembersUnder));
-			regData.addData(womenOverOrEqualAgeLimit, new Integer(womenMembersEqualOrOver));
-			regData.addData(menUnderAge, new Integer(menMembersUnder));
-			regData.addData(menOverOrEqualAgeLimit, new Integer(menMembersEqualOrOver));
-			regData.addData(bothGendersUnderAge, new Integer(womenMembersUnder + menMembersUnder));
-			regData.addData(bothGendersEqualOrOver, new Integer(womenMembersEqualOrOver + menMembersEqualOrOver));
-			regData.addData(bothGendersAllAge, new Integer(womenMembersUnder + menMembersUnder + womenMembersEqualOrOver + menMembersEqualOrOver));
-			regData.addData(bothGendersLastYear, new Integer(lastYearMemberCount));
+			regData.addData(womenUnderAge, new Integer(womenPlayersUnder));
+			regData.addData(womenOverOrEqualAgeLimit, new Integer(womenPlayersEqualOrOver));
+			regData.addData(menUnderAge, new Integer(menPlayersUnder));
+			regData.addData(menOverOrEqualAgeLimit, new Integer(menPlayersEqualOrOver));
+			regData.addData(bothGendersUnderAge, new Integer(womenPlayersUnder + menPlayersUnder));
+			regData.addData(bothGendersEqualOrOver, new Integer(womenPlayersEqualOrOver + menPlayersEqualOrOver));
+			regData.addData(bothGendersAllAge, new Integer(womenPlayersUnder + menPlayersUnder + womenPlayersEqualOrOver + menPlayersEqualOrOver));
+			regData.addData(bothGendersLastYear, new Integer(lastYearPlayersCount));
 		
 			reportCollection.add(regData);
 		}
@@ -2351,24 +2370,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			}
 			System.out.println();
 			
-			
-			WorkReport lastYearReport=null;
-			try {
-				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),year.intValue()-1);
-			} catch (FinderException e1) {
-				System.err.println("WorkReportStatsBusiness : No report for year before :"+year);
-			}
-			
 			String reportStatus = report.getStatus();
 			String statusString = "";
 			if(WorkReportConstants.WR_STATUS_DONE.equals(reportStatus)) {
 				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_DONE, "Done");
 			} else if(WorkReportConstants.WR_STATUS_NO_REPORT.equals(reportStatus)) {
-				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_NO_REPORT, "Done");
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_NO_REPORT, "No Report");
 			} else if(WorkReportConstants.WR_STATUS_NOT_DONE.equals(reportStatus)) {
-				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_NOT_DONE, "Done");
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_NOT_DONE, "Not Done");
 			} else if(WorkReportConstants.WR_STATUS_SOME_DONE.equals(reportStatus)) {
-				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_SOME_DONE, "Done");
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_SOME_DONE, "Some Done");
 			}
 	
 			ReportableData regData = new ReportableData();
@@ -2400,6 +2411,213 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		return reportCollection;
 	}
 	
+	/*
+	 * Report B12.5.2 of the ISI Specs
+	 */
+	public ReportableCollection getWorkReportStatusForClubsByYearRegionalUnionsAndClubs (
+			final Integer year,
+			Collection regionalUnionsFilter,
+			Collection clubsFilter,
+			String onlyTotals)
+	throws RemoteException {
+		//initialize stuff
+		int age = 16;
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		//PARAMETES
+
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+
+		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
+		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
+		reportCollection.addField(clubName);
+
+		ReportableField divisionName = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		divisionName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		reportCollection.addField(divisionName);
+
+		ReportableField annualReportStatus = new ReportableField(FIELD_NAME_ANNUAL_REPORT_STATUS, String.class);
+		annualReportStatus.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ANNUAL_REPORT_STATUS, "Annual Report Status"), currentLocale);
+		reportCollection.addField(annualReportStatus);
+	
+		// Fields for member stats
+		ReportableField womenMembersUnderAge = new ReportableField(FIELD_NAME_WOMEN_MEMBERS_UNDER_AGE, Integer.class);
+		womenMembersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
+		reportCollection.addField(womenMembersUnderAge);
+
+		ReportableField womenMembersOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_WOMEN_MEMBERS_OVER_OR_EQUAL_AGE, Integer.class);
+		womenMembersOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenMembersOverOrEqualAgeLimit);
+
+		ReportableField menMembersUnderAge = new ReportableField(FIELD_NAME_MEN_MEMBERS_UNDER_AGE, Integer.class);
+		menMembersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
+		reportCollection.addField(menMembersUnderAge);
+
+		ReportableField menMembersOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_MEN_MEMBERS_OVER_OR_EQUAL_AGE, Integer.class);
+		menMembersOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
+		reportCollection.addField(menMembersOverOrEqualAgeLimit);
+
+		ReportableField bothGendersMembersUnderAge = new ReportableField(FIELD_NAME_ALL_MEMBERS_UNDER_AGE, Integer.class);
+		bothGendersMembersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
+		reportCollection.addField(bothGendersMembersUnderAge);
+
+		ReportableField bothGendersMembersEqualOrOver = new ReportableField(FIELD_NAME_ALL_MEMBERS_OVER_OR_EQUAL_AGE, Integer.class);
+		bothGendersMembersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
+		reportCollection.addField(bothGendersMembersEqualOrOver);
+
+		ReportableField bothGendersMembersAllAge = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES, Integer.class);
+		bothGendersMembersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(bothGendersMembersAllAge);
+		
+		// Fields for player stats
+		ReportableField womenPlayersUnderAge = new ReportableField(FIELD_NAME_WOMEN_UNDER_AGE, Integer.class);
+		womenPlayersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
+		reportCollection.addField(womenPlayersUnderAge);
+		
+		ReportableField womenPlayersOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_WOMEN_OVER_OR_EQUAL_AGE, Integer.class);
+		womenPlayersOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenPlayersOverOrEqualAgeLimit);
+		
+		ReportableField menPlayersUnderAge = new ReportableField(FIELD_NAME_MEN_UNDER_AGE, Integer.class);
+		menPlayersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
+		reportCollection.addField(menPlayersUnderAge);
+		
+		ReportableField menPlayersOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_MEN_OVER_OR_EQUAL_AGE, Integer.class);
+		menPlayersOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
+		reportCollection.addField(menPlayersOverOrEqualAgeLimit);
+		
+		ReportableField bothGendersPlayersUnderAge = new ReportableField(FIELD_NAME_ALL_UNDER_AGE, Integer.class);
+		bothGendersPlayersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
+		reportCollection.addField(bothGendersPlayersUnderAge);
+		
+		ReportableField bothGendersPlayersEqualOrOver = new ReportableField(FIELD_NAME_ALL_OVER_OR_EQUAL_AGE, Integer.class);
+		bothGendersPlayersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
+		reportCollection.addField(bothGendersPlayersEqualOrOver);
+		
+		ReportableField bothGendersPlayersAllAge = new ReportableField(FIELD_NAME_ALL_AGES, Integer.class);
+		bothGendersPlayersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(bothGendersPlayersAllAge);
+		
+		// Fields for competitors stats
+		ReportableField womenCompetitorsUnderAge = new ReportableField(FIELD_NAME_WOMEN_UNDER_AGE, Integer.class);
+		womenCompetitorsUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
+		reportCollection.addField(womenCompetitorsUnderAge);
+	
+		ReportableField womenCompetitorsOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_WOMEN_OVER_OR_EQUAL_AGE, Integer.class);
+		womenCompetitorsOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenCompetitorsOverOrEqualAgeLimit);
+	
+		ReportableField menCompetitorsUnderAge = new ReportableField(FIELD_NAME_MEN_UNDER_AGE, Integer.class);
+		menCompetitorsUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
+		reportCollection.addField(menCompetitorsUnderAge);
+	
+		ReportableField menCompetitorsOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_MEN_OVER_OR_EQUAL_AGE, Integer.class);
+		menCompetitorsOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
+		reportCollection.addField(menCompetitorsOverOrEqualAgeLimit);
+	
+		ReportableField bothGendersCompetitorsUnderAge = new ReportableField(FIELD_NAME_ALL_UNDER_AGE, Integer.class);
+		bothGendersCompetitorsUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
+		reportCollection.addField(bothGendersCompetitorsUnderAge);
+	
+		ReportableField bothGendersCompetitorsEqualOrOver = new ReportableField(FIELD_NAME_ALL_OVER_OR_EQUAL_AGE, Integer.class);
+		bothGendersCompetitorsEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
+		reportCollection.addField(bothGendersCompetitorsEqualOrOver);
+	
+		ReportableField bothGendersCompetitorsAllAge = new ReportableField(FIELD_NAME_ALL_AGES, Integer.class);
+		bothGendersCompetitorsAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(bothGendersCompetitorsAllAge);
+	
+		//Real data stuff
+		//Gathering data
+		//Get all the workreports (actually more than needed)
+		//then for each get its leagues and the count for
+		//each age and create a row and insert into an ordered map by league
+		//then iterate the map and insert into the final report collection.
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			String cName = report.getGroupName();
+			
+			ReportableData regData = new ReportableData();
+			// fetch club info
+			try {
+				Collection leagues = report.getLeagues();
+				Iterator iterator = leagues.iterator();
+				while (iterator.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					
+					String leagueIdentifier = getLeagueIdentifier(league);
+					regData.addData(clubName, cName);
+					regData.addData(divisionName, leagueIdentifier);
+					
+					// Find if annual report is in or missing
+					Collection records = getWorkReportBusiness().getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(report.getGroupId().intValue(),league.getGroupId().intValue());
+					boolean hasData = (records!=null && !records.isEmpty());
+					String status;
+					if(hasData) {
+						status = _iwrb.getLocalizedString(LOCALIZED_ANNUAL_REPORT_IN, "In");
+					} else {
+						status = _iwrb.getLocalizedString(LOCALIZED_ANNUAL_REPORT_MISSING, "Missing");
+					}
+					regData.addData(annualReportStatus, status);
+			
+					//fetch member stats stats for this division	
+					// @TODO (jonas) don't know how to fetch this data, have to ask eiki
+					regData.addData(womenMembersUnderAge, new Integer(0));
+					regData.addData(womenMembersOverOrEqualAgeLimit, new Integer(0));
+					regData.addData(menMembersUnderAge, new Integer(0));
+					regData.addData(menMembersOverOrEqualAgeLimit, new Integer(0));
+					regData.addData(bothGendersMembersUnderAge, new Integer(0));
+					regData.addData(bothGendersMembersEqualOrOver, new Integer(0));
+					regData.addData(bothGendersMembersAllAge, new Integer(0));
+					
+					// fetch player stats stats for this division
+					int womenPlayersUnder = getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					int womenPlayersEqualOrOver = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					int menPlayersUnder = getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					int menPlayersEqualOrOver = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					regData.addData(womenPlayersUnderAge, new Integer(womenPlayersUnder));
+					regData.addData(womenPlayersOverOrEqualAgeLimit, new Integer(womenPlayersEqualOrOver));
+					regData.addData(menPlayersUnderAge, new Integer(menPlayersUnder));
+					regData.addData(menPlayersOverOrEqualAgeLimit, new Integer(menPlayersEqualOrOver));
+					regData.addData(bothGendersPlayersUnderAge, new Integer(womenPlayersUnder + menPlayersUnder));
+					regData.addData(bothGendersPlayersEqualOrOver, new Integer(womenPlayersEqualOrOver + menPlayersEqualOrOver));
+					regData.addData(bothGendersPlayersAllAge, new Integer(womenPlayersUnder + menPlayersUnder + womenPlayersEqualOrOver + menPlayersEqualOrOver));
+
+					//fetch competitor stats stats for this division
+//					@TODO (jonas) don't know how to fetch this data, have to ask eiki	
+					regData.addData(womenCompetitorsUnderAge, new Integer(0));
+					regData.addData(womenCompetitorsOverOrEqualAgeLimit, new Integer(0));
+					regData.addData(menCompetitorsUnderAge, new Integer(0));
+					regData.addData(menCompetitorsOverOrEqualAgeLimit, new Integer(0));
+					regData.addData(bothGendersCompetitorsUnderAge, new Integer(0));
+					regData.addData(bothGendersCompetitorsEqualOrOver, new Integer(0));
+					regData.addData(bothGendersCompetitorsAllAge, new Integer(0));
+
+					reportCollection.add(regData);
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		ReportableField[] sortFields = new ReportableField[] {clubName, divisionName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+
+		//finished return the collection
+		return reportCollection;
+	}
+		
 	private boolean showClubStatus(WorkReport report, String status) {
 		String reportStatus = report.getStatus();
 		boolean show = true;
