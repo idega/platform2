@@ -1768,7 +1768,12 @@ public class HotelBookingForm extends BookingForm {
 		
 		int max = 0;
 		
-		if (supplier != null) {
+		if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				max = cont.getAlotment();
+			}	
+		}else { //if (supplier != null) {
 			max = hotel.getNumberOfUnits();
 			if (max < 1) {
 				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -1779,11 +1784,6 @@ public class HotelBookingForm extends BookingForm {
 					max = sDay.getMax();
 				}
 			}
-		}else if (_reseller != null) {
-			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
-			if (cont != null) {
-				max = cont.getAlotment();
-			}	
 		}
 	
 		if (max > 0) {

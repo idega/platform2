@@ -2732,7 +2732,12 @@ public abstract class BookingForm extends TravelManager{
 
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 	  int max = 0;
-	  if (supplier != null) {
+	  if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				max = cont.getAlotment();
+			}	
+	  } else {//if (supplier != null) {
 		  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 		  ServiceDay sDay = sDayHome.create();
 		  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
@@ -2740,20 +2745,15 @@ public abstract class BookingForm extends TravelManager{
 		  if (sDay != null) {
 		  	max = sDay.getMax();
 		  }
-	  }else if (_reseller != null) {
-			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
-			if (cont != null) {
-				max = cont.getAlotment();
-			}	
 	  }
 
-  	if (max > 0 ) {
-			int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
-			if (currentBookings >= max) {
-				return true;	
-			}
-  	}
-		
+	  	if (max > 0 ) {
+				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+				if (currentBookings >= max) {
+					return true;	
+				}
+	  	}
+			
 		return false;
 	}
 

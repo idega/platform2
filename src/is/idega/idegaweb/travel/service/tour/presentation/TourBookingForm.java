@@ -1975,7 +1975,10 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
 		int max = 0;
-		if (supplier != null) {
+		if (_reseller != null) {
+			Contract cont = getContractBusiness(iwc).getContract(_reseller, product);
+			max = cont.getAlotment();
+		} else {//if (supplier != null) {
 			max = tour.getTotalSeats();
 			if ( max < 1) {
 				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -1987,9 +1990,6 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 				}
 				
 			}
-		}else if (_reseller != null) {
-			Contract cont = getContractBusiness(iwc).getContract(_reseller, product);
-			max = cont.getAlotment();
 		}
 		if (max > 0) {
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
