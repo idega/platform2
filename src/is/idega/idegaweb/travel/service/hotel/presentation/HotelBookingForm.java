@@ -296,6 +296,7 @@ public class HotelBookingForm extends BookingForm {
           table.add(manyDays, 2, row);
 //          manyDays.setOnBlur("this.form."+toDate.sety+".value=\"2002-11-23\"");
         }else {
+        	System.out.println("[HotelBookingForm] in here 1");
           table.add(new HiddenInput(parameterFromDate, new IWTimestamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
           GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
           GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
@@ -328,6 +329,7 @@ public class HotelBookingForm extends BookingForm {
         int currentSum = 0;
         int currentCount = 0;
         if (_booking != null) {
+        	System.out.println("[HotelBookingForm] in here 2");
           entries = getBooker(iwc).getBookingEntries(_booking);
         }
 
@@ -400,6 +402,7 @@ public class HotelBookingForm extends BookingForm {
                 }
 
                 if (_booking != null) {
+				        	System.out.println("[HotelBookingForm] in here for pCat = "+category.getName());
                   if (entries != null) {
                     for (int j = 0; j < entries.length; j++) {
                       if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
@@ -458,6 +461,7 @@ public class HotelBookingForm extends BookingForm {
         table.add(totalText,1,row);
 
         if (_booking != null) {
+        	System.out.println("[HotelBookingForm] in here 3");
           TotalPassTextInput.setContent(Integer.toString(totalCount));
           TotalTextInput.setContent(Integer.toString(totalSum));
         }
@@ -545,6 +549,7 @@ public class HotelBookingForm extends BookingForm {
 
 
         if (_booking != null) {
+        	System.out.println("[HotelBookingForm] in here 4");
           form.addParameter(this.parameterBookingId,_booking.getID());
           surname.setContent(_booking.getName());
           address.setContent(_booking.getAddress());
@@ -553,6 +558,7 @@ public class HotelBookingForm extends BookingForm {
           country.setContent(_booking.getCountry());
           email.setContent(_booking.getEmail());
           telNumber.setContent(_booking.getTelephoneNumber());
+        	System.out.println("[HotelBookingForm] in here 5");
 
           if (usersDrop != null) {
             usersDrop.setSelectedElement(Integer.toString(_booking.getUserId()));
@@ -561,6 +567,8 @@ public class HotelBookingForm extends BookingForm {
           if (_booking.getComment() != null) {
             comment.setContent(_booking.getComment());
           }
+        	System.out.println("[HotelBookingForm] in here 6");
+
 	        if (pickupMenu != null) {
 	          try {
 	            pickupMenu.setSelectedElement(Integer.toString(_booking.getPickupPlaceID()));
@@ -575,6 +583,8 @@ public class HotelBookingForm extends BookingForm {
         
         ++row;
         if (_booking != null) {
+        	System.out.println("[HotelBookingForm] in here 7");
+
           table.add(new SubmitButton(iwrb.getImage("buttons/update.gif"), this.sAction, this.parameterSaveBooking),2,row);
         }else {
           table.add(new SubmitButton(iwrb.getImage("buttons/book.gif"), this.sAction, this.parameterSaveBooking),2,row);
