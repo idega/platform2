@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.ejb.CreateException;
@@ -30,6 +31,7 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
+import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
@@ -39,6 +41,7 @@ import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -382,6 +385,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // !!!  add the main board (represented by null)
     //
     workReportLeagues.add(null);
+
     // create helper 
     // iterate over leagues
     Collection workReportAccountGroupHelpers = new ArrayList();
@@ -393,6 +397,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       Integer groupId = (group == null) ? IWMemberConstants.MAIN_BOARD_ID : group.getGroupId();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
+    }
+    // add new entry
+    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
+      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), IWMemberConstants.MAIN_BOARD));
     }
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
@@ -433,21 +441,21 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   }
   
   private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
-    String createNewEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_create_new_entry", "New entry");
+    String createNewEntityText = resourceBundle.getLocalizedString("wr_account_editor_create_new_entry", "New entry");
     SubmitButton button = new SubmitButton(createNewEntityText, SUBMIT_CREATE_NEW_ENTRY_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
   }
   
   private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
-    String deleteEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_remove_entries", "Remove");
+    String deleteEntityText = resourceBundle.getLocalizedString("wr_account_editor_remove_entries", "Remove");
     SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
   }    
  
   private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
-    String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
+    String cancelText = resourceBundle.getLocalizedString("wr_account_editor_cancel", "Cancel");
     SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
@@ -691,7 +699,99 @@ public class WorkReportAccountEditor extends WorkReportSelector {
      createOrUpdateRecord(workReportBusiness, groupId, accountKeyId, amount);
     }
   } 
-     
+
+  private void changeLeagueOfExistingRecords(Integer groupId, String newLeagueName, WorkReportBusiness workReportBusiness)  {
+    WorkReportGroup workReportGroup; 
+    Integer newGroupId;
+    try {
+      workReportGroup = 
+        workReportBusiness.getWorkReportGroupHome().findWorkReportGroupByNameAndYear(newLeagueName, getYear());
+      newGroupId = (Integer) workReportGroup.getPrimaryKey();
+    }
+    catch (RemoteException rmEx) {
+      String message =
+        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + rmEx.getMessage());
+      rmEx.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+    catch (FinderException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReportGroupHome.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      // give up
+      return;
+    }
+    // does this league already exist?
+    Set leaguesIds = leagueKeyMatrix.firstKeySet();
+    if (leaguesIds.contains(newGroupId))  {
+      // do nothing
+      return;
+    }
+    // !!!! add league to work report +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    WorkReport workReport;
+    try {
+      workReport = workReportBusiness.getWorkReportById(getWorkReportId());
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReport.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+    try {
+      workReport.addLeague(workReportGroup);
+    }
+    catch (IDORelationshipException ex) {
+      String message =
+        "[WorkReportBoardMemberEditor]: Can't add league to work report.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      // give up
+      return;
+    }
+    TransactionManager tm = IdegaTransactionManager.getInstance();
+    try {
+      tm.begin();
+      List changedRecords = new ArrayList();
+      Map recordsMap = leagueKeyMatrix.get(groupId);
+      Collection records = recordsMap.values();
+      Iterator iteratorRecords = records.iterator();
+      while (iteratorRecords.hasNext())  {
+        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
+        record.setWorkReportGroupId(newGroupId.intValue());
+        record.store();
+        changedRecords.add(record);
+      } 
+      // change the matrix
+      Iterator iterator = changedRecords.iterator();
+      while (iterator.hasNext())  {
+        WorkReportClubAccountRecord recordItem = (WorkReportClubAccountRecord) iterator.next();
+        Integer accountKeyId = new Integer(recordItem.getAccountKeyId());
+        leagueKeyMatrix.remove(groupId, accountKeyId);
+        leagueKeyMatrix.put(newGroupId, accountKeyId, recordItem);
+      }
+      tm.commit();
+    }
+    catch (Exception ex)  {
+      String message =
+        "[WorkReportAccountEditor]: Can't store records.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      try {
+        tm.rollback();
+      }
+      catch (SystemException sysEx) {
+        String sysMessage =
+        "[WorkReportAccountEditor]: Can't rollback.";
+        System.err.println(sysMessage + " Message is: "+ sysEx.getMessage());
+        sysEx.printStackTrace(System.err);
+      }
+    }
+  }
+
     
   private void createOrUpdateRecord(WorkReportBusiness workReportBusiness, Integer groupId, Integer accountKeyId, Float amount)  {
     WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKeyId);
