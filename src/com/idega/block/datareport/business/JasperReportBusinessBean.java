@@ -119,7 +119,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     
 
   
-  private String getRealPathToReportFile(String fileName, String extension) {
+  public String getRealPathToReportFile(String fileName, String extension) {
     IWMainApplication mainApp = getIWApplicationContext().getApplication();
     String separator = FileUtil.getFileSeparator();
     StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
@@ -219,7 +219,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       return design;
     }
     catch (Exception ex)  {
-      System.err.println("[ReportBusiness]: File could not be read");
+      System.err.println("[JasperReportBusiness]: File could not be read");
       ex.printStackTrace(System.err);
       try {
         inputStream.close();
@@ -238,7 +238,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     }
     // FinderException, RemoteException
     catch(Exception ex){
-      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+      throw new RuntimeException("[JasperReportBusiness]: Message was: " + ex.getMessage());
     }
   }     
     
