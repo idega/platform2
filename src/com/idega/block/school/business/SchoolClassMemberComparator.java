@@ -1,16 +1,18 @@
-package se.idega.idegaweb.commune.school.business;
+package com.idega.block.school.business;
 
 import java.rmi.RemoteException;
 import java.text.Collator;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Locale;
-
-import se.idega.util.PIDChecker;
-
+import java.util.Map;
+import javax.ejb.FinderException;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.location.data.Address;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Gender;
+import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
 import com.idega.util.LocaleUtil;
 
@@ -35,13 +37,28 @@ public class SchoolClassMemberComparator implements Comparator {
   private Collator collator;
   private Map students;
   private int sortBy = NAME_SORT;
+  private int femaleID = -1;
   
-  public SchoolClassMemberComparator(Locale locale, UserBusiness business, Map students) {
-  	this(NAME_SORT, locale, business, students);
+  private Comparator genderComparatorForUser = null;
+  
+  /** 
+   * If a special gender comparator is used (e.g. for swedish applications) 
+   * */
+  static public Comparator getComparatorSortByUseGenderComparator(int sortBy, Comparator genderComparatorForUser, Locale locale, UserBusiness business, Map students) {
+  	return new SchoolClassMemberComparator(sortBy, genderComparatorForUser, locale, business, students);
+  }  
+  
+  static public Comparator getComparatorSortBy(int sortBy, Locale locale, UserBusiness business, Map students) {
+  	return new SchoolClassMemberComparator(sortBy, null, locale, business, students);
   }
   
-  public SchoolClassMemberComparator(int sortBy, Locale locale, UserBusiness business, Map students) {
+  static public Comparator getComparatorSortByName(Locale locale, UserBusiness business, Map students) {
+  	return new SchoolClassMemberComparator(NAME_SORT, null, locale, business, students);
+  }
+  
+  private SchoolClassMemberComparator(int sortBy, Comparator genderComparator, Locale locale, UserBusiness business, Map students) {
   	this.sortBy = sortBy;
+  	this.genderComparatorForUser = genderComparator;
   	this.locale = locale;
   	this.business = business;
   	this.students = students;
@@ -138,18 +155,24 @@ public class SchoolClassMemberComparator implements Comparator {
 		User p2 = (User) students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
 		int result = 0;
 		
-		boolean isFemale1 = PIDChecker.getInstance().isFemale(p1.getPersonalID());
-		boolean isFemale2 = PIDChecker.getInstance().isFemale(p2.getPersonalID());
+		if (genderComparatorForUser == null) {
+			boolean isFemale1 = isGenderIDFemale(p1.getGenderID());
+			boolean isFemale2 = isGenderIDFemale(p2.getGenderID());
 		
-		if (isFemale1 && !isFemale2)
-			result = -1;
-		if (!isFemale1 && isFemale2)
-			result = 1;
+			if (isFemale1 && !isFemale2) {
+				result = -1;
+			}
+			if (!isFemale1 && isFemale2) {
+				result = 1;
+			}
+		}
+		else {
+			result = genderComparatorForUser.compare(p1, p2);
+		}
 		
 		if (result == 0){
-		  result = lastNameSort(o1,o2);
+			result = lastNameSort(o1,o2);
 		}
-
 		return result;
 	}	
 
@@ -196,4 +219,27 @@ public class SchoolClassMemberComparator implements Comparator {
 
 		return result;
 	}	
+	
+	private boolean isGenderIDFemale(int genderID) {
+		if (femaleID < 0) {
+			try {
+				Gender female = ((GenderHome) IDOLookup.getHome(Gender.class)).getFemaleGender();
+				femaleID = ((Integer)female.getPrimaryKey()).intValue();
+			} 
+			catch (IDOLookupException e) {
+				System.err.println("[SchoolClassMemberComparator] Could not look up Gender");
+				e.printStackTrace(System.err);
+			}
+			catch (FinderException e) {
+				System.err.println("[SchoolClassMemberComparator] Could not find Gender");
+				e.printStackTrace(System.err);
+			}
+			catch (RemoteException e) {
+				System.err.println("[SchoolClassMemberComparator] Could not access Gender");
+				e.printStackTrace(System.err);
+			}
+		}
+		return femaleID == genderID;
+	}
+
 }
