@@ -1222,9 +1222,7 @@ public class ReportQueryBuilder extends Block {
 		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 8, row);
 		if(hasTemplatePermission){
 		
-			CheckBox lock = new CheckBox(PARAM_LOCK);	
 			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
-//LOCK			table.add(lock,8,row);
 			table.add(dynamic,9,row);
 		}
 		
@@ -1476,9 +1474,7 @@ public class ReportQueryBuilder extends Block {
 //		}
 		
 		if (helper.hasPreviousQuery())	{
-			List resultFields = new ArrayList();
 			QueryHelper previousQuery = helper.previousQuery();
-			String previousQueryName = previousQuery.getName();
 			List fields = previousQuery.getListOfVisibleFields();
 			Iterator iterator = fields.iterator();
 			while (iterator.hasNext())	{
