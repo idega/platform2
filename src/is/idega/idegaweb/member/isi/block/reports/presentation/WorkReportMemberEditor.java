@@ -416,7 +416,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     browser.setEntities("dummy_string", entities);
     browser.setCellpadding(2);
     browser.setCellspacing(0);
-    browser.setBorder(2);
+    browser.setBorder(1);
     return browser;
   }
   
@@ -624,7 +624,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       String text;
       if (shouldBeChecked) {
         // black dot
-        text = String.valueOf('\u0087');
+        text = "X";
       }
       else {
         text = "_";

@@ -1455,7 +1455,15 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       // add work report group to work report 
       if (newGroup != null) {
         Collection coll = getLeaguesOfWorkReportById(workReportID);
-        if (! coll.contains(newGroup))  {
+        Integer pk = (Integer) newGroup.getPrimaryKey();
+        Iterator iteratorLeagues = coll.iterator();
+        boolean doesNotExist = true;
+        while (iteratorLeagues.hasNext() && doesNotExist) {
+          WorkReportGroup group = (WorkReportGroup) iteratorLeagues.next();
+          Integer pkGroup = (Integer) group.getPrimaryKey();
+          doesNotExist = ! (pk.equals(pkGroup));
+        }
+        if (doesNotExist)  {
           WorkReport workReport = getWorkReportById(workReportID);
           workReport.addLeague(newGroup);
         }
