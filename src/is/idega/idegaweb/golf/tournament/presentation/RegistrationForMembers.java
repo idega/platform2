@@ -27,6 +27,7 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
@@ -288,7 +289,17 @@ public class RegistrationForMembers extends GolfBlock {
 
       TournamentGroup[] tGroups = tournament.getTournamentGroups();
       List groups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
-
+      
+      PresentationObjectContainer info = new PresentationObjectContainer();
+      String tournamentInfo = localize("start.tournament_info", "Tournament: ") + tournament.getName();
+      info.add(tournamentInfo);
+      info.addBreak();
+      TournamentRound tRound = tournament.getTournamentRounds()[0];
+      String teetimeInfo = localize("start.teetime_info", "Teetime: ") + getRoundTimeFromGrupNum(Integer.parseInt(modinfo.getParameter(PRM_TEETIME_GROUP_NUMBER)), tournament, tRound);
+      info.add(teetimeInfo);
+      info.addBreak();
+      add(info);
+      
       if (tGroups.length != 0) {
           if (groups.size() != 0)  {
           	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
@@ -460,6 +471,9 @@ public class RegistrationForMembers extends GolfBlock {
 //        form.setSubmitButtonParameter("action", "open");
     	
         Form form = new Form();
+        String info = localize("start.tournament_info", "Tournament: ") + tournament.getName();
+        add(info);
+        addBreak();
         form.addParameter("action", "open");
         form.addParameter("tournament_round",tRounds[0].getPrimaryKey().toString());
         
@@ -585,7 +599,7 @@ public class RegistrationForMembers extends GolfBlock {
 			int groupCounterNum = 0;
 
 			for (int y = 1; y <= tournamentRound.getStartingtees(); y++) {
-				// HARÐKÓÐUN DAUÐANS
+				// HARï¿½Kï¿½ï¿½UN DAUï¿½ANS
 				int tee_number = 1;
 				if (y == 2) tee_number = 10;
 
@@ -1040,6 +1054,13 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
 
 }
 
+private String getRoundTimeFromGrupNum(int num, Tournament tournament, TournamentRound tRound) {
+	int interval = tournament.getInterval();
+	IWTimestamp start = new IWTimestamp(tRound.getRoundDate());
+	start.addMinutes((num-1)*interval);
+	java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
+	return extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute());
+}
 
 public DropdownMenu getAvailableGrupNumsDropdownMenu(IWContext iwc, String dropdownName, Tournament tournament, TournamentRound tRound) throws SQLException, RemoteException {
 	DropdownMenu menu = new DropdownMenu(dropdownName);
@@ -1091,8 +1112,24 @@ public DropdownMenu getAvailableGrupNumsDropdownMenu(IWContext iwc, String dropd
 
 public void directRegistrationConfirmMessageWML(IWContext iwc){
     Paragraph p = new Paragraph();
-    p.add(new Text(localize("temp.registered","You have been registered")));
-    add(p);
+    
+    Tournament tournament = getTournament(iwc);
+    String tournamentName = tournament.getName();
+    String tournamentText = localize("start.registered_in","You have been registered in tournament");
+    add(tournamentText + ": ");
+    add(tournamentName);
+    addBreak();
+    
+    try {
+    	TournamentRound tRound = tournament.getTournamentRounds()[0];
+    	String teetime = getRoundTimeFromGrupNum(Integer.parseInt(iwc.getParameter(PRM_TEETIME_GROUP_NUMBER)), tournament, tRound);
+    	String teetimeText = localize("start.your_teetime_is", "Your teetime is");
+    	add(teetimeText + ": ");
+    	add(teetime);
+    	addBreak();
+    } catch(Exception e) {
+    		e.printStackTrace();
+    }
 }
 
 }
