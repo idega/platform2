@@ -1,7 +1,6 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
@@ -15,13 +14,10 @@ import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -252,7 +248,7 @@ public class RegistrationForMembers extends GolfBlock {
   }
   
   public void notOnlineRegistrationWML(IWContext modinfo) throws SQLException {
-    Member member = GolfLoginBusiness.getMember(modinfo);
+    Member member = AccessControl.getMember(modinfo);
     Tournament tournament = getTournament(modinfo);
 
     Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + member.getName());
@@ -310,7 +306,7 @@ public class RegistrationForMembers extends GolfBlock {
           if (groups.size() != 0)  {
           	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
           		
-          		Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(modinfo).getName());
+          		Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + AccessControl.getMember(modinfo).getName());
           		Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
           		Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
           		Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
@@ -340,7 +336,7 @@ public class RegistrationForMembers extends GolfBlock {
 	                		form.addParameter("action","directRegistrationMembersChosen");
 	                		String tournament_round = modinfo.getParameter("tournament_round");
 
-	                		form.addParameter("member_id",GolfLoginBusiness.getMember(modinfo).getPrimaryKey().toString());
+	                		form.addParameter("member_id", AccessControl.getMember(modinfo).getPrimaryKey().toString());
 //	                		form.addParameter("tournament_group",);
 	                		int index = gr.indexOf(SUFFIX_TENTH_TEE);
 	                		if(index!=-1){
@@ -449,7 +445,7 @@ public class RegistrationForMembers extends GolfBlock {
       
       if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
         
-        Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(modinfo).getName());
+        Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + AccessControl.getMember(modinfo).getName());
 	    	Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
 	    	Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
 	    	Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
@@ -560,7 +556,7 @@ public class RegistrationForMembers extends GolfBlock {
 //        TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
 //        form.setSubmitButtonParameter("action", "open");
     	
-    		Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(modinfo).getName());
+    		Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + AccessControl.getMember(modinfo).getName());
     		Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
     		Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
     		Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
@@ -1221,7 +1217,7 @@ public void directRegistrationConfirmMessageWML(IWContext iwc) throws SQLExcepti
     
     Tournament tournament = getTournament(iwc);
     
-    Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(iwc).getName());
+    Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + AccessControl.getMember(iwc).getName());
 	Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
 	Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
 	Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());

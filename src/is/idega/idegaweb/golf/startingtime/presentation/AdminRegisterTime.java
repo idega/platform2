@@ -1,7 +1,6 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
@@ -12,14 +11,11 @@ import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import is.idega.idegaweb.golf.startingtime.data.TeeTimeHome;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 import is.idega.idegaweb.golf.tournament.presentation.MemberSearchWindow;
-
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
@@ -778,7 +774,7 @@ public class AdminRegisterTime extends GolfWindow {
 		}
 
 		if (MemberID == null) {
-			Object tempObj = GolfLoginBusiness.getMember(modinfo);
+			Object tempObj = AccessControl.getMember(modinfo);
 			if (tempObj != null) {
 				MemberID = Integer.toString(((GenericEntity) tempObj).getID());
 				myForm.add(new HiddenInput("member_id", MemberID));

@@ -6,14 +6,12 @@
 package is.idega.idegaweb.golf.block.login.business;
 
 import is.idega.idegaweb.golf.block.login.data.LoginTable;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
-
 import java.io.IOException;
 import java.sql.SQLException;
-
 import javax.ejb.FinderException;
-
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
@@ -122,11 +120,11 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
     }
 
     public boolean isAdmin(IWContext modinfo) throws SQLException {
-        return is.idega.idegaweb.golf.block.login.business.AccessControl.isAdmin(modinfo);
+        return is.idega.idegaweb.golf.business.AccessControl.isAdmin(modinfo);
     }
 
     public boolean isDeveloper(IWContext modinfo) throws SQLException {
-        Member member = getMember(modinfo);
+        Member member = AccessControl.getMember(modinfo);
         if (member != null) {
             Group[] access = member.getGroups();
             for (int i = 0; i < access.length; i++) {
@@ -137,7 +135,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
     }
 
     public boolean isClubAdmin(IWContext modinfo) throws SQLException {
-        Member member = getMember(modinfo);
+        Member member = AccessControl.getMember(modinfo);
         if (member != null) {
             Group[] access = member.getGroups();
             for (int i = 0; i < access.length; i++) {
@@ -148,7 +146,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
     }
 
     public boolean isUser(IWContext modinfo) throws SQLException {
-        Member member = getMember(modinfo);
+        Member member = AccessControl.getMember(modinfo);
         if (member != null) {
             Group[] access = member.getGroups();
             for (int i = 0; i < access.length; i++) {
@@ -156,10 +154,6 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
             }
         }
         return false;
-    }
-
-    public static Member getMember(IWContext modinfo) {
-        return (Member) modinfo.getSession().getAttribute(UserAttributeParameter);
     }
 
     public static Member getMemberByEmail(String email) throws SQLException {
