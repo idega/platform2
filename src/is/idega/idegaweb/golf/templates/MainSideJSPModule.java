@@ -4,7 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import is.idega.idegaweb.golf.*;
-import com.idega.jmodule.*;
+import com.idega.jmodule.PageJSPModule;
 import com.idega.presentation.*;
 import is.idega.idegaweb.golf.templates.page.*;
 
