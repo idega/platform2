@@ -27,9 +27,9 @@ public Regulation findRegulation(int p0)throws javax.ejb.FinderException{
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findRegulationsByPeriode(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
+public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByPeriode(p0,p1);
+	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ConditionBMPBean.java,v 1.2 2003/09/03 23:32:44 kjell Exp $
+ * $Id: ConditionBMPBean.java,v 1.3 2003/09/05 16:08:14 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOQuery;
  * 
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPbean# 
  * <p>
- * $Id: ConditionBMPBean.java,v 1.2 2003/09/03 23:32:44 kjell Exp $
+ * $Id: ConditionBMPBean.java,v 1.3 2003/09/05 16:08:14 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ConditionBMPBean extends GenericEntity implements Condition {
 	
@@ -42,7 +42,7 @@ public class ConditionBMPBean extends GenericEntity implements Condition {
 		addAttribute(COLUMN_REGULATION_ID, "Regulation ID", true, true, Integer.class);
 		addAttribute(COLUMN_CONDITION_ID, "Condition ID", true, true, Integer.class);
 		addAttribute(COLUMN_INTERVAL_ID, "Intervall ID", true, true, Integer.class);
-		setAsPrimaryKey (COLUMN_REGULATION_ID, true);
+//		setAsPrimaryKey (COLUMN_REGULATION_ID, true);
 	}
 
 	public void setRegulationID(int id) { 
