@@ -16,7 +16,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Text; 
 import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -49,7 +49,6 @@ public class HelpWindow extends Window {
 	private static final String BUNDLE_IDENTIFIER = "com.idega.block.help";
 	public final static String HELP_KEY = Help.HELP_KEY;
 	public final static String HELP_BUNDLE = Help.HELP_BUNDLE;
-//	private final static String IW_CORE_BUNDLE_IDENTIFIER = "com.idega.core";
 	private final static String EDIT_IMAGE = "edit.gif";
 	private final static String HELP_FILE_PREFIX = "hlp_";
 
@@ -160,7 +159,7 @@ public class HelpWindow extends Window {
 		row++;
 		t.add(bodyLabel, 1, row++);
 		t.add(editor, 1, row++);
-		row++;
+		row++; 
 		t.add(save, 1, row);
 		t.add(Text.NON_BREAKING_SPACE, 1, row);
 		t.add(close, 1, row);
