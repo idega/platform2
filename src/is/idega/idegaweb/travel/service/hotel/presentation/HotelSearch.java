@@ -16,6 +16,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -56,6 +57,10 @@ public class HotelSearch extends AbstractSearchForm {
 
 	protected String getServiceName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.accomodation","Accomodation");		
+	}
+	
+	protected Image getHeaderImage(IWResourceBundle iwrb) {
+		return iwrb.getImage("/search/accomodation.png");
 	}
 	
 	protected void getResults() throws RemoteException {

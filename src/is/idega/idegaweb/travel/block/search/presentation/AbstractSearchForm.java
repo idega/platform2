@@ -119,6 +119,8 @@ public abstract class AbstractSearchForm extends Block{
 	protected String headerBackgroundColor;
 	protected String linkBackgroundColor;
 	protected String backgroundColor;
+	protected String width;
+	protected String formInputStyle;
 	
 	protected IWResourceBundle iwrb;
 
@@ -135,6 +137,7 @@ public abstract class AbstractSearchForm extends Block{
 	protected abstract String getServiceName(IWResourceBundle iwrb);
 	protected abstract void setupSearchForm();
 	protected abstract void getResults() throws RemoteException;
+	protected abstract Image getHeaderImage(IWResourceBundle iwrb);
 
 	public void main(IWContext iwc) throws Exception {
 		this.iwc = iwc;
@@ -148,7 +151,10 @@ public abstract class AbstractSearchForm extends Block{
 		}
 		
 		Table outTable = new Table();
-		outTable.setBorder(1);
+		if (width != null) {
+			outTable.setWidth(width);
+		}
+		//outTable.setBorder(1);
 		
 		handleSubmit(iwc);
 		
@@ -197,7 +203,7 @@ public abstract class AbstractSearchForm extends Block{
 		
 		Table table = new Table();
 		table.setWidth("100%");
-		table.setCellpaddingAndCellspacing(0);
+		table.setCellpadding(3);
 		int column = 0;
 		
 		Link link;
@@ -210,8 +216,6 @@ public abstract class AbstractSearchForm extends Block{
 				link = new Link(getLinkText(bsf.getServiceName(iwrb)));
 				link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, bsf.getClassName());
 				table.add(link, ++column, 1);
-				Link link2 = new Link(" Test ");
-				table.add(link2, ++column, 1);
 			}
 		}	else {
 			System.out.println(" no extra searchForms found" );
@@ -231,6 +235,8 @@ public abstract class AbstractSearchForm extends Block{
 		table.setCellpaddingAndCellspacing(0);
 		if (headerImage != null) {
 			table.add(headerImage);
+	//	if (getHeaderImage(iwrb) != null) {
+	//		table.add(getHeaderImage(iwrb));
 		} else {
 			table.add(getHeaderText(getServiceName(iwrb)));
 		}
@@ -722,7 +728,8 @@ public abstract class AbstractSearchForm extends Block{
 	}
 	
 	protected Link getBookingLink(int productId) {
-		Link link = new Link(getLinkText(iwrb.getLocalizedString("travel.book","Book")));
+		Link link = new Link(iwrb.getLocalizedImageButton("travel.book","Book"));
+//		Link link = new Link(getLinkText(iwrb.getLocalizedString("travel.book","Book")));
 		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(PARAMETER_TO_DATE, iwc);
@@ -757,20 +764,6 @@ public abstract class AbstractSearchForm extends Block{
 		++row;
 		String value;
 		for (int i = 0; i < object.length; i++) {
-			/** keepStatusOnAction not used because it does not seem to work always
-			 *  and i already did the other thing before i remembered keepStatusOnAction
-			 */
-			/*if (object[i] instanceof InterfaceObject) {
-				((InterfaceObject)object[i]).keepStatusOnAction(true);
-			} else if (object[i] instanceof DateInput) {
-				((DateInput)object[i]).keepStatusOnAction(true);
-			} else if (object[i] instanceof TimeInput) {
-				((TimeInput)object[i]).keepStatusOnAction();
-			} else if (object[i] instanceof TimestampInput) {
-				((TimestampInput)object[i]).keepStatusOnAction();
-			} */
-		
-		
 			value = iwc.getParameter(object[i].getName());
 			if (value != null) {
 				if (object[i] instanceof DropdownMenu) {
@@ -797,14 +790,12 @@ public abstract class AbstractSearchForm extends Block{
 					}
 				}
 			}
-			/*
-			if (errorFields == null) {
-				System.out.println("ErrorField == null");
-			} else {
-				System.out.println("ErrorFields.size() = "+errorFields.size());
-			}*/
+
 			if ( errorFields != null && errorFields.contains(object[i].getName())) {
 				formTable.add(getErrorText("*"), i+1, row);
+			}
+			if (formInputStyle != null) {
+				object[i].setStyleAttribute(formInputStyle);
 			}
 			formTable.add(object[i], i+1, row);
 		}
@@ -874,6 +865,14 @@ public abstract class AbstractSearchForm extends Block{
 	
 	public void setBackgroundColor(String color) {
 		this.backgroundColor = color;
+	}
+
+	public void setWidth(String width) {
+		this.width = width;
+	}
+
+	public void setFormInputStyle(String style) {
+		this.formInputStyle = style;
 	}
 
 	protected TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {

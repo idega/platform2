@@ -47,6 +47,9 @@ public class ServiceSearch extends Block {
 	protected String linkBackgroundColor;
 	protected String backgroundColor;
 	
+	protected String width;
+	protected String formInputStyle;
+	
 	private Image headerImage;
 	
 	IWResourceBundle iwrb;
@@ -113,6 +116,8 @@ public class ServiceSearch extends Block {
 			ss.setHeaderBackgroundColor(headerBackgroundColor);
 			ss.setLinksBackgroundColor(linkBackgroundColor);
 			ss.setHeaderImage(headerImage);
+			ss.setWidth(width);
+			ss.setFormInputStyle(formInputStyle);
 			return ss;
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -152,6 +157,13 @@ public class ServiceSearch extends Block {
 		this.backgroundColor = color;
 	}
 
+	public void setFormInputStyle(String style) {
+		this.formInputStyle = style;
+	}
+
+	public void setWidth(String width) {
+		this.width = width;
+	}
 	
 	protected TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {
 		return (TravelSessionManager) IBOLookup.getSessionInstance(iwuc, TravelSessionManager.class);
