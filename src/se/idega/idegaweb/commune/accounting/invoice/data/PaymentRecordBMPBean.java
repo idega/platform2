@@ -497,6 +497,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
+	
 	public int ejbHomeGetTotAmountForProviderAndPeriod(int providerID, Date period, String schoolCategoryID) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
@@ -512,7 +513,6 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
-		System.out.println(sql.toString());
 		return idoGetNumberOfRecords(sql);
 	}
 

@@ -170,7 +170,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetPlacementCountForSchoolAndPeriod(int schoolID, Date period) throws IDOException {
+	public int ejbHomeGetPlacementCountForSchoolAndPeriod(int schoolID, Date period, String schoolCategoryID) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -179,7 +179,8 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 
 		IDOQuery sql = idoQuery();
 		sql.appendSelect().append("count (distinct m.ic_user_id) from " + getEntityName() + " p, sch_school_class c, sch_class_member m, sch_school s");
-		sql.appendWhere("p.school_id = c.school_id");
+		sql.appendWhereEqualsQuoted("p.school_category_id", schoolCategoryID);
+		sql.appendAnd().append("p.school_id = c.school_id");
 		sql.appendAnd().append("p.school_id = s.sch_school_id");
 		sql.appendAnd().append("c.sch_school_class_id = m.sch_school_class_id");
 		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());

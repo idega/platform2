@@ -15,7 +15,7 @@ public interface PaymentHeaderHome extends com.idega.data.IDOHome
  public java.util.Collection findBySchoolCategoryStatusInCommuneWithCommunalManagement(java.lang.String p0,char p1)throws javax.ejb.FinderException;
  public java.util.Collection findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(java.lang.String p0,char p1)throws javax.ejb.FinderException;
  public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws javax.ejb.EJBException,javax.ejb.FinderException;
- public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
+ public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException;
  public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException;
 
 }

@@ -17,7 +17,7 @@ public interface PaymentHeader extends com.idega.data.IDOEntity
  public void setSchoolCategory(com.idega.block.school.data.SchoolCategory p0);
  public void setSchoolCategoryID(int p0);
  public void setSchoolID(int p0);
- public void setSignaturelID(int p0);
  public void setSignaturelID(com.idega.user.data.User p0);
+ public void setSignaturelID(int p0);
  public void setStatus(char p0);
 }

@@ -88,9 +88,9 @@ public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws javax.
  }
 
 
-public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1)throws com.idega.data.IDOException{
+public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PaymentHeaderBMPBean)entity).ejbHomeGetPlacementCountForSchoolAndPeriod(p0,p1);
+	int theReturn = ((PaymentHeaderBMPBean)entity).ejbHomeGetPlacementCountForSchoolAndPeriod(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
