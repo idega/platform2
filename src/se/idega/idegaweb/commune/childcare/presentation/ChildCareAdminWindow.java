@@ -41,6 +41,7 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -378,7 +379,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until")+":"), 1, row++);
 		table.add(dateInput, 1, row++);
 
-		SubmitButton offer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
+		
+		HiddenInput action = new HiddenInput(PARAMETER_ACTION);
+		action.setValue(String.valueOf(ACTION_OFFER));
+		table.add(action);
+		SubmitButton offer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer")));
 		table.add(offer, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
