@@ -192,15 +192,7 @@ public class Register extends Block {
 		T.add(inputHintAnswer, 2, row++);
 		
 		
-		SubmitButton ok =
-			new SubmitButton(
-				_iwrb.getLocalizedImageButton("send", "Send"),
-				"send");
-
-		CloseButton close =
-			new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
-		T.add(ok, 1, row);
-		T.add(close, 2, row++);
+		insertContinueCancelButtons(T, row++);
 		
 		Form myForm = new Form();
 		myForm.add(T);
