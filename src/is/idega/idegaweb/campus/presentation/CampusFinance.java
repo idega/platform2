@@ -67,6 +67,7 @@ public class CampusFinance extends Block {
     */
     myTable.add(getLinkTable() ,1,1);
 
+    /*
     IFrame iFrame2 = new IFrame(FRAME_NAME);
      iFrame2.setSrc(CampusFinanceIndex.class);
       iFrame2.setWidth("100%");
@@ -76,7 +77,7 @@ public class CampusFinance extends Block {
       iFrame2.setAlignment(IFrame.ALIGN_LEFT);
       iFrame2.setStyle("border: 1 solid #000000");
       myTable.add(iFrame2,2,1);
-
+*/
 
     add(myTable);
   }
@@ -84,6 +85,7 @@ public class CampusFinance extends Block {
   public PresentationObject getLinkTable(){
       Table FL = new Table();
       //FL.setListpadding(1);
+      /*
       FL.add(getLink(CampusTariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys"),CampusFinance.FRAME_NAME),1,1);
       FL.add(getLink(CampusAccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys"),CampusFinance.FRAME_NAME),1,2);
       FL.add(getLink(CampusTariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes"),CampusFinance.FRAME_NAME),1,3);
@@ -92,7 +94,9 @@ public class CampusFinance extends Block {
       FL.add(getLink(PhoneFiles.class,iwrb.getLocalizedString("phonefiles","Phone files"),CampusFinance.FRAME_NAME),1,6);
       FL.add(getLink(CampusEntryGroups.class,iwrb.getLocalizedString("bunks","Bunks"),CampusFinance.FRAME_NAME),1,7);
       FL.add(getLink(CampusTariffReports.class,iwrb.getLocalizedString("reports","Reports"),CampusFinance.FRAME_NAME),1,8);
+      */
       return FL;
+
   }
 
   public Link getLink(Class cl,String name,String target){

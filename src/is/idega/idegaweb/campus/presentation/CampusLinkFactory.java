@@ -67,7 +67,7 @@ public class CampusLinkFactory {
   private static Class getInstanciateClass(int ID){
     Class C = null;
     switch (ID) {
-      case ADM_FINANCE :    C=CampusFinance.class;          break;
+     //case ADM_FINANCE :    C=CampusFinance.class;          break;
       case ADM_HABITANTS :  C=CampusHabitants.class;      break;
       case ADM_ALLOCATION:  C=CampusAllocation.class;         break;
       case ADM_APARTMENTS:  C=CampusBuilding.class;           break;
