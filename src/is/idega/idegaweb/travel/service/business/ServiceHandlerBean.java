@@ -257,10 +257,9 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
 
 	public List getServiceLinks(IWResourceBundle iwrb) {
 		List list = new Vector();
-		
-		Link hotelLink = new Link(iwrb.getLocalizedImageButton("travel.hotel_setup","Hotel setup"), HotelSetup.class);
-		list.add(hotelLink);
+		list.add(new Link(iwrb.getLocalizedImageButton("travel.hotel_setup","Hotel setup"), HotelSetup.class));
 		list.add(new Link(iwrb.getLocalizedImageButton("travel.tour_setup","Tour setup"), TourSetup.class));
+		list.add(new Link(iwrb.getLocalizedImageButton("travel.car_rental_setup","CarRental setup"), CarRentalSetup.class));
 		return list;	
 	}
 
