@@ -10,6 +10,7 @@ import javax.ejb.FinderException;
 
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.user.data.User;
 
 /**
@@ -49,7 +50,7 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 		addAttribute(COLUMN_NAME_DATE_OF_BIRTH,"Date of birth",true,true,Timestamp.class);
 		addAttribute(COLUMN_NAME_AGE, "The yearly age of the member",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GENDER,"Gender m/f",true,true,String.class,1);
-		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP, "The league/division connection, null then use club",true,true,Integer.class,"many-to-one",WorkReport.class);
+		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP, "The league/division connection, null then use club",true,true,Integer.class,"many-to-many",WorkReportGroup.class);
 		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
 		
@@ -133,16 +134,11 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 		setColumn(COLUMN_NAME_USER_ID,userId);
 	}
 	
-	public void setWorkReportGroupId(int wrGroupId){
-		setColumn(COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId);
-	}
-	
-	public int getWorkReportGroupId(){
-		return getIntColumnValue(COLUMN_NAME_WORK_REPORT_GROUP);
-	}
-	
 	public Collection ejbFindAllClubMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
-
+	
+	public Collection getLeaguesForMember() throws IDOException {
+		return idoGetRelatedEntities(WorkReportGroup.class);
+	}
 }

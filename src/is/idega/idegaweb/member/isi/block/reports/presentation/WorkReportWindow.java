@@ -93,7 +93,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				table.add(new WorkReportSelector(),2,1);	
 			}
 			else if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
-				table.add(new WorkReportSelector(),2,1);	
+				table.add(new WorkReportMemberEditor(),2,1);	
 			}
 			else if( action.equals(ACTION_EDIT_ACCOUNT) ){
 				table.add(new WorkReportSelector(),2,1);	

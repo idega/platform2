@@ -2,17 +2,25 @@ package is.idega.idegaweb.member.isi.block.reports.business;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.MemberUserBusinessBean;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
+import com.idega.util.Age;
+import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.SocialSecurityNumber;
 
 /**
  * Description:	Use this business class to handle work report related business.
@@ -24,6 +32,7 @@ import com.idega.user.data.Group;
 public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness {
 	
 	private WorkReportHome workReportHome;
+	private WorkReportClubMemberHome workReportClubMemberHome;
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
 	/**
@@ -80,8 +89,46 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportHome;
 	}
 		
+	public WorkReportClubMemberHome getWorkReportClubMemberHome(){
+		if(workReportClubMemberHome==null){
+			try{
+				workReportClubMemberHome = (WorkReportClubMemberHome) IDOLookup.getHome(WorkReportClubMember.class);
+			}
+			catch(RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportClubMemberHome;
+	}
 	
-		
-		
-	
+	public boolean createEntry(int reportID, String personalID) {
+		try {
+			User user = null;
+			try {
+				user = getUserHome().findByPersonalID(personalID);
+			}
+			catch (FinderException e) {
+				return false;
+			}
+			
+			Age age = new Age(user.getDateOfBirth());
+
+			WorkReportClubMember member = getWorkReportClubMemberHome().create();
+			member.setReportId(reportID);
+			member.setName(user.getName());
+			member.setPersonalId(personalID);
+			member.setAge(age.getYears());
+			member.setUserId(((Integer)user.getPrimaryKey()).intValue());
+			if (true)
+				member.setAsMale();
+			else
+				member.setAsFemale();
+			
+			member.store();
+			return true;
+		}
+		catch (CreateException ce) {
+			return false;
+		}
+	}
 }

@@ -5,11 +5,11 @@ public interface WorkReportClubMember extends com.idega.data.IDOEntity
 {
  public int getAge();
  public java.sql.Timestamp getDateOfBirth();
+ public java.util.Collection getLeaguesForMember()throws com.idega.data.IDOException;
  public java.lang.String getName();
  public java.lang.String getPersonalId();
  public int getReportId();
  public int getUserId();
- public int getWorkReportGroupId();
  public void initializeAttributes();
  public boolean isFemale();
  public boolean isMale();
@@ -21,5 +21,4 @@ public interface WorkReportClubMember extends com.idega.data.IDOEntity
  public void setPersonalId(java.lang.String p0);
  public void setReportId(int p0);
  public void setUserId(int p0);
- public void setWorkReportGroupId(int p0);
 }
