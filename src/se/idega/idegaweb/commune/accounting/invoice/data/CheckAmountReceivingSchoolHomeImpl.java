@@ -7,10 +7,10 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2004/03/22 13:01:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/23 14:04:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CheckAmountReceivingSchoolHomeImpl extends IDOFactory
 	implements CheckAmountReceivingSchoolHome {
@@ -57,4 +57,13 @@ public class CheckAmountReceivingSchoolHomeImpl extends IDOFactory
 		 return getEntityCollectionForPrimaryKeys (primaryKeys);
 	}
 
+	public Collection findAllByCheckAmountBroadcast
+		(final CheckAmountBroadcast broadcastInfo) throws FinderException {
+		 final IDOEntity entity = idoCheckOutPooledEntity ();
+		 final Collection primaryKeys
+				 = ((CheckAmountReceivingSchoolBMPBean) entity)
+				 .ejbFindAllByCheckAmountBroadcast (broadcastInfo);
+		 idoCheckInPooledEntity (entity);
+		 return getEntityCollectionForPrimaryKeys (primaryKeys);
+	}
 }

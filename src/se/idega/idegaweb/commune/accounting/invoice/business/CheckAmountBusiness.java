@@ -7,9 +7,11 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
+import javax.ejb.RemoveException;
 
 public interface CheckAmountBusiness extends com.idega.business.IBOService
 {
 	void sendCheckAmountLists(User p0, String schoolCategoryPK) throws RemoteException, CreateException, FinderException;
 	MemoryFileBuffer getInternalCheckAmountListBuffer (String schoolCategoryId, Integer providerId, Date startPeriod, Date endPeriod, boolean isShowPosting)	throws RemoteException, DocumentException, FinderException;
+	void deleteOldCheckAmountBroadcastInfo (String schoolCategoryPK, int days)	throws RemoteException, RemoveException;
 }

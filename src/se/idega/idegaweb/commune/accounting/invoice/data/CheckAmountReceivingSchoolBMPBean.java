@@ -8,10 +8,10 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2004/03/22 13:01:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/23 14:04:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CheckAmountReceivingSchoolBMPBean extends GenericEntity
 	implements CheckAmountReceivingSchool {
@@ -115,6 +115,14 @@ public class CheckAmountReceivingSchoolBMPBean extends GenericEntity
 		sql.appendWhereEquals (COLUMN_CHECK_AMOUNT_BROADCAST_ID, broadcastInfo);
 		sql.appendAnd ().append (0).appendGreaterThanOrEqualsSign ();
 		sql.append (COLUMN_PAYMENT_RECORD_COUNT);
+		return idoFindPKsByQuery (sql);
+	}
+
+	public Collection ejbFindAllByCheckAmountBroadcast
+		(final CheckAmountBroadcast broadcastInfo) throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this);
+		sql.appendWhereEquals (COLUMN_CHECK_AMOUNT_BROADCAST_ID, broadcastInfo);
 		return idoFindPKsByQuery (sql);
 	}
 }

@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -69,11 +70,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/03/23 09:30:53 $ by $Author: gimmi $
+ * Last modified: $Date: 2004/03/23 14:04:05 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -148,7 +149,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	}
 
 
-	void createJournalLog
+	private static void createJournalLog
 		(final User currentUser, final String schoolCategoryPK)
 		throws CreateException, IDOLookupException {
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -161,7 +162,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		log.store();
 	}
 
-	void createCheckAmountReceivingSchool
+	private static void createCheckAmountReceivingSchool
 		(final CheckAmountBroadcast broadcastInfo, final School school,
 		 final PaymentRecord[] records, final Collection emailReceivers,
 		 final CheckAmountReceivingSchoolHome recievingSchoolHome)
@@ -175,7 +176,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		receivingSchool.store ();
 	}
 	
-	static void setStatusToHistory (final PaymentRecord[] records) {
+	private static void setStatusToHistory (final PaymentRecord[] records) {
 		for (int i = 0; records.length > i; i++) {
 			final PaymentRecord record = records [i];
 			record.setStatus (ConstantStatus.HISTORY);
@@ -188,7 +189,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
 
-	Document createPdfDocument() {
+	private Document createPdfDocument() {
 		final DocumentBusiness documentBusiness = getDocumentBusiness ();
 		final Document document = new Document
 				(PageSize.A4,documentBusiness.getPointsFromMM(30),
@@ -198,7 +199,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return document;
 	}
 
-	void putCheckAmountListsInPrinterQueue
+	private void putCheckAmountListsInPrinterQueue
 		(final MemoryFileBuffer buffer, User currentUser,
 		 SchoolCategory schoolCategory)
 		throws RemoteException, CreateException, IDOLookupException {
@@ -229,7 +230,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		queueItem.store();
 	}
 
-	PdfWriter createPdfWriter
+	private static PdfWriter createPdfWriter
 		(final Document document, final OutputStream outStream)
 		throws DocumentException {
 		final PdfWriter writer = PdfWriter.getInstance(document, outStream);
@@ -240,7 +241,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return writer;
 	}
 
-	void sendEmails
+	private void sendEmails
 		(SchoolCategory schoolCategory, final School school,
 		 final PaymentRecord[] records, Collection emailReceivers)
 		throws Exception {
@@ -272,7 +273,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		file.delete();
 	}
 
-	void addCheckAmountListToDocument
+	private void addCheckAmountListToDocument
 		(final PdfWriter writer, final Document document,
 		 SchoolCategory schoolCategory, final School school,
 		 final PaymentRecord[] records) throws Exception {
@@ -288,7 +289,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		documentBusiness.createCommuneFooter(writer);
 	}
 
-	Collection findEmailReceiversAndNotifyThem
+	private Collection findEmailReceiversAndNotifyThem
 		(final User currentUser, final School school)
 		throws IBOLookupException, RemoteException, FinderException {
 		final SchoolUserBusiness sub = getSchoolUserBusiness ();
@@ -307,7 +308,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return emailReceivers;
 	}
 
-	private String getTitle (final Object schoolId) {
+	private static String getTitle (final Object schoolId) {
 		return "CheckbeloppsLista_" + schoolId + "_"
 				+ IWTimestamp.RightNow ().getDate ();
 	}
@@ -330,7 +331,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return outerTable;
 	}
 
-	PaymentRecord[] getLockedPaymentRecords(SchoolCategory schoolCategory, School school) throws FinderException, IDOLookupException {
+	private static PaymentRecord[] getLockedPaymentRecords(SchoolCategory schoolCategory, School school) throws FinderException, IDOLookupException {
 		Collection paymentHeaders
 				= getPaymentHeaderHome ().findBySchoolAndSchoolCategoryPKAndStatus
 				(school.getPrimaryKey(), schoolCategory.getPrimaryKey(),
@@ -346,7 +347,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return records;
 	}
 
-	private String getAddressString (final School school) {
+	private static String getAddressString (final School school) {
 		final StringBuffer result = new StringBuffer ();
 		final String street = school.getSchoolAddress ();
 		final String zip = school.getSchoolZipCode ();
@@ -596,7 +597,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return summaryTable;
 	}
 	
-	private void addRecordOnARow
+	private static void addRecordOnARow
 		(final PdfPTable table, final PaymentRecord record,
 		 final boolean isInternal) {
 		if (isInternal) {
@@ -618,7 +619,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
 
-	private PostingField [] getCurrentPostingFields
+	private static PostingField [] getCurrentPostingFields
 		(final PostingBusiness postingBusiness) throws RemoteException {
 		final Date now = new Date (System.currentTimeMillis ());
 		final Collection fields = postingBusiness.getAllPostingFieldsByDate (now);
@@ -627,12 +628,12 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				: array;
 	}
 	
-	private void addPhrase (final PdfPTable table, final String string) {
+	private static void addPhrase (final PdfPTable table, final String string) {
 		table.addCell (new Phrase (new Chunk (null != string ? string : "",
 																					SANSSERIF_FONT)));
 	}
 	
-	private void addBoldPhrase (final PdfPTable table, final String string) {
+	private static void addBoldPhrase (final PdfPTable table, final String string) {
 		table.addCell (new Phrase (new Chunk (null != string ? string : "",
 																					SANSSERIFBOLD_FONT)));
 	}
@@ -641,19 +642,19 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return mm*72/25.4f;
 	}
 	
-	private long roundAmount (final float f) {
+	private static long roundAmount (final float f) {
 		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
 	}
 	
-	private int min (final int a, final int b) {
+	private static int min (final int a, final int b) {
 		return a < b ? a : b;
 	}
 	
-	private String getFormattedAmount (final float f) {
+	private static String getFormattedAmount (final float f) {
 		return f == -1.0f ? "0" : integerFormatter.format (roundAmount (f));
 	}
 	
-	private String getFormattedPeriod (Date date) {
+	private static String getFormattedPeriod (Date date) {
 		return null != date ? periodFormatter.format (date) : "";
 	}
 	
@@ -664,6 +665,33 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			return localize (category.getLocalizedKey (), category.getName ());
 		} catch (Exception dummy) {
 			return "";
+		}
+	}
+
+	public void deleteOldCheckAmountBroadcastInfo
+		(final String schoolCategoryPK, final int days)
+		throws RemoteException, RemoveException {
+		final long offsetInMillis =  24 * 60 * 60 * 1000 * (long) days;
+		final Timestamp timestamp = new Timestamp
+				(System.currentTimeMillis () - offsetInMillis);
+		try {
+			final CheckAmountReceivingSchoolHome receivingSchoolHome
+					= getCheckAmountReceivingSchoolHome ();
+			final Collection checkAmountBroadcasts
+					= getCheckAmountBroadcastHome ().findOlderByTimestamp
+					(schoolCategoryPK, timestamp);
+			for (Iterator i = checkAmountBroadcasts.iterator (); i.hasNext ();) {
+				final CheckAmountBroadcast broadcastInfo
+						= (CheckAmountBroadcast) i.next ();
+				final Collection receivingSchools
+						= receivingSchoolHome.findAllByCheckAmountBroadcast (broadcastInfo);
+				for (Iterator j = receivingSchools.iterator (); j.hasNext ();) {
+					((CheckAmountReceivingSchool) j.next ()).remove ();
+				}
+				broadcastInfo.remove ();
+			}
+		} catch (FinderException e) {
+			// no problem, no old things to remove
 		}
 	}
 
@@ -707,36 +735,36 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
  
-	private SchoolCategoryHome getSchoolCategoryHome ()
+	private static SchoolCategoryHome getSchoolCategoryHome ()
 		throws IDOLookupException {
 		return (SchoolCategoryHome) IDOLookup.getHome (SchoolCategory.class);
 	}
  
-	private PaymentRecordHome getPaymentRecordHome () throws IDOLookupException {
+	private static PaymentRecordHome getPaymentRecordHome () throws IDOLookupException {
 		return (PaymentRecordHome) IDOLookup.getHome (PaymentRecord.class);
 	}
  
-	private PaymentHeaderHome getPaymentHeaderHome () throws IDOLookupException {
+	private static PaymentHeaderHome getPaymentHeaderHome () throws IDOLookupException {
 		return (PaymentHeaderHome) IDOLookup.getHome (PaymentHeader.class);
 	}
  
-	private PrintedLetterMessageHome getPrintedLetterMessageHome ()
+	private static PrintedLetterMessageHome getPrintedLetterMessageHome ()
 		throws IDOLookupException {
 		return (PrintedLetterMessageHome)
 				IDOLookup.getHome (PrintedLetterMessage.class);
 	}
  
-	private SchoolHome getSchoolHome () throws IDOLookupException {
+	private static SchoolHome getSchoolHome () throws IDOLookupException {
 		return (SchoolHome) IDOLookup.getHome (School.class);
 	}
  
-	private CheckAmountBroadcastHome getCheckAmountBroadcastHome ()
+	private static CheckAmountBroadcastHome getCheckAmountBroadcastHome ()
 		throws IDOLookupException {
 		return (CheckAmountBroadcastHome) IDOLookup.getHome
 				(CheckAmountBroadcast.class);
 	}
  
-	CheckAmountReceivingSchoolHome getCheckAmountReceivingSchoolHome ()
+	private static CheckAmountReceivingSchoolHome getCheckAmountReceivingSchoolHome ()
 		throws IDOLookupException {
 		return (CheckAmountReceivingSchoolHome) IDOLookup.getHome
 				(CheckAmountReceivingSchool.class);

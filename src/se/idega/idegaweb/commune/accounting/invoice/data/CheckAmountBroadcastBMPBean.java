@@ -5,13 +5,14 @@ import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import java.sql.Timestamp;
+import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2004/03/22 13:01:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/23 14:04:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CheckAmountBroadcastBMPBean extends GenericEntity
 	implements CheckAmountBroadcast {
@@ -82,5 +83,16 @@ public class CheckAmountBroadcastBMPBean extends GenericEntity
 		sql.appendWhereEqualsQuoted (COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId);
 		sql.appendOrderByDescending (COLUMN_STARTTIME);
 		return (Integer) idoFindOnePKByQuery (sql);
+	}
+
+	public Collection ejbFindOlderByTimestamp
+		(final String schoolCategoryId, final Timestamp timestamp)
+		throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this);
+		sql.appendWhereEqualsQuoted (COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId);
+		sql.appendAnd ().append (timestamp).appendGreaterThanSign ();
+		sql.append (COLUMN_STARTTIME);
+		return idoFindPKsByQuery (sql);
 	}
 }

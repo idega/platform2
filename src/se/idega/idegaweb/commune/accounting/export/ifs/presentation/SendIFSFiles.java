@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcast;
 import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcastHome;
@@ -45,7 +46,7 @@ public class SendIFSFiles extends AccountingBlock {
 	protected final static String KEY_IGNORED_PROVIDERS = PREFIX + "ignored_providers";
 	protected final static String KEY_LAST_BROADCAST_FOR = PREFIX + "last_broadcast_for";
 	protected final static String KEY_NAME = PREFIX + "name";
-	protected final static String KEY_NO_BROADCAST_EXCUTED = PREFIX + "no_broadcast_excuted";
+	protected final static String KEY_NO_BROADCAST_EXECUTED = PREFIX + "no_broadcast_executed";
 	protected final static String KEY_OF = PREFIX + "of";
 	protected final static String KEY_PAPER_MAILED_PROVIDERS = PREFIX + "paper_mailed_providers";
 	protected final static String KEY_SEND = PREFIX + "save";
@@ -127,7 +128,7 @@ public class SendIFSFiles extends AccountingBlock {
 			table.add (getProviderTable (emailedProviders, paperMailedProviders, ignoredProviders), 1, row++);
 			add (table);
 		} catch (FinderException e) {
-			add (localize (KEY_NO_BROADCAST_EXCUTED, KEY_NO_BROADCAST_EXCUTED));
+			add (localize (KEY_NO_BROADCAST_EXECUTED, KEY_NO_BROADCAST_EXECUTED));
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
@@ -190,11 +191,15 @@ public class SendIFSFiles extends AccountingBlock {
 	
 	private void sendFiles(IWContext context) throws RemoteException {
 		try {
-			getCheckAmountBusiness(context).sendCheckAmountLists
-					(context.getCurrentUser(), _currentOperation);
+			final CheckAmountBusiness business = getCheckAmountBusiness(context);
+			business.sendCheckAmountLists (context.getCurrentUser(),
+																		 _currentOperation);
+			business.deleteOldCheckAmountBroadcastInfo (_currentOperation, 90);
 		} catch (CreateException e) {
 			e.printStackTrace ();
 		} catch (FinderException e) {
+			e.printStackTrace ();
+		} catch (RemoveException e) {
 			e.printStackTrace ();
 		}
 	}
