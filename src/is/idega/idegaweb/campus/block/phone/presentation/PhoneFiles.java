@@ -17,6 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.data.AccountPhoneEntry;
 import com.idega.block.finance.business.FinanceObject;
 import com.idega.util.idegaTimestamp;
+import com.idega.idegaweb.presentation.BusyBar;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.SQLException;
@@ -109,8 +110,13 @@ public class PhoneFiles extends Block {
         T.add(new HiddenInput(sAction,String.valueOf(ACT2)));
         T.add(new HiddenInput("filename",fileName));
         SubmitButton read = new SubmitButton("read",iwrb.getLocalizedString("read","Read"));
+        read.setOnClick("this.form.submit()");
+        BusyBar busy = new BusyBar("phonebusy");
+        busy.setInterfaceObject(read);
         Edit.setStyle(read);
+
         T.add(read,3,2);
+        T.add(busy,3,2);
       }
       catch (Exception ex) {
         T.add(Edit.formatText(iwrb.getLocalizedString("no_file","No file")),1,2);
