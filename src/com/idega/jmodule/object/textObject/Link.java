@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.37 2001/09/24 09:58:23 laddi Exp $
+ * $Id: Link.java,v 1.38 2001/09/25 00:40:08 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,9 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWConstants;
 import com.idega.event.IWLinkEvent;
 import com.idega.event.IWLinkListener;
+import com.idega.builder.data.IBPage;
+import com.idega.core.data.ICFile;
+import com.idega.jmodule.object.Image;
 
 /**
  *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -136,14 +139,14 @@ public class Link extends Text {
    * @deprecated replaced with com.idega.jmodule.object.interfaceobject.FilePresentation
    */
   public Link(int file_id) {
-    this(new Text("File"),"/servlet/FileModule?file_id="+file_id);
+    this(new Text("File"),com.idega.idegaweb.IWMainApplication.MEDIA_SERVLET_URL+"?file_id="+file_id);
   }
 
   /**
    * @deprecated replaced with com.idega.jmodule.object.interfaceobject.FilePresentation
    */
   public Link(int file_id, String file_name) {
-    this(new Text(file_name),"/servlet/FileModule?file_id="+file_id);
+    this(new Text(file_name),com.idega.idegaweb.IWMainApplication.MEDIA_SERVLET_URL+"?file_id="+file_id);
   }
 
   /**
@@ -152,7 +155,7 @@ public class Link extends Text {
   public Link(ModuleObject mo, int file_id) {
     super();
     _obj = mo;
-    setURL("/servlet/FileModule?file_id="+file_id);
+    setURL(com.idega.idegaweb.IWMainApplication.MEDIA_SERVLET_URL+"?file_id="+file_id);
     _obj.setParentObject(this);
     _objectType = OBJECT_TYPE_MODULEOBJECT;
   }
@@ -523,6 +526,47 @@ public class Link extends Text {
   }
 
   /**
+   * method for adding an image to the link
+   */
+  public void setImage(Image image) {
+    _obj = image;
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
+  }
+
+
+  /**
+   * method for adding a link to a page object
+   */
+  public void setPage(IBPage page) {
+    if( (page!=null) && (page.getID()!=-1) ){
+      StringBuffer url = new StringBuffer();
+      url.append(IWMainApplication.BUILDER_SERVLET_URL);
+      url.append('?');
+      url.append(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+      url.append('=');
+      url.append(page.getID());
+      setURL(url.toString());
+    }
+  }
+
+  /**
+   * method for adding a link to a file object
+   */
+  public void setFile(ICFile file) {
+    if( (file!=null) && (file.getID()!=-1) ){
+      StringBuffer url = new StringBuffer();
+      url.append(IWMainApplication.MEDIA_SERVLET_URL);
+      url.append('?');
+      url.append(com.idega.block.media.servlet.MediaServlet.PARAMETER_NAME);
+      url.append('=');
+      url.append(file.getID());
+      setURL(url.toString());
+    }
+  }
+
+
+
+  /**
    *
    */
   public ModuleObject getObject() {
@@ -736,7 +780,7 @@ public class Link extends Text {
       addParameters = false;
     }
 
-		if (getLanguage().equals("HTML")) {
+    if (getLanguage().equals("HTML")) {
       if (_objectType==(OBJECT_TYPE_WINDOW)) {
         if (_windowClass == null) {
           setOnClick(_myWindow.getCallingScriptString(modinfo,_myWindow.getURL(modinfo)+getParameterString(modinfo,_myWindow.getURL(modinfo))));
