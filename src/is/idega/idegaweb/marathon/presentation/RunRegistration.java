@@ -193,6 +193,7 @@ public class RunRegistration extends Block{
     nameField.setAsAlphabeticText(iwrb.getLocalizedString("run_reg.name_err_msg","Your name may only contain alphabetic characters"));
     nameField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.name_not_empty","Name field cannot be empty"));
     nameField.setInFocusOnPageLoad(true);
+    nameField.setWidth(Table.HUNDRED_PERCENT);
     
     Collection countries = getRunBiz(iwc).getCountries();
     
@@ -209,9 +210,13 @@ public class RunRegistration extends Block{
       nationalityField.setSelectedElement("104");
       countryField.setSelectedElement("104");
     }
+    nationalityField.setWidth(Table.HUNDRED_PERCENT);
+    countryField.setWidth(Table.HUNDRED_PERCENT);
+
     ssnISField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_SSN_IS), STYLENAME_INTERFACE);
     ssnISField.setAsIcelandicSSNumber(iwrb.getLocalizedString("run_reg.ssn_is_err_msg","Your ssn is not a valid Icelandic ssn"));
     ssnISField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.ssnIS_not_empty","ssnIS may not be empty"));
+    ssnISField.setLength(10);
     
     ssnField = (DateInput) getStyleObject(new DateInput(IWMarathonConstants.PARAMETER_SSN), STYLENAME_INTERFACE);
     //TODO: set the ssnField as either dateInput or set a error check on the TextInput... 
@@ -222,20 +227,26 @@ public class RunRegistration extends Block{
     genderField.addMenuElement(IWMarathonConstants.PARAMETER_FEMALE, iwrb.getLocalizedString(IWMarathonConstants.RR_FEMALE, "Female"));
     
     addressField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_ADDRESS), STYLENAME_INTERFACE);
+    addressField.setWidth(Table.HUNDRED_PERCENT);
     
     postalField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_POSTAL), STYLENAME_INTERFACE);
     postalField.setMaxlength(7);
+    nameField.setLength(7);
     
     cityField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_CITY), STYLENAME_INTERFACE);
+    cityField.setWidth(Table.HUNDRED_PERCENT);
     
     telField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_TEL), STYLENAME_INTERFACE);
     telField.setAsIntegers(iwrb.getLocalizedString("run_reg.tel_err_msg","Phonenumber must be integers"));
+    mobileField.setWidth(Table.HUNDRED_PERCENT);
     
     mobileField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_MOBILE), STYLENAME_INTERFACE);
     mobileField.setAsIntegers(iwrb.getLocalizedString("run_reg.mob_err_msg","Mobilephonenumber must be integers"));
+    mobileField.setWidth(Table.HUNDRED_PERCENT);
     
     emailField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_EMAIL), STYLENAME_INTERFACE);
     emailField.setAsEmail(iwrb.getLocalizedString("run_reg.email_err_msg","Not a valid email address"));
+    emailField.setWidth(Table.HUNDRED_PERCENT);
     
     tShirtField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT), STYLENAME_INTERFACE);
     small = new SelectOption(iwrb.getLocalizedString("run_reg.small","Small"),IWMarathonConstants.PARAMETER_TSHIRT_S);
@@ -345,6 +356,7 @@ public class RunRegistration extends Block{
     t.add(countryField, column, row++);
     
     row = formRow;
+    column = 3;
     
     t.add(genderText, column, row);
     t.add(redStar, column, row++);
@@ -391,6 +403,8 @@ public class RunRegistration extends Block{
     t.add(stepTwoGreen, 1, row);
     t.add(Text.getNonBrakingSpace(), 1, row);
     t.add(stepTwoBlue, 1, row);
+    
+    t.setWidth(2, 16);
     
     f.addParameter(PARAMETER_ACTION,ACTION_STEP_TWO);
     f.keepStatusOnAction();
