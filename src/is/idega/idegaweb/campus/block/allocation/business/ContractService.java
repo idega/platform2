@@ -11,7 +11,7 @@ public interface ContractService extends com.idega.business.IBOService
  public com.idega.util.IWTimestamp[] getContractStampsForApartment(com.idega.block.building.data.Apartment p0) throws java.rmi.RemoteException;
  public void resignContract(com.idega.idegaweb.IWApplicationContext p0,int p1,com.idega.util.IWTimestamp p2,java.lang.String p3,boolean p4) throws java.rmi.RemoteException;
  public is.idega.idegaweb.campus.block.allocation.data.ContractHome getContractHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean deleteAllocation(int p0) throws java.rmi.RemoteException;
+ public boolean deleteAllocation(int p0, com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public com.idega.util.IWTimestamp[] getContractStampsForApartment(int p0) throws java.rmi.RemoteException;
  public void doGarbageContract(int p0) throws java.rmi.RemoteException;
  public java.lang.String getLocalizedStatus(com.idega.idegaweb.IWResourceBundle p0,java.lang.String p1) throws java.rmi.RemoteException;
