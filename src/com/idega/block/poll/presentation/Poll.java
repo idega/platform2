@@ -10,7 +10,7 @@ import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.block.IBBlock;
+import com.idega.block.IWBlock;
 import com.idega.block.poll.data.*;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.block.poll.business.*;
@@ -22,7 +22,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
 
 
-public class Poll extends JModuleObject implements IBBlock{
+public class Poll extends JModuleObject implements IWBlock{
 
 private boolean _isAdmin;
 private int _pollID;
