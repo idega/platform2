@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
