@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.2 2003/08/25 21:54:35 anders Exp $
+ * $Id: AgeEditor.java,v 1.3 2003/08/28 10:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -8,7 +8,7 @@
  *
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
- 
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.sql.Date;
@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/08/25 21:54:35 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/28 10:58:22 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -506,5 +506,5 @@ public class AgeEditor extends AccountingBlock {
 	 */
 	private AgeBusiness getAgeBusiness(IWContext iwc) throws RemoteException {
 		return (AgeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
-	}
+	}	
 }
