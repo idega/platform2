@@ -177,6 +177,11 @@ public BuildingViewer(int building_id){
             roomInfo.setFontStyle(infoStyle);
           }
 
+        Text divideText = new Text("<br>.........<br><br>");
+          if ( infoStyle != null ) {
+            divideText.setFontStyle(infoStyle);
+          }
+
         Image roomImage = new Image(rooms[a].getImageId());
 
         Window roomWindow = new Window("Herbergi",400,550,"/room.jsp");
@@ -186,9 +191,14 @@ public BuildingViewer(int building_id){
           roomLink.addParameter("room_sub_type_id",rooms[a].getID());
 
         roomsTable.add(roomName,1,1);
-        roomsTable.add(roomText,1,2);
+        roomsTable.add(roomInfo,1,2);
         roomsTable.add(roomLink,1,3);
         roomsTable.add(roomImage,3,2);
+
+        buildingTable.add(roomsTable,1,a+2);
+        if ( a+1 < rooms.length ) {
+          buildingTable.add(divideText,1,a+2);
+        }
 
       }
 
