@@ -20,6 +20,7 @@ import com.idega.block.school.data.*;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -424,6 +425,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			ex.printStackTrace();
 			return new java.util.Vector();
 		}
+	}
+
+	public Collection findAllSchoolYearsInSchool(int schoolID) throws IDORelationshipException,RemoteException {
+		School school = this.getSchool(new Integer(schoolID));
+		return school.findRelatedSchoolYears();
 	}
 
 }
