@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.8 2001/08/30 06:50:01 aron Exp $
+ * $Id: CampusBuilding.java,v 1.1 2001/08/30 06:48:48 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package is.idegaweb.campus.tariffs;
+package is.idegaweb.campus.building;
 
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.IFrame;
@@ -25,14 +25,14 @@ import is.idegaweb.campus.tariffs.CampusFinanceMenu;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusFinance extends JModuleObject {
+public class CampusBuilding extends JModuleObject {
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
   public final static String FRAME_NAME = "rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public CampusFinance() {
+  public CampusBuilding() {
   }
 
   public void main(ModuleInfo modinfo){
@@ -53,7 +53,7 @@ public class CampusFinance extends JModuleObject {
       myTable.setVerticalAlignment(1,2,"top");
 
     IFrame iFrame = new IFrame("menuFrame");
-      iFrame.setSrc(CampusFinanceMenu.class);
+      iFrame.setSrc(CampusBuildingMenu.class);
       iFrame.setWidth(120);
       iFrame.setHeight(150);
       iFrame.setBorder(IFrame.FRAMEBORDER_ON);
@@ -73,6 +73,5 @@ public class CampusFinance extends JModuleObject {
 
     add(myTable);
   }
-
 
 }

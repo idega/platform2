@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.8 2001/08/30 06:37:39 aron Exp $
+ * $Id: CampusTariffer.java,v 1.9 2001/08/30 06:49:09 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -115,7 +115,7 @@ public class CampusTariffer extends ModuleObjectContainer {
         roundName = roundName == null?"":roundName;
         accountType = accountType != null?accountType:Account.typeFinancial;
         idegaTimestamp paydate = new idegaTimestamp(date);
-        add(paydate.getISLDate());
+        //add(paydate.getISLDate());
         MO = doAssess(paydate,roundName,accountType);
       }
       else{
@@ -279,7 +279,7 @@ public class CampusTariffer extends ModuleObjectContainer {
     Table T = new Table();
     List listOfTariffs = Finder.listOfTariffs();
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
-    System.err.println(accountType);
+    int iAccountCount = 0;
     if(listOfTariffs !=null){
       if(listOfUsers!=null){
         int rlen = listOfUsers.size();
@@ -379,6 +379,7 @@ public class CampusTariffer extends ModuleObjectContainer {
             eAccount.setBalance(eAccount.getBalance()+totalAmount);
             eAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
             eAccount.update();
+            iAccountCount++;
           } // Outer loop block
           AR.setTotals((float)(totals));
           AR.update();
@@ -387,7 +388,7 @@ public class CampusTariffer extends ModuleObjectContainer {
           T.add(Edit.formatText(iwrb.getLocalizedString("total_amount","Total amount")),1,2);
           T.add(Edit.formatText(new java.text.DecimalFormat().format(totals *-1)),2,2);
           T.add(Edit.formatText(iwrb.getLocalizedString("account_number","Accounts")),1,3);
-          T.add(Edit.formatText(rlen));
+          T.add(Edit.formatText(iAccountCount),2,3);
         } // Try block
         catch(Exception e) {
           try {
