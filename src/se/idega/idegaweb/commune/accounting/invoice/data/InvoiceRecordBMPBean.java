@@ -2,8 +2,10 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
 
-import com.idega.data.GenericEntity;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+
+import com.idega.block.school.data.School;
+import com.idega.data.GenericEntity;
 
 /**
  * @author Joakim
@@ -29,6 +31,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	private static final String COLUMN_DATE_CHANGED = "date_changed";
 	private static final String COLUMN_CHANGED_BY = "changed_by";
 	private static final String COLUMN_AMOUNT = "amount";
+	private static final String COLUMN_AMOUNT_VAT = "amount_vat";
 	private static final String COLUMN_NOTES = "notes";
 	private static final String COLUMN_ORDER_ID = "order_id";
 	private static final String COLUMN_RULE_SPEC_TYPE = "rule_spec_type";
@@ -62,6 +65,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_DATE_CHANGED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CHANGED_BY, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_AMOUNT, "", true, true, java.lang.Float.class);
+		addAttribute(COLUMN_AMOUNT_VAT, "", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_NOTES, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.Integer.class);
@@ -71,6 +75,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
 		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContract.class);
+		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
 	}
 	public int getInvoiceheader() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);
@@ -120,6 +125,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public float getAmount() {
 		return getFloatColumnValue(COLUMN_AMOUNT);
 	}
+	public float getAmountVAT() {
+		return getFloatColumnValue(COLUMN_AMOUNT_VAT);
+	}
 	public String getNotes() {
 		return getStringColumnValue(COLUMN_NOTES);
 	}
@@ -148,6 +156,12 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	}
 	public void setPaymentRecordId(int i) {
 		setColumn(COLUMN_PAYMENT_RECORD_ID, i);
+	}
+	public void setProviderId(int i) {
+		setColumn(COLUMN_PROVIDER_ID, i);
+	}
+	public void setProviderId(School s) {
+		setColumn(COLUMN_PROVIDER_ID, s);
 	}
 	public void setColumnProviderId(int i) {
 		setColumn(COLUMN_PROVIDER_ID, i);
@@ -190,6 +204,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	}
 	public void setAmount(float f) {
 		setColumn(COLUMN_AMOUNT, f);
+	}
+	public void setAmountVAT(float f) {
+		setColumn(COLUMN_AMOUNT_VAT, f);
 	}
 	public void setNotes(String s) {
 		setColumn(COLUMN_NOTES, s);

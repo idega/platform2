@@ -4,25 +4,24 @@ import java.sql.Date;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.*;
 
 /**
+ * The databean for the "Fakturahuvud" in the C&P Req spec. The invoice header holds all the 
+ * information that is the same for all the invoice records that it is related to.
+ * 
  * @author Joakim
  */
-public class InvoiceHeaderBMPBean extends GenericEntity 
-//implements InvoiceHeader 
-{
+public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader {
 	private static final String ENTITY_NAME = "cacc_invoice_header";
 
 	private static final String COLUMN_SCHOOL_CATEGORY_ID = "main_school_category_id";
 	private static final String COLUMN_PERIOD = "period";
-	private static final String COLUMN_CUSTODIAN_ID = "custodian_id";		//Invoice receiver
-	private static final String COLUMN_REFERENCE = "reference";
-	//TODO (JJ) ref to Bun person???
+	private static final String COLUMN_CUSTODIAN_ID = "custodian_id";	//Invoice receiver
+//	private static final String COLUMN_REFERENCE = "reference";			//Probably forgotten to remove from req. spec.
 	private static final String COLUMN_STATUS = "status";
 	private static final String COLUMN_DATE_CREATED = "date_created";
 	private static final String COLUMN_DATE_ADJUSTED = "date_adjusted";
@@ -31,6 +30,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity
 	private static final String COLUMN_CHANGED_BY = "changed_by";
 	private static final String COLUMN_OWN_POSTING = "own_postiong";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
+
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
@@ -45,7 +45,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity
 		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_REFERENCE, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_REFERENCE, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_DATE_CREATED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_DATE_ADJUSTED, "", true, true, java.sql.Date.class);
@@ -57,9 +57,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity
 
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addManyToOneRelationship(COLUMN_CUSTODIAN_ID, User.class);
-//		addManyToOneRelationship(COLUMN_REFERENCE, .class);
-//TODO (JJ) find the clas for the BUN reference
-//TODO (JJ) need to get the reference to main activity/huvudverksamhet
 	}
 	public int getSchoolCategoryID() {
 		return getIntColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
@@ -70,9 +67,9 @@ public class InvoiceHeaderBMPBean extends GenericEntity
 	public int getCustodianId() {
 		return getIntColumnValue(COLUMN_CUSTODIAN_ID);
 	}
-	public int getReference() {
-		return getIntColumnValue(COLUMN_REFERENCE);
-	}
+//	public int getReference() {
+//		return getIntColumnValue(COLUMN_REFERENCE);
+//	}
 	public char getStatus() {
 		return getCharColumnValue(COLUMN_STATUS);
 	}
@@ -114,12 +111,12 @@ public class InvoiceHeaderBMPBean extends GenericEntity
 	public void setCustodianId(User u) {
 		setColumn(COLUMN_CUSTODIAN_ID, u);
 	}
-	public void setReference(int i) {
-		setColumn(COLUMN_REFERENCE, i);
-	}
-	public void setReference(School s) {
-		setColumn(COLUMN_REFERENCE, s);
-	}
+//	public void setReference(int i) {
+//		setColumn(COLUMN_REFERENCE, i);
+//	}
+//	public void setReference(School s) {
+//		setColumn(COLUMN_REFERENCE, s);
+//	}
 	
 	public void setStatus(char c) {
 		setColumn(COLUMN_STATUS, c);

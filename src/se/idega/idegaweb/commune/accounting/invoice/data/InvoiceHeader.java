@@ -12,7 +12,6 @@ public interface InvoiceHeader extends com.idega.data.IDOEntity
  public java.lang.String getDoublePosting();
  public java.lang.String getOwnPosting();
  public java.sql.Date getPeriod();
- public int getReference();
  public int getSchoolCategoryID();
  public char getStatus();
  public void initializeAttributes();
@@ -26,8 +25,6 @@ public interface InvoiceHeader extends com.idega.data.IDOEntity
  public void setDoublePosting(java.lang.String p0);
  public void setOwnPosting(java.lang.String p0);
  public void setPeriod(java.sql.Date p0);
- public void setReference(com.idega.block.school.data.School p0);
- public void setReference(int p0);
  public void setSchoolCagtegoryID(int p0);
  public void setSchoolCagtegoryID(com.idega.block.school.data.SchoolCategory p0);
  public void setStatus(char p0);

@@ -1,9 +1,10 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 
-public interface InvoiceRecord extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity
+public interface InvoiceRecord extends com.idega.data.IDOEntity
 {
  public float getAmount();
+ public float getAmountVAT();
  public java.lang.String getChangedBy();
  public int getContractId();
  public java.lang.String getCreadedBy();
@@ -27,6 +28,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity,com.idega.data.I
  public int getVATType();
  public void initializeAttributes();
  public void setAmount(float p0);
+ public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
  public void setColumnProviderId(int p0);
  public void setContractId(int p0);
@@ -35,8 +37,8 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity,com.idega.data.I
  public void setDateCreated(java.sql.Date p0);
  public void setDays(int p0);
  public void setDoublePosting(java.lang.String p0);
- public void setInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0);
  public void setInvoiceHeader(int p0);
+ public void setInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0);
  public void setInvoiceText(java.lang.String p0);
  public void setNotes(java.lang.String p0);
  public void setOrderId(int p0);
@@ -46,6 +48,8 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity,com.idega.data.I
  public void setPeriodEndPlacement(java.sql.Date p0);
  public void setPeriodStartCheck(java.sql.Date p0);
  public void setPeriodStartPlacement(java.sql.Date p0);
+ public void setProviderId(com.idega.block.school.data.School p0);
+ public void setProviderId(int p0);
  public void setRuleSpecType(int p0);
  public void setRuleText(java.lang.String p0);
  public void setVATType(int p0);
