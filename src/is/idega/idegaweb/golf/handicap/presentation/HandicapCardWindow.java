@@ -22,6 +22,7 @@ public class HandicapCardWindow extends Window{
 			HandicapCard ch = new HandicapCard(Integer.parseInt(memberId));
 			ch.addName(true);
 			ch.addClub(true);
+			ch.addPrintLink(false);
 			add(ch);
 		}	
 	}

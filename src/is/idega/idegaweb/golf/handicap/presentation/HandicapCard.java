@@ -36,7 +36,7 @@ public class HandicapCard extends GolfBlock {
 	private String textColor = "#000000";
 	private int numberOfDisplayedCards = 5;
 	private String width;
-	private boolean addPrintLink = false;
+	private boolean addPrintLink = true;
 	private boolean addName = false;
 	private boolean addClub = false;
 
