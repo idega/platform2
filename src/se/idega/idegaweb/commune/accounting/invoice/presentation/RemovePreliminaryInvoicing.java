@@ -59,6 +59,8 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 			monthInput = new DateInput(PARAM_MONTH);
 			monthInput.setToCurrentDate();	
 			monthInput.setToShowDay(false);
+			monthInput.setToDisplayDayLast(true);
+			
 			int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
 			monthInput.setYearRange(currentYear - 1, currentYear + 1);	
 									

@@ -94,6 +94,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 						monthInput = new DateInput(PARAM_MONTH,true);
 						monthInput.setToCurrentDate();	
 						monthInput.setToShowDay(false);
+						monthInput.setToDisplayDayLast(true);						
 						int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
 						monthInput.setYearRange(currentYear - 1, currentYear + 1);							
 						iwc.setApplicationAttribute(PARAM_MONTH+iwc.getCurrentUserId(), monthInput);						
