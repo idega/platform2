@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.129 2004/10/07 13:42:10 thomas Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.130 2004/10/07 15:23:57 thomas Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -27,6 +27,8 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.accounting.extra.data.Resource;
+import se.idega.idegaweb.commune.accounting.extra.data.ResourceHome;
 import se.idega.idegaweb.commune.accounting.invoice.business.PlacementTimes;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
@@ -55,8 +57,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationT
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
-import se.idega.idegaweb.commune.accounting.resource.data.Resource;
-import se.idega.idegaweb.commune.accounting.resource.data.ResourceHome;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 

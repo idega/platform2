@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.resource.data;
+package se.idega.idegaweb.commune.accounting.extra.data;
 
 
 public interface Resource extends com.idega.data.IDOEntity

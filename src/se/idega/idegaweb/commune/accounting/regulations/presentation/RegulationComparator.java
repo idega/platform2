@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationComparator.java,v 1.6 2003/11/03 16:44:12 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.7 2004/10/07 15:23:57 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -15,17 +15,17 @@ import com.idega.data.GenericEntity;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.core.location.data.Commune;
 
+import se.idega.idegaweb.commune.accounting.extra.data.Resource;
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
-import se.idega.idegaweb.commune.accounting.resource.data.Resource;
 
 /**
  * RegulationComparator compares objects for the dropdowns
  * <p>
- * $Id: RegulationComparator.java,v 1.6 2003/11/03 16:44:12 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.7 2004/10/07 15:23:57 thomas Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RegulationComparator implements Comparator {
 

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.resource.data;
+package se.idega.idegaweb.commune.accounting.extra.data;
 
 
 public class ResourceClassMemberHomeImpl extends com.idega.data.IDOFactory implements ResourceClassMemberHome

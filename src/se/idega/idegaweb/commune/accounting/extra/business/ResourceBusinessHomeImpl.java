@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.resource.business;
+package se.idega.idegaweb.commune.accounting.extra.business;
 
 
 public class ResourceBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements ResourceBusinessHome
