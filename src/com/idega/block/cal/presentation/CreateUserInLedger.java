@@ -51,7 +51,6 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 	private SubmitButton submitButton;
 	private CloseButton closeButton;
 	
-	private Table table;
 	private Form form;
 	
 	private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
@@ -60,7 +59,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 	public CreateUserInLedger() {
 		super();
 		setHeight(250);
-		setWidth(380);
+		setWidth(330);
 		setScrollbar(false);
 		setResizable(true);
 	}
@@ -68,8 +67,10 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name"));
-		ssnText = new Text(iwrb.getLocalizedString(ssnFieldParameterName,"SSN"));
+		nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name") + ":");
+		nameText.setBold();
+		ssnText = new Text(iwrb.getLocalizedString(ssnFieldParameterName,"SSN") + ":");
+		ssnText.setBold();
 	}
 	public void initializeFields() {
 		IWContext iwc = IWContext.getInstance();
@@ -83,20 +84,42 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
 	}
 	public void lineUp() {
-		table = new Table();
-		table.setCellspacing(0);
+		Table mainTable = new Table();
+		mainTable.setCellspacing(0);
+		mainTable.setCellpadding(0);
+		mainTable.setWidth(Table.HUNDRED_PERCENT);
+		mainTable.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		mainTable.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		mainTable.setHeight(2, 5);
+		
+		Table table = new Table();
+		table.setCellspacing(12);
 		table.setCellpadding(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setStyleClass(borderAllWhite);
 		table.add(nameText,1,1);
-		table.add(nameField,2,1);
+		table.add(Text.getBreak(),1,1);
+		table.add(nameField,1,1);
 		table.add(ssnText,1,2);
-		table.add(ssnField,2,2);
-		table.setAlignment(2,3,"right");
-		table.add(submitButton,2,3);
-		table.add(Text.NON_BREAKING_SPACE,2,3);
-		table.add(closeButton,2,3);
-		table.add(getHelp(HELP_TEXT_KEY), 1, 4);
-		form.add(table);
+		table.add(Text.getBreak(),1,2);
+		table.add(ssnField,1,2);
+		
+		Table bottomTable = new Table();
+		bottomTable.setCellspacing(12);
+		bottomTable.setCellpadding(0);
+		bottomTable.setWidth(Table.HUNDRED_PERCENT);
+		bottomTable.setStyleClass(borderAllWhite);
+		bottomTable.add(getHelp(HELP_TEXT_KEY), 1, 1);
+		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.add(submitButton,2,1);
+		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
+		bottomTable.add(closeButton,2,1);
+		
+		
+		mainTable.add(table,1,1);
+		mainTable.add(bottomTable,1,3);
+		
+		form.add(mainTable);
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
