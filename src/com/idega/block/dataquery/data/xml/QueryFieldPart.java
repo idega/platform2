@@ -40,9 +40,6 @@ public class QueryFieldPart implements QueryPart {
 	private boolean locked = false;
 	private boolean hidden = false;
 	
-	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass) {
-		this(name, entity, path,  column, function, display, typeClass, null, null, false);
-	}
 	
 // not used at the moment because function concat is not used at the moment	
 //	public QueryFieldPart(String name, String entity, String path, String[] columns,String function, String display,String typeClass, String handlerClass, String handlerDescription, String hidden){
