@@ -66,24 +66,10 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		table.setHeight(2, "6");
 		form.add(table);
 		
-		table.add(getNavigationTable(),1,1);
+		table.add(getNavigationTable(false),1,1);
 		table.add(getClassTable(iwc),1,3);
 		
 		add(form);
-	}
-	
-	private Table getNavigationTable() throws RemoteException {
-		Table table = new Table(5,1);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(3,"8");
-
-		table.add(getSmallHeader(localize("school.season","Season")+":"+Text.NON_BREAKING_SPACE),1,1);
-		table.add(getSchoolSeasons(),2,1);
-		table.add(getSmallHeader(localize("school.year","Year")+":"+Text.NON_BREAKING_SPACE),4,1);
-		table.add(getSchoolYears(),5,1);
-		
-		return table;
 	}
 	
 	private Table getClassTable(IWContext iwc) throws RemoteException {

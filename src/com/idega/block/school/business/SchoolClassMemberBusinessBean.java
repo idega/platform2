@@ -14,7 +14,9 @@ import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolSeason;
 import com.idega.data.IDOLookup;
+import com.idega.user.data.User;
 
 /**
  * @author Laddi
@@ -35,9 +37,17 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 			return getSchoolClassMemberHome().findByUserAndSchoolClass(studentID, schoolClassID);
 		}
 		catch (FinderException fe) {
-			fe.printStackTrace(System.err);
 			return null;
 		}
+	}
+	
+	public SchoolClassMember findByStudentAndSeason(User user, SchoolSeason season) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findByUserAndSeason(user, season);
+		}
+		catch (FinderException fe) {
+			return null;
+		}	
 	}
 
 	public Collection findClassMember(int studentID) throws RemoteException {
@@ -45,7 +55,6 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 			return getSchoolClassMemberHome().findByStudent(studentID);
 		}
 		catch (FinderException fe) {
-			fe.printStackTrace(System.err);
 			return new Vector();
 		}
 	}
@@ -55,7 +64,24 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 			return getSchoolClassMemberHome().findBySchoolClass(studentClassID);	
 		}
 		catch (FinderException fe) {
-			fe.printStackTrace(System.err);
+			return new Vector();
+		}
+	}
+
+	public Collection findStudentsBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findBySchoolAndSeasonAndYear(schoolID, seasonID, yearID);
+		}
+		catch (FinderException fe) {
+			return new Vector();
+		}
+	}
+
+	public Collection findStudentsBySchoolAndSeason(int schoolID, int seasonID) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findBySchoolAndSeason(schoolID, seasonID);
+		}
+		catch (FinderException fe) {
 			return new Vector();
 		}
 	}
@@ -91,10 +117,8 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 	
 	public void storeSchoolClassMember(int studentID,int schoolClassID,Timestamp registerDate,int registrator) throws RemoteException {
 		try {
-			SchoolClassMember member;
-			if ( schoolClassID != -1 )
-				member = this.findClassMemberInClass(studentID,schoolClassID);
-			else
+			SchoolClassMember member = findClassMemberInClass(studentID,schoolClassID);
+			if (member == null)
 				member = this.getSchoolClassMemberHome().create();
 				
 			if (member != null ) {

@@ -2,9 +2,15 @@ package com.idega.block.school.business;
 
 import com.idega.block.school.data.*;
 import com.idega.data.IDOLookup;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Vector;
+
 import com.idega.business.IBOServiceBean;
 import java.util.Date;
+
+import javax.ejb.FinderException;
 
 /**
  * <p>Title: </p>
@@ -59,6 +65,17 @@ public class SchoolSeasonBusinessBean extends IBOServiceBean implements SchoolSe
       ex.printStackTrace();
       return new java.util.Vector();
     }
+  }
+  
+  public Collection findAllPreviousSchoolSeasons(int schoolSeasonID) throws RemoteException {
+  	try {
+    	SchoolSeasonHome shome = (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
+    	SchoolSeason season = shome.findByPrimaryKey(new Integer(schoolSeasonID));
+    	return shome.findAllPreviousSchoolSeasons(season);
+  	}
+  	catch (FinderException fe) {
+  		return new Vector();
+  	}
   }
 
   public void storeSchoolSeason(int id,String name,Date start,Date end,Date due_date) throws java.rmi.RemoteException{
