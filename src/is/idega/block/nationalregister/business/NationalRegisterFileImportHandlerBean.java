@@ -723,7 +723,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			}
 			FamilyLogic familyService = getMemberFamilyLogic();
 			IWTimestamp dom = new IWTimestamp();
-			if (dateOfModification != null && !"".equals(dateOfModification)) {
+			if (dateOfModification != null && !"".equals(dateOfModification.trim())) {
 				dom = new IWTimestamp(dateOfModification);
 			}
 			else {
