@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxAsLinkConverter;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
@@ -120,6 +123,46 @@ public class WorkReportOverViewCloseView extends Block {
     add(form);
   }
 
+	private String parseAction(IWContext iwc) throws RemoteException{
+		 String action = "";
+
+		 // does the user want to modify an existing entity?
+		 if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
+			 WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+			 String id = iwc.getParameter(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY);
+			 Integer primaryKey = null;
+			 try {
+				 primaryKey = new Integer(id);
+			 }
+			 catch (NumberFormatException ex)  {
+				 ex.printStackTrace(System.err);
+			 }
+      
+			WorkReportDivisionBoard division;
+			try {
+				division = workReportBusiness.getWorkReportDivisionBoardHome().findByPrimaryKey(primaryKey);
+			
+				boolean isChecked = CheckBoxConverter.isEntityCheckedUsingDefaultKey(iwc,primaryKey);
+				
+				 if(isChecked){
+						division.setHasNationalLeague(true);
+				 }
+				 else{
+					division.setHasNationalLeague(false);
+				 }
+				
+	
+				division.store();
+			
+			}
+		
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		 }  
+
+		 return action;
+	 }
   
   private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form) throws RemoteException {
   	  
@@ -160,13 +203,16 @@ public class WorkReportOverViewCloseView extends Block {
 		private static final String HAS_ACCOUNT = "HAS_ACCOUNT";
 		private static final String HAS_BOARD= "HAS_BOARD";*/
 		
+		HasNationLeagueCheckBoxConverter hasNLConverter = new HasNationLeagueCheckBoxConverter();
+		hasNLConverter.maintainParameters(params);
+		
     Object[] columns = {
     	REPORT_YEAR,null,
 	//		REGIONAL_UNION_NUMBER,null,
 			REGIONAL_UNION_ABBR,null,
 	//		GROUP_NUMBER,null,
 			GROUP_NAME,null,
-			HAS_NATIONAL_LEAGUE,null,
+			HAS_NATIONAL_LEAGUE,hasNLConverter,
 			GROUP_TYPE,null,
 			MEMBER_COUNT,null,
 			PLAYER_COUNT,null,
@@ -276,6 +322,17 @@ public class WorkReportOverViewCloseView extends Block {
 		}
 	
 	
-
+	/** 
+	 * CheckBoxConverterHelper:
+	 * Inner class.
+	 */
+  
+	class HasNationLeagueCheckBoxConverter extends CheckBoxAsLinkConverter {
+    
+			protected boolean shouldEntityBeChecked(Object entity, Integer primaryKey) {
+				WorkReportDivisionBoard division = (WorkReportDivisionBoard) entity;
+				return  division.hasNationalLeague();
+			}
+	}
 	
 }

@@ -114,8 +114,6 @@ public class WorkReportMultiEditor extends Block {
         primaryKey = new Integer(id);
       }
       catch (NumberFormatException ex)  {
-        System.err.println("[WorkReportBoardMemberEditor] Wrong primary key. Message is: " +
-          ex.getMessage());
         ex.printStackTrace(System.err);
       }
       
