@@ -324,7 +324,6 @@ private IWResourceBundle iwrb;
 
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
-
     imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
 
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
