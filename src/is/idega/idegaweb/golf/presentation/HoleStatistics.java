@@ -81,7 +81,10 @@ public class HoleStatistics extends GolfBlock {
 				darkBackground = !darkBackground;
 			}
 		}
-
+		table.setBorder(1);
+		table.mergeCells(1,row,4,row);
+		table.setCellpadding(1,row,4);
+		table.add(getSmallText(localize("hole.statistic_explained","Statistic explained")),1,row++);
 		add(table);
 	}
 
@@ -90,12 +93,14 @@ public class HoleStatistics extends GolfBlock {
 		if (coll != null) {
 			noTees = coll.size();
 		}
-		Table table = new Table(4, 2 + noTees);
+		Table table = new Table(4, 3 + noTees);
+//		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 		return table;
 	}
 	
