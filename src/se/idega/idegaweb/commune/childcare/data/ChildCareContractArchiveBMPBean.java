@@ -189,7 +189,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
-	public Integer ejbFindApplicationtByContract(int contractID) throws FinderException {
+	public Integer ejbFindApplicationByContract(int contractID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_ID, contractID);
 		return (Integer) idoFindOnePKByQuery(sql);
@@ -276,4 +276,15 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_FILE_ID, contractFileID);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
+
+	public Collection ejbFindByDateRange(Date startDate, Date endDate) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
+		sql.appendWhereEquals("a."+COLUMN_CHILD_ID, "c."+ChildCareApplicationBMPBean.CHILD_ID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);
+		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		return idoFindPKsByQuery(sql);
+	}
+	
 }
