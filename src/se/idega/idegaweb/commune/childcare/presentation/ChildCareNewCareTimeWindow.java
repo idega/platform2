@@ -8,21 +8,16 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 
 import java.rmi.RemoteException;
-import java.text.MessageFormat;
 import java.util.Date;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-import com.idega.business.IBOLookup;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -39,6 +34,7 @@ import com.idega.presentation.ui.Window;
  */
 public class ChildCareNewCareTimeWindow extends Window {
 	
+	private final static int ACTION_NEW_CARE_TIME = 0;	
 	private final static String[] CARE_TIME_LABEL = new String[] {"ccnctw_care_time", "Care time"};		
 	private final static String[] FROM_DATE_LABEL = new String[] {"ccnctw_from_date", "From date"};	
 	final static String CARE_TIME = "CARE_TIME";	
@@ -53,7 +49,7 @@ public class ChildCareNewCareTimeWindow extends Window {
 				iwc.getParameter(CCConstants.APPID));	
 		
 		if (iwc.getParameter(CCConstants.ACTION) != null 
-			&& Integer.parseInt(iwc.getParameter(CCConstants.ACTION)) == CCConstants.ACTION_NEW_CARE_TIME){
+			&& Integer.parseInt(iwc.getParameter(CCConstants.ACTION)) == ACTION_NEW_CARE_TIME){
 			
 			sendRequest(iwc, application);
 		} else {
@@ -79,7 +75,7 @@ public class ChildCareNewCareTimeWindow extends Window {
 		fromDate.setStyleAttribute("style", style.getSmallTextFontStyle());
 		
 		HiddenInput action = new HiddenInput(CCConstants.ACTION);
-		action.setValue(CCConstants.ACTION_NEW_CARE_TIME);
+		action.setValue(ACTION_NEW_CARE_TIME);
 		
 		HiddenInput appid = new HiddenInput(CCConstants.APPID);
 		appid.setValue(iwc.getParameter(CCConstants.APPID));

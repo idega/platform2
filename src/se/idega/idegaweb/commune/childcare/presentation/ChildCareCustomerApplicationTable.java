@@ -13,11 +13,9 @@ import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;
 import com.idega.builder.data.IBPage;
 import com.idega.core.user.business.UserBusiness;
@@ -34,7 +32,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.24 2003/05/08 16:09:27 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.25 2003/05/08 17:03:46 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -532,7 +530,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getText(school.getSchoolAddress()), 2, 4);
 			layoutTbl.add(getText(school.getSchoolPhone()), 2, 6);
 			
-			Contract contract = acceptedOffer.getContract();
 
 			Link careTimePopup = new Link("Endra omsorgstid");
 //			popup.setImage(new Image());
@@ -540,13 +537,13 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			careTimePopup.addParameter(CCConstants.APPID, acceptedOffer.getNodeID());
 			careTimePopup.setAsImageButton(true);
 			layoutTbl.add(careTimePopup, 1, 8);
-//			
-//			Link careTimePopup = new Link("Avsluta kontrakt");
-////			popup.setImage(new Image());
-//			careTimePopup.setWindowToOpen(ChildCareNewCareTimeWindow.class);
-//			careTimePopup.addParameter(CCConstants.APPID, acceptedOffer.getNodeID());
-//			careTimePopup.setAsImageButton(true);
-//			layoutTbl.add(careTimePopup, 1, 8);			
+			
+			Link contractPopup = new Link("Avsluta kontrakt");
+//			popup.setImage(new Image());
+			contractPopup.setWindowToOpen(ChildCareEndContractWindow.class);
+			contractPopup.addParameter(CCConstants.APPID, acceptedOffer.getNodeID());
+			contractPopup.setAsImageButton(true);
+			layoutTbl.add(contractPopup, 1, 8);			
 						
 		} else {
 			layoutTbl.add(getText(localize(NO_PLACEMENT)), 1, 3);	

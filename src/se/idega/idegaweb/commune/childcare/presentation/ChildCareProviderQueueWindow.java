@@ -54,7 +54,6 @@ public class ChildCareProviderQueueWindow extends Window {
 		
 		Table appTbl = new Table();
 		
-		String ownerId = iwc.getParameter(CCConstants.USER_ID);
 //		add(new Text("ProviderId: " + providerId));
 		if (providerId != null){
 			Collection applications = getChildCareBusiness(iwc).getOpenAndGrantedApplicationsByProvider(new Integer(providerId).intValue());

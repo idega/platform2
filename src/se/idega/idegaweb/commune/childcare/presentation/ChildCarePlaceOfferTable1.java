@@ -8,7 +8,6 @@ import java.util.SortedSet;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -177,7 +176,6 @@ class ChildCarePlaceOfferTable1 extends Table {
 		String name = app.getChoiceNumber()	+ ": " + app.getProvider().getName() + _page.getDebugInfo(app);
 		
 		String offerText = isOffer ? GRANTED + app.getFromDate() : "";
-		String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 		boolean presentOffer = isOffer && !offerPresented;
 		boolean disable = offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected();
 			
