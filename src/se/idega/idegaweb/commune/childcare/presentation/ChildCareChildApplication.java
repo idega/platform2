@@ -4,6 +4,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -166,17 +167,32 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		try {
 			int[] providers = new int[5];
 			String[] dates = new String[5];
+			Date[] queueDates = new Date[5];
 			
 			for (int i = 0; i < 5; i++) {
 				providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 				dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
 			}
+				
+			Collection applications = getBusiness().getApplicationsForChild(child);
+			loop:
+			for (int i = 0; i < providers.length; i++){
+				Iterator apps = applications.iterator();
+				while(apps.hasNext()){
+					ChildCareApplication app = (ChildCareApplication) apps.next();
+					if (app.getProviderId() == providers[i]){
+						queueDates[i] = app.getQueueDate();
+						continue loop;
+					}
+				}
+			}
+						
 			String message = iwc.getParameter(PARAM_MESSAGE);
 
 			String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 			String body = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, message, getSession().getCheckID(), getSession().getChildID(), subject, body, false);
+			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, message, getSession().getCheckID(), getSession().getChildID(), subject, body, false, true, queueDates, null);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
