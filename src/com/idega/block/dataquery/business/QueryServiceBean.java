@@ -17,14 +17,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import com.idega.block.dataquery.data.QueryConstants;
+import com.idega.block.dataquery.data.QueryRepresentation;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QuerySequence;
 import com.idega.block.dataquery.data.QuerySequenceHome;
@@ -34,8 +34,10 @@ import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
 import com.idega.block.dataquery.data.xml.QueryHelper;
+import com.idega.block.dataquery.presentation.ReportQueryOverview;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
@@ -50,10 +52,12 @@ import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.StringAlphabeticalComparator;
 import com.idega.util.StringHandler;
 import com.idega.util.xml.XMLData;
 
@@ -65,6 +69,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	
 	private static final String COUNTER_TOKEN = "_"; 
 	private static final String DEFAULT_QUERY_NAME = "my query";
+	private  static final String NON_GROUPNAME_SUBSTITUTE = "-";
 
 	
 	private UserQueryHome userQueryHome;
@@ -204,7 +209,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return map.values();
 	}
 	
-	/** Retrieves a Collection of EntityAttribute objects of the given entity class
+	/** Retrieves a Collection of EntityAttribute objects of the given entity clazz
 	 * @param entityClass
 	 * @return Collection, null if nothing found.
 	 */
@@ -626,16 +631,23 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			return querySequence;
 	}
 
-	public UserBusiness getUserBusiness()	{
+	private UserBusiness getUserBusiness()	{
 		try {
 			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		}
 		catch (RemoteException ex)	{
-      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+      throw new RuntimeException("[QueryService]: Can't retrieve UserBusiness");
 		}
 	}	
 	
+	private GroupBusiness getGroupBusiness()	{
+		try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      throw new RuntimeException("[QueryService]: Can't retrieve GroupBusiness");
+		}
+	}
 	
 	
 		
@@ -689,7 +701,140 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		}
   }
 
-
-		
+  
+	// returns a collection of EntityRepresentation
+	public Collection getQueries(IWContext iwc) throws RemoteException, FinderException {
+		return getQueries(iwc, -1);
+	}
+	
+	public Collection getOwnQueries(IWContext iwc) throws RemoteException, FinderException {
+		Group topGroup = getTopGroupForUser(iwc);
+		TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+		getOwnQueries(topGroup,queryRepresentations, -1);
+		return queryRepresentations.values();
+	}
+	
+	public Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException, FinderException {
+			 //To keep them ordered alphabetically
+		TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+		// start: special case: admin
+		if (iwc.isSuperAdmin()) {
+			User user = iwc.getCurrentUser();
+			// use the admin user as group
+			getOwnQueries(user, queryRepresentations, showOnlyOneQueryWithId);
+			// bye bye
+			return queryRepresentations.values();
+		}
+		// end: special case: admin
+		Group topGroup = getTopGroupForUser(iwc);
+			GroupBusiness groupBusiness = getGroupBusiness();
+		Collection parentGroups = new ArrayList();
+		// special case admin
+		// add the administrator group to the parent groups
+		try {
+			AccessController accessController = iwc.getAccessController();
+			UserBusiness userBusiness = getUserBusiness();
+			com.idega.core.user.data.User superAdmin = accessController.getAdministratorUser();
+			// change to other user clazz because the "core" user doesn't implement Group
+			Group adminGroup = userBusiness.getUser((Integer)superAdmin.getPrimaryKey());
+			parentGroups.add(adminGroup);
+		}
+		catch (Exception ex) {
+			//TODO thi: implement logger
+				String message =
+					"[ReportOverview]: Can't retrieve AdministratorUser.";
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			// return empty collection
+		}
+		try {
+			// bad implementation in GroupBusiness
+			// null is returned instead of an empty collection
+			//TODO: implement a better version of that method
+		Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
+		if (coll != null) {
+			parentGroups.addAll(coll);
+		}
+		//TODO thi: handle exception in the right way
+		}
+		catch (Exception ex) {
+			parentGroups = new ArrayList();
+		}
+			// add own queries
+			getOwnQueries(topGroup, queryRepresentations, showOnlyOneQueryWithId);
+			// add public queries
+		Iterator parentGroupsIterator = parentGroups.iterator();
+		while (parentGroupsIterator.hasNext()) {
+			Group group = (Group) parentGroupsIterator.next();
+			getQueriesFromGroup(queryRepresentations, group, false, false, showOnlyOneQueryWithId);
+		}
+		return queryRepresentations.values();
+	}
+	
+	private Group getTopGroupForUser(IWContext iwc) throws RemoteException {
+		User currentUser = iwc.getCurrentUser();
+		UserBusiness userBusiness = getUserBusiness();
+		//TODO: thi solve problem with the group types
+		String[] groupTypes = 
+				{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+			// special hack for damaged databases
+			if (topGroup == null) {
+				List groupType = new ArrayList();
+				groupType.add("general");
+				topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
+			}
+			return topGroup;
+	}
+	
+	private void getOwnQueries(Group topGroup, TreeMap queryRepresentations, int showOnlyOneQueryWithId) throws  FinderException {
+		// add own queries
+			getQueriesFromGroup(queryRepresentations, topGroup, true, true, showOnlyOneQueryWithId);
+			getQueriesFromGroup(queryRepresentations, topGroup, false, true, showOnlyOneQueryWithId);
+		}
+	
+	private void getQueriesFromGroup(TreeMap queryRepresentations, Group group, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) throws FinderException { 
+		// bad implementation:
+		// if the children list is empty null is returned. 
+		//TODO: thi: change the implementation
+		String groupName = group.getName();
+		if (groupName == null || groupName.length() == 0) {
+			groupName = NON_GROUPNAME_SUBSTITUTE;
+		}
+		UserQueryHome userQueryHomeTemp = getUserQueryHome();
+		String permission = (isPrivate) ? QueryConstants.PERMISSION_PRIVATE_QUERY : QueryConstants.PERMISSION_PUBLIC_QUERY;
+		Collection userQueries = userQueryHomeTemp.findByGroupAndPermission(group, permission);
+		Iterator iterator = userQueries.iterator();
+		while (iterator.hasNext())	{
+			UserQuery userQuery = (UserQuery) iterator.next();
+			int id = ((Integer) userQuery.getPrimaryKey()).intValue();
+			String name = userQuery.getName();
+			int countOfSameName = 2;
+			
+			boolean alreadyAddedKey = queryRepresentations.containsKey(name);
+			if(alreadyAddedKey){
+				String newName = name;
+				while(alreadyAddedKey){
+					//probably crappy code its 4am and i dead tired - Eiki
+					//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
+					newName = new String(name+countOfSameName);
+					alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
+					countOfSameName++;
+				}
+				name = newName;
+			}
+			// show only the query with a specified id if desired 
+			if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+				QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
+				if (queryRepresentations.containsKey(name)) {
+					// usually all names are different (you can't store the same name twice), that is
+					// this shouldn't happen at all therefore we do a very simple solution
+					name += " (1)";
+				}
+				queryRepresentations.put(name,representation);
+			}
+		}  
+	}
+	
 }
 
