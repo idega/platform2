@@ -12,6 +12,9 @@ import javax.sql.*;
 import com.idega.servlet.IWCoreServlet;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.image.data.ImageEntity;
+import com.idega.util.caching.BlobCacher;
+import com.idega.idegaweb.IWMainApplication;
+import java.io.FileInputStream;
 
 public class ImageServlet extends IWCoreServlet{
 
@@ -35,55 +38,71 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
   String imageName;
   String fromFile;
   String fileLocation;
+  IWMainApplication app;
 
   String imageId = request.getParameter("image_id");
 
   try{
-    conn = (ImageEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity")).getConnection();
-    Stmt = conn.createStatement();
+    if( imageId!=null){
 
-    RS = Stmt.executeQuery("select image_value,content_type from image where image_id='"+imageId+"'");
+      app = getApplication();
+      String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",Integer.parseInt(imageId), app ,"image_value");
 
-    String filename = null;
-    InputStream myInputStream = null;
+      if( URIString == null ){
+        conn = (ImageEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity")).getConnection();
 
-    while(RS.next()){
-      contentType = RS.getString("content_type");
-      myInputStream = RS.getBinaryStream("image_value");
-    }
+        if( conn!=null ){
+          Stmt = conn.createStatement();
 
+          RS = Stmt.executeQuery("select image_value,content_type from image where image_id='"+imageId+"'");
 
+          String filename = null;
+          InputStream myInputStream = null;
 
-    response.setContentType(contentType);
-
-    if(myInputStream!=null){
-      DataOutputStream output = new DataOutputStream( response.getOutputStream() );
-
-      byte	buffer[]= new byte[1024];
-      int		noRead	= 0;
+          while(RS.next()){
+            contentType = RS.getString("content_type");
+            myInputStream = RS.getBinaryStream("image_value");
+          }
 
 
-      noRead	= myInputStream.read( buffer, 0, 1024 );
 
-      //Write out the file to the browser
-      while ( noRead != -1 ){
-              output.write( buffer, 0, noRead );
-              noRead = myInputStream.read( buffer, 0, 1024 );
+          response.setContentType(contentType);
 
+          if(myInputStream!=null){
+            DataOutputStream output = new DataOutputStream( response.getOutputStream() );
+
+            byte	buffer[]= new byte[1024];
+            int		noRead	= 0;
+
+
+            noRead	= myInputStream.read( buffer, 0, 1024 );
+
+            //Write out the file to the browser
+            while ( noRead != -1 ){
+                    output.write( buffer, 0, noRead );
+                    noRead = myInputStream.read( buffer, 0, 1024 );
+
+            }
+
+          output.flush();
+          output.close();
+          myInputStream.close();
+          }
+
+          Stmt.close();
+          RS.close();
       }
 
 
-    //  if(cacheImagesToFiles) cacheImageToFile(imageId);
-    output.flush();
-    output.close();
-    myInputStream.close();
+    }
+    else { //Stream from a file
+
+      java.io.File file = new File(app.getApplicationRealPath()+URIString);
+      file.getC
+
 
     }
-
-
-    Stmt.close();
-    RS.close();
-
+  }
 
 
   }
@@ -97,14 +116,5 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
 
 }//end service
 
-
-private void cacheImageToFile(String imageId) throws Exception{
-
-   //imageEntityHash;
-  // scorecardHash;
-
- // ImageEntity image = new ImageEntity(Integer.parseInt(imageId));
-
-}
 
 }//end

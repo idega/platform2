@@ -149,7 +149,7 @@ public Image(int image_id, String name, int width, int height) throws SQLExcepti
 
 private String getImageURL(ModuleInfo modinfo){
   StringBuffer URIBuffer;
-  String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",imageId, modinfo ,"image_value");
+  String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",imageId, modinfo.getApplication() ,"image_value");
 
   if( URIString == null ){
     useCached = false;
