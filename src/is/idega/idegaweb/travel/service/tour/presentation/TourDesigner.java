@@ -1,4 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
+
+import is.idega.idegaweb.travel.service.presentation.DesignerForm;
 import javax.ejb.FinderException;
 import java.util.*;
 import com.idega.util.ListUtil;
@@ -14,6 +16,7 @@ import is.idega.idegaweb.travel.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
+import javax.ejb.*;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.core.data.Address;
 import com.idega.core.data.AddressType;
@@ -32,7 +35,7 @@ import is.idega.idegaweb.travel.presentation.TravelManager;
  *@version    1.0
  */
 
-public class TourDesigner extends TravelManager {
+public class TourDesigner extends TravelManager implements DesignerForm{
   IWResourceBundle iwrb;
   IWBundle iwb;
   Supplier supplier;
@@ -67,7 +70,7 @@ public class TourDesigner extends TravelManager {
    *@param  iwc            Description of the Parameter
    *@exception  Exception  Description of the Exception
    */
-  public void init( IWContext iwc ) throws Exception {
+  private void init( IWContext iwc ) throws Exception {
     super.main( iwc );
     iwrb = super.getResourceBundle();
     iwb = super.getBundle();
@@ -85,7 +88,11 @@ public class TourDesigner extends TravelManager {
     try {
       product = ProductBusiness.getProduct( tourId );
       service = ( ( is.idega.idegaweb.travel.data.ServiceHome ) com.idega.data.IDOLookup.getHome( Service.class ) ).findByPrimaryKey( product.getPrimaryKey() );
-      tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).findByPrimaryKey( product.getPrimaryKey() );
+      try {
+        tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).findByPrimaryKey( product.getPrimaryKey() );
+      }catch (FinderException fe) {
+        //fe.printStackTrace(System.err);
+      }
       timeframe = product.getTimeframe();
 
       arrAddress = ProductBusiness.getArrivalAddress( product );
@@ -108,6 +115,9 @@ public class TourDesigner extends TravelManager {
   public Form getTourDesignerForm( IWContext iwc ) throws RemoteException, FinderException{
     return getTourDesignerForm( iwc, -1 );
   }
+  public Form getDesignerForm( IWContext iwc ) throws RemoteException, FinderException{
+    return getTourDesignerForm( iwc );
+  }
 
 
   /**
@@ -117,6 +127,10 @@ public class TourDesigner extends TravelManager {
    *@param  tourId  Description of the Parameter
    *@return         The tourDesignerForm value
    */
+  public Form getDesignerForm( IWContext iwc, int tourId ) throws RemoteException, FinderException{
+    return getTourDesignerForm(iwc, tourId);
+  }
+
   public Form getTourDesignerForm( IWContext iwc, int tourId ) throws RemoteException, FinderException{
     boolean isDataValid = true;
 
@@ -378,11 +392,6 @@ public class TourDesigner extends TravelManager {
       table.add( departureFromText, 1, row );
       table.add( departure_from, 2, row );
 
-      /*
-       *  Link addDepAddress = new Link(iwrb.getImage("/buttons/new.gif"));
-       *  addDepAddress.setWindowToOpen(AddressAdder.class);
-       *  table.add(addDepAddress,2,row);
-       */
       ++row;
       Text departureTimeText = ( Text ) theBoldText.clone();
       departureTimeText.setText( iwrb.getLocalizedString( "travel.departure_time", "Departure time" ) );
@@ -532,18 +541,20 @@ public class TourDesigner extends TravelManager {
           hotels.setSelectedElement(iter.next().toString());
         }
 
-        if ( tour.getIsHotelPickup() ) {
-          hotelPickupYes.setSelected();
-        } else {
-          hotelPickupNo.setSelected();
-        }
+        if (tour != null) {
+          if ( tour.getIsHotelPickup() ) {
+            hotelPickupYes.setSelected();
+          } else {
+            hotelPickupNo.setSelected();
+          }
 
-        numberOfSeats.setContent( Integer.toString( tour.getTotalSeats() ) );
-        minNumberOfSeats.setContent( Integer.toString( tour.getMinimumSeats() ) );
-        number_of_days.setContent( Integer.toString( tour.getNumberOfDays() ) );
-        estSeats.setContent( Integer.toString( tour.getEstimatedSeatsUsed() ) );
-        discountType.setSelectedElement( Integer.toString( this.product.getDiscountTypeId() ) );
-        kilometers.setContent( Float.toString( tour.getLength() ) );
+          numberOfSeats.setContent( Integer.toString( tour.getTotalSeats() ) );
+          minNumberOfSeats.setContent( Integer.toString( tour.getMinimumSeats() ) );
+          number_of_days.setContent( Integer.toString( tour.getNumberOfDays() ) );
+          estSeats.setContent( Integer.toString( tour.getEstimatedSeatsUsed() ) );
+          discountType.setSelectedElement( Integer.toString( this.product.getDiscountTypeId() ) );
+          kilometers.setContent( Float.toString( tour.getLength() ) );
+        }
       } else {
         discountType.setSelectedElement( Integer.toString( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT ) );
       }
@@ -553,17 +564,26 @@ public class TourDesigner extends TravelManager {
     return form;
   }
 
-  /**
-   *  Description of the Method
-   *
-   *@param  iwc  Description of the Parameter
-   *@return      Description of the Return Value
-   */
-  public int createTour( IWContext iwc ) {
+
+  public int handleInsert( IWContext iwc ) throws RemoteException{
+    return createTour(iwc);
+  }
+
+  public int createTour( IWContext iwc ) throws RemoteException {
     String sTourId = iwc.getParameter( this.parameterIsUpdate );
     int tourId = -1;
     if ( sTourId != null ) {
       tourId = Integer.parseInt( sTourId );
+      if (tour == null) {
+        try {
+          System.err.println("Tour er null, þyrfti að smíða hann kannski hér??");
+          tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).create();
+          tour.setPrimaryKey(new Integer(tourId));
+          tour.store();
+        }catch (CreateException ce) {
+          ce.printStackTrace(System.err);
+        }
+      }
     }
 
     String name = iwc.getParameter( "name_of_trip" );
@@ -751,7 +771,8 @@ public class TourDesigner extends TravelManager {
           timeframeId = "-1";
         }
         tb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        serviceId = tb.updateTourService( tourId, supplier.getID(), iImageId, name, number, description, true, departureFrom, departureStamp, arrivalAt, arrivalStamp, hotelPickup, activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt( estSeats ), Integer.parseInt( discountType ) );
+
+        serviceId = tb.updateTourService( tourId, supplier.getID(), iImageId, name, number, description, true, departureFrom, departureStamp, arrivalAt, arrivalStamp, hotelPickup, activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, iEstSeats, iDiscountType );
         if ( useImageId == null ) {
           Product product = ProductBusiness.getProduct( serviceId );
           ProductEditorBusiness.getInstance().dropImage( product, true );

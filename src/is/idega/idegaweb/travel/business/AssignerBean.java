@@ -28,35 +28,6 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
   }
 
 
-  /**
-   * @deprecated
-   */
-/*  public int getNumberOfAssignedSeatsByContract(int serviceId, idegaTimestamp stamp, Contract contract) {
-    idegaTimestamp theStamp= idegaTimestamp.RightNow();
-      theStamp.addDays(contract.getExpireDays()-1);
-    if (stamp.isLaterThan(theStamp)) {
-      return getNumberOfAssignedSeats(serviceId, -1, stamp);
-    }else {
-      return 0;
-    }
-  }
-
-*/
-  /**
-   * @deprecatedjfasldflsj
-   */
-/*  private int getNumberOfAssignedSeatsByContract(int serviceId, idegaTimestamp stamp, Contract contract, Connection conn) {
-    idegaTimestamp theStamp= idegaTimestamp.RightNow();
-      theStamp.addDays(contract.getExpireDays()-1);
-    if (stamp.isLaterThan(theStamp)) {
-      return getNumberOfAssignedSeats(serviceId, -1, stamp, conn);
-    }else {
-      return 0;
-    }
-  }
-*/
-
-
   public int getNumberOfAssignedSeatsByContract(int serviceId, int resellerId, idegaTimestamp stamp, Contract contract, Connection conn) throws RemoteException {
     idegaTimestamp theStamp= idegaTimestamp.RightNow();
       theStamp.addDays(contract.getExpireDays()-1);

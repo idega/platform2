@@ -12,6 +12,7 @@ import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.data.*;
 import java.sql.SQLException;
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
@@ -41,7 +42,6 @@ public class Statistics extends TravelManager {
   private Product product;
   private TravelStockroomBusiness tsb;
   private Service service;
-  private Tour tour;
   private Timeframe timeframe;
 
   private idegaTimestamp fromStamp;
@@ -87,15 +87,12 @@ public class Statistics extends TravelManager {
         if (productId != null && !productId.equals("-1")) {
           product = ProductBusiness.getProduct(Integer.parseInt(productId));
           service = tsb.getService(product);
-          tour = getTourBusiness(iwc).getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
       }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TourNotFoundException tnfe) {
-          tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
       fromStamp = getFromIdegaTimestamp(iwc);
@@ -341,7 +338,12 @@ public class Statistics extends TravelManager {
 
 
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;
-      int numberOfSeats = tour.getTotalSeats() * getTourBusiness(iwc).getNumberOfTours(service.getID(), fromStamp, toStamp);
+
+      /**
+       * @todo smiða fall sem skila number of seats for - to
+       */
+      int numberOfSeats = 0;
+      //      int numberOfSeats = tour.getTotalSeats() * getTourBusiness(iwc).getNumberOfTours(service.getID(), fromStamp, toStamp);
 
       int iAvail = numberOfSeats - total;
 

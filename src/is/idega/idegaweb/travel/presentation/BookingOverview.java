@@ -55,7 +55,7 @@ public class BookingOverview extends TravelManager {
 
   private Service service;
   private Timeframe timeframe;
-  private Tour tour;
+//  private Tour tour;
 
   private idegaTimestamp fromStamp;
   private idegaTimestamp toStamp;
@@ -115,16 +115,16 @@ public class BookingOverview extends TravelManager {
           //System.err.println("_productId = "+_productId);
           product = ProductBusiness.getProduct(_productId);
           service = getTravelStockroomBusiness(iwc).getService(product);
-          tour = getTourBusiness(iwc).getTour(product);
+//          tour = getTourBusiness(iwc).getTour(product);
           timeframe = getTravelStockroomBusiness(iwc).getTimeframe(product);
         }
       }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TourNotFoundException tnfe) {
+      }/*catch (TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
-      }catch (SQLException sql) {sql.printStackTrace(System.err);}
+      }*/catch (SQLException sql) {sql.printStackTrace(System.err);}
 
 
       if ((reseller != null) && (product != null)){
@@ -364,7 +364,7 @@ public class BookingOverview extends TravelManager {
           boolean upALine = false;
 
           Service service;
-          Tour tour;
+//          Tour tour;
 
           int iCount = 0;
           int iBooked =0;
@@ -418,17 +418,17 @@ public class BookingOverview extends TravelManager {
                           iAvailable=0;
                           iAssigned=0;
                           service = getTravelStockroomBusiness(iwc).getService(prod);
-                          tour = getTourBusiness(iwc).getTour(prod);
+                          //tour = getTourBusiness(iwc).getTour(prod);
 
                           if (supplier != null) {
                             sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
                             if (sDay != null) {
                               iCount = sDay.getMax();
                               if (iCount < 1) {
-                                iCount = tour.getTotalSeats();
+                                //iCount = tour.getTotalSeats();
                               }
                             }else {
-                              iCount = tour.getTotalSeats();
+                              //iCount = tour.getTotalSeats();
                             }
 
                             //iCount = tour.getTotalSeats();
@@ -521,9 +521,9 @@ public class BookingOverview extends TravelManager {
                     sql.printStackTrace(System.err);
                   }catch (ServiceNotFoundException snfe) {
                     snfe.printStackTrace(System.err);
-                  }catch (TourNotFoundException tnfe) {
+                  }/*catch (TourNotFoundException tnfe) {
                     tnfe.printStackTrace(System.err);
-                  }catch (TimeframeNotFoundException tfnfe) {
+                  }*/catch (TimeframeNotFoundException tfnfe) {
                     tfnfe.printStackTrace(System.err);
                   }
               }
@@ -638,12 +638,12 @@ public class BookingOverview extends TravelManager {
             sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), currentStamp.getDayOfWeek());
             if (sDay != null) {
               seats = sDay.getMax();
-              if (seats < 1) {
-                seats = tour.getTotalSeats();
-              }
-            }else {
-              seats = tour.getTotalSeats();
-            }
+              //if (seats < 1) {
+                //seats = tour.getTotalSeats();
+              //}
+            }//else {
+              //seats = tour.getTotalSeats();
+            //}
 //            seats = tour.getTotalSeats();
             assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) service.getPrimaryKey()).intValue(), currentStamp);
             iInqueries = getInquirer(iwc).getInqueredSeats(service.getID() , currentStamp, true);

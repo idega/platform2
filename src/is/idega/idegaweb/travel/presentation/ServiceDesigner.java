@@ -2,8 +2,8 @@ package is.idega.idegaweb.travel.presentation;
 
 import javax.ejb.FinderException;
 import java.rmi.RemoteException;
-import com.idega.data.IDOFinderException;
-import java.util.List;
+import com.idega.data.*;
+import java.util.*;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -22,7 +22,8 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 
 import is.idega.idegaweb.travel.data.Service;
-import is.idega.idegaweb.travel.service.tour.presentation.TourDesigner;
+import is.idega.idegaweb.travel.service.business.*;
+import is.idega.idegaweb.travel.service.presentation.*;
 import com.idega.core.data.*;
 
 /**
@@ -42,6 +43,7 @@ public class ServiceDesigner extends TravelManager {
   private TravelStockroomBusiness tsb;
   private Supplier supplier;
   private Service service;
+  private ProductCategory productCategory;
 
   public static String ServiceAction = "service_action";
   private String PriceCategoryRefresh = "refresh_categories";
@@ -55,11 +57,16 @@ public class ServiceDesigner extends TravelManager {
   public static String parameterAddressId = "parameterAddressId";
   public static String parameterCreate = "create";
 
+  private String PARAMETER_PRODUCT_CATEGORY_TYPE = "pCat_type";
+
   public static String NAME_OF_FORM = "service_designer_form";
   public static String NAME_OF_PRICE_CATEGORY_FORM = "service_price_category_form";
 
 //  private Boolean priceCategoryCreation;
   private String sessionNameServiceId = "tourDesignerSessionTourId";
+  private String PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
+
+  private int serviceId = -1;
 
 
 
@@ -70,13 +77,55 @@ public class ServiceDesigner extends TravelManager {
     super.add(mo);
   }
 
+  private void init(IWContext iwc) throws RemoteException {
+    bundle = super.getBundle();
+    iwrb = super.getResourceBundle();
+    supplier = super.getSupplier();
+    tsb = getTravelStockroomBusiness(iwc);
+
+    String pCatType = iwc.getParameter(PARAMETER_PRODUCT_CATEGORY_TYPE);
+
+    if (pCatType != null) {
+      PRODUCT_CATEGORY_TYPE = pCatType;
+    }else {
+      PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
+    }
+
+    String id = iwc.getParameter(this.parameterUpdateServiceId);
+    if (id == null) {
+      String sServiceId = getSessionServiceId(iwc);
+      if (sServiceId != null) {
+        serviceId = Integer.parseInt(sServiceId);
+      }
+    }else {
+      serviceId = Integer.parseInt(id);
+      try {
+        Product prod = ProductBusiness.getProduct(serviceId);
+        Collection coll = getProductCategoryFactory(iwc).getProductCategory(prod);
+        Iterator iter = coll.iterator();
+        if (iter.hasNext()) {
+          PRODUCT_CATEGORY_TYPE = ((ProductCategory) iter.next()).getCategoryType();
+        }
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }catch (FinderException fe) {
+        fe.printStackTrace(System.err);
+      }
+    }
+
+
+
+    try {
+      productCategory = ((ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class)).getProductCategory(PRODUCT_CATEGORY_TYPE);
+    }catch (FinderException fe) {
+      fe.printStackTrace(System.err);
+    }
+  }
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
-      bundle = super.getBundle();
-      iwrb = super.getResourceBundle();
-      supplier = super.getSupplier();
-      tsb = getTravelStockroomBusiness(iwc);
+      init(iwc);
+
       if (super.isLoggedOn(iwc)) {
         if (iwc.getParameter(super.sAction) != null) {
           if (iwc.getParameter(super.sAction).equals(super.parameterServiceDesigner)) {
@@ -117,32 +166,48 @@ public class ServiceDesigner extends TravelManager {
 
   public boolean isCategoryCreation(IWContext iwc) {
     Object obj = iwc.getSessionAttribute("sd_isCategoryCreation");
-    if (obj == null) return false;
-    else return true;
+    if (obj == null) {
+      return false;
+    }
+    else {
+      return true;
+    }
   }
 
+  private Form getProductCategoryForm(IWContext iwc) throws RemoteException{
+    Form form = new Form();
+    Table table = new Table();
+    form.add(table);
+    table.add("ProductCategory : ");
+    try {
+      Collection coll = this.supplier.getProductCategories();
+      DropdownMenu pCats = getProductCategoryFactory(iwc).getProductCategoryDropdown(iwrb, supplier, PARAMETER_PRODUCT_CATEGORY_TYPE);
+        pCats.setSelectedElement(PRODUCT_CATEGORY_TYPE);
+        pCats.setToSubmit();
+      table.add(pCats);
+    }catch (IDORelationshipException idor) {
+      idor.printStackTrace(System.err);
+    }
+    return form;
+  }
 
   private void displayForm(IWContext iwc) throws Exception{
-    /**
-     * @todo implement for other types
-     */
-     add(Text.BREAK);
-    TourDesigner td = new TourDesigner(iwc);
+    add(Text.BREAK);
+    add(getProductCategoryForm(iwc));
 
-    String id = iwc.getParameter(this.parameterUpdateServiceId);
-    if (id == null) {
-      String sServiceId = getSessionServiceId(iwc);
-      if (sServiceId != null) {
-        id  = sServiceId;
-      }
-    }
+    DesignerForm df = getServiceHandler(iwc).getDesignerForm(iwc, productCategory);
 
-    if (id != null) {
-      add(td.getTourDesignerForm(iwc, Integer.parseInt(id)));
+
+    if (serviceId != -1) {
+      Form form = df.getDesignerForm(iwc, serviceId);
+        form.addParameter(PARAMETER_PRODUCT_CATEGORY_TYPE, PRODUCT_CATEGORY_TYPE);
+      add(form);
       setCategoryCreation(iwc, false);
-      setSessionServiceId(iwc, Integer.parseInt(id));
+      setSessionServiceId(iwc, serviceId);
     }else {
-      add(td.getTourDesignerForm(iwc));
+      Form form = df.getDesignerForm(iwc);
+        form.addParameter(PARAMETER_PRODUCT_CATEGORY_TYPE, PRODUCT_CATEGORY_TYPE);
+      add(form);
     }
   }
 
@@ -150,8 +215,9 @@ public class ServiceDesigner extends TravelManager {
   private void createService(IWContext iwc) throws Exception{
 
       if ( !isCategoryCreation(iwc) ) {
-        TourDesigner td = new TourDesigner(iwc);
-          int tourId = td.createTour(iwc);
+          DesignerForm df = getServiceHandler(iwc).getDesignerForm(iwc, productCategory);
+//        TourDesigner td = new TourDesigner(iwc);
+          int tourId = df.handleInsert(iwc);
           setService(iwc,tourId);
           removeSessionServiceId(iwc);
       }

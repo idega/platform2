@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import com.idega.data.*;
 import com.idega.business.IBOLookup;
 import javax.ejb.*;
@@ -33,22 +34,22 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class TourBookingForm extends TravelManager {
-  IWResourceBundle iwrb;
-  Supplier supplier;
+public class TourBookingForm extends BookingForm{
+//  IWResourceBundle iwrb;
+//  Supplier supplier;
 
-  private Product _product;
-  private Service _service;
+//  private Product _product;
+//  private Service _service;
   private Tour _tour;
-  private Contract _contract;
-  private idegaTimestamp _stamp;
+//  private Contract _contract;
+//  private idegaTimestamp _stamp;
   private TourBooking _booking;
-  private Reseller _reseller;
+//  private Reseller _reseller;
 
-  private int _productId;
-  private int _resellerId;
+//  private int _productId;
+//  private int _resellerId;
 
-  int available = is.idega.idegaweb.travel.presentation.Booking.available;
+/*  int available = is.idega.idegaweb.travel.presentation.Booking.available;
   int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
 
   public static String BookingAction = is.idega.idegaweb.travel.presentation.Booking.BookingAction;
@@ -59,7 +60,7 @@ public class TourBookingForm extends TravelManager {
   public static String parameterInquiry = "bookingInquiry";
   private static String parameterSendInquery = "bookingSendInquery";
   private static String parameterSupplierId = "bookingSupplierId";
-  public static String parameterDepartureAddressId = "depAddrId";
+  public static String parameterDepartureAddressId = BookingForm.parameterDepartureAddressId;
   public static String parameterCCNumber = "CCNumber";
   public static String parameterCCMonth  = "CCMonth";
   public static String parameterCCYear   = "CCYear";
@@ -76,15 +77,27 @@ public class TourBookingForm extends TravelManager {
   public static final int inquirySent = -10;
   public List errorDays = new Vector();
   private boolean _useInquiryForm = false;
-
+*/
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
-    super.main(iwc);    setProduct(iwc, product);
-    iwrb = super.getResourceBundle(iwc);
-    supplier = super.getSupplier();
-    setTimestamp(iwc);
+    super(iwc, product);
+    setTour(iwc, product);
+//    setProduct(iwc, product);
+//    iwrb = super.getResourceBundle(iwc);
+//    supplier = super.getSupplier();
+//    _reseller = super.getReseller();
+//    setTimestamp(iwc);
   }
 
+  private void setTour(IWContext iwc, Product product) throws RemoteException{
+    try {
+      TourHome tHome = (TourHome) IDOLookup.getHome(Tour.class);
+      _tour = tHome.findByPrimaryKey(product.getPrimaryKey());
+    }catch (FinderException fe) {
+      fe.printStackTrace(System.err);
+    }
+  }
+/*
   private void setTimestamp(IWContext iwc) {
     String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
@@ -95,7 +108,7 @@ public class TourBookingForm extends TravelManager {
       _stamp = new idegaTimestamp(idegaTimestamp.RightNow());
     }
   }
-
+*/
   public Form getBookingForm(IWContext iwc) throws RemoteException, FinderException {
       Form form = new Form();
       Table table = new Table();
@@ -142,7 +155,6 @@ public class TourBookingForm extends TravelManager {
         debug("tFrame == null");
       }
 
-
       if (prices.length > 0) {
 
           int row = 1;
@@ -150,7 +162,7 @@ public class TourBookingForm extends TravelManager {
           int textInputSizeMd = 18;
           int textInputSizeSm = 5;
 
-            DateInput fromDate = new DateInput(parameterFromDate);
+            DateInput fromDate = new DateInput(this.parameterFromDate);
               fromDate.setDay(_stamp.getDay());
               fromDate.setMonth(_stamp.getMonth());
               fromDate.setYear(_stamp.getYear());
@@ -606,7 +618,7 @@ public class TourBookingForm extends TravelManager {
       return form;
   }
 
-  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
+  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, FinderException {
     int bookings = getTourBooker(iwc).getNumberOfBookings(_productId, this._stamp);
     int max = 0;
     int min = 0;
@@ -636,8 +648,13 @@ public class TourBookingForm extends TravelManager {
     if ((max > 0 && max <= bookings) || (min > 0 && min > bookings) ){
       _useInquiryForm = true;
     }
-
-    return getPublicBookingFormPrivate(iwc, product, stamp);
+    try {
+      return getPublicBookingFormPrivate(iwc, product, stamp);
+    }catch (ServiceNotFoundException snfe) {
+      throw new FinderException(snfe.getMessage());
+    }catch (TimeframeNotFoundException tnfe) {
+      throw new FinderException(tnfe.getMessage());
+    }
   }
 /*
   private Form getInquiryForm(IWContext iwc, Product product, idegaTimestamp stamp) {
@@ -1300,7 +1317,7 @@ public class TourBookingForm extends TravelManager {
                   //table.setBorder(1);
     return form;
   }
-
+/*
   private DropdownMenu getDropdownMenuWithUsers(List users, String name) {
     DropdownMenu usersDrop = new DropdownMenu("ic_user");
     User usr = null;
@@ -1329,7 +1346,7 @@ public class TourBookingForm extends TravelManager {
 
     return usersDrop;
   }
-
+*/
  public Form getFormMaintainingAllParameters() {
     return getFormMaintainingAllParameters(true);
  }
@@ -1977,7 +1994,7 @@ public class TourBookingForm extends TravelManager {
  * @todo Check booking
  */
 
-
+/*
   private void setProduct(IWContext iwc, Product product) {
     _product = product;
     try {
@@ -1994,12 +2011,13 @@ public class TourBookingForm extends TravelManager {
       e.printStackTrace(System.err);
     }
   }
-
+*/
+/*
   public void setReseller(Reseller reseller) {
     _reseller = reseller;
     _resellerId = reseller.getID();
   }
-
+*/
   public void setBooking(Booking booking) throws RemoteException, FinderException {
     this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
   }

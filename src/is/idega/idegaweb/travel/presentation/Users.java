@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.service.presentation.InitialDataObject;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -23,7 +24,7 @@ import com.idega.core.accesscontrol.data.*;
  * @version 1.0
  */
 
-public class Users extends TravelManager {
+public class Users extends TravelManager implements InitialDataObject {
 
   private Reseller _reseller;
   private Supplier _supplier;

@@ -17,6 +17,6 @@ public interface TourBusiness extends TravelStockroomBusiness
  public com.idega.util.idegaTimestamp getNextAvailableDay(com.idega.presentation.IWContext p0,is.idega.idegaweb.travel.service.tour.data.Tour p1,com.idega.block.trade.stockroom.data.Product p2,com.idega.util.idegaTimestamp p3)throws java.sql.SQLException, java.rmi.RemoteException;
  public int getNumberOfTours(int p0,com.idega.util.idegaTimestamp p1,com.idega.util.idegaTimestamp p2) throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.service.tour.data.Tour getTour(com.idega.block.trade.stockroom.data.Product p0)throws is.idega.idegaweb.travel.service.tour.business.TourNotFoundException, java.rmi.RemoteException;
- public void removeDepartureDaysApplication(com.idega.presentation.IWContext p0,is.idega.idegaweb.travel.service.tour.data.Tour p1) throws java.rmi.RemoteException;
+ public void removeDepartureDaysApplication(com.idega.idegaweb.IWApplicationContext p0,is.idega.idegaweb.travel.service.tour.data.Tour p1) throws java.rmi.RemoteException;
  public int updateTourService(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,java.lang.String p7,com.idega.util.idegaTimestamp p8,java.lang.String p9,com.idega.util.idegaTimestamp p10,java.lang.String[] p11,int[] p12,java.lang.Integer p13,java.lang.Integer p14,java.lang.Integer p15,java.lang.Float p16,int p17,int p18)throws java.lang.Exception, java.rmi.RemoteException;
 }

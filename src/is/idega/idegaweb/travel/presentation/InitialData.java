@@ -11,6 +11,7 @@ import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.service.presentation.ServiceSelector;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -52,6 +53,7 @@ public class InitialData extends TravelManager {
   private static String parameterViewResellerInfo = "resellerViewInfo";
   private static String parameterViewHotelPickup = "parameteViewHotelPickup";
   private static String parameterViewPriceCategories = "parameteViewPriceCategories";
+  private static String parameterViewProductCategories = "parameterViewProductCategories";
   private static String parameterViewMiscellaneousServices = "parameteMicsServ";
   private static String parameterCreditCardRefund = "parameterCreditcardRefund";
   private static String parameterTPosProperties = "parTPosProp";
@@ -74,7 +76,6 @@ public class InitialData extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception{
-      super.debugParameters(iwc);
       super.main(iwc);
       initialize(iwc);
 
@@ -118,6 +119,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterViewSupplierInfo, iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
         menu.addMenuElement(this.parameterSettings, iwrb.getLocalizedString("travel.settings","Settings"));
         menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
+        menu.addMenuElement(this.parameterViewProductCategories, iwrb.getLocalizedString("travel.product_categories","Product categories"));
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
         menu.addMenuElement(this.parameterViewMiscellaneousServices, iwrb.getLocalizedString("travel.misc_services","Miscellaneous services"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
@@ -163,6 +165,15 @@ public class InitialData extends TravelManager {
                 HotelPickupPlaceDesigner hppd = new HotelPickupPlaceDesigner(iwc);
                 //hppd.handleInsert(iwc,supplier);
                 form = hppd.getHotelPickupPlaceForm(iwc, supplier.getID());
+              }catch (Exception e) {
+                e.printStackTrace(System.err);
+                form = new Form();
+              }
+            }else if (selected.equals(this.parameterViewProductCategories)) {
+              try {
+                ServiceSelector ss = new ServiceSelector(iwc);
+                  ss.handleInsert(iwc);
+                form = ss.getForm(iwc);
               }catch (Exception e) {
                 e.printStackTrace(System.err);
                 form = new Form();

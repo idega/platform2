@@ -23,9 +23,16 @@ import com.idega.util.text.*;
 import java.sql.SQLException;
 import java.util.*;
 import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.service.presentation.*;
+import is.idega.idegaweb.travel.service.business.*;
+
+/**
+ * @todo losna við below
+ */
 import is.idega.idegaweb.travel.service.tour.presentation.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
+
 
 
 /**
@@ -135,10 +142,15 @@ public class Booking extends TravelManager {
           productId = Integer.parseInt(sProductId);
           product = ProductBusiness.getProduct(productId);
           service = tsb.getService(product);
-          tour = getTourBusiness(iwc).getTour(product);
+          try {
+            tour = getTourBusiness(iwc).getTour(product);
+          }catch (TourNotFoundException tnfe) {
+            //tnfe.printStackTrace(System.err);
+            System.out.println("Tour not found");
+          }
           timeframe = tsb.getTimeframe(product);
 
-          String travelAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
+          String travelAddressId = iwc.getParameter(BookingForm.parameterDepartureAddressId);
           if (travelAddressId == null) {
             List addresses = ProductBusiness.getDepartureAddresses(product, true);
             travelAddress = (TravelAddress) addresses.get(0);
@@ -153,8 +165,6 @@ public class Booking extends TravelManager {
           snfe.printStackTrace(System.err);
       }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TourNotFoundException tnfe) {
-          tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
       catch (FinderException fe) {fe.printStackTrace(System.err);}
 
@@ -743,19 +753,23 @@ public class Booking extends TravelManager {
               if (sDay != null) {
                 iCount = sDay.getMax();
                 iMin = sDay.getMin();
-                if (iCount < 1) {
-                  iCount = tour.getTotalSeats();
+                if (tour != null) {
+                  if (iCount < 1) {
+                    iCount = tour.getTotalSeats();
+                  }
+                  if (iMin < 1) {
+                    iMin = tour.getMinimumSeats();
+                  }
                 }
-                if (iMin < 1) {
-                  iMin = tour.getMinimumSeats();
-                }
-              }else {
+              }else if (tour != null ){
                 iCount = tour.getTotalSeats();
                 iMin = tour.getMinimumSeats();
               }
             }catch (Exception e) {
               e.printStackTrace(System.err);
-              iCount = tour.getTotalSeats();
+              if (tour != null) {
+                iCount = tour.getTotalSeats();
+              }
             }
 
             if (supplier != null) {
@@ -831,12 +845,13 @@ public class Booking extends TravelManager {
 
   private Form getBookingForm(IWContext iwc) throws Exception{
 
-    TourBookingForm tbf = new TourBookingForm(iwc,product);
+    BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
+//    TourBookingForm tbf = new TourBookingForm(iwc,product);
     try {
-      if (reseller != null) tbf.setReseller(reseller);
-      tbf.setTimestamp(stamp);
-      if (booking != null)  tbf.setBooking(booking);
-      return tbf.getBookingForm(iwc);
+//      if (reseller != null) tbf.setReseller(reseller);
+      bf.setTimestamp(stamp);
+      if (booking != null)  bf.setBooking(booking);
+      return bf.getBookingForm(iwc);
     }catch (Exception e) {
       return new Form();
     }
@@ -894,14 +909,15 @@ public class Booking extends TravelManager {
 
   private int handleInsert(IWContext iwc, boolean displayForm) throws Exception {
 
-    TourBookingForm tbf = new TourBookingForm(iwc, product);
+    BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
+//    TourBookingForm tbf = new TourBookingForm(iwc, product);
     try {
-      if (reseller != null) tbf.setReseller(reseller);
-      tbf.setTimestamp(stamp);
+      if (reseller != null) bf.setReseller(reseller);
+      bf.setTimestamp(stamp);
 
-      int returner = tbf.handleInsert(iwc);
+      int returner = bf.handleInsert(iwc);
 
-      if (returner == tbf.inquirySent) {
+      if (returner == bf.inquirySent) {
         /** @todo Cleara form eftir að inquiry hefur att ser stad  */
         displayForm(iwc);
       }else if (returner == 0) {
@@ -910,7 +926,7 @@ public class Booking extends TravelManager {
         add(Text.BREAK);
         add(bookingInformation(iwc, returner));
       }else {
-        displayForm(iwc, tbf.getErrorForm(iwc, returner));
+        displayForm(iwc, bf.getErrorForm(iwc, returner));
       }
       return returner;
     }catch (Exception e) {

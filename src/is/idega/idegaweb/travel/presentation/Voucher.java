@@ -1,26 +1,26 @@
 package is.idega.idegaweb.travel.presentation;
 
-import java.util.Collection;
-import java.rmi.RemoteException;
-import javax.ejb.FinderException;
 import com.idega.core.user.data.User;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.idegaweb.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.data.*;
 import com.idega.util.idegaTimestamp;
+import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.business.Booker;
 
 import java.text.DecimalFormat;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
+import java.util.Collection;
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -30,7 +30,7 @@ import java.util.List;
  * @version 1.0
  */
 
-public class Voucher extends TravelManager {
+public abstract class Voucher extends TravelManager {
 
   public static int width = 580;
   public static final int voucherNumberChanger = 4098;
@@ -39,7 +39,7 @@ public class Voucher extends TravelManager {
   private IWResourceBundle _iwrb;
   private IWBundle _bundle;
 
-  private Booking _booking;
+  protected Booking _booking;
   private List _bookings;
   private BookingEntry[] _entries;
   private Service _service;
@@ -52,19 +52,36 @@ public class Voucher extends TravelManager {
   private int _localeId = -1;
 
   private DecimalFormat df = new DecimalFormat("0.00");
+  private List sectOne;
+  private List sectTwo;
+  private List sectThree;
+  private List sectFour;
+  private List clientInfo;
+  private List sectFive;
 
-  public Voucher(IWContext iwc, int bookingId) throws Exception{
-    this(iwc, ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId)));
+  public Voucher(){}
+
+  public Voucher(int bookingId) throws Exception{
+    this(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId)));
   }
 
-  public Voucher(IWContext iwc, Booking booking) throws Exception{
-    super.main(iwc);
+  public Voucher(Booking booking) throws Exception{
+    _booking = booking;
+  }
+
+
+  public void add(PresentationObject po) {
+    super.addToBlock(po);
+  }
+
+  public void main(IWContext iwc) throws Exception{
+    super.initializer(iwc);
+
     _bundle = super.getBundle();
     _iwrb = super.getResourceBundle();
     _iwc = iwc;
     _localeId = iwc.getCurrentLocaleId();
     try {
-      _booking = booking;
       GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(_booking.getPrimaryKey());
       _bookings = getBooker(iwc).getMultibleBookings(gBooking);
       _service = _booking.getService();
@@ -78,8 +95,8 @@ public class Voucher extends TravelManager {
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
       Collection coll = gBooking.getTravelAddresses();
       TravelAddress[] addresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
-//      TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
       _address = addresses[addresses.length - 1];
+      add(getVoucher(iwc));
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
@@ -113,7 +130,7 @@ public class Voucher extends TravelManager {
     return bookingId + voucherNumberChanger;
   }
 
-  public Table getVoucher(IWContext iwc) throws RemoteException{
+  private Table getVoucher(IWContext iwc) throws RemoteException{
     Table bigTable = new Table();
       bigTable.setColor(BLACK);
       bigTable.setCellspacing(0);
@@ -170,6 +187,20 @@ public class Voucher extends TravelManager {
         table.add(rightHeader,3,1);
         table.setAlignment(3,1,"right");
 
+
+        String strng;
+        int size;
+        // SECTION ONE BEGINS
+        if (sectOne != null) {
+          size = sectOne.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) sectOne.get(i);
+            table.add(strng, 1, 2);
+            table.add(Text.BREAK,1,2);
+          }
+        }
+        // SECTION ONE ENDS
+
         table.add(Text.BREAK,1,2);
 
         Address address = null;
@@ -222,10 +253,30 @@ public class Voucher extends TravelManager {
         }
         table.add(Text.BREAK,1,2);
 
+        // SECTION TWO BEGINS
+        if (sectTwo != null) {
+          size = sectTwo.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) sectTwo.get(i);
+            table.add(strng, 1, 2);
+            table.add(Text.BREAK,1,2);
+          }
+        }
+        // SECTION TWO ENDS
 
         table.add(Text.BREAK,1,2);
 
         table.add(getText(_iwrb.getLocalizedString("travel.this_order_to_be_accepted","This order to be accepted at amount shown as part or full payment for the following services")),1,2);
+        // SECTION THREE BEGINS
+        if (sectThree != null) {
+          size = sectThree.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) sectThree.get(i);
+            table.add(strng, 1, 2);
+            table.add(Text.BREAK,1,2);
+          }
+        }
+        // SECTION THREE ENDS
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
@@ -246,6 +297,16 @@ public class Voucher extends TravelManager {
           table.add(getText(" : "),1,2);
           table.add(getText(_address.getName()),1,2);
         }
+        // SECTION FOUR BEGINS
+        if (sectFour != null) {
+          size = sectFour.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) sectFour.get(i);
+            table.add(strng, 1, 2);
+            table.add(Text.BREAK,1,2);
+          }
+        }
+        // SECTION FOUR ENDS
 
         table.add(Text.BREAK,1,2);
 
@@ -256,6 +317,16 @@ public class Voucher extends TravelManager {
         table.add(getText(" : "),1,2);
         table.add(getText(_booking.getName()),1,2);
         table.add(Text.BREAK,1,2);
+        // SECTION CLIENT_INFO BEGINS
+        if (clientInfo != null) {
+          size = clientInfo.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) clientInfo.get(i);
+            table.add(strng, 1, 2);
+            table.add(Text.BREAK,1,2);
+          }
+        }
+        // SECTION CLIENT_INFO ENDS
 
         table.add(Text.BREAK,1,2);
         table.add(getText(_iwrb.getLocalizedString("travel.party_of_lg","PARTY OF")),1,2);
@@ -283,6 +354,18 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
 
+        // SECTION FIVE BEGINS
+        if (sectFive != null) {
+          size = sectFive.size();
+          for (int i = 0 ; i < size ; i++) {
+            strng = (String) sectFive.get(i);
+            table.add(strng, 1, 2);
+            table.add(Text.BREAK,1,2);
+          }
+        }
+        // SECTION FIVE ENDS
+
+
         table.add(Text.BREAK,1,2);
 
       }catch (FinderException fe) {
@@ -304,5 +387,49 @@ public class Voucher extends TravelManager {
 
     return bigTable;
   }
+
+  protected void addToSectionOne(String lineToAdd) {
+    if (sectOne == null) {
+      sectOne = new Vector();
+    }
+    sectOne.add(lineToAdd);
+  }
+
+  protected void addToSectionTwo(String lineToAdd) {
+    if (sectTwo == null) {
+      sectTwo = new Vector();
+    }
+    sectTwo.add(lineToAdd);
+  }
+
+  protected void addToSectionThree(String lineToAdd) {
+    if (sectThree == null) {
+      sectThree = new Vector();
+    }
+    sectThree.add(lineToAdd);
+  }
+
+  protected void addToSectionFour(String lineToAdd) {
+    if (sectFour == null) {
+      sectFour = new Vector();
+    }
+    sectFour.add(lineToAdd);
+  }
+
+  protected void addToSectionFive(String lineToAdd) {
+    if (sectFive == null) {
+      sectFive = new Vector();
+    }
+    sectFive.add(lineToAdd);
+  }
+
+  protected void addToClientInfo(String lineToAdd) {
+    if (clientInfo == null) {
+      clientInfo = new Vector();
+    }
+    clientInfo.add(lineToAdd);
+  }
+
+  protected abstract void setupVoucher(IWContext iwc)throws RemoteException;
 
 }

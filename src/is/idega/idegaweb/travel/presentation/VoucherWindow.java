@@ -5,10 +5,13 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.*;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.*;
 
 import is.idega.idegaweb.travel.presentation.Voucher;
-import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 
 
 /**
@@ -57,17 +60,24 @@ public class VoucherWindow extends Window {
     Table table  = new Table();
       table.setCellpaddingAndCellspacing(0);
 
+    ServiceHandler sh = (ServiceHandler) IBOLookup.getServiceInstance(iwc, ServiceHandler.class);
+
     if (sBookingId != null) {
-      Voucher voucher = new Voucher(iwc, Integer.parseInt(sBookingId));
-      table.add(voucher.getVoucher(iwc));
+      GeneralBooking gBooking = (GeneralBooking) ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKeyIDO(new Integer(sBookingId));
+      Voucher voucher = sh.getVoucher(gBooking);
+//      Voucher voucher = new Voucher(iwc, Integer.parseInt(sBookingId));
+//      table.add(voucher.getVoucher(iwc));
+      table.add(voucher);
     }else if (searchAction != null){
       if (searchAction.equals(searchMethodReferenceNumber)) {
         String refMethod = iwc.getParameter(this.parameterReferenceNumber);
         if (refMethod != null && !refMethod.equals("")) {
           GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getReferenceNumberColumnName(), refMethod);
           if (gBooking.length > 0) {
-            Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-            table.add(voucher.getVoucher(iwc));
+            Voucher voucher = sh.getVoucher(gBooking[0]);
+            //Voucher voucher = new Voucher(iwc, gBooking[0].getID());
+//            table.add(voucher.getVoucher(iwc));
+            table.add(voucher);
           }else {
             error = true;
           }
@@ -79,8 +89,10 @@ public class VoucherWindow extends Window {
         if (numMethod != null && !numMethod.equals("")) {
           GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
           if (gBooking.length > 0) {
-            Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-            table.add(voucher.getVoucher(iwc));
+            Voucher voucher = sh.getVoucher(gBooking[0]);
+//            Voucher voucher = new Voucher(iwc, gBooking[0].getID());
+//            table.add(voucher.getVoucher(iwc));
+            table.add(voucher);
           }else {
             error = true;
           }

@@ -15,9 +15,11 @@ import com.idega.util.*;
 import java.sql.SQLException;
 import java.util.*;
 import com.idega.presentation.IWContext;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import com.idega.presentation.ui.DropdownMenu;
+import is.idega.idegaweb.travel.service.business.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -50,77 +52,12 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       if (super.timeframe == null) isError = true;
       if (activeDays.length == 0) isError = true;
 
-      int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueDepartureAddressType);
-      int arrivalAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueArrivalAddressType);
       int hotelPickupAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueHotelPickupAddressType);
 
-      TravelAddress departureAddress = null;
-      Address arrivalAddress = null;
-      Address address = null;
 
-      if (tourId == -1) {
+      int[] departureAddressIds = setDepartureAddress(tourId, departureFrom, departureTime);
+      int[] arrivalAddressIds = setArrivalAddress(tourId, arrivalAt);
 
-        address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
-        address.setAddressTypeID(departureAddressTypeId);
-        address.setStreetName(departureFrom);
-        address.insert();
-
-        departureAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
-        departureAddress.setAddressId(address.getID());
-        departureAddress.setAddressTypeId(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE);
-        departureAddress.setTime(departureTime.getTimestamp());
-        departureAddress.insert();
-
-        arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
-        arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-        arrivalAddress.setStreetName(arrivalAt);
-        arrivalAddress.insert();
-
-      }else {
-          //Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(tourId);
-          Product product = ProductBusiness.getProduct(tourId);//((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(tourId);
-          Address[] tempAddresses = ProductBusiness.getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
-          if (tempAddresses.length > 0) {
-            arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
-            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-            arrivalAddress.setStreetName(arrivalAt);
-            arrivalAddress.update();
-          }else {
-            arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
-            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-            arrivalAddress.setStreetName(arrivalAt);
-            arrivalAddress.insert();
-          }
-
-          List tAddresses = ProductBusiness.getDepartureAddresses(product, false); ///Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
-          TravelAddress tAddress;
-          if (tempAddresses.length > 0) {
-            tAddress = (TravelAddress) tAddresses.get(0);
-            departureAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(tAddress.getID());
-            departureAddress.setTime(departureTime);
-            departureAddress.update();
-
-            address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(departureAddress.getAddressId());
-            address.setStreetName(departureFrom);
-            address.update();
-          }else {
-            address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
-            address.setAddressTypeID(departureAddressTypeId);
-            address.setStreetName(departureFrom);
-            address.insert();
-
-            departureAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
-            departureAddress.setAddressTypeId(TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE);
-            departureAddress.setTime(departureTime);
-            departureAddress.setAddressId(address.getID());
-            departureAddress.insert();
-          }
-
-      }
-
-
-      int[] departureAddressIds = {departureAddress.getID()};
-      int[] arrivalAddressIds = {arrivalAddress.getID()};
       int[] hotelPickupPlaceIds ={};
       if (pickupPlaceIds != null && pickupPlaceIds.length > 0 && !pickupPlaceIds[0].equals("") ) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
       for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
@@ -134,14 +71,11 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
         serviceId = updateService(tourId,supplierId, fileId, serviceName, number, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
       }
 
-//      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
-//      if (serviceId == -1) {
-//        System.err.println("Tour Business : UpdateTour() - serviceID == -1");
-//      }
+      javax.transaction.UserTransaction userT = getSessionContext().getUserTransaction();
 
       if (serviceId != -1)
       try {
-          //tm.begin();
+          userT.begin();
           Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(serviceId));
           Product product = ProductBusiness.getProduct(serviceId);// Product(serviceId);
           Tour tour;
@@ -192,85 +126,26 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           }
 
           tour.store();
-          /*
-          if (tourId == -1) {
-            tour.insert();
-          }else {
-            tour.update();
-          }*/
 
 
-          /**
-           * @todo laga ?? (getInstance ()),
-           */
-          this.removeDepartureDaysApplication(IWContext.getInstance(), tour);
+          this.removeDepartureDaysApplication(this.getIWApplicationContext(), tour);
+          setActiveDays(tourId, activeDays);
 
-          List list = new Vector();
-          for (int i = 0; i < activeDays.length; i++) {
-            list.add(new Integer(activeDays[i]));
+
+          ProductCategory pCat = ( (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class)).getProductCategory(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR);
+          try {
+            if (pCat != null) {
+              product.removeFrom(ProductCategory.class);
+              pCat.addTo(Product.class, serviceId);
+      //        product.addTo(pCat);
+            }
+          }catch (SQLException sql) {
           }
 
-
-          if (tourId != -1) {
-            if (activeDays.length > 0) {
-              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-              ServiceDay sDayTemp = sDayHome.create();
-              ServiceDay sDay;
-
-              for (int i = ServiceDayBMPBean.SUNDAY; i <= ServiceDayBMPBean.SATURDAY; i++) {
-                sDay = sDayTemp.getServiceDay(tourId, i);
-                if (list.contains(new Integer(i))) {
-                  if (sDay == null) {
-                    sDay = sDayHome.create();
-                    sDay.setServiceId(serviceId);
-                    sDay.setDayOfWeek(i);
-                    sDay.store();
-                  }
-                }else {
-                  if (sDay != null) {
-                    sDay.remove();
-                  }
-
-                }
-              }
-/*
-              for (int i = 0; i < activeDays.length; i++) {
-                sDay = sDay.getServiceDay(tourId, activeDays[i]);
-                if (sDay == null) {
-                  sDay = sDayHome.create();
-                  sDay.setServiceId(serviceId);
-                  sDay.setDayOfWeek(activeDays[i]);
-                  sDay.store();
-                }
-              }
-*/
-            }else {
-              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDayHome.class);
-              sDayHome.deleteService(serviceId);
-//              service2.r
-//              is.idega.idegaweb.travel.data.ServiceDayBMPBean.deleteService(serviceId);
-            }
-          }else {
-            if (activeDays.length > 0) {
-              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-              ServiceDay sDayTemp = sDayHome.create();
-              ServiceDay sDay;
-              for (int i = 0; i < activeDays.length; i++) {
-                sDay = sDayHome.create();
-                sDay.setServiceId(serviceId);
-                sDay.setDayOfWeek(activeDays[i]);
-                sDay.store();
-              }
-
-            }
-          }
-
-
-
-          //tm.commit();
+          userT.commit();
       }catch (Exception e) {
           e.printStackTrace(System.err);
-          //tm.rollback();
+          userT.rollback();
       }
 
 
@@ -452,13 +327,13 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     return getDepartureDays(iwc, tour, null, null, showPast);
   }
 
-  public void removeDepartureDaysApplication(IWContext iwc, Tour tour) throws RemoteException{
-    Enumeration enum = iwc.getApplication().getAttributeNames();
+  public void removeDepartureDaysApplication(IWApplicationContext iwac, Tour tour) throws RemoteException{
+    Enumeration enum = iwac.getApplication().getAttributeNames();
     String name;
     while (enum.hasMoreElements()) {
       name = (String) enum.nextElement();
       if (name.indexOf("tourDepDays"+tour.getPrimaryKey().toString()+"_") != -1) {
-        iwc.removeApplicationAttribute(name);
+        iwac.removeApplicationAttribute(name);
       }
     }
   }

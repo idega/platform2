@@ -25,6 +25,7 @@ import com.idega.core.data.Address;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.service.business.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -59,12 +60,12 @@ public class BookerBean extends IBOServiceBean implements Booker{
   private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
     Booking booking = null;
     int returner = bookingId;
-    Object type = getServiceType(serviceId);
+//    Object type = getServiceType(serviceId);
 
     try {
-      if (type != null)
+//      if (type != null)
       if (bookingId == -1) {
-        if (type instanceof Tour) booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).create();
+        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).create();
           booking.setServiceID(serviceId);
           booking.setAddress(address);
           booking.setBookingDate(date.getTimestamp());
@@ -89,7 +90,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
         returner =  booking.getID();
       }else {
-        if (type instanceof Tour) booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
           booking.setServiceID(serviceId);
           booking.setAddress(address);
           booking.setBookingDate(date.getTimestamp());
@@ -389,7 +390,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   /**
-   * @todo finna betri stað
+   * @deprecated
    */
   public  Object getServiceType(int serviceId) {
     Object object;
@@ -441,10 +442,21 @@ public class BookerBean extends IBOServiceBean implements Booker{
     List list = getGeneralBookingHome().getMultibleBookings(booking);
 //    List list = new Vector();
     int numberOfDays = 1;
-      numberOfDays = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(new Integer(booking.getServiceID())).getNumberOfDays();
-      if (numberOfDays < 1){
-        numberOfDays = 1;
+    Collection coll = getProductCategoryFactory().getProductCategory(booking.getService().getProduct());
+    Iterator iter = coll.iterator();
+    if (iter.hasNext()) {
+      ProductCategory pCat = (ProductCategory) iter.next();
+      /**
+       * @todo Kannski bara laga thetta crap her...
+       */
+      if (ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR.equals(pCat.getCategoryType()) ) {
+        numberOfDays = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(new Integer(booking.getServiceID())).getNumberOfDays();
+        if (numberOfDays < 1){
+          numberOfDays = 1;
+        }
       }
+
+    }
 
     if (list.size() < 2) {
       return list;
@@ -460,10 +472,6 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   private  List cleanList(List list, Booking booking, int mainIndex, int numberOfDays) throws RemoteException {
-    //System.err.println("mainIndex : "+mainIndex);
-    //System.err.println("numberOfDays : "+numberOfDays);
-
-
     Booking book;
     int betw = 1;
     int index = mainIndex;
@@ -471,11 +479,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
     idegaTimestamp tempStamp = new idegaTimestamp(booking.getBookingDate());
 
-    System.err.println("starting cleaning...");
-
     if (mainIndex == 0) {
       while (cont) {
-      //System.err.println("...1");
         ++index;
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
@@ -488,15 +493,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
     }else if (mainIndex == list.size() -1) {
       while (cont) {
-        //System.err.println("...2");
         --index;
-        //System.err.println("index : "+index);
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
-        //System.err.println("betw : "+betw);
         if (betw != numberOfDays) {
           list = list.subList(index+1, mainIndex);
-          //System.err.println("list.size() : "+list.size());
           cont = false;
         }
         if (index == 0) cont = false;
@@ -504,7 +505,6 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
     }else {
       while (cont) {
-        //System.err.println("...3");
         --index;
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
@@ -526,7 +526,6 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
 
       while (cont) {
-        //System.err.println("...4");
         ++index;
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
@@ -604,6 +603,14 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
   public Booking[] collectionToBookingsArray(Collection coll) {
     return (Booking[]) coll.toArray(new Booking[]{});
+  }
+
+  public ServiceHandler getServiceHandler() throws RemoteException{
+    return (ServiceHandler) IBOLookup.getServiceInstance(getIWApplicationContext(), ServiceHandler.class);
+  }
+
+  public ProductCategoryFactory getProductCategoryFactory() throws RemoteException {
+    return (ProductCategoryFactory) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductCategoryFactory.class);
   }
 
 

@@ -2,8 +2,10 @@ package is.idega.idegaweb.travel.presentation;
 
 import javax.ejb.FinderException;
 import java.rmi.RemoteException;
+import java.util.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.data.IDOLookup;
+import com.idega.business.IBOLookup;
 import java.util.Vector;
 import com.idega.data.IDOFinderException;
 import com.idega.presentation.Block;
@@ -235,10 +237,27 @@ public class ServiceOverview extends TravelManager {
           table.setAlignment(1, row, "center");
         }
 
+        Collection coll;
+        ProductCategory pCat;
+        ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
+        Iterator pCatIds;
+        try {
+          coll = this.supplier.getProductCategories();
+          pCatIds = coll.iterator();
+          while (pCatIds.hasNext()) {
+            pCat = (ProductCategory) pCatIds.next();
+//              pCat = pCatHome.findByPrimaryKeyLegacy( ( (Integer) pCatIds.next() ).intValue() );
+            System.out.println("prodCat = "+pCat.getCategoryType());
+          }
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
+
         for (int i = iStartNumber; i < iStopNumber; i++) {
           try {
             product = (Product) products.get(i);
             contentTable = getProductInfoTable(iwc,iwrb,product);
+
 
             /*ServiceViewer sv = new ServiceViewer();
               sv.setService(((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID()));
@@ -483,9 +502,9 @@ public class ServiceOverview extends TravelManager {
             prodName.setFontColor(super.BLACK);
 
 
-
-
-        depTimeStamp = new idegaTimestamp(service.getDepartureTime());
+        if (service.getDepartureTime() != null) {
+          depTimeStamp = new idegaTimestamp(service.getDepartureTime());
+        }
         //depTime = (Text) theBoldText.clone();
             //depTime.setFontColor(super.BLACK);
             //depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
@@ -495,10 +514,12 @@ public class ServiceOverview extends TravelManager {
         if (arrAddress != null)
             arrFrom.setText(arrAddress.getStreetName());
 
-        arrTimeStamp = new idegaTimestamp(service.getArrivalTime());
         arrTime = (Text) theBoldText.clone();
             arrTime.setFontColor(super.BLACK);
-            arrTime.setText(TextSoap.addZero(arrTimeStamp.getHour())+":"+TextSoap.addZero(arrTimeStamp.getMinute()));
+        if (service.getArrivalTime() != null) {
+          arrTimeStamp = new idegaTimestamp(service.getArrivalTime());
+          arrTime.setText(TextSoap.addZero(arrTimeStamp.getHour())+":"+TextSoap.addZero(arrTimeStamp.getMinute()));
+        }
 
         actDays = (Text) theBoldText.clone();
             actDays.setFontColor(super.BLACK);

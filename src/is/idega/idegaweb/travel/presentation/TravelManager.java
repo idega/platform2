@@ -19,6 +19,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.*;
 import com.idega.block.login.business.*;
 import com.idega.core.user.data.User;
+import is.idega.idegaweb.travel.service.business.*;
 
 public class TravelManager extends Block {
 
@@ -351,12 +352,21 @@ public class TravelManager extends Block {
         table.add(mo,1,2);
     }
 
+    public void addToBlock(PresentationObject po) {
+      super.add(po);
+    }
+
     public void add(String string) {
       Text text = (Text) theText.clone();
         text.setText(string);
       this.add(text);
     }
 
+    public void addToBlock(String string) {
+      Text text = (Text) theText.clone();
+        text.setText(string);
+      super.add(text);
+    }
     protected String getNextZebraColor(String color1, String color2, String currentColor) {
       if (currentColor.equals(color1)) {
         return color2;
@@ -447,6 +457,14 @@ public class TravelManager extends Block {
 
     protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
       return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+    }
+
+    protected ProductCategoryFactory getProductCategoryFactory(IWApplicationContext iwac) throws RemoteException {
+      return (ProductCategoryFactory) IBOLookup.getServiceInstance(iwac, ProductCategoryFactory.class);
+    }
+
+    protected ServiceHandler getServiceHandler(IWApplicationContext iwac) throws RemoteException {
+      return (ServiceHandler) IBOLookup.getServiceInstance(iwac, ServiceHandler.class);
     }
 
     protected boolean isTravelAdministrator(IWContext iwc) {

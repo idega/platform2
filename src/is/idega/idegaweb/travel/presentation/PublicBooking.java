@@ -26,6 +26,8 @@ import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.data.Currency;
 
 import is.idega.idegaweb.travel.service.tour.presentation.TourBookingForm;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 
 import com.idega.block.trade.stockroom.business.ProductPriceException;
 import com.idega.block.tpos.presentation.*;
@@ -443,7 +445,8 @@ public class PublicBooking extends Block  {
 
   private Form leftBottom(IWContext iwc) {
     try {
-      TourBookingForm tbf = new TourBookingForm(iwc, product);
+      BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+//      TourBookingForm tbf = new TourBookingForm(iwc, product);
       CalendarHandler ch  = new CalendarHandler(iwc);
         ch.setProduct(product);
 
@@ -462,15 +465,15 @@ public class PublicBooking extends Block  {
         }
 
         if (action == null || action.equals("")) {
-            form = tbf.getPublicBookingForm(iwc, product, stamp);
+            form = bf.getPublicBookingForm(iwc, product, stamp);
             form.maintainParameter(this.parameterProductId);
             form.addParameter(this.sAction,this.parameterSubmitBooking);
         }else if (action.equals(this.parameterSubmitBooking)) {
-            form = tbf.getFormMaintainingAllParameters();
+            form = bf.getFormMaintainingAllParameters();
             form.maintainParameter(this.parameterProductId);
             form.add(getVerifyBookingTable(iwc));
         }else if (action.equals(this.parameterBookingVerified)) {
-            form = tbf.getFormMaintainingAllParameters();
+            form = bf.getFormMaintainingAllParameters();
             form.maintainParameter(this.parameterProductId);
             form.add(doBooking(iwc));
         }
@@ -764,14 +767,15 @@ public class PublicBooking extends Block  {
         Text bookingsError = getBoldText(iwrb.getLocalizedString("travel.some_days_are_not_available","Some of the selected days are not available"));
           bookingsError.setFontColor(errorColor);
         try {
-          TourBookingForm tbf = new TourBookingForm(iwc, product);
-          int id = tbf.checkBooking(iwc, false);
-          if (id != TourBookingForm.errorTooMany) {
+          BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+//          TourBookingForm tbf = new TourBookingForm(iwc, product);
+          int id = bf.checkBooking(iwc, false);
+          if (id != BookingForm.errorTooMany) {
           }else {
             ++row;
             table.mergeCells(1, row, 2, row);
             table.add(bookingsError, 1, row);
-            List errorDays = tbf.getErrorDays();
+            List errorDays = bf.getErrorDays();
             Text dayText;
             if (errorDays != null) {
               valid = false;
@@ -863,11 +867,12 @@ public class PublicBooking extends Block  {
 
         }
 
-        TourBookingForm tbf = new TourBookingForm(iwc,product);
-        int bookingId = tbf.handleInsert(iwc);
+        BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+//        TourBookingForm tbf = new TourBookingForm(iwc,product);
+        int bookingId = bf.handleInsert(iwc);
         gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
 
-        if (bookingId == TourBookingForm.inquirySent) {
+        if (bookingId == BookingForm.inquirySent) {
           inquirySent = true;
           tm.commit();
         }else {
@@ -1105,5 +1110,8 @@ public class PublicBooking extends Block  {
 
   protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+  }
+  protected ServiceHandler getServiceHandler(IWApplicationContext iwac) throws RemoteException {
+    return (ServiceHandler) IBOLookup.getServiceInstance(iwac, ServiceHandler.class);
   }
 }
