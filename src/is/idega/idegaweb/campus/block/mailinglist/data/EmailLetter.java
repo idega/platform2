@@ -41,6 +41,7 @@ public class EmailLetter extends GenericEntity{
     addAttribute(ONLYUSER,"Only user",true,true,java.lang.Boolean.class);
     addAttribute(HOST,"host",true,true,java.lang.String.class);
     addAttribute(TYPE,"type",true,true,java.lang.String.class);
+    addManyToManyRelationShip(MailingList.class);
 
   }
   public String getEntityName(){

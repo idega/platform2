@@ -32,7 +32,7 @@ public class MailingList extends CategoryEntity {
     addAttribute(NAME , "Name", true, true, String.class);
     addAttribute(CREATED , "Created", true, true, Timestamp.class);
     addManyToManyRelationShip(com.idega.core.data.Email.class);
-    addManyToManyRelationShip(EmailLetter.class);
+
   }
   public String getEntityName() {
     return TABLE_NAME;

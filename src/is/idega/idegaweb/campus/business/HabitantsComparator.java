@@ -17,6 +17,7 @@ public class HabitantsComparator implements Comparator {
   public static final int NAME = 1;
   public static final int APARTMENT = 2;
   public static final int FLOOR = 3;
+  public static final int ADDRESS = 4;
 
   private int sortBy;
 
@@ -46,12 +47,22 @@ public class HabitantsComparator implements Comparator {
           result = nameCompare(o1,o2);
       break;
 
+      case ADDRESS :
+        result = addressCompare(o1,o2);
+        if (result == 0)
+          result = apartmentCompare(o1,o2);
+        if (result == 0)
+          result = nameCompare(o1,o2);
+      break;
+
       case FLOOR :
         result = floorCompare(o1,o2);
         if (result == 0)
-          result = nameCompare(o1,o2);
+          result = addressCompare(o1,o2);
         if (result == 0)
           result = apartmentCompare(o1,o2);
+        if (result == 0)
+          result = nameCompare(o1,o2);
       break;
 
     }
@@ -107,6 +118,20 @@ public class HabitantsComparator implements Comparator {
 
     String one = r1.getFloor()!=null?r1.getFloor():"";
     String two = r2.getFloor()!=null?r2.getFloor():"";
+    result = IsCollator.getIsCollator().compare(one,two);
+
+    return result;
+  }
+
+  public int addressCompare(Object o1, Object o2) {
+
+    HabitantsCollector r1 = (HabitantsCollector) o1;
+    HabitantsCollector r2 = (HabitantsCollector) o2;
+    int result = 0;
+
+
+    String one = r1.getAddress()!=null?r1.getAddress():"";
+    String two = r2.getAddress()!=null?r2.getAddress():"";
     result = IsCollator.getIsCollator().compare(one,two);
 
     return result;

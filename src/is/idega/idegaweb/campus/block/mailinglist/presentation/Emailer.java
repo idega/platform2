@@ -40,6 +40,8 @@ import java.util.Map;
 
 public class Emailer extends Block {
 
+    private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus.emails";
+
     private IWBundle iwb, core;
     private IWResourceBundle iwrb;
     private static String prmLocale = "em_locales";
@@ -713,7 +715,4 @@ public class Emailer extends Block {
         }
         return obj;
     }
-
-
-    private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus.emails";
 }

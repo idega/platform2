@@ -5,10 +5,12 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.Collections;
 import com.idega.presentation.Block;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.text.*;
+import com.idega.presentation.ui.DataTable;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -59,6 +61,7 @@ public class TenantsHabitants extends Block implements Campus{
   }
 
   public void main(IWContext iwc){
+    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
@@ -86,38 +89,19 @@ public class TenantsHabitants extends Block implements Campus{
     styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
     styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
 
-    if( _isAdmin || _isLoggedOn ) {
-      try {
-        _userID = LoginBusiness.getUser(iwc).getID();
-      }
-      catch (Exception e) {
-        _userID = -1;
-      }
-
-      try {
-        _campusID = Integer.parseInt(iwc.getParameter(PARAMETER_CAMPUS_ID));
-      }
-      catch (NumberFormatException e) {
-        _campusID = -1;
-      }
-
-      try {
+    if(iwc.isParameterSet(PARAMETER_ORDER_ID))
         _orderID = Integer.parseInt(iwc.getParameter(PARAMETER_ORDER_ID));
-      }
-      catch (NumberFormatException e) {
+    else
         _orderID = HabitantsComparator.NAME;
-      }
 
+    if(iwc.isParameterSet(PARAMETER_CAMPUS_ID))
+      _campusID = Integer.parseInt(iwc.getParameter(PARAMETER_CAMPUS_ID));
+
+    if( _isAdmin || _isLoggedOn ) {
+      _userID = iwc.getUserId();
     }
     else {
       _isPublic = true;
-
-      try {
-        _campusID = Integer.parseInt(iwc.getParameter(PARAMETER_CAMPUS_ID));
-      }
-      catch (NumberFormatException e) {
-        _campusID = -1;
-      }
     }
 
       Table myTable = new Table(1,2);
@@ -171,7 +155,7 @@ public class TenantsHabitants extends Block implements Campus{
     CampusApplication campusApplication = null;
 
     if(!_isAdmin && !_isPublic){
-      contract = ContractFinder.findApplicant(_userID);
+      contract = ContractFinder.findByUser(_userID);
       if(contract !=null){
       applicant = ContractFinder.getApplicant(contract);
       apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
@@ -198,6 +182,7 @@ public class TenantsHabitants extends Block implements Campus{
           applicant = ContractFinder.getApplicant(contract);
           apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
           floor = BuildingCacher.getFloor(apartment.getFloorId());
+          building = BuildingCacher.getBuilding(floor.getBuildingId());
           campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
           Integer ID = new Integer(apartment.getID());
           if(phoneMap != null && phoneMap.containsKey(ID))
@@ -213,6 +198,7 @@ public class TenantsHabitants extends Block implements Campus{
           collector.setFloor(floor.getName());
           collector.setLastName(applicant.getLastName());
           collector.setMiddleName(applicant.getMiddleName());
+          collector.setAddress(building.getName());
           if ( phone != null )
             collector.setPhone(phone.getPhoneNumber());
 
@@ -229,11 +215,16 @@ public class TenantsHabitants extends Block implements Campus{
     return vector;
   }
 
-  public Table getTenantsTable(IWContext iwc){
-    Table table = new Table();
+  public PresentationObject getTenantsTable(IWContext iwc){
+    DataTable table = new DataTable();
+    table.setTitlesHorizontal(true);
+    table.getContentTable().setCellpadding(3);
+    table.getContentTable().setCellspacing(1);
+    /*
       table.setCellspacing(1);
       table.setCellpadding(3);
       table.mergeCells(1,1,5,1);
+    */
       table.setWidth("100%");
 
     Complex complex = null;
@@ -254,25 +245,30 @@ public class TenantsHabitants extends Block implements Campus{
     }
 
     if(complex !=null)
-    table.add(formatText(complex.getName(),"#FFFFFF",true),1,1);
+    table.addTitle(complex.getName());
 
     Link nameLink = new Link(formatText(iwrb.getLocalizedString("name","Name")));
       nameLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.NAME);
       nameLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
-    table.add(nameLink,1,2);
+    table.add(nameLink,1,1);
 
-    Link apartmentLink = new Link(formatText(iwrb.getLocalizedString("apartment","Apartment")));
-      apartmentLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.APARTMENT);
+    Link apartmentLink = new Link(formatText(iwrb.getLocalizedString("address","Address")));
+      apartmentLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.ADDRESS);
       apartmentLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
-    table.add(apartmentLink,2,2);
+    table.add(apartmentLink,2,1);
+
+    Link addressLink = new Link(formatText(iwrb.getLocalizedString("apartment","Apartment")));
+      addressLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.APARTMENT);
+      addressLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
+    table.add(addressLink,3,1);
 
     Link floorLink = new Link(formatText(iwrb.getLocalizedString("floor","Floor")));
       floorLink.addParameter(PARAMETER_ORDER_ID,HabitantsComparator.FLOOR);
       floorLink.addParameter(PARAMETER_CAMPUS_ID,_campusID);
-    table.add(floorLink,3,2);
+    table.add(floorLink,4,1);
 
-    table.add(formatText(iwrb.getLocalizedString("phone","Residence phone")),4,2);
-    table.add(formatText(iwrb.getLocalizedString("email","E-mail")),5,2);
+    table.add(formatText(iwrb.getLocalizedString("phone","Residence phone")),5,1);
+    table.add(formatText(iwrb.getLocalizedString("email","E-mail")),6,1);
 
 
     int row = 3;
@@ -280,7 +276,9 @@ public class TenantsHabitants extends Block implements Campus{
     List vector = listOfComplexHabitants(_campusID,iwc);
 
     HabitantsComparator comparator = new HabitantsComparator(_orderID);
+    //System.err.println("starting sort "+com.idega.util.idegaTimestamp.getTimestampRightNow().toString());
     Collections.sort(vector,comparator);
+    //System.err.println("ending sort "+com.idega.util.idegaTimestamp.getTimestampRightNow().toString());
     Link adminLink = null;
     int column = 1;
 
@@ -295,6 +293,7 @@ public class TenantsHabitants extends Block implements Campus{
       }
       else
         table.add(formatText(collected.getName()),column++,row);
+      table.add(formatText(collected.getAddress()),column++,row);
       table.add(formatText(collected.getApartment()),column++,row);
       table.add(formatText(collected.getFloor()),column++,row);
       table.add(formatText(collected.getPhone()),column++,row);
@@ -302,6 +301,7 @@ public class TenantsHabitants extends Block implements Campus{
       row++;
     }
 
+    /*
     table.setHorizontalZebraColored(TenantsProfile.white,TenantsProfile.lightGray);
     table.setColor(1,1,TenantsProfile.darkBlue);
     table.setRowColor(2,TenantsProfile.darkGray);
@@ -319,7 +319,7 @@ public class TenantsHabitants extends Block implements Campus{
 
     table.add(image,1,row);
     table.setColor(1,row,TenantsProfile.darkRed);
-
+*/
     return table;
   }
 

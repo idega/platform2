@@ -1,5 +1,5 @@
 /*
- * $Id: CampusLogin.java,v 1.5 2002/01/07 17:35:41 aron Exp $
+ * $Id: CampusLogin.java,v 1.6 2002/03/13 12:08:58 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.login.presentation.Login;
@@ -26,7 +26,7 @@ import com.idega.idegaweb.IWBundle;
  * @author <a href="aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class CampusLogin extends PresentationObjectContainer {
+public class CampusLogin extends Block {
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
   private IWBundle iwb;
 

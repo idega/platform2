@@ -11,6 +11,7 @@ public class HabitantsCollector {
   private String floor_ = null;
   private String phone_ = null;
   private String email_ = null;
+  private String address_ = null;
 
   public HabitantsCollector() {
   }
@@ -45,6 +46,10 @@ public class HabitantsCollector {
 
   public void setEmail(String email) {
     email_ = email;
+  }
+
+  public void setAddress(String address) {
+    this.address_ = address;
   }
 
   public int getUserID() {
@@ -89,5 +94,8 @@ public class HabitantsCollector {
 
   public String getEmail() {
     return email_;
+  }
+  public String getAddress() {
+    return address_;
   }
 }
