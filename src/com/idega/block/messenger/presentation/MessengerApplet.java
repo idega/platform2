@@ -190,7 +190,7 @@ public class MessengerApplet extends Applet implements Runnable{
       packetToServlet = new Packet();
       packetToServlet.setSender(sessionId);
     }
-    System.out.println("In getMessagesFromDialog()");
+    //System.out.println("In getMessagesFromDialog()");
 
     Vector msg = dialog.getMessages();
     /**@todo make this work for many dialogs..don't clear*/
