@@ -9,7 +9,7 @@
  */
 package se.idega.idegaweb.commune.childcare.check.presentation;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -291,9 +291,9 @@ public class RedeemCheck extends CommuneBlock {
 	}
 	*/
 
-	protected MemberFamilyLogic getMemberFamilyLogic(IWContext iwc) {
+	protected FamilyLogic getMemberFamilyLogic(IWContext iwc) {
 		try {
-			return (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+			return (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
 		}
 		catch (RemoteException e) {
 			return null;

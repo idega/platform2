@@ -1,4 +1,5 @@
 package is.idega.idegaweb.member.business;
+import is.idega.block.family.business.FamilyLogic;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +51,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
   private GroupBusiness groupBiz;
   private UserHome home;
   private AddressBusiness addressBiz;
-  private MemberFamilyLogic relationBiz;
+  private FamilyLogic relationBiz;
   private GroupHome groupHome;
   private Group rootGroup;
   private ImportFile file;
@@ -89,7 +90,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     try {
       //initialize business beans and data homes
       biz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
-      relationBiz = (MemberFamilyLogic) this.getServiceInstance(MemberFamilyLogic.class);
+      relationBiz = (FamilyLogic) this.getServiceInstance(FamilyLogic.class);
       home = biz.getUserHome();
       addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
       groupBiz = biz.getGroupBusiness();

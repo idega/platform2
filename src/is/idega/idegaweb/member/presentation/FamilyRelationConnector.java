@@ -11,7 +11,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -47,7 +47,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 			return tReverseType;
 		}
 		else {
-			MemberFamilyLogic familyService = getMemberFamilyLogic(iwc);
+			FamilyLogic familyService = getMemberFamilyLogic(iwc);
 			DropdownMenu menu = new DropdownMenu(PARAM_TYPE);
 			IWResourceBundle iwrb = getResourceBundle(iwc);
 			try {
@@ -80,9 +80,9 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		}
 	}
 
-	protected MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException{
+	protected FamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException{
 		
-		return	(MemberFamilyLogic) IBOLookup.getServiceInstance(iwac, MemberFamilyLogic.class);
+		return	(FamilyLogic) IBOLookup.getServiceInstance(iwac, FamilyLogic.class);
 		
 	}
 
@@ -93,7 +93,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		throws RemoteException {
 			debug("adding relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
 		try {
-			MemberFamilyLogic logic = getMemberFamilyLogic(iwc);
+			FamilyLogic logic = getMemberFamilyLogic(iwc);
 			UserHome userHome  = getUserHome();
 			User user = userHome.findByPrimaryKey(userID);
 			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
@@ -159,7 +159,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		throws RemoteException {
 			debug("removing relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
 		try {
-			MemberFamilyLogic logic = getMemberFamilyLogic(iwc); 
+			FamilyLogic logic = getMemberFamilyLogic(iwc); 
 			UserHome userHome = getUserHome();
 			User user = userHome.findByPrimaryKey(userID);
 			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
@@ -208,7 +208,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 	 */
 	protected boolean hasActiveRelations(IWContext iwc,User roleUser, User victimUser, String mainType, String reverseType) {
 		try {
-			MemberFamilyLogic familyService = getMemberFamilyLogic(iwc);
+			FamilyLogic familyService = getMemberFamilyLogic(iwc);
 			String childType = familyService.getChildRelationType();
 			if(mainType!=null && reverseType!=null){
 				int roleUserID = ((Integer)roleUser.getUserGroup().getPrimaryKey()).intValue();

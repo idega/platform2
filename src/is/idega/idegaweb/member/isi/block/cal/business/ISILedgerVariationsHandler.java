@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.member.isi.block.cal.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -171,11 +171,11 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 		parentKey = GroupRelation.class.getName() + ".IC_GROUP_RELATION_ID|RELATED_IC_GROUP_ID";
 		return parentKey;
 	}
-	public MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
-		MemberFamilyLogic famLog = null;
+	public FamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
+		FamilyLogic famLog = null;
 		if(famLog ==null) {
 			try {
-				famLog = (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+				famLog = (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
 			} catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}

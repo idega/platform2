@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
@@ -290,8 +290,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MessageBusiness.class);
 	}
 	
-	private MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
-		return (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
+	private FamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
 	}
 	
 	public int getCheckFee() {

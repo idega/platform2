@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFile;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFileHome;
 
@@ -82,11 +82,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/04/07 16:54:48 $ by $Author: roar $
+ * Last modified: $Date: 2004/08/27 16:12:54 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.127 $
+ * @version $Revision: 1.128 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -996,9 +996,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		(final InvoiceHeader header) {
 		final Collection allPlacements = new ArrayList ();
 		try {
-			final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
+			final FamilyLogic familyBusiness = (FamilyLogic)
 					IBOLookup.getServiceInstance (getIWApplicationContext(),
-																				MemberFamilyLogic.class);
+																				FamilyLogic.class);
 			final Collection children = familyBusiness.getChildrenInCustodyOf
 					(header.getCustodian ());
 			final SchoolClassMemberHome placementHome = (SchoolClassMemberHome)
@@ -1248,8 +1248,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				IDOLookup.getHome(RegulationSpecType.class);
 	}
 	
-	private MemberFamilyLogic getMemberFamilyLogic () throws RemoteException {
-		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);	
+	private FamilyLogic getMemberFamilyLogic () throws RemoteException {
+		return (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);	
 	}
 	
 	public PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {

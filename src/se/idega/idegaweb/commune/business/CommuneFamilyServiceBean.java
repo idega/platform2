@@ -10,14 +10,14 @@ import javax.ejb.CreateException;
 
 import com.idega.user.data.User;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogicBean;
+import is.idega.block.family.business.FamilyLogicBean;
 
 /**
  * CommuneFamilyServiceBean
  * @author aron 
  * @version 1.0
  */
-public class CommuneFamilyServiceBean extends MemberFamilyLogicBean implements CommuneFamilyService {
+public class CommuneFamilyServiceBean extends FamilyLogicBean implements CommuneFamilyService {
 	
 	
 	/* (non-Javadoc)

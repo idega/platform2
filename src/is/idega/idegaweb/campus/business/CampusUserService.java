@@ -1,6 +1,6 @@
 package is.idega.idegaweb.campus.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import java.rmi.RemoteException;
 
@@ -19,7 +19,7 @@ public interface CampusUserService extends com.idega.business.IBOService,UserBus
 	public Group getCurrentTenantGroup()throws CreateException, FinderException, RemoteException;
 	public Group getStaffGroup()throws CreateException, FinderException, RemoteException;
 	public Group getAdminGroup()throws CreateException, FinderException, RemoteException;
-	public MemberFamilyLogic getFamilyService()throws RemoteException;
+	public FamilyLogic getFamilyService()throws RemoteException;
 	public void setAsTenant(User tenant) throws CampusGroupException,RemoteException;
 	public void setAsTenantSpouse(User tenant,User spouse)throws CampusGroupException,RemoteException;
 	public void setAsTenantChild(User tenant,User child)throws CampusGroupException,RemoteException;

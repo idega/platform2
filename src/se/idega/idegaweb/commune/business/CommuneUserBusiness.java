@@ -49,7 +49,7 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
  public com.idega.core.contact.data.Phone getChildHomePhone(int childId) throws RemoteException;
  public java.util.Collection getParentsForChild(User child) throws RemoteException;
  public java.util.Collection getChildrenForUser(User user) throws RemoteException;
- public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic() throws RemoteException;
+ public is.idega.block.family.business.FamilyLogic getMemberFamilyLogic() throws RemoteException;
  public boolean getIfUserAddressesMatch(com.idega.core.location.data.Address userAddress, com.idega.core.location.data.Address userAddressToCompare) throws RemoteException;
  public Group getRootOtherCommuneCitizensGroup() throws CreateException, FinderException, RemoteException;
  public User createSpecialCitizenByPersonalIDIfDoesNotExist(

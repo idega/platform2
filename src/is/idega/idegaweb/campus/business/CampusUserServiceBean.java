@@ -4,7 +4,7 @@
  */
 package is.idega.idegaweb.campus.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import java.rmi.RemoteException;
 
@@ -111,7 +111,7 @@ public class CampusUserServiceBean extends UserBusinessBean implements CampusUse
 		}
 	}
 	
-	public MemberFamilyLogic getFamilyService()throws RemoteException{
-		return (MemberFamilyLogic)getServiceInstance(MemberFamilyLogic.class);
+	public FamilyLogic getFamilyService()throws RemoteException{
+		return (FamilyLogic)getServiceInstance(FamilyLogic.class);
 	}
 }

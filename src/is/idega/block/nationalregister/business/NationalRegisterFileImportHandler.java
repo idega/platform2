@@ -1,6 +1,6 @@
 package is.idega.block.nationalregister.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import java.rmi.RemoteException;
 import java.util.List;
 import com.idega.block.importer.data.ImportFile;
@@ -41,5 +41,5 @@ public interface NationalRegisterFileImportHandler {
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#getMemberFamilyLogic
 	 */
-	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException, java.rmi.RemoteException;
+	public FamilyLogic getMemberFamilyLogic() throws RemoteException, java.rmi.RemoteException;
 }

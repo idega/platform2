@@ -1,5 +1,5 @@
 package se.idega.idegaweb.commune.business;
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 import java.rmi.RemoteException;
@@ -907,8 +907,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 	}
 
-	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
-		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
+	public FamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
 	}
 
 	public int getRootAdministratorGroupID() {
@@ -1031,7 +1031,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 //			UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
 //			userStatusService.setUserAsDeceased(userID,deceasedDate);
 			// remove custodian relations
-			MemberFamilyLogic familyService = getMemberFamilyLogic();
+			FamilyLogic familyService = getMemberFamilyLogic();
 			User deceasedUser = getUser(userID);
 			familyService.registerAsDeceased(deceasedUser, deceasedDate);
 //			familyService.removeAllFamilyRelationsForUser(deceasedUser);

@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.presentation;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 
 import java.rmi.RemoteException;
@@ -229,9 +229,9 @@ public class CitizenChildren extends CommuneBlock {
 		return new Vector();
 	}
 	
-	private MemberFamilyLogic getFamilyLogic(IWApplicationContext iwac) {
+	private FamilyLogic getFamilyLogic(IWApplicationContext iwac) {
 		try {
-			return (MemberFamilyLogic) IBOLookup.getServiceInstance(iwac, MemberFamilyLogic.class);
+			return (FamilyLogic) IBOLookup.getServiceInstance(iwac, FamilyLogic.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e);

@@ -1,6 +1,6 @@
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import java.rmi.RemoteException;
 
@@ -181,7 +181,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 
 	private void save(IWContext iwc) throws RemoteException {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		MemberFamilyLogic logic = getMemberFamilyLogic(iwc);
+		FamilyLogic logic = getMemberFamilyLogic(iwc);
 		String relationType = iwc.getParameter(_PARAM_TYPE);
 		String relatedPerson = iwc.getParameter(_PARAM_RELATED_USER_ID);
 		if (relatedPerson != null) {
@@ -310,11 +310,11 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		}
 	}
 
-	public MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
-		MemberFamilyLogic familyLogic = null;
+	public FamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
+		FamilyLogic familyLogic = null;
 		if (familyLogic == null) {
 			try {
-				familyLogic = (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+				familyLogic = (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());

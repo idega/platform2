@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.childcare.check.presentation;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -534,7 +534,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		return (CheckBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CheckBusiness.class);
 	}
 
-	protected MemberFamilyLogic getMemberFamilyLogic(IWContext iwc) throws Exception {
-		return (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+	protected FamilyLogic getMemberFamilyLogic(IWContext iwc) throws Exception {
+		return (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
 	}
 }

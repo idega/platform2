@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/04/06 12:36:54 $ by $Author: staffan $
+ * Last modified: $Date: 2004/08/27 16:12:54 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.146 $
+ * @version $Revision: 1.147 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -174,7 +174,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			
 			try {
 				UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-				MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+				FamilyLogic familyLogic = (FamilyLogic) IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
 				Collection custodians;		//Collection parents only hold the biological parents
 				custodians = familyLogic.getCustodiansFor(child);
 				Iterator custIter = custodians.iterator();

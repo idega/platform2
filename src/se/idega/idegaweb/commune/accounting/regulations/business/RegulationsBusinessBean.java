@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.126 2004/06/04 15:45:08 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.127 2004/08/27 16:12:55 joakim Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -10,7 +10,7 @@
 
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
@@ -1887,8 +1887,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		return ret;
 	}
 
-	protected MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
-		return (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+	protected FamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (FamilyLogic) getServiceInstance(FamilyLogic.class);
 	}
 
 	protected UserInfoService getUserInfoService() throws RemoteException {

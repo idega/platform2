@@ -5,7 +5,7 @@
 package se.idega.idegaweb.commune.accounting.userinfo.business;
 
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
@@ -143,7 +143,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 	public HouseHoldFamily getHouseHoldFamily(User head)throws RemoteException{
 		if(head!=null){
 			CommuneUserBusiness userService = (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
-			MemberFamilyLogic familyService = userService.getMemberFamilyLogic();
+			FamilyLogic familyService = userService.getMemberFamilyLogic();
 			User spouse = null;
 			try {
 				spouse = familyService.getSpouseFor(head);
@@ -435,7 +435,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		return (UserBusiness) getServiceInstance(UserBusiness.class);
 	}
 
-	protected MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
-		return (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+	protected FamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (FamilyLogic) getServiceInstance(FamilyLogic.class);
 	}
 }

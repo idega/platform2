@@ -1,6 +1,6 @@
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 import is.idega.idegaweb.member.business.NoSiblingFound;
@@ -299,11 +299,11 @@ public class UserFamilyTab extends UserTab implements FamilyTab {
 		return link;
 	}
 
-	public MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
-		MemberFamilyLogic familyLogic = null;
+	public FamilyLogic getMemberFamilyLogic(IWApplicationContext iwc) {
+		FamilyLogic familyLogic = null;
 		if (familyLogic == null) {
 			try {
-				familyLogic = (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+				familyLogic = (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());

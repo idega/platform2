@@ -13,7 +13,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.presentation.FamilyRelationConnector;
 
 /**
@@ -34,8 +34,8 @@ public class CommuneFamilyRelationConnector extends FamilyRelationConnector {
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.FamilyRelationConnector#getMemberFamilyLogic(com.idega.idegaweb.IWApplicationContext)
 	 */
-	protected MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException {
-		return (MemberFamilyLogic)IBOLookup.getServiceInstance(iwac,CommuneFamilyService.class);
+	protected FamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException {
+		return (FamilyLogic)IBOLookup.getServiceInstance(iwac,CommuneFamilyService.class);
 	}
 
 	/* (non-Javadoc)
@@ -43,7 +43,7 @@ public class CommuneFamilyRelationConnector extends FamilyRelationConnector {
 	 */
 	protected boolean isRelationshipLegal(IWContext iwc, User roleUser, User victimUser, String relationType) {
 		try {
-			MemberFamilyLogic familyService = getMemberFamilyLogic(iwc);
+			FamilyLogic familyService = getMemberFamilyLogic(iwc);
 			if(relationType.equalsIgnoreCase(familyService.getCohabitantRelationType())){
 				return !familyService.isSpouseOf(roleUser,victimUser);
 			}

@@ -1,11 +1,11 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.71 2004/07/28 12:31:05 aron Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.72 2004/08/27 16:12:55 joakim Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.account.citizen.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -73,11 +73,11 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 /**
- * Last modified: $Date: 2004/07/28 12:31:05 $ by $Author: aron $
+ * Last modified: $Date: 2004/08/27 16:12:55 $ by $Author: joakim $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.71 $
+ * @version $Revision: 1.72 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -511,7 +511,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			createPhone (user, PhoneBMPBean.getMobileNumberID(),
 									 applicant.getPhoneWork());
 
-			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+			final FamilyLogic familyLogic = (FamilyLogic) getServiceInstance(FamilyLogic.class);
 			User cohabitant = null;
 			if (applicant.hasCohabitant()) {
 				cohabitant = createCohabitant
@@ -567,7 +567,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		(final String ssn, final GenderHome genderHome, final PIDChecker pidChecker,
 		 final CommuneUserBusiness userBusiness, final boolean notNackaResident,
 		 final User user,User cohabitant, Address address, Phone homePhone,
-		 final MemberFamilyLogic familyLogic, final CitizenApplicantChildren child)
+		 final FamilyLogic familyLogic, final CitizenApplicantChildren child)
 		throws RemoteException, FinderException, CreateException,
 					 IDOAddRelationshipException {
 		final String childSsn = child.getSsn();
@@ -599,7 +599,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		(final int applicationID, final String ssn, final GenderHome genderHome,
 		 final PIDChecker pidChecker, final CommuneUserBusiness userBusiness,
 		 final boolean notNackaResident, final User user, Address address,
-		 Phone homePhone, final MemberFamilyLogic familyLogic)
+		 Phone homePhone, final FamilyLogic familyLogic)
 		throws IDOLookupException, RemoteException, CreateException,
 					 IDOAddRelationshipException {
 		try {

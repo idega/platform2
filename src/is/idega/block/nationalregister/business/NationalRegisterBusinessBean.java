@@ -181,10 +181,11 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 				user.setPrimaryGroup(citizenGroup);
 				user.store();
 			}
-			
-			if(null!=familyId) {
-				user.setFamilyID(familyId);
-			}
+
+			//TODO (JJ) change this to use the group instead
+//			if(null!=familyId) {
+//				user.setFamilyID(familyId);
+//			}
 
 //			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 //			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);

@@ -37,7 +37,7 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.awt.Color;
 import java.io.OutputStream;
@@ -90,10 +90,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/03/09 14:01:10 $ by $Author: staffan $
+ * Last modified: $Date: 2004/08/27 16:12:54 $ by $Author: joakim $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.130 $
+ * @version $Revision: 1.131 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1202,7 +1202,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	
 	private boolean isCustodian (final IWContext context, final User user)
 		throws RemoteException {
-		final MemberFamilyLogic familyBusiness = getMemberFamilyLogic (context);
+		final FamilyLogic familyBusiness = getMemberFamilyLogic (context);
 		try {
 			final Collection children
 					= familyBusiness.getChildrenInCustodyOf (user);
@@ -1222,7 +1222,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																													 user)) {
 				receiver = user;
 			} else {
-				final MemberFamilyLogic familyBusiness
+				final FamilyLogic familyBusiness
 						= getMemberFamilyLogic (context);
 				final Collection custodians
 						= familyBusiness.getCustodiansFor (user);
@@ -2581,10 +2581,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				(context, SchoolBusiness.class);	
 	}
 	
-	private static MemberFamilyLogic getMemberFamilyLogic
+	private static FamilyLogic getMemberFamilyLogic
 		(final IWContext context) throws RemoteException {
-		return (MemberFamilyLogic) IBOLookup.getServiceInstance
-				(context, MemberFamilyLogic.class);	
+		return (FamilyLogic) IBOLookup.getServiceInstance
+				(context, FamilyLogic.class);	
 	}
 	
 	private static InvoiceBusiness getInvoiceBusiness

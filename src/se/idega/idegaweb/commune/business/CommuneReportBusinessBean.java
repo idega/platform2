@@ -6,7 +6,7 @@
  */
 package se.idega.idegaweb.commune.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
@@ -55,7 +55,7 @@ import com.idega.util.IWTimestamp;
 public class CommuneReportBusinessBean extends IBOSessionBean implements CommuneReportBusiness{
 	
 	private CommuneUserBusiness _communeUserService = null;
-	private MemberFamilyLogic _familyLogic = null;
+	private FamilyLogic _familyLogic = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
@@ -76,7 +76,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	
 	private void initializeMemberFamilyLogicIfNeeded() throws RemoteException{
 		if(_familyLogic==null){
-			_familyLogic = (MemberFamilyLogic)IBOLookup.getServiceInstance(this.getIWApplicationContext(),MemberFamilyLogic.class);
+			_familyLogic = (FamilyLogic)IBOLookup.getServiceInstance(this.getIWApplicationContext(),FamilyLogic.class);
 		}
 	}
 	
