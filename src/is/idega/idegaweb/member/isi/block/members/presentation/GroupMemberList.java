@@ -113,7 +113,7 @@ public class GroupMemberList extends Block {
 					}
 				}
 				if(showGroup) {
-					String groupNames = getGroupNamesForTrainer(user, division);
+					String groupNames = getGroupNamesForTrainer(iwc, user, division);
 					table.setCellpaddingLeft(column, row, 3);
 					table.add(groupNames, column++, row);
 				}
@@ -130,23 +130,37 @@ public class GroupMemberList extends Block {
 		return table;
 	}
 	
-	private String getGroupNamesForTrainer(User trainer, Group division) {
-		Iterator parentIter = trainer.getParentGroups().iterator();
-		Collection divisionChildren = division.getChildGroups();
+	private String getGroupNamesForTrainer(IWContext iwc, User trainer, Group division) {
+		Collection children = division.getChildGroups();
+		Iterator iter = children.iterator();
 		StringBuffer buf = new StringBuffer();
-		while(parentIter.hasNext()) {
-			Group group = (Group) parentIter.next();
+		while(iter.hasNext()) {
+			Group group = (Group) iter.next();
 			boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
-			boolean isInDivision = divisionChildren.contains(group);
-			String name = group.getName();
-			if(isFlock && isInDivision) {
-				System.out.println("Adding flock " + name + " to list of groups for trainer " + trainer.getName());
-				if(buf.length()>0) {
-					buf.append(", ");
+			if(isFlock) {
+				boolean isTrainer = false;
+				try {
+					int user_id = Integer.parseInt(trainer.getPrimaryKey().toString());
+					int group_id = Integer.parseInt(group.getPrimaryKey().toString());
+					int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
+					if(status_id != -1) {
+						Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
+						isTrainer = IWMemberConstants.STATUS_COACH.equals(st.getStatusKey()) ||
+						            IWMemberConstants.STATUS_ASSISTANT_COACH.equals(st.getStatusKey());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				buf.append(name);
-			} else {
-				System.out.println("Group " + name + " not added to list of groups for trainer " + trainer.getName());
+				String name = group.getName();
+				if(isFlock && isTrainer) {
+					System.out.println("Adding flock " + name + " to list of groups for trainer " + trainer.getName());
+					if(buf.length()>0) {
+						buf.append(", ");
+					}
+					buf.append(name);
+				} else {
+					System.out.println("Group " + name + " not added to list of groups for trainer " + trainer.getName());
+				}
 			}
 		}
 		return buf.toString();
