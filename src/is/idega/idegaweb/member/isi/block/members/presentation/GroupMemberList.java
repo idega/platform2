@@ -123,12 +123,18 @@ public class GroupMemberList extends Block {
 					// adding mobile phone and email, 
 					String phone = getMobilePhone(user);
 					if(phone!=null) {
+						System.out.println("Mobile phone displayd for user " + name);
 						table.add(phone, column, row);
+					} else {
+						System.out.println("Mobile phone not displayd for user " + name);
 					}
 					column++;
 					PresentationObject emails = getEmailLinkList(user);
 					if(emails!=null && emails.getChildCount()>0) {
+						System.out.println("Emails displayd for user " + name);
 						table.add(emails, column, row);
+					} else {
+						System.out.println("Emails not displayd for user " + name);
 					}
 					column++;
 				}

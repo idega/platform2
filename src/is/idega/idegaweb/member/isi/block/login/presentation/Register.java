@@ -110,19 +110,22 @@ public class Register extends Block {
 		T.add(labelPersonNumber, 1, row);
 		T.add(inputPersonalNumber, 2, row++);
 		
-		SubmitButton ok =
-			new SubmitButton(
-				_iwrb.getLocalizedImageButton("send", "Send"),
-				"send");
+		insertContinueCancelButtons(T, row++);
 
-		CloseButton close =
-			new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
-
-		T.add(ok, 1, row);
-		T.add(close, 2, row++);
 		Form myForm = new Form();
 		myForm.add(T);
 		return myForm;
+	}
+	
+	private void insertContinueCancelButtons(Table table, int row) {
+		CloseButton cancel =
+			new CloseButton(_iwrb.getLocalizedImageButton("cancel", "Cancel"));
+		
+		SubmitButton cont =
+			new SubmitButton(_iwrb.getLocalizedImageButton("send", "Send"), "send");
+		
+		table.add(cancel, 1, row);
+		table.add(cont, 2, row);
 	}
 	
 	private String processStage1() {
