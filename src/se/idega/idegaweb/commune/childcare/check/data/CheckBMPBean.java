@@ -245,21 +245,11 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	}
 	
 	public Collection ejbFindChecksByUser(User user) throws FinderException {
-		try {
 			return super.ejbFindAllCasesByUser(user);
-		}
-		catch (RemoteException e) {
-			return null;
-		}
 	}
 	
 	public Collection ejbFindChecksByUserAndStatus(User user,String caseStatus) throws FinderException {
-		try {
 			return super.ejbFindAllCasesByUserAndStatus(user,caseStatus);
-		}
-		catch (RemoteException e) {
-			return null;
-		}
 	}
 
 	public Collection ejbFindApprovedChecksByUser(User user) throws FinderException {
