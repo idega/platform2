@@ -147,9 +147,9 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
+		init(iwc);
 		iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window");
 		addTitle(iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"), TITLE_STYLECLASS);
-		init(iwc);
 		if (group != null) {
 			if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)
 					|| group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
