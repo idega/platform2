@@ -1,5 +1,5 @@
 /*
- * $Id: AgeRegulationBMPBean.java,v 1.2 2003/08/25 20:58:48 anders Exp $
+ * $Id: AgeRegulationBMPBean.java,v 1.3 2003/08/25 21:12:06 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for age regulation entries.
  * <p>
- * Last modified: $Date: 2003/08/25 20:58:48 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 21:12:06 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation {
 
@@ -59,7 +59,7 @@ public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation
 		addAttribute(COLUMN_PERIOD_FROM, "From period", true, true, Date.class);
 		addAttribute(COLUMN_PERIOD_TO, "To period", true, true, Date.class);
 		addAttribute(COLUMN_AGE_FROM, "Person age from", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_AGE_FROM, "Person age to", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_AGE_TO, "Person age to", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_DESCRIPTION, "Description of the age regulation", true, true, java.lang.String.class);
 		addAttribute(COLUMN_CUT_DATE, "Cut date", true, true, Date.class);
 		setAsPrimaryKey(getIDColumnName(), true);
