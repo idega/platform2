@@ -27,7 +27,6 @@ import com.idega.block.datareport.business.jasperdesignxml.Title;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
 
 import dori.jasper.engine.JRException;
@@ -250,14 +249,20 @@ public class DynamicReportDesign {
 	
 	
 	
-	
-	
+	public void addField(String fieldName, String className, int columnWidth) {
+		_designDoc.addField(fieldName, className);
+		addColumn(fieldName, className, columnWidth);
+	}
 	
 	public void addField(String fieldName, Class classType, int columnWidth){
 		_designDoc.addField(fieldName,classType);
 		addColumn(fieldName, classType, columnWidth);
 	}
-
+	
+	public void addColumn(String fieldName, String className, int columnWidth) {
+		addFieldToColumnHeader(fieldName, String.class, columnWidth);
+		addToFieldDetail(fieldName, className, columnWidth);
+	}
 
 	private void addColumn(String fieldName, Class classType, int columnWidth){
 		addFieldToColumnHeader(fieldName, String.class, columnWidth);
@@ -298,7 +303,22 @@ public class DynamicReportDesign {
 		_designDoc.getColumnHeader().addContent(tField);
 	}
 	
-	private void addToFieldDetail(String fieldName, Class classType, int columnWidth){
+	private void addToFieldDetail(String fieldName, String className, int columnWidth) {
+			TextFieldExpression tfExpression = new TextFieldExpression();
+			tfExpression.setClassType(className);
+			tfExpression.addField(fieldName);	
+			createTextField(tfExpression, columnWidth);
+	}
+	
+	private void addToFieldDetail(String fieldName, Class classType, int columnWidth) {
+			TextFieldExpression tfExpression = new TextFieldExpression();
+			tfExpression.setClassType(classType);
+			tfExpression.addField(fieldName);	
+			createTextField(tfExpression, columnWidth);
+	}
+
+	
+	private void createTextField(TextFieldExpression textFieldExpression, int columnWidth){
 		TextField tField = new TextField();
 		tField.setIsBlankWhenNull(true);
 		tField.setIsStretchWithOverflow(true);
@@ -320,11 +340,7 @@ public class DynamicReportDesign {
 				tElementFont.setFontSize(10);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
-			TextFieldExpression tfExpression = new TextFieldExpression();
-			tfExpression.setClassType(classType);
-			tfExpression.addField(fieldName);	
-		tField.addContent(tfExpression);
-
+		tField.addContent(textFieldExpression);
 		_designDoc.getDetail().addContent(tField);
 	}
 	
@@ -413,25 +429,25 @@ public class DynamicReportDesign {
 		return null;
 	}
 	
-	
-	private String getURIToDesign(IWContext iwc, String fileName, String extension) {
-		IWMainApplication mainApp = iwc.getApplication();
-		String separator = FileUtil.getFileSeparator();
-		StringBuffer uri = new StringBuffer(mainApp.getApplicationContextURI());
-		uri.append(separator)
-			.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
-			.append(separator)
-			.append(REPORT_FOLDER)
-			.append(separator)
-			.append(DYNAMIC_DESIGN_FOLDER)
-			.append(separator)
-		    .append(getTempFileNumber())
-		 	.append("_")
-			.append(fileName)
-			.append(DOT)
-			.append(extension);
-		return uri.toString();
-	}
+//	this method is not used 
+//	private String getURIToDesign(IWContext iwc, String fileName, String extension) {
+//		IWMainApplication mainApp = iwc.getApplication();
+//		String separator = FileUtil.getFileSeparator();
+//		StringBuffer uri = new StringBuffer(mainApp.getApplicationContextURI());
+//		uri.append(separator)
+//			.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
+//			.append(separator)
+//			.append(REPORT_FOLDER)
+//			.append(separator)
+//			.append(DYNAMIC_DESIGN_FOLDER)
+//			.append(separator)
+//		    .append(getTempFileNumber())
+//		 	.append("_")
+//			.append(fileName)
+//			.append(DOT)
+//			.append(extension);
+//		return uri.toString();
+//	}
 	
 	
 	private String getRealPathToDesignFile(IWApplicationContext iwc, String fileName, String extension) {
