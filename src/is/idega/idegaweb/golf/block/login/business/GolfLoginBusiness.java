@@ -372,6 +372,13 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 			iwc.setSessionAttribute(UserAttributeParameter, member);
 			setGolfUserType(iwc);
 			internalSetState(iwc, "loggedon");
+			
+			//todo remove, only needed because clubadmin are connected to the administrator user today but have the unique id of a "kerfisstjori" from felix
+			User user = member.getICUser();
+			if (user != null) {
+				logIn(iwc, user);
+			}
+			
 		}
 		return super.logInByUUID(iwc, uuid);
 	}
