@@ -495,15 +495,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 
 
-    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly) throws SQLException{
-        return TournamentController.getStartingtimeTable(tournament,tournament_round_id,viewOnly,false,true);
+    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, IWResourceBundle iwrb) throws SQLException{
+        return TournamentController.getStartingtimeTable(tournament,tournament_round_id,viewOnly,false,true, iwrb);
     }
 
-    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, boolean onlineRegistration) throws SQLException{
-        return TournamentController.getStartingtimeTable(tournament,tournament_round_id,viewOnly,onlineRegistration,true);
+    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, boolean onlineRegistration, IWResourceBundle iwrb) throws SQLException{
+        return TournamentController.getStartingtimeTable(tournament,tournament_round_id,viewOnly,onlineRegistration,true,iwrb);
     }
 
-    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, boolean onlineRegistration, boolean useBorder) throws SQLException{
+    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, boolean onlineRegistration, boolean useBorder, IWResourceBundle iwrb) throws SQLException{
         Form form = new Form();
             form.maintainParameter("action");
             form.add(new HiddenInput("viewOnly",""+viewOnly));
@@ -545,7 +545,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
           if (!onlineRegistration) {
             for (int i = 0; i < tourRounds.length; i++) {
               tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
-                rounds.addMenuElement(tourRounds[i].getID() ,"Hringur "+tourRounds[i].getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
+                rounds.addMenuElement(tourRounds[i].getID() ,iwrb.getLocalizedString("tournament.round","Round")+" "+tourRounds[i].getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
             }
 
             if (tournamentRoundId != -1) {
@@ -555,7 +555,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
           }
           else {
               tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
-                rounds.addMenuElement(tournamentRound.getID() ,"Hringur "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
+                rounds.addMenuElement(tournamentRound.getID() ,iwrb.getLocalizedString("tournament.round","Round")+ " "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
           }
         table.add(rounds,1,row);
 
@@ -581,15 +581,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 
             Text tim = (Text) headerLook.clone();
-              tim.setText("&nbsp;Tími");
+              tim.setText(iwrb.getLocalizedString("tournament.time","Time"));
             Text sc = (Text) headerLook.clone();
-              sc.setText("Kennitala");
+              sc.setText(iwrb.getLocalizedString("tournament.social_security_number","Social security number") );
             Text name = (Text) headerLook.clone();
-              name.setText("Nafn");
+              name.setText(iwrb.getLocalizedString("tournament.name","Name"));
             Text club = (Text) headerLook.clone();
-              club.setText("Klúbbur");
+              club.setText(iwrb.getLocalizedString("tournament.club","Club"));
             Text hc = (Text) headerLook.clone();
-              hc.setText("Forgjöf");
+              hc.setText(iwrb.getLocalizedString("tournament.handicap","Handicap"));
 
             table.add(tim,1,row);
             table.add(sc,2,row);
@@ -602,7 +602,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
             }
             else{
                 Text del = (Text) headerLook.clone();
-                  del.setText("Eyða");
+                  del.setText(iwrb.getLocalizedString("tournament.remove","Remove"));
                 table.add(del,6,row);
             }
             table.setRowColor(row,headerColor);
@@ -618,7 +618,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
         com.idega.jmodule.object.Image time;
 
         Link remove;
-        Text tooMany = new Text("Ekki pláss");
+        Text tooMany = new Text(iwrb.getLocalizedString("tournament.no_room","No room"));
             tooMany.setFontColor("RED");
 
 
@@ -651,7 +651,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 			if (displayTee) {
 				++row;
 				Text startTee = (Text) headerLook.clone();
-                                  startTee.setText("Rásteigur : "+tee_number);
+                                  startTee.setText(iwrb.getLocalizedString("tournament.starting_tee","Starting tee") +" : "+tee_number);
 				table.add(startTee,1,row);
 			    table.setRowColor(row,headerColor);
 			    table.mergeCells(1,row,6,row);
@@ -770,12 +770,12 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
             table.setRowColor(row,headerColor);
             table.mergeCells(1,row,3,row);
             Text many = (Text) headerLook.clone();
-                many.setText("Fjöldi þátttakenda : " +numberOfMember);
+                many.setText(iwrb.getLocalizedString("tournament.number_of_participants","Number of participants") +" : " +numberOfMember);
             table.add(many,1,row);
 
             table.mergeCells(4,row,6,row);
             if (!viewOnly) {
-                SubmitButton submitButton = new SubmitButton(new com.idega.jmodule.object.Image("/pics/formtakks/vista.gif",""));
+                SubmitButton submitButton = new SubmitButton(iwrb.getImage("buttons/save.gif"));
                 table.add(new HiddenInput("sub_action","saveDirectRegistration"),4,row);
                 table.add(submitButton,4,row);
                 table.add(new HiddenInput("number_of_groups",""+groupCounterNum),4,row);
