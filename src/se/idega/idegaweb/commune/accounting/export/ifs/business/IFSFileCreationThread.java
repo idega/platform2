@@ -577,7 +577,8 @@ public class IFSFileCreationThread extends Thread {
 					bWriter.write(";");
 					bWriter.write("1");
 					bWriter.write(";");
-					bWriter.write("L6");
+					//VAT code, changed L6 to 11...
+					bWriter.write("11");
 					bWriter.write(";");
 					bWriter.write(format.format(sum));
 					bWriter.write(";");
