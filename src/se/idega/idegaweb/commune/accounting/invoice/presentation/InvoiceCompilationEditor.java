@@ -2,6 +2,8 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
@@ -55,10 +57,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/14 11:02:11 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/17 10:17:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -265,32 +267,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     showCompilationList (context);
 					break;					
 			}
-            /*
-            displayRedText
-                    ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
-
-                     + "<li>ändra i en manuell faktureringsrad"
-                     + "<li>skapa rad: kopiera rule_text till invoice_text"
-                     + "<li>skapa rad: hitta rule_text, order_id i regelverket"
-                     + "<li>skapa rad: hitt payment_record_id med anordn.+verks"
-                     + "<li>skapa rad: koppla till barn"
-                     + "<li>välj ett kontrakt från 'skapa fakturarrad'"
-                     + "<li>se faktureringsunderlag i pdf"
-                     + "<li>efter skapa ny faktura => ny record form"
-                     + "<li>tillåt inte negativt taxbelopp mm"
-                     + "<li>sök på huvudverksamhet - bara barnomsorg"
-                     + "<li>felhantering för periodinmatning, t ex '1313'"
-                     + "<li>confirm-page tillbaka till rätt sida"
-                     + "<li>sortera efter order_id eller något annat"
-                     + "<li>byt inte sida vid byte av huvudverksamhet"
-                     + "<li>kontroll av felaktig eller utelämnad indata"
-                     + "<li>skriv ut anordnare på 'skapa fakturarrad'"
-                     + "<li>uppdatera totalb. och momsersättning vid justering"
-                     + "<li>ta bort invoice record => ta bort payment-record?"
-                     + "<li>funkar periodsökning på fakturaunderlag?"
-
-                     + "</ol>\n\n(" + actionId + ')');
-            */
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
 		}
@@ -435,7 +411,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void showNewRecordForm (final IWContext context)
         throws RemoteException, javax.ejb.FinderException {
-        final Map inputs = new HashMap ();
+        final java.util.Map inputs = new java.util.HashMap ();
         final String nowPeriod = periodFormatter.format (new Date ());
         inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
         inputs.put (NUMBER_OF_DAYS_KEY, getStyledInput (NUMBER_OF_DAYS_KEY));
@@ -483,7 +459,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final InvoiceBusiness business = (InvoiceBusiness)
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceRecord record = getInvoiceRecord (context);
-        final Map inputs = new HashMap ();
+        final java.util.Map inputs = new java.util.HashMap ();
         inputs.put (INVOICE_TEXT_KEY, getStyledInput
                     (INVOICE_TEXT_KEY, record.getInvoiceText ()));
         inputs.put (NUMBER_OF_DAYS_KEY, getStyledInput
@@ -504,8 +480,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     (dateFormatter.format (record.getDateCreated ())));
         inputs.put (CREATED_SIGNATURE_KEY, getSmallText
                     (record.getCreatedBy ()));
-        inputs.put (DATE_ADJUSTED_KEY, getSmallText (""));
-        inputs.put (ADJUSTED_SIGNATURE_KEY, getSmallText (""));
+        addSmallDateText (inputs, DATE_ADJUSTED_KEY, record.getDateChanged ());
+        addSmallText (inputs, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
 
         inputs.put (AMOUNT_KEY, getStyledInput
                     (AMOUNT_KEY, ((long) record.getAmount ()) +""));
@@ -565,7 +541,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final InvoiceBusiness business = (InvoiceBusiness)
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceRecord record = getInvoiceRecord (context);
-        final Map details = new HashMap ();
+        final java.util.Map details = new java.util.HashMap ();
         addSmallText (details, PROVIDER_KEY,
                       getProviderName (context, record.getProviderId ()));
         addSmallText (details, AMOUNT_KEY, (long) record.getAmount ());
@@ -607,14 +583,28 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         renderRecordDetailsOrForm (context, details);
     }
 
+    final String getSchoolCategoryName (final IWContext context,
+                                        final InvoiceHeader header) {
+        try {
+            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                    .getServiceInstance (context, SchoolBusiness.class);
+            final SchoolCategoryHome categoryHome
+                    = schoolBusiness.getSchoolCategoryHome ();
+            final SchoolCategory category = categoryHome.findByPrimaryKey
+                    (header.getSchoolCategoryID ());
+            return localize (category.getLocalizedKey (), category.getName ());
+        } catch (Exception dummy) {
+            return "";
+        }
+    }
+
     private void renderRecordDetailsOrForm
-        (final IWContext context, final Map presentationObjects)
+        (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, javax.ejb.FinderException {
-        // get info from invoice header
-        final InvoiceHeader header = getInvoiceHeader (context);
         final UserBusiness userBusiness = (UserBusiness)
                 IBOLookup.getServiceInstance (context, UserBusiness.class);
         final UserHome userHome = userBusiness.getUserHome ();
+        final InvoiceHeader header = getInvoiceHeader (context);
 		final User custodian = userHome.findByPrimaryKey
 		        (new Integer (header.getCustodianId ()));
 
@@ -622,17 +612,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
         int row = 2;
-        addOperationFieldDropdown (table, row++); 
         int col = 1;
+        addOperationFieldRow (table, context, header, row++);
+        col = 1;
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
-        addSmallText(table, formatSsn (custodian.getPersonalID ()), col++, row);
+        addSmallText (table, formatSsn (custodian.getPersonalID ()), col++,
+                      row);
         addSmallHeader (table, col++, row, NAME_KEY, NAME_DEFAULT, ":");
-        addSmallText(table, getUserName (custodian), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
-                        INVOICE_TEXT_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (INVOICE_TEXT_KEY), col++, row);
+        addSmallText (table, getUserName (custodian), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
                         ":");
@@ -644,6 +631,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (col, row, table.getColumns (), row);
         table.add ((PresentationObject) presentationObjects.get (PROVIDER_KEY),
                    col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
+                        INVOICE_TEXT_DEFAULT, ":");
+        table.add ((PresentationObject) presentationObjects.get
+                   (INVOICE_TEXT_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
                         NUMBER_OF_DAYS_DEFAULT, ":");
@@ -709,6 +701,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add ((PresentationObject) presentationObjects.get
                    (REGULATION_SPEC_TYPE_KEY), col++, row);
         col = 1; row++;
+        addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
+        table.add ((PresentationObject) presentationObjects.get (VAT_RULE_KEY),
+                   col++, row);
+        col = 1; row++;
         addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
         col = 1; row++;
@@ -722,10 +718,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (col, row, table.getColumns (), row);
         table.add ((PresentationObject) presentationObjects.get
                    (DOUBLE_POSTING_KEY), col, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (VAT_RULE_KEY),
-                   col++, row);
         col = 1; row++;
         table.setHeight (row++, 12);
         table.mergeCells (col, row, table.getColumns (), row);
@@ -823,7 +815,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
         int row = 2;
-        addOperationFieldDropdown (table, row++); 
+        addOperationFieldRow (table, context, header, row++);
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText(table, (null != period ? periodFormatter.format (period)
@@ -1511,6 +1503,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (new OperationalFieldsMenu (), col++, row);
     }
 
+    private void addOperationFieldRow
+        (final Table table, final IWContext context, final InvoiceHeader header,
+         final int row) throws RemoteException {
+        int col = 1;
+        addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
+                        MAIN_ACTIVITY_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addSmallText (table, getSchoolCategoryName (context, header), col++,
+                      row);
+    }
+
     private UserSearcher createSearcher () {
         final UserSearcher searcher = new UserSearcher ();
         searcher.setOwnFormContainer (false);
@@ -1570,24 +1573,24 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return result.toString ();
     }
 
-    private void addSmallText (final Map map, final String key,
+    private void addSmallText (final java.util.Map map, final String key,
                                final String value) {
         map.put (key, getSmallText (null != value && !value.equals (null + "")
                                     ? value : ""));
     }
 
-    private void addSmallText (final Map map, final String key,
+    private void addSmallText (final java.util.Map map, final String key,
                                final long value) {
         map.put (key, getSmallText (-1 != value ? value + "" : "0"));
     }
 
-    private void addSmallDateText (final Map map, final String key,
+    private void addSmallDateText (final java.util.Map map, final String key,
                                      final Date date) {
         map.put (key, getSmallText (null != date ? dateFormatter.format (date)
                                     : ""));
     }
 
-    private void addSmallPeriodText (final Map map, final String key,
+    private void addSmallPeriodText (final java.util.Map map, final String key,
                                      final Date date) {
         map.put (key, getSmallText (null != date ? periodFormatter.format (date)
                                     : ""));

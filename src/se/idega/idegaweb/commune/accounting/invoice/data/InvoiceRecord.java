@@ -30,7 +30,6 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setAmount(float p0);
  public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
- public void setColumnProviderId(int p0);
  public void setCreatedBy(java.lang.String p0);
  public void setDateChanged(java.sql.Date p0);
  public void setDateCreated(java.sql.Date p0);
