@@ -243,6 +243,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		if (getSession().getSortBy() != -1) {
 			sortBy.setSelectedElement(getSession().getSortBy());
 			sortBy.addMenuElement(SORT_ALL, localize("child_care.show_all","Show all"));
+			sortBy.setToSubmit(String.valueOf(SORT_ALL));
 		}
 
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.get_sorted","Get sorted")));
