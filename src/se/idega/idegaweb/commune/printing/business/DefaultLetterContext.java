@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultLetterContext.java,v 1.1 2004/11/04 20:34:48 aron Exp $
+ * $Id: DefaultLetterContext.java,v 1.2 2004/12/05 09:52:31 laddi Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,19 +18,19 @@ import com.idega.idegaweb.IWUserContext;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 20:34:48 $ by $Author: aron $
+ *  Last modified: $Date: 2004/12/05 09:52:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DefaultLetterContext extends MessageLetterContext {
     
     public DefaultLetterContext(IWUserContext iwuc ,Message msg) {
         super(iwuc,msg);      
-        init(iwuc,msg);
+        init(iwuc);
     }
     
-    private void init(IWUserContext iwuc,Message msg){
+    private void init(IWUserContext iwuc){
         setResourceDirectory(new File(getResourceUrl(getBundle(iwuc),iwuc.getCurrentLocale())));
         try {
             setTemplateStream(getTemplateUrlAsStream(getBundle(iwuc),iwuc.getCurrentLocale(),"default_template.xml",true));
