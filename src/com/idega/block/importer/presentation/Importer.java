@@ -232,7 +232,7 @@ public class Importer extends Block {
 		        Text fileStatus = new Text(path+" : "+status);
 		        fileStatus.setBold();
 		        
-		        if(success){
+		        if(success && !usingLocalFileSystem){
 		        	//@todo move to a business method
 		        	Integer id = new Integer(values[i]);
 		        	ImportFileRecord record = (ImportFileRecord) ((ImportFileRecordHome)com.idega.data.IDOLookup.getHome(ImportFileRecord.class)).findByPrimaryKey(id);
