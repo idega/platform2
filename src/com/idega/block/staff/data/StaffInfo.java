@@ -1,0 +1,126 @@
+package com.idega.block.staff.data;
+
+import com.idega.data.*;
+import com.idega.core.data.*;
+import com.idega.core.user.data.User;
+import java.sql.*;
+
+
+/**
+ * Title:        User
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega.is
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @version 1.0
+ */
+
+public class StaffInfo extends GenericEntity {
+
+    private static String sClassName = StaffInfo.class.getName();
+
+    public StaffInfo(){
+      super();
+    }
+
+    public StaffInfo(int id)throws SQLException{
+      super(id);
+    }
+
+
+    public String getEntityName(){
+            return "st_staff_info";
+    }
+
+    public void initializeAttributes(){
+      addAttribute(getColumnNameUserID(),"Starfsmaður",true,true,"java.lang.Integer","one-to-one","com.idega.core.user.data.User");
+      addAttribute(getColumnNameTitle(),"Titill",true,true,"java.lang.String");
+      addAttribute(getColumnNameEducation(),"Menntun",true,true,"java.lang.String");
+      addAttribute(getColumnNameSchool(),"Skólaganga",true,true,"java.lang.String");
+      addAttribute(getColumnNameArea(),"Starfssvið",true,true,"java.lang.String");
+      addAttribute(getColumnNameBeganWork(),"Hóf störf",true,true,"java.sql.Date");
+      addAttribute(getColumnNameImageID(),"Mynd",true,true,"java.lang.Integer","one-to-one","com.idega.jmodule.image.data.ImageEntity");
+      setNullable(getColumnNameUserID(),false);
+      setNullable(getColumnNameImageID(),false);
+      setAsPrimaryKey(getColumnNameUserID(),true);
+    }
+
+    public void setDefaultValues(){
+    }
+
+    public String getIDColumnName(){
+      return getColumnNameUserID();
+    }
+
+    public static StaffInfo getStaticInstance(){
+      return (StaffInfo)StaffInfo.getStaticInstance(sClassName);
+    }
+
+
+    /*  ColumNames begin   */
+
+    public static String getColumnNameUserID(){return User.getColumnNameUserID();}
+    public static String getColumnNameTitle(){return "title";}
+    public static String getColumnNameEducation(){return "education";}
+    public static String getColumnNameSchool(){return "school";}
+    public static String getColumnNameArea(){return "area";}
+    public static String getColumnNameBeganWork(){return "began_work";}
+    public static String getColumnNameImageID(){return "image_id";}
+
+    /*  ColumNames end   */
+
+
+    /*  Getters begin   */
+
+    public String getTitle() {
+      return (String) getColumnValue(getColumnNameTitle());
+    }
+
+    public String getEducation() {
+      return (String) getColumnValue(getColumnNameEducation());
+    }
+
+    public String getSchool() {
+      return (String) getColumnValue(getColumnNameSchool());
+    }
+
+    public String getArea() {
+      return (String) getColumnValue(getColumnNameArea());
+    }
+
+    public Date getBeganWork(){
+      return (Date) getColumnValue(getColumnNameBeganWork());
+    }
+
+    public int getImageID() {
+      return getIntColumnValue(getColumnNameImageID());
+    }
+
+    /*  Getters end   */
+
+
+    /*  Setters begin   */
+
+    public void setTitle(String title) {
+      setColumn(getColumnNameTitle(),title);
+    }
+
+    public void setEducation(String education) {
+      setColumn(getColumnNameEducation(),education);
+    }
+
+    public void setSchool(String school) {
+      setColumn(getColumnNameSchool(),school);
+    }
+
+    public void setArea(String area) {
+      setColumn(getColumnNameArea(),area);
+    }
+
+    public void setBeganWork(Date beganWork){
+      setColumn(getColumnNameBeganWork(),beganWork);
+    }
+
+    public void setImageID(int imageID){
+      setColumn(getColumnNameImageID(),imageID);
+    }
+}
