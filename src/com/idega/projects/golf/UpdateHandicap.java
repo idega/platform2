@@ -2,6 +2,7 @@ package com.idega.projects.golf;
 
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.*;
+import java.util.Vector;
 import java.sql.SQLException;
 import com.idega.util.idegaTimestamp;
 import com.idega.projects.golf.business.TournamentController;
@@ -35,51 +36,66 @@ public class UpdateHandicap {
       try {
             int member_id = member.getID();
 
+            System.out.print("Updating member "+member_id);
+            idegaTimestamp timeBefore = new idegaTimestamp();
+
             MemberInfo memberInfo = new MemberInfo(member_id);
-            TournamentRound round;
-            TournamentRound[] rounds;
+            TournamentRound round = null;
+            Field field = null;
+            Handicap leikForgjof = null;
+            Vector strokeVector = null;
+            Stroke[] stroke2 = null;
+
+            int leik = 0;
+            int realLeik = 0;
+            int heildarpunktar = 0;
+            int realTotalPoints = 0;
+
+            int field_par = 0;
+            int slope = 0;
+            float course_rating = 0;
+            int teeColorID = 0;
+            int field_id = 0;
+            int tournamentRoundID = 0;
+            boolean isTournament = false;
 
             double grunn = (double) memberInfo.getFirstHandicap();
             int tee_id = 0;
             double tournamentHandicap = 0;
 
-            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
-
-            System.out.println("Total scorecards: "+scorecard.length);
+            Scorecard[] scorecard = (Scorecard[]) (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
             if ( scorecard.length > 0 ) {
-              Scorecard[] scorecardsBefore = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
+              Scorecard[] scorecardsBefore = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
               if ( scorecardsBefore.length > 0 ) {
                 grunn = (double) scorecardsBefore[0].getHandicapAfter();
-                System.out.println("HandicapBefore: "+grunn);
               }
             }
 
             for (int m=0; m < scorecard.length; m++) {
 
-                if ( scorecard[m].getScorecardDate() != null ) {
-                  System.out.println("Date: "+new idegaTimestamp(scorecard[m].getScorecardDate()).toSQLDateString());
-                }
+                int scorecardID = scorecard[m].getID();
                 round = new TournamentRound(scorecard[m].getTournamentRoundId());
-                rounds = (TournamentRound[]) (new TournamentRound()).findAllByColumn("tournament_id",round.getTournamentID());
 
                 if ( scorecard[m].getHandicapCorrection().equalsIgnoreCase("N") ) {
+                    slope = scorecard[m].getSlope();
+                    course_rating = scorecard[m].getCourseRating();
+                    teeColorID = scorecard[m].getTeeColorID();
+                    field_id = scorecard[m].getFieldID();
+                    tournamentRoundID = scorecard[m].getTournamentRoundId();
+                    isTournament = false;
+                    if ( tournamentRoundID > 1 ) {
+                      isTournament = true;
+                    }
 
-                    float slope = (float) scorecard[m].getSlope();
-                    float course_rating = scorecard[m].getCourseRating();
-                    int teeColorID = scorecard[m].getTeeColorID();
-                    int field_id = scorecard[m].getFieldID();
-                    int tournamentRoundID = scorecard[m].getTournamentRoundId();
-                    System.out.println("TournamentRoundID: "+tournamentRoundID);
+                    field = new Field(field_id);
+                      field_par = field.getFieldPar();
 
-                    Field field = new Field(field_id);
-                            float field_par = (float) field.getIntColumnValue("field_par");
-
-                    Handicap leikForgjof = new Handicap(grunn);
-                      if ( tournamentRoundID > 1 ) {
+                    leikForgjof = new Handicap(grunn);
+                      if ( isTournament ) {
                         if ( round.getRoundNumber() == 1 ) {
                           tournamentHandicap = grunn;
                         }
-                        float tournamentPlayHandicap = (float) leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
+                        float tournamentPlayHandicap = (float) leikForgjof.getLeikHandicap(slope,course_rating,field_par);
                         Tournament tournament = round.getTournament();
                         if ( member.getGender().equalsIgnoreCase("m") ) {
                           if ( tournamentPlayHandicap > tournament.getMaxHandicap() ) {
@@ -95,92 +111,36 @@ public class UpdateHandicap {
 
                       }
 
-                    int leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
-                    int realLeik = new Handicap(grunn).getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
+                    leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
+                    realLeik = new Handicap(grunn).getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
 
-                    System.out.println("GameHandicap: "+leik);
-                    System.out.println("RealHandicap: "+realLeik);
+                    heildarpunktar = 0;
+                    realTotalPoints = 0;
 
-                    int leikpunktar = leik + 36;
-                    int punktar = leikpunktar/18;
-                    int afgangur = leikpunktar%18;
-                    int punktar2 = punktar + 1;
-                    int punktar3 = 0;
-                    int heildarpunktar = 0;
-                    int hole_handicap = 0;
-                    int hole_par = 0;
-                    int old_point = 0;
-                    int old_total_points = scorecard[m].getTotalPoints();
+                    stroke2 = (Stroke[]) (new Stroke()).findAll("select stroke.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecardID+" order by hole_number");
 
-                    Stroke[] stroke2 = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].getID());
+                    strokeVector = new Vector(stroke2.length);
+                    for (int i = 0; i < stroke2.length; i++)
+                      strokeVector.add(stroke2[i]);
 
-                    for (int c = 0 ; c < stroke2.length; c++ ) {
+                    heildarpunktar = Handicap.calculatePoints(scorecard[m],strokeVector,leik);
 
-                            hole_handicap = (int) stroke2[c].getHoleHandicap();
-                            hole_par = stroke2[c].getHolePar();
-                            old_point = stroke2[c].getPointCount();
-
-                            int strokes2 = stroke2[c].getStrokeCount();
-
-                            if ( hole_handicap > afgangur ) {
-                                    punktar3 = hole_par + punktar - strokes2;
-                            }
-
-                            if ( hole_handicap <= afgangur ) {
-                                    punktar3 = hole_par + punktar2 - strokes2;
-                            }
-
-                            if ( punktar2 < 0 ) {
-                                    punktar3 = 0;
-                            }
-
-                            if ( punktar3 < 0 ) {
-                                    punktar3 = 0;
-                            }
-
-                            if ( strokes2 == 0 ) {
-                              punktar3 = 0;
-                            }
-
-                            heildarpunktar += punktar3;
-
-                            if ( old_point != punktar3 ) {
-                              stroke2[c].setPointCount(punktar3);
-                              stroke2[c].update();
-                            }
-
-                    }
-
-                    if ( stroke2.length == 9 ) {
-                            heildarpunktar += 18;
-                    }
-
-                    int realTotalPoints = 0;
-
-                    System.out.println("TotalPoints: "+heildarpunktar);
-
-                    if( old_total_points != heildarpunktar ) {
-                      scorecard[m].setTotalPoints(heildarpunktar);
-                    }
-
-                    if ( tournamentRoundID == 1 ) {
-                      scorecard[m].setHandicapBefore((float) grunn);
-                    }
-                    else {
+                    if ( isTournament ) {
                       scorecard[m].setHandicapBefore((float) tournamentHandicap);
                       realTotalPoints = Handicap.calculatePointsWithoutUpdate(stroke2,realLeik);
-                      System.out.println("RealTotalPoints: "+realTotalPoints);
+                    }
+                    else {
+                      scorecard[m].setHandicapBefore((float) grunn);
                     }
 
                     if ( scorecard[m].getUpdateHandicap().equalsIgnoreCase("Y") ) {
-                      if ( tournamentRoundID > 1 ) {
+                      if ( isTournament ) {
                         grunn = reiknaHandicap2((double)grunn,realTotalPoints);
                       }
                       else {
                         grunn = reiknaHandicap2((double)grunn,heildarpunktar);
                       }
 
-                      System.out.println("NewHandicap: "+grunn);
                       scorecard[m].setHandicapAfter((float) grunn);
                     }
                     else {
@@ -188,22 +148,26 @@ public class UpdateHandicap {
                     }
                 }
                 else {
-                    System.out.println("Setting handicapBefore");
                     scorecard[m].setHandicapBefore((float) grunn);
                     if ( m == 0 ) {
                       scorecard[m].setHandicapBefore(memberInfo.getFirstHandicap());
                     }
-                    System.out.println("Setting handicapAfter = Correction");
                     grunn = (double) scorecard[m].getHandicapAfter();
-                    System.out.println(grunn+" - "+scorecard[m].getHandicapAfter());
                 }
 
                   scorecard[m].update();
+
+                System.out.print(".");
 
             }
 
             memberInfo.setHandicap((float) grunn);
             memberInfo.update();
+            idegaTimestamp timeAfter = new idegaTimestamp();
+            int secondsAfter = timeAfter.getSecond() + (timeAfter.getMinute() * 60) + (timeAfter.getHour() * 60 * 60);
+            int secondsBefore = timeBefore.getSecond() + (timeBefore.getMinute() * 60) + (timeBefore.getHour() * 60 * 60);
+            int between = secondsAfter - secondsBefore;
+            System.out.println("Done! ("+between+")");
 
       }
 
