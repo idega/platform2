@@ -174,8 +174,7 @@ public class NewsBundleStarter implements IWBundleStartable{
       return (s!=null && s.length > 0 );
     }
     catch (Exception ex) {
-
-      //ex.printStackTrace();
+      ex.printStackTrace();
     }
     return false;
   }
