@@ -9,6 +9,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.contract.data.Contract;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
@@ -26,6 +27,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public static final String COLUMN_APPLICATION_ID = "application_id";
 	public final static String COLUMN_CONTRACT_ID = "contract_id";
 	public static final String COLUMN_CONTRACT_FILE_ID = "contract_file_id";
+	public static final String COLUMN_SCH_CLASS_MEMBER = "sch_class_member_id";
 	public static final String COLUMN_CREATED_DATE = "created_date";
 	public static final String COLUMN_VALID_FROM_DATE = "valid_from_date";
 	public static final String COLUMN_TERMINATED_DATE = "terminated_date";
@@ -52,6 +54,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		addManyToOneRelationship(COLUMN_APPLICATION_ID,ChildCareApplication.class);
 		addOneToOneRelationship(COLUMN_CONTRACT_FILE_ID,ICFile.class);
 		addOneToOneRelationship(COLUMN_CONTRACT_ID,Contract.class);
+		addOneToOneRelationship(COLUMN_SCH_CLASS_MEMBER,SchoolClassMember.class);
 	}
 	
 	public Date getCreatedDate() {
@@ -102,6 +105,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return (ICFile) getColumnValue(COLUMN_CONTRACT_FILE_ID);
 	}
 	
+	public SchoolClassMember getSchoolClassMmeber() {
+		return (SchoolClassMember) getColumnValue(COLUMN_SCH_CLASS_MEMBER);
+	}
+	
 	public void setCreatedDate(Date createdDate) {
 		setColumn(COLUMN_CREATED_DATE, createdDate);
 	}
@@ -148,6 +155,14 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	
 	public void setContractFile(ICFile contractFile) {
 		setColumn(COLUMN_CONTRACT_FILE_ID, contractFile);
+	}
+	
+	public void setSchoolClassMemberID(int schoolClassMemberID) {
+		setColumn(COLUMN_SCH_CLASS_MEMBER, schoolClassMemberID);
+	}
+	
+	public void setSchoolClassMember(SchoolClassMember schoolClassMember) {
+		setColumn(COLUMN_SCH_CLASS_MEMBER, schoolClassMember);
 	}
 	
 	public void setTerminationDateAsNull(boolean setAsNull) {

@@ -13,6 +13,7 @@ public interface ChildCareContract extends com.idega.data.IDOEntity
  public int getContractFileID();
  public int getContractID();
  public java.sql.Date getCreatedDate();
+ public com.idega.block.school.data.SchoolClassMember getSchoolClassMmeber();
  public java.sql.Date getTerminatedDate();
  public java.sql.Date getValidFromDate();
  public void initializeAttributes();
@@ -26,6 +27,8 @@ public interface ChildCareContract extends com.idega.data.IDOEntity
  public void setContractFileID(int p0);
  public void setContractID(int p0);
  public void setCreatedDate(java.sql.Date p0);
+ public void setSchoolClassMember(com.idega.block.school.data.SchoolClassMember p0);
+ public void setSchoolClassMemberID(int p0);
  public void setTerminatedDate(java.sql.Date p0);
  public void setTerminationDateAsNull(boolean p0);
  public void setValidFromDate(java.sql.Date p0);
