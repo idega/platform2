@@ -47,13 +47,17 @@ private IWApplicationContext iwac;
   			for (int i = 0; i < files.length; i++) {
 				ColumnSeparatedImportFile postals = new ColumnSeparatedImportFile(files[i]);
 				
-				String record;
+				try {
+					String record;
       
       			while ( !(record=(String)postals.getNextRecord()).equals("") ){
       				ArrayList values = postals.getValuesFromRecordString(record);
       				createPostalIfDoesNotExist((String)values.get(0),(String)values.get(1),(String)values.get(2));			      				
       			}
-				
+				} catch (Exception e) {
+					System.err.println("PostalCodeBundleStarter : Cant use file = "+files[i].getName()+" (error = "+e.getMessage()+")");
+				}
+      			
 			}
   				
   		}
