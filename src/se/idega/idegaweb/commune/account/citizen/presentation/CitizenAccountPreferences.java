@@ -466,10 +466,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.add(sbUpdate, 2, row);
 		table.add(getSmallText(" "), 2, row);
 //		table.add(sbCancel, 2, row);
-//		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		
-		row++;
-		table.addBreak(1, row);
+//		row++;
+//		table.addBreak(1, row);
 				
 		add(form);
 	}
