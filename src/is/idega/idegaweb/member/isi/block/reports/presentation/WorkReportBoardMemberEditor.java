@@ -473,9 +473,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       if (optionMap == null)  {
         optionMap = new TreeMap();
         WorkReportBusiness business = getWorkReportBusiness(iwc);
-        SortedSet coll = null;
+        Collection coll = null;
         try {
-          coll = new TreeSet(business.getLeaguesOfWorkReportById(getWorkReportId()));
+          coll = business.getLeaguesOfWorkReportById(getWorkReportId());
         }
         catch (Exception ex) {
           System.err.println(
@@ -484,10 +484,17 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
           ex.printStackTrace(System.err);
           throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
         }
+        // sort 
+        SortedSet names = new TreeSet();
         Iterator collIterator = coll.iterator();
         while (collIterator.hasNext())  {
           WorkReportGroup league = (WorkReportGroup) collIterator.next();
           String name = league.getName(); 
+          names.add(names);
+        }
+        Iterator nameIterator = names.iterator();
+        while (nameIterator.hasNext())  {
+          String name = (String) nameIterator.next();
           String display = resourceBundle.getLocalizedString(name, name);
           optionMap.put(name, display);
           }
