@@ -4,16 +4,8 @@
 package is.idega.idegaweb.marathon.data;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Collections;
 
-import com.idega.block.cal.data.CalendarEntryGroup;
-import com.idega.block.cal.data.CalendarEntryType;
-import com.idega.block.text.data.LocalizedText;
 import com.idega.data.GenericEntity;
-import com.idega.data.IDORelationshipException;
-import com.idega.user.data.User;
 
 /**
  * Description: <br>
