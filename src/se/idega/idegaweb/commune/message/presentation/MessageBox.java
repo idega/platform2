@@ -255,7 +255,8 @@ public class MessageBox extends CommuneBlock {
 		messageTable.setWidth(getMessageNumberColumn(), row, 8);
 		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), getSubjectColumn(), row);
 		messageTable.add(getSmallHeader(localize("message.date", "Date")), getDateColumn(), row);
-		messageTable.setWidth(getDeleteColumn(), "12");
+		messageTable.add(getSmallHeader(localize("message.delete", "Delete")), getDeleteColumn(), row);
+		//messageTable.setWidth(getDeleteColumn(), "12");
 	}
 	
 	/**
