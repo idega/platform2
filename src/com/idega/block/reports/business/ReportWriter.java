@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.StringTokenizer;
 
@@ -150,14 +151,17 @@ public class ReportWriter implements MediaWritable {
 	}
 	private static MemoryFileBuffer writeDelimited(String sql, String[] headers, String type, String delimiter) {
 		Connection Conn = null;
+		ResultSet RS = null;
+		Statement stmt = null;
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
+		
 		try {
 			//String file = realpath;
 			//FileWriter out = new FileWriter(file);
 			Conn = com.idega.util.database.ConnectionBroker.getConnection();
-			Statement stmt = Conn.createStatement();
-			ResultSet RS = stmt.executeQuery(sql);
+			stmt = Conn.createStatement();
+			RS = stmt.executeQuery(sql);
 			ResultSetMetaData MD = RS.getMetaData();
 			int count = MD.getColumnCount();
 			if (headers == null) {
@@ -187,16 +191,34 @@ public class ReportWriter implements MediaWritable {
 				data.append("\n");
 				mos.write(data.toString().getBytes());
 			}
-			RS.close();
-			stmt.close();
-			mos.close();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		finally {
-			ConnectionBroker.freeConnection(Conn);
-		}
+	    finally {
+	    	// do not hide an existing exception
+	    	try { 
+	    		if (RS != null) {
+	    			RS.close();
+		      	}
+	    	}
+		    catch (SQLException resultCloseEx) {
+		    	System.err.println("[ReportWriter] result set could not be closed");
+		     	resultCloseEx.printStackTrace(System.err);
+		    }
+		    // do not hide an existing exception
+		    try {
+		    	if (stmt != null)  {
+		    		stmt.close();
+		    	    com.idega.util.database.ConnectionBroker.freeConnection(Conn);
+		    	}
+		    }
+	 	    catch (SQLException statementCloseEx) {
+		     	System.err.println("[ReportWriter] statement could not be closed");
+		     	statementCloseEx.printStackTrace(System.err);
+		    }    	
+ 	    	mos.close();
+	    }
 		if (type.equals(XLS))
 			buffer.setMimeType("application/x-msexcel");
 		else
@@ -207,6 +229,8 @@ public class ReportWriter implements MediaWritable {
 		Connection Conn = null;
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
 		MemoryOutputStream mos = new MemoryOutputStream(buffer);
+		Statement stmt = null;
+		ResultSet RS = null;
 		try {
 			String[] Headers = report.getHeaders();
 			int Hlen = Headers.length;
@@ -241,8 +265,8 @@ public class ReportWriter implements MediaWritable {
 			document.addSubject(report.getInfo());
 			document.open();
 			Conn = com.idega.util.database.ConnectionBroker.getConnection();
-			Statement stmt = Conn.createStatement();
-			ResultSet RS = stmt.executeQuery(sql);
+			stmt = Conn.createStatement();
+			RS = stmt.executeQuery(sql);
 			String temp = null;
 			Table datatable = getTable(Headers, sizes);
 			while (RS.next()) {
@@ -260,18 +284,37 @@ public class ReportWriter implements MediaWritable {
 					datatable = getTable(Headers, sizes);
 				}
 			}
-			RS.close();
-			stmt.close();
 			document.add(datatable);
 			document.close();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		finally {
-			if (Conn != null)
-				ConnectionBroker.freeConnection(Conn);
-		}
+		
+	    finally {
+	    	// do not hide an existing exception
+	    	try { 
+	    		if (RS != null) {
+	    			RS.close();
+		      	}
+	    	}
+		    catch (SQLException resultCloseEx) {
+		    	System.err.println("[ReportWriter] result set could not be closed");
+		     	resultCloseEx.printStackTrace(System.err);
+		    }
+		    // do not hide an existing exception
+		    try {
+		    	if (stmt != null)  {
+		    		stmt.close();
+					if (Conn != null)
+						ConnectionBroker.freeConnection(Conn);
+		    	}
+		    }
+	 	    catch (SQLException statementCloseEx) {
+		     	System.err.println("[ReportWriter] statement could not be closed");
+		     	statementCloseEx.printStackTrace(System.err);
+		    }
+	    }
 		buffer.setMimeType("application/pdf");
 		return buffer;
 	}

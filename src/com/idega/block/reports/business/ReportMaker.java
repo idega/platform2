@@ -501,14 +501,17 @@ public class ReportMaker {
     Vector v = new Vector();
 
     Connection Conn = null;
+    Statement stmt = null;
+    ResultSet RS = null;
+    
 
     try{
 
       Conn = ConnectionBroker.getConnection();
 
-      Statement stmt = Conn.createStatement();
+      stmt = Conn.createStatement();
 
-      ResultSet RS = stmt.executeQuery(SQL);
+      RS = stmt.executeQuery(SQL);
 
       ResultSetMetaData MD = RS.getMetaData();
 
@@ -537,11 +540,6 @@ public class ReportMaker {
         v.add(RC);
 
       }
-
-      RS.close();
-
-      stmt.close();
-
     }
 
     catch(SQLException e){
@@ -551,9 +549,27 @@ public class ReportMaker {
     }
 
     finally {
-
-      ConnectionBroker.freeConnection(Conn);
-
+    	// do not hide an existing exception
+    	try { 
+    		if (RS != null) {
+    			RS.close();
+	      	}
+    	}
+	    catch (SQLException resultCloseEx) {
+	    	System.err.println("[ReportMaker] result set could not be closed");
+	     	resultCloseEx.printStackTrace(System.err);
+	    }
+	    // do not hide an existing exception
+	    try {
+	    	if (stmt != null)  {
+	    		stmt.close();
+	    	    com.idega.util.database.ConnectionBroker.freeConnection(Conn);
+	    	}
+	    }
+ 	    catch (SQLException statementCloseEx) {
+	     	System.err.println("[ReportMaker] statement could not be closed");
+	     	statementCloseEx.printStackTrace(System.err);
+	    }
     }
 
     return v;

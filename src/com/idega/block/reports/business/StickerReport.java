@@ -2,6 +2,7 @@ package com.idega.block.reports.business;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class StickerReport {
 
   public static MemoryFileBuffer writeStickerList(Report report,ReportInfo info){
     Connection Conn = null;
+    Statement stmt = null;
+    ResultSet RS = null;
 
     MemoryFileBuffer buffer = new MemoryFileBuffer();
     MemoryOutputStream mos = new MemoryOutputStream(buffer);
@@ -66,8 +69,8 @@ public class StickerReport {
         }
 
         Conn = com.idega.util.database.ConnectionBroker.getConnection();
-        Statement stmt = Conn.createStatement();
-        ResultSet RS  = stmt.executeQuery(sql);
+        stmt = Conn.createStatement();
+        RS  = stmt.executeQuery(sql);
         StickerList list = new StickerList();
         list.setStickerHeight(info.getHeight());
         list.setStickerWidth(info.getWidth());
@@ -89,17 +92,34 @@ public class StickerReport {
           }
           list.add(parag);
         }
-
-        RS.close();
-        stmt.close();
-
         StickerWriter.print(mos,list);
     }
     catch (Exception ex) {
       ex.printStackTrace();
     }
     finally {
-      ConnectionBroker.freeConnection(Conn);
+    	// do not hide an existing exception
+    	try { 
+    		if (RS != null) {
+    			RS.close();
+	      	}
+    	}
+	    catch (SQLException resultCloseEx) {
+	    	System.err.println("[StickerReport] result set could not be closed");
+	     	resultCloseEx.printStackTrace(System.err);
+	    }
+	    // do not hide an existing exception
+	    try {
+	    	if (stmt != null)  {
+	    		stmt.close();
+	    	    ConnectionBroker.freeConnection(Conn);
+	    	}
+	    }
+ 	    catch (SQLException statementCloseEx) {
+	     	System.err.println("[StickerReport] statement could not be closed");
+	     	statementCloseEx.printStackTrace(System.err);
+	    }
+    	
     }
     buffer.setMimeType("application/pdf");
     return buffer;

@@ -13,6 +13,7 @@ package com.idega.block.news.business;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -71,39 +72,60 @@ public class NewsBundleStarter implements IWBundleStartable{
     //String sql = "select * from nw_news_cat ";
     String sql2 = "select IC_OBJECT_INSTANCE_ID from  NW_NEWS_CAT_IC_OBJECT_INSTANCE where NW_NEWS_CAT_ID = ";
     String type = ((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).createLegacy().getCategoryType();
-    try{
-    Connection Conn = com.idega.util.database.ConnectionBroker.getConnection();
-    Statement stmt = Conn.createStatement();
     ResultSet RS = null;
-    RS = stmt.executeQuery(sql);
-    String[] oinst;
-    ICCategory CAT ;
-    int objectinstance_id;
-    while(RS.next()){
-      objectinstance_id = -1;
-      int id = RS.getInt("NW_NEWS_CAT_ID"); // first_name
-      String name = RS.getString("NAME");
-      String info = RS.getString("DESCRIPTION");
-      oinst = SimpleQuerier.executeStringQuery(sql2+id,Conn);
-      if(oinst !=null && oinst.length > 0)
-        objectinstance_id = Integer.parseInt(oinst[0]);
-      ICCategory cat = ((com.idega.block.category.data.ICCategoryHome)com.idega.data.IDOLookup.getHome(ICCategory.class)).create();
-      cat.setName(name);
-      cat.setDescription(info);
-      cat.setType(type);
-
-      CAT = CategoryBusiness.getInstance().saveCategory(cat,objectinstance_id,false);
-      hash.put(new Integer(id),new Integer(CAT.getID()));
-    }
-    if(RS!=null)
-        RS.close();
-      stmt.close();
-
-    com.idega.util.database.ConnectionBroker.freeConnection(Conn);
-
+    Statement stmt = null;
+    Connection Conn  = null;
+    try{
+	    Conn = com.idega.util.database.ConnectionBroker.getConnection();
+	    stmt = Conn.createStatement();
+	
+	    RS = stmt.executeQuery(sql);
+	    String[] oinst;
+	    ICCategory CAT ;
+	    int objectinstance_id;
+	    while(RS.next()){
+		      objectinstance_id = -1;
+		      int id = RS.getInt("NW_NEWS_CAT_ID"); // first_name
+		      String name = RS.getString("NAME");
+		      String info = RS.getString("DESCRIPTION");
+		      oinst = SimpleQuerier.executeStringQuery(sql2+id,Conn);
+		      if(oinst !=null && oinst.length > 0)
+		        objectinstance_id = Integer.parseInt(oinst[0]);
+		      ICCategory cat = ((com.idega.block.category.data.ICCategoryHome)com.idega.data.IDOLookup.getHome(ICCategory.class)).create();
+		      cat.setName(name);
+		      cat.setDescription(info);
+		      cat.setType(type);
+		
+		      CAT = CategoryBusiness.getInstance().saveCategory(cat,objectinstance_id,false);
+		      hash.put(new Integer(id),new Integer(CAT.getID()));
+	    }
     }
     catch(Exception ex){
       ex.printStackTrace();
+    }
+    finally {
+    	// do not hide an existing exception
+    	try { 
+    		if (RS != null) {
+    			RS.close();
+	      	}
+    	}
+	    catch (SQLException resultCloseEx) {
+	    	System.err.println("[NewsBundleStarter] result set could not be closed");
+	     	resultCloseEx.printStackTrace(System.err);
+	    }
+	    // do not hide an existing exception
+	    try {
+	    	if (stmt != null)  {
+	    		stmt.close();
+	    	    com.idega.util.database.ConnectionBroker.freeConnection(Conn);
+	    	}
+	    }
+ 	    catch (SQLException statementCloseEx) {
+	     	System.err.println("[NewsBundleStarter] statement could not be closed");
+	     	statementCloseEx.printStackTrace(System.err);
+	    }
+    	
     }
     return hash;
   }
