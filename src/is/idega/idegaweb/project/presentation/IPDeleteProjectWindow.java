@@ -51,7 +51,7 @@ public class IPDeleteProjectWindow extends IWAdminWindow{
       //this.debugParameters(iwc);
 
 
-      boolean doConfirm = (iwc.getParameter(_PRM_CONFIRM)==null);
+      boolean doConfirm = !(iwc.getParameter(_PRM_CONFIRM)!=null || iwc.getParameter(_PRM_CONFIRM+".x")!=null);
       if(doConfirm){
         add(getConfirmBox(iwc));
       }
