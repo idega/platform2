@@ -160,7 +160,7 @@ public class PublicBooking extends TravelBlock  {
 
   private void displayForm(IWContext iwc) throws RemoteException, FinderException{
       Table table = new Table(3,6);
-	    table.setWidth("800");
+//	    table.setWidth("800");
 	    table.setAlignment("center");
 	    table.setCellspacing(0);
 	    table.setCellpadding(0);
