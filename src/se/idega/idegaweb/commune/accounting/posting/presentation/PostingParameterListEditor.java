@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.39 2003/12/13 17:21:08 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.40 2004/02/05 16:17:45 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.39 2003/12/13 17:21:08 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.40 2004/02/05 16:17:45 roar Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -119,6 +119,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private String _theOwnString = "";
 	private String _theDoubleString = "";
 	private Map _pMap;
+	
+	private boolean _setToEmpty = false;
 	
 	public void setResponsePage(ICPage page) {
 		_responsePage = page;
@@ -451,6 +453,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return table;
 	}
 
+	/**
+	 * Makes the block not to show any values
+	 *
+	 */
+	public void setToEmpty(){
+		_setToEmpty=true;
+	}
 	
 	/*
 	 * Returns the posting form with selectors edit fields 
@@ -488,15 +497,18 @@ public class PostingParameterListEditor extends AccountingBlock {
 				int fieldLength = field.getLen();
 				String theData1 = "";
 				String theData2 = "";
-				if(iwc.isParameterSet(PARAM_OWN_STRING+"_"+index)) {
-					theData1 = (String) _pMap.get(PARAM_OWN_STRING+"_"+index);
-				}
-				if(iwc.isParameterSet(PARAM_DOUBLE_STRING+"_"+index)) {
-					theData2 = (String) _pMap.get(PARAM_DOUBLE_STRING+"_"+index);
-				}
-				if (postingString != null && !iwc.isParameterSet(PARAM_BUTTON_SAVE)) {
-					theData1 = pBiz.extractField(postingString,readPointer, fieldLength, field);
-					theData2 = pBiz.extractField(doublePostingString,readPointer, fieldLength, field);
+				if (! _setToEmpty){
+				
+					if(iwc.isParameterSet(PARAM_OWN_STRING+"_"+index)) {
+						theData1 = (String) _pMap.get(PARAM_OWN_STRING+"_"+index);
+					}
+					if(iwc.isParameterSet(PARAM_DOUBLE_STRING+"_"+index)) {
+						theData2 = (String) _pMap.get(PARAM_DOUBLE_STRING+"_"+index);
+					}
+					if (postingString != null && !iwc.isParameterSet(PARAM_BUTTON_SAVE)) {
+						theData1 = pBiz.extractField(postingString,readPointer, fieldLength, field);
+						theData2 = pBiz.extractField(doublePostingString,readPointer, fieldLength, field);
+					}
 				}
 				readPointer += fieldLength;
 				list1.add(inputTextFieldValidation(
