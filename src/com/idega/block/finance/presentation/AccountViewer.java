@@ -14,6 +14,7 @@ import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.Table;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.List;
 import java.util.StringTokenizer;
 import com.idega.block.login.business.LoginBusiness;
@@ -155,7 +156,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       T.setRowColor(3,sWhiteColor);
 
       String fontColor = sHeaderColor;
-      int fontSize = 2;
+      int fontSize = 1;
       int row = 1;
 
       Text Title = new Text(iwrb.getLocalizedString("account","Account"),true,false,false);
@@ -198,14 +199,154 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return T;
   }
 
-  private Table getEntryTable(int AccountId,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
-    List listEntries = null;
-    if(showallkeys)
-      listEntries = AccountManager.listOfAccountEntries(AccountId,from,to);
-    else
-      listEntries = AccountManager.listOfKeySortedEntries(AccountId,from,to);
+  private ModuleObject getEntryTable(int iAccountId,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
+    ModuleObject mo = null;
+    try{
+      Account a = new Account(iAccountId);
+      mo =  getEntryTable(a, from, to, showallkeys);
+    }
+    catch(SQLException ex){
+      ex.printStackTrace();
+      mo = new Text();
+    }
+    return mo;
+  }
 
-    int tableDepth = 2;
+  private ModuleObject getEntryTable(Account eAccount,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
+    List listEntries = null;
+    if(eAccount.getType().equals(Account.typeFinancial)){
+      if(showallkeys)
+        listEntries = AccountManager.listOfAccountEntries(eAccount.getID(),from,to);
+      else
+        listEntries = AccountManager.listOfKeySortedEntries(eAccount.getID(),from,to);
+      return getFinanceEntryTable(listEntries);
+    }
+    else if(eAccount.getType().equals(Account.typePhone)){
+      listEntries = AccountManager.listOfPhoneEntries(eAccount.getID(),from,to);
+      return getPhoneEntryTable(listEntries);
+    }
+    else return new Text();
+  }
+
+  private ModuleObject getPhoneEntryTable(List listEntries){
+    int tableDepth = 3;
+    int cols = 9;
+    if(listEntries != null){
+      tableDepth += listEntries.size();
+    }
+
+    Table T = new Table(9,tableDepth);
+    T.setWidth("100%");
+    T.setWidth(1,"65");
+    T.setCellspacing(0);
+    T.setCellpadding(2);
+    T.setColumnAlignment(1,"right");
+    T.setColumnAlignment(2,"left");
+    T.setColumnAlignment(3,"left");
+    T.setColumnAlignment(4,"right");
+    T.setColumnAlignment(cols,"right");
+    T.setAlignment(1,1,"left");
+    T.setAlignment(1,2,"left");
+    T.setWidth(1,"20");
+   // T.setWidth(2,"40%");
+   // T.setWidth(3,"60%");
+    T.setWidth(cols,"20");
+    T.setWidth("100%");
+
+    T.setHorizontalZebraColored(sLightColor,sWhiteColor);
+    T.setRowColor(1,sWhiteColor);
+    T.setRowColor(2,sHeaderColor);
+
+    String fontColor = sWhiteColor;
+    int fontSize = 1;
+
+    Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
+    Title.setFontColor(sHeaderColor);
+    T.add(Title,1,1);
+    T.mergeCells(1,1,4,1);
+
+    Text[] TableTitles = new Text[cols];
+    TableTitles[0] = new Text(iwrb.getLocalizedString("date","Date"));
+    TableTitles[1] = new Text(iwrb.getLocalizedString("anumber","A-Number"));
+    TableTitles[2] = new Text(iwrb.getLocalizedString("subnumber","Sub-Number"));
+    TableTitles[3] = new Text(iwrb.getLocalizedString("number","Number"));
+    TableTitles[4] = new Text(iwrb.getLocalizedString("dating","Dating"));
+    TableTitles[5] = new Text(iwrb.getLocalizedString("night_time","Night time"));
+    TableTitles[6] = new Text(iwrb.getLocalizedString("day_time","Day time"));
+    TableTitles[7] = new Text(iwrb.getLocalizedString("time","Time"));
+    TableTitles[8] = new Text(iwrb.getLocalizedString("amount","Amount"));
+
+
+    for(int i = 0 ; i < TableTitles.length;i++){
+      TableTitles[i].setFontSize(fontSize);
+      TableTitles[i].setFontColor(sWhiteColor);
+      T.add(TableTitles[i],i+1,2);
+    }
+
+    Text[] TableTexts = new Text[cols];
+    boolean debet = false;
+    if(listEntries != null){
+      int len = listEntries.size();
+      int totNight = 0,totDay = 0,totDur = 0;
+      float totPrice = 0;
+      for(int j = 0; j < len; j++){
+        AccountPhoneEntry entry = (AccountPhoneEntry) listEntries.get(j);
+        TableTexts[0] = new Text(new idegaTimestamp(entry.getLastUpdated()).getISLDate(".",true));
+        TableTexts[1] = new Text(entry.getMainNumber());
+        TableTexts[2] = new Text(entry.getSubNumber());
+        TableTexts[3] = new Text(entry.getPhonedNumber());
+        TableTexts[4] = new Text(new idegaTimestamp(entry.getPhonedStamp()).toSQLString());
+        TableTexts[5] = new Text(new java.sql.Time(entry.getNightDuration()*1000).toString());
+        TableTexts[6] = new Text(new java.sql.Time(entry.getDayDuration()*1000).toString());
+        TableTexts[7] = new Text(new java.sql.Time(entry.getDuration()*1000).toString());
+        totNight += entry.getNightDuration();
+        totDay += entry.getDayDuration();
+        totDur += entry.getDuration();
+        float p = entry.getPrice();
+        totPrice += p;
+        debet = p >= 0 ? true : false ;
+        TableTexts[8] = new Text(NF.format(p));
+
+        for(int i = 0 ; i < cols;i++){
+          TableTexts[i].setFontSize(fontSize);
+          TableTexts[i].setFontColor("#000000");
+          if(i == 8){
+            if(debet) TableTexts[i].setFontColor(sDebetColor);
+            else TableTexts[i].setFontColor(sKreditColor);
+          }
+          else
+            TableTexts[i].setFontColor("#000000");
+          T.add(TableTexts[i],i+1,j+3);
+        }
+
+      }
+      Text txTotNight = new Text(new java.sql.Time(totNight*1000).toString());
+      Text txTotDay = new Text(new java.sql.Time(totDay*1000).toString());
+      Text txTotDur = new Text(new java.sql.Time(totDur*1000).toString());
+      Text txTotPrice = new Text(NF.format(totPrice));
+      txTotNight.setFontColor("#000000");
+      txTotDay.setFontColor("#000000");
+      txTotDur.setFontColor("#000000");
+      if(totPrice >= 0 )
+        txTotPrice.setFontColor(sDebetColor);
+      else
+        txTotPrice.setFontColor(sKreditColor);
+      txTotNight.setFontSize(fontSize);
+      txTotDay.setFontSize(fontSize);
+      txTotDur.setFontSize(fontSize);
+      txTotPrice.setFontSize(fontSize);
+
+      T.add(txTotNight,6,tableDepth);
+      T.add(txTotDay,7,tableDepth);
+      T.add(txTotDur,8,tableDepth);
+      T.add(txTotPrice,9,tableDepth);
+    }
+    return T;
+  }
+
+  private ModuleObject getFinanceEntryTable(List listEntries){
+
+    int tableDepth = 3;
     if(listEntries != null){
       tableDepth += listEntries.size();
     }
@@ -231,9 +372,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     T.setRowColor(2,sHeaderColor);
 
     String fontColor = sWhiteColor;
-    int fontSize = 2;
+    int fontSize = 1;
 
-    Text Title = new Text(iwrb.getLocalizedString("movement","Movement"),true,false,false);
+    Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
     Title.setFontColor(sHeaderColor);
     T.add(Title,1,1);
     T.mergeCells(1,1,4,1);
@@ -254,6 +395,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     boolean debet = false;
     if(listEntries != null){
       int len = listEntries.size();
+      float totPrice = 0;
       for(int j = 0; j < len; j++){
         AccountEntry entry = (AccountEntry) listEntries.get(j);
         TableTexts[0] = new Text(new idegaTimestamp(entry.getLastUpdated()).getISLDate(".",true));
@@ -261,6 +403,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         TableTexts[2] = new Text(entry.getInfo());
         float p = entry.getPrice();
         debet = p > 0 ? true : false ;
+        totPrice += p;
         TableTexts[3] = new Text(NF.format(p));
 
         for(int i = 0 ; i < 4;i++){
@@ -273,12 +416,18 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
           else
             TableTexts[i].setFontColor("#000000");
           T.add(TableTexts[i],i+1,j+3);
-
         }
       }
+      Text txTotPrice = new Text(NF.format(totPrice));
+      txTotPrice.setFontSize(fontSize);
+      if(totPrice >= 0 )
+        txTotPrice.setFontColor(sDebetColor);
+      else
+        txTotPrice.setFontColor(sKreditColor);
+      T.add(txTotPrice,4,tableDepth);
     }
-      return T;
-    }
+    return T;
+  }
 
   private idegaTimestamp getFromDate(ModuleInfo modinfo){
     if(modinfo.getParameter(prmFromDate)!=null){

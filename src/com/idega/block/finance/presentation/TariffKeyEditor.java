@@ -117,7 +117,6 @@ public class TariffKeyEditor extends KeyEditor {
     inputTable.add(formatText("Lýsing"),3,1);
     inputTable.add(formatText("Eyða"),4,1);
 
-
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
       String s = "";

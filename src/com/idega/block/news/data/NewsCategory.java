@@ -24,13 +24,14 @@ public class NewsCategory extends GenericEntity{
     addAttribute(getNameColumnName(), "Name", true, true, String.class);
     addAttribute(getDescriptionColumnName(), "Description", true, true, String.class);
     addAttribute(getNewsDateColumnName(), "News date", true, true, java.sql.Date.class);
-    addAttribute(getValidColumnName(), "Valid", true, true, String.class,1);
+    addAttribute(getValidColumnName(), "Valid", true, true, Boolean.class);
+    addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class,"NW_NEWS_CAT_IC_OBJECT_INSTANCE");
   }
 
   public void insertStartData()throws Exception{
     NewsCategory cat = new NewsCategory();
     cat.setName("Default");
-    cat.setValid("Y");
+    cat.setValid(true);
     cat.setDescription("Default Category for idegaWeb");
     cat.insert();
 
@@ -65,10 +66,10 @@ public class NewsCategory extends GenericEntity{
   public void setDescription(String description){
     setColumn(getDescriptionColumnName(), description);
   }
-  public String getValid(){
-    return getStringColumnValue(getValidColumnName());
+  public boolean getValid(){
+    return getBooleanColumnValue(getValidColumnName());
   }
-  public void setValid(String valid){
+  public void setValid(boolean valid){
     setColumn(getValidColumnName(), valid);
   }
   public java.sql.Date getDate(){

@@ -12,7 +12,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class AccountEntry extends GenericEntity {
+public class AccountEntry extends GenericEntity implements Entry {
 
   public AccountEntry() {
     super();
@@ -124,5 +124,19 @@ public class AccountEntry extends GenericEntity {
   }
   public void setRoundId(int round){
     setColumn(getRoundIdColumnName(), round);
+  }
+
+  // interface specific:
+  public String getType(){
+    return typeFinancial;
+  }
+  public String getFieldNameLastUpdated(){
+    return getLastUpdatedColumnName();
+  }
+  public String getFieldNameAccountId(){
+    return getAccountIdColumnName();
+  }
+  public String getTableName(){
+    return getEntityTableName();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.9 2001/08/20 22:09:31 aron Exp $
+ * $Id: ContractFinder.java,v 1.10 2001/09/24 12:49:43 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,8 @@ import java.util.List;
 import com.idega.data.EntityFinder;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Iterator;
 import com.idega.core.user.data.User;
 import com.idega.block.application.data.Applicant;
 
@@ -43,6 +45,22 @@ public abstract class ContractFinder {
     catch(SQLException e){
       return(null);
     }
+  }
+
+  public static Map mapOfStatusContractByApartmentId(String s){
+    List L = listOfStatusContracts(s);
+    Hashtable h = null;
+    if(L!= null){
+      int len = L.size();
+      h = new Hashtable(len);
+      Iterator I = L.iterator();
+      Contract C;
+      while(I.hasNext()){
+        C = (Contract) I.next();
+        h.put(C.getApartmentId(),C);
+      }
+    }
+    return h;
   }
 
   public static Hashtable hashOfContracts(){

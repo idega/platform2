@@ -1,138 +1,297 @@
 package com.idega.block.news.business;
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
 
-import java.util.Vector;
-import com.idega.util.text.TextSoap;
+import java.sql.*;
+import com.idega.jmodule.object.ModuleInfo;
+import com.idega.block.news.data.*;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.util.idegaTimestamp;
+import java.util.List;
+import java.util.Iterator;
 
-public class NewsBusiness {
+public class NewsBusiness{
 
-public static String language = "IS";
-
-  public static String formatNews(String newsString, int textSize) {
-    Vector tableVector = createTextTable(newsString);
-
-    for ( int a = 0; a < tableVector.size(); a++ ) {
-      String tableRow = tableVector.elementAt(a).toString();
-
-      if ( a == 0 ) {
-        tableRow = TextSoap.findAndReplace(tableRow,"|","</font></th><th><font size=\""+textSize+"\">");
+  public static NwNews getNews(int iNewsId){
+    NwNews NW = new NwNews();
+    if ( iNewsId > 0 ) {
+      try {
+       NW = new NwNews(iNewsId);
       }
-      else {
-        tableRow = TextSoap.findAndReplace(tableRow,"|","</font></td><td><font size=\""+textSize+"\">");
-      }
-
-      if ( a == 0 || a == tableVector.size()-1) {
-        if ( a == 0 ) {
-          tableRow = "<table bgcolor=\"#FFFFFF\" border=\"0\" cellpadding=\"6\" cellspacing=\"1\"><tr bgcolor=\"#FFFFFF\"><th><font size=\""+textSize+"\">"+tableRow+"</font></th></tr>";
-        }
-        if ( a == tableVector.size()-1 ) {
-          tableRow = "<tr bgcolor=\"#FFFFFF\"><td><font size=\""+textSize+"\">"+tableRow+"</font></td></tr></table>";
-        }
-      }
-      else {
-        tableRow = "<tr bgcolor=\"#FFFFFF\"><td><font size=\""+textSize+"\">"+tableRow+"</font></td></tr>";
-      }
-
-      newsString = TextSoap.findAndReplace(newsString,tableVector.elementAt(a).toString(),tableRow);
-    }
-
-    newsString = TextSoap.findAndReplace(newsString,"|\r\n","");
-    newsString = TextSoap.findAndReplace(newsString,"|","");
-    //Töflugerð lokið
-
-    //Búa til tengla
-    Vector linkVector = createTextLink(newsString);
-
-    for ( int a = 0; a < linkVector.size(); a++ ) {
-      String link = linkVector.elementAt(a).toString();
-      int comma = link.indexOf(",");
-
-      link = "<a href=\""+link.substring(comma+1,link.length())+"\">"+link.substring(0,comma)+"</a>";
-      newsString = TextSoap.findAndReplace(newsString,"Link("+linkVector.elementAt(a).toString()+")",link);
-    }
-
-    //Almenn hreinsun
-    newsString = TextSoap.findAndReplace(newsString,"*","<li>");
-    newsString = TextSoap.findAndReplace(newsString,"\n","<br>");
-    newsString = TextSoap.findAndReplace(newsString,"\t","&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-
-    return newsString;
-  }
-
-  private static Vector createTextTable(String newsString) {
-    Vector tableVector = TextSoap.FindAllBetween(newsString,"|","|\r\n");
-    return tableVector;
-  }
-
-  private static Vector createTextLink(String newsString) {
-    Vector linkVector = TextSoap.FindAllBetween(newsString,"Link(",")");
-    return linkVector;
-  }
-
-  public static String formatDateWithTime(String date ,String DatastoreType) {
-    StringBuffer ReturnString = new StringBuffer("");
-
-    if ( !language.equalsIgnoreCase("IS") ){
-      if ( !(DatastoreType.equals("oracle"))){//month/day
-        ReturnString.append(date.substring(8, 10));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(0, 4));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(5, 7));
-        ReturnString.append(" ");
-        ReturnString.append(date.substring(11, 13));
-        ReturnString.append(":");
-        ReturnString.append(date.substring(14, 16));
-      }
-      else {
-        ReturnString.append(date.substring(0, 4));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(5, 7));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(8, 10));
-        ReturnString.append(" ");
-        ReturnString.append(date.substring(11, 13));
-        ReturnString.append(":");
-        ReturnString.append(date.substring(14, 16));
-
-     //2000-10-10 00:00:00.0
-     //30/10/2000 17:58
+      catch (SQLException e) {
+        e.printStackTrace();
+        NW = new NwNews();
       }
     }
     else {
-       if ( !(DatastoreType.equals("oracle"))){
-        ReturnString.append(date.substring(8, 10));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(5, 7));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(0, 4));
-        ReturnString.append(" ");
-        ReturnString.append(date.substring(11, 13));
-        ReturnString.append(":");
-        ReturnString.append(date.substring(14, 16));
-      }
-      else {
-        ReturnString.append(date.substring(0, 4));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(8, 10));
-        ReturnString.append("/");
-        ReturnString.append(date.substring(5, 7));
-        ReturnString.append(" ");
-        ReturnString.append(date.substring(11, 13));
-        ReturnString.append(":");
-        ReturnString.append(date.substring(14, 16));
-
-      }
+      NW =  null;
     }
-    return ReturnString.toString();
+    return NW;
+  }
+
+  public static boolean disconnectBlock(int instanceid){
+    List L = NewsFinder.listOfNewsCategoryForObjectInstanceId(instanceid);
+    if(L!= null){
+      Iterator I = L.iterator();
+      while(I.hasNext()){
+        NewsCategory N = (NewsCategory) I.next();
+        disconnectNewsCategory(N,instanceid);
+      }
+      return true;
+    }
+    else
+      return false;
+
+  }
+
+  public static boolean disconnectNewsCategory(NewsCategory newsCat,int iObjectInstanceId){
+    try {
+      newsCat.setValid(false);
+      newsCat.update();
+      if(iObjectInstanceId > 0  ){
+        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        newsCat.removeFrom(obj);
+      }
+
+      return true;
+    }
+    catch (SQLException ex) {
+
+    }
+    return false;
   }
 
 
+  public static boolean deleteBlock(int instanceid){
+    List L = NewsFinder.listOfNewsCategoryForObjectInstanceId(instanceid);
+    if(L!= null){
+      Iterator I = L.iterator();
+      while(I.hasNext()){
+        NewsCategory N = (NewsCategory) I.next();
+        deleteNewsCategory(N.getID(),instanceid );
+      }
+      return true;
+    }
+    else
+      return false;
+  }
+
+  public static void deleteNewsCategory(int iNewsCategoryId){
+    deleteNewsCategory(iNewsCategoryId ,NewsFinder.getObjectInstanceIdFromNewsCategoryId(iNewsCategoryId));
+  }
+
+  private static void deleteNwNews(NwNews nwNews) throws SQLException{
+      List L = NewsFinder.listOfLocalizedText(nwNews.getID());
+      if(L != null){
+        LocalizedText lt;
+        for (int i = 0; i < L.size(); i++) {
+          lt = (LocalizedText) L.get(i);
+          lt.removeFrom(nwNews);
+          lt.delete();
+        }
+      }
+      nwNews.delete();
+  }
+
+  public static boolean deleteNews(int iNewsId){
+    try {
+      deleteNwNews(new NwNews(iNewsId ));
+      return true;
+    }
+    catch (SQLException ex) {
+      return false;
+    }
+  }
+
+  public static void deleteNewsCategory(int iCategoryId ,int iObjectInstanceId) {
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try {
+      t.begin();
+    //  List O = TextFinder.listOfObjectInstanceTexts();
+      NewsCategory nc = new NewsCategory( iCategoryId );
+      List L = NewsFinder.listOfNwNewsInCategory(nc.getID());
+      if(L != null){
+        NwNews news;
+
+        for (int i = 0; i < L.size(); i++) {
+          news = (NwNews) L.get(i);
+          deleteNwNews(news);
+        }
+      }
+
+      if(iObjectInstanceId > 0  ){
+        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        nc.removeFrom(obj);
+      }
+      nc.delete();
+     t.commit();
+    }
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+      e.printStackTrace();
+    }
+  }
+
+
+
+
+   public static void saveText(int iTxTextId,int iLocalizedTextId,int iCategoryId,
+            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId){
+
+     saveNews( iTxTextId, iLocalizedTextId,iCategoryId,
+             sHeadline, sTitle,sAuthor,sSource,sBody,iImageId, useImage, iLocaleId , iUserId,-1,"");
+
+   }
+
+   public static void saveNews(int iTxTextId,int iLocalizedTextId,int iCategoryId,
+            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,String sAttribute){
+
+     saveNews( iTxTextId, iLocalizedTextId,iCategoryId,
+             sHeadline, sTitle,sAuthor,sSource,sBody,iImageId, useImage, iLocaleId , iUserId,-1,sAttribute);
+
+   }
+
+    public static void saveNews(int iTxTextId,int iLocalizedTextId,int iCategoryId,
+            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int iInstanceId){
+
+     saveNews( iTxTextId, iLocalizedTextId,iCategoryId,sHeadline, sTitle,
+     sAuthor,sSource,sBody,iImageId, useImage, iLocaleId , iUserId,iInstanceId,"");
+
+   }
+
+
+  public static void saveNews(int iNwNewsId,int iLocalizedTextId,int iCategoryId,
+            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId,String sAttribute){
+
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try {
+      t.begin();
+      boolean nwUpdate = false;
+      boolean locUpdate = false;
+      NwNews nwNews = null;
+      LocalizedText locText = null;
+      if(iNwNewsId > 0){
+        nwUpdate = true;
+        nwNews = new NwNews(iNwNewsId);
+        if(iLocalizedTextId > 0){
+          locUpdate = true;
+          locText = new LocalizedText(iLocalizedTextId);
+        }
+        else{
+          locUpdate = false;
+          locText = new LocalizedText();
+        }
+      }
+      else{
+        nwUpdate = false;
+        locUpdate = false;
+        nwNews = new NwNews();
+        locText = new LocalizedText();
+      }
+
+      locText.setHeadline(sHeadline);
+      locText.setBody(sBody);
+      locText.setLocaleId(iLocaleId);
+      locText.setTitle( sTitle);
+      locText.setUpdated(idegaTimestamp.getTimestampRightNow());
+
+      nwNews.setImageId(iImageId);
+      nwNews.setIncludeImage(useImage);
+      nwNews.setUpdated(idegaTimestamp.getTimestampRightNow());
+      nwNews.setNewsCategoryId(iCategoryId );
+      nwNews.setAuthor(sAuthor);
+      nwNews.setSource(sSource);
+
+
+      if(nwUpdate ){
+        nwNews.update();
+        if(locUpdate){
+          locText.update();
+        }
+        else if(!locUpdate){
+          locText.setCreated(idegaTimestamp.getTimestampRightNow());
+          locText.insert();
+          locText.addTo(nwNews);
+        }
+      }
+      else if(!nwUpdate){
+        nwNews.setNewsDate(idegaTimestamp.getTimestampRightNow());
+        nwNews.setCreated(idegaTimestamp.getTimestampRightNow());
+        nwNews.setUserId(iUserId);
+        nwNews.insert();
+        locText.setCreated(idegaTimestamp.getTimestampRightNow());
+        locText.insert();
+        locText.addTo(nwNews);
+        if(InstanceId > 0){
+          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          nwNews.addTo(objIns);
+        }
+      }
+      t.commit();
+    }
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+      e.printStackTrace();
+    }
+
+
+  }
+
+  public static void saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try{
+     t.begin();
+      boolean update = false;
+      NewsCategory newsCat = null;
+      if(iCategoryId > 0){
+        update = true;
+        newsCat = new NewsCategory(iCategoryId );
+      }
+      else{
+        newsCat = new NewsCategory();
+      }
+
+      newsCat.setName(sName);
+      newsCat.setDescription(sDesc);
+      newsCat.setValid(true);
+
+      if(update){
+        newsCat.update();
+      }
+      else{
+        newsCat.insert();
+        if(iObjectInstanceId > 0){
+          ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
+          newsCat.addTo(objIns);
+        }
+      }
+
+      t.commit();
+
+    }
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+      e.printStackTrace();
+    }
+
+  }
 }
+

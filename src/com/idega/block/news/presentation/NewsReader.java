@@ -1,15 +1,20 @@
 package com.idega.block.news.presentation;
 
+import com.idega.block.IWBlock;
+import com.idega.block.news.presentation.NewsTable;
+import com.idega.block.text.data.LocalizedText;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.news.business.*;
+import com.idega.core.user.data.User;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
+import java.text.DateFormat;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.block.news.data.*;
-import com.idega.block.news.business.NewsBusiness;
 import com.idega.data.*;
 import com.idega.util.text.*;
 import com.idega.idegaweb.IWResourceBundle;
@@ -17,264 +22,353 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 
 
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.1
+ */
+
+public class NewsReader extends ModuleObjectContainer implements IWBlock{
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
+  private boolean isAdmin=false;
+  private int iCategoryId = -1;
+  private String attributeName = null;
+  private int attributeId = -1;
+  private User eUser = null;
+
+  private boolean showNewsCollectionButton=true;
+  private int categoryId = 0;
+
+
+  private Table outerTable = new Table(1,1);
+
+  private int numberOfLetters = 273;
+  private int numberOfDisplayedNews = 5;
+  private int numberOfExpandedNews = 3;
+  private int iSpaceBetween = 1;
+  private boolean backbutton = false;
+  private boolean showAll = false;
+  private boolean showImages = true;
+  private boolean showOnlyDates = false;
+  private boolean headlineAsLink = false;
+  private boolean showHeadlineImage = false;
+  private boolean showMoreButton = false;
+  private boolean alignWithHeadline = false;
+  private boolean limitNumberOfNews = false;
+  private boolean enableDelete=true;
+  private String date = null;
+  private String newsReaderURL;
+  private String newsCollectionURL;
+  private String selectFrom = "select nw_news.* from nw_news where ";
+  private String orderBy = " order by news_date DESC";
+  private String sNewsCategoryId = "nw_news_cat_id ='";
+  private String sNewsEditorUrl ="/news/editor.jsp";
+  private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
+
+  private static String prmDelete = "nwr.delete";
+  private static String prmEdit = "nwr.edit";
+  private static String prmNew = "nwr.new";
+  private static String prmMore = "nwr.more";
+
+  public static String prmNewsCategoryId = "nwr.newscategoryid";
+  private boolean newobjinst = false;
+  private Hashtable objectsBetween = null;
+  private String sObjectAlign = "center";
+
+  private Text textProxy = new Text();
+  private Text headlineProxy  = new Text();
+  private Text informationProxy  = new Text();
+
+  private String outerTableWidth = "100%";
+
+  private int textSize = 2;
+
+  private IWBundle iwb;
+  private IWResourceBundle iwrb ;
+
+  public static final int SINGLE_FILE_LAYOUT = 1;
+  public static final int NEWS_SITE_LAYOUT = 2;
+  public static final int NEWS_PAPER_LAYOUT = 3;
+  private int iLayout =1;
+
+  public NewsReader(){
+    init();
+    showAll = true;
+  }
+
+  public NewsReader(int iCategoryId){
+    this();
+    this.iCategoryId=iCategoryId;
+    this.showAll = false;
+  }
 /*
-**
-** need to look at numberofdisplayed news
-**
+  public NewsViewer(String date){
+    this.date=date;
+    this.showAll=true;
+  }
+
+  public NewsViewer(idegaTimestamp timestamp){
+    this.showAll=true;
+    this.date = timestamp.toSQLString();
+  }
+
+  public NewsViewer(int iCategoryId, String date){
+    this.iCategoryId=iCategoryId;
+    this.date=date;
+    this.showAll = false;
+  }
+
+  public NewsViewer(int iCategoryId, idegaTimestamp timestamp){
+    this.showAll=false;
+    this.iCategoryId=iCategoryId;
+    this.date = timestamp.toSQLString();
+  }
 */
+  private void init(){
+    headlineProxy.setBold();
+    informationProxy.setFontColor("#666666");
+    textProxy.setFontSize(1);
+    informationProxy.setFontSize(1);
 
-public class NewsReader extends JModuleObject{
+  }
 
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
-private boolean isAdmin=false;
-private boolean showNewsCollectionButton=true;
-private int categoryId = 0;
-private String date = null;
-private boolean backbutton = false;
-private boolean cutNews = true;// or default true?
-private boolean showAll = false;
-private Table outerTable = new Table(1,1);
-private String newsReaderURL;
-private String newsCollectionURL;
-private boolean showImages = true;
-private boolean showOnlyDates = false;
-private boolean headlineAsLink = false;
-private String selectFrom = "select nw_news.* from nw_news where ";
-private String orderBy = " order by news_date DESC";
-private String sNewsCategoryId = "nw_news_cat_id ='";
-private String sNewsEditorUrl ="/news/editor.jsp";
-private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
-private boolean showHeadlineImage = false;
-private boolean showMoreButton = false;
-private boolean alignWithHeadline = false;
-private Window adminWindow;
+  private void checkCategories(){
 
-private Text textProxy = new Text();
-private Text headlineProxy = new Text();
-private Text informationProxy = new Text();
+  }
 
-private int numberOfLetters = 273;
-private int numberOfDisplayedNews = 3;
-private int numberOfExpandedNews = 3;
-private int currentColumnPosition = 1;
-private int currentRowPosition = 1;
-private String outerTableWidth = "100%";
+  private void control(ModuleInfo modinfo){
+    Locale locale = modinfo.getCurrentLocale();
+    String sNewsId = modinfo.getParameter(prmMore);
+    NewsCategory newsCategory = null;
 
-private boolean limitNumberOfNews = false;
+    if(iCategoryId <= 0){
+      String sCategoryId = modinfo.getParameter(prmNewsCategoryId );
+      if(sCategoryId != null)
+        iCategoryId = Integer.parseInt(sCategoryId);
+      else if(getICObjectInstanceID() > 0){
+        iCategoryId = NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID());
+        if(iCategoryId <= 0 ){
+          newobjinst = true;
+        }
+      }
+    }
+    Table T = new Table(1,1);
+    T.setCellpadding(0);
+    T.setCellpadding(0);
+    T.setWidth( "100%");
+    if(isAdmin){
+      T.add(getAdminPart(iCategoryId,false,newobjinst),1,1);
+    }
+    if(iCategoryId >0){
+      newsCategory = NewsFinder.getNewsCategory(iCategoryId);
+      if(newsCategory != null){
+        if(sNewsId != null){
+          int id = Integer.parseInt(sNewsId);
+          NewsHelper nh = NewsFinder.getNewsHelper(id);
+          T.add(getNewsTable(nh,newsCategory,locale,true),1,1);
+        }
+        else
+          T.add(publishNews(modinfo,newsCategory,locale),1,1);
+      }
+    }
+    else{
+      T.add(new Text(iwrb.getLocalizedString("no_news_category","No news category")));
+      showCategoryMaker();
+    }
+    super.add(T);
+  }
 
-private Image change;
-private Image delete;
-private Image editor;
-private Image collection;
-private Image more;
-private Image back;
+  public ModuleObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst){
+    Table T = new Table(3,1);
+    T.setCellpadding(2);
+    T.setCellspacing(2);
+    T.setBorder(0);
+
+    if(iCategoryId > 0){
+      Link ne = new Link(iwrb.getImage("newseditor.gif"));
+      ne.setWindowToOpen(NewsEditorWindow.class);
+      ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
+      T.add(ne,1,1);
+
+      Link change = new Link(iwrb.getImage("change.gif"));
+      change.setWindowToOpen(NewsEditorWindow.class);
+      change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
+      change.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
+      T.add(change,2,1);
+
+      if ( enableDelete ) {
+        Link delete = new Link(iwrb.getImage("delete.gif"));
+        delete.setWindowToOpen(NewsEditorWindow.class);
+        delete.addParameter(NewsEditorWindow.prmDelete,iCategoryId);
+        T.add(delete,3,1);
+      }
+    }
+    if(newObjInst){
+      Link newLink = new Link(iwrb.getImage("new.gif"));
+      newLink.setWindowToOpen(NewsEditorWindow.class);
+      if(newObjInst)
+        newLink.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
+
+      T.add(newLink,2,1);
+    }
+
+    T.setWidth("100%");
+    return T;
+
+  }
+
+  private ModuleObject publishNews(ModuleInfo modinfo ,NewsCategory newsCategory,Locale locale){
+    List L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
+    NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT );
+    boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
+    if(L!=null){
+      int len = L.size();
+      Integer I;
+      NewsHelper newsHelper;
+      for (int i = 0; i < len; i++) {
+        newsHelper = (NewsHelper) L.get(i);
+        I = new Integer(i);
+        if(objectsBetween != null && objectsBetween.containsKey(I)){
+          T.add((ModuleObject)objectsBetween.get(I),sObjectAlign );
+          objectsBetween.remove(I);
+        }
+        T.add(getNewsTable(newsHelper,newsCategory,locale ,false),useDividedTable,"left");
+      }
+      if(objectsBetween != null && objectsBetween.size() > 0){
+        Vector V = new Vector(objectsBetween.values());
+        Collections.reverse(V);
+        Iterator iter = V.iterator();
+        while(iter.hasNext()){
+          T.add((ModuleObject)iter.next(),sObjectAlign );
+        }
+      }
+    }
+    else{
+      T.add(new Text(iwrb.getLocalizedString("no_news","No News")));
+    }
+   return(T);
+  }
+
+  // Make a table around each news
+  private ModuleObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll){
+    Table T = new Table(1,4);
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    T.setBorder(0);
+    T.setWidth("100%");
+
+    NwNews news = newsHelper.getNwNews();
+    LocalizedText locText = newsHelper.getLocalizedText(locale);
+    Text newsInfo = getInfoText(news,newsCategory.getName(),locale,showOnlyDates);
+
+    String sNewsBody = "";
+    String sHeadline = "";
+
+    if(locText!=null){
+      sHeadline = locText.getHeadline();
+      sNewsBody =  locText.getBody();
+    }
+    else{
+      if(news.getHeadline()!=null){
+        sHeadline = news.getHeadline();
+      }
+      if(news.getText()!=null){
+        sNewsBody = NewsFormatter.formatNews(news.getText(),"2");
+      }
+    }
+
+    // shortening newstext
+    if(!showAll && sNewsBody.length() >= numberOfLetters){
+      sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
+    }
+
+    Text headLine = new Text(sHeadline);
+    Text newsBody = new Text(sNewsBody);
+
+    if( showAll ) {
+        T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
+    }
+
+    newsInfo = setInformationAttributes(newsInfo);
+    headLine = setHeadlineAttributes(headLine);
+    newsBody = setTextAttributes(newsBody);
+    T.add(newsInfo,1,1);
+    T.add(newsBody,1,3);
+
+    //  add news
+     if(!showAll && showMoreButton){
+      Link moreLink = new Link(iwrb.getImage("more.gif"));
+      moreLink.addParameter(prmMore,news.getID());
+      T.add(moreLink, 1, 4);
+    }
+
+    if ( alignWithHeadline && headlineImageURL!=null){
+      T.add(new Image(headlineImageURL), 1, 2);
+    }
+
+    if ( headlineAsLink ) {
+      Link headlineLink = new Link(headLine);
+      headlineLink.addParameter(prmMore,news.getID());
+      T.add(headlineLink, 1, 2);
+    }
+    else {
+      T.add(headLine, 1, 2);
+    }
 
 
-private int textSize = 2;
 
-private String attributeName = "union_id";
-//private int attributeId = -1;
-private int attributeId = 3;
+    if(isAdmin){
+      T.add(getNewsAdminPart(news),1,4);
+    }
+    return T;
+  }
 
-public static final int SINGLE_FILE_LAYOUT = 1;
-public static final int NEWS_SITE_LAYOUT = 2;
-public static final int NEWS_PAPER_LAYOUT = 3;
-private int LAYOUT = 1;
+  private ModuleObject getNewsAdminPart(NwNews news){
+    Table links = new Table(2,1);
+      Link newsEdit = new Link(iwrb.getImage("change.gif"));
+      newsEdit.setWindowToOpen(NewsEditorWindow.class);
+      newsEdit.addParameter(NewsEditorWindow.prmNwNewsId,news.getID());
 
+      Link newsDelete = new Link(iwrb.getImage("delete.gif"));
+      newsDelete.setWindowToOpen(NewsEditorWindow.class);
+      newsDelete.addParameter(NewsEditorWindow.prmDelete,news.getID());
 
+      links.setAlignment(1,1,"left");
+      links.setAlignment(2,1,"right");
+      links.add(newsEdit,2,1);
+      links.add(newsDelete,1,1);
+    return links;
+  }
 
-public NewsReader(){
-  showAll = true;
-}
+  private Text getInfoText(NwNews nwNews,String sCategoryName,Locale locale, boolean ifUseOnlyDates){
+    return new Text(NewsFormatter.getInfoText(nwNews,sCategoryName,locale,ifUseOnlyDates) );
+  }
 
+  private void showCategoryMaker(){
 
-public NewsReader(String date){
-  this.date=date;
-  this.showAll=true;
-}
-
-public NewsReader(idegaTimestamp timestamp){
-  this.showAll=true;
-  this.date = timestamp.toSQLString();
-}
-
-
-public NewsReader(int categoryId, String date){
-  this.categoryId=categoryId;
-  this.date=date;
-  this.showAll = false;
-}
-
-public NewsReader(int categoryId){
-  this.categoryId=categoryId;
-  this.showAll = false;
-}
-
-public NewsReader(int categoryId, idegaTimestamp timestamp){
-  this.showAll=false;
-  this.categoryId=categoryId;
-  this.date = timestamp.toSQLString();
-}
-
-public void setNewsEditorUrl(String url){
-  this.sNewsEditorUrl = url;
-}
+  }
 
   public void main(ModuleInfo modinfo)throws Exception{
-    this.isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    IWBundle iwb = getBundle(modinfo);
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
-
-    if( newsReaderURL == null ){
-      newsReaderURL = iwb.getProperty("news_reader_url",modinfo.getRequestURI());//link with "" constructs a link to the calling page
+    try {
+      //isAdmin = AccessControl.isAdmin(modinfo);
+      /** @todo  */
+      isAdmin = AccessControl.hasEditPermission(this,modinfo);
     }
-    if( newsCollectionURL == null ){
-      newsCollectionURL = iwb.getProperty("news_collection_url",modinfo.getRequestURI());
+    catch (SQLException ex) {
+      isAdmin = false;
     }
 
-    back = iwrb.getImage("back.gif");
-    more  = iwrb.getImage("more.gif");
-    change = iwrb.getImage("change.gif");
-    delete = iwrb.getImage("delete.gif");
-    editor = iwrb.getImage("newseditor.gif");
-    collection = iwrb.getImage("collection.gif");
+    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(modinfo);
+    control(modinfo);
+  }
 
-    adminWindow = new Window("AdminWindow",NewsEditor.class,com.idega.jmodule.object.Page.class);
-      adminWindow.setWidth(570);
-      adminWindow.setHeight(470);  boolean byDate=false;
-
-    News[] news = new News[1];
-
-    String news_id = modinfo.getParameter("news_id");
-    String news_category_id = modinfo.getParameter("news_category_id");
-  //added for multiple newsreader support in one page
-    boolean showSingleNews = false;
-
-
-    try{
-      if(news_category_id !=null) {
-          categoryId = Integer.parseInt(news_category_id);//overrides the preset category
-          showSingleNews = false;//nope we are showing a collection!
-          showAll = false;
-          LAYOUT = SINGLE_FILE_LAYOUT;
-      }
-      else if ( (news_category_id==null) && (news_id != null) ) { //yup only one to see if this. owns the newscategory!
-        showSingleNews = true;
-      }
-
-      if(isAdmin) {
-        Link newsEditor = new Link(editor,adminWindow);
-        add(newsEditor);
-      }
-
-      if(showSingleNews) {//single news
-        news[0] = new News(Integer.parseInt(news_id));
-        showAll=false;
-        backbutton=true;
-        cutNews = false;
-        setNumberOfDisplayedNews(1);
-        add(drawNewsTable(news));
-      }
-      else {//view all or category view
-        NewsCategoryAttribute[] attribs = null;
-        String categoryString = null;
-
-        if ( categoryId == 0) {//show the whole collection
-          setLayout(SINGLE_FILE_LAYOUT);
-          showAll = true;
-          String attName = NewsCategoryAttribute.getAttributeNameColumnName();
-          String attId = NewsCategoryAttribute.getAttributeIdColumnName();
-          attribs = (NewsCategoryAttribute[]) (new NewsCategoryAttribute()).findAllByColumn(attName,attributeName,attId,String.valueOf(attributeId));
-          categoryString = getColumnString(attribs);
-
-          //gimmi bætti við 14.2.01
-          if (attribs.length > 0) {
-            this.categoryId = attribs[0].getNewsCategoryId();
-          }
-        }
-        else{
-          showAll = false;
-          categoryString = NewsCategoryAttribute.getNewsCategoryIdColumnName()+" = '"+categoryId+"' ";
-
-        }
-
-        if( date == null ){//not by Date
-          if( showAll ) {
-            if( categoryString!=null )
-              categoryString = " where " + categoryString;
-            else
-              categoryString = "";
-
-            news = (News[]) (new News()).findAll("select * from "+News.getNewsTableName()+" "+categoryString+orderBy);
-          }
-          else news = (News[]) (new News()).findAllByColumn(News.getNewsCategoryIdColumnName(),categoryId);
-        }
-        else{// by date
-        //debug
-       // System.err.println(date);
-          String DatastoreType = getDatastoreType( new News() );
-          byDate=true;
-          if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString = " OR " + categoryString;
-          if( (showAll) && !(DatastoreType.equals("oracle"))  ){
-            String statementstring = selectFrom+News.getNewsDateColumnName()+" >= '"+date+"'  "+categoryString+orderBy;
-            //debug eiki
-          //  System.err.println(statementstring);
-            news = (News[]) (new News()).findAll(statementstring);
-           // if (news != null) System.err.println("fann "+ news.length +"fréttir");
-
-          }
-          else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (new News()).findAll(selectFrom+News.getNewsDateColumnName()+" >= "+date+" "+categoryString+orderBy);
-          else {
-            if ( !(DatastoreType.equals("oracle")) ){
-
-            String statementstring = selectFrom+sNewsCategoryId+categoryId+"' and "+News.getNewsDateColumnName()+" >= '"+date+"'"+orderBy;
-  //System.err.println(statementstring);
-
-             news = (News[]) (new News()).findAll(statementstring);
-
-            }
-            else news = (News[]) (new News()).findAll(selectFrom+sNewsCategoryId+categoryId+"' and "+News.getNewsDateColumnName()+" >= "+date+orderBy);
-          }
-        }
-
-        if(news.length > 0){	add(drawNewsTable(news));}
-        else {//if out of date range
-          if( byDate ){
-            date=null;
-            categoryString = TextSoap.findAndCut(categoryString,"OR");
-            String statementstring = selectFrom+categoryString+orderBy;
-            //debug eiki 24.dec
-           // System.err.println("OUT OF RANGE "+statementstring);
-            news = (News[]) (new News()).findAll(statementstring);
-
-            if( news.length!=0){
-              setNumberOfDisplayedNews(1);
-              add(drawNewsTable(news));
-            }
-            else add(new Text("<b>No news in database</b><br>"));
-          }
-          else add(new Text("<b>No news in database</b><br>"));
-
-        }
-      }
-
-      if ( news_id == null){
-          Table newsCollection = new Table(1,1);
-          if ( showNewsCollectionButton ) {
-          Link collectionLink = new Link( collection, newsCollectionURL);
-          collectionLink.addParameter("news_category_id",Integer.toString(categoryId));
-          newsCollection.add(collectionLink,1,1);
-          newsCollection.setAlignment("right");
-          add(newsCollection);
-          }
-      }
-    }
-    catch( Exception e ){
-
-      add(new Text(e.getMessage()) );//something went wrong
-      e.printStackTrace( System.err);
-    }
-
+  public boolean deleteBlock(int instanceid){
+    return NewsBusiness.disconnectBlock(instanceid);
   }
 
   public void setConnectionAttributes(String attributeName, int attributeId) {
@@ -288,358 +382,9 @@ public void setNewsEditorUrl(String url){
   }
 
   public void setNumberOfDays( int daysIn ){
-
     idegaTimestamp stamp= idegaTimestamp.RightNow();
     stamp.addDays(-daysIn);//dagar inni
     this.date= stamp.toSQLString();
-
-  }
-
-  private String getDatastoreType(GenericEntity entity){
-    return DatastoreInterface.getDatastoreType(entity.getDatasource());
-  }
-
-
-
-  private String getColumnString(NewsCategoryAttribute[] attribs){
-    StringBuffer values = new StringBuffer("");
-    for (int i = 0 ; i < attribs.length ; i++) {
-      values.append(attribs[i].getNewsCategoryIdColumnName()+" = '");
-      values.append(attribs[i].getNewsCategoryId());
-      values.append("'") ;
-      if( i!= (attribs.length)-1 ) values.append(" OR ");
-    }
-    String returnString = values.toString();
-    if (returnString.equalsIgnoreCase("")) return null;
-    else return returnString;
-  }
-
-
-  private Table drawNewsTable(News[] news)throws IOException,SQLException{
-    idegaCalendar funcDate = new idegaCalendar();
-    int news_category_id;
-    NewsCategory newscat;
-    String news_category;
-    String headline;
-    String newstext;
-    String includeImage;
-    String timestamp;
-    String author;
-    String source;
-    int daysshown;
-    Text information;
-    int image_id;
-    int newsLength = news.length;
-
-  //System.out.println("limitNumberOfNews: "+ limitNumberOfNews+" numberOfDisplayedNews: "+numberOfDisplayedNews+" newsLength: "+newsLength);
-    if( (!limitNumberOfNews) || (numberOfDisplayedNews>newsLength) ){
-       numberOfDisplayedNews = newsLength;
-    }
-
-    outerTable = createContainerTable();
-
-    for ( int i=0; i<numberOfDisplayedNews; i++){
-      news_category_id = news[i].getNewsCategoryId();
-      newscat = new NewsCategory(news_category_id);
-      news_category = newscat.getName();
-
-      headline = news[i].getHeadline();
-      includeImage = news[i].getIncludeImage();
-      timestamp = (news[i].getDate()).toString();
-      author = news[i].getAuthor();
-      source = news[i].getSource();
-      daysshown = news[i].getDaysShown();
-
-
-      if ( (i-numberOfExpandedNews)>=0 ){
-        includeImage = "N";
-        newstext = "";
-      }
-      else {
-        newstext = news[i].getText();
-        newstext = NewsBusiness.formatNews(newstext,textSize);
-      }
-
-      information = getInfoText(author, source, news_category, timestamp);
-      if("Y".equals(includeImage)){
-        image_id = news[i].getImageId();
-        addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
-      }
-      else{
-        image_id=-1;
-        addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
-      }
-
-    }
-
-    return outerTable;
-  }
-
-
-
-  private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int newsId,int image_id) throws SQLException
-  {
-
-    Text headline = new Text(Headline);
-    boolean showMore = false;
-
-    //cut of news
-    if(cutNews){
-      if(NewsText.length() >= numberOfLetters){
-              showMore=true;
-              NewsText=NewsText.substring(0,numberOfLetters)+"...";
-      }
-      else if (NewsText.length()<5) {
-              showMore=false;
-      }
-    }
-
-
-    getHeadlineProxy().setBold();
-    headline = setHeadlineAttributes(headline);
-    if( headline.getAttribute("size") == null ) headline.setFontSize(2);
-    else if( headline.getAttribute("size").equals("") )  headline.setFontSize(2);
-
-
-    Text newstext = new Text(NewsText);
-    newstext = setTextAttributes( newstext );
-    if( newstext.getAttribute("size") == null ) newstext.setFontSize(2);
-    else if( newstext.getAttribute("size").equals("") )  newstext.setFontSize(2);
-
-    getInformationProxy().setFontColor("#666666");
-    information = setInformationAttributes(information);
-    if( information.getAttribute("size") == null ) information.setFontSize(1);
-    else if( information.getAttribute("size").equals("") )  information.setFontSize(1);
-
-    Table newsTable = new Table();
-      newsTable.setWidth("100%");
-      newsTable.add(information, 1, 1);
-      newsTable.setRowVerticalAlignment(1,"top");
-      newsTable.setRowVerticalAlignment(2,"top");
-      newsTable.setRowVerticalAlignment(3,"top");
-
-    if ( showHeadlineImage ) {
-      Image headlineImage = new Image(headlineImageURL,"");
-      headlineImage.setAttribute("align","absmiddle");
-      newsTable.add(headlineImage, 1, 2);
-    }
-
-    if ( headlineAsLink ) {
-      Link headlineLink = new Link(headline,getNewsReaderURL());
-      headlineLink.addParameter("news_id",newsId);
-      newsTable.add(headlineLink, 1, 2);
-    }
-    else {
-      newsTable.add(headline, 1, 2);
-    }
-
-
-    if (image_id!=-1){
-      if ( showImages ) {
-        newsTable.mergeCells(1,1,2,1);
-        if ( !alignWithHeadline ) {
-          newsTable.mergeCells(1,2,2,1);
-        }
-        Image newsImage = new Image(image_id);
-          newsImage.setVerticalSpacing(3);
-          newsImage.setHorizontalSpacing(3);
-
-        if( (LAYOUT!=NEWS_SITE_LAYOUT) ){
-          if ( alignWithHeadline )
-            newsTable.add(newsImage, 2, 2);
-          else
-            newsTable.add(newsImage, 2, 3);
-        }
-        else{
-         if(currentRowPosition==1){
-          if ( alignWithHeadline )
-            newsTable.add(newsImage, 2, 2);
-          else
-            newsTable.add(newsImage, 2, 3);
-         }
-        }
-      }
-
-    }
-
-    if ( alignWithHeadline ) {
-      newsTable.add(Text.getBreak(),1,2);
-      newsTable.add(newstext, 1, 2);
-    }
-    else {
-      newsTable.add(newstext, 1, 3);
-    }
-
-    if( backbutton ) {
-      if ( alignWithHeadline ) {
-        newsTable.mergeCells(1,3,2,3);
-        newsTable.add(new BackButton(back), 1, 3);
-      }
-      else {
-        newsTable.mergeCells(1,4,2,4);
-        newsTable.add(new BackButton(back), 1, 4);
-      }
-    }
-    else {
-      //if(showMore && !headlineAsLink) {//always show the more button
-        if(showMoreButton) {
-          if ( !backbutton ) {
-            if ( alignWithHeadline ) {
-              newsTable.mergeCells(1,3,2,3);
-            }
-            else {
-              newsTable.mergeCells(1,4,2,4);
-            }
-          }
-
-          Link moreLink = new Link(more,newsReaderURL);
-          moreLink.addParameter("news_id",newsId);
-          if ( alignWithHeadline ) {
-            newsTable.add(moreLink, 1, 3);
-          }
-          else {
-            newsTable.add(moreLink, 1, 4);
-          }
-        }
-    }
-
-
-    if(isAdmin) {
-      Table links = new Table(2,1);
-      Link newsEdit = new Link(change,adminWindow);
-      newsEdit.addParameter("news_id",newsId);
-
-      Link newsDelete = new Link(delete,adminWindow);
-      newsDelete.addParameter("news_id",newsId);
-      newsDelete.addParameter("mode","delete");
-
-      links.setAlignment(1,1,"left");
-      links.setAlignment(2,1,"right");
-      links.add(newsEdit,2,1);
-      links.add(newsDelete,1,1);
-
-      newsTable.add(links,1,3);
-
-    }
-
-    return newsTable;
-  }
-
-
-
-  //debug StringBuffer this
-  private Text getInfoText(String Author, String Source, String Category, String TimeStamp)
-  {
-    Text information = new Text();
-    String DatastoreType = getDatastoreType( new News() );
-    TimeStamp = NewsBusiness.formatDateWithTime(TimeStamp,DatastoreType);
-
-    if ( showOnlyDates ) {
-      idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
-
-      String date = Integer.toString(timeStamp.getDate());
-      if ( date.length() == 1 ) date = "0" + date;
-      String month = Integer.toString(timeStamp.getMonth());
-      if ( month.length() == 1 ) month = "0" + month;
-      String year = Integer.toString(timeStamp.getYear());
-
-      information = new Text(date+"."+month+"."+year);
-    }
-
-    else {
-
-        if((Author == null||  Author.equals("")) && (Source == null || (Source.equals(""))))
-                information = new Text(Category+" | "+TimeStamp);
-
-        else if(Author == null || Author.equals("")){
-                if(Source != null || !(Source.equals("")))
-                        information = new Text(Category+" | "+Source+" | "+TimeStamp);
-        }
-
-        else if(Source == null || Source.equals("")){
-                if(Author != null || !(Author.equals("")))
-                        information = new Text(Category+" | "+Author+" | "+TimeStamp);
-        }
-
-        else
-                information = new Text(Category+" | "+Author+" | "+Source+" | "+TimeStamp);
-
-    }
-
-    return information;
-  }
-
-
-  private void addNext(Table table){
-   switch (LAYOUT) {
-     case SINGLE_FILE_LAYOUT:
-      outerTable.add(table, 1, 1);
-      outerTable.addBreak(1,1);
-      outerTable.addBreak(1,1);
-       break;
-     case  NEWS_SITE_LAYOUT:
-      //debug NEWS_SITE_LAYOUT shows only one image for now...code in insertTable
-      //teljari með staðsetningu
-        if( (currentColumnPosition==1) && (currentRowPosition==1) && (numberOfDisplayedNews>0)) {
-          outerTable.add(table, 1, 1);
-          outerTable.setVerticalAlignment(1, 1,"top");
-          currentRowPosition++;
-        }
-        else{
-          if( (currentColumnPosition==1) && (currentRowPosition!=2) ){
-             outerTable.add(table, 1, currentRowPosition);
-             outerTable.setVerticalAlignment(1,currentRowPosition,"top");
-             currentColumnPosition=2;
-          }
-          else if(currentColumnPosition==2){
-            outerTable.add(table, 2, currentRowPosition);
-            outerTable.setVerticalAlignment(2, currentRowPosition,"top");
-            currentColumnPosition=1;
-            currentRowPosition++;
-          }
-          else {
-            outerTable.add(table, 1, currentRowPosition);
-            outerTable.setVerticalAlignment(1, currentRowPosition,"top");
-            currentColumnPosition=2;
-          }
-        }
-       break;
-     case NEWS_PAPER_LAYOUT:
-         //flowtable
-
-      break;
-   }
-
-  }
-
-  private Table createContainerTable(){
-    Table temp;
-
-     switch (LAYOUT) {
-     case SINGLE_FILE_LAYOUT:
-      temp = new Table(1,1);
-      outerTable.setAlignment("center");
-       break;
-     case  NEWS_SITE_LAYOUT:
-      int rows = (numberOfDisplayedNews/2) ;
-      int theRest = (numberOfDisplayedNews%2);
-      if( theRest==0) rows++;
-      else rows+=theRest;
-
-      temp = new Table(2,rows);
-      temp.setCellspacing(6);;
-      temp.setWidth(1,"50%");
-      temp.setWidth(2,"50%");
-      temp.mergeCells(1,1,2,1);
-       break;
-     case NEWS_PAPER_LAYOUT:
-      temp = new Table(3,1);
-      break;
-     default: temp = new Table(1,1);
-    }
-
-    temp.setWidth(outerTableWidth);
-    return temp;
   }
 
   /*
@@ -647,7 +392,7 @@ public void setNewsEditorUrl(String url){
   **
   */
   public void setLayout(int LAYOUT){
-    this.LAYOUT = LAYOUT;
+    this.iLayout = LAYOUT;
   }
 
   /**
@@ -659,157 +404,125 @@ public void setNewsEditorUrl(String url){
   public Text getTextProxy(){
     return textProxy;
   }
-
   public Text getHeadlineProxy(){
     return headlineProxy;
   }
-
   public Text getInformationProxy(){
     return informationProxy;
   }
-
   public void setTextProxy(Text textProxy){
     this.textProxy = textProxy;
   }
-
   public void setHeadlineProxy(Text headlineProxy){
     this.headlineProxy = headlineProxy;
   }
-
   public void setInformationProxy(Text informationProxy){
     this.informationProxy = informationProxy;
   }
-
   public Text setTextAttributes( Text realText ){
     Text tempText = (Text) textProxy.clone();
     tempText.setText( realText.getText() );
-    return tempText;
+  return tempText;
   }
-
   public Text setHeadlineAttributes( Text realText ){
     Text tempText = (Text) headlineProxy.clone();
     tempText.setText( realText.getText() );
     return tempText;
   }
-
-
   public Text setInformationAttributes( Text realText ){
     Text tempText = (Text) informationProxy.clone();
     tempText.setText( realText.getText() );
     return tempText;
   }
-
   public void setNumberOfLetters(int numberOfLetters){
-    if( numberOfLetters<0 ) numberOfLetters = (-1)*numberOfLetters;
-    this.numberOfLetters = numberOfLetters;
+    this.numberOfLetters = Math.abs(numberOfLetters);
   }
-
+  //debug this changes the number of news displayed..that is the date alone is failing
   public void setNumberOfDisplayedNews(int numberOfDisplayedNews){
     this.limitNumberOfNews = true;
-    if( numberOfDisplayedNews<0 ) numberOfDisplayedNews = (-1)*numberOfDisplayedNews;
-    this.numberOfDisplayedNews = numberOfDisplayedNews;
+    this.numberOfDisplayedNews = Math.abs(numberOfDisplayedNews);
   }
-
   public void setAdmin(boolean isAdmin){
     this.isAdmin=isAdmin;
   }
-
   public void setFromDate(String SQLdate){
     this.date=SQLdate;
   }
-
   public void setWidth(int width){
     setWidth(Integer.toString(width));
   }
-
   public void setWidth(String width){
-    outerTableWidth = width;
-  }
-
-  public void setChangeImage(String image_name){
-    change = new Image(image_name);
-  }
-
-  public void setDeleteImage(String image_name){
-    delete = new Image(image_name);
-  }
-
-  public void setEditorImage(String image_name){
-    editor = new Image(image_name);
-  }
-
-  public void setCollectionImage(String image_name){
-    editor = new Image(image_name);
+    this.outerTableWidth = width;
   }
 
   public void setNewsReaderURL(String URL){
-    newsReaderURL = URL;
+    this.newsReaderURL = URL;
   }
-
   public String getNewsReaderURL(){
     return newsReaderURL;
   }
-
   public void setNewsCollectionURL(String URL){
-    newsCollectionURL = URL;
+    this.newsCollectionURL = URL;
   }
-
   public String getNewsCollectionURL(){
     return newsCollectionURL;
   }
-
-  public void showNewsCollectionButton(boolean showNewsCollection){
-    showNewsCollectionButton = showNewsCollection;
+  public void showNewsCollectionButton(boolean showNewsCollectionButton){
+    this.showNewsCollectionButton = showNewsCollectionButton;
   }
-
   public void setNewsReaderURLAsSamePage(ModuleInfo modinfo){
-    newsReaderURL =  modinfo.getRequestURI();
+    this.newsReaderURL =  modinfo.getRequestURI();
   }
-
   public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
-    newsCollectionURL =  modinfo.getRequestURI();
+    this.newsCollectionURL =  modinfo.getRequestURI();
   }
-
   public void setNumberOfExpandedNews(int numberOfExpandedNews){
-    if( numberOfExpandedNews<0 ) numberOfExpandedNews = (-1)*numberOfExpandedNews;
-    this.numberOfExpandedNews=numberOfExpandedNews;
+    this.numberOfExpandedNews = Math.abs(numberOfExpandedNews);
   }
-
   public void setShowImages(boolean showImages) {
     this.showImages=showImages;
   }
-
   public void setShowMoreButton(boolean showMoreButton) {
     this.showMoreButton=showMoreButton;
   }
-
   public void setShowHeadlineImage(boolean showHeadlineImage) {
     this.showHeadlineImage=showHeadlineImage;
   }
-
   public void alignImageWithHeadline() {
     this.alignWithHeadline=true;
   }
-
   public void setHeadlineAsLink(boolean headlineAsLink) {
     this.headlineAsLink=headlineAsLink;
     this.showHeadlineImage=true;
     this.showMoreButton=false;
   }
-
   public void setHeadlineImageURL(String headlineImageURL) {
     this.headlineImageURL=headlineImageURL;
   }
-
   public void setShowOnlyDates(boolean showOnlyDates) {
     this.showOnlyDates=showOnlyDates;
   }
-
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
-
-  public void add(ModuleObject obj) {
-    outerTable.addAtBeginning(obj);
+  public String getObjectAlignment(){
+    return sObjectAlign ;
+  }
+  public void setObjectAligment(String sAlign){
+    sObjectAlign = sAlign;
+  }
+  public void addObjectBetween(ModuleObject object,int spaceNumber){
+    if(objectsBetween == null)
+      objectsBetween = new Hashtable();
+    objectsBetween.put(new Integer(spaceNumber),object);
+  }
+  // overriding super class method
+  public void add(ModuleObject MO){
+    addObjectBetween(MO,iSpaceBetween);
+    if(iLayout == NEWS_SITE_LAYOUT){
+      iSpaceBetween+=2;
+    }
+    else
+      iSpaceBetween++;
   }
 }

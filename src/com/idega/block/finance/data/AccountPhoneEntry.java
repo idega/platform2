@@ -12,7 +12,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class AccountPhoneEntry extends GenericEntity {
+public class AccountPhoneEntry extends GenericEntity implements Entry{
   public static final String statusUnread = "U";
   public static final String statusRead = "R";
   public static final String statusBilled = "B";
@@ -125,7 +125,7 @@ public class AccountPhoneEntry extends GenericEntity {
     setColumn(getColumnNamePrice(), price);
   }
   public float getPrice(){
-    return getIntColumnValue(getColumnNamePrice());
+    return getFloatColumnValue(getColumnNamePrice());
   }
 
   public void setDayDuration(int seconds){
@@ -170,6 +170,20 @@ public class AccountPhoneEntry extends GenericEntity {
     }
     else
       throw new IllegalStateException("Undefined state : " + status);
+  }
+
+  // interface specific:
+  public String getType(){
+    return typePhone;
+  }
+  public String getFieldNameLastUpdated(){
+    return getColumnNameLastUpdated();
+  }
+  public String getFieldNameAccountId(){
+    return getColumnNameAccountId();
+  }
+  public String getTableName(){
+    return getEntityTableName();
   }
 
 }

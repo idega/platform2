@@ -6,6 +6,7 @@ import com.idega.data.genericentity.Member;
 import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -65,25 +66,36 @@ public class AccountManager {
   }
 
   public static List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    return listOfAccEntries(iAccountId,new AccountEntry(), from,to);
+  }
+
+  public static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    return listOfAccEntries(iAccountId,new AccountPhoneEntry(), from,to);
+  }
+  private static List listOfAccEntries(int iAccountId,Entry entry,idegaTimestamp from,idegaTimestamp to){
     StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(AccountEntry.getEntityTableName());
+    sql.append(entry.getTableName());
     sql.append(" where ");
-    sql.append(AccountEntry.getAccountIdColumnName());
+    sql.append(entry.getFieldNameAccountId());
     sql.append(" = ");
     sql.append(iAccountId);
     sql.append(" and ");
-    sql.append(AccountEntry.getLastUpdatedColumnName());
+    sql.append(entry.getFieldNameLastUpdated());
     sql.append(" >= '");
     sql.append(from.getSQLDate());
     sql.append("' and ");
-    sql.append(AccountEntry.getLastUpdatedColumnName());
+    sql.append(entry.getFieldNameLastUpdated());
     sql.append(" <= '");
     sql.append(to.getSQLDate());
     sql.append(" 23:59:59'");
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     List A = null;
     try{
-       A = EntityFinder.findAll(new AccountEntry(),sql.toString());
+      if(entry.getType().equals(entry.typeFinancial))
+        A = EntityFinder.findAll(new AccountEntry(),sql.toString());
+      else if(entry.getType().equals(entry.typePhone)){
+        A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
+      }
     }
     catch(Exception e){A=null;}
     return A;
