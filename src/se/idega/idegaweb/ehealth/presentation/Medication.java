@@ -47,7 +47,7 @@ public class Medication extends EHealthBlock {
 	private String prmLinkFass = prefix + "link_to_fass";
 	private String prmShow = prefix + "visa";
 	
-	
+	private String keyRenewReceipeInfo = prefix + "renew_alert_info";
 	
 	IWContext _iwc = null;
 	ICPage _fassPage = null;
@@ -103,6 +103,7 @@ public class Medication extends EHealthBlock {
 		info.add("<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat");
 		
 		GenericButton renew = getButton(new GenericButton("renew", localize(prmRenewReceipe, "Renew receipe")));
+		renew.setOnClick("alert('"+ localize(keyRenewReceipeInfo, "Renew receipe info")+"')");
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
