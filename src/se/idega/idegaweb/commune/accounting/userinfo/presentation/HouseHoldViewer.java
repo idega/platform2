@@ -26,6 +26,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
@@ -33,6 +34,7 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.GenericButton;
@@ -60,6 +62,8 @@ public class HouseHoldViewer extends AccountingBlock {
 	private Class userEditorWindowClass = CitizenEditorWindow.class;
 	private Class userBruttoIncomeWindowClass = BruttoIncomeWindow.class;
 	private Class userLowIncomeWindowClass = null;
+	private Class childContractHistoryWindowClass = ChildContractsWindow.class;
+	private String childContractHistoryChildParameterName = ChildContractsWindow.PARAMETER_CHILD_ID;
 	private String userEditorUserParameterName = CitizenEditorWindow.getUserIDParameterName();
 	private String userBruttoIncomeUserParameterName = BruttoIncomeWindow.getUserIDParameterName();
 	private String userLowIncomeUserParameterName = null;
@@ -310,7 +314,8 @@ public class HouseHoldViewer extends AccountingBlock {
 			for (Iterator iter = children.iterator(); iter.hasNext();) {
 				User child = (User) iter.next();
 				col = 1;
-				table.add(getText(child.getFirstName()));
+				
+				table.add(getChildHistoryLink(child));
 				table.add(getText(child.getPersonalID()));
 				Address address = getUserAddress(iwc, child);
 				if (address != null) {
@@ -708,4 +713,42 @@ public class HouseHoldViewer extends AccountingBlock {
 			IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
 			return dob;
 		}
+	/**
+	 * @return
+	 */
+	public String getChildContractHistoryChildParameterName() {
+		return childContractHistoryChildParameterName;
+	}
+
+	/**
+	 * @param childContractHistoryChildParameterName
+	 */
+	public void setChildContractHistoryChildParameterName(String childContractHistoryChildParameterName) {
+		this.childContractHistoryChildParameterName = childContractHistoryChildParameterName;
+	}
+
+	/**
+	 * @return
+	 */
+	public Class getChildContractHistoryWindowClass() {
+		return childContractHistoryWindowClass;
+	}
+
+	/**
+	 * @param childContractHistoryWindowClass
+	 */
+	public void setChildContractHistoryWindowClass(Class childContractHistoryWindowClass) {
+		this.childContractHistoryWindowClass = childContractHistoryWindowClass;
+	}
+	
+	private PresentationObject getChildHistoryLink(User child){
+		if(childContractHistoryWindowClass!=null && childContractHistoryChildParameterName!=null){
+			Link l = new Link(child.getFirstName());
+			l.setWindowToOpen(childContractHistoryWindowClass);
+			l.addParameter(childContractHistoryChildParameterName,child.getPrimaryKey().toString());
+			return l;
+		}
+		return getText(child.getFirstName());
+	}
+
 }
