@@ -353,7 +353,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     while (para.hasNext())  {
       String parameterKey = (String) para.next();
       String parameterValue  = iwc.getParameter(parameterKey);
-      Parameter parameter = new Parameter(parameterKey, parameterValue);
+      String parameterString = (parameterValue == null) ? "" : parameterValue;
+      Parameter parameter = new Parameter(parameterKey, parameterString);
       browser.addMandatoryParameter(parameter);
     }
     if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
