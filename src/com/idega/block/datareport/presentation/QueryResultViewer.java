@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.sql.DirectSQLStatement;
 import com.idega.block.dataquery.data.sql.InputDescription;
@@ -68,6 +69,8 @@ public class QueryResultViewer extends Block {
 	
 	public static final String DESIGN_CHOOSER_KEY ="design_chooser_key";
 	
+	public static final String NUMBER_OF_ROWS_KEY =  "number_of_rows_key";
+	
 	public static final String ACTION_EXECUTE_QUERY = "action_execute_query";
 	public static final String ACTION_SHOW_QUERY = "execute_show_query";
 	public static final String EXECUTE_QUERY_KEY = "execute_query_key";
@@ -84,6 +87,10 @@ public class QueryResultViewer extends Block {
 	private int queryId;
 	// -1 is default value
 	private int designId = -1;
+	
+	private int numberOfRowsLimit = -1; 
+	private int resultNumberOfRows = -1;
+		
 	private String outputFormat = HTML_KEY;
 	
 	public String getBundleIdentifier(){
@@ -102,9 +109,12 @@ public class QueryResultViewer extends Block {
 				showInputFieldsOrExecuteQuery(executedSQLStatements, resourceBundle, iwc);
 		}
 		else {
-			errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
+			errorMessage = executeQueries(query, numberOfRowsLimit, bridge, executedSQLStatements, resourceBundle, iwc);
 			if (errorMessage != null) {
 	  		addErrorMessage(errorMessage);
+	  		if (resultNumberOfRows != -1) {
+	  			showInputFieldsOrExecuteQuery(executedSQLStatements, resourceBundle, iwc);
+	  		}
 	  	}
 		}
 	}
@@ -115,6 +125,9 @@ public class QueryResultViewer extends Block {
 			queryId = Integer.parseInt(iwc.getParameter(QUERY_ID_KEY));
 			designId = Integer.parseInt(iwc.getParameter(DESIGN_ID_KEY));
 			outputFormat = iwc.getParameter(OUTPUT_FORMAT_KEY);
+			if (iwc.isParameterSet(NUMBER_OF_ROWS_KEY)) {
+				numberOfRowsLimit = Integer.parseInt(iwc.getParameter(NUMBER_OF_ROWS_KEY));
+			}
 		}
 		else {
 			// request from overview
@@ -184,31 +197,42 @@ public class QueryResultViewer extends Block {
   private void showInputFieldsOrExecuteQuery(List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
   	Map identifierValueMap = query.getIdentifierValueMap();
 	  boolean calculateAccess = calculateAccess(identifierValueMap);
-	  boolean containsOnlyAccessVariable = containsOnlyAccessVariables(identifierValueMap); 
-	  if (! (containsOnlyAccessVariable || iwc.isParameterSet(EXECUTE_QUERY_KEY))) {
+	  boolean containsOnlyAccessVariable = containsOnlyAccessVariables(identifierValueMap);
+	  if ((! containsOnlyAccessVariable && ! iwc.isParameterSet(EXECUTE_QUERY_KEY)) || 
+	  		resultNumberOfRows != -1) {
+	  	// Case: there are input fields and the user hasn't filled those fields yet or
+	  	// the result contains a large number of rows.
 	  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
 	  	showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
 	  }
 	  else {
+	  	// Case:
+	  	// contains only access variable (nothing to do for the user) or
+	  	// execute query key is set (user has laready filled in the input fields)
+	  	// 
 	  	// get the values of the input fields
 	    Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap, iwc);
 	    if (calculateAccess) {
 	    	setAccessCondition(modifiedValues, iwc);
 	    }
 	    query.setIdentifierValueMap(modifiedValues);
-	  	String errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
+	  	String errorMessage = executeQueries(query, numberOfRowsLimit, bridge, executedSQLStatements, resourceBundle, iwc);
 	  	if (errorMessage != null) {
 	  		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
 	  			addExecutedSQLQueries(executedSQLStatements);
 	  		}
 	  		addErrorMessage(errorMessage);
-	  		if (! containsOnlyAccessVariable) {
+	  		if (! containsOnlyAccessVariable || resultNumberOfRows != -1) {
 			  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
+			  	identifierValueMap = query.getIdentifierValueMap();
 			  	showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
 	  		}
 	  	}
 	  }
   }  
+  
+  
+  
   
   private boolean calculateAccess(Map identifierValueMap) {
   	return (
@@ -279,9 +303,24 @@ public class QueryResultViewer extends Block {
   		add(queryDescriptionText);
   	}	
   	
-  	Table table = new Table (2, identifierValueMap.size() + 1);
-  	Iterator iterator = identifierValueMap.entrySet().iterator();
+  	Table table = null;
   	int i = 1;
+  	// special case: ask for the desired number of rows
+  	if (resultNumberOfRows != -1) {
+	  	table = new Table (2, identifierValueMap.size() + 2);
+	  	
+	  	Text desiredNumberOfRowsText = new Text(resourceBundle.getLocalizedString("ro_set_number_of_max_rows", "Set number of  max rows"));
+	  	table.add(desiredNumberOfRowsText, 1, i );
+	  	TextInput numberOfRowsInput = new TextInput(NUMBER_OF_ROWS_KEY, Integer.toString(resultNumberOfRows));
+	  	table.add(numberOfRowsInput, 2, i );
+	  	i++;
+  	}
+  	else {
+  		table = new Table (2, identifierValueMap.size() + 1);
+  	}
+  	
+  	Iterator iterator = identifierValueMap.entrySet().iterator();
+
   	while (iterator.hasNext())	{
   		Map.Entry entry = (Map.Entry) iterator.next();
   		String key = (String) entry.getKey();
@@ -349,13 +388,27 @@ public class QueryResultViewer extends Block {
   	return goBack;
 	}
 		
-	private String executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
-		QueryResult queryResult = bridge.executeQueries(query, executedSQLStatements);
+	private String executeQueries(SQLQuery query, int numberOfRows, QueryToSQLBridge bridge, List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
+		QueryResult queryResult = bridge.executeQueries(query, numberOfRows, executedSQLStatements);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{
 			// nothing to do
 			return resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 		}
+		resultNumberOfRows = queryResult.getNumberOfRows();
+		// that means: if the user has set number of rows to 12 000 and the result contains 11 000 rows
+		// nothing happens even if MAX_NUMBER_OF_ROWS_IN_RESULT is only set to 500 
+		if (resultNumberOfRows > numberOfRows && resultNumberOfRows > QueryConstants.MAX_NUMBER_OF_ROWS_IN_RESULT)  {
+			String error = resourceBundle.getLocalizedString("ro_number_of_rows_in result _is_properly_too_large", "Number of rows in result is properly too large");
+			String rows = resourceBundle.getLocalizedString("ro_rows","rows");
+			StringBuffer buffer = new StringBuffer(error);
+			buffer.append(": ").append(resultNumberOfRows).append(" ").append(rows);
+			return buffer.toString();
+		}
+		else {
+			resultNumberOfRows = -1;
+		}
+			
 		// get design
 		JasperReportBusiness reportBusiness = getReportBusiness();
 		DesignBox designBox = getDesignBox(query, reportBusiness, resourceBundle, iwc);
