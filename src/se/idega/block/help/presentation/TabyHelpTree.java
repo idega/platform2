@@ -1,5 +1,5 @@
 /*
- * $Id: TabyHelpTree.java,v 1.1 2003/12/18 15:02:18 palli Exp $
+ * $Id: TabyHelpTree.java,v 1.2 2004/01/09 20:35:45 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ public class TabyHelpTree extends Block {
 	public static final String BODY_STYLE = "hlp_bdy_sty";
 	public static final String BODY_CLASS = "hlp_bdy_cla";
 	
-	private static final String BUNDLE_IDENTIFIER = "com.idega.block.help";
+	private static final String BUNDLE_IDENTIFIER = "se.idega.block.help";
 	
 	private static final String HELP_FRAME = "hlp_tree_frame";
 
@@ -115,10 +115,10 @@ public class TabyHelpTree extends Block {
 		HelpNode child14 = null;
 		HelpNode child15 = null;
 
-		HelpNode child16 = null;
+		/*HelpNode child16 = null;
 		HelpNode child17 = null;
 		HelpNode child18 = null;
-
+*/
 
 		HelpNode citizen = null;
 		HelpNode schoolChoice = null;
@@ -127,31 +127,30 @@ public class TabyHelpTree extends Block {
 		if (iwc.getCurrentLocale().getLanguage().equals("en")) {
 			top = new HelpNode(1,"se.idega.idegaweb.commune","Help - Citizens");
 			child1 = new HelpNode(2,"se.idega.idegaweb.commune","Application for citizen account");
-			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Citizen account - for you who do not live in Nacka");
+			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Citizen account - for you who do not live in Täby");
 			child3 = new HelpNode(4,"se.idega.idegaweb.commune","My page");
 			child4 = new HelpNode(5,"se.idega.idegaweb.commune","My settings");
 			child5 = new HelpNode(6,"se.idega.idegaweb.commune","School selection - to choose school");
-			child6 = new HelpNode(7,"se.idega.idegaweb.commune","Change of school");
-			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Selection of child-care for school children with child-care check");
-			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Application for child-care check");
-			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Leave points of view");
-			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Political responsibility");
-			child11 = new HelpNode(12,"se.idega.idegaweb.commune","Your selection");
-			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Search Nacka24");
-			child13 = new HelpNode(14,"se.idega.idegaweb.commune","To nacka.se");		
-			child14 = new HelpNode(15,"se.idega.idegaweb.commune","My messages");
-			child15 = new HelpNode(16,"se.idega.idegaweb.commune","My errands");
+			child6 = new HelpNode(7,"se.idega.idegaweb.commune","School selection - placing message");
+			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Selection of after school care");
+			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Application for after school care check");
+			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Change your personal settings");
+			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Search");
+			child11 = new HelpNode(12,"se.idega.idegaweb.commune","To taby.se");
+			child12 = new HelpNode(13,"se.idega.idegaweb.commune","My messages");
+			child13 = new HelpNode(14,"se.idega.idegaweb.commune","My errands");
 			
-			citizen = new HelpNode(17,"se.idega.idegaweb.commune","Citizen account");
-			schoolChoice = new HelpNode(18,"se.idega.idegaweb.commune","School selection");
-			other = new HelpNode(19,"se.idega.idegaweb.commune","Other");
+			citizen = new HelpNode(15,"se.idega.idegaweb.commune","Citizen account");
+			schoolChoice = new HelpNode(16,"se.idega.idegaweb.commune","School selection");
+			other = new HelpNode(17,"se.idega.idegaweb.commune","Other");
 			
 			citizen.addChild(child1);
 			citizen.addChild(child2);
 			citizen.addChild(child3);
+			citizen.addChild(child4);
 			citizen.addChild(child14);
 			citizen.addChild(child15);
-			citizen.addChild(child4);
+			
 			
 			schoolChoice.addChild(child5);
 			schoolChoice.addChild(child6);
@@ -171,42 +170,34 @@ public class TabyHelpTree extends Block {
 		else {
 			HelpNode citizenTop = new HelpNode(1,"se.idega.idegaweb.commune","Hjälp - Medborgare");
 			child1 = new HelpNode(2,"se.idega.idegaweb.commune","Ansökan om medborgarkonto");
-			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Medborgarkonto - för dig som inte bor i Nacka");
+			child2 = new HelpNode(3,"se.idega.idegaweb.commune","Medborgarkonto - för dig som inte bor i Täby");
 			child3 = new HelpNode(4,"se.idega.idegaweb.commune","Min sida");
 			child4 = new HelpNode(5,"se.idega.idegaweb.commune","Mina inställningar");
 			child5 = new HelpNode(6,"se.idega.idegaweb.commune","Skolval - att välja skola");
-			child6 = new HelpNode(7,"se.idega.idegaweb.commune","Byte av skola");
-			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Val av skolbarnsomsorg med barnomsorgscheck");
-			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Ansökan om barnomsorgscheck");
-			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Lämna synpunkter");
-			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Politiskt ansvar");
-			child11 = new HelpNode(12,"se.idega.idegaweb.commune","Ditt val");
-			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Sök på Nacka24");
-			child13 = new HelpNode(14,"se.idega.idegaweb.commune","Till nacka.se");
-			child14 = new HelpNode(15,"se.idega.idegaweb.commune","Mina meddelanden");
-			child15 = new HelpNode(16,"se.idega.idegaweb.commune","Mina ärenden");
-			
-			child16 = new HelpNode(21,"se.idega.idegaweb.commune","Updatera dina köalternativ - för dig som står i barnomsorgskö");
-			child17 = new HelpNode(22,"se.idega.idegaweb.commune","Updatera dina köalternativ - för dig som har en barnomsorgsplats");
-			child18 = new HelpNode(23,"se.idega.idegaweb.commune","Barnomsorg & Utbildning");
+			child6 = new HelpNode(7,"se.idega.idegaweb.commune","Skolval - platsmeddelande");
+			child7 = new HelpNode(8,"se.idega.idegaweb.commune","Val av skolbarnsomsorg");
+			child8 = new HelpNode(9,"se.idega.idegaweb.commune","Ansökan om fritidshemspeng");
+			child9 = new HelpNode(10,"se.idega.idegaweb.commune","Ändra dina personliga uppgifter");
+			child10 = new HelpNode(11,"se.idega.idegaweb.commune","Sök");
+			child11 = new HelpNode(12,"se.idega.idegaweb.commune","Till taby.se");
+			child12 = new HelpNode(13,"se.idega.idegaweb.commune","Mina meddelanden");
+			child13 = new HelpNode(14,"se.idega.idegaweb.commune","Mina ärenden");		
 
 			citizenTop.addChild(child1);
 			citizenTop.addChild(child2);
 			citizenTop.addChild(child3);
 			citizenTop.addChild(child4);
-			citizenTop.addChild(child16);
-			citizenTop.addChild(child17);
+			citizenTop.addChild(child5);			
 			citizenTop.addChild(child6);
 			citizenTop.addChild(child7);
 			citizenTop.addChild(child8);
 			citizenTop.addChild(child9);
 			citizenTop.addChild(child10);
-			citizenTop.addChild(child18);
-			citizenTop.addChild(child12);
-			citizenTop.addChild(child13);
+			citizenTop.addChild(child11);
+				
 			
-			child3.addChild(child14);
-			child3.addChild(child15);
+			child3.addChild(child12);
+			child3.addChild(child13);
 
 //			citizen = new HelpNode(17,"se.idega.idegaweb.commune","Medborgarkonto");
 //			schoolChoice = new HelpNode(18,"se.idega.idegaweb.commune","Skolval");
