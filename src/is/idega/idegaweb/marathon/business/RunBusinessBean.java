@@ -241,10 +241,12 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 	
 	public int getAgeFromPersonalID(String personalID) {
-		IWTimestamp dateOfBirth = getBirthDateFromSSN(personalID);
-		if (dateOfBirth != null) {
-			Age age = new Age(dateOfBirth.getDate());
-			return age.getYears();
+		if (personalID != null) {
+			IWTimestamp dateOfBirth = getBirthDateFromSSN(personalID);
+			if (dateOfBirth != null) {
+				Age age = new Age(dateOfBirth.getDate());
+				return age.getYears();
+			}
 		}
 		return -1;
 	}
