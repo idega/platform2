@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.9 2003/08/27 07:36:33 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.10 2003/08/27 14:02:13 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,6 +18,9 @@ import java.util.Iterator;
 
 import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
+
+import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldHome;
@@ -39,6 +42,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	public static final int JUSTIFY_RIGHT = 1;
 
 	private final static String KEY_ERROR_POST_PARAM_CREATE = "posting_param_err.create";
+	private final static String KEY_ERROR_POST_NOT_FOUND = "posting_parm_edit.post_not_found";
 
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
@@ -88,6 +92,91 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		return ret.toString();
 	}
 
+	/**
+	 * Hämta konteringsinformation
+	 * Retrieves accounting default information. Matching is done via keys to avoid localisation problems. 
+	 * The example keys I added here are just for "Check och Peng" education/childcare but could easily be 
+	 * extened to use other areas such as elderly care etc etc. And of course localized.
+	 * We store the keys in the data bean and these are retrived from the regulation framework
+	 * @see se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness#
+	 *    
+	 * @param date Date when the transaction took place
+	 * 
+	 * @param activity String containing an identifyer for the activity examples are:
+	 * Skola, Förskola or "". Matching is done on keys: school, pre_school or ""
+	 *  
+	 * @param regSpecType String containing an identifyer for the regulations specifications type 
+	 * examples are:
+	 * Check, Modersmål or "". Matching is done on keys: check, modersmal, ""
+	 *
+	 * @param companyType String containing an identifyer for the company type 
+	 * examples are:
+	 * Kommun, Stiftelse, AB, Övriga företag or "". Matching is done on keys:   
+	 * "kommun", "stiftelse", "ab", "ovr_foretag" or ""
+	 * 
+	 * @param communeBelonging String containing an identifyer for the commune belonging 
+	 * examples are:
+	 * Nacka, EJ Nacka or "". Matching is done on keys:  "nacka", "ej_nacka" or ""
+	 * 
+	 * @return PostingParameters @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters#
+	 * @throws PostingParametersException
+	 * 
+	 * @author Kjell
+	 */
+	public PostingParameters getPostingParameter(Date date, String act_key, String reg_key, String com_key, String com_bel_key) throws PostingParametersException {
+		
+		try {
+			int match;
+			ActivityTypeHome ath = getActivityTypeHome();
+			PostingParametersHome home = getPostingParametersHome();
+			
+			Collection ppCol = (Collection) home.findPostingParametersByDate(date);
+			Iterator iter = ppCol.iterator();
+
+			while(iter.hasNext())  {
+				PostingParameters pp = (PostingParameters) iter.next();
+				String the_act_key = pp.getActivity() != null ? 
+						pp.getActivity().getActivityType() : "";
+				String the_reg_key = pp.getRegSpecType() != null ? 
+						pp.getRegSpecType().getRegSpecType() : "";
+				String the_com_key = pp.getCompanyType() != null ? 
+						pp.getCompanyType().getCompanyType() : "";
+				String the_com_bel_key = pp.getCommuneBelonging() != null ? 
+						pp.getCommuneBelonging().getCommuneBelongingType() : "";
+				
+				match = 0;
+				
+				if (the_act_key.indexOf("blank") != -1) 
+					match++;
+				if (the_reg_key.indexOf("blank") != -1)
+					match++;	  					
+				if (the_com_key.indexOf("blank") != -1)
+					match++;	  					
+				if (the_com_bel_key.indexOf("blank") != -1)
+					match++;	  		
+								
+				if(act_key.compareToIgnoreCase(the_act_key) != -1 && act_key.length() != 0) 
+					match++;
+				if(reg_key.compareToIgnoreCase(the_reg_key) != -1 && reg_key.length() != 0) 
+					match++;
+				if(com_key.compareToIgnoreCase(the_com_key) != -1 && com_key.length() != 0) 
+					match++;
+				if(com_bel_key.compareToIgnoreCase(the_com_bel_key) != -1 && com_bel_key.length() != 0) 
+					match++;
+				
+				if (match == 4) {
+					return pp;
+				}
+			}
+			throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Sökt parameter hittades ej");
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
+
 	public void savePostingParameter(String sppID,
 				Date periodeFrom, 
 				Date periodeTo,
@@ -128,6 +217,11 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if(regSpecTypeID == null) regSpecTypeID = "1"; 
 				if(companyTypeID == null) companyTypeID = "1"; 
 				if(communeBelongingID == null) communeBelongingID = "1"; 
+				
+				if(activityID.indexOf("0") != -1) activityID = "1"; 
+				if(regSpecTypeID.indexOf("0") != -1) regSpecTypeID = "1"; 
+				if(companyTypeID.indexOf("0") != -1) companyTypeID = "1"; 
+				if(communeBelongingID.indexOf("0") != -1) communeBelongingID = "1"; 
 
 				parm1 = Integer.parseInt(activityID);
 				parm2 = Integer.parseInt(regSpecTypeID);
@@ -187,6 +281,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			}
 		}
 
+
+
 	/**
 	 * Deletes a posting parameter
 	 * @param id PostingParameter ID
@@ -242,7 +338,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 	/**
 	 * Gets a posting parameter by the ID
-	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters; 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters# 
 	 * @return PostingParameters
 	 * @author Kjell
 	 */
@@ -259,7 +355,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	}
 	/**
 	 * Gets a posting parameter by a periode
-	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters; 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters# 
 	 * @return PostingParameters
 	 * @author Kjell
 	 */
@@ -329,4 +425,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	{
 		return (PostingFieldHome) com.idega.data.IDOLookup.getHome(PostingField.class);
 	}
+
+	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
+		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
+	}
+
 }
