@@ -200,8 +200,11 @@ public static final int PAGE = 3;
       if ( boxLinkURL != null ) {
         if ( update ) {
           try {
-            boxLink.setColumnAsNull(BoxLink.getColumnNamePageID());
-            boxLink.setColumnAsNull(BoxLink.getColumnNameFileID());
+            //boxLink.setColumnAsNull(BoxLink.getColumnNamePageID());
+            //boxLink.setColumnAsNull(BoxLink.getColumnNameFileID());
+            boxLink.removeFromColumn(BoxLink.getColumnNamePageID());
+            boxLink.removeFromColumn(BoxLink.getColumnNameFileID());
+            boxLink.update();
           }
           catch (SQLException e) {
             e.printStackTrace(System.err);
@@ -211,8 +214,11 @@ public static final int PAGE = 3;
       else if ( fileID != -1 ) {
         if ( update ) {
           try {
-            boxLink.setColumnAsNull(BoxLink.getColumnNamePageID());
-            boxLink.setColumnAsNull(BoxLink.getColumnNameURL());
+            //boxLink.setColumnAsNull(BoxLink.getColumnNamePageID());
+            //boxLink.setColumnAsNull(BoxLink.getColumnNameURL());
+            boxLink.removeFromColumn(BoxLink.getColumnNamePageID());
+            boxLink.removeFromColumn(BoxLink.getColumnNameURL());
+            boxLink.update();
           }
           catch (SQLException e) {
             e.printStackTrace(System.err);
@@ -222,8 +228,11 @@ public static final int PAGE = 3;
       else if ( pageID != -1 ) {
         if ( update ) {
           try {
-            boxLink.setColumnAsNull(BoxLink.getColumnNameFileID());
-            boxLink.setColumnAsNull(BoxLink.getColumnNameURL());
+            //boxLink.setColumnAsNull(BoxLink.getColumnNameFileID());
+            //boxLink.setColumnAsNull(BoxLink.getColumnNameURL());
+            boxLink.removeFromColumn(BoxLink.getColumnNameFileID());
+            boxLink.removeFromColumn(BoxLink.getColumnNameURL());
+            boxLink.update();
           }
           catch (SQLException e) {
             e.printStackTrace(System.err);
