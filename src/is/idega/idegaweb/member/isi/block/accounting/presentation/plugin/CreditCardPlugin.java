@@ -158,6 +158,8 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
             if (!errorList.isEmpty()) {
                 return false;
             }
+            
+            
         }
 
         return false;

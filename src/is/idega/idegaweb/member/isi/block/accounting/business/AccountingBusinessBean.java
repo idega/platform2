@@ -67,6 +67,9 @@ import com.idega.util.ListUtil;
 public class AccountingBusinessBean extends IBOServiceBean implements
         AccountingBusiness {
 
+    
+    
+    
     /**
      * A method to start the assessment batch. Starts up a thread that executes
      * the batch, creates a log entry and then exits.

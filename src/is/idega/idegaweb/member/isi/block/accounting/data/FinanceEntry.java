@@ -9,6 +9,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public int getAssessmentRoundID();
  public com.idega.user.data.Group getClub();
  public int getClubID();
+ public is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract getContract();
+ public int getContractId();
  public java.sql.Timestamp getDateOfEntry();
  public double getDiscountAmount();
  public java.lang.String getDiscountInfo();
@@ -43,6 +45,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public void setAssessmentRoundID(int p0);
  public void setClub(com.idega.user.data.Group p0);
  public void setClubID(int p0);
+ public void setContract(is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract p0);
+ public void setContractId(int p0);
  public void setDateOfEntry(java.sql.Timestamp p0);
  public void setDiscountAmount(double p0);
  public void setDiscountInfo(java.lang.String p0);
@@ -58,8 +62,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public void setPaymentDate(java.sql.Timestamp p0);
  public void setPaymentType(is.idega.idegaweb.member.isi.block.accounting.data.PaymentType p0);
  public void setPaymentTypeID(int p0);
- public void setSent(boolean p0);
  public void setSent(java.lang.Boolean p0);
+ public void setSent(boolean p0);
  public void setStatusCreated();
  public void setStatusReady();
  public void setStatusSent();
