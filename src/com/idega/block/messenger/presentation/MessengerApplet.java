@@ -97,7 +97,7 @@ public class MessengerApplet extends Applet implements Runnable{
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
 
-      listener.addMessageDialog(dialog);
+      //listener.addMessageDialog(dialog);
 
 
       SingleLineItem test = new SingleLineItem(this);
@@ -176,7 +176,7 @@ public class MessengerApplet extends Applet implements Runnable{
           dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
           messageDialog.setVisible(true);
 //debug
-          listener.addMessageDialog(messageDialog);
+          //listener.addMessageDialog(messageDialog);
 
         }
         else {
@@ -187,7 +187,7 @@ public class MessengerApplet extends Applet implements Runnable{
       }
   }
 
-  public void getMessagesFromDialog(MessageDialog dialog){
+  public synchronized void getMessagesFromDialog(MessageDialog dialog){
     if( packetToServlet == null ){
       packetToServlet = new Packet();
       packetToServlet.setSender(sessionId);
@@ -495,11 +495,9 @@ public class MessengerApplet extends Applet implements Runnable{
       runThread = true;
       t.start();
     }
-    if(!listenerStarted){
       System.out.println("starting listener");
       listener.start();
       listenerStarted = true;
-    }
   }
   /**Stop the applet*/
   public void stop() {
