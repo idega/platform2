@@ -194,7 +194,7 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 	}
 	
 	public ProductCategory getProductCategory() {
-		return (ProductCategory)getColumn(PRODUCT_CATEGORY);			
+		return (ProductCategory)getColumnValue(PRODUCT_CATEGORY);			
 	}
 	
 	public int getSupplierId() {
