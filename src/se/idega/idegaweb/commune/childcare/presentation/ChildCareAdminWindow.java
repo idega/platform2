@@ -276,7 +276,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		String userName= null;
 		String personalId = null;
-		String personalIdUserName = null;
+		String personalIdUserName = "";
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		User child;
 		if (application != null && userName == null) {
@@ -295,7 +295,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				userName = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 			}
 		}
-		personalIdUserName =  "  -  " + userName + "   " + personalId;
+		
+		if (userName != null){
+			personalIdUserName =  "  -  " + userName + "   " + personalId;
+		}
+		
 		
 		switch (_method) {
 			case METHOD_GRANT_PRIORITY :
