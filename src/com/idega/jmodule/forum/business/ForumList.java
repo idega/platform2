@@ -42,7 +42,8 @@ public class ForumList{
   public ForumList() throws SQLException {
     enterForum = new Link();
     FListParametersAdded = false;
-    service = new ForumService();
+    //service = new ForumService();
+    service = ForumService.getStaticInstance();
   }
 
   public ForumList(int id) throws SQLException {
