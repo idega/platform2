@@ -1301,6 +1301,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (IDOException ie) {
 			return false;
 		}
-		
+	}
+	
+	public String getSchoolPhone(int schoolID) {
+		try {
+			School school = getSchool(new Integer(schoolID));
+			return school.getSchoolPhone();
+		}
+		catch (RemoteException e) {
+			return null;
+		}
 	}
 }

@@ -95,4 +95,5 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public void storeSchoolYearPlaces(int p0,int p1,int p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolsByAreaAndTypeAndYear(int areaID, int typeID, int yearID) throws java.rmi.RemoteException;
  public boolean hasSchoolRelationToYear(com.idega.block.school.data.School school, com.idega.block.school.data.SchoolYear schoolYear) throws java.rmi.RemoteException;
+ public String getSchoolPhone(int schoolID);
 }
