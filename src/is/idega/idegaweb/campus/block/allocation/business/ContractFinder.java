@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.4 2001/12/05 21:57:25 aron Exp $
+ * $Id: ContractFinder.java,v 1.5 2001/12/28 15:32:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -295,6 +295,38 @@ public abstract class ContractFinder {
     }
   }
 
+  public static List listOfContractsInComplex(int complexID){
+
+    StringBuffer sql = new StringBuffer("select con.* ");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
+    sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    sql.append(" and con.app_applicant_id = p.app_applicant_id");
+    sql.append(" and bu_complex_id  = ");
+    sql.append(complexID);
+    String order = getOrderString(0);
+    if(order != null){
+      sql.append(" order by ");
+      sql.append(order);
+    }
+    String sSQL = sql.toString();
+    try{
+      List list = EntityFinder.findAll(new Contract(),sql.toString());
+      if ( list != null ) {
+        return list;
+      }
+      return null;
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
   public static int countApartmentsInTypeAndComplex(int typeId,int cmplxId,String status){
     StringBuffer sql = new StringBuffer("select count(*) ");
     sql.append(" from bu_apartment a,bu_floor f,bu_building b");
@@ -341,6 +373,20 @@ public abstract class ContractFinder {
     return count;
   }
 
+  public static Contract findApplicant(int userID){
+    Contract contract = null;
+    try {
+      List L = EntityFinder.findAllByColumn(Contract.getStaticInstance(Contract.class),Contract.getUserIdColumnName(),userID);
+      if(L!= null)
+        contract = (Contract) L.get(0);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      contract = null;
+    }
+    return contract;
+  }
+
   public static Applicant findApplicant(User eUser){
     Applicant eApplicant = null;
     StringBuffer sql = new StringBuffer("select a.* from app_applicant a,cam_contract c");
@@ -359,6 +405,15 @@ public abstract class ContractFinder {
     return eApplicant;
   }
 
+  public static Applicant getApplicant(Contract contract){
+    try {
+      return new Applicant(contract.getApplicantId().intValue());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
   public static User findApplicant(Applicant eApplicant){
     User eUser = null;
     StringBuffer sql = new StringBuffer("select u.* from ic_user a,cam_contract c");
@@ -375,6 +430,15 @@ public abstract class ContractFinder {
       eUser = null;
     }
     return eUser;
+  }
+
+  public static Apartment getApartment(Contract contract){
+    try {
+      return new Apartment(contract.getApartmentId().intValue());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
   }
 
   public static Map mapOfAvailableApartmentContracts(int iApartmentTypeId, int iComplexId){

@@ -1,0 +1,84 @@
+package is.idega.idegaweb.campus.business;
+
+import java.util.*;
+
+public class HabitantsCollector {
+  private String firstName_ = null;
+  private String middleName_ = null;
+  private String lastName_ = null;
+  private String apartment_ = null;
+  private String floor_ = null;
+  private String phone_ = null;
+  private String email_ = null;
+
+  public HabitantsCollector() {
+  }
+
+  public void setFirstName(String firstName) {
+    firstName_ = firstName;
+  }
+
+  public void setMiddleName(String middleName) {
+    middleName_ = middleName;
+  }
+
+  public void setLastName(String lastName) {
+    lastName_ = lastName;
+  }
+
+  public void setApartment(String apartment) {
+    apartment_ = apartment;
+  }
+
+  public void setFloor(String floor) {
+    floor_ = floor;
+  }
+
+  public void setPhone(String phone) {
+    phone_ = phone;
+  }
+
+  public void setEmail(String email) {
+    email_ = email;
+  }
+
+  public String getName() {
+    StringBuffer name = new StringBuffer();
+    if ( firstName_ != null )
+      name.append(firstName_);
+    if ( middleName_ != null && "" != middleName_ )
+      name.append(" "+middleName_);
+    if ( lastName_ != null )
+      name.append(" "+lastName_);
+
+    return name.toString();
+  }
+
+  public String getFirstName() {
+    return firstName_;
+  }
+
+  public String getMiddleName() {
+    return middleName_;
+  }
+
+  public String getLastName() {
+    return lastName_;
+  }
+
+  public String getApartment() {
+    return apartment_;
+  }
+
+  public String getFloor() {
+    return floor_;
+  }
+
+  public String getPhone() {
+    return phone_;
+  }
+
+  public String getEmail() {
+    return email_;
+  }
+}
