@@ -14,7 +14,9 @@ import com.idega.presentation.text.*;
 public class LinkGenerator extends TravelWindow {
 
   public static String parameterProductId = "linkGeneratorProductId";
-  private static String http = "https";
+  private static String http = "http";
+  private static Class defaultClass = PublicBooking.class;
+  //private static String http = "https";
 
   public LinkGenerator() {
     super.setWidth(600);
@@ -27,7 +29,7 @@ public class LinkGenerator extends TravelWindow {
 
     String productId = iwc.getParameter(parameterProductId);
 
-    String link = getLinkText(iwc, Integer.parseInt(productId));
+    String link = getLinkText(iwc, Integer.parseInt(productId), defaultClass);
 
     Text tLink = (Text) text.clone();
       tLink.setBold();
@@ -44,17 +46,32 @@ public class LinkGenerator extends TravelWindow {
   }
 
   public static Link getLink(IWContext iwc, int serviceId) {
-    Link link = new Link("Try link",getLinkText(iwc, serviceId));
+    return getLink(iwc, serviceId, defaultClass);
+  }
+
+  public static Link getLink(IWContext iwc, int serviceId, Class classToInstanciate) {
+    Link link = new Link("Try link",getLinkText(iwc, serviceId, classToInstanciate));
+    if (classToInstanciate.getName().equals(defaultClass.getName())) {
       link.setTarget(Link.TARGET_BLANK_WINDOW);
+    }
     return link;
   }
 
-  private static String getLinkText(IWContext iwc, int serviceId) {
+  private static String getLinkText(IWContext iwc, int serviceId, Class classToInstanciate) {
     StringBuffer text = new StringBuffer(http+"://"+iwc.getServerName());
     if (!http.equals("https")) {
       text.append(":"+iwc.getServerPort());
     }
-    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+parameterProductId+"="+serviceId);
+
+    String parName = parameterProductId;
+    String className = iwc.getApplication().getEncryptedClassName(classToInstanciate);
+    if (classToInstanciate.getName().equals(Booking.class.getName())) {
+      parName = Booking.parameterProductId;
+    }
+
+    String url = iwc.getApplication().getObjectInstanciatorURL(classToInstanciate)+"&"+parName+"="+serviceId;
+    text.append(url);
+//    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+className+"&"+parName+"="+serviceId);
     return text.toString();
   }
 }
