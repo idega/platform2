@@ -279,7 +279,6 @@ public class VacationApplication extends VacationBlock {
 	private SubmitButton getNextButton() {
 		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation.next", "Next step")));
 		nextButton.setToolTip(getResourceBundle().getLocalizedString("vacation.next_step_tooltip","Proceeds to next step"));
-		nextButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.next_step_popup","Are you sure you want to proceed?"));
 		return nextButton;
 	}
 

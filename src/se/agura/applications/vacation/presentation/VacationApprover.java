@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.5 2004/12/13 16:43:10 anna Exp $ Created on
+ * $Id: VacationApprover.java,v 1.6 2004/12/13 17:35:42 anna Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,7 +35,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -269,7 +269,7 @@ public class VacationApprover extends VacationBlock {
 	private SubmitButton getCloseButton() {
 		SubmitButton closeButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.close_application", "Close"), PARAMETER_ACTION, ACTION_CLOSED));
 		closeButton.setToolTip(getResourceBundle().getLocalizedString("vacation.close.tooltip","Puts the application to a closed status"));
-		closeButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.deny.popup","Are you sure you want to finally close the application?"));
+		closeButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.close.popup","Are you sure you want to finally close the application?"));
 
 		return closeButton;
 	}
