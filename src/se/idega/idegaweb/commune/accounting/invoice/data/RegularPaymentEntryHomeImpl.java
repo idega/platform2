@@ -11,6 +11,8 @@ import java.sql.Date;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.data.School;
+
 /**
  * @author Roar
  *
@@ -42,6 +44,16 @@ public class RegularPaymentEntryHomeImpl  extends com.idega.data.IDOFactory impl
 	
 	public RegularPaymentEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
 	 return (RegularPaymentEntry) super.findByPrimaryKeyIDO(pk);
+	}
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome#findRegularPaymentsForPeriodeAndProvider(java.sql.Date, java.sql.Date, com.idega.block.school.data.School)
+	 */
+	public Collection findRegularPaymentsForPeriodeAndProvider(Date from, Date to, School provider)  throws FinderException{
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RegularPaymentEntryBMPBean)entity).ejbFindByPeriodeAndProvider(from, to, provider);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}	
 
 }
