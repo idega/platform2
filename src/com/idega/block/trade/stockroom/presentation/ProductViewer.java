@@ -38,6 +38,7 @@ public class ProductViewer extends Block {
   int _localeId = -1;
   String _fontStyle;
   String _headerFontStyle;
+  String _priceFontStyle;
   Image _seperator = null;
   boolean _useHRasSeperator = false;
   boolean _showRandom = false;
@@ -50,6 +51,8 @@ public class ProductViewer extends Block {
   boolean _showProductLink = false;
   boolean _showTeaser = false;
   boolean _showThumbnail = false;
+  boolean _showPrice = false;
+  boolean _showCurrency = false;
   String _spaceBetween = "3";
   boolean _showImages = true;
   boolean _addCategoryID = false;
@@ -183,6 +186,12 @@ public class ProductViewer extends Block {
     return text;
   }
 
+  Text getPriceText(String content) {
+    Text text = new Text(content);
+    if (this._priceFontStyle != null) text.setFontStyle(_priceFontStyle);
+    return text;
+  }
+
   public void setFontStyle(String style) {
     this._fontStyle = style;
   }
@@ -271,6 +280,18 @@ public class ProductViewer extends Block {
 
   public void setAddCategoryID(boolean addID) {
     _addCategoryID = addID;
+  }
+
+  public void setShowPrice(boolean showPrice) {
+    _showPrice = showPrice;
+  }
+
+  public void setShowCurrency(boolean showCurrency) {
+    _showCurrency = showCurrency;
+  }
+
+  public void setPriceFontStyle(String style) {
+    _priceFontStyle = style;
   }
 
   private List getCategoriesFromParameter(IWContext iwc) {

@@ -28,6 +28,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   private String _number = "Number";
   private String _teaser = "Teaser";
   private String _description = "Desription";
+  private ProductItemPrice _price = null;
   private List _images = new Vector();
   private Product _product = null;
 
@@ -54,6 +55,12 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     _teaser = ProductBusiness.getProductTeaser(product,productViewer._localeId);
     _teaser = TextFormatter.formatText(_teaser,1,Table.HUNDRED_PERCENT);
     _product = product;
+    _price = new ProductItemPrice(product);
+    if ( productViewer._priceFontStyle != null ) {
+      _price.setFontStyle(productViewer._priceFontStyle);
+    }
+      _price.setShowCurrency(productViewer._showCurrency);
+
     try {
       _images = EntityFinder.getInstance().findRelated(product, ICFile.class);
     }catch (IDOFinderException ido) {
@@ -78,7 +85,16 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
     int row = 1;
 
-    table.add(header, 1, row++);
+    table.add(header, 1, row);
+    if ( productViewer._showPrice && _price != null ) {
+      table.add(productViewer.getText(" - "),1,row);
+      table.add(_price,1,row++);
+    }
+    else {
+      row++;
+    }
+
+    table.setHeight(row++,"6");
 
     if (productViewer._useHRasSeperator) {
       HorizontalRule hr = new HorizontalRule("100%");
