@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.96 2002/04/30 11:28:30 eiki Exp $
+ * $Id: NewsReader.java,v 1.97 2002/06/08 17:46:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -196,7 +196,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   }
 
   private void control(IWContext iwc){
-    //debugParameters(iwc);
+
     if(moreImage == null)
       moreImage = iwrb.getImage("more.gif");
     if(backImage == null)
@@ -271,6 +271,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 	Link ne = new Link(core.getImage("/shared/create.gif"));
 	ne.setWindowToOpen(NewsEditorWindow.class);
 	ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
+        ne.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
 	T.add(ne,1,1);
       }
       //T.add(T.getTransparentCell(iwc),1,1);
@@ -809,6 +810,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       Link newsEdit = new Link(iwb.getImage("/shared/edit.gif"));
       newsEdit.setWindowToOpen(NewsEditorWindow.class);
       newsEdit.addParameter(NewsEditorWindow.prmNwNewsId,news.getID());
+      newsEdit.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
 
       Link newsDelete = new Link(iwb.getImage("/shared/delete.gif"));
       newsDelete.setWindowToOpen(NewsEditorWindow.class);
