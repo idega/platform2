@@ -310,9 +310,9 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
         buff.append(" AND ");
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
-//        buff.append(" AND ");
+        buff.append(" AND ");
 //        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
-        buff.appendAndEqualsQuoted(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName(),(new IWTimestamp(inquiry.getInqueryPostDate())).toSQLString());
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName()+" like '"+(new IWTimestamp(inquiry.getInqueryPostDate()))+"%'");
         buff.append(" AND ");
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName()+" = '"+inquiry.getName()+"'");
         buff.append(" AND ");
