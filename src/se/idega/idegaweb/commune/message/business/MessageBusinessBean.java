@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.31 2003/02/14 08:55:25 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.32 2003/02/14 09:28:27 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -165,6 +165,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			boolean sendMail = getIfUserPreferesMessageByEmail(user);
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(user);
 			boolean canSendEmail = getIfCanSendEmail();
+			System.out.println(subject + ": " + body);
 			
 			if (sendToBox) {
 				message = createMessage(getTypeUserMessage(), user, subject, body);
@@ -445,11 +446,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
 	public void sendMessage(String email, String subject, String body) {
 
-		String mailServer = getIWApplicationContext().getSystemProperties().getProperties(MAIL_PROPERTIES).getProperty("mail_server");
-		if (mailServer == null) {
-			mailServer = DEFAULT_SMTP_MAILSERVER;
-		}
-		
+		String mailServer = DEFAULT_SMTP_MAILSERVER;
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
 		try{
 			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
