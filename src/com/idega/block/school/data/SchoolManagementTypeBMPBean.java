@@ -147,7 +147,7 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 		query.appendAnd().appendEquals("sst.sch_school_id", "s.sch_school_id");
 		query.appendAnd().appendEquals("st.school_category", "c.category");
 		query.appendAnd().appendEquals("s.management_type", "mt.management_type");
-		query.append("c.category in ").appendLeftParenthesis();
+		query.appendAnd().append("c.category in ").appendLeftParenthesis();
 		query.appendCommaDelimitedWithinSingleQuotes(categories).appendRightParenthesis();
 		
 		return idoFindPKsByQuery(query);
