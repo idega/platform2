@@ -185,6 +185,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
+		_connectionToSpecialField.setAsNotEmpty(iwrb.getLocalizedString("clubinformationtab.special_field_name_not_empty", "You have to select a regional union"),"-1");
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
@@ -209,6 +210,7 @@ public class ClubInformationTab extends UserGroupTab {
 					return collator.compare(((Group) arg0).getName(), ((Group) arg1).getName());
 				}				
 			});
+			_connectionToSpecialField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_reg_un","Choose a regional union"));
 		
 			Iterator it = special.iterator();
 			while (it.hasNext()) {
