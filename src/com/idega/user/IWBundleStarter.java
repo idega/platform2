@@ -31,9 +31,6 @@ public class IWBundleStarter implements IWBundleStartable {
 		ImplementorRepository repository = ImplementorRepository.getInstance();
 		// add implementor for the developer bundle
 		repository.addImplementor(DeveloperHomepageGenerator.class, HomePageGenerator.class);
-		// add implementors for the cal bundle
-		repository.addImplementor(CalPropertyWindow.class, UserPropertyWindow.class);
-		repository.addImplementor(AttendantChooser.class, GroupChooser.class);
 		// add implementors for the staff bundle
 		repository.addImplementor(StaffApplication.class, UserApplication.class);
 		// add plugins
