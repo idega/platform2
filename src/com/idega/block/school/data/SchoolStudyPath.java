@@ -1,7 +1,7 @@
 package com.idega.block.school.data;
 
 
-public interface SchoolCourse extends com.idega.data.IDOEntity
+public interface SchoolStudyPath extends com.idega.data.IDOEntity
 {
  public void addSchoolClassMember(com.idega.block.school.data.SchoolClassMember p0)throws com.idega.data.IDOAddRelationshipException;
  public java.lang.String getCourseName();

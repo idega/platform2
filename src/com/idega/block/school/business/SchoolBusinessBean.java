@@ -23,8 +23,8 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
-import com.idega.block.school.data.SchoolCourse;
-import com.idega.block.school.data.SchoolCourseHome;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
@@ -391,12 +391,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	
 	public Map getSchoolAndSchoolTypeRelatedSchoolCourses(School school, Object schoolTypeId) {
 		try {
-			SchoolCourseHome scHome = (SchoolCourseHome) IDOLookup.getHome(SchoolCourse.class);
+			SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
 			Collection courses = scHome.findSchoolCourses(school, schoolTypeId); 
 			if (courses != null && !courses.isEmpty()) {
 				HashMap map = new HashMap(courses.size());
 				Iterator iter = courses.iterator();
-				SchoolCourse course;
+				SchoolStudyPath course;
 				while (iter.hasNext()) {
 					course = scHome.findByPrimaryKey(iter.next());
 					map.put(course.getPrimaryKey(), course);

@@ -16,7 +16,7 @@ import com.idega.data.IDORemoveRelationshipException;
 /**
  * @author Gimmi
  */
-public class SchoolCourseBMPBean extends GenericEntity implements SchoolCourse{
+public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudyPath{
 	
 	private static String TABLE_NAME           = "SCH_COURSE";
 	private static String COLUMN_NAME          ="COURSE_NAME";

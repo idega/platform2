@@ -27,7 +27,7 @@ import com.idega.util.text.TextFormat;
 /**
  * @author Gimmi
  */
-public class SchoolCourseEditor extends Block {
+public class SchoolStudyPathEditor extends Block {
 	private TextFormat tFormat;
 	private SchoolBusiness sBus;
 	private IWResourceBundle iwrb;
