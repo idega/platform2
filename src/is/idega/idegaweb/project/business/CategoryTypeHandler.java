@@ -1,5 +1,5 @@
 /*
- * $Id: CategoryTypeHandler.java,v 1.4 2004/06/28 11:11:47 thomas Exp $
+ * $Id: CategoryTypeHandler.java,v 1.5 2004/06/28 14:05:56 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.project.business;
 
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;

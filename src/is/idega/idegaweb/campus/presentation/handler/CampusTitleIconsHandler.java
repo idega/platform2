@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusTitleIconsHandler.java,v 1.6 2004/06/28 11:11:47 thomas Exp $
+ * $Id: CampusTitleIconsHandler.java,v 1.7 2004/06/28 14:05:56 thomas Exp $
 
  *
 
@@ -24,7 +24,7 @@ import is.idega.idegaweb.campus.presentation.TitleIcons;
 
 import java.util.List;
 
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;

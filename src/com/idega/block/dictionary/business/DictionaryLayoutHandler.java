@@ -1,5 +1,5 @@
 /*
- * $Id: DictionaryLayoutHandler.java,v 1.3 2004/06/28 11:18:52 thomas Exp $
+ * $Id: DictionaryLayoutHandler.java,v 1.4 2004/06/28 14:07:44 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.block.dictionary.business;
 
 import java.util.List;
 
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;

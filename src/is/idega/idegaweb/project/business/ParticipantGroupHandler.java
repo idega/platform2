@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.data.GenericGroup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
