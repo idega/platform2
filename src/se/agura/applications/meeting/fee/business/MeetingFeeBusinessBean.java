@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.13 2005/02/18 14:50:02 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.14 2005/02/23 16:08:42 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -47,7 +47,7 @@ import com.idega.util.text.Name;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -302,7 +302,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			
 			Object[] arguments = { user.getName(), userParish.getName(), parish.getName(), participantGroup.getName(), from.getLocaleDate(locale, IWTimestamp.SHORT), comment, location, participants.toString() };
 
-			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate: {4}\nMeeting group: {3}\nLocation: {5}\nComment: {6}\n\nParticipants:\n{7}"), arguments), null);
+			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate: {4}\nMeeting group: {3}\nLocation: {6}\nComment: {5}\n\nParticipants:\n{7}"), arguments), null);
 		}
 	}
 
