@@ -965,6 +965,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private Table getNewCareTimeForm() throws RemoteException {
+		boolean onlyAllowFutureCareDate = false;
 		Table layoutTbl = new Table();
 		layoutTbl.setCellpadding(5);
 		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
@@ -992,10 +993,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		fromDate.setAsNotEmpty(localize("ccnctw_unvalid_date_format_alert", "Please choose a valid from date."));
-		fromDate.setEarliestPossibleDate(
-			new Date(),
-			localize("ccnctw_unvalid_date_alert", "The date most be in the future."));
-
+		if(onlyAllowFutureCareDate){
+			fromDate.setEarliestPossibleDate(
+				new Date(),
+				localize("ccnctw_unvalid_date_alert", "The date most be in the future."));			
+		}
 		layoutTbl.add(fromDate, 2, row++);
 
 		row++;
