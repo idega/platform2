@@ -54,7 +54,7 @@ public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffTy
 		setNullable(COLUMN_CLUB, true);
 	}
 
-	public void insertStartData() throws Exception {
+/*	public void insertStartData() throws Exception {
 
 		String types[] = { TYPE_MEMBER_FEE, TYPE_PRACTISE_FEE, TYPE_TOURNAMENT_FEE };
 
@@ -73,7 +73,7 @@ public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffTy
 			type.setLocalizedKey(b.toString());
 			type.store();
 		}
-	}
+	}*/
 
 	public void setTariffType(String type) {
 		setColumn(COLUMN_TARIFF_TYPE, type);
