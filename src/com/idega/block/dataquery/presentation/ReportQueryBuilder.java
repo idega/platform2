@@ -413,7 +413,6 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	private boolean processStep3(IWContext iwc) {
-		helper.clearFields();
 		String[] fields = null;
 		if (iwc.isParameterSet(PARAM_FIELDS)) {
 			fields = iwc.getParameterValues(PARAM_FIELDS);
@@ -422,20 +421,10 @@ public class ReportQueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_FIELDS + "_left")) {
 			fields = iwc.getParameterValues(PARAM_FIELDS + "_left");
 		}
-		if (fields != null) {
-			for (int i = 0; i < fields.length; i++) {
-				QueryFieldPart part = QueryFieldPart.decode(fields[i]);
-				if (part != null)
-					helper.addField(part);
-			}
-			helper.setFieldsLock(iwc.isParameterSet(PARAM_LOCK));
-			return helper.hasFields();
-		}
-		return false;
+		return setFields(fields);
 	}
 	
 	private boolean processStep4(IWContext iwc) {
-		helper.clearOrderConditions();
 		String[] orderConditions = null;
 		if (iwc.isParameterSet(PARAM_ORDER_FIELDS))	{
 			orderConditions = iwc.getParameterValues(PARAM_ORDER_FIELDS);
@@ -443,27 +432,7 @@ public class ReportQueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_ORDER_FIELDS + "_left"))	{
 			orderConditions = iwc.getParameterValues(PARAM_ORDER_FIELDS + "_left");
 		}
-		if (orderConditions != null) {
-			for (int i = 0; i < orderConditions.length; i++) {
-				// thomas: this is not the best way to do this but at the moment I have no other ideas.
-				// on the right side of the selection box are query order conditions or query fields if the 
-				// order condition has not been created yet.
-				QueryOrderConditionPart conditionPart = QueryOrderConditionPart.decode(orderConditions[i]);
-				QueryFieldPart fieldPart = null;
-				if (conditionPart == null) {
-					fieldPart = QueryFieldPart.decode(orderConditions[i]);
-				}
-				if (fieldPart != null) {
-					helper.addHiddenField(fieldPart);
-					conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getColumns());
-				}
-				if (conditionPart != null) {
-					helper.addOrderCondition(conditionPart);
-				}
-			}
-		}
-		// order conditions are not mandatory
-		return true;
+		return setOrderConditions(orderConditions);	
 	}
 
 	
@@ -536,24 +505,11 @@ public class ReportQueryBuilder extends Block {
 	
 	private boolean processFunction(IWContext iwc){
 		//++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		helper.clearFields();
 		String[] fields = null;
 		if (iwc.isParameterSet(PARAM_FIELDS)) {
 			fields = iwc.getParameterValues(PARAM_FIELDS);
 		}
-		// allow to select from the left box only ( no ordering ), shortcut !
-//		else if (iwc.isParameterSet(PARAM_FIELDS + "_left")) {
-//			fields = iwc.getParameterValues(PARAM_FIELDS + "_left");
-//	}
-		if (fields != null) {
-			for (int i = 0; i < fields.length; i++) {
-				QueryFieldPart part = QueryFieldPart.decode(fields[i]);
-				if (part != null)
-					helper.addField(part);
-			}
-			helper.setFieldsLock(iwc.isParameterSet(PARAM_LOCK));
-			//return helper.hasFields();
-		}
+		setFields(fields);
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++	
 		String type = iwc.getParameter(PARAM_FUNCTION);
 		fields = iwc.getParameterValues(PARAM_FIELDS+"_left");
@@ -615,7 +571,13 @@ public class ReportQueryBuilder extends Block {
 	}
 
 	private boolean processFunctionForOrder(IWContext iwc){
-		//String type = QueryXMLConstants.TYPE_DESCENDANT;
+		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		String[] orderConditions = null;
+		if (iwc.isParameterSet(PARAM_ORDER_FIELDS))	{
+			orderConditions = iwc.getParameterValues(PARAM_ORDER_FIELDS);
+		}
+		setOrderConditions(orderConditions);
+		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		String[] fields = iwc.getParameterValues(PARAM_ORDER_FIELDS+"_left");
 		if(fields !=null ){
 			for (int i = 0; i < fields.length; i++) {
@@ -631,7 +593,44 @@ public class ReportQueryBuilder extends Block {
 		return false;
 	}
 	
+	private boolean setOrderConditions(String[] orderConditions) {
+		helper.clearOrderConditions();
+		if (orderConditions != null) {
+			for (int i = 0; i < orderConditions.length; i++) {
+				// thomas: this is not the best way to do this but at the moment I have no other ideas.
+				// on the right side of the selection box are query order conditions or query fields if the 
+				// order condition has not been created yet.
+				QueryOrderConditionPart conditionPart = QueryOrderConditionPart.decode(orderConditions[i]);
+				QueryFieldPart fieldPart = null;
+				if (conditionPart == null) {
+					fieldPart = QueryFieldPart.decode(orderConditions[i]);
+				}
+				if (fieldPart != null) {
+					helper.addHiddenField(fieldPart);
+					conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getColumns());
+				}
+				if (conditionPart != null) {
+					helper.addOrderCondition(conditionPart);
+				}
+			}
+		}
+		// order conditions are not mandatory
+		return true;
+	}
 	
+	private boolean setFields(String[] fields) {
+		helper.clearFields();
+		if (fields != null) {
+			for (int i = 0; i < fields.length; i++) {
+				QueryFieldPart part = QueryFieldPart.decode(fields[i]);
+				if (part != null)
+					helper.addField(part);
+			}
+//LOCK			helper.setFieldsLock(iwc.isParameterSet(PARAM_LOCK));
+			return helper.hasFields();
+		}
+		return false;
+	}
 	
 	
 	private void processPreviousStep(IWContext iwc) {
@@ -643,18 +642,21 @@ public class ReportQueryBuilder extends Block {
 			case 3 :
 			// added by thomas
 			// skip the second step
+				processStep3(iwc);
 				if (! expertMode) {
 					step--;
 				}
 				//helper.clearRelatedEntities();
 				break;
 			case 4 :
+				processStep4(iwc);
 				//helper.clearFields();
 				break;
 				// we are coming from the finish step, so maybe we have to 
 				// set it to some other step than the previous to the  current
 			case 5 :
-				System.out.println("helper step is " + helper.getStep());
+				processStep5(iwc);
+				//System.out.println("helper step is " + helper.getStep());
 				step = helper.getStep() + 1;
 				//helper.clearConditions();
 				break;
