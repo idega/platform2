@@ -405,8 +405,12 @@ public class Contracts extends TravelManager {
         Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
 
-        IWTimestamp from = new IWTimestamp(activeFrom);
-        IWTimestamp to = new IWTimestamp(activeTo);
+        IWTimestamp from = null;
+        IWTimestamp to = null;
+				if (activeFrom != null) {
+	        from = new IWTimestamp(activeFrom);
+	        to = new IWTimestamp(activeTo);
+				}
 
 
         Contract contract;
@@ -420,8 +424,10 @@ public class Contracts extends TravelManager {
           contract.setDiscount(discount);
           contract.setServiceId(productId);
           contract.setResellerId(resellerId);
-          contract.setFrom(from.getTimestamp());
-          contract.setTo(to.getTimestamp());
+          if (from != null ) {
+	          contract.setFrom(from.getTimestamp());
+	          contract.setTo(to.getTimestamp());
+          }
           contract.setExpireDays(Integer.parseInt(valid));
 
         if (contractId != -1) {
@@ -806,11 +812,15 @@ public class Contracts extends TravelManager {
       infoTable.add(new HiddenInput(this.parameterContractId,contract.getPrimaryKey().toString()));
     }
 
+		boolean useTimeframes = false;
     try {
       if (contract == null) {
         timeframe = tsb.getTimeframe(product);
-        pFrom.setDate(new IWTimestamp(timeframe.getFrom()).getSQLDate());
-        pTo.setDate(new IWTimestamp(timeframe.getTo()).getSQLDate());
+        if (timeframe != null) {
+        	useTimeframes = true;
+	        pFrom.setDate(new IWTimestamp(timeframe.getFrom()).getSQLDate());
+	        pTo.setDate(new IWTimestamp(timeframe.getTo()).getSQLDate());
+        }
       }else {
         pFrom.setDate(new IWTimestamp(contract.getFrom()).getSQLDate());
         pTo.setDate(new IWTimestamp(contract.getTo()).getSQLDate());
@@ -845,13 +855,15 @@ public class Contracts extends TravelManager {
     infoTable.add(weekdayFixTable,3,infoRow);
     infoTable.mergeCells(3,infoRow,4,infoRow);
 
-    ++infoRow;
-    infoTable.add(tTimeframe,1,infoRow);
-    infoTable.mergeCells(3,infoRow,4,infoRow);
-    infoTable.add(tfFromText,2,infoRow);
-    infoTable.add(pFrom,3,infoRow);
-    infoTable.add(tfToText,3,infoRow);
-    infoTable.add(pTo,3,infoRow);
+		if (useTimeframes) {
+	    ++infoRow;
+	    infoTable.add(tTimeframe,1,infoRow);
+	    infoTable.mergeCells(3,infoRow,4,infoRow);
+	    infoTable.add(tfFromText,2,infoRow);
+	    infoTable.add(pFrom,3,infoRow);
+	    infoTable.add(tfToText,3,infoRow);
+	    infoTable.add(pTo,3,infoRow);
+		}
 
     ++infoRow;
     infoTable.add(tValidUntil,1,infoRow);
