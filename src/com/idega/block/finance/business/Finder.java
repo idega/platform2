@@ -6,6 +6,7 @@ import java.util.List;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
+import java.sql.SQLException;
 
 /**
  * Title:
@@ -78,6 +79,28 @@ public class Finder  {
     catch(SQLException e){}
     return keys;
   }
+
+  public static List listOfAccounts(){
+    List L = null;
+    try{
+       L = EntityFinder.findAll(new Account());
+    }
+    catch(Exception e){e.printStackTrace();}
+    return L;
+  }
+
+  public static int countAccounts(){
+    String sql = "select count(*) from fin_account ";
+    int count = 0;
+    try{
+      count = new Account().getNumberOfRecords(sql.toString());
+    }
+    catch(SQLException ex){}
+    if(count < 0)
+      count = 0;
+    return count;
+  }
+
 
 
 }// class AccountKeyEditor

@@ -124,7 +124,7 @@ public class CampusAllocator extends KeyEditor{
       add(Frame);
   }
   else
-    add(formatText("Ekki réttindi"));
+    add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
   }
 
   public String getBundleIdentifier(){

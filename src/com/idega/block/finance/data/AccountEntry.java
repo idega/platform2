@@ -25,22 +25,22 @@ public class AccountEntry extends GenericEntity {
     addAttribute(getAccountIdColumnName(), "Account", true, true, "java.lang.Integer","many-to-one","com.idega.block.finance.data.Account");
     addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
     addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
-    addAttribute(getAccountKeyIdColumnName(),"Account key",true,true,"java.lang.Integer");
-    addAttribute(getEntryKeyIdColumnName(),"Entry key",true,true,"java.lang.String");
+    addAttribute(getAccountKeyIdColumnName(),"Account key",true,true,"java.lang.Integer","many-to-one","com.idega.block.finance.data.AccountKey");
+    addAttribute(getEntryTypeColumnName(),"Entry type",true,true,"java.lang.String");
     addAttribute(getPriceColumnName(), "Amount", true, true, "java.lang.Integer");
     addAttribute(getPaymentDateColumnName(),"Payment date",true,true,"java.sql.Timestamp");
     addAttribute(getLastUpdatedColumnName(),"Last updated",true,true,"java.sql.Timestamp");
-    addAttribute(getCashierIdColumnName(),"Cashier",true,true,"java.lang.Integer");
-    addAttribute(getRoundIdColumnName(),"Round",true,true,"java.lang.Integer");
+    addAttribute(getCashierIdColumnName(),"Cashier",true,true,"java.lang.Integer","many-to-one","com.idega.block.finance.data.Cashier");
+    addAttribute(getRoundIdColumnName(),"Round",true,true,"java.lang.Integer","many-to-one","com.idega.block.finance.data.AssessmentRound");
   }
 
   public static String getEntityTableName(){return "ACCOUNT_ENTRY";}
   public static String getAccountIdColumnName(){return "ACCOUNT_ID";}
   public static String getNameColumnName(){return "NAME";}
   public static String getInfoColumnName(){return "INFO";}
-  public static String getAccountKeyIdColumnName(){return "ACCOUNT_KEY_ID";}
-  public static String getEntryKeyIdColumnName(){return "ENTRY_KEY_ID";}
-  public static String getPriceColumnName(){return "ENTRY_KEY_ID";}
+  public static String getAccountKeyIdColumnName(){return "FIN_ACC_KEY_ID";}
+  public static String getEntryTypeColumnName(){return "ENTRY_TYPE";}
+  public static String getPriceColumnName(){return "PRICE";}
   public static String getPaymentDateColumnName() {return "PAYMENT_DATE";}
   public static String getLastUpdatedColumnName() {return "LAST_UPDATED";}
   public static String getCashierIdColumnName() {return "CASHIER_ID";}
@@ -59,14 +59,11 @@ public class AccountEntry extends GenericEntity {
   public void setAccountId(int account_id){
     setColumn(getAccountIdColumnName(), account_id);
   }
-  public int getEntryKeyId(){
-    return getIntColumnValue(getEntryKeyIdColumnName());
+  public String getEntryType(){
+    return getStringColumnValue(getEntryTypeColumnName());
   }
-  public void setEntryKeyId(Integer entry_key_id){
-    setColumn(getEntryKeyIdColumnName(), entry_key_id);
-  }
-  public void setEntryKeyId(int entry_key_id){
-    setColumn(getEntryKeyIdColumnName(), entry_key_id);
+  public void setEntryType(String entryType){
+    setColumn(getEntryTypeColumnName(), entryType);
   }
   public int getAccountKeyId(){
     return getIntColumnValue(getAccountKeyIdColumnName());
@@ -119,13 +116,13 @@ public class AccountEntry extends GenericEntity {
   public void setPrice(int price){
     setColumn(getPriceColumnName(), price);
   }
-  public int getRound(){
+  public int getRoundId(){
     return getIntColumnValue(getRoundIdColumnName());
   }
-  public void setRound(Integer round){
+  public void setRoundId(Integer round){
     setColumn(getRoundIdColumnName(), round);
   }
-  public void setRound(int round){
+  public void setRoundId(int round){
     setColumn(getRoundIdColumnName(), round);
   }
 }

@@ -44,4 +44,24 @@ public class CampusAccountFinder  {
     }
   }
 
+  public static int countAccounts(){
+    String sql = "select count(*) from "+ContractAccountApartment.getEntityTableName();
+    int count = 0;
+    try{
+      count = new ContractAccountApartment().getNumberOfRecords(sql.toString());
+    }
+    catch(SQLException ex){}
+    if(count < 0)
+      count = 0;
+    return count;
+  }
+  /*
+  public Account findAccountFromApartmentSeries(String serie){
+
+    //
+    select ac.* from fin_account
+    //
+  }
+  */
+
 }

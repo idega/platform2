@@ -27,6 +27,7 @@ public class AssessmentRound extends GenericEntity{
 
   public static final String statusAssessed = "A";
   public static final String statusSent = "S";
+  public static final String statusReceived = "R";
 
   public static String getEntityTableName(){return "FIN_ASSESSMENT_ROUND";}
   public static String getNameColumnName(){return "NAME";}
@@ -68,7 +69,8 @@ public class AssessmentRound extends GenericEntity{
 
    public void setStatus(String status) throws IllegalStateException {
     if ((status.equalsIgnoreCase(statusAssessed)) ||
-        (status.equalsIgnoreCase(statusSent)) )
+        (status.equalsIgnoreCase(statusSent)) ||
+        (status.equalsIgnoreCase(statusReceived)) )
       setColumn(getStatusColumnName(),status);
     else
       throw new IllegalStateException("Undefined state : " + status);
@@ -82,6 +84,10 @@ public class AssessmentRound extends GenericEntity{
   public void setStatusSent() {
     setStatus(statusSent);
   }
+  public void setStatusReceived() {
+    setStatus(statusReceived);
+  }
+
 
   public void setAsNew(String name){
     setName(name);
@@ -92,6 +98,12 @@ public class AssessmentRound extends GenericEntity{
   public void setAsSent(String name){
     setName(name);
     setStatusSent();
+    setRoundStamp(idegaTimestamp.getTimestampRightNow());
+  }
+
+  public void setAsReceived(String name){
+    setName(name);
+    setStatusReceived();
     setRoundStamp(idegaTimestamp.getTimestampRightNow());
   }
 

@@ -3,7 +3,10 @@ package com.idega.block.finance.business;
 import com.idega.block.finance.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.genericentity.Member;
+import com.idega.core.user.data.User;
 import java.sql.SQLException;
+import com.idega.data.EntityFinder;
+import java.util.List;
 /**
  * Title:        AccountManager
  * Description:

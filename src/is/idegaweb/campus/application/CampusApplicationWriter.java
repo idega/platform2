@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationWriter.java,v 1.1 2001/07/18 11:43:23 aron Exp $
+ * $Id: CampusApplicationWriter.java,v 1.2 2001/07/30 09:47:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ public class CampusApplicationWriter{
   public static boolean writePDF(List listOfCampusApplicationHolders,IWResourceBundle iwrb,String realpath){
     boolean returner = false;
     try {
-        System.err.println("working");
+
         String file = realpath;
         FileOutputStream fos = new FileOutputStream(file);
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
