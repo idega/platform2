@@ -407,23 +407,23 @@ public class CashierWindow extends StyledIWAdminWindow {
         menu.add(selectPayments, 1, 10);
         menu.add(checkOut, 1, 11);
 
-        menu.add(reports, 1, 15);
+        menu.add(reports, 1, 13);
         menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true), 2,
-                15);
-        menu.setRowColor(15, COLOR_MIDDLE);
-        menu.add(paymentStatus, 1, 16);
-        menu.add(paymentOverview, 1, 17);
-        menu.add(debtOverview, 1, 18);
-        menu.add(entryOverview, 1, 19);
-        menu.add(latePaymentList, 1, 20);
-        menu.add(paymentList, 1, 21);
+                13);
+        menu.setRowColor(13, COLOR_MIDDLE);
+        menu.add(paymentStatus, 1, 14);
+        menu.add(paymentOverview, 1, 15);
+        menu.add(debtOverview, 1, 16);
+        menu.add(entryOverview, 1, 17);
+        menu.add(latePaymentList, 1, 18);
+        menu.add(paymentList, 1, 19);
 
-        menu.add(ledger, 1, 23);
+        menu.add(ledger, 1, 21);
         menu
                 .add(getHelpWithGrayImage("cashierwindow.ledger_help", true),
-                        2, 23);
-        menu.setRowColor(23, COLOR_MIDDLE);
-        menu.add(ledgerList, 1, 24);
+                        2, 21);
+        menu.setRowColor(21, COLOR_MIDDLE);
+        menu.add(ledgerList, 1, 22);
 
         return menu;
     }

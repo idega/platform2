@@ -60,7 +60,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		String type = iwc.getParameter(LABEL_CARD_TYPE);
 
 		try {
-			getAccountingBusiness(iwc).insertCreditCardContract(getClub(), div, number, type);
+			getAccountingBusiness(iwc).insertCreditCardContract(getClub(), div, grp, number, type);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

@@ -153,4 +153,12 @@ public class BasketBusinessBean extends IBOSessionBean implements
             return false;
         }
     }
+    
+    public void emptyBasket() {
+        if (basket != null && !basket.isEmpty()) {
+            basket.clear();
+        }
+        
+        basket = null;
+    }
 }

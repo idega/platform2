@@ -54,9 +54,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	private final static String LABEL_TARIFF = "isi_acc_ma_tariff";
 	private final static String LABEL_AMOUNT = "isi_acc_ma_amount";
 	private final static String LABEL_INFO = "isi_acc_ma_info";
-	
-	private final static String ERROR_NO_SELECTED_USER = "isi_acc_no_user_selected";
-	
+		
 	private final static String ERROR_NO_GROUP_SELECTED = "isi_acc_ma_no_group_selected";
 	private final static String ERROR_NO_TARIFF_SELECTED = "isi_acc_ma_no_tariff_selected";
 	private final static String ERROR_NO_AMOUNT_ENTERED = "isi_acc_ma_no_amount_entered";
@@ -154,16 +152,15 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		SubmitButton selectUser = new SubmitButton(iwrb.getLocalizedString(ACTION_SELECT_USER, "Select User"), ACTION_SELECT_USER, "select_user");
 		
 		t.add(labelUser, 1, row);
-		t.add(Text.getNonBrakingSpace(), 1, row);
 		if (getUser() != null) {
-			t.add(getUser().getName(), 1, row);
+			t.add(getUser().getName(), 2, row);
 		}
 		
 		row++;
-		t.add(new UserChooserBrowser(CashierWindow.PARAMETER_USER_ID), 1, row++);
-		t.add(selectUser, 1, row);
+		t.add(new UserChooserBrowser(CashierWindow.PARAMETER_USER_ID), 1, row);
+		t.add(selectUser, 2, row);
 		
-		t.setAlignment(1, 3, "RIGHT");
+		t.setAlignment(2, row, "RIGHT");
 
 		
 		if (getUser() != null) {
@@ -181,8 +178,6 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 					e.printStackTrace();
 				} 
 			}
-			
-			t.add(getUser().getName(), 1, row);
 			
 			row = 1;
 			Text labelUsersGroups = new Text(iwrb.getLocalizedString(LABEL_USERS_GROUPS, "Users groups"));
@@ -319,9 +314,6 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			catch (FinderException e1) {
 				e1.printStackTrace();
 			} 
-		}
-		else {
-			t.add(iwrb.getLocalizedString(ERROR_NO_SELECTED_USER, "No user selected. Please select a user in the Select user tab."), 1, row);
 		}
 			
 		f.maintainParameter(CashierWindow.ACTION);

@@ -129,24 +129,29 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 	}
 	
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
-	    return ejbFindAllByClubDivisionAndGroup(club, null, null);
+	    return ejbFindAllByClubDivisionGroupAndType(club, null, null, null);
 	}	
 
-	public Collection ejbFindAllByClubAndDivision(Group club, Group division) throws FinderException {
-	    return ejbFindAllByClubDivisionAndGroup(club, division, null);
+	public Collection ejbFindAllByClubAndType(Group club, CreditCardType type) throws FinderException {
+	    return ejbFindAllByClubDivisionGroupAndType(club, null, null, type);
 	}	
 
-	public Collection ejbFindAllByClubDivisionAndGroup(Group club, Group division, Group group) throws FinderException {
+	public Collection ejbFindAllByClubDivisionAndType(Group club, Group division, CreditCardType type) throws FinderException {
+	    return ejbFindAllByClubDivisionGroupAndType(club, division, null, type);
+	}	
+
+	public Collection ejbFindAllByClubDivisionGroupAndType(Group club, Group division, Group group, CreditCardType type) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_CLUB, ((Integer)club.getPrimaryKey()).intValue());
 		if (division != null) {
-		    sql.appendAnd();
-		    sql.appendEquals(COLUMN_DIVISION, division);
+		    sql.appendAndEquals(COLUMN_DIVISION, division);
 		}
 		if (group != null) {
-		    sql.appendAnd();
-		    sql.appendEquals(COLUMN_GROUP, group);		    
+		    sql.appendAndEquals(COLUMN_GROUP, group);		    
+		}
+		if (type != null) {
+		    sql.appendAndEquals(COLUMN_CARD_TYPE, type);
 		}
 		sql.appendAnd();
 		sql.appendLeftParenthesis();
