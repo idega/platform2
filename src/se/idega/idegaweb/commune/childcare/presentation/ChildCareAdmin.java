@@ -36,128 +36,133 @@ public class ChildCareAdmin extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		int applicantsSize = -1;
-		if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL)
-			applicantsSize = getBusiness().getNumberOfApplicationsByProvider(getSession().getChildCareID(), getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
-		else
-			applicantsSize = getBusiness().getNumberOfApplicationsByProvider(getSession().getChildCareID());
+		if (getSession().hasPrognosis()) {
+			int applicantsSize = -1;
+			if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL)
+				applicantsSize = getBusiness().getNumberOfApplicationsByProvider(getSession().getChildCareID(), getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
+			else
+				applicantsSize = getBusiness().getNumberOfApplicationsByProvider(getSession().getChildCareID());
+		
+			Table table = new Table(1,7);
+			table.setWidth(getWidth());
+			table.setHeight(2, 12);
+			table.setHeight(4, 3);
+			table.setHeight(6, 6);
+			table.setCellpadding(0);
+			table.setCellspacing(0);
+			add(table);
+			
+			table.add(getSortTable(), 1, 1);
 	
-		Table table = new Table(1,7);
-		table.setWidth(getWidth());
-		table.setHeight(2, 12);
-		table.setHeight(4, 3);
-		table.setHeight(6, 6);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		add(table);
-		
-		table.add(getSortTable(), 1, 1);
-
-		CollectionNavigator navigator = new CollectionNavigator(applicantsSize);
-		navigator.setEventListener(ChildCareEventListener.class);
-		navigator.setTextStyle(STYLENAME_SMALL_TEXT);
-		navigator.setLinkStyle(STYLENAME_SMALL_LINK);
-		navigator.setNumberOfEntriesPerPage(_numberPerPage);
-		navigator.setPadding(getCellpadding());
-		int start = navigator.getStart(iwc);
-		table.add(navigator, 1, 3);
-
-		Collection applications;
-		if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL)
-			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
-		else
-			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, start);
-
-		Table applicationTable = new Table();
-		applicationTable.setWidth(Table.HUNDRED_PERCENT);
-		applicationTable.setCellpadding(getCellpadding());
-		applicationTable.setCellspacing(getCellspacing());
-		applicationTable.setColumns(6);
-		applicationTable.setRowColor(1, getHeaderColor());
-		table.add(applicationTable, 1, 5);
-		int row = 1;
-		int column = 1;
-		int queueOrder = -1;
-		int netOrder = -1;
-		
-		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row++);
+			CollectionNavigator navigator = new CollectionNavigator(applicantsSize);
+			navigator.setEventListener(ChildCareEventListener.class);
+			navigator.setTextStyle(STYLENAME_SMALL_TEXT);
+			navigator.setLinkStyle(STYLENAME_SMALL_LINK);
+			navigator.setNumberOfEntriesPerPage(_numberPerPage);
+			navigator.setPadding(getCellpadding());
+			int start = navigator.getStart(iwc);
+			table.add(navigator, 1, 3);
+	
+			Collection applications;
+			if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL)
+				applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
+			else
+				applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, start);
+	
+			Table applicationTable = new Table();
+			applicationTable.setWidth(Table.HUNDRED_PERCENT);
+			applicationTable.setCellpadding(getCellpadding());
+			applicationTable.setCellspacing(getCellspacing());
+			applicationTable.setColumns(6);
+			applicationTable.setRowColor(1, getHeaderColor());
+			table.add(applicationTable, 1, 5);
+			int row = 1;
+			int column = 1;
+			int queueOrder = -1;
+			int netOrder = -1;
 			
-		if (applications != null && !applications.isEmpty()) {
-			ChildCareApplication application;
-			User child;
-			IWCalendar queueDate;
-			IWCalendar placementDate;
-			Link link;
-			
-			Iterator iter = applications.iterator();
-			while (iter.hasNext()) {
-				column = 1;
-				application = (ChildCareApplication) iter.next();
-				child = application.getChild();
-				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
-				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
-				queueOrder = getBusiness().getNumberInQueue(application);
-				if (application.getApplicationStatus() == getBusiness().getStatusSentIn())
-					netOrder = getBusiness().getNumberInQueueByStatus(application);
-				else
-					netOrder = -1;
-					
-				if (netOrder == 1 && row != 2) {
-					applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-					applicationTable.setStyle(1, row, "padding: 0px;");
-					applicationTable.setColor(1, row++, "#000000");
-				}
+			applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
+			applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
+			applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
+			applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
+			applicationTable.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
+			applicationTable.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row++);
 				
-				if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
-					applicationTable.setRowColor(row, ACCEPTED_COLOR);
-				}
-				else if (application.getApplicationStatus() == getBusiness().getStatusParentsAccept()) {
-					applicationTable.setRowColor(row, PARENTS_ACCEPTED_COLOR);
-				}
-				else if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
-					applicationTable.setRowColor(row, CONTRACT_COLOR);
-				}
-				else {
-					if (row % 2 == 0)
-						applicationTable.setRowColor(row, getZebraColor1());
+			if (applications != null && !applications.isEmpty()) {
+				ChildCareApplication application;
+				User child;
+				IWCalendar queueDate;
+				IWCalendar placementDate;
+				Link link;
+				
+				Iterator iter = applications.iterator();
+				while (iter.hasNext()) {
+					column = 1;
+					application = (ChildCareApplication) iter.next();
+					child = application.getChild();
+					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
+					placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
+					queueOrder = getBusiness().getNumberInQueue(application);
+					if (application.getApplicationStatus() == getBusiness().getStatusSentIn())
+						netOrder = getBusiness().getNumberInQueueByStatus(application);
 					else
-						applicationTable.setRowColor(row, getZebraColor2());
+						netOrder = -1;
+						
+					if (netOrder == 1 && row != 2) {
+						applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+						applicationTable.setStyle(1, row, "padding: 0px;");
+						applicationTable.setColor(1, row++, "#000000");
+					}
+					
+					if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
+						applicationTable.setRowColor(row, ACCEPTED_COLOR);
+					}
+					else if (application.getApplicationStatus() == getBusiness().getStatusParentsAccept()) {
+						applicationTable.setRowColor(row, PARENTS_ACCEPTED_COLOR);
+					}
+					else if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
+						applicationTable.setRowColor(row, CONTRACT_COLOR);
+					}
+					else {
+						if (row % 2 == 0)
+							applicationTable.setRowColor(row, getZebraColor1());
+						else
+							applicationTable.setRowColor(row, getZebraColor2());
+					}
+					
+	
+					link = (Link) this.getSmallLink(child.getNameLastFirst(true));
+					link.setEventListener(ChildCareEventListener.class);
+					link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
+					link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
+					if (getResponsePage() != null)
+						link.setPage(getResponsePage());
+	
+					applicationTable.add(link, column++, row);
+					applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
+					applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
+					applicationTable.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
+					if (netOrder != -1)
+						applicationTable.add(getSmallText(String.valueOf(netOrder)), column++, row);
+					else 
+						applicationTable.add(getSmallText("-"), column++, row);
+					if (queueOrder != -1)
+						applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column, row++);
+					else 
+						applicationTable.add(getSmallText("-"), column, row++);
 				}
-				
-
-				link = (Link) this.getSmallLink(child.getNameLastFirst(true));
-				link.setEventListener(ChildCareEventListener.class);
-				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
-				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
-				if (getResponsePage() != null)
-					link.setPage(getResponsePage());
-
-				applicationTable.add(link, column++, row);
-				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-				applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				applicationTable.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				if (netOrder != -1)
-					applicationTable.add(getSmallText(String.valueOf(netOrder)), column++, row);
-				else 
-					applicationTable.add(getSmallText("-"), column++, row);
-				if (queueOrder != -1)
-					applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column, row++);
-				else 
-					applicationTable.add(getSmallText("-"), column, row++);
+				applicationTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+				applicationTable.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+				applicationTable.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
+				applicationTable.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
+				applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 			}
-			applicationTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
-			applicationTable.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
-			applicationTable.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
-			applicationTable.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
-			applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+			
+			table.add(getLegendTable(), 1, 7);
 		}
-		
-		table.add(getLegendTable(), 1, 7);
+		else {
+			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
+		}
 	}
 	
 	private Form getSortTable() {

@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
@@ -26,6 +27,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected static final String PARAMETER_SORT_BY = "cc_sort_by";
 
 	protected int _childcareID = -1;
+	protected School _provider;
 	protected int _userID = -1;
 	protected int _childID = -1;
 	protected int _applicationID = -1;
@@ -33,9 +35,51 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected int _sortBy = -1;
 	protected IWTimestamp fromTimestamp;
 	protected IWTimestamp toTimestamp;
+	protected Boolean hasPrognosis;
+	protected boolean _outDatedPrognosis = false;
 
 	public CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
+	}
+	
+	public ChildCareBusiness getChildCareBusiness() throws RemoteException {
+		return (ChildCareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ChildCareBusiness.class);
+	}
+	
+	public School getProvider() throws RemoteException {
+		return _provider;
+	}
+	
+	public boolean hasPrognosis() throws RemoteException {
+		if (hasPrognosis == null) {
+			ChildCarePrognosis prognosis = getChildCareBusiness().getPrognosis(getChildCareID());
+			if (prognosis != null) {
+				IWTimestamp stamp = new IWTimestamp();
+				IWTimestamp lastUpdated = new IWTimestamp(prognosis.getUpdatedDate());
+				if (IWTimestamp.getDaysBetween(lastUpdated, stamp) > 90) {
+					hasPrognosis = new Boolean(false);
+					_outDatedPrognosis = true;
+				}
+				else
+					hasPrognosis = new Boolean(true);
+			}
+			else {
+				hasPrognosis = new Boolean(false);
+			}
+		}
+		return hasPrognosis.booleanValue();
+	}
+	
+	public void setHasPrognosis(boolean hasPrognosis) {
+		this.hasPrognosis = new Boolean(hasPrognosis);
+	}
+	
+	public boolean hasOutdatedPrognosis() {
+		return _outDatedPrognosis;
+	}
+	
+	public void setHasOutdatedPrognosis(boolean hasOutdatedPrognosis) {
+		_outDatedPrognosis = hasOutdatedPrognosis;
 	}
 	
 	/**
@@ -71,6 +115,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			try {
 				School school = getCommuneUserBusiness().getFirstManagingChildCareForUser(user);
 				if (school != null) {
+					_provider = school;
 					_childcareID = ((Integer) school.getPrimaryKey()).intValue();
 				}
 			}

@@ -35,6 +35,8 @@ import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
+import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
@@ -85,6 +87,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 	}
 
+	public ChildCarePrognosisHome getChildCarePrognosisHome() throws RemoteException {
+		return (ChildCarePrognosisHome) IDOLookup.getHome(ChildCarePrognosis.class);
+	}
+	
+	public ChildCarePrognosis getPrognosis(int providerID) throws RemoteException {
+		try {
+			return getChildCarePrognosisHome().findPrognosis(providerID);
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+	
+	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis) throws RemoteException {
+		try {
+			ChildCarePrognosis prognosis = getPrognosis(providerID);
+			if (prognosis == null)
+				prognosis = getChildCarePrognosisHome().create();
+				
+			prognosis.setProviderID(providerID);
+			prognosis.setThreeMonthsPrognosis(threeMonthsPrognosis);
+			prognosis.setOneYearPrognosis(oneYearPrognosis);
+			prognosis.setUpdatedDate(new IWTimestamp().getDate());
+			prognosis.store();
+		}
+		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public boolean insertApplications(User user, int provider[], String date, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 

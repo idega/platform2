@@ -34,30 +34,35 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		handleAction(iwc);
-		
-		Table table = new Table(1,5);
-		table.setWidth(getWidth());
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setHeight(2, 12);
-		table.setHeight(4, 12);
-		add(table);
-		
-		table.add(getNavigationTable(), 1, 1);
-		table.add(getChildrenTable(iwc), 1, 3);
-		
-		String localized = "";
-		if (getSession().getGroupID() != -1)
-			localized = localize("child_care.change_group", "Change group");
-		else
-			localized = localize("child_care.create_group", "Create group");
-
-		GenericButton createGroup = (GenericButton) getButton(new GenericButton("create_change_group", localized));
-		createGroup.setWindowToOpen(ChildCareWindow.class);
-		createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
-		createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-		table.add(createGroup, 1, 5);
+		if (getSession().hasPrognosis()) {
+			handleAction(iwc);
+			
+			Table table = new Table(1,5);
+			table.setWidth(getWidth());
+			table.setCellpadding(0);
+			table.setCellspacing(0);
+			table.setHeight(2, 12);
+			table.setHeight(4, 12);
+			add(table);
+			
+			table.add(getNavigationTable(), 1, 1);
+			table.add(getChildrenTable(iwc), 1, 3);
+			
+			String localized = "";
+			if (getSession().getGroupID() != -1)
+				localized = localize("child_care.change_group", "Change group");
+			else
+				localized = localize("child_care.create_group", "Create group");
+	
+			GenericButton createGroup = (GenericButton) getButton(new GenericButton("create_change_group", localized));
+			createGroup.setWindowToOpen(ChildCareWindow.class);
+			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
+			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+			table.add(createGroup, 1, 5);
+		}
+		else {
+			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
+		}
 	}
 
 	protected Form getChildrenTable(IWContext iwc) throws RemoteException {

@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.text.MessageFormat;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
 import com.idega.block.school.data.SchoolClass;
 import com.idega.builder.business.BuilderLogic;
@@ -40,6 +41,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_CHILDCARE_TIME = "cc_childcare_time";
 	public static final String PARAMETER_GROUP_NAME = "cc_group_name";
 	public static final String PARAMETER_OLD_GROUP = "cc_old_group";
+	public static final String PARAMETER_THREE_MONTHS_PROGNOSIS = "cc_three_months";
+	public static final String PARAMETER_ONE_YEAR_PROGNOSIS = "cc_one_year";
 
 	private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
 	private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
@@ -51,6 +54,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_CREATE_GROUP = 6;
 	public static final int METHOD_PLACE_IN_GROUP = 7;
 	public static final int METHOD_MOVE_TO_GROUP = 8;
+	public static final int METHOD_UPDATE_PROGNOSIS = 9;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -62,6 +66,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_PLACE_IN_GROUP = 7;
 	public static final int ACTION_MOVE_TO_GROUP = 8;
 	public static final int ACTION_CANCEL_CONTRACT = 9;
+	public static final int ACTION_UPDATE_PROGNOSIS = 10;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -108,6 +113,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_CANCEL_CONTRACT :
 				cancelContract(iwc);
+				break;
+			case ACTION_UPDATE_PROGNOSIS :
+				updatePrognosis(iwc);
 				break;
 		}
 
@@ -176,6 +184,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				else
 					headerTable.add(getHeader(localize("child_care.create_group", "Create group")));
 				contentTable.add(getCreateGroupForm(iwc));
+				break;
+			case METHOD_UPDATE_PROGNOSIS :
+				headerTable.add(getHeader(localize("child_care.set_prognosis", "Set prognosis")));
+				contentTable.add(getUpdatePrognosisForm(iwc));
 				break;
 		}
 		
@@ -359,6 +371,46 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
+	private Table getUpdatePrognosisForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+		
+		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
+
+		TextInput threeMonths = (TextInput) getStyledInterface(new TextInput(PARAMETER_THREE_MONTHS_PROGNOSIS));
+		threeMonths.setLength(3);
+		threeMonths.setAsNotEmpty(localize("child_care.three_months_prognosis_required","You must fill in the three months prognosis."));
+		threeMonths.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid prognosis."));
+		if (prognosis != null)
+			threeMonths.setContent(String.valueOf(prognosis.getThreeMonthsPrognosis()));
+
+		table.add(getSmallHeader(localize("child_care.enter_prognosis", "Enter prognosis:")), 1, row++);
+		table.add(getSmallText(localize("child_care.three_months_prognosis", "Three months prognosis")+":"), 1, row);
+		table.add(threeMonths, 1, row++);
+		
+		TextInput oneYear = (TextInput) getStyledInterface(new TextInput(PARAMETER_ONE_YEAR_PROGNOSIS));
+		oneYear.setLength(3);
+		oneYear.setAsNotEmpty(localize("child_care.one_year_prognosis_required","You must fill in the one year prognosis."));
+		oneYear.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid prognosis."));
+		if (prognosis != null)
+			oneYear.setContent(String.valueOf(prognosis.getOneYearPrognosis()));
+
+		table.add(getSmallText(localize("child_care.one_year_prognosis", "Twelve months prognosis")+":"), 1, row);
+		table.add(oneYear, 1, row++);
+
+		SubmitButton updatePrognosis = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_prognosis", "Set prognosis"), PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_PROGNOSIS)));
+		table.add(updatePrognosis, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_METHOD))
 			_method = Integer.parseInt(iwc.getParameter(PARAMETER_METHOD));
@@ -450,6 +502,17 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void moveToGroup(IWContext iwc) throws RemoteException {
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		getBusiness().moveToGroup(_userID, getSession().getChildCareID(), groupID);
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
+	private void updatePrognosis(IWContext iwc) throws RemoteException {
+		int threeMonths = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PROGNOSIS));
+		int oneYear = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PROGNOSIS));
+		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear);
+		getSession().setHasPrognosis(true);
+		getSession().setHasOutdatedPrognosis(false);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
