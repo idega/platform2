@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.6 2002/10/16 02:51:24 palli Exp $
+ * $Id: ContractBusiness.java,v 1.7 2002/10/16 15:57:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -464,11 +464,14 @@ public class ContractBusiness
 			C.setValidFrom(ValFrom.getSQLDate());
 			C.setValidTo(ValTo.getSQLDate());
 			C.setCategoryId(iCategoryId);
-			Iterator I = map.entrySet().iterator();
-			while (I.hasNext())
-			{
-				Map.Entry me = (Map.Entry) I.next();
-				C.addMetaData(me.getKey().toString(), me.getValue().toString());
+			Iterator it = null;
+			if (map != null)  {
+				it = map.entrySet().iterator();
+							
+				while (it.hasNext()) {
+					Map.Entry me = (Map.Entry)it.next();
+					C.addMetaData(me.getKey().toString(), me.getValue().toString());
+				}
 			}
 			C.insert();
 			
