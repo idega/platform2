@@ -209,6 +209,7 @@ public class QueryBuilder extends Block {
 			String pattern = iwc.getParameter(PARAM_CONDITION);
 			if (!"".equals(pattern) || iwc.isParameterSet(PARAM_DYNAMIC)){
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
+				helper.addField(fieldPart);
 				if(pattern ==null || "".equals(pattern)){
 					pattern = defaultDynamicPattern;
 				}
@@ -557,6 +558,8 @@ public class QueryBuilder extends Block {
 		treeLink.addParameter(PARAM_STEP, step);
 		tree.setLinkOpenClosePrototype(treeLink);
 		tree.addOpenCloseParameter(PARAM_STEP, "2");
+		tree.setInitOpenLevel();
+		tree.setNestLevelAtOpen(1);
 		//tree.setToMaintainParameter(PARAM_STEP,iwc);
 		//viewer.setNestLevelAtOpen(4);
 		table.add(tree, 1, 1);
