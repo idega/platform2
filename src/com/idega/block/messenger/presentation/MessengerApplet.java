@@ -370,20 +370,16 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
 
-      //if( faceLabel!= null )
-      item.add(faceLabel);
-
-      item.add(new Label(name));
       item.setSize(18,150);
+      if( faceLabel!= null ) item.add(faceLabel);
+      item.add(new Label(name));
 
-
-      item.repaint();
+      item.doLayout();
       add(item);
+      item.repaint();
+
       doLayout();
-
       repaint();
-
-
   }
 
   public synchronized void cycle(){
@@ -475,9 +471,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
   /**Stop the applet*/
   public void stop() {
-      packetToServlet = new Packet();
-  packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
-  cycle();
+    packetToServlet = new Packet();
+    packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
+    cycle();
 
     if ( t != null ){
       runThread = false;

@@ -85,6 +85,7 @@ public class MessageDialog extends Dialog implements ActionListener{
 
     if(logo!=null){
       logo.setBounds(new Rectangle(6, 0, 126, 52));
+      logo.resize(120,52);
       panel.add(logo, null);
     }
 
