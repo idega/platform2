@@ -328,7 +328,7 @@ public class DesignDocument extends XMLDocument {
 	}
 	
 	public void setIsSummaryNewPage(boolean value){
-		this.getRootElement().setAttribute(ATTRIBUTE_IS_SUMMARY_NEW_PAGE,Boolean.toString(value));
+		this.getRootElement().setAttribute(ATTRIBUTE_IS_SUMMARY_NEW_PAGE,String.valueOf(value));
 	}
 	
 	private void setWhenNoDataType(String value){

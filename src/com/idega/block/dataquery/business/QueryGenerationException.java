@@ -28,21 +28,15 @@ public class QueryGenerationException extends Exception {
 	
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
+/* Commented out because of JDK1.3 compliance...
 	public QueryGenerationException(String message, Throwable cause) {
 		super(message, cause);
 		
 	}
 
-	/**
-	 * @param cause
-	 */
 	public QueryGenerationException(Throwable cause) {
 		super(cause);
 		
 	}
-
+*/
 }
