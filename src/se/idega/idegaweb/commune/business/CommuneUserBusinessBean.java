@@ -625,7 +625,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public School getProviderForUser(User user) throws FinderException {
 		Group primaryGroup = user.getPrimaryGroup();
 		try {
-			if (primaryGroup.equals(getRootProviderAdministratorGroup()) || primaryGroup.equals(getRootSchoolAdministratorGroup())) {
+			if (primaryGroup.equals(getRootProviderAdministratorGroup()) || primaryGroup.equals(getRootSchoolAdministratorGroup()) || primaryGroup.equals(getRootMusicSchoolAdministratorGroup())) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
 				if (!schoolIds.isEmpty()) {
