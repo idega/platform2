@@ -283,11 +283,10 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		end.addMonths(1);
 		
 		IDOQuery sql = idoQuery();
-		sql.append("select sum("+COLUMN_PLACEMENTS+") from "+getEntityName());
+		sql.append("select sum(r."+COLUMN_PLACEMENTS+") from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
 		sql.appendWhereEqualsQuoted("h.school_category_id", schoolCategoryID);
 		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
 		return idoGetNumberOfRecords(sql);
