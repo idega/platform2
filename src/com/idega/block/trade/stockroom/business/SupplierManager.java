@@ -133,35 +133,6 @@ public class SupplierManager {
     }
   }
 
-  /**
-   * @deprecated
-  public static PermissionGroup getPermissionGroup(Supplier supplier) {
-    PermissionGroup pGroup = null;
-    try {
-      PermissionGroup pg = PermissionGroup.getStaticPermissionGroupInstance();
-      GenericGroup group = new GenericGroup(supplier.getGroupId());
-      if (group.getGroupType().equals(pg.getGroupTypeValue()) ) {
-        pGroup = new PermissionGroup(group.getID());
-      }
-
-      if (pGroup == null && group != null) {
-        GenericGroup[] gGroups = group.getAllGroupsContainingThis();
-        for (int i = 0; i < gGroups.length; i++) {
-          if (gGroups[i].getGroupType().equals(pg.getGroupTypeValue()) ) {
-            pGroup = new PermissionGroup(group.getID());
-            break;
-          }
-        }
-      }
-
-    }catch (Exception e) {
-      e.printStackTrace();
-    }
-    return pGroup;
-  }
-
-   */
-
   public static void invalidateSupplier(Supplier supplier) throws SQLException {
     supplier.setIsValid(false);
     supplier.update();

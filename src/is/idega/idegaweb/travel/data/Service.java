@@ -9,6 +9,7 @@ import com.idega.data.*;
 import com.idega.core.data.*;
 
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
 
 
 
@@ -126,7 +127,7 @@ public class Service extends GenericEntity{
 
   public String getName(){
 
-    return getProduct().getName();
+    return ProductBusiness.getProductName(getProduct());
 
   }
 
@@ -134,7 +135,7 @@ public class Service extends GenericEntity{
 
   public String getDescription() {
 
-    return getProduct().getProdcutDescription();
+    return ProductBusiness.getProductDescription(getProduct());
 
   }
 
