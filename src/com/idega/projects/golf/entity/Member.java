@@ -8,7 +8,7 @@ import java.util.Vector;
 
 public class Member extends com.idega.data.genericentity.Member {
 
-  public boolean debug = false;
+  public boolean debug = true;
 
   public Member(){
     super();
@@ -158,8 +158,8 @@ public class Member extends com.idega.data.genericentity.Member {
   public void setImageId(Integer image_id){
     setColumn("image_id",image_id);
   }
-  public ImageEntity getImage(){
-    return (ImageEntity)getColumnValue("image_id");
+  public com.idega.jmodule.image.data.ImageEntity getImage(){
+    return (com.idega.jmodule.image.data.ImageEntity)getColumnValue("image_id");
   }
   public String getJob() {
     return getStringColumnValue("job");
@@ -424,7 +424,7 @@ public class Member extends com.idega.data.genericentity.Member {
       */
 
       try{
-              ImageEntity image = this.getImage();
+              com.idega.jmodule.image.data.ImageEntity image = this.getImage();
               image.delete();
       }
       catch(SQLException ex){   if(debug) ex.printStackTrace(); }
