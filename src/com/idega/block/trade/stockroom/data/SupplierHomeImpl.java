@@ -24,6 +24,20 @@ public class SupplierHomeImpl extends com.idega.data.IDOFactory implements Suppl
  }
 
 
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SupplierBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findWithTPosMerchant()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SupplierBMPBean)entity).ejbFindWithTPosMerchant();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public Supplier findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Supplier) super.findByPrimaryKeyIDO(pk);
  }

@@ -20,6 +20,7 @@ import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 
 /**
@@ -174,6 +175,11 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
     return (Supplier[]) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class).findAllByColumnOrdered(com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameIsValid(),"Y",com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
   }
 
+  public Collection ejbFindAll() throws FinderException {
+  	return this.idoFindAllIDsByColumnOrderedBySQL(this.getColumnNameIsValid(), "'Y'", getColumnNameName());
+  }
+  
+  
   public void update() throws SQLException {
     if (newName != null) {
       PermissionGroup pGroup = SupplierManager.getPermissionGroup(this);
@@ -204,9 +210,13 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
   }
 
   public void setTPosMerchantId(int id) {
-    setColumn(getColumnNameTPosMerchantID(), id);
+  	setTPosMerchantId(new Integer(id));
   }
 
+  public void setTPosMerchantId(Integer id) {
+  	setColumn(getColumnNameTPosMerchantID(), id);
+  }
+  
   public Settings getSettings() throws FinderException, RemoteException, CreateException {
     Collection coll = null;
     try{
@@ -240,5 +250,16 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
     return this.idoGetRelatedEntities(ProductCategory.class);
   }
 
+  public Collection ejbFindWithTPosMerchant() throws FinderException {
+  	IDOQuery query = this.idoQuery();
+  	query.appendSelectAllFrom(this).appendWhereEqualsQuoted( getColumnNameIsValid(), "Y")
+  	.appendAnd().append("(")
+  	.append(getColumnNameTPosMerchantID()).append(" is not null")
+  	.appendOr().appendEquals(getColumnNameTPosMerchantID(), -1)
+  	.append(")")
+  	.appendOrderBy(getColumnNameName());
+  	
+  	return this.idoFindPKsByQuery(query);
+  }
 }
 
