@@ -138,6 +138,7 @@ public class Registration extends EHealthBlock {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
 		layer.setPositionType("relative");
+		layer.setHeight(13);
 		
 		
 		int theRow = 1;
