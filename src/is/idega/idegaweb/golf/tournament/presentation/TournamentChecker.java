@@ -11,8 +11,11 @@ import is.idega.idegaweb.golf.entity.Startingtime;
 import is.idega.idegaweb.golf.entity.StartingtimeHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
+import is.idega.idegaweb.golf.entity.TournamentGroupHome;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
+import is.idega.idegaweb.golf.entity.TournamentRoundHome;
+import is.idega.idegaweb.golf.entity.TournamentTournamentGroup;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import java.rmi.RemoteException;
@@ -329,26 +332,52 @@ public void doFix(IWContext modinfo, IWResourceBundle iwrb, IWBundle iwb) throws
             Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
 
             String[] tournament_group_ids = SimpleQuerier.executeStringQuery("SELECT TOURNAMENT_GROUP_ID FROM TOURNAMENT_MEMBER WHERE TOURNAMENT_ID = "+tournament_id+" AND MEMBER_ID = "+member_id+"");
-
-            int grupNum = 1;
-
-            if (startingtime_id.equals("0")) {
-                String time = modinfo.getParameter("time");
-                IWTimestamp stamp = new IWTimestamp(tRounds[0].getRoundDate());
-                    stamp.setHour(Integer.parseInt(time.substring(0,2)));
-                    stamp.setMinute(Integer.parseInt(time.substring(3,5)));
-                    grupNum = getGrupNum(tRounds[0],stamp);
-            }
-            else {
-                Startingtime sTime = ((StartingtimeHome) IDOLookup.getHomeLegacy(Startingtime.class)).findByPrimaryKey(Integer.parseInt(startingtime_id));
-                grupNum = sTime.getGroupNum();
-            }
-
-
-            getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,member);
-            getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_ids[0]);
-
-            getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,tRounds[0].getID(),grupNum);
+            String[] tournament_round_ids = SimpleQuerier.executeStringQuery("select distinct (tr.tournament_round_id) from scorecard s, tournament_round tr where tr.tournament_round_id = s.tournament_round_id and tr.tournament_id = "+tournament_id+" AND s.member_id = "+member_id+"");
+            
+            if (tournament_round_ids != null && tournament_round_ids.length > 0) {
+            		System.out.print("Creating missing scorecards for member = "+member.getName());
+            		int tournamentGroupId = getTournamentBusiness(modinfo).getTournamentGroup(member, tournament);
+            		TournamentGroup tGroup = ((TournamentGroupHome) IDOLookup.getHome(TournamentGroup.class)).findByPrimaryKey(tournamentGroupId);
+            		TournamentTournamentGroup[] tTGroup = (TournamentTournamentGroup[]) ((TournamentTournamentGroup) IDOLookup.instanciateEntity(TournamentTournamentGroup.class)).findAllByColumn("tournament_id", tournament.getID() + "", "tournament_group_id", tournamentGroupId + "");
+//            		TournamentTournamentGroup ttGroup = ((TournamentTournamentGroupHome) IDOLookup.getHome(TournamentTournamentGroup.class)).findByPrimaryKey();
+            		for (int i = 0; i < tournament_round_ids.length; i++) {
+            			boolean alreadyExists = false;
+            			for (int j = 0; j < tRounds.length && !alreadyExists; j++) {
+            				alreadyExists =  (tournament_round_ids[i].equals( tRounds[j].getPrimaryKey().toString()) );
+            			}
+            			
+            			if (!alreadyExists && tTGroup.length > 0) {
+            				TournamentRound tournamentRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tournament_round_ids[i]));
+            				//getTournamentBusiness(modinfo).createScorecardForMember(member, tournament, tGroup, tournamentRound);
+            				getTournamentBusiness(modinfo).createScorecardForMember(member, tournament, tTGroup[0], tournamentRound);
+            				System.out.print("x");
+            			} else {
+            				System.out.print("o");
+            			}
+            		}
+            		System.out.println(" done");
+            	
+            } else {
+            	
+            		int grupNum = 1;
+	            if (startingtime_id.equals("0")) {
+	                String time = modinfo.getParameter("time");
+	                IWTimestamp stamp = new IWTimestamp(tRounds[0].getRoundDate());
+	                    stamp.setHour(Integer.parseInt(time.substring(0,2)));
+	                    stamp.setMinute(Integer.parseInt(time.substring(3,5)));
+	                    grupNum = getGrupNum(tRounds[0],stamp);
+	            }
+	            else {
+	                Startingtime sTime = ((StartingtimeHome) IDOLookup.getHomeLegacy(Startingtime.class)).findByPrimaryKey(Integer.parseInt(startingtime_id));
+	                grupNum = sTime.getGroupNum();
+	            }
+	
+	
+	            getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,member);
+	            getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_ids[0]);
+	
+	            getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,tRounds[0].getID(),grupNum);
+        			}
 
         }
         checkTournament(modinfo,tournament,iwrb,iwb);
