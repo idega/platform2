@@ -723,7 +723,8 @@ public class Booking extends TravelManager {
 		int iInquery = 0;
 		int iAvailable = 0;
 		int iMin = 0;
-
+		int iBookingExtra = 0;
+		
 		Text dateText = (Text) theBoldText.clone();
 		dateText.setText(stamp.getLocaleDate(iwc));
 		dateText.setFontColor(super.BLACK);
@@ -815,17 +816,21 @@ public class Booking extends TravelManager {
 						TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness(this.product);
 						iCount = tsb.getMaxBookings(product, stamp);
 						iMin = tsb.getMinBookings(product, stamp);
+						//iBookingExtra = getBooker(iwc).getBookingsTotalCountByOthersInPool(product, this.stamp);
 
 						if (supplier != null) {
 							if (iCount > 0) {
 								countTextBold.setText(Integer.toString(iCount));
 							}
 							bookedTextBold.setText(Integer.toString(iBooked));
+							if (iBookingExtra > 0) {
+								bookedTextBold.addToText(" ("+iBookingExtra+") *");
+							}
 							inqTextBold.setText(Integer.toString(iInquery));
 						}
 
 						if (iCount > 0) {
-							iAvailable = iCount - iBooked;
+							iAvailable = iCount - iBooked - iBookingExtra;
 							available = iAvailable;
 							availableTextBold.setText(Integer.toString(iAvailable));
 						}
@@ -866,6 +871,12 @@ public class Booking extends TravelManager {
 		table.add(bookedTextBold, 3, row);
 		table.add(inqTextBold, 4, row);
 		table.add(availableTextBold, 5, row);
+		if (iBookingExtra > 0) {
+			Text extra = (Text) theSmallBoldText.clone();
+			extra.setFontColor(super.BLACK);
+			extra.setText(iwrb.getLocalizedString("travel.extra_bookings_explated","* Bookings made on pool"));
+			table.add(extra, 6, row);
+		}
 
 		table.setColumnAlignment(1, "left");
 		table.setColumnAlignment(2, "center");
