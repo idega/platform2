@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2004/03/17 13:38:12 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/18 08:57:38 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -116,7 +116,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
      * @exception RemoteException if something fails in business layer
 	 */
     private void showInvoiceByCompensationList (final IWContext context)
-        throws RemoteException, FinderException {
+        throws RemoteException {
         
         // set up header row
         final String [][] columnNames =
@@ -169,7 +169,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
      */
 	private void showStudentInTableRow
         (final Table studentTable, final SchoolClassMember member,
-         int row) throws FinderException {
+         int row) {
 		int col = 1;
 		studentTable.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
                                   : getZebraColor2 ());
