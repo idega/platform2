@@ -722,14 +722,14 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
 //      sql.append("b."+dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
-      sql.append("b."+dateColumn+" like '%"+fromStamp.toSQLDateString()+"%'");
+      sql.append("b."+dateColumn+" like '%"+fromStamp.toSQLString()+"%'");
     }else if (fromStamp != null && toStamp != null) {
       sql.append(" and ");
 //      sql.append("b."+dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
-      sql.append("b."+dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
+      sql.append("b."+dateColumn+" >= '"+fromStamp.toSQLString()+"'");
       sql.append(" and ");
 //      sql.append("b."+dateColumn+" <= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
-      sql.append("b."+dateColumn+" <= '"+toStamp.toSQLDateString()+"'");
+      sql.append("b."+dateColumn+" <= '"+toStamp.toSQLString()+"'");
     }
     if (bookingTypeIds != null) {
       if (bookingTypeIds.length > 0 ) {
