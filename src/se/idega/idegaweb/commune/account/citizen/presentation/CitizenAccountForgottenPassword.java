@@ -262,9 +262,10 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	  final Table table = createTable();
     addSimpleInputs(table, iwc);
     table.setHeight(table.getRows() + 1, 12);
-    SubmitButton button = getSubmitButton(FORM_SUBMIT_KEY, FORM_SUBMIT_DEFAULT);
+    SubmitButton button = getSubmitButton(FORM_SUBMIT_KEY + "_button", FORM_SUBMIT_DEFAULT);
     table.add(button, 1, table.getRows() + 1);
     final Form accountForm = new Form();
+		accountForm.addParameter(FORM_SUBMIT_KEY, Boolean.TRUE.toString());
     accountForm.add(table);
     accountForm.setToDisableOnSubmit(button, true);
     add(accountForm);
