@@ -360,8 +360,8 @@ public abstract class VacationBlock extends Block {
 	
 	public SubmitButton getSendButton() {
 		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.send_application", "Send"), PARAMETER_ACTION, ACTION_SEND));
-		sendButton.setToolTip("Sends your application in");
-		sendButton.setSubmitConfirm("Are you sure you want to send the application now?");
+		sendButton.setToolTip(getResourceBundle().getLocalizedString("vacation.send.tooltip","Sends your application in"));
+		sendButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.send.popup","Are you sure you want to send the application now?"));
 		return sendButton;
 	}
 	
@@ -370,7 +370,7 @@ public abstract class VacationBlock extends Block {
 		if (getPage() != null) {
 			cancelButton.setPageToOpen(getPage());
 		}
-		cancelButton.setToolTip("Cancels and returns to last page");
+		cancelButton.setToolTip(getResourceBundle().getLocalizedString("vacation.cancel.tooltip","Cancels and returns to last page"));
 		return cancelButton;
 	}
 

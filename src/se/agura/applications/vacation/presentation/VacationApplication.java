@@ -225,8 +225,19 @@ public class VacationApplication extends VacationBlock {
 		toDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.to_date_not_empty", "This field may not be empty"));
 		toDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.to_date_back_in_time", "To date can not be back in time."));
 		
+		DropdownMenu hours = new DropdownMenu(PARAMETER_VACATION_WORKING_HOURS);
+		hours.addMenuElement(1, "1");
+		hours.addMenuElement(2, "2");
+		hours.addMenuElement(3, "3");
+		hours.addMenuElement(4, "4");
+		hours.addMenuElement(5, "5");
+		hours.addMenuElement(6, "6");
+		hours.addMenuElement(7, "7");
+		hours.addMenuElement(8, "8");
+		hours.setSelectedElement(1);
+	
 		//hva› ef ﬂa› er skrá› inn tala hér???
-		TextInput hours = (TextInput) getInput(new TextInput(PARAMETER_VACATION_WORKING_HOURS));
+		//TextInput hours = (TextInput) getInput(new TextInput(PARAMETER_VACATION_WORKING_HOURS));
 		hours.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.hours_not_empty", "This field may not be empty"));
 		
 		Table timeTable = new Table(2, 6);
@@ -267,8 +278,8 @@ public class VacationApplication extends VacationBlock {
 
 	private SubmitButton getNextButton() {
 		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation.next", "Next step")));
-		nextButton.setToolTip("Proceeds to next step");
-		nextButton.setSubmitConfirm("Are you sure you want to proceed?");
+		nextButton.setToolTip(getResourceBundle().getLocalizedString("vacation.next_step_tooltip","Proceeds to next step"));
+		nextButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.next_step_popup","Are you sure you want to proceed?"));
 		return nextButton;
 	}
 
@@ -312,10 +323,12 @@ public class VacationApplication extends VacationBlock {
 					TextArea input = (TextArea) getInput(new TextArea(key));
 					input.setWidth(Table.HUNDRED_PERCENT);
 					input.setRows(4);
+					input.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.text_area_not_empty","This field may not be empty!"));
 					reasonTable.add(input, 2, row);
 				}
 				else if (type.equals("com.idega.presentation.ui.TextInput")) {
 					TextInput input = (TextInput) getInput(new TextInput(key));
+					input.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.text_area_not_empty","This field may not be empty!"));
 					reasonTable.add(input, 2, row);
 				}
 				else if (type.equals("com.idega.presentation.ui.RadioButton")) {
@@ -323,6 +336,7 @@ public class VacationApplication extends VacationBlock {
 					while (tokens.hasMoreTokens()) {
 						String booleanValue = tokens.nextToken();
 						RadioButton button = (RadioButton) getRadioButton(new RadioButton(key, booleanValue));
+						button.setMustBeSelected("You have to choose one button here!");
 						reasonTable.add(button, 2, row);
 						reasonTable.add(getText(getResourceBundle().getLocalizedString("vacation_type_metadata_boolean." + booleanValue,
 								booleanValue)), 2, row);

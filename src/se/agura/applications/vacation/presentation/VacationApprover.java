@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.4 2004/12/13 14:44:20 anna Exp $ Created on
+ * $Id: VacationApprover.java,v 1.5 2004/12/13 16:43:10 anna Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,7 +35,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -268,32 +268,37 @@ public class VacationApprover extends VacationBlock {
 
 	private SubmitButton getCloseButton() {
 		SubmitButton closeButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.close_application", "Close"), PARAMETER_ACTION, ACTION_CLOSED));
+		closeButton.setToolTip(getResourceBundle().getLocalizedString("vacation.close.tooltip","Puts the application to a closed status"));
+		closeButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.deny.popup","Are you sure you want to finally close the application?"));
+
 		return closeButton;
 	}
 
 	private SubmitButton getDeniedButton() {
 		SubmitButton deniedButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.reject_application", "Reject"), PARAMETER_ACTION, ACTION_DENIED));
-		deniedButton.setToolTip("Denies the application");
-		deniedButton.setSubmitConfirm("Are you sure you want to deny this application?");
+		deniedButton.setToolTip(getResourceBundle().getLocalizedString("vacation.deny.tooltip","Denies the application"));
+		deniedButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.deny.popup","Are you sure you want to deny this application?"));
 		return deniedButton;
 	}
 
 	private SubmitButton getApprovedButton() {
 		SubmitButton approvedButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.approve_application", "Approve"), PARAMETER_ACTION, ACTION_APPROVED));
-		approvedButton.setToolTip("Approves the application");
-		approvedButton.setSubmitConfirm("Are you sure you want to approve this application?");
+		approvedButton.setToolTip(getResourceBundle().getLocalizedString("vacation.approve.tooltip","Approves the application"));
+		approvedButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.approve.popup","Are you sure you want to approve this application?"));
 		return approvedButton;
 	}
 
 	public SubmitButton getSendButton() {
 		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.send_application", "Send"), PARAMETER_ACTION, ACTION_SEND));
+		sendButton.setToolTip(getResourceBundle().getLocalizedString("vacation.send.tooltip","Sends the application"));
+		sendButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.send.popup","Are you sure you want to send this application?"));
 		return sendButton;
 	}
 
 	private SubmitButton getForwardButton() {
 		SubmitButton forwardButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.forward_application", "Forward"), PARAMETER_ACTION, ACTION_FORWARD));
-		forwardButton.setToolTip("Forwards the application");
-		forwardButton.setSubmitConfirm("Are you sure you want to forward this application?");
+		forwardButton.setToolTip(getResourceBundle().getLocalizedString("vacation.forward.tooltip","Forwards the application"));
+		forwardButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.forward.popup","Are you sure you want to forward this application?"));
 		return forwardButton;
 	}
 
