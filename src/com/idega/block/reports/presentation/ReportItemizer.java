@@ -281,7 +281,10 @@ public class ReportItemizer extends Editor{
     for (int i = 0;i < ent.getColumnNames().length; i++ ){
       T.add(formatText(ent.getLongName(ent.getColumnNames()[i])),1,i+2);
       T.add(formatText(ent.getColumnNames()[i]),2,i+2);
-      T.add(formatText(ent.getRelationShipClassName(ent.getColumnNames()[i])),3,i+2);
+      Class relationshipClass= ent.getRelationShipClass(ent.getColumnNames()[i]);
+      if(relationshipClass!=null){
+        T.add(formatText(relationshipClass.getName()),3,i+2);
+      }
     }
     return T;
     }
