@@ -27,10 +27,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/06 12:53:26 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/07 10:03:46 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -118,6 +118,8 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
 	private final static String NOTLOGGEDON_DEFAULT
         = "Du måste vara inloggad för att använda den här funktionen.";
+	private final static String SSN_KEY = "viewpoint.ssn";
+	private final static String SSN_DEFAULT = "Personnummer";
 	private final static String SENDANSWERTOCITIZEN_KEY
         = "viewpoint.sendAnswerToCitizen";
 	private final static String SENDANSWERTOCITIZEN_DEFAULT
@@ -128,6 +130,8 @@ public class ViewpointForm extends CommuneBlock {
         = "viewpoint.submitViewpoint";
 	private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
 	private final static String USER_KEY = "viewpoint.user";
+	private final static String USE_SSN_INFO_KEY = "viewpoint.useSsnInfo";
+	private final static String USE_SSN_INFO_DEFAULT = "För att kunna lämna en synpunkt så måste du antingen vara inloggad eller om du bor i Nacka så räcker det med att ange ditt personnummer nedan";
 	private final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
 	private final static String VIEWPOINTS_DEFAULT = "Synpunkter";
 	private final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
@@ -197,9 +201,7 @@ public class ViewpointForm extends CommuneBlock {
 	private int getActionId (final IWContext iwc) {
 		int result = UNKNOWN_ACTION;
 
-        if (!isAuthenticated (iwc)) {
-            result = SHOWAUTHENTICATIONFORM_ACTION;
-        } else if (iwc.isParameterSet(PARAM_ACTION)) {
+        if (iwc.isParameterSet(PARAM_ACTION)) {
             try {
                 result = Integer.parseInt (iwc.getParameter (PARAM_ACTION));
             } catch (final NumberFormatException e) {
@@ -207,13 +209,14 @@ public class ViewpointForm extends CommuneBlock {
                 result = UNKNOWN_ACTION;
             }
         }
-
+        
         if (result == UNKNOWN_ACTION) {
             if (iwc.isParameterSet (PARAM_VIEWPOINT_ID)) {
                 result = SHOWVIEWPOINT_ACTION;
-            } else {
+            } else if (!isAuthenticated (iwc)) {
+                result = SHOWAUTHENTICATIONFORM_ACTION;
+            } else 
                 result = SHOWTOPCATEGORIESFORM_ACTION;
-            }
         }
         
 		return result;
@@ -222,18 +225,32 @@ public class ViewpointForm extends CommuneBlock {
 	private void showAuthenticationForm (final IWContext context) {
 		final Form form = new Form();
 
-		final SubmitButton submit = getSubmitButton ("---", "---");
+		final Text text1 = new Text (getLocalizedString (DESCRIPTION1_KEY,
+                                                         DESCRIPTION1_DEFAULT));
+		final Text text2 = new Text (getLocalizedString (DESCRIPTION2_KEY,
+                                                         DESCRIPTION2_DEFAULT));
+		final Text text3 = new Text (getLocalizedString (USE_SSN_INFO_KEY,
+                                                         USE_SSN_INFO_DEFAULT));
+		final TextInput ssnInput = (TextInput) getStyledInterface
+                (new TextInput (PARAM_SSN));
+		ssnInput.setLength (10);
+		final SubmitButton submit = getSubmitButton (CONTINUE_KEY,
+                                                     CONTINUE_DEFAULT);
+
 		final Table table = new Table ();
 		table.setWidth (getWidth ());
 		table.setCellpadding (0);
 		table.setCellspacing (0);
 		int row = 1;
-
-		table.add ("För att kunna lämna en synpunkt så måste du antingen vara inloggad eller om du bor i Nacka ange ditt personnummer", 1, row++);
-		final TextInput ssnInput = (TextInput) getStyledInterface
-                (new TextInput (PARAM_SSN));
-		ssnInput.setLength (10);
+		table.add (text1, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (text2, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (text3, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (getLocalizedHeader (SSN_KEY, SSN_DEFAULT), 1, row++);
         table.add (ssnInput, 1, row++);
+		table.setHeight (row++, 12);
 		table.add (submit, 1, row++);
 		form.add (table);
 		add (form);
@@ -333,7 +350,7 @@ public class ViewpointForm extends CommuneBlock {
             return;
         }
 
-        final User currentUser = getCurrentUser (iwc);
+        final User currentUser = iwc.getCurrentUser ();
         final int currentUserId
                 = ((Integer) currentUser.getPrimaryKey ()).intValue ();
 		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
@@ -400,7 +417,7 @@ public class ViewpointForm extends CommuneBlock {
 
 		// 2. registerhandler
 		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
-		viewpointBusiness.registerHandler(viewpointId, getCurrentUser (iwc));
+		viewpointBusiness.registerHandler(viewpointId, iwc.getCurrentUser ());
 
 		// 3. print feedback
 		final Text text = new Text(getLocalizedString(CONFIRMSETHANDLER_KEY, CONFIRMSETHANDLER_DEFAULT));
