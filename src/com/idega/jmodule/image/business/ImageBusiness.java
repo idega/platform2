@@ -2,10 +2,12 @@ package com.idega.jmodule.image.business;
 
 import java.io.*;
 import java.util.*;
+import java.sql.*;
 import javax.servlet.http.HttpServlet;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.servlet.*;
-//import com.idega.idegaweb.*;
+import com.idega.jmodule.image.data.*;
+
 /**
  * Title: ImageBusiness
  * Description:
@@ -17,7 +19,7 @@ import com.idega.servlet.*;
  */
 
 //public class ImageBusiness extends JModule  {
-public class ImageBusiness extends IWCoreServlet  {
+public class ImageBusiness  {
 
 public static Properties getBundleProperties(ModuleInfo modinfo) throws FileNotFoundException,IOException{
   //IWMainApplication application = getApplication();
@@ -38,6 +40,29 @@ private static Properties getBundleProperties( HttpServlet servlet ) throws File
   fin.close();
   return prop;
 }
+
+private static void saveImageToCatagories(int imageId, String[] categoryId)throws SQLException {
+//debug eiki parent id?? fix this
+  ImageEntity image = new ImageEntity(imageId);
+  image.setParentId(-1);
+  image.update();
+
+  for (int i = 0; i < categoryId.length; i++) {
+    try{
+      int category = Integer.parseInt(categoryId[i]);
+      ImageCatagory cat = new ImageCatagory(category);
+      cat.addTo(image);
+    }
+    catch(NumberFormatException e){
+      System.err.println("ImageBusiness: categoryId is not a number");
+    }
+  }
+}
+
+
+
+
+
 /**
  * unimplemented
  */
