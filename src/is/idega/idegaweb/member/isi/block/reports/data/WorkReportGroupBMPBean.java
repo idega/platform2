@@ -12,6 +12,7 @@ import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupType;
 
@@ -171,6 +172,10 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		this.idoAddTo(member);
 	}
 	
+  public void removeMember(WorkReportMember member) throws IDORemoveRelationshipException {
+    this.idoRemoveFrom(member);
+  }
+  
 	public Integer ejbFindWorkReportGroupByGroupIdAndYear(int groupId, int year) throws FinderException{
 		IDOQuery sql = idoQuery();
 		

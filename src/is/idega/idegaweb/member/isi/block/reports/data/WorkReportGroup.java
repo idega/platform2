@@ -18,6 +18,7 @@ public interface WorkReportGroup extends com.idega.data.IDOEntity
  public java.lang.String getWorkPhone();
  public java.lang.Integer getYearOfReport();
  public void initializeAttributes();
+ public void removeMember(is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setEmail(java.lang.String p0);
  public void setFax(java.lang.String p0);
  public void setGroupId(int p0);
