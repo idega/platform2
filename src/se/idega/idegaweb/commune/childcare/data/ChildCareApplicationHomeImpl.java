@@ -13,13 +13,6 @@ public class ChildCareApplicationHomeImpl extends com.idega.data.IDOFactory impl
  }
 
 
-public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,int p1,java.sql.Date p2,java.sql.Date p3,java.lang.String[] p4,int p5,int p6)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2,p3,p4,p5,p6);
@@ -27,9 +20,16 @@ public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,int p1,j
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1,p2,p3);
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -48,22 +48,21 @@ public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.scho
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllChildCasesByProvider(int providerId)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllChildCasesByProvider(providerId);
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-
-public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -91,9 +90,9 @@ public java.util.Collection findAllCasesByUserAndStatus(com.idega.user.data.User
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllChildCasesByProvider(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllChildCasesByProvider(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -105,14 +104,14 @@ public java.util.Collection findApplicationByChild(int p0)throws javax.ejb.Finde
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public ChildCareApplication findApplicationByChildAndChoiceNumber(int p0,int p1)throws javax.ejb.FinderException{
+public ChildCareApplication findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationByChildAndChoiceNumber(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
 
-public ChildCareApplication findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException{
+public ChildCareApplication findApplicationByChildAndChoiceNumber(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationByChildAndChoiceNumber(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -124,6 +123,13 @@ public java.util.Collection findApplicationByChildAndNotInStatus(int p0,java.lan
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationByChildAndNotInStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public ChildCareApplication findApplicationByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationByChildAndProvider(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
 }
 
 public java.util.Collection findApplicationsByProviderAndDate(int p0,java.sql.Date p1)throws javax.ejb.FinderException{

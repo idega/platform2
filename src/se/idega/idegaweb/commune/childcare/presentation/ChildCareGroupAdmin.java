@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.SchoolClassMember;
@@ -18,6 +19,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
@@ -26,10 +28,14 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareGroupAdmin extends ChildCareBlock {
 
+	protected static final String PARAMETER_CHILD_ID = "cc_remove_child_id";
+	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
+		handleAction(iwc);
+		
 		Table table = new Table(1,5);
 		table.setWidth(getWidth());
 		table.setCellpadding(0);
@@ -54,13 +60,16 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.add(createGroup, 1, 5);
 	}
 
-	protected Table getChildrenTable(IWContext iwc) throws RemoteException {
+	protected Form getChildrenTable(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(5);
+		table.setColumns(6);
 		table.setRowColor(1, getHeaderColor());
+		form.add(table);
 		int row = 1;
 		int column = 1;
 			
@@ -74,6 +83,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Address address;
 		Phone phone;
 		Link move;
+		SubmitButton delete;
 
 		Collection students = getBusiness().getSchoolBusiness().findStudentsInSchool(getSession().getChildCareID(), getSession().getGroupID());
 		Iterator iter = students.iterator();
@@ -90,6 +100,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			move.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_OLD_GROUP, student.getSchoolClassId());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+			
+			delete = new SubmitButton(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")), PARAMETER_CHILD_ID, String.valueOf(student.getClassMemberId()));
+			delete.setSubmitConfirm(localize("child_care.confirm_deletion","Are you sure you want to remove this student from the childcare and cancel its contract?"));
 
 			if (row % 2 == 0)
 				table.setRowColor(row, getZebraColor1());
@@ -106,10 +119,12 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			column++;
 			
 			table.setWidth(column, row, 12);
-			table.add(move, column++, row++);
+			table.add(move, column++, row);
+			table.setWidth(column, row, 12);
+			table.add(delete, column++, row++);
 		}
 		
-		return table;
+		return form;
 	}
 
 	protected Form getNavigationTable() throws RemoteException {
@@ -135,5 +150,16 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		
 		return menu;	
 	}
-		
+
+	private void handleAction(IWContext iwc) throws RemoteException {
+		if (iwc.isParameterSet(PARAMETER_CHILD_ID)) {
+			ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(Integer.parseInt(iwc.getParameter(PARAMETER_CHILD_ID)), getSession().getChildCareID());
+			if (application != null) {
+				String subject = localize("child_care.cancel_contract_subject","Your child care contract has been terminated.");
+				String body = localize("child_care.cancel_contract_body","Your contract for {0} at {1} has been terminated.");
+			
+				getBusiness().cancelContract(application, subject, body, iwc.getCurrentUser());
+			}
+		}
+	}
 }

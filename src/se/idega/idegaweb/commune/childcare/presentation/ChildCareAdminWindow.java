@@ -61,6 +61,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_CREATE_GROUP = 6;
 	public static final int ACTION_PLACE_IN_GROUP = 7;
 	public static final int ACTION_MOVE_TO_GROUP = 8;
+	public static final int ACTION_CANCEL_CONTRACT = 9;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -104,6 +105,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_MOVE_TO_GROUP :
 				moveToGroup(iwc);
+				break;
+			case ACTION_CANCEL_CONTRACT :
+				cancelContract(iwc);
 				break;
 		}
 
@@ -422,9 +426,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void placeInGroup(IWContext iwc) throws RemoteException {
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
-		getBusiness().placeApplication(getSession().getApplicationID(), "", "", childCareTime, groupID, iwc.getCurrentUser());
+		
+		String subject = localize("child_care.placing_subject","Your child placed in child care.");
+		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
+		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, iwc.getCurrentUser());
 
 		close(iwc);
+	}
+	
+	private void cancelContract(IWContext iwc) throws RemoteException {
+		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
+		if (application != null) {
+			String subject = localize("child_care.cancel_contract_subject","Your child care contract has been terminated.");
+			String body = localize("child_care.cancel_contract_body","Your contract for {0} at {1} has been terminated.");
+			
+			getBusiness().cancelContract(application, subject, body, iwc.getCurrentUser());
+		}
+		
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
 	}
 	
 	private void moveToGroup(IWContext iwc) throws RemoteException {

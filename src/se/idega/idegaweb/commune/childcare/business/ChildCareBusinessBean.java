@@ -24,7 +24,9 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -484,6 +486,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 	}
+	
+	public void removeFromProvider(int childID, int providerID) throws RemoteException {
+		try {
+			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(childID, providerID);
+			classMember.remove();
+		}
+		catch (EJBException e1) {
+			e1.printStackTrace();
+		}
+		catch (RemoveException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public boolean acceptApplication(ChildCareApplication application, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
@@ -493,6 +511,34 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setApplicationStatus(getStatusAccepted());
 			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
+			sendMessageToParents(application, subject, message);
+
+			t.commit();
+
+			return true;
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public boolean cancelContract(ChildCareApplication application, String subject, String message, User user) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			application.setApplicationStatus('Z');
+			caseBiz.changeCaseStatus(application, this.getCaseStatusInactive().getStatus(), user);
+			
+			removeFromProvider(application.getChildId(), application.getProviderId());
 			sendMessageToParents(application, subject, message);
 
 			t.commit();
@@ -810,6 +856,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		} catch (FinderException fe) {
 			return null;
 		} catch (RemoteException re) {
+			return null;
+		}
+	}
+
+	public ChildCareApplication getApplicationForChildAndProvider(int childID, int providerID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().findApplicationByChildAndProvider(childID, providerID);
+		} 
+		catch (FinderException fe) {
 			return null;
 		}
 	}
