@@ -775,6 +775,27 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 */
 	public Collection getLeaguesOfWorkReportById(int id) throws IDOException {
 		WorkReport workReport = getWorkReportById(id);
+		int year = workReport.getYearOfReport().intValue();
+		WorkReportGroup mainBoard = getMainBoardWorkReportGroup(year);
+		Integer mainBoardId = (Integer) mainBoard.getPrimaryKey();
+		Collection leagues = workReport.getLeagues();
+		Iterator leagueIterator = leagues.iterator();
+		while (leagueIterator.hasNext())	{
+			WorkReportGroup group = (WorkReportGroup)  leagueIterator.next();
+			Integer workReportId = (Integer) group.getPrimaryKey();
+			if (mainBoardId.equals(workReportId))	{
+				return leagues;
+			}
+		}
+		try {
+			workReport.addLeague(mainBoard);
+		}
+		catch (IDORelationshipException ex) {
+			String message =
+				"[WorkReportBusiness]: Can't add mainboard league";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
 		return workReport.getLeagues();
 	}
 

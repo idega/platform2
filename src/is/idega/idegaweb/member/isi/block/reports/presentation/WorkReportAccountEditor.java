@@ -409,7 +409,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // needs to be converted to a list because of sorting 
     List workReportLeagues;
     try {
-      workReportLeagues = new ArrayList(workReport.getLeagues());
+      workReportLeagues = new ArrayList(workReportBusiness.getLeaguesOfWorkReportById(workReportId));
     }
     catch (IDOException ex) {
       String message =
@@ -418,6 +418,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       workReportLeagues = new ArrayList();
     }
+    catch (RemoteException ex) {
+			String message =
+				"[WorkReportAccountEditor]: Can't retrieve leagues.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException(message);
+		}
 
     // sort league collection
     Comparator leagueComparator = new Comparator()  {
