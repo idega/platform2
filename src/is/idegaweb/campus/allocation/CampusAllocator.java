@@ -349,23 +349,23 @@ public class CampusAllocator extends KeyEditor{
         Table Frame = new Table(2,2);
         Frame.mergeCells(1,2,2,2);
         Frame.setVerticalAlignment(1,2,"top");
-        Frame.add(CA.getApplicantTable(AH.getApplicant(),AH.getCampusApplication(),iwrb),1,1);
+        Frame.add(CA.getViewApplicant(AH.getApplicant(),AH.getCampusApplication(),iwrb),1,1);
         String sSpouse = AH.getCampusApplication().getSpouseName();
         String sChildren = AH.getCampusApplication().getChildren();
         boolean bSpouse = false,bChildren = false;
         if(sSpouse !=null && sSpouse.length() > 0){
-          Frame.add(CA.getSpouseTable(AH.getCampusApplication(),iwrb),2,1);
+          Frame.add(CA.getViewSpouse(AH.getCampusApplication(),iwrb),2,1);
           bSpouse = true;
         }
         if(sChildren !=null && sChildren.length() > 0){
-          Frame.add(CA.getChildrenTable(AH.getCampusApplication(),iwrb),2,1);
+          Frame.add(CA.getViewChildren(AH.getCampusApplication(),iwrb),2,1);
           bChildren = true;
         }
         if(bChildren && bSpouse){
           Frame.mergeCells(1,1,2,1);
         }
 
-        Frame.add(CA.getApartmentTable(AH.getCampusApplication(),AH.getApplied(),modinfo,iwrb),1,2);
+        Frame.add(CA.getViewApartment(AH.getCampusApplication(),AH.getApplied(),modinfo,iwrb),1,2);
 
         MO =  Frame;
       }

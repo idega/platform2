@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.3 2001/07/11 14:35:16 aron Exp $
+ * $Id: ApartmentTypeComplexHelper.java,v 1.4 2001/08/18 12:41:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,10 @@ public class ApartmentTypeComplexHelper {
   private String name_ = null;
 
   public ApartmentTypeComplexHelper() {
+  }
+
+  public ApartmentTypeComplexHelper(int key1, int key2){
+    setKey(key1,key2);
   }
 
   public void setKey(int key1, int key2) {
