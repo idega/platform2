@@ -65,10 +65,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/25 15:29:39 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 10:51:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.54 $
+ * @version $Revision: 1.55 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -294,10 +294,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
 	private void generateCompilationPdf (final IWContext context)
         throws RemoteException, FinderException {
+        final String [] columnNames =
+                {localize (SSN_KEY, SSN_DEFAULT),
+                 localize (FIRST_NAME_KEY, FIRST_NAME_DEFAULT),
+                 localize (INVOICE_TEXT_KEY, INVOICE_TEXT_DEFAULT),
+                 localize (NUMBER_OF_DAYS_KEY, NUMBER_OF_DAYS_DEFAULT),
+                 localize (AMOUNT_KEY, AMOUNT_DEFAULT),
+                 localize (REMARK_KEY, REMARK_DEFAULT)};
+        
         final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
                 .getServiceInstance (context, InvoiceBusiness.class);
         final int docId = business.generateInvoiceCompilationPdf
-                (getInvoiceHeader (context));
+                (getInvoiceHeader (context), columnNames);
 
         final Table table = new Table ();
         add (table);
@@ -1766,16 +1774,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void logUnexpectedException (final IWContext context,
                                          final Exception exception) {
-        logWarning ("Exception caught in " + getClass ().getName ()
-                    + " " + (new java.util.Date ()));
-        logWarning ("Parameters:");
+        final StringBuffer message = new StringBuffer ();
+        message.append ("Exception caught in " + getClass ().getName ()
+                        + " " + (new java.util.Date ()) + '\n');
+        message.append ("Parameters:\n");
         final java.util.Enumeration enum = context.getParameterNames ();
         while (enum.hasMoreElements ()) {
             final String key = (String) enum.nextElement ();
-            logWarning ('\t' + key + "='"
-                        + context.getParameter (key) + "'");
+            message.append ('\t' + key + "='"
+                            + context.getParameter (key) + "'\n");
         }
-        log (exception);
+        logWarning (message.toString ());
+        final java.io.StringWriter sw = new java.io.StringWriter ();
+        exception.printStackTrace (new java.io.PrintWriter (sw, true));
+        logWarning (sw.toString ());
         add ("Det inträffade ett fel. Försök igen senare.");
     }
 
