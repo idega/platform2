@@ -308,7 +308,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 						metaTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 					metaTable.add(formatText(iwrb.getLocalizedString(METADATA + key, key)), 1, row);
 					metaTable.add(getMetaDataObject(key, value, type, _product, _locale), 3, row++);
-					metaTable.setHeight(row++, 3);
+					metaTable.setHeight(row++, 6);
 					addTable = true;
 				}
 			}
@@ -503,6 +503,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 		List files = _business.getFiles(_product);
 
 		if (files != null && files.size() > 0) {
+			System.out.println("Files are not null");
 			RadioButton radio;
 			int imageId = _product.getFileId();
 
@@ -533,7 +534,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 					imgRow++;
 				}
 				catch (Exception ex) {
-
+					ex.printStackTrace(System.err);
 				}
 			}
 			radio = new RadioButton(PAR_IMAGE_THUMBNAIL, "-1");
@@ -553,6 +554,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 	private PresentationObject getMetaDataObject(String key, String value, String type, Product product, Locale locale) {
 		if (type.equalsIgnoreCase(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED)) {
 			SelectionBox box = new SelectionBox(METADATA + key);
+			box.setHeight(4);
 			setStyle(box);
 			StringTokenizer token = new StringTokenizer(value, ",");
 			while (token.hasMoreTokens()) {
