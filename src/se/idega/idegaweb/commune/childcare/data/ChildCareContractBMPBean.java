@@ -204,7 +204,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
-	public Integer ejbFindValidContractByProvider(int providerID, Date date) throws FinderException {
+	public Collection ejbFindValidContractByProvider(int providerID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(getEntityName()).append(" c, ");
 		sql.append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" a");
@@ -214,7 +214,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendAndEquals("c."+COLUMN_APPLICATION_ID,"a."+ChildCareApplicationBMPBean.ENTITY_NAME+"_id");
 		sql.appendAndEquals("a."+ChildCareApplicationBMPBean.PROVIDER_ID, providerID);
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
-		return (Integer) idoFindOnePKByQuery(sql);
+		return idoFindPKsByQuery(sql);
 	}
 	
 	public Integer ejbFindApplicationByContract(int contractID) throws FinderException {

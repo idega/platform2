@@ -16,7 +16,7 @@ public interface ChildCareContractHome extends com.idega.data.IDOHome
  public ChildCareContract findLatestTerminatedContractByChild(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public ChildCareContract findValidContractByApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public ChildCareContract findValidContractByChild(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public ChildCareContract findValidContractByProvider(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public java.util.Collection findValidContractByProvider(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public int getContractsCountByApplication(int p0)throws com.idega.data.IDOException;
  public int getFutureContractsCountByApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getNumberOfActiveForApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
