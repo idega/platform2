@@ -41,6 +41,7 @@ public final static String PATH = "path";
 public final static String TEMPLATE = "template";
 public final static String LOCK = "lock";
 public final static String DYNAMIC = "dynamic";
+public final static String SQL = "sql";
 
 
 }

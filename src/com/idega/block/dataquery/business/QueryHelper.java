@@ -19,7 +19,6 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
 import com.idega.xml.XMLParser;
 
-
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: A helper class for Query objects</p>
@@ -30,7 +29,7 @@ import com.idega.xml.XMLParser;
  */
 
 public class QueryHelper {
-	
+
 	private XMLDocument doc = null;
 	private XMLElement root = null;
 	private QueryEntityPart sourceEntity = null;
@@ -39,143 +38,142 @@ public class QueryHelper {
 	private List listOfConditions = null;
 	private int step = 0;
 	private boolean isTemplate = false;
-	private boolean entitiesLock = false,fieldsLock = false;
-	
-		
-	public QueryHelper(){
+	private boolean entitiesLock = false, fieldsLock = false;
+
+	public QueryHelper() {
 	}
-	
-	public QueryHelper(Query query) throws XMLException,Exception{
+
+	public QueryHelper(Query query) throws XMLException, Exception {
 		this(query.getFileValue());
 	}
-		
-	public QueryHelper(InputStream stream) throws XMLException,Exception{
+
+	public QueryHelper(InputStream stream) throws XMLException, Exception {
 		doc = new XMLParser().parse(stream);
 		init();
 	}
-	
-	public QueryHelper(XMLDocument document){
+
+	public QueryHelper(XMLDocument document) {
 		doc = document;
 		init();
 	}
-	
-	private void init(){
+
+	private void init() {
 		root = doc.getRootElement();
-		if(root!=null){
-		XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
-		isTemplate = (template!=null && Boolean.getBoolean(template.getValue()));
-		XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
-		if(source!=null){
-			// SOURCE ENTITY PART (STEP 1)
-			XMLElement entity = source.getChild(QueryXMLConstants.ENTITY);
-			if(entity !=null){
-				sourceEntity = new QueryEntityPart(entity);
-				// RELATED PART ( STEP 2)
-				if(sourceEntity!=null){
-					XMLElement related= root.getChild(QueryXMLConstants.RELATED_ENTITIES);
-					if(related!=null){
-						XMLAttribute entLock  = related.getAttribute(QueryXMLConstants.LOCK);
-						entitiesLock = (entLock!=null && Boolean.getBoolean(entLock.getValue()));
-					}
-					if(related!=null && related.hasChildren()){
-						listOfRelatedEntities = new ArrayList();
-						Iterator entities = related.getChildren().iterator();
-						while(entities.hasNext()){
-							XMLElement xmlEntity = (XMLElement) entities.next();
-							listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
+		if (root != null) {
+			XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
+			isTemplate = (template != null && Boolean.getBoolean(template.getValue()));
+			XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
+			if (source != null) {
+				// SOURCE ENTITY PART (STEP 1)
+				XMLElement entity = source.getChild(QueryXMLConstants.ENTITY);
+				if (entity != null) {
+					sourceEntity = new QueryEntityPart(entity);
+					// RELATED PART ( STEP 2)
+					if (sourceEntity != null) {
+						XMLElement related = root.getChild(QueryXMLConstants.RELATED_ENTITIES);
+						if (related != null) {
+							XMLAttribute entLock = related.getAttribute(QueryXMLConstants.LOCK);
+							entitiesLock = (entLock != null && Boolean.getBoolean(entLock.getValue()));
 						}
-					}	
+						if (related != null && related.hasChildren()) {
+							listOfRelatedEntities = new ArrayList();
+							Iterator entities = related.getChildren().iterator();
+							while (entities.hasNext()) {
+								XMLElement xmlEntity = (XMLElement) entities.next();
+								listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
+							}
+						}
 						// FIELD PART (STEP 3)
 						XMLElement fields = root.getChild(QueryXMLConstants.FIELDS);
-						
-						XMLAttribute fieldLock  = null;
-						if(related!=null)
+
+						XMLAttribute fieldLock = null;
+						if (related != null)
 							related.getAttribute(QueryXMLConstants.LOCK);
-						fieldsLock = (fieldLock!=null && Boolean.getBoolean(fieldLock.getValue()));
-						if(fields!=null && fields.hasChildren()){
+						fieldsLock = (fieldLock != null && Boolean.getBoolean(fieldLock.getValue()));
+						if (fields != null && fields.hasChildren()) {
 							listOfFields = new ArrayList();
 							Iterator iter = fields.getChildren().iterator();
-							while(iter.hasNext()){
+							while (iter.hasNext()) {
 								XMLElement xmlField = (XMLElement) iter.next();
 								listOfFields.add(new QueryFieldPart(xmlField));
 							}
-							
+
 							// CONDITION PART (STEP 4)
 							XMLElement conditions = root.getChild(QueryXMLConstants.CONDITIONS);
-							if(conditions!=null && conditions.hasChildren()){
+							if (conditions != null && conditions.hasChildren()) {
 								listOfConditions = new ArrayList();
 								Iterator conds = conditions.getChildren().iterator();
-								while(conds.hasNext()){
-									XMLElement xmlCondition = (XMLElement)conds.next();
+								while (conds.hasNext()) {
+									XMLElement xmlCondition = (XMLElement) conds.next();
 									listOfConditions.add(new QueryConditionPart(xmlCondition));
 								}
 							}
 						}
-					
+
+					}
 				}
-			}		
-			checkStep();	
-		}
-		
+				checkStep();
+			}
+
 		}
 	}
-	
-	private XMLElement getRootElement(){
-		if(root==null)
-			root =  new XMLElement(QueryXMLConstants.ROOT);
+
+	private XMLElement getRootElement() {
+		if (root == null)
+			root = new XMLElement(QueryXMLConstants.ROOT);
 		return root;
 	}
-	
-	private XMLElement getSourceEntityElement(){
+
+	private XMLElement getSourceEntityElement() {
 		return new XMLElement(QueryXMLConstants.SOURCE_ENTITY);
 	}
-	
-	private XMLElement getRelatedElement(){
+
+	private XMLElement getRelatedElement() {
 		return new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
 	}
-	private XMLElement getFieldsElement(){
+	private XMLElement getFieldsElement() {
 		return new XMLElement(QueryXMLConstants.FIELDS);
 	}
-	
-	public XMLDocument createDocument(){
-		if(doc == null)
+
+	public XMLDocument createDocument() {
+		if (doc == null)
 			doc = new XMLDocument(getRootElement());
-		if(isTemplate()){
+		if (isTemplate()) {
 			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
 		}
 		//	SOURCE ENTITY PART (STEP 1)
-		if(sourceEntity!=null){
+		if (sourceEntity != null) {
 			XMLElement sourceElement = getSourceEntityElement();
 			sourceElement.addContent(sourceEntity.getQueryElement());
 			root.addContent(sourceElement);
 			//	RELATED PART ( STEP 2)
-			if(listOfRelatedEntities!=null && !listOfRelatedEntities.isEmpty()){
+			if (listOfRelatedEntities != null && !listOfRelatedEntities.isEmpty()) {
 				Iterator iter = listOfRelatedEntities.iterator();
 				XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
-				if(entitiesLock)
-					related.setAttribute(QueryXMLConstants.LOCK,String.valueOf(entitiesLock));
-				while(iter.hasNext()){
-					related.addContent(((QueryPart)iter.next()).getQueryElement());
+				if (entitiesLock)
+					related.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+				while (iter.hasNext()) {
+					related.addContent(((QueryPart) iter.next()).getQueryElement());
 				}
 				root.addContent(related);
-				
+
 				//	FIELD PART (STEP 3)
-				if(listOfFields!=null && !listOfFields.isEmpty()){
+				if (listOfFields != null && !listOfFields.isEmpty()) {
 					iter = listOfFields.iterator();
 					XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
-					if(fieldsLock)
-						fields.setAttribute(QueryXMLConstants.LOCK,String.valueOf(entitiesLock));
-					while(iter.hasNext()){
-						fields.addContent(((QueryPart)iter.next()).getQueryElement());
+					if (fieldsLock)
+						fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+					while (iter.hasNext()) {
+						fields.addContent(((QueryPart) iter.next()).getQueryElement());
 					}
 					root.addContent(fields);
-					
+
 					//	CONDITION PART (STEP 4)
-					if(listOfConditions!=null && !listOfConditions.isEmpty()){
+					if (listOfConditions != null && !listOfConditions.isEmpty()) {
 						iter = listOfConditions.iterator();
 						XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
-						while(iter.hasNext()){
-							conditions.addContent(((QueryPart)iter.next()).getQueryElement());
+						while (iter.hasNext()) {
+							conditions.addContent(((QueryPart) iter.next()).getQueryElement());
 						}
 						root.addContent(conditions);
 					}
@@ -184,31 +182,31 @@ public class QueryHelper {
 		}
 		return doc;
 	}
-	
+
 	/**
 	 * @return <CODE>true</CODE> if the query has a source entity
 	 */
-	public boolean hasSourceEntity(){
-		return sourceEntity!=null;
+	public boolean hasSourceEntity() {
+		return sourceEntity != null;
 	}
 	/**
 	 * @return <CODE>true</CODE> if the query has related entities
 	 */
-	public boolean hasRelatedEntities(){
-		return listOfRelatedEntities !=null && !listOfRelatedEntities.isEmpty();
+	public boolean hasRelatedEntities() {
+		return listOfRelatedEntities != null && !listOfRelatedEntities.isEmpty();
 	}
 	/**
 	 * @return <CODE>true</CODE> if the query has fields
 	 */
-	public boolean hasFields(){
-		return listOfFields!=null && !listOfFields.isEmpty();
+	public boolean hasFields() {
+		return listOfFields != null && !listOfFields.isEmpty();
 	}
 	/**
 	 * 
 	 * @return <CODE>true</CODE> if the query has conditions
 	 */
-	public boolean hasConditions(){
-		return listOfConditions!=null && !listOfConditions.isEmpty();
+	public boolean hasConditions() {
+		return listOfConditions != null && !listOfConditions.isEmpty();
 	}
 
 	/**
@@ -309,147 +307,152 @@ public class QueryHelper {
 	public void setSourceEntity(QueryEntityPart part) {
 		QueryEntityPart oldPart = sourceEntity;
 		sourceEntity = part;
-		if(oldPart !=null && !part.encode().equals(oldPart.encode())){
+		if (oldPart != null && !part.encode().equals(oldPart.encode())) {
 			clearRelatedEntities();
 			clearFields();
 			clearConditions();
-		}			
+		}
 		checkStep();
 	}
-	
+
 	/**
 	 * Sets the source entity part of the query
 	 * @param the entity class
 	 */
 	public void setSourceEntity(Class entityClass) {
-		QueryEntityPart  entityPart = getQueryEntityPart(entityClass);
-		if(entityPart !=null){			
-			setSourceEntity(entityPart);	
+		QueryEntityPart entityPart = getQueryEntityPart(entityClass);
+		if (entityPart != null) {
+			setSourceEntity(entityPart);
 		}
 	}
-	
-	private QueryEntityPart getQueryEntityPart(Class entityClass){
+
+	private QueryEntityPart getQueryEntityPart(Class entityClass) {
 		GenericEntity entity = getEntity(entityClass);
-		if(entity!=null)
-		 	return  new QueryEntityPart(entity.getEntityName(),entityClass.getName());
-		 return null;
+		if (entity != null)
+			return new QueryEntityPart(entity.getEntityName(), entityClass.getName());
+		return null;
 	}
-	
+
 	/**
 	 * Adds a new related entity to the related entity part of the query
 	 * @param new  entity class
 	 */
-	public void addRelatedEntity(Class entityClass){
-		QueryEntityPart  entityPart = getQueryEntityPart(entityClass);
-		if(entityPart !=null)
+	public void addRelatedEntity(Class entityClass) {
+		QueryEntityPart entityPart = getQueryEntityPart(entityClass);
+		if (entityPart != null)
 			addRelatedEntity(entityPart);
 	}
-	
+
 	/**
 	 * Adds a new related entity to the related entity part of the query
 	 * @param the new entity
 	 */
-	public void addRelatedEntity(QueryEntityPart entity){
-		if(listOfRelatedEntities==null){
+	public void addRelatedEntity(QueryEntityPart entity) {
+		if (listOfRelatedEntities == null) {
 			listOfRelatedEntities = new ArrayList();
 		}
-		listOfRelatedEntities.add(entity);
-		checkStep();
+		if(!hasRelatedEntity(entity)){
+			listOfRelatedEntities.add(entity);
+			checkStep();
+		}
 	}
-	
+
 	/**
 	 * Adds a new field to the field part of the query
 	 * @param the new field
 	 */
-	public void addField(QueryFieldPart field){
-		if(listOfFields==null){
+	public void addField(QueryFieldPart field) {
+		if (listOfFields == null) {
 			listOfFields = new ArrayList();
 		}
-		listOfFields.add(field);
-		checkStep();
+		if(!hasFieldPart(field)){
+			listOfFields.add(field);
+			checkStep();
+		}
 	}
-	
+
 	/**
 	 * Adds a new condition to the condition part of the query
 	 * @param the new condition
 	 */
-	public void addCondition(QueryConditionPart condition){
-		if(listOfConditions== null){
+	public void addCondition(QueryConditionPart condition) {
+		if (listOfConditions == null) {
 			listOfConditions = new ArrayList();
 		}
-		listOfConditions.add(condition);
-		checkStep();
+		if(!hasCondition(condition)){
+			listOfConditions.add(condition);
+			checkStep();
+		}
 	}
-	
+
 	/**
 	 * Clears all part of the query
 	 */
-	public void clearAll(){
+	public void clearAll() {
 		clearSourceEntity();
 		clearRelatedEntities();
 		clearFields();
 		clearConditions();
 	}
-	
+
 	/**
 	 *  Clears the source entity part of the query
 	 * 	and updates the current step.
 	 */
-	public void clearSourceEntity(){
-			sourceEntity = null;
-			checkStep();
-		}
-	
+	public void clearSourceEntity() {
+		sourceEntity = null;
+		checkStep();
+	}
+
 	/**
 	 *  Clears the related entity part of the query
 	 * and updates the current step.
 	 */
-	public void clearRelatedEntities(){
+	public void clearRelatedEntities() {
 		listOfRelatedEntities = null;
 		checkStep();
 	}
-	
-	
+
 	/**
 	 *  Clears the field part of the query and updates the current step
 	 */
-	public void clearFields(){
+	public void clearFields() {
 		listOfFields = null;
 		checkStep();
 	}
-	
+
 	/**
 	 * Clears the condition part of the query
 	 * and updates the current step.
 	 */
-	public void clearConditions(){
+	public void clearConditions() {
 		listOfConditions = null;
 		checkStep();
 	}
-	
+
 	/**
 	 * Gets the current step in the query building process
 	 * @return the current step 
 	 */
-	public int getStep(){
-		return step;		
+	public int getStep() {
+		return step;
 	}
-	
-	private void checkStep(){
-		if(hasConditions())
+
+	private void checkStep() {
+		if (hasConditions())
 			step = 4;
-		else if(hasFields())
+		else if (hasFields())
 			step = 3;
-		else if(hasRelatedEntities())
+		else if (hasRelatedEntities())
 			step = 2;
-		else if(hasSourceEntity())
+		else if (hasSourceEntity())
 			step = 1;
-		else 
+		else
 			step = 0;
 		//System.out.println("checkstep : step is now "+step);
 	}
-	
-	private GenericEntity getEntity(Class entityClass){
+
+	private GenericEntity getEntity(Class entityClass) {
 		return (GenericEntity) GenericEntity.getStaticInstance(entityClass);
 	}
 
@@ -495,25 +498,64 @@ public class QueryHelper {
 	public void setFieldsLock(boolean b) {
 		fieldsLock = b;
 	}
-	
+
 	/**
 	 * Searches the entity with the given name
 	 * @param name
 	 * @return query entity part if found, else null
 	 */
-	public QueryEntityPart getEntityPart(String name){
-		if(hasSourceEntity() && getSourceEntity().getName().equals(name)){
-				return getSourceEntity();
+	public QueryEntityPart getEntityPart(String name) {
+		if (hasSourceEntity() && getSourceEntity().getName().equals(name)) {
+			return getSourceEntity();
 		}
-		else if(hasRelatedEntities()){
+		else if (hasRelatedEntities()) {
 			Iterator iter = getListOfRelatedEntities().iterator();
 			while (iter.hasNext()) {
 				QueryEntityPart part = (QueryEntityPart) iter.next();
-				if(part.getName().equals(name))
+				if (part.getName().equals(name))
 					return part;
 			}
 		}
 		return null;
+	}
+
+	public boolean hasFieldPart(QueryFieldPart field) {
+		if (!hasFields())
+			return false;
+		else {
+			for (Iterator iter = listOfFields.iterator(); iter.hasNext();) {
+				QueryFieldPart element = (QueryFieldPart) iter.next();
+				if (element.encode().equals(field.encode()))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasCondition(QueryConditionPart condition) {
+		if (!hasConditions())
+			return false;
+		else {
+			for (Iterator iter = listOfFields.iterator(); iter.hasNext();) {
+				QueryConditionPart element = (QueryConditionPart) iter.next();
+				if (element.encode().equals(condition.encode()))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasRelatedEntity(QueryEntityPart entity) {
+		if (!hasRelatedEntities())
+			return false;
+		else {
+			for (Iterator iter = listOfRelatedEntities.iterator(); iter.hasNext();) {
+				QueryEntityPart element = (QueryEntityPart) iter.next();
+				if (element.encode().equals(entity.encode()))
+					return true;
+			}
+		}
+		return false;
 	}
 
 }
