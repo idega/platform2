@@ -78,6 +78,7 @@ public class WebSearcher extends Block {
 	private String arrowStyleClass;
 	private ICPage submitPage;
 	private String inputStyle;
+	private String inputWidth;
 
 	public WebSearcher() {
 	}
@@ -173,6 +174,9 @@ public class WebSearcher extends Block {
 		if (inputStyle != null) {
 			search.setStyleAttribute(inputStyle);
 		}
+		if (inputWidth != null) {
+			search.setWidth(inputWidth);
+		}
 		Link crawl = null;
 		if (canEdit) {
 			crawl = new Link(iwrb.getLocalizedString("index.this.site", "Index this site (done every 24h)"));
@@ -207,7 +211,7 @@ public class WebSearcher extends Block {
 			}
 			
 			table.add(link, 1, 3);
-			table.add(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE, 1, 3);
+			table.add(Text.NON_BREAKING_SPACE, 1, 3);
 			table.add(arrow, 1, 3);
 			
 			if (crawl != null) {
@@ -475,5 +479,11 @@ public class WebSearcher extends Block {
 		else {
 			layout = HORIZONTAL_LAYOUT;
 		}
+	}
+	/**
+	 * @param inputWidth The inputWidth to set.
+	 */
+	public void setInputWidth(String inputWidth) {
+		this.inputWidth = inputWidth;
 	}
 }
