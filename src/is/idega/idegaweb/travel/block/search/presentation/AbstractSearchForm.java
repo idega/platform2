@@ -651,7 +651,13 @@ public abstract class AbstractSearchForm extends Block{
 					table.add(getText(supplier.getName()), 1, row);
 					table.mergeCells(1, row, 2, row);
 					++row;
-					available = ((Boolean)availability.get(product.getPrimaryKey())).booleanValue();
+					Boolean boolTest = ((Boolean)availability.get(product.getPrimaryKey()));
+					if (boolTest == null) {
+						System.out.println("[AbstractSearchForm] boolTest == null");
+						available = false;
+					} else {
+						available = boolTest.booleanValue();
+					}
 					table.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
 					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 					if (available) {
