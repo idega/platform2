@@ -12,6 +12,7 @@ import com.idega.util.PersonalIDFormatter;
 import java.util.*;
 
 import se.idega.idegaweb.commune.presentation.*;
+import sun.beans.editors.IntEditor;
 import se.idega.idegaweb.commune.childcare.check.data.*;
 import se.idega.idegaweb.commune.childcare.check.business.*;
 
@@ -32,22 +33,24 @@ import com.idega.builder.data.IBPage;
 
 public class CheckRequestAdmin extends CommuneBlock {
 
-	private final static int ACTION_VIEW_CHECK_LIST = 1;
-	private final static int ACTION_VIEW_CHECK = 2;
-	private final static int ACTION_GRANT_CHECK = 3;
-	private final static int ACTION_RETRIAL_CHECK = 4;
-	private final static int ACTION_SAVE_CHECK = 5;
+	protected final static int ACTION_VIEW_CHECK_LIST = 1;
+	protected final static int ACTION_VIEW_CHECK = 2;
+	protected final static int ACTION_GRANT_CHECK = 3;
+	protected final static int ACTION_RETRIAL_CHECK = 4;
+	protected final static int ACTION_SAVE_CHECK = 5;
 
-	private final static String PARAM_VIEW_CHECK_LIST = "chk_v_c_l";
-	private final static String PARAM_VIEW_CHECK = "chk_view_check";
-	private final static String PARAM_GRANT_CHECK = "chk_grant_check";
-	private final static String PARAM_RETRIAL_CHECK = "chk_retrial_check";
-	private final static String PARAM_SAVE_CHECK = "chk_save_check";
-	private final static String PARAM_CHECK_ID = "chk_check_id";
-	private final static String PARAM_RULE = "chk_rule";
-	private final static String PARAM_NOTES = "chk_notes";
+	protected final static String PARAM_TYPE = "chk_type";
+	protected final static String PARAM_VIEW_CHECK_LIST = "chk_v_c_l";
+	protected final static String PARAM_VIEW_CHECK = "chk_view_check";
+	protected final static String PARAM_GRANT_CHECK = "chk_grant_check";
+	protected final static String PARAM_RETRIAL_CHECK = "chk_retrial_check";
+	protected final static String PARAM_SAVE_CHECK = "chk_save_check";
+	protected final static String PARAM_CHECK_ID = "chk_check_id";
+	protected final static String PARAM_RULE = "chk_rule";
+	protected final static String PARAM_NOTES = "chk_notes";
 
-	public CheckRequestAdmin() {}
+	public CheckRequestAdmin() {
+	}
 
 	public void main(IWContext iwc) {
 		this.setResourceBundle(getResourceBundle(iwc));
@@ -73,13 +76,14 @@ public class CheckRequestAdmin extends CommuneBlock {
 					saveCheck(iwc);
 					break;
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
 	}
 
-	private int parseAction(IWContext iwc) {
-		int action = ACTION_VIEW_CHECK_LIST;
+	protected int parseAction(IWContext iwc) {
+		int action = getDefaultView();
 
 		if (iwc.isParameterSet(PARAM_VIEW_CHECK)) {
 			action = ACTION_VIEW_CHECK;
@@ -113,13 +117,13 @@ public class CheckRequestAdmin extends CommuneBlock {
 		Iterator iter = checks.iterator();
 		while (iter.hasNext()) {
 			Check check = (Check) iter.next();
-			User child = getCheckBusiness(iwc).getUserById(iwc, check.getChildId());
-			User manager = getCheckBusiness(iwc).getUserById(iwc, check.getManagerId());
+			User child = getCheckBusiness(iwc).getUserById(check.getChildId());
+			User manager = getCheckBusiness(iwc).getUserById(check.getManagerId());
 
 			String childSSN = "-";
-			if (child != null){
-				childSSN = PersonalIDFormatter.format(child.getPersonalID(),iwc.getApplication().getSettings().getApplicationLocale());
-				
+			if (child != null) {
+				childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
+
 			}
 			String managerName = "-";
 			if (manager != null)
@@ -137,7 +141,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		add(checkList);
 	}
 
-	private void viewCheck(IWContext iwc, Check check, boolean isError) throws Exception {
+	protected void viewCheck(IWContext iwc, Check check, boolean isError) throws Exception {
 		add(getCheckInfoTable(iwc, check));
 		add(new Break(2));
 
@@ -155,39 +159,38 @@ public class CheckRequestAdmin extends CommuneBlock {
 		frame.setCellspacing(0);
 		frame.setColor("#ffffcc");
 
-		Table checkInfoTable = new Table(2, 8);
+		Table checkInfoTable = new Table();
 		checkInfoTable.setCellpadding(6);
 		checkInfoTable.setCellspacing(0);
 		int row = 1;
 
-		checkInfoTable.add(getLocalizedSmallHeader("check.case_number", "Case number"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row);
+		if (check != null) {
+			checkInfoTable.add(getLocalizedSmallHeader("check.case_number", "Case number"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+			String number = check.getPrimaryKey().toString();
+			checkInfoTable.add(getSmallText(number), 2, row++);
 
-		String number = check.getPrimaryKey().toString();
-		/*long checkNumber = ((Long) new Long(check.getPrimaryKey().toString())).longValue();
-		checkNumber = 666;
+			SchoolType type = getCheckBusiness(iwc).getSchoolType(check.getChildCareType());
+			if (type != null) {
+				checkInfoTable.add(getLocalizedSmallHeader("check.request_regarding", "Request regarding"), 1, row);
+				checkInfoTable.add(getSmallHeader(":"), 1, row);
+				checkInfoTable.add(getSmallText(type.getSchoolTypeName()), 2, row++);
+			}
+		}
 
-		DecimalFormat format = new DecimalFormat("0000000");
-		String number = format.format(checkNumber);*/
-		checkInfoTable.add(getSmallText(number), 2, row++);
+		User child = null;
+		if (check != null) {
+			child = getCheckBusiness(iwc).getUserById(check.getChildId());
+		}
+		else {
+			child = getChild(iwc);
+		}
 
-		checkInfoTable.add(getLocalizedSmallHeader("check.request_regarding", "Request regarding"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row);
-		SchoolType type = getCheckBusiness(iwc).getSchoolType(iwc, check.getChildCareType());
-		if (type != null)
-			checkInfoTable.add(getSmallText(type.getSchoolTypeName()), 2, row);
-		row++;
-
-		checkInfoTable.add(getLocalizedSmallHeader("check.child", "Child"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row++);
-		checkInfoTable.add(getLocalizedSmallHeader("check.custodians", "Custodians"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row);
-		checkInfoTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-
-		User child = getCheckBusiness(iwc).getUserById(iwc, check.getChildId());
 		if (child != null) {
-			--row;
-			String childSSN = PersonalIDFormatter.format(child.getPersonalID(),iwc.getApplication().getSettings().getApplicationLocale());
+			checkInfoTable.add(getLocalizedSmallHeader("check.child", "Child"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+
+			String childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
 
 			checkInfoTable.add(getSmallText(childSSN + ", " + child.getName()), 2, row);
 			Collection addresses = child.getAddresses();
@@ -207,24 +210,36 @@ public class CheckRequestAdmin extends CommuneBlock {
 			}
 
 			Collection custodians = getMemberFamilyLogic(iwc).getCustodiansFor(child);
-			Iterator iter2 = custodians.iterator();
-			while (iter2.hasNext()) {
-				User parent = (User) iter2.next();
-				checkInfoTable.add(getSmallText(parent.getNameLastFirst(false)), 2, ++row);
-				//", 08-633 54 37, Studerande, Gift"),2,4);
+			if (custodians != null && custodians.size() > 0) {
+				checkInfoTable.add(getLocalizedSmallHeader("check.custodians", "Custodians"), 1, row + 1);
+				checkInfoTable.add(getSmallHeader(":"), 1, row + 1);
+				checkInfoTable.setVerticalAlignment(1, row + 1, Table.VERTICAL_ALIGN_TOP);
+
+				Iterator iter2 = custodians.iterator();
+				while (iter2.hasNext()) {
+					User parent = (User) iter2.next();
+					checkInfoTable.add(getSmallText(parent.getNameLastFirst(false)), 2, ++row);
+				}
 			}
 		}
 
 		row++;
-		checkInfoTable.add(getLocalizedSmallHeader("check.language_mother_child", "Language mother-child"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row);
-		checkInfoTable.add(getSmallText(check.getMotherToungueMotherChild()), 2, row++);
-		checkInfoTable.add(getLocalizedSmallHeader("check.language_father_child", "Language father-child"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row);
-		checkInfoTable.add(getSmallText(check.getMotherToungueFatherChild()), 2, row++);
-		checkInfoTable.add(getLocalizedSmallHeader("check.language_parents", "Language parents"), 1, row);
-		checkInfoTable.add(getSmallHeader(":"), 1, row);
-		checkInfoTable.add(getSmallText(check.getMotherToungueParents()), 2, row);
+
+		if (check != null && check.getMotherToungueMotherChild() != null) {
+			checkInfoTable.add(getLocalizedSmallHeader("check.language_mother_child", "Language mother-child"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+			checkInfoTable.add(getSmallText(check.getMotherToungueMotherChild()), 2, row++);
+		}
+		if (check != null && check.getMotherToungueFatherChild() != null) {
+			checkInfoTable.add(getLocalizedSmallHeader("check.language_father_child", "Language father-child"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+			checkInfoTable.add(getSmallText(check.getMotherToungueFatherChild()), 2, row++);
+		}
+		if (check != null && check.getMotherToungueParents() != null) {
+			checkInfoTable.add(getLocalizedSmallHeader("check.language_parents", "Language parents"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+			checkInfoTable.add(getSmallText(check.getMotherToungueParents()), 2, row);
+		}
 
 		frame.add(checkInfoTable);
 
@@ -233,7 +248,14 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 	private Form getCheckForm(IWContext iwc, Check check, boolean isError) throws Exception {
 		Form f = new Form();
-		f.addParameter(PARAM_CHECK_ID, check.getPrimaryKey().toString());
+		if (check != null) {
+			f.addParameter(PARAM_CHECK_ID, check.getPrimaryKey().toString());
+		}
+
+		User user = getChild(iwc);
+		if (user != null) {
+			f.add(new HiddenInput(CitizenChildren.getChildIDParameterName(), user.getPrimaryKey().toString()));
+		}
 
 		Table frame = new Table(2, 1);
 		frame.setCellpadding(14);
@@ -246,30 +268,45 @@ public class CheckRequestAdmin extends CommuneBlock {
 		Table ruleTable = new Table(2, 5);
 		ruleTable.setCellpadding(4);
 		ruleTable.setCellspacing(0);
-		
-		ruleTable.add(getCheckBox("1", check.getRule1()), 1, 1);
-		ruleTable.add(getRuleText(localize("check.nationally_registered", "Nationally registered"), check.getRule1(), isError), 2, 1);
 
-		ruleTable.add(getCheckBox("2", check.getRule2()), 1, 2);
-		ruleTable.add(getRuleText(localize("check.child_one_year", "Child one year of age"), check.getRule2(), isError), 2, 2);
+		boolean rule1 = false;
+		boolean rule2 = false;
+		boolean rule3 = false;
+		boolean rule4 = false;
+		boolean rule5 = false;
 
-		ruleTable.add(getCheckBox("3", check.getRule3()), 1, 3);
-		ruleTable.add(getRuleText(localize("check.work_situation_approved", "Work situation approved"), check.getRule3(), isError), 2, 3);
+		if (check != null) {
+			rule1 = check.getRule1();
+			rule2 = check.getRule2();
+			rule3 = check.getRule3();
+			rule4 = check.getRule4();
+			rule5 = check.getRule5();
+		}
 
-		ruleTable.add(getCheckBox("4", check.getRule4()), 1, 4);
-		ruleTable.add(getRuleText(localize("check.dept_control", "Skuldkontroll"), check.getRule4(), isError), 2, 4);
+		ruleTable.add(getCheckBox("1", rule1), 1, 1);
+		ruleTable.add(getRuleText(localize("check.nationally_registered", "Nationally registered"), rule1, isError), 2, 1);
 
-		ruleTable.add(getCheckBox("5", check.getRule5()), 1, 5);
-		ruleTable.add(getRuleText(localize("check.need_for_special_support", "Need for special support"), check.getRule5(), isError), 2, 5);
+		ruleTable.add(getCheckBox("2", rule2), 1, 2);
+		ruleTable.add(getRuleText(localize("check.child_one_year", "Child one year of age"), rule2, isError), 2, 2);
+
+		ruleTable.add(getCheckBox("3", rule3), 1, 3);
+		ruleTable.add(getRuleText(localize("check.work_situation_approved", "Work situation approved"), rule3, isError), 2, 3);
+
+		ruleTable.add(getCheckBox("4", rule4), 1, 4);
+		ruleTable.add(getRuleText(localize("check.dept_control", "Skuldkontroll"), rule4, isError), 2, 4);
+
+		ruleTable.add(getCheckBox("5", rule5), 1, 5);
+		ruleTable.add(getRuleText(localize("check.need_for_special_support", "Need for special support"), rule5, isError), 2, 5);
 
 		frame.add(ruleTable, 1, 1);
 		frame.add(new Break(2), 1, 1);
 		frame.add(getSubmitButtonTable(), 1, 1);
-		
+
 		frame.add(getLocalizedSmallText("check.notes", "Notes"), 2, 1);
 		frame.add(new Break(2), 2, 1);
 		TextArea notes = new TextArea(PARAM_NOTES);
-		notes.setValue(check.getNotes());
+		if (check != null)
+			notes.setValue(check.getNotes());
 		notes.setHeight(8);
 		notes.setWidth(50);
 		frame.add(notes, 2, 1);
@@ -294,7 +331,8 @@ public class CheckRequestAdmin extends CommuneBlock {
 	private Text getRuleText(String ruleText, boolean ruleChecked, boolean isError) {
 		if (ruleChecked || !isError) {
 			return getText(ruleText);
-		} else {
+		}
+		else {
 			return getErrorText(ruleText);
 		}
 	}
@@ -338,21 +376,21 @@ public class CheckRequestAdmin extends CommuneBlock {
 			viewCheck(iwc, check, true);
 			return;
 		}
-		String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline","Check granted");
-		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body","Your check has been granted");
-		getCheckBusiness(iwc).approveCheck(iwc,check,subject,body);
+		String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline", "Check granted");
+		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check has been granted");
+		getCheckBusiness(iwc).approveCheck(check, subject, body);
 
-		add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted","Check granted")+": "+((Integer)check.getPrimaryKey()).toString()));
+		add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted", "Check granted") + ": " + ((Integer) check.getPrimaryKey()).toString()));
 		add(new Break(2));
 		viewCheckList(iwc);
 	}
 
 	private void retrialCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
-		String subject = getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline","Check denied");
-		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body","Your check has been denied");
-		getCheckBusiness(iwc).retrialCheck(iwc,check,subject,body);
-		
+		String subject = getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline", "Check denied");
+		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body", "Your check has been denied");
+		getCheckBusiness(iwc).retrialCheck(check, subject, body);
+
 		viewCheckList(iwc);
 	}
 
@@ -367,11 +405,37 @@ public class CheckRequestAdmin extends CommuneBlock {
 		viewCheckList(iwc);
 	}
 
-	private CheckBusiness getCheckBusiness(IWContext iwc) throws Exception {
+	protected User getChild(IWContext iwc) {
+		if (iwc.isParameterSet(CitizenChildren.getChildIDParameterName())) {
+			try {
+				return getCheckBusiness(iwc).getUserById(Integer.parseInt(iwc.getParameter(CitizenChildren.getChildIDParameterName())));
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				return null;
+			}
+		}
+		if (iwc.isParameterSet(CitizenChildren.getChildSSNParameterName())) {
+			try {
+				return getCheckBusiness(iwc).getUserByPersonalId(iwc.getParameter(CitizenChildren.getChildSSNParameterName()));
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				return null;
+			}
+		}
+		return null;
+	}
+
+	private int getDefaultView() {
+		return ACTION_VIEW_CHECK_LIST;
+	}
+
+	protected CheckBusiness getCheckBusiness(IWContext iwc) throws Exception {
 		return (CheckBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CheckBusiness.class);
 	}
 
-	private MemberFamilyLogic getMemberFamilyLogic(IWContext iwc) throws Exception {
+	protected MemberFamilyLogic getMemberFamilyLogic(IWContext iwc) throws Exception {
 		return (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 	}
 }
