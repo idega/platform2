@@ -128,7 +128,7 @@ public class WebSearcher extends Block {
 
 
 	private void crawl(IWContext iwc) throws Exception{
-		add(new BackButton("Back"));
+		add(new BackButton(iwrb.getLocalizedString("back","back")));
 		index = WebSearchManager.getIndex("main");//this should not be hard coded
 					
 		if ( report  > 0) {
@@ -139,14 +139,14 @@ public class WebSearcher extends Block {
 		}
 	
 		crawler.crawl();
-		add("Done");
+		add(iwrb.getLocalizedString("done","Done!"));
 		
 	}
 
 	
 	private Form getSearchForm(){
 		Form searchForm = new Form();
-		Table table = new Table(2,2);
+		Table table = new Table(3,1);
 		TextInput search = new TextInput(SEARCH_PARAM);
 		if(queryString!=null){ 
 			search.setContent(queryString); 
@@ -161,10 +161,10 @@ public class WebSearcher extends Block {
 		searchForm.add(table);
 		
 		if(canEdit){
-			Link crawl = new Link("Index this site");
+			Link crawl = new Link(iwrb.getLocalizedString("index.this.site","Index this site"));
 			crawl.addParameter(CRAWL_PARAM,"true");
 			crawl.addParameter(CRAWL_REPORT_PARAM,INDEX_DETAILED_REPORT);
-			table.add(crawl,1,2);				
+			table.add(crawl,3,1);				
 		}
 		
 		return searchForm;
@@ -195,7 +195,7 @@ public class WebSearcher extends Block {
 			}
 			catch(Exception e){
 				e.printStackTrace();
-				add("You need to crawl and index first!");	
+				add(iwrb.getLocalizedString("you.have.to.index.first","You need to run the indexer first!"));	
 			}
 		}
 		
@@ -217,9 +217,10 @@ public class WebSearcher extends Block {
 				//String bgColor = (hit.getRank()%2==0)?"#BBBBBB":"#CDCDCD";
 				Table hitTable = new Table(1,3);
 				hitTable.setWidth(Table.HUNDRED_PERCENT);
-				hitTable.setHeight(Table.HUNDRED_PERCENT);
+				hitTable.setHeight(50);
 				hitTable.setCellpadding(0);
 				hitTable.setCellspacing(1);
+				
 			
 				//hitTable.setColor(bgColor);
 				//if detailed ?
@@ -244,7 +245,7 @@ public class WebSearcher extends Block {
 				
 				}
 				
-				String extraInfo = hit.getHREF()+" - "+hit.getContentType()+" - rank: "+hit.getRank();
+				String extraInfo = hit.getHREF()+" - "+hit.getContentType()+" - "+iwrb.getLocalizedString("rank","rank")+": "+hit.getRank();
 				Text extraInfoText = (Text) extraInfoTextProto.clone();
 				extraInfoText.setText(extraInfo);
 				hitTable.add(extraInfoText,1,row);
@@ -308,7 +309,7 @@ public class WebSearcher extends Block {
 		Text text2 = (Text) textProto.clone();
 		Text text3 = (Text) textProto.clone();
 		
-		text1.setText("Searched for : <b>"+hits.getQuery()+"</b>. Results ");
+		text1.setText(iwrb.getLocalizedString("searched.for","Searched for")+" : <b>"+hits.getQuery()+"</b>. "+iwrb.getLocalizedString("results","Results")+" ");
 		info.add(text1,1,1);
 		
 		if (hits.hasPreviousSet()) { 
@@ -339,7 +340,7 @@ public class WebSearcher extends Block {
 			info.add(next,1,1);
 		}
 		
-		text3.setText(" of "+"<b>"+hits.getTotalHits()+"</b>"+".");
+		text3.setText(iwrb.getLocalizedString("of","of")+" <b>"+hits.getTotalHits()+"</b>"+".");
 		info.add(text3,1,1);
 
 		return info;
