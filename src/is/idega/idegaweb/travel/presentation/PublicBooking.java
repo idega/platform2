@@ -853,10 +853,10 @@ public class PublicBooking extends Block  {
       }
       catch (Exception e) {
         /**
-         * @todo commenta út success= true
+         * //@todo commenta út success= true
          */
-        success = true;
-        debug("error : success er on");
+        //success = true;
+        //debug("error : success er on");
         //display.addToText("error : success er on");
         e.printStackTrace(System.err);
       }
