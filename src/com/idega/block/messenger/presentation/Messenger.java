@@ -16,9 +16,8 @@ import com.idega.idegaweb.IWBundle;
  */
 
 public class Messenger extends Block {
-  private Applet messenger;
+  private static Applet messenger;
   private IWBundle iwb;
-  private IWResourceBundle iwrb;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.messenger";
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
@@ -38,6 +37,7 @@ public class Messenger extends Block {
     if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
       if(messenger==null){
         messenger = new Applet();
+        iwb = getBundle(iwc);
         messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
         messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
         messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
