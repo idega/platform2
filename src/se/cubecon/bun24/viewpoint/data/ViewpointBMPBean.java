@@ -129,7 +129,6 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
             sql.append ("proc_case.handler_group_id = '" + groupId + "'");
         }
         sql.append (")");
-        System.out.println (sql);
         final Collection viewpoints = idoFindIDsBySQL (sql.toString ());
         return viewpoints;
     }
