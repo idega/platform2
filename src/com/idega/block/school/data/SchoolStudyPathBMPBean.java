@@ -71,6 +71,10 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		setColumn(COLUMN_SCHOOL_TYPE, schoolTypeId);
 	}
 
+    public boolean isValid () {
+        return getBooleanColumnValue (COLUMN_IS_VALID);
+    }
+
 	public void remove() {
 		setColumn(COLUMN_IS_VALID, false);
 		this.store();

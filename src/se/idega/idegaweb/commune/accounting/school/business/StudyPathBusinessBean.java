@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.5 2003/10/13 13:16:02 anders Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.6 2003/10/15 09:23:41 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,24 +9,27 @@
  */
 package se.idega.idegaweb.commune.accounting.school.business;
 
-import java.util.Collection;
 import java.rmi.RemoteException;
-import javax.ejb.FinderException;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
-import com.idega.block.school.data.SchoolStudyPathHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolStudyPath;
-import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
 
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/13 13:16:02 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/15 09:23:41 $ by $Author: staffan $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
@@ -64,6 +67,15 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	 */	
 	protected SchoolTypeHome getSchoolTypeHome() throws RemoteException {
 		return (SchoolTypeHome) com.idega.data.IDOLookup.getHome(SchoolType.class);
+	}	
+	
+	/**
+	 * Return school class member home. 
+	 */	
+	protected SchoolClassMemberHome getSchoolClassMemberHome ()
+        throws RemoteException {
+		return (SchoolClassMemberHome) com.idega.data.IDOLookup.getHome
+                (SchoolClassMember.class);
 	}	
 	
 	/**
@@ -189,9 +201,27 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	 */ 
 	public void deleteStudyPath(String id) throws StudyPathException {
 		try {
+            // 1. set the study path to in valid
 			SchoolStudyPathHome home = getSchoolStudyPathHome();
-			SchoolStudyPath sp = home.findByPrimaryKey(new Integer(id));
-			sp.remove();
+			SchoolStudyPath studyPath = home.findByPrimaryKey(new Integer(id));
+			studyPath.remove();
+
+            // 2. remove all associations between students and the invalidated
+            // study path
+            try {
+                final Collection students = getSchoolClassMemberHome ()
+                        .findAllBySchoolStudyPath (studyPath);
+                if (null != students) {
+                    for (Iterator i = students.iterator (); i.hasNext ();) {
+                        final SchoolClassMember student
+                                = (SchoolClassMember) i.next ();
+                        student.setStudyPathToNull ();
+                        student.store ();
+                    }
+                }
+            } catch (final FinderException fe) {
+                // no problem, no kids with this study path - do nothing
+            }
 		} catch (RemoteException e) { 
 			throw new StudyPathException(KEY_CANNOT_DELETE_STUDY_PATH, DEFAULT_CANNOT_DELETE_STUDY_PATH);
 		} catch (FinderException e) { 

@@ -11,6 +11,7 @@ public interface SchoolStudyPath extends com.idega.data.IDOEntity
  public java.util.Collection getSchools()throws com.idega.data.IDORelationshipException;
  public void initializeAttributes();
  public void removeAllSchools()throws com.idega.data.IDORemoveRelationshipException;
+    boolean isValid ();
  public void removeSchool(com.idega.block.school.data.School p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setCode(java.lang.String p0);
  public void setDescription(java.lang.String p0);
