@@ -311,7 +311,6 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -319,7 +318,6 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initFieldContents()
 	 */
 	public void initFieldContents() {
-		// TODO Auto-generated method stub
 	}
 	
 	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc){
