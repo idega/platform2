@@ -61,10 +61,11 @@ public class ContractSignWindow extends Window{
   */
 
   public ContractSignWindow() {
+		keepFocus();
   }
 
   protected void control(IWContext iwc){
-    setParentToReload();
+
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
@@ -76,6 +77,7 @@ public class ContractSignWindow extends Window{
 
       if(iwc.getParameter("sign")!=null || iwc.getParameter("save")!=null){
         doSignContract(iwc);
+				setParentToReload();
       }
       add(getSignatureTable(iwc));
     }

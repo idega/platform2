@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuilding.java,v 1.1 2001/11/08 15:53:52 aron Exp $
+ * $Id: CampusBuilding.java,v 1.2 2001/11/19 00:28:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import com.idega.block.finance.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.presentation.BuildingEditorWindow;
+import com.idega.block.building.presentation.BuildingStatistics;
 import is.idega.idegaweb.campus.block.phone.presentation.CampusPhones;
 import is.idega.idegaweb.campus.block.building.presentation.*;
 
@@ -74,6 +75,7 @@ public class CampusBuilding extends Block {
       iFrame2.setScrolling(IFrame.SCROLLING_YES);
       iFrame2.setAlignment(IFrame.ALIGN_LEFT);
       iFrame2.setStyle("border: 1 solid #000000");
+			iFrame2.setSrc(BuildingStatistics.class);
       myTable.add(iFrame2,2,1);
 
     add(myTable);

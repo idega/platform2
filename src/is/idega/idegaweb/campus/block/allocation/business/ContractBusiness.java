@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: ContractBusiness.java,v 1.2 2001/11/19 00:29:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -64,44 +64,58 @@ public  class ContractBusiness {
       eContract = new Contract(iContractId );
       if(eContract != null ){
         int iUserId = eContract.getUserId().intValue();
+				System.err.println("Signing user "+iUserId);
         if(sEmail !=null && sEmail.trim().length() >0){
+					//System.err.println("adding email "+sEmail);
           UserBusiness.addNewUserEmail(iUserId,sEmail);
         }
         if(newAccount){
           String prefix = iwrb.getLocalizedString("finance","Finance");
+					//System.err.println("adding finance account ");
           AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
         }
         if(newPhoneAccount){
+					//System.err.println("adding phone account ");
           String prefix = iwrb.getLocalizedString("phone","Phone");
           AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
         }
         if(newLogin  && iGroupId > 0){
+					//System.err.println("creating login "+login);
           createLogin( iUserId,iGroupId,login,pass,generatePasswd );
         }
 
+				//System.err.println("deleteing from waitinglist ");
         deleteFromWaitingList(eContract);
+
+				//System.err.println("changing application status ");
         changeApplicationStatus( eContract);
 
         if(sendMail){
           sendMail(iUserId,login,pass,iwrb);
         }
 
+				//System.err.println("changing contract status ");
         eContract.setStatusSigned();
+				//System.err.println("updateing contract ");
         eContract.update();
+				//System.err.println("lets try to commit");
       }
 
 
      t.commit();
+		 //System.err.println("done committing ");
 
     }
     catch(Exception e) {
       e.printStackTrace();
+
       try {
         t.rollback();
       }
       catch(javax.transaction.SystemException ex) {
         ex.printStackTrace();
       }
+
 
     }
     return pass;
@@ -132,19 +146,15 @@ public  class ContractBusiness {
   public static void changeApplicationStatus(Contract eContract)throws SQLException{
     String status = Application.statusSigned;
     List L = null;
-    try {
-       L = EntityFinder.findAllByColumn(new Application(),Application.getColumnNameApplicantId(),eContract.getApplicantId().intValue());
-
-    }
-    catch (SQLException ex) {
-
-    }
+    L = EntityFinder.findAllByColumn(new Application(),Application.getColumnNameApplicantId(),eContract.getApplicantId().intValue());
     if(L!=null){
-      while(L.iterator().hasNext()){
-        Application A = (Application) L.iterator().next();
+			Iterator I = L.iterator();
+      while(I.hasNext()){
+        Application A = (Application) I.next();
         A.setStatusSigned();
         A.update();
       }
+
     }
   }
 
