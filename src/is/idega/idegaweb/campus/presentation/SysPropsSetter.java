@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.finance.presentation.Finance;
+import com.idega.builder.handler.ColorHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
@@ -113,6 +114,12 @@ public class SysPropsSetter extends CampusBlock{
 	      emailHost.setContent(settings.getSmtpServer());
 	    	
 	    sendEventMails.setSelectedElement(Boolean.toString(settings.getSendEventMail()));    
+	    
+	    String transferColor = settings.getTransferBackgroundColor();
+	    if(transferColor==null)
+	    		transferColor = "";
+	    ColorHandler transferColorHandler = new ColorHandler();
+	  
 	
 	    /*
 	    T.add(Edit.formatText(iwrb.getLocalizedString("contract_years","Contract years")),1,row);
@@ -167,6 +174,9 @@ public class SysPropsSetter extends CampusBlock{
 	    T.add(getHeader(localize("send_event_mails","Send event mails")),1,row);
 	    T.add(sendEventMails,3,row);
 	    row++;
+	    T.add(getHeader(localize("transfer_background_color","Transfer background")),1,row);
+	    T.add(transferColorHandler.getHandlerObject("transfer_color",transferColor,iwc),3,row);
+	    row++;
 	    
 	    SubmitButton save =(SubmitButton)getSubmitButton("cmp_stng_save","true","Save","save");
 	    T.addButton(save);
@@ -188,6 +198,7 @@ public class SysPropsSetter extends CampusBlock{
     String financeCategory = iwc.getParameter("finance_category");
     String term = iwc.getParameter("term");
     String sendEventMails = iwc.getParameter("send_event_mail");
+    String transferColor = iwc.getParameter("transfer_color");
      
     if(settings !=null){
       /*if(contractDate.length() == 10){
@@ -234,6 +245,9 @@ public class SysPropsSetter extends CampusBlock{
       }
       if(!"".equals(sendEventMails)){
         settings.setSendEventMail(Boolean.valueOf(sendEventMails).booleanValue());
+      }
+      if(!"".equals(transferColor)){
+        settings.setTransferBackgroundColor(transferColor);
       }
      getCampusService(iwc).storeSettings(settings);
 

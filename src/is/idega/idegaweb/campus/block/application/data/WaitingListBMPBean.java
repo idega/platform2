@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.13 2004/06/24 13:23:33 aron Exp $
+ * $Id: WaitingListBMPBean.java,v 1.14 2004/07/20 10:53:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -48,8 +48,8 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
   private final String PRIORITY_E = "E";
 
 
-  private final String TYPE_APPLICATION = "A";
-  private final String TYPE_TRANSFER = "T";
+  public static final String TYPE_APPLICATION = "A";
+  public static final String TYPE_TRANSFER = "T";
 
   public WaitingListBMPBean() {
     super();

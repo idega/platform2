@@ -18,6 +18,7 @@ public class CampusSettings {
 	protected final static String PROPERTY_SMTP_SERVER = "SMTP_SERVER";
 	protected final static String PROPERTY_FINANCE_CATEGORY = "FINANCE_CATEGORY";
 	protected final static String PROPERTY_SEND_EVENT_MAIL = "SEND_EVENT_MAIL";
+	protected final static String PROPERTY_TRANSFER_BGR_COLOR = "TRANSFER_BGR_COLOR";
 	
 	private Integer termOfNoticeDays = null;
 	private Integer tenantGroupID = null;
@@ -25,6 +26,7 @@ public class CampusSettings {
 	private String smtpServer = null;
 	private Integer financeCategoryID = null;
 	private Boolean sendEventMail = null;
+	private String transferBackgroundColor = null;
 	
 	/**
 	 * @return Returns the adminEmail.
@@ -101,5 +103,18 @@ public class CampusSettings {
 	 */
 	public void setSendEventMail(boolean sendEventMail) {
 		this.sendEventMail = Boolean.valueOf(sendEventMail);
+	}
+	/**
+	 * @return
+	 */
+	public String getTransferBackgroundColor() {
+		// TODO Auto-generated method stub
+		return transferBackgroundColor;
+	}
+	/**
+	 * @param transferBackgroundColor The transferBackgroundColor to set.
+	 */
+	public void setTransferBackgroundColor(String transferBackgroundColor) {
+		this.transferBackgroundColor = transferBackgroundColor;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.74 2004/07/19 13:54:48 aron Exp $
+ * $Id: CampusAllocator.java,v 1.75 2004/07/20 10:53:08 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
 import is.idega.idegaweb.campus.business.CampusService;
@@ -1299,6 +1300,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				ApplicantHome applicantHome = (ApplicantHome) IDOLookup.getHome(Applicant.class);
 				row++;
 				String TempColor = "#000000";
+				String transferColor = getCampusSettings(iwc).getTransferBackgroundColor();
+				if(transferColor==null)
+				 transferColor = "#D5B5FF";
+				
 				int con_id = -1;
 				boolean redColorSet = false;
 				int numberOnList = 1;
@@ -1328,9 +1333,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							applicationID = ((Integer) application.getPrimaryKey());
 						}
 						TextFontColor = TempColor;
-						if (WL.getType().equals("T")) {
-							TextFontColor = "#0000CC";
-						}
+						
+						
 						/* er thetta thitt skitamix Palli ??
 						if (application.getSubjectId() == 15) {
 							TextFontColor = "#00CC00";
@@ -1347,8 +1351,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						Frame.add(getWaitingListOrderLink(WL.getPrimaryKey().toString(),numberOnList,typeID.intValue(), complexID.intValue(),listSize), col++, row);
 						numberOnList++;
 						Frame.add(getText(WL.getPriorityLevel()), col++, row);
-						if(priorityColorMap.containsKey(WL.getPriorityLevel()))
+						if(priorityColorMap.containsKey(WL.getPriorityLevel())){
 							colorMap.put(new Integer(row),priorityColorMap.get(WL.getPriorityLevel()));
+						}
+						
+						if (WL.getType().equals(WaitingListBMPBean.TYPE_TRANSFER)) {
+							colorMap.put(new Integer(row),transferColor);
+						}
+						
 						String cypher = null;
 						if (application != null && applicationID.intValue() >0) {
 							

@@ -40,6 +40,8 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 		settings.setAdminEmail(property);
 		property = bundle.getProperty(CampusSettings.PROPERTY_SMTP_SERVER);
 		settings.setSmtpServer(property);
+		property = bundle.getProperty(CampusSettings.PROPERTY_TRANSFER_BGR_COLOR);
+		settings.setTransferBackgroundColor(property);
 		property = bundle.getProperty(CampusSettings.PROPERTY_TERM_OF_NOTICE);
 		try {
 			Integer daysOfNotice = Integer.valueOf(property);
@@ -83,6 +85,7 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 		if(settings.getFinanceCategoryID()!=null)
 			setBundleProperty(bundle,CampusSettings.PROPERTY_FINANCE_CATEGORY,settings.getFinanceCategoryID().toString());
 		setBundleProperty(bundle,CampusSettings.PROPERTY_SEND_EVENT_MAIL,Boolean.toString(settings.getSendEventMail()));
+		setBundleProperty(bundle,CampusSettings.PROPERTY_TRANSFER_BGR_COLOR, settings.getTransferBackgroundColor());
 	}
 	
 	private  void setBundleProperty(IWBundle bundle,String propertyKey,String propertyValue){
