@@ -688,6 +688,43 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 	}
 	
+	public boolean rejectOfferWithNewDate(int applicationId, User user, Date date) {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationId));
+			
+			UserTransaction t = getSessionContext().getUserTransaction();
+			try {
+				t.begin();
+				CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
+				application.setFromDate(date);
+				application.setApplicationStatus(getStatusSentIn());
+				caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+			
+				t.commit();
+			
+				return true;
+			}
+			catch (Exception e) {
+				try {
+					t.rollback();
+				}
+				catch (SystemException ex) {
+					ex.printStackTrace();
+				}
+				e.printStackTrace();
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
+	
 
 /*	public boolean signApplication(ChildCareApplication application) {
 		return false;	
