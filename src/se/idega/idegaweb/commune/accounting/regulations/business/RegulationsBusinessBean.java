@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.110 2004/01/07 10:32:29 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.111 2004/01/08 19:05:08 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -60,7 +60,9 @@ import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
@@ -1820,7 +1822,17 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		try {
 			VATBusiness vatBusiness = getVATBusiness();
 			Regulation vatRuleRegulation = reg.getVATRuleRegulation();
-			if (vatRuleRegulation != null) {
+			School school = null;
+			if (contract != null) {
+				SchoolClassMember plac = contract.getSchoolClassMember();
+				SchoolClass sclass = plac.getSchoolClass();
+				school = sclass.getSchool();
+			}
+			else if (placement != null) {
+				SchoolClass sclass = placement.getSchoolClass();
+				school = sclass.getSchool();
+			}
+			if (vatRuleRegulation != null && vatBusiness.isSchoolApplicableForVAT(school)) {
 				VATRegulation vatRegulation = vatBusiness.getVATRegulationFromRegulation(reg);
 				ret.setVATPercent(vatRegulation.getVATPercent());
 				ret.setVATRegulation(vatRegulation);

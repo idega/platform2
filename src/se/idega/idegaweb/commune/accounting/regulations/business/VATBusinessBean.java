@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.17 2004/01/06 14:09:53 tryggvil Exp $
+ * $Id: VATBusinessBean.java,v 1.18 2004/01/08 19:05:08 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,8 +19,10 @@ import javax.ejb.RemoveException;
 
 import com.idega.util.IWTimestamp;
 
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolManagementTypeBMPBean;
 import com.idega.business.IBOLookupException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
@@ -31,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/01/06 14:09:53 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/08 19:05:08 $ by $Author: tryggvil $
  *
  * @author Anders Lindman
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -453,5 +455,13 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	private RegulationsBusiness getRegulationsBusiness() throws IBOLookupException {
 		RegulationsBusiness business = (RegulationsBusiness)getServiceInstance(RegulationsBusiness.class);
 		return business;
+	}
+	
+	public boolean isSchoolApplicableForVAT(School school){
+		String manType = (String)school.getManagementType().getPrimaryKey();
+		if(manType.equals(SchoolManagementTypeBMPBean.TYPE_PRIVATE)||manType.equals(SchoolManagementTypeBMPBean.TYPE_COMPANY)){
+			return true;
+		}
+		return false;
 	}
 }

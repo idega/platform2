@@ -296,7 +296,9 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		IDOQuery sql = idoQueryFindByMonth(month);
 		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
 		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
-		sql.appendAndEquals(COLUMN_VAT_RULE_REGULATION_ID,vatRuleRegulation.getPrimaryKey().toString());
+		if(vatRuleRegulation!=null){
+			sql.appendAndEquals(COLUMN_VAT_RULE_REGULATION_ID,vatRuleRegulation.getPrimaryKey().toString());
+		}
 		sql.appendAndEqualsQuoted(COLUMN_PAYMENT_TEXT,text);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}		

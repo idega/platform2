@@ -308,6 +308,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated.append("conditions:"+conditions.size());
 					errorRelated.append("totalSum:"+totalSum);
 					errorRelated.append("contract:"+contract.getPrimaryKey());
+
 					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 						category.getCategory(),		//The ID that selects barnomsorg in the regulation
 						PaymentFlowConstant.OUT, 	//The payment flow is out
