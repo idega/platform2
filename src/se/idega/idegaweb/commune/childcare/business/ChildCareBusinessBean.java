@@ -855,7 +855,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					while (iter.hasNext()) {
 						Case element = (Case) iter.next();
 						if (isAfterSchoolApplication(element)) {
-							application = (ChildCareApplication) element;
+							application = getApplication(((Integer)element.getPrimaryKey()).intValue());
 							application.setApplicationStatus(getStatusSentIn());
 							caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
 	
