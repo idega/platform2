@@ -1175,7 +1175,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 
 			String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
-			String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {5} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
+			String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {3} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
 			sendMessageToProvider(application, subject, body);
 			return true;
 		}
