@@ -233,9 +233,9 @@ public abstract class AccountingBlock extends CommuneBlock {
 		Date date = null;
 		
 		if ((d == null) && (s.length() == 4)) {
-			s = "20" + s;
+			s = "20" + s + "01";
 //			pos = new ParsePosition(0);
-//			formatter = new SimpleDateFormat ("yyMM");
+//			formatter = new SimpleDateFormat ("yyyyMM");
 //			d = formatter.parse(s, pos);
 		}
 		if ((d == null) && (s.length() == 6)) {
@@ -307,6 +307,9 @@ public abstract class AccountingBlock extends CommuneBlock {
 	 */
 	private Date validateDate(java.util.Date d, String s) {
 		Date date = null;
+		if (s.length() == 4) {
+			s = "20" + s + "01";
+		}
 		if (d != null) {
 			date = new Date(d.getTime());
 			String validate = null;
