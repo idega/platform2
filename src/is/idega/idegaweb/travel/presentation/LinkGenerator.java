@@ -14,6 +14,7 @@ import com.idega.presentation.text.*;
 public class LinkGenerator extends TravelWindow {
 
   public static String parameterProductId = "linkGeneratorProductId";
+  private static String http = "http";
 
   public LinkGenerator() {
     super.setWidth(600);
@@ -34,16 +35,18 @@ public class LinkGenerator extends TravelWindow {
     add(tLink);
     add(Text.getBreak());
 
-    String http = "http";
     /*if (iwc.getRequest().isSecure()) {
       http = "https";
     }*/
 
-    add("&lt;a target=\"_blank\" href=\"https://"+link+"\"&gt;Book&lt;/a&gt;");
+    Link lLink = getLink(iwc,Integer.parseInt(productId));
+
+    add("&lt;a target=\"_blank\" href=\""+link+"\"&gt;Book&lt;/a&gt;");
+//    add(lLink.getURL());
     add(Text.getBreak());
     add(Text.getBreak());
 //    add("<a target=\"_blank\" href=\""+http+"://"+link+"\">Try link</a>");
-    add(getLink(iwc,Integer.parseInt(productId)));
+    add(lLink);
   }
 
   public static Link getLink(IWContext iwc, int serviceId) {
@@ -53,6 +56,6 @@ public class LinkGenerator extends TravelWindow {
   }
 
   private static String getLinkText(IWContext iwc, int serviceId) {
-    return iwc.getServerName()+":"+iwc.getServerPort()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+parameterProductId+"="+serviceId;
+    return http+"://"+iwc.getServerName()+":"+iwc.getServerPort()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+parameterProductId+"="+serviceId;
   }
 }
