@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.13 2002/07/09 23:38:49 aron Exp $
+ * $Id: ContractBusiness.java,v 1.14 2002/07/11 09:55:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -390,5 +390,17 @@ public  class ContractBusiness {
       case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
     }
     return r;
+  }
+
+  public static  void doGarbageContract(int iContract){
+    int id = iContract;
+    try {
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
+      eContract.setStatusGarbage();
+      eContract.update();
+    }
+    catch (SQLException ex) {
+
+    }
   }
 }
