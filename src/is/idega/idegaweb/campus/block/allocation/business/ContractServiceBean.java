@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.20 2004/07/19 11:43:16 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.21 2004/07/26 12:24:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
@@ -364,8 +365,12 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	}
 	public User createNewUser(Applicant A, String[] emails) throws RemoteException, CreateException {
 		//User user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
-		User user = getUserService().createUserByPersonalIDIfDoesNotExist(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN(),null,null);
-		if (emails != null && emails.length > 0) {
+		User user = null;
+		if(getAllowedTemporaryPersonalID().contains(A.getSSN()))
+			 user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
+		else
+			 user = getUserService().createUserByPersonalIDIfDoesNotExist(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN(),null,null);
+		if (user!=null && emails != null && emails.length > 0) {
 			Integer userID = (Integer) user.getPrimaryKey();
 			getUserService().addNewUserEmail(userID.intValue(), emails[0]);
 		}
@@ -959,6 +964,12 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		String[] statuses = {ContractBMPBean.statusCreated,ContractBMPBean.statusPrinted,ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
 				ContractBMPBean.statusTerminated};
 		return statuses;
+	}
+	
+	public Collection getAllowedTemporaryPersonalID(){
+		ArrayList list = new ArrayList(1);
+		list.add("9999999999");
+		return list;
 	}
 	
 	public Map getNewApplicantContracts() throws RemoteException, FinderException {
