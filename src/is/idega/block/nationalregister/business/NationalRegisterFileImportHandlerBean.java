@@ -29,6 +29,7 @@ import com.idega.core.location.business.AddressBusiness;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.PostalCode;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
@@ -127,7 +128,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			aBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
 			//if the transaction failes all the users and their relations are removed
 //			transaction.begin();
-			performer = IWContext.getInstance().getCurrentUser();
+			try {
+				performer = IWContext.getInstance().getCurrentUser();
+			} catch (NullPointerException n) {
+				System.out.println("NationalRegisterImporter iwcontext instance not found");
+				performer = null;
+			}
+			
+			if (performer == null) {
+				com.idega.core.user.data.User admUser = this.getIWMainApplication().getAccessController().getAdministratorUser();
+				performer = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(admUser.getPrimaryKey());
+			}
 			//iterate through the records and process them
 			String item;
 			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
