@@ -38,6 +38,7 @@ public class Sidemenu extends JModuleObject{
     private Image bulletImage = null;
     private String extraParameterName;
     private String extraParameterValue;
+    private Text textObjectToClone;
 
     boolean isAdmin = false;
     boolean show_menu_name = false;
@@ -88,6 +89,9 @@ public class Sidemenu extends JModuleObject{
       this.bulletImage = bulletImage;
     }
 
+    public void setText(Text textToClone) {
+      this.textObjectToClone = textToClone;
+    }
     public void addParameter(String parameterName, String parameterValue) {
         this.extraParameterName = parameterName;
         this.extraParameterValue = parameterValue;
@@ -297,18 +301,27 @@ public class Sidemenu extends JModuleObject{
                    }
 
                    option = new SidemenuOption(id);
-                   textinn = new Text(option.getName());
+                   if (this.textObjectToClone != null) {
+                      textinn = (Text) this.textObjectToClone.clone();
+                      textinn.setText(option.getName());
+                   }else {
+                      textinn = new Text(option.getName());
+                   }
 
                    if (position != 1) {
                       if ( addBullet ) {
                         textinn = new Text("- "+option.getName());
                       }
-                      textinn.setAttribute("style",childStyle);
-                      textinn.setFontSize(fontSize-1);
+                      if (this.textObjectToClone == null) {
+                        textinn.setAttribute("style",childStyle);
+                        textinn.setFontSize(fontSize-1);
+                      }
                   }
                   else {
-                      textinn.setAttribute("style",parentStyle);
-                      textinn.setFontSize(fontSize);
+                      if (this.textObjectToClone == null) {
+                        textinn.setAttribute("style",parentStyle);
+                        textinn.setFontSize(fontSize);
+                      }
                   }
 
                   link = new Link(textinn,URI);
@@ -340,11 +353,11 @@ public class Sidemenu extends JModuleObject{
                   }
 
 
-                  if (this.bulletImage != null) {
-                      table.add(bulletImage,position,row);
-                  }
 
                   if (position == 1) {
+                    if (this.bulletImage != null) {
+                        table.add(bulletImage,position,row);
+                    }
                     table.add(link,position,row);
                     table.mergeCells(position,row,depth,row);
                     table.setRowColor(row,colors.elementAt(colors_position).toString());
@@ -372,8 +385,9 @@ public class Sidemenu extends JModuleObject{
                 }
 
               }
-
-            table.resize(depth,row-1);
+            try {
+              table.resize(depth,row-1);
+            }catch (ArrayIndexOutOfBoundsException aioobe) {}
             modinfo.getServletContext().setAttribute("sidemenu_table"+attribute_id+""+open,table);
 
 

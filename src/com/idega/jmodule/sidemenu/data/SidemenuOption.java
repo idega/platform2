@@ -24,6 +24,8 @@ public class SidemenuOption extends GenericEntity{
                 addAttribute("module_object_class_name","Nafn arachnea objects",true,true,"java.lang.String");
                 addAttribute("entity_id_column_name","Nafn id_column entitys",true,true,"java.lang.String");
                 addAttribute("entity_id_column_value","Gildi id_column entitys",true,true,"java.lang.Integer");
+
+                this.addManyToManyRelationShip(c);
         }
 
 	public String getIDColumnName(){
