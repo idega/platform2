@@ -35,8 +35,6 @@ public class CategoryBusiness{
 
   public static boolean disconnectCategory(ICCategory Cat,int iObjectInstanceId){
     try {
-      //newsCat.setValid(false);
-      //newsCat.update();
       if(iObjectInstanceId > 0  ){
         ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
         Cat.removeFrom(obj);
@@ -74,7 +72,7 @@ public class CategoryBusiness{
   }
 
   public static void deleteCategory(int iCategoryId ,int iObjectInstanceId) throws SQLException {
-    ICCategory nc = new ICCategory( iCategoryId );
+    ICCategory nc = (ICCategory) CategoryFinder.getCategory( iCategoryId );
 
     if(iObjectInstanceId > 0  ){
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
@@ -84,27 +82,25 @@ public class CategoryBusiness{
 
   }
 
+  public static ICCategory saveCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId,String type,boolean allowMultible){
+    ICCategory Cat = new ICCategory();
+    if(iCategoryId > 0)
+      Cat = CategoryFinder.getCategory(iCategoryId);
+    Cat.setName(sName);
+    Cat.setDescription(sDesc);
+    Cat.setType(type);
+    return saveCategory(Cat,iObjectInstanceId,allowMultible);
+  }
+
   public static ICCategory saveCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId,String type){
+    return saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,type,false);
+  }
+
+  public static ICCategory saveCategory(ICCategory Cat,int iObjectInstanceId,boolean allowMultible){
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try{
      t.begin();
-      boolean update = false;
-      ICCategory Cat = null;
-      if(iCategoryId > 0){
-        update = true;
-        Cat = new ICCategory(iCategoryId );
-      }
-      else{
-        Cat = new ICCategory();
-      }
-
-      Cat.setName(sName);
-      Cat.setDescription(sDesc);
-      Cat.setValid(true);
-      Cat.setCreated(idegaTimestamp.getTimestampRightNow());
-      Cat.setType(type);
-
-      if(update){
+      if(Cat.getID()>0){
         Cat.update();
       }
       else{
@@ -114,10 +110,10 @@ public class CategoryBusiness{
       if(iObjectInstanceId > 0){
         ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
         // Allows only one category per instanceId
-        objIns.removeFrom(new ICCategory());
+        if(!allowMultible)
+          objIns.removeFrom((ICCategory)ICCategory.getEntityInstance(ICCategory.class));
         Cat.addTo(objIns);
       }
-
       t.commit();
       return Cat;
     }
@@ -133,7 +129,9 @@ public class CategoryBusiness{
     return null;
   }
 
+
   public static int createCategory(int iObjectInstanceId,String type){
-    return saveCategory(-1,"Category - "+iObjectInstanceId,"Category - "+iObjectInstanceId,iObjectInstanceId ,type).getID();
+    return saveCategory(-1,"Category - "+iObjectInstanceId,"Category - "+iObjectInstanceId,iObjectInstanceId ,type,false).getID();
   }
+
 }

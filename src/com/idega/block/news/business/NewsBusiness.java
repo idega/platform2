@@ -36,18 +36,7 @@ public class NewsBusiness{
   }
 
   public static boolean disconnectBlock(int instanceid){
-    List L = NewsFinder.listOfNewsCategoryForObjectInstanceId(instanceid);
-    if(L!= null){
-      Iterator I = L.iterator();
-      while(I.hasNext()){
-        NewsCategory N = (NewsCategory) I.next();
-        disconnectNewsCategory(N,instanceid);
-      }
-      return true;
-    }
-    else
-      return false;
-
+    return CategoryBusiness.disconnectBlock(instanceid);
   }
 
   public static boolean disconnectNewsCategory(NewsCategory newsCat,int iObjectInstanceId){

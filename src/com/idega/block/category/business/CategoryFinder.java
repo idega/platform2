@@ -17,6 +17,7 @@ import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICBusiness;
+import com.idega.data.GenericEntity;
 
 /**
  * Title:
@@ -31,19 +32,14 @@ public class CategoryFinder {
 
   public static ICCategory getCategory(int iCategoryId){
     if( iCategoryId > 0){
-      try {
-        return new ICCategory(iCategoryId );
-      }
-      catch (SQLException ex) {
-        ex.printStackTrace();
-      }
+        return (ICCategory) ICCategory.getEntityInstance(ICCategory.class,iCategoryId);
     }
     return null;
   }
 
   public static List listOfCategories(String type){
     try {
-      return EntityFinder.findAllByColumn(new ICCategory(),ICCategory.getColumnType(),type);
+      return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnType(),type);
     }
     catch (SQLException ex) {
       return null;
@@ -52,7 +48,7 @@ public class CategoryFinder {
 
   public static List listOfValidCategories(){
     try {
-      return EntityFinder.findAllByColumn(new ICCategory(),ICCategory.getColumnValid(),"Y");
+      return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"Y");
     }
     catch (SQLException ex) {
       return null;
@@ -61,7 +57,7 @@ public class CategoryFinder {
 
   public static List listOfValidCategories(String type){
     try {
-      return EntityFinder.findAllByColumn(new ICCategory(),ICCategory.getColumnValid(),"Y",ICCategory.getColumnType(),type);
+      return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"Y",ICCategory.getColumnType(),type);
     }
     catch (SQLException ex) {
       return null;
@@ -70,7 +66,7 @@ public class CategoryFinder {
 
   public static List listOfInValidCategories(){
     try {
-      return EntityFinder.findAllByColumn(new ICCategory(),ICCategory.getColumnValid(),"N");
+      return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"N");
     }
     catch (SQLException ex) {
       return null;
@@ -79,7 +75,7 @@ public class CategoryFinder {
 
   public static List listOfInValidCategories(String type){
     try {
-      return EntityFinder.findAllByColumn(new ICCategory(),ICCategory.getColumnValid(),"N",ICCategory.getColumnType(),type);
+      return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"N",ICCategory.getColumnType(),type);
     }
     catch (SQLException ex) {
       return null;
@@ -90,7 +86,7 @@ public class CategoryFinder {
 
   public static int getObjectInstanceIdFromCategoryId(int iCategoryId){
     try {
-      ICCategory nw = new ICCategory(iCategoryId);
+      ICCategory nw = (ICCategory) getCategory(iCategoryId);
       List L = EntityFinder.findRelated( nw,new ICObjectInstance());
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
@@ -114,7 +110,7 @@ public class CategoryFinder {
       }
     }
     catch (Exception ex) {
-
+      ex.printStackTrace();
     }
     return id;
   }
@@ -132,9 +128,9 @@ public class CategoryFinder {
 
   public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
     try {
-      List L = EntityFinder.findRelated(eObjectInstance ,new ICCategory());
+      List L = EntityFinder.findRelated(eObjectInstance ,(GenericEntity)ICCategory.getStaticInstance(ICCategory.class));
       if(L!= null){
-        return ((ICCategory) L.get(0)).getID();
+        return ((GenericEntity) L.get(0)).getID();
       }
       else
         return -1;
@@ -157,7 +153,7 @@ public class CategoryFinder {
 
   public static List listOfCategoryForObjectInstanceId( ICObjectInstance obj){
     try {
-      List L = EntityFinder.findRelated(obj,new ICCategory());
+      List L = EntityFinder.findRelated(obj,ICCategory.getStaticInstance(ICCategory.class));
       return L;
     }
     catch (SQLException ex) {
