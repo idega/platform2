@@ -110,8 +110,10 @@ public class ReportQueryBuilder extends Block {
 	private static final String PERM_CREATE = "create";
 	private static final String PARAM_LOCK = "lock";
 	private static final String PARAM_FUNCTION = "mkfunction";
+	// parameters used for field selection step (step 3)
+	private static final String PARAM_DISPLAY = "display";
 	
-	// parameter used for condition step
+	// parameters used for condition step (step 5)
 	// input fields
 	private static final String PARAM_COND_PATTERN = "field_pattern";
 	private static final String PARAM_COND_TYPE = "field_type";
@@ -128,7 +130,7 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_COND_EDIT_MODE = "edit_mode_condition";
 	
 	private static final String VALUE_DO_NOT_USE_FIELD_AS_CONDITION = "do_not_use_a_field";
-
+	
 
 	
 	
@@ -627,7 +629,7 @@ public class ReportQueryBuilder extends Block {
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++	
 		String type = iwc.getParameter(PARAM_FUNCTION);
 		fields = iwc.getParameterValues(PARAM_FIELDS+"_left");
-		String display = iwc.getParameter("display");
+		String display = iwc.getParameter(PARAM_DISPLAY);
 		if(fields !=null ){
 			Vector dfields = new Vector();
 			for (int i = 0; i < fields.length; i++) {
@@ -641,24 +643,24 @@ public class ReportQueryBuilder extends Block {
 				QueryFieldPart newPart = (QueryFieldPart) dfields.get(0);
 				// concat fields
 				if(type.equalsIgnoreCase(QueryXMLConstants.FUNC_CONCAT)){
-					String partDisplay = newPart.getDisplay();
-					for(int i=1;i<dfields.size();i++){
-						QueryFieldPart part = (QueryFieldPart) dfields.get(i);
-						// if from same entity, allow concat
-						if(newPart.getEntity().equals(part.getEntity())){
-							newPart.addColumn(part.getColumns());
-							partDisplay+=","+ part.getDisplay();
-						}
-					}
-					newPart.setFunction(type);
-					if(display!=null && display.length()>0){
-						newPart.setDisplay(display);
-					}
-					else{
-						newPart.setDisplay(type+"("+partDisplay+")");
-					}
-					helper.addField(newPart);
-					
+//					String partDisplay = newPart.getDisplay();
+//					for(int i=1;i<dfields.size();i++){
+//						QueryFieldPart part = (QueryFieldPart) dfields.get(i);
+//						// if from same entity, allow concat
+//						if(newPart.getEntity().equals(part.getEntity())){
+//							newPart.addColumn(part.getColumns());
+//							partDisplay+=","+ part.getDisplay();
+//						}
+//					}
+//					newPart.setFunction(type);
+//					if(display!=null && display.length()>0){
+//						newPart.setDisplay(display);
+//					}
+//					else{
+//						newPart.setDisplay(type+"("+partDisplay+")");
+//					}
+//					helper.addField(newPart);
+//					
 				}
 				// other functions
 				else{
@@ -699,7 +701,7 @@ public class ReportQueryBuilder extends Block {
 				System.out.println(field);
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
 				helper.addHiddenField(fieldPart);
-				QueryOrderConditionPart	conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getColumns());
+				QueryOrderConditionPart	conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getName());
 				conditionPart.setDescendant(true);
 				helper.addOrderCondition(conditionPart);
 			}
@@ -721,7 +723,7 @@ public class ReportQueryBuilder extends Block {
 				}
 				if (fieldPart != null) {
 					helper.addHiddenField(fieldPart);
-					conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getColumns());
+					conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getName());
 				}
 				if (conditionPart != null) {
 					helper.addOrderCondition(conditionPart);
@@ -952,8 +954,6 @@ public class ReportQueryBuilder extends Block {
 			entities = new Vector();
 		Iterator iterator = entities.iterator();
 		List listOfFields = helper.getListOfVisibleFields();
-		if (listOfFields == null)
-			listOfFields = new Vector();
 
 		Map fieldMap = getQueryPartMap(listOfFields);
 		SelectionDoubleBox box = new SelectionDoubleBox(PARAM_FIELDS + "_left", PARAM_FIELDS);
@@ -1069,7 +1069,7 @@ public class ReportQueryBuilder extends Block {
 		int col = 1;
 		table.mergeCells(1,1,8,1);
 		table.add(getMsgText(iwrb.getLocalizedString("step_3_choose_function","Select function to apply on selected fields in the left box, and new display name if required")),1,1);
-		TextInput display = new TextInput("display");
+		TextInput display = new TextInput(PARAM_DISPLAY);
 		SubmitButton count = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count","Count"),PARAM_FUNCTION,QueryXMLConstants.FUNC_COUNT);
 		SubmitButton count_distinct = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count_distinct", "Count distinct"), PARAM_FUNCTION, QueryXMLConstants.FUNC_COUNT_DISTINCT);
 		// concat not supported yet
@@ -1126,7 +1126,7 @@ public class ReportQueryBuilder extends Block {
 			if (! fieldMap.containsKey(enc)) {
 				box.getLeftBox().addElement(
 				part.encode(),
-				iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+				getDisplay(part));
 			}
 		}
 	}
@@ -1397,7 +1397,7 @@ public class ReportQueryBuilder extends Block {
 			if (fieldEncoded != null) {
 				chosenFields.setSelectedElement(fieldEncoded);
 			}
-			table.add(chosenFields, 5 ,row + 1);
+			table.add(chosenFields, 3 ,row + 1);
 		}
 		else if (path != null && fieldName != null) {
 			QueryFieldPart field = (QueryFieldPart) mapOfFields.get(path, fieldName);
@@ -1761,7 +1761,6 @@ public class ReportQueryBuilder extends Block {
 		QueryService service = getQueryService(iwc);
 		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(keyName);
-		drp.setWidth("200");
 
 		if (helper.hasPreviousQuery())	{
 			List previousQueries = helper.previousQueries();
@@ -1774,12 +1773,14 @@ public class ReportQueryBuilder extends Block {
 				Iterator fieldIterator = fields.iterator();
 				while (fieldIterator.hasNext())	{
 					QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+					String aliasName = fieldPart.getAliasName();
 					String display = fieldPart.getDisplay();
 					String type = fieldPart.getTypeClass();
 					String handlerClass = fieldPart.getHandlerClass();
 					String handlerDescription = fieldPart.getHandlerDescription();
+					// see also method fillFieldsFromPreviousQuery
 					QueryFieldPart newFieldPart = 
-						new QueryFieldPart(display, previousQueryName, previousQueryPath, display, null, display, type, handlerClass, handlerDescription);
+						new QueryFieldPart(aliasName, null, previousQueryName, previousQueryPath, aliasName, null, display, type, handlerClass, handlerDescription);
 					drpMap.put(newFieldPart.encode(), newFieldPart);
 					addMenuElement(drp, newFieldPart);
 				}
@@ -1827,13 +1828,19 @@ public class ReportQueryBuilder extends Block {
 		String entity = part.getEntity();
 		String displayName = part.getDisplay();//localizable key
 		String fieldName = part.getName();//the real database field name
-		
+		String functionName = part.getFunction(); // function name
+		if (displayName == null || displayName.length() == 0) {
+			displayName = iwrb.getLocalizedString(fieldName,fieldName);
+		}
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entity, entity));
 		buffer.append(" -> ")
-		.append(iwrb.getLocalizedString(displayName,displayName))
+		.append(displayName)
 		.append(" ( ")
 		.append(fieldName)
 		.append(" )");
+		if (functionName != null && functionName.length() > 0)	{
+			buffer.append(" [ ").append(functionName).append(" ] ");
+		}
 		return buffer.toString();
 	}
 
@@ -1996,10 +2003,12 @@ public class ReportQueryBuilder extends Block {
 				Iterator fieldIterator = fields.iterator();
 				while (fieldIterator.hasNext())	{
 					QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+					String aliasName = fieldPart.getAliasName();
 					String display = fieldPart.getDisplay();
 					String type = fieldPart.getTypeClass();
+					// name, aliasName, entity, path, column,function, display, typeClass, handlerClass, handlerDescription
 					QueryFieldPart newFieldPart = 
-						new QueryFieldPart(display, previousQueryName, previousQueryPath, display, null, display, type, null, null);
+						new QueryFieldPart(aliasName, null,  previousQueryName, previousQueryPath, aliasName, null, display, type, null, null);
 					resultFields.add(newFieldPart);
 				}
 				fillFieldSelectionBox(resultFields, fieldMap,box);
