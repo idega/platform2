@@ -56,7 +56,6 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
 	public void add(ModuleObject objectToAdd){
-          System.err.println("-> " + objectToAdd);
           ((JmoduleWindowModuleWindow)getPage()).add(objectToAdd);
 	}
 
