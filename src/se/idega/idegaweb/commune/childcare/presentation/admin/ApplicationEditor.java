@@ -23,6 +23,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
@@ -37,7 +38,8 @@ public class ApplicationEditor extends ChildCareBlock {
 	private static String ACTION_UPDATE = "ae_u";
 	
 	private static String PARAMETER_APPLICATION_ID = "ae_p_ai";
-	private static String PARAMETER_APPLICATION_STATUS = "ae_p_as"; 
+	private static String PARAMETER_APPLICATION_STATUS = "ae_p_as";
+	private static String PARAMETER_CHOICE_NUMBER = "ae_p_on";
 	
 	User child;
 	
@@ -79,9 +81,16 @@ public class ApplicationEditor extends ChildCareBlock {
 		ChildCareApplication application = getBusiness().getApplication(Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID)));
 		
 		String strStatus = iwc.getParameter(PARAMETER_APPLICATION_STATUS);
+		String strChoiceNumber = iwc.getParameter(PARAMETER_CHOICE_NUMBER);
 		try {
 			char status = strStatus.charAt(0);
 			boolean success = getBusiness().changeApplicationStatus(application, status, iwc.getCurrentUser());
+			if (success && strChoiceNumber != null) {
+				try {
+					application.setChoiceNumber(Integer.parseInt(strChoiceNumber));
+					application.store();
+				} catch (Exception ignore) {}
+			}
 			return success;
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -110,10 +119,14 @@ public class ApplicationEditor extends ChildCareBlock {
 			
 			table.add(new HiddenInput(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString()), 1, row);
 			DropdownMenu menu = getDropdownForStatus(application.getApplicationStatus());
+			TextInput orderNumber = new TextInput(PARAMETER_CHOICE_NUMBER);
+			orderNumber.setSize(3);
 			
 			
 			table.add(getLocalizedSmallText("child_care.status", "Application Status"), 1, row);
 			table.add(menu, 2, row++);
+			table.add(getLocalizedSmallText("child_care.choice_number", "Choice number"), 1, row);
+			table.add(orderNumber, 2, row++);
 			table.add(new Link(getResourceBundle().getLocalizedImageButton("child_care.back", "Back")), 1, row);
 			table.add(new SubmitButton(getResourceBundle().getLocalizedImageButton("child_care.update", "Update"), ACTION, ACTION_UPDATE), 2, row);
 			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
