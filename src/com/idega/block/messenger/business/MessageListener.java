@@ -27,8 +27,8 @@ public class MessageListener implements Runnable{
   }
 
   public MessageListener(long interval) {
-    this();
     setInterval(interval);
+    start();
   }
 
   public void run(){
@@ -48,8 +48,10 @@ public class MessageListener implements Runnable{
     if( t == null ){
       t = new Thread(this);
       t.start();
-      run();
     }
+
+    run();
+
   }
 
   public void stop(){
