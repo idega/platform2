@@ -118,7 +118,7 @@ public class NewsBundleStarter implements IWBundleStartable{
       StringBuffer sql = new StringBuffer("update ");
       sql.append(news.getEntityName());
       sql.append(" set ");
-      sql.append(news.getColumnNameNewsCategoryId());
+      sql.append(NwNews.getColumnNameNewsCategoryId());
       sql.append(" = ");
       sql.append(toCategoryId);
       sql.append(" where ");
