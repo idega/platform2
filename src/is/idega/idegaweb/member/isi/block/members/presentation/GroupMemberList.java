@@ -170,24 +170,24 @@ public class GroupMemberList extends Block {
 			e.printStackTrace();
 		}
 		if(!isTrainer) {
-			// not trainer by status, try to see if trainer is member of a trainer group in flock
-			Collection trainerParents = trainer.getParentGroups();
-			Iterator flockChildrenIter = flock.getChildren();
-			while(flockChildrenIter.hasNext()) {
-				Group flockChild = (Group) flockChildrenIter.next();
-				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(flockChild.getGroupType())) {
-					Iterator trainerParentsIter = trainerParents.iterator();
+			// not trainer by status, try to see if trainer is member of a trainer group for flock
+			try {
+				String flockTrainerGroupId = flock.getMetaData("CLUBPLAYER_COACH");
+				if(flockTrainerGroupId!=null) {
+					Iterator trainerParentsIter = trainer.getParentGroups().iterator();
 					while(trainerParentsIter.hasNext()) {
 						Group trainerParent = (Group) trainerParentsIter.next();
-						if(trainerParent.getPrimaryKey().equals(flockChild.getPrimaryKey())) {
+						if(flockTrainerGroupId.equals(trainerParent.getPrimaryKey().toString())) {
 							isTrainer = true;
-							System.out.println("found trainer group in flock, " + flockChild.getName());
+							System.out.println("Found trainer for flock " + flock.getName());
 							break;
 						}
 					}
 				}
+				System.out.println("After checking trainer groups in flock, isTrainer=" + isTrainer);
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-			System.out.println("After checking trainer groups in flock, isTrainer=" + isTrainer);
 		}
 		
 		return isTrainer;
