@@ -71,9 +71,12 @@ import com.idega.user.data.User;
  */
 public class RegularPaymentEntriesList extends AccountingBlock {
 
+	private String ERROR_PLACING_EMPTY = "error_placing_empty";
+	private String ERROR_DATE_FORMAT = "error_date_form";
+	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
-	private String ERROR_DATE_FORMAT = "error_date_form";	
+	
 
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
@@ -360,60 +363,72 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private void handleSaveAction(IWContext iwc, School school){
 		Map errorMessages = new HashMap();
 				
+
+		RegularPaymentEntry entry = null;
+		
+		if (iwc.getParameter(PAR_PK) != null){
+			entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
+		}
+		
+		if (entry == null){
+			try{
+				entry = getRegularPaymentEntryHome().create();
+			
+			}catch(CreateException ex2){
+				ex2.printStackTrace();
+				return;
+			}			
+		}
+
+		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
+		entry.setFrom(from);
+		entry.setTo(to);
+			
+		entry.setNote(iwc.getParameter(PAR_REMARK));
+		entry.setPlacing(iwc.getParameter(PAR_PLACING));
+		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
+			entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+		}
 		
-		if (from == null || to == null){
-			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
-			handleEditAction(iwc, getNotStoredEntry(iwc), errorMessages);	
-		} else {
+		entry.setUser(getUser(iwc));
+		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
 		
-			RegularPaymentEntry entry = null;
-			
-			if (iwc.getParameter(PAR_PK) != null){
-				entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
-			}
-			
-			if (entry == null){
-				try{
-					entry = getRegularPaymentEntryHome().create();
-				}catch(CreateException ex2){
-					ex2.printStackTrace();
-					return;
-				}			
-			}
-
-
-			entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
-	
-			entry.setFrom(from);
-			entry.setTo(to);
-				
-			entry.setNote(iwc.getParameter(PAR_REMARK));
-			entry.setPlacing(iwc.getParameter(PAR_PLACING));
-			entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
-				entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
-			}
-			
-			entry.setUser(getUser(iwc));
-			entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-			
-			try{
-				PostingBlock p = new PostingBlock(iwc);			
-				entry.setOwnPosting(p.getOwnPosting());
-				entry.setDoublePosting(p.getDoublePosting());
-			} catch (PostingParametersException e) {
-				errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
-			}	
-						
+		try{
+			PostingBlock p = new PostingBlock(iwc);			
+			entry.setOwnPosting(p.getOwnPosting());
+			entry.setDoublePosting(p.getDoublePosting());
+		} catch (PostingParametersException e) {
+			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
+		}	
+					
 //			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
 //			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
-		
+		if (from == null || to == null){
+			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
+		} else if (to.before(from)){
+			errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
+		} 
+		if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
+			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
+		} 
+//			if (entry.getAmount() == 0){
+//				errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
+//			}
 
+		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
+			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
+		}
+	
+		if (! errorMessages.isEmpty()){
+			handleEditAction(iwc, entry, errorMessages);	
+		}else{		
 			entry.store();		
 			handleDefaultAction(iwc, school, parseDate(iwc.getParameter(PAR_SEEK_FROM)), parseDate(iwc.getParameter(PAR_SEEK_TO)));
-		}					
+		}				
 	}
 
 	private RegularPaymentEntry getRegularPaymentEntry(String pk) {
