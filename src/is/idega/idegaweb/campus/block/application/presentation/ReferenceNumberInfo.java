@@ -1,6 +1,6 @@
 /*
 
- * $Id: ReferenceNumberInfo.java,v 1.7 2002/02/28 15:03:00 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.8 2002/02/28 16:47:14 aron Exp $
 
  *
 
@@ -558,8 +558,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 
     else {
 
-      System.out.println("Handling display of ssn lookup");
-
+      debug("Handling display of ssn lookup "+iwc.getParameter("cam_ref_number"));
       java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(iwc);
 
       if (li == null ){
@@ -740,7 +739,6 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
    */
 
   public void main(IWContext iwc) {
-    debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     control(iwc);
   }

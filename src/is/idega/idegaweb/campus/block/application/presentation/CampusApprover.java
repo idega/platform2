@@ -49,7 +49,7 @@ public class CampusApprover extends Block{
   private String sGlobalStatus = "S",sGlobalOrder = Applicant.getFullnameOrderValue();
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
-  private final String sView = "view",sEdit = "edit";
+  private final String sView = "app_view",sEdit = "app_edit";
   protected boolean isAdmin = false;
 
   /*
@@ -102,8 +102,8 @@ public class CampusApprover extends Block{
         trashApplication(trashid);
       }
 
-      if(iwc.getParameter("view")!=null){
-        int id = Integer.parseInt(iwc.getParameter("view"));
+      if(iwc.getParameter(sView)!=null){
+        int id = Integer.parseInt(iwc.getParameter(sView));
         add(makeApplicationTable(id,false,iwc,iwrb));
       }
       else if(iwc.getParameter("application_id")!=null){
@@ -1174,12 +1174,12 @@ public class CampusApprover extends Block{
     if(iterator != null){
       if(iterator.hasPrevious()){
         Link lLast = new Link(iwrb.getImage("back.gif"));
-        lLast.addParameter("view","-2");
+        lLast.addParameter(sView,"-2");
         T.add(lLast,1,1);
       }
       if(iterator.hasNext()){
         Link lNext = new Link(iwrb.getImage("next.gif"));
-        lNext.addParameter("view","-4");
+        lNext.addParameter(sView,"-4");
         T.add(lNext,5,1);
       }
     }
@@ -1307,7 +1307,7 @@ public class CampusApprover extends Block{
   public Link getApplicationLink(PresentationObject MO,int id){
     Link L = new Link(MO);
     L.setFontSize(1);
-    L.addParameter("view",id);
+    L.addParameter(sView,id);
     return L;
   }
 
