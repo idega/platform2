@@ -10,13 +10,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.idega.data.IDOReportableEntity;
+
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
 import dori.jasper.engine.JRField;
 
 /**
  * Title:		IDOReportableCollection
- * Description:
+ * Description: Use addCollection(Collection) to add result 
+ * 				from IDOEntities that implement IDOReportableEntity 
+ * 				to be able to use that result in reports
  * Copyright:	Copyright (c) 2003
  * Company:		idega Software
  * @author		2003 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
