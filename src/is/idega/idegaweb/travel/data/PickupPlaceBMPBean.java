@@ -19,6 +19,9 @@ import com.idega.block.trade.stockroom.data.Supplier;
 
 public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.PickupPlace {
 
+	public static final int TYPE_PICKUP = 1;
+	public static final int TYPE_DROPOFF = 2;
+
   public PickupPlaceBMPBean(){
           super();
   }
@@ -30,6 +33,7 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
     addAttribute(getNameColumnName(), "Name", true, true, String.class);
     addAttribute(getAddressIDColumnName(), "Heimilisfang", true, true, Integer.class ,"many_to_one",Address.class);
     addAttribute(getDeletedColumnName(), "Hent", true, true, Boolean.class);
+    addAttribute(getTypeColumnName(), "Type", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Supplier.class,"TB_HOTEL_PICKUP_PL_SR_SUPPLIER");
   }
@@ -41,7 +45,7 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
   public static String getNameColumnName() {return "NAME";}
   public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
   public static String getDeletedColumnName() {return "DELETED";}
-
+	public static String getTypeColumnName() { return "PLACE_TYPE";}
   public void setDefaultValues() {
     setColumn(getDeletedColumnName(),false);
   }
@@ -78,8 +82,15 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
       setColumn(getAddressIDColumnName(), addressId);
   }
 
+  public Collection ejbFindDropoffPlaces(Service service)throws RemoteException, FinderException {
+		return ejbFindHotelPickupPlaces(service, TYPE_DROPOFF);
+  }
 
   public Collection ejbFindHotelPickupPlaces(Service service)throws RemoteException, FinderException {
+		return ejbFindHotelPickupPlaces(service, TYPE_PICKUP);
+  }
+
+  public Collection ejbFindHotelPickupPlaces(Service service, int PLACE_TYPE)throws RemoteException, FinderException {
     Collection returner = null;
 //        HotelPickupPlace hp = (HotelPickupPlace) is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getStaticInstance(HotelPickupPlace.class);
 
@@ -87,40 +98,64 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
       buffer.append("select h.* from ");
       buffer.append(is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceTableName()+" s,");
       buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,PickupPlace.class)+" smh, ");
-      buffer.append(getHotelPickupPlaceTableName() +" h ");
+      buffer.append(getEntityName() +" h ");
       buffer.append(" WHERE ");
       buffer.append("s."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName()+" = "+((Integer) service.getPrimaryKey()).intValue());
       buffer.append(" AND ");
       buffer.append("s."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName()+" = smh."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName());
       buffer.append(" AND ");
       buffer.append(" smh."+getIDColumnName()+" = h."+getIDColumnName());
+			if (PLACE_TYPE == TYPE_DROPOFF) {
+					  buffer.append(" AND ");
+					  buffer.append(" h."+getTypeColumnName()+" = "+PLACE_TYPE);
+			}else if  (PLACE_TYPE == TYPE_PICKUP) {
+					  buffer.append(" AND ");
+						buffer.append(" h."+getTypeColumnName()+" not in ("+TYPE_DROPOFF+")");
+			}
       buffer.append(" AND ");
       buffer.append(getDeletedColumnName() +" = 'N'");
       buffer.append(" ORDER BY "+getNameColumnName());
 
+		//System.out.println("[PickupPlaceBMPBean] sql = "+buffer.toString());
     returner = this.idoFindPKsBySQL(buffer.toString());
 //        returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
     return returner;
   }
 
+  public Collection ejbFindDropoffPlaces(Supplier supplier) throws FinderException{
+		return ejbFindHotelPickupPlaces(supplier, TYPE_DROPOFF);
+  }
+
   public Collection ejbFindHotelPickupPlaces(Supplier supplier) throws FinderException{
+		return ejbFindHotelPickupPlaces(supplier, TYPE_PICKUP);
+  }
+  
+  public Collection ejbFindHotelPickupPlaces(Supplier supplier, int PLACE_TYPE) throws FinderException{
     Collection returner = null;
 
     StringBuffer buffer = new StringBuffer();
       buffer.append("select h.* from ");
       buffer.append(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s,");
       buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,PickupPlace.class)+" smh, ");
-      buffer.append(is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getHotelPickupPlaceTableName() +" h ");
+      buffer.append(getEntityName() +" h ");
       buffer.append(" WHERE ");
       buffer.append("s."+supplier.getIDColumnName()+" = "+supplier.getID());
       buffer.append(" AND ");
       buffer.append("s."+supplier.getIDColumnName()+" = smh."+supplier.getIDColumnName());
       buffer.append(" AND ");
       buffer.append(" smh."+getIDColumnName()+" = h."+getIDColumnName());
+			if (PLACE_TYPE == TYPE_DROPOFF) {
+					  buffer.append(" AND ");
+					  buffer.append(" h."+getTypeColumnName()+" = "+PLACE_TYPE);
+			}else if  (PLACE_TYPE == TYPE_PICKUP) {
+					  buffer.append(" AND ");
+					  buffer.append(" h."+getTypeColumnName()+" not in ("+TYPE_DROPOFF+")");
+			}
       buffer.append(" AND ");
       buffer.append("h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
       buffer.append(" ORDER BY h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getNameColumnName());
 
+		//System.out.println("[PickupPlaceBMPBean] sql = "+buffer.toString());
 
       returner = this.idoFindPKsBySQL(buffer.toString());
 //                  returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
@@ -143,12 +178,22 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
   public void removeFromService(Service service) throws IDORemoveRelationshipException{
     this.idoRemoveFrom(service);
   }
-
-  public void ejbHomeRemoveFromAllServices() throws IDORemoveRelationshipException{
-    this.idoRemoveFrom(PickupPlace.class);
+  
+  public void setAsPickup() {
+  	setColumn(getTypeColumnName(), TYPE_PICKUP);	
+  }
+  
+  public void setAsDropoff() {
+  	setColumn(getTypeColumnName(), TYPE_DROPOFF);	
   }
 
-
+	public boolean getIsPickup() {
+		return TYPE_PICKUP == getIntColumnValue(getTypeColumnName());	
+	}
+	
+	public boolean getIsDropoff() {
+		return TYPE_DROPOFF == getIntColumnValue(getTypeColumnName());	
+	}
 
 }
 
