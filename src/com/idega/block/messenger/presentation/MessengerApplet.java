@@ -96,7 +96,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     try {
         System.out.println("CODEBASE = "+getCodeBase());
         //faceLabel = new ImageLabel(getCodeBase(),"face_in.gif");
-        //logoLabel = new ImageLabel(getCodeBase(),"idegalogo.gif");
+        logoLabel = new ImageLabel(getCodeBase(),"idegalogo.gif");
         alertSound = getAudioClip(getCodeBase(),"notify.au");
 
       }
