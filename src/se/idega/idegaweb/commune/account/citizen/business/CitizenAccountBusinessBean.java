@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.68 2004/05/24 19:09:37 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.69 2004/05/24 21:22:33 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -73,11 +73,11 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 /**
- * Last modified: $Date: 2004/05/24 19:09:37 $ by $Author: laddi $
+ * Last modified: $Date: 2004/05/24 21:22:33 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -508,7 +508,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final Phone homePhone
 					= createPhone(applicant, user, PhoneBMPBean.getHomeNumberID(),
 												applicant.getPhoneHome());
-			createPhone (applicant, user, PhoneBMPBean.getWorkNumberID(),
+			createPhone (applicant, user, PhoneBMPBean.getMobileNumberID(),
 									 applicant.getPhoneWork());
 
 			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
@@ -639,7 +639,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 	private Phone createPhone(final CitizenAccount applicant, final User user, int phoneNumberId, String phoneString) throws CreateException, IDOLookupException, IDOAddRelationshipException {
 		Phone phone = null;
-		if (applicant.getPhoneHome() != null) {
+		if (phoneString != null) {
 			phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 			phone.setNumber(phoneString);
 			phone.setPhoneTypeId(phoneNumberId);

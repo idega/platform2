@@ -544,7 +544,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
 			}
 			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 1, phoneHome);
-			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 2, phoneWork);
+			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 3, phoneWork);
 			if (updateCOAddress) {
 				Address coAddress = getCOAddress(iwc);
 				coAddress.setStreetName(coStreetAddress);
