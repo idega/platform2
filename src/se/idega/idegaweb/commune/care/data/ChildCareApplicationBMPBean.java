@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.11 2005/01/18 13:44:24 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.12 2005/02/03 09:29:38 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1408,8 +1408,14 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		java.util.Date today = new java.util.Date();
 		
 		if (contract != null) {
-			if (contract.getValidFrom().compareTo(today) <= 0 && contract.getValidTo().compareTo(today) >= 0 && contract.isSigned()) {
-				return true;
+			if (contract.getValidTo() != null) {
+				if (contract.getValidFrom().compareTo(today) <= 0 && contract.getValidTo().compareTo(today) >= 0 && contract.isSigned()) {
+					return true;
+				}
+			} else {
+				if (contract.getValidFrom().compareTo(today) <= 0 && contract.isSigned()) {
+					return true;
+				}
 			}
 		}
 		return false;
