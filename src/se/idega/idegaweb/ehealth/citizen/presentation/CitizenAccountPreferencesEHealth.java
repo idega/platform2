@@ -595,7 +595,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		
 		DateInput diFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM, true));
 		diFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-		diFrom.setDate(stamp.getDate());
+		//diFrom.setDate(stamp.getDate());
 		
 		DateInput diTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO, true));
 		diTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
