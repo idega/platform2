@@ -1,5 +1,5 @@
 /*
- * $Id: PostingStringBMPBean.java,v 1.4 2003/09/08 17:06:33 laddi Exp $
+ * $Id: PostingStringBMPBean.java,v 1.5 2003/09/17 07:35:29 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,17 +72,7 @@ public class PostingStringBMPBean extends GenericEntity implements PostingString
 		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
-/*	
-	public int ejbFindPostingStringByDate(Date date) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_VALID_FROM);
-		sql.appendLessThanOrEqualsSign().append("'"+date+"'");
-		sql.appendAnd().append(COLUMN_VALID_TO);
-		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
-		return ((Integer) idoFindOnePKByQuery(sql)).intValue();
-	}
-*/	
+
 	public Collection ejbFindKonterignStrings() throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getEntityName());
