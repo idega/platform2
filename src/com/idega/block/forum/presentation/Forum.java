@@ -40,6 +40,7 @@ public class Forum extends CategoryBlock implements IWBlock {
   private int _topicID = -1;
   private int _threadID = -1;
   private boolean _isAdmin = false;
+  private boolean _hasAddPermission = true;
   private String _attribute;
   private int _iLocaleID;
 
@@ -76,6 +77,7 @@ public class Forum extends CategoryBlock implements IWBlock {
   private String _threadName;
   private String _linkName;
 
+  private static String AddPermisson = "add";
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.forum";
   protected IWResourceBundle _iwrb;
   protected IWBundle _iwb;
@@ -90,6 +92,7 @@ public class Forum extends CategoryBlock implements IWBlock {
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
     _iwcb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    _hasAddPermission = iwc.hasPermission(AddPermisson,this);
 
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
@@ -365,7 +368,7 @@ public class Forum extends CategoryBlock implements IWBlock {
 	if ( user.getDisplayName() != null )
 	  name = user.getDisplayName();
 	Link link = new Link(name);
-	  link.setStyle(_linkName);
+	  link.setStyle(_threadName);
 	link.setURL("mailto:"+mail.getEmailAddress());
 	return link;
       }
@@ -376,7 +379,7 @@ public class Forum extends CategoryBlock implements IWBlock {
     }
     else if ( thread.getUserName() != null && thread.getUserEMail() != null ) {
       Link link = new Link(thread.getUserName());
-	link.setStyle(_linkName);
+	link.setStyle(_threadName);
       if ( thread.getUserEMail() != null )
 	link.setURL("mailto:"+thread.getUserEMail());
       return link;
@@ -506,28 +509,52 @@ public class Forum extends CategoryBlock implements IWBlock {
     Table table = new Table();
     int column = 1;
 
-    Link reply = new Link(_iwrb.getImage("reply.gif"));
-    reply.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
-    reply.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID,thread.getID());
-    reply.setWindowToOpen(ForumThreadEditor.class);
-    table.add(reply,column++,1);
+    Image replyImage = _iwb.getImage("shared/reply.gif");
+      replyImage.setHorizontalSpacing(2);
+      replyImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+    table.add(replyImage,column,1);
+
+    if ( _hasAddPermission ) {
+      Link reply = new Link(_iwrb.getLocalizedString("reply","Reply"));
+	reply.setStyle(_linkName);
+	reply.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+	reply.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID,thread.getID());
+	reply.setWindowToOpen(ForumThreadEditor.class);
+      table.add(reply,column++,1);
+    }
+    else {
+      Text text = new Text(_iwrb.getLocalizedString("reply","Reply"));
+	text.setFontStyle(_linkStyle);
+      table.add(text,column++,1);
+    }
 
     if ( thread.getUserID() != -1 && iwc.getUserId() == thread.getUserID() && thread.getChildCount() == 0 ) {
-      Link edit = new Link(_iwrb.getImage("edit.gif"));
-      edit.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
-      edit.addParameter(ForumBusiness.PARAMETER_THREAD_ID,thread.getID());
-      edit.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID,thread.getParentThreadID());
-      edit.setWindowToOpen(ForumThreadEditor.class);
+      Image editImage = _iwb.getImage("shared/edit.gif");
+	editImage.setHorizontalSpacing(2);
+	editImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+      table.add(editImage,column,1);
+
+      Link edit = new Link(_iwrb.getLocalizedString("edit","Edit"));
+	edit.setStyle(_linkName);
+	edit.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+	edit.addParameter(ForumBusiness.PARAMETER_THREAD_ID,thread.getID());
+	edit.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID,thread.getParentThreadID());
+	edit.setWindowToOpen(ForumThreadEditor.class);
       table.add(edit,column++,1);
     }
 
     if ( _isAdmin ) {
-      Link delete = new Link(_iwrb.getImage("delete.gif"));
-      delete.setStyle(_linkName);
-      delete.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
-      delete.addParameter(ForumBusiness.PARAMETER_THREAD_ID,thread.getID());
-      delete.addParameter(ForumBusiness.PARAMETER_MODE,ForumBusiness.PARAMETER_DELETE);
-      delete.setWindowToOpen(ForumThreadEditor.class);
+      Image deleteImage = _iwb.getImage("shared/delete.gif");
+	deleteImage.setHorizontalSpacing(2);
+	deleteImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+      table.add(deleteImage,column,1);
+
+      Link delete = new Link(_iwrb.getLocalizedString("delete","Delete"));
+	delete.setStyle(_linkName);
+	delete.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+	delete.addParameter(ForumBusiness.PARAMETER_THREAD_ID,thread.getID());
+	delete.addParameter(ForumBusiness.PARAMETER_MODE,ForumBusiness.PARAMETER_DELETE);
+	delete.setWindowToOpen(ForumThreadEditor.class);
       table.add(delete,column++,1);
     }
 
@@ -538,14 +565,29 @@ public class Forum extends CategoryBlock implements IWBlock {
     Table table = new Table();
     int column = 1;
 
-    Image image = _iwrb.getImage("new.gif");
-      image.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-    Link newLink = new Link(image);
-      newLink.setWindowToOpen(ForumThreadEditor.class);
-      newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
-    table.add(newLink,column++,1);
+    Image newImage = _iwb.getImage("shared/new.gif");
+      newImage.setHorizontalSpacing(2);
+      newImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+    table.add(newImage,column,1);
+
+    if ( _hasAddPermission ) {
+      Link newLink = new Link(_iwrb.getLocalizedString("new_thread"));
+	newLink.setStyle(_linkName);
+	newLink.setWindowToOpen(ForumThreadEditor.class);
+	newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+      table.add(newLink,column++,1);
+    }
+    else {
+      Text newText = new Text(_iwrb.getLocalizedString("new_thread"));
+	newText.setFontStyle(_linkStyle);
+      table.add(newText,column++,1);
+    }
 
     if ( _showOverviewLink ) {
+      Image overviewImage = _iwb.getImage("shared/forum.gif");
+	overviewImage.setHorizontalSpacing(2);
+	overviewImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+      table.add(overviewImage,column,1);
       table.add(getOverviewLink(),column,1);
     }
 
@@ -553,7 +595,8 @@ public class Forum extends CategoryBlock implements IWBlock {
   }
 
   private Link getOverviewLink() {
-    Link overView = new Link(_iwrb.getImage("overview.gif"));
+    Link overView = new Link(_iwrb.getLocalizedString("topic_overview","Topic overview"));
+      overView.setStyle(_linkName);
       overView.addParameter(ForumBusiness.PARAMETER_STATE,ForumBusiness.FORUM_TOPICS);
       if ( _page != null )
 	overView.setPage(_page);
@@ -669,8 +712,8 @@ public class Forum extends CategoryBlock implements IWBlock {
     _headingColor = "#eeeeee";
 
     _headerStyle = "font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold";
-    _linkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;";
-    _linkHoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;";
+    _linkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: none;";
+    _linkHoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: underline;";
     _topicLinkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline; font-weight:bold;";
     _topicLinkHoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline; font-weight:bold;";
     _threadLinkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;";
@@ -758,6 +801,10 @@ public class Forum extends CategoryBlock implements IWBlock {
 
   public String getCategoryType(){
     return "forum";
+  }
+
+  public void registerPermissionKeys(){
+    registerPermissionKey(AddPermisson);
   }
 
   public boolean getMultible(){ return true; }

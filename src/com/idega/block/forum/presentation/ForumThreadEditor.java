@@ -142,9 +142,12 @@ public ForumThreadEditor(){
 	subject.setContent(subjectString);
       }
 
-    TextArea body = new TextArea(ForumBusiness.PARAMETER_THREAD_BODY,30,4);
+    TextArea body = new TextArea(ForumBusiness.PARAMETER_THREAD_BODY,35,4);
       if ( _update && thread.getThreadBody() != null )
 	body.setContent(thread.getThreadBody());
+      if ( _isLoggedOn )
+	body.setHeight(10);
+      body.setStyleAttribute(this.STYLE+"width: 100%;");
 
     addLeft(_iwrb.getLocalizedString("thread_subject","Title")+":",subject,true);
     addLeft(_iwrb.getLocalizedString("thread_body","Body")+":",body,true);
