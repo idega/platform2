@@ -37,7 +37,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
-		};
+		}
 
 		return col;
 	}
@@ -59,7 +59,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
-		};
+		}
 
 		return col;
 	}
@@ -81,7 +81,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
-		};
+		}
 
 		return col;
 	}
