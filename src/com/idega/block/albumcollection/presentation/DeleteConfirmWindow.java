@@ -10,8 +10,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
-import java.util.Vector;
-import java.util.Iterator;
 
 /**
  * Title:        idegaWeb

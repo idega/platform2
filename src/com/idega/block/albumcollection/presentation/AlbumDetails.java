@@ -73,7 +73,6 @@ public class AlbumDetails extends Block {
 
   public void lineUpElements(IWContext iwc)throws Exception {
 
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     Table frameTable = new Table(1,1);
@@ -214,7 +213,6 @@ public class AlbumDetails extends Block {
   public Table getTrackList(IWContext iwc)throws Exception {
 
     IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-    IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     Table trackTable = null;
     int index=1;
