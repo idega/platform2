@@ -223,7 +223,7 @@ public class ReportGenerator extends Block {
 					String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
 					String tmpPrmValue = (String) _parameterMap.get(prmName);
 					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmValueWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
 					designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
 				}
 			}
