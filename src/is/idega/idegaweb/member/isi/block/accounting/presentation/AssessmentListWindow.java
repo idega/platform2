@@ -39,6 +39,7 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 	protected static final String LABEL_GROUP = "isi_acc_alw_group";
 	protected static final String LABEL_TARIFF = "isi_acc_alw_tariff";
 	protected static final String LABEL_USER = "isi_acc_alw_user";
+	protected static final String LABEL_PERSONAL_ID = "isi_acc_alw_personal_id";
 	protected static final String LABEL_DATE = "isi_acc_alw_date";
 	protected static final String LABEL_AMOUNT = "isi_acc_alw_amount";
 	protected static final String LABEL_ROUND_NAME = "isi_acc_alw_round_name";
@@ -94,6 +95,8 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelPersonalID = new Text(iwrb.getLocalizedString(LABEL_PERSONAL_ID, "Personal ID"));
+		labelPersonalID.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF, "Tariff"));
 		labelTariff.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDate = new Text(iwrb.getLocalizedString(LABEL_DATE, "Date"));
@@ -110,8 +113,9 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		t.add(labelDiv, 1, row);		
 		t.add(labelGroup, 2, row);
 		t.add(labelUser, 3, row);
-		t.add(labelTariff, 4, row);
-		t.add(labelAmount, 5, row);
+		t.add(labelPersonalID, 4, row);
+		t.add(labelTariff, 5, row);
+		t.add(labelAmount, 6, row);
 		row++;
 		
 		NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
@@ -139,18 +143,19 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 						t.add(entry.getDivision().getName(), 1, row);
 					t.add(entry.getGroup().getName(), 2, row);
 					t.add(entry.getUser().getName(), 3, row);
+					t.add(entry.getUser().getPersonalID(), 4, row);
 					if (entry.getInfo() != null)
-						t.add(entry.getInfo(), 4, row);
-					t.add(nf.format(entry.getAmount()), 5, row);
-					t.setAlignment(5, row, "RIGHT");
+						t.add(entry.getInfo(), 5, row);
+					t.add(nf.format(entry.getAmount()), 6, row);
+					t.setAlignment(6, row, "RIGHT");
 					sum += entry.getAmount();
 					row++;
 				}
-				t.mergeCells(1,row,5,row);
+				t.mergeCells(1,row,6,row);
 				t.add("<hr>",1,row++);
-				t.add(labelSum, 4, row);
-				t.add(nf.format(sum), 5, row);
-				t.setAlignment(5, row, "RIGHT");
+				t.add(labelSum, 5, row);
+				t.add(nf.format(sum), 6, row);
+				t.setAlignment(6, row, "RIGHT");
 			}
 		}
 		catch (NumberFormatException e) {
