@@ -10,6 +10,9 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public com.idega.user.data.Group getClub();
  public int getClubID();
  public java.sql.Timestamp getDateOfEntry();
+ public double getDiscountAmount();
+ public java.lang.String getDiscountInfo();
+ public double getDiscountPerc();
  public com.idega.user.data.Group getDivision();
  public int getDivisionID();
  public boolean getEntryOpen();
@@ -38,6 +41,9 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public void setClub(com.idega.user.data.Group p0);
  public void setClubID(int p0);
  public void setDateOfEntry(java.sql.Timestamp p0);
+ public void setDiscountAmount(double p0);
+ public void setDiscountInfo(java.lang.String p0);
+ public void setDiscountPerc(double p0);
  public void setDivision(com.idega.user.data.Group p0);
  public void setDivisionID(int p0);
  public void setEntryOpen(boolean p0);

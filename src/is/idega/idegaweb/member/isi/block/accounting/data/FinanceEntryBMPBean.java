@@ -45,6 +45,9 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_AMOUNT_EQUALIZED = "eq_amount";
 	protected final static String COLUMN_OPEN = "entry_open";
 	protected final static String COLUMN_PAYMENT_TYPE_ID = "payment_type_id";
+	protected final static String COLUMN_DISCOUNT_PERC = "discount_perc";
+	protected final static String COLUMN_DISCOUNT_AMOUNT = "discount_amount";
+	protected final static String COLUMN_DISCOUNT_INFO = "discount_info";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";
@@ -87,6 +90,9 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addAttribute(COLUMN_AMOUNT_EQUALIZED, "Amount equalized", true, true, Double.class);
 		addAttribute(COLUMN_OPEN, "Open", true, true, Boolean.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_TYPE_ID, PaymentType.class);
+		addAttribute(COLUMN_DISCOUNT_PERC, "Discount %", true, true, Double.class);
+		addAttribute(COLUMN_DISCOUNT_AMOUNT, "Discount amount", true, true, Double.class);
+		addAttribute(COLUMN_DISCOUNT_INFO, "Discount info", true, true, String.class, 255);
 		
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -322,6 +328,29 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		setColumn(COLUMN_OPEN, open);
 	}
 	
+	public void setDiscountPerc(double perc) {
+	    setColumn(COLUMN_DISCOUNT_PERC, perc);
+	}
+	
+	public double getDiscountPerc() {
+	    return getDoubleColumnValue(COLUMN_DISCOUNT_PERC, 0);
+	}
+	
+	public void setDiscountAmount(double amount) {
+	    setColumn(COLUMN_DISCOUNT_AMOUNT, amount);
+	}
+	
+	public double getDiscountAmount() {
+	    return getDoubleColumnValue(COLUMN_DISCOUNT_AMOUNT, 0);
+	}
+	
+	public void setDiscountInfo(String info) {
+	    setColumn(COLUMN_DISCOUNT_INFO, info);
+	}
+	
+	public String getDiscountInfo() {
+	    return getStringColumnValue(COLUMN_DISCOUNT_INFO);
+	}
 	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
 		IDOQuery sql = idoQuery();
