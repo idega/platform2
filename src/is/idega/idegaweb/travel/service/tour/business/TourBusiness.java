@@ -470,6 +470,9 @@ public class TourBusiness extends TravelStockroomBusiness {
             yearsBetween = to.getYear() - toY;
           }
 
+          System.err.println("from : "+from.toSQLDateString());
+          System.err.println("to   : "+to.toSQLDateString());
+
         idegaTimestamp stamp = new idegaTimestamp(from);
         idegaTimestamp temp;
 

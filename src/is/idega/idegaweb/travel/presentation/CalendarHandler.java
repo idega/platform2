@@ -331,7 +331,9 @@ public class CalendarHandler extends TravelManager {
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
       int iBookings = 0;
 
+      debug("before");
       List depDays = this.getDepartureDays(iwc, _showPast);
+      debug("after ... size : "+depDays.size());
 
       int seats = 0;
       int minSeats = 0;
@@ -610,15 +612,19 @@ public class CalendarHandler extends TravelManager {
         for (int i = 0; i < _timeframes.length; i++) {
           if (_tour.getNumberOfDays() > 1) {
             if (_timeframes[i].getIfYearly()) {
+debug("reppetan 1");
               depDays.addAll(TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast));
             }else {
+debug("reppetan 2");
               depDays.addAll(TourBusiness.getDepartureDays(iwc, _tour, showPast));
             }
           }else {
+debug("reppetan 3");
             depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }
         }
       }else {
+debug("reppetan 4");
           depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
       }
 
