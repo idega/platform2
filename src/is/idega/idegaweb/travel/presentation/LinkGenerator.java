@@ -14,9 +14,9 @@ import com.idega.presentation.text.*;
 public class LinkGenerator extends TravelWindow {
 
   public static String parameterProductId = "linkGeneratorProductId";
-  //private static String http = "http";
+  private static String http = "http";
   private static Class defaultClass = PublicBooking.class;
-  private static String http = "https";
+  //private static String http = "https";
 
   public LinkGenerator() {
     super.setWidth(600);
