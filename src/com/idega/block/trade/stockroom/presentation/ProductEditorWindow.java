@@ -430,6 +430,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 					_business.setCategories(_product, categories);
 					_product.setProductTeaser(iLocaleID, teaser);
 					
+					// Adding comment to force maven rebuild
 					saveMetaData(iwc, _product);
 					
 					if (_business.setPrice(_product, price, currency)) {
