@@ -283,7 +283,7 @@ public class ProviderAccountBusinessBean
 			coll = getPostalCodeHome().findAllOrdererByCode();
 			return coll;
 		} catch (FinderException e) {
-			return ListUtil.getEmptyVector();
+			return ListUtil.getEmptyList();
 		}
 	}
 
