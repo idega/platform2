@@ -394,7 +394,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return bundle.getResourceBundle(locale);
   }
     
-  private String getBundleIdentifier() {
+  protected String getBundleIdentifier() {
     return AGE_GENDER_PLUGIN_BUSINESS_BUNDLE_IDENTIFIER;
   } 
   
