@@ -99,4 +99,13 @@ public class TournamentRound extends GolfEntity{
 		setColumn("decrease_handicap",new Boolean(decrease_handicap));
 	}
 
+        public void delete() {
+            Scorecard[] scorecards = (Scorecard[]) this.findAllByColumn("TOURNAMENT_ROUND_ID",this.getID());
+            if (scorecards != null) {
+                for (int j = 0; j < scorecards.length; j++) {
+                    scorecards[j].delete();
+                }
+            }
+        }
+
 }
