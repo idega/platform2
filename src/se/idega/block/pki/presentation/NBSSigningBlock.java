@@ -59,7 +59,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}	
 		
 	
-	public void main(IWContext iwc) throws NBSException, Exception{
+	public void main(IWContext iwc) throws Exception{
 		try{
 		
 			add(new Text("<h2>Sign Contract</h2>"));
@@ -85,6 +85,27 @@ public class NBSSigningBlock extends Block implements Builderaware{
 				iwc.forwardToIBPage(getParentPage(), getGotoPage());	
 	
 			}
+		}catch(NBSException ex){
+			String errorMsg = null;
+			switch(ex.getCode()){
+				case NBSException.ERROR_SRV_CERT_EXPIRED: 		
+					errorMsg = "Certificate expired";	
+					break;	
+				case NBSException.ERROR_SRV_BAD_TBS: 
+					errorMsg = "Bad TBS";	
+					break;	
+				case NBSException.ERROR_SRV_CERT_SIG_INVALID:
+					errorMsg = "Invalid signature";	
+					break;	
+				case NBSException.ERROR_CLNT_NO_KEY:
+					errorMsg = "No key";	
+					break;	
+				default:
+					errorMsg = "NBS Error";	
+					break;											
+			}
+			add(new Text(errorMsg + "( Error code: " + ex.getCode() + ")"));			
+			
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
@@ -224,11 +245,12 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}
 	
 
-	
 	private String getConfigFilePath(IWContext iwc){
 
 		System.out.println("getConfigFilePath()");
 		String path = getBundle(iwc).getProperty(BIDT_SDK_PATH_PROPERTY);
 		return path != null ? path : "bidt_sdk.properties";
 	}
+	
+	
 }
