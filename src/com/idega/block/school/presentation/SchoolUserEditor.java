@@ -303,7 +303,7 @@ public class SchoolUserEditor extends Block {
 			*/
 						
 			/** Empty User field */
-			Table table = this.getUserForm();
+			Table table = this.getUserForm(iwc, school);
 
 			contTable.add(table, 1, cRow);
 
@@ -480,7 +480,7 @@ public class SchoolUserEditor extends Block {
 
 	/**
 	 * Returns a UserForm	 * @param userType 1 = Headmaster, 2 = Assistant Headmaster, 3 = User	 * @return Table	 */
-	private Table getUserForm() {
+	private Table getUserForm(IWContext iwc, School school) {
 		String name = PARAMETER_SCHOOL_USER_NAME;
 		String email = PARAMETER_SCHOOL_USER_EMAIL;
 		String phone = PARAMETER_SCHOOL_USER_TELEPHONE;
@@ -497,10 +497,23 @@ public class SchoolUserEditor extends Block {
 		
 		
 		DropdownMenu pType = new DropdownMenu(PARAMETER_SCHOOL_USER_TYPE);
-			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_HEADMASTER , _iwrb.getLocalizedString("headmaster","Headmaster"));
-			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER , _iwrb.getLocalizedString("assistant_headmaster","Assistant headmaster"));
-			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN, _iwrb.getLocalizedString("web_administrator","Web administrator"));
-			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_TEACHER , _iwrb.getLocalizedString("teacher","Teacher"));
+		Collection suTypes;
+		try {
+			suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
+			if (suTypes != null && !suTypes.isEmpty() ) {
+				Iterator iter = suTypes.iterator();
+				String[] str;
+				while (iter.hasNext()) {
+					str = (String[]) iter.next();
+					pType.addMenuElement(str[2], _iwrb.getLocalizedString(str[0],str[1]));
+				}
+			}
+		} catch (Exception e) {
+		}
+//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_HEADMASTER , _iwrb.getLocalizedString("headmaster","Headmaster"));
+//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER , _iwrb.getLocalizedString("assistant_headmaster","Assistant headmaster"));
+//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN, _iwrb.getLocalizedString("web_administrator","Web administrator"));
+//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_TEACHER , _iwrb.getLocalizedString("teacher","Teacher"));
 		TextInput pName = new TextInput(name);
 		TextInput pEmail = new TextInput(email);
 		TextInput pPhone = new TextInput(phone);
