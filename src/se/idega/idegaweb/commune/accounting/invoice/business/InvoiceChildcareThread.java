@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
@@ -179,22 +180,24 @@ public class InvoiceChildcareThread extends BillingThread{
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL,new Integer(age.getYears())));
+					String employment = "";
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,(Integer)employmentType.getPrimaryKey()));
-						log.info("Emplyment: "+employmentType.getLocalizationKey());
+						employment = employmentType.getLocalizationKey();
 					}
 
-					log.info("\nSchool type: "+childcareType+
-						"\nHours "+hours+
-						"\nYears "+age.getYears());
+					log.info("\n School type: "+childcareType+
+						"\n Hours "+hours+
+						"\n Years "+age.getYears()+
+						"\n Emplyment "+employment);
 //					conditions.add(new ConditionParameter(IntervalConstant.ACTIVITY,childcareType));
 //					conditions.add(new ConditionParameter(IntervalConstant.HOURS,new Integer(hours)));
 //					conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
 	
 					//Select a specific row from the regulation, given the following restrictions
 					// TODO Auto-generated catch block
-					log.warning("Getting posting detail for:\n" +
+					log.info("Getting posting detail for:\n" +
 					"  Category:"+category.getCategory()+"\n"+
 					"  PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"\n"+
 					"  currentDate:"+currentDate+"\n"+
@@ -214,6 +217,9 @@ public class InvoiceChildcareThread extends BillingThread{
 						conditions,						//The conditions that need to fulfilled
 						totalSum,						//Sent in to be used for "Specialutrakning"
 						contract);						//Sent in to be used for "Specialutrakning"
+					if(postingDetail == null){
+						throw new RegulationException("reg_exp_no_results","No regulations found.");
+					}
 					System.out.println("RuleSpecType: "+postingDetail.getTerm());
 		
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
@@ -229,7 +235,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					int siblingOrder = getSiblingOrder(contract);
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 							new Integer(siblingOrder)));
-					log.info("Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
+					log.info(" Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
 
 					//Get all the rules for this contract
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
@@ -246,6 +252,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					{
 						try {
 						Regulation regulation = (Regulation)regulationIter.next();
+						log.info("regulation "+regulation.getName());
 						postingDetail = regBus.getPostingDetailForContract(
 							totalSum,
 							contract,
@@ -254,18 +261,22 @@ public class InvoiceChildcareThread extends BillingThread{
 							conditions);
 							
 						if(postingDetail==null){
-							log.warning("Posting detail is null!");
-							log.info("tot sum "+totalSum);
-							log.info("contract "+contract.getPrimaryKey());
-							log.info("regulation "+regulation.getName());
-							log.info("start period "+startPeriod.toString());
-							log.info("# of conditions"+conditions.size());
+							log.warning("Posting detail is null!"+
+							"\n tot sum "+totalSum+
+							"\n contract "+contract.getPrimaryKey()+
+							"\n regulation "+regulation.getName()+
+							"\n start period "+startPeriod.toString()+
+							"\n # of conditions"+conditions.size());
+							throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
 						}
 
 						// **Create the invoice record
 						//TODO (JJ) get these strings from the postingDetail instead.
-						System.out.println("posting:"+postings[0]);
+						System.out.println("Regspectyp: "+postingDetail.getRuleSpecType());
+						System.out.println("Regspectyp: "+regulation.getRegSpecType().getLocalizationKey());
 						System.out.println("InvoiceHeader "+invoiceHeader.getPrimaryKey());
+//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+						postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,currentDate);
 						invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], postings[1]);
 
 						//Need to store the subvention row, so that it can be adjusted later if needed					
@@ -475,12 +486,14 @@ public class InvoiceChildcareThread extends BillingThread{
 	 */
 	private int getSiblingOrder(ChildCareContract contract) throws EJBException, SiblingOrderException, IDOLookupException, RemoteException, CreateException{
 		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+//		log.info("Trying to get sibling order for "+contract.getChild().getName());
 	
 		//First see if the child already has been given a sibling order
 		MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 		Integer order = (Integer)siblingOrders.get(contract.getChild().getPrimaryKey());
 		if(order != null)
 		{
+//			log.info("Sibling order already calculated: "+order.intValue());
 			return order.intValue();	//Sibling order already calculated.
 		}
 	
@@ -505,7 +518,9 @@ public class InvoiceChildcareThread extends BillingThread{
 		//Itterate through parents
 		while(parentIter.hasNext()){
 			User parent = (User)parentIter.next();
+//			log.info("Found parent: "+parent.getName());
 			try {
+//				log.info("Found cohabitant: "+familyLogic.getCohabitantFor(parent));
 				adults.add(familyLogic.getCohabitantFor(parent));
 			} catch (NoCohabitantFound e) {
 			}
@@ -515,31 +530,51 @@ public class InvoiceChildcareThread extends BillingThread{
 		Iterator adultIter = adults.iterator();
 		while(adultIter.hasNext()){
 			User adult = (User)adultIter.next();
-			Iterator siblingsIter = adult.getChildren();
-			//Itterate through their kids
-			while(siblingsIter.hasNext())
-			{
-				User sibling = (User) siblingsIter.next();
+//			log.info("Getting children for "+adult.getName());
+			Iterator siblingsIter;
+			try {
+				siblingsIter = familyLogic.getChildrenFor(adult).iterator();
+				//Itterate through their kids
+				while(siblingsIter.hasNext())
+				{
+					User sibling = (User) siblingsIter.next();
+//					log.info("Checking child: "+sibling.getName());
 			
-				//Check if the sibling has a valid contract of right type
-				try {
-					getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
-					//If kids have same address add to collection
-					Address siblingAddress = userBus.getUsersMainAddress(contract.getChild());
-					if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&
-						childAddress.getCity().equals(siblingAddress.getCity()) && 
-						childAddress.getPOBox().equals(siblingAddress.getPOBox())){
+					//Check if the sibling has a valid contract of right type
+					try {
+						getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
+						//If kids have same address add to collection
+						Address siblingAddress = userBus.getUsersMainAddress(contract.getChild());
+//						log.info("cpa "+childAddress.getPostalAddress()+
+//							"\ncc "+childAddress.getCity()+
+//							"\ncPOB "+childAddress.getStreetAddress()+
+//							"\nspa "+siblingAddress.getPostalAddress()+
+//							"\nsc "+siblingAddress.getCity()+
+//							"\nsPOB "+siblingAddress.getStreetAddress()
+//						);
+						if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&
+							childAddress.getCity().equals(siblingAddress.getCity()) &&
+							childAddress.getStreetAddress().equals(siblingAddress.getStreetAddress())){
 
-						SortableSibling sortableSibling = new SortableSibling(sibling);
-						if(!sortedSiblings.contains(sortableSibling)){
-							sortedSiblings.add(sortableSibling);
+//							log.info(("child was at same address, adding"));
+							SortableSibling sortableSibling = new SortableSibling(sibling);
+							if(!sortedSiblings.contains(sortableSibling)){
+								sortedSiblings.add(sortableSibling);
+							}
 						}
+					} catch (FinderException e) {
+						//If sibling don't have a childcare contract we just ignore it
+					} catch (NullPointerException e) {
+						//If sibling doesn't have an address or contract, it won't be counted in the sibling order
+						e.printStackTrace();
 					}
-				} catch (FinderException e) {
-					//If sibling doesn't have an address or contract, it won't be counted in the sibling order
-					System.out.println("Warning: got a finder exception where it shouldn't happen");
-					e.printStackTrace();
 				}
+			} catch (RemoteException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (NoChildrenFound e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	
@@ -549,6 +584,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		while(sortedIter.hasNext()){
 			SortableSibling sortableSibling = (SortableSibling)sortedIter.next();
 			siblingOrders.put(sortableSibling.getSibling().getPrimaryKey(),new Integer(orderNr));
+			log.info("Added child "+sortableSibling.getSibling()+" as sibling "+orderNr+" out of "+sortedSiblings.size());
 			orderNr++;
 		}
 	

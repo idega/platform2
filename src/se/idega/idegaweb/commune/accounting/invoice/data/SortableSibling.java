@@ -23,11 +23,11 @@ public class SortableSibling implements Comparable{
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(Object o) {
-		User other = (User)o;
-		if(sibling.getDateOfBirth().after(other.getDateOfBirth())){
-			return 1;
-		} else if(sibling.getDateOfBirth().before(other.getDateOfBirth())){
+		SortableSibling other = (SortableSibling)o;
+		if(sibling.getDateOfBirth().after(other.getSibling().getDateOfBirth())){
 			return -1;
+		} else if(sibling.getDateOfBirth().before(other.getSibling().getDateOfBirth())){
+			return 1;
 		}
 		return 0;
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.80 2003/12/01 18:00:29 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.81 2003/12/02 19:45:47 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1556,12 +1556,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			}
 
 			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeID,-1);
+			System.out.println("Found "+reg.size()+" regulations from initial query");
 			if (reg != null && !reg.isEmpty()) {
 				List match = new Vector();
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
 					Regulation regulation = (Regulation) it.next();
-					System.out.println("Checking Regulation "+regulation.getName());
+//					System.out.println("Checking Regulation "+regulation.getName());
 					int i = checkConditions(regulation, condition);
 					if (i == 1){
 						System.out.println("Regulation found "+regulation.getName());
@@ -1587,6 +1588,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				} else{
 					System.out.println("No regulations found");
 				}
+			} else{
+				System.out.println("Initial query for regulations did not find anything.");
 			}
 		}
 		catch (RemoteException e) {
