@@ -35,21 +35,28 @@ public class QueryFieldPart implements QueryPart {
 	private String function = null;
 	private String display = null;
 	private String typeClass = null;
+	private String handlerClass = null;
+	private String handlerDescription = null;
 	private boolean locked = false;
 	private boolean hidden = false;
 	
-	public QueryFieldPart(String name, String entity, String path, String[] columns,String function, String display,String typeClass, String hidden){
-		this(name,entity, path, "",function,display,typeClass, Boolean.getBoolean(hidden));
-		this.columns = stringArrayToCommaList(columns);
+	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass) {
+		this(name, entity, path,  column, function, display, typeClass, null, null, false);
 	}
 	
-	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String hidden){
-		this( name, entity, path, column, function, display, typeClass, Boolean.getBoolean(hidden));
+// not used at the moment because function concat is not used at the moment	
+//	public QueryFieldPart(String name, String entity, String path, String[] columns,String function, String display,String typeClass, String handlerClass, String handlerDescription, String hidden){
+//		this(name,entity, path, "",function,display,typeClass, handlerClass, handlerDescription, Boolean.getBoolean(hidden));
+//		this.columns = stringArrayToCommaList(columns);
+//	}
+	
+	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String handlerClass, String handlerDescription){
+		this( name, entity, path, column, function, display, typeClass, handlerClass, handlerDescription, false);
 	}
 	
 	
 	
-	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, boolean hidden){
+	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String handlerClass , String handlerDescription, boolean hidden){
 		this.name = name;
 		this.entity = entity;
 		this.path = path;
@@ -57,6 +64,8 @@ public class QueryFieldPart implements QueryPart {
 		this.function = function;
 		this.display = display;
 		this.typeClass = typeClass;
+		this.handlerClass = handlerClass;
+		this.handlerDescription = handlerDescription;
 		this.hidden = hidden;
 	}
 	
@@ -70,17 +79,15 @@ public class QueryFieldPart implements QueryPart {
 			function = func.getValue();
 		typeClass = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()){
-			XMLElement xmlDisplay = xml.getChild(QueryXMLConstants.DISPLAY);
-			display = xmlDisplay.getTextTrim();
+			handlerClass = xml.getTextTrim(QueryXMLConstants.HANDLER);
+			handlerDescription = xml.getTextTrim(QueryXMLConstants.HANDLER_DESCRIPTION);
+			display = xml.getTextTrim(QueryXMLConstants.DISPLAY);
 			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
-			locked = xmlLock!=null;
+			locked = (xmlLock!=null);
 			XMLElement hidden = xml.getChild(QueryXMLConstants.HIDDEN);
-			this.hidden = hidden!= null;
+			this.hidden = (hidden!= null);
 		}
-		
-		
 	}
-	
 	
 
 	/* (non-Javadoc)
@@ -99,6 +106,16 @@ public class QueryFieldPart implements QueryPart {
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
 	  	el.addContent(xmlDisplay);
+	  	if (handlerClass != null && !handlerClass.equalsIgnoreCase("null"))	{
+	  		XMLElement xmlHandlerClass = new XMLElement(QueryXMLConstants.HANDLER);
+	  		xmlHandlerClass.addContent(handlerClass);
+	  		el.addContent(xmlHandlerClass);
+	  	}
+	  	if (handlerDescription != null && !handlerDescription.equalsIgnoreCase("null")) {
+	  		XMLElement xmlHandlerDescription = new XMLElement(QueryXMLConstants.HANDLER_DESCRIPTION);
+	  		xmlHandlerDescription.addContent(handlerDescription);
+	  		el.addContent(xmlHandlerDescription);
+	  	}
 	  	if(locked) {
 				el.addContent(new XMLElement(QueryXMLConstants.LOCK));
 	  	}
@@ -176,6 +193,22 @@ public class QueryFieldPart implements QueryPart {
 		name = string;
 	}
 
+	public void setHandlerClass(String handlerClass)  {
+		this.handlerClass = handlerClass;
+	}
+	
+	public void setHandlerDescription(String handlerDescription) {
+		this.handlerDescription = handlerDescription;
+	}
+	
+	public String getHandlerClass()  {
+		return handlerClass;
+	}
+	
+	public String getHandlerDescription() {
+		return handlerDescription;
+	}
+	
 	/**
 	 * @param strings
 	 */
@@ -225,14 +258,27 @@ public class QueryFieldPart implements QueryPart {
 		buffer.append(function).append(';');
 		buffer.append(display).append(';');
 		buffer.append(typeClass).append(';');
-		buffer.append(hidden);		
+		buffer.append(handlerClass).append(';');
+		buffer.append(handlerDescription);
+		// the property hidden is always set explicitly
+		// do not add hidden (encode/decode is used for comparision) 
+//		buffer.append(hidden);		
 		return buffer.toString();
 	}
 	
 	public static QueryFieldPart  decode(String encoded){
 			StringTokenizer toker = new StringTokenizer(encoded,";");
-			if(toker.countTokens()==8){
-				return new QueryFieldPart(toker.nextToken(),toker.nextToken(), toker.nextToken(), toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(), toker.nextToken());
+			if(toker.countTokens()== 9){
+				return new QueryFieldPart(toker.nextToken(),
+						toker.nextToken(), 
+						toker.nextToken(), 
+						toker.nextToken(),
+						toker.nextToken(),
+						toker.nextToken(),
+						toker.nextToken(), 
+						toker.nextToken(), 
+//						toker.nextToken(),
+						toker.nextToken());
 				
 			}
 			return null;

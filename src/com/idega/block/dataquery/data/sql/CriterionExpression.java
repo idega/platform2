@@ -1,10 +1,13 @@
 package com.idega.block.dataquery.data.sql;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
+import com.idega.business.InputHandler;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -20,6 +23,10 @@ public class CriterionExpression implements DynamicExpression {
   public static final char DOT = '.';
   public static final char WHITE_SPACE = ' ';
   public static final char APOSTROPHE = '\'';
+  public static final char BRACKET_OPEN = '(';
+  public static final char BRACKET_CLOSE = ')';
+  public static final String OR = "OR";
+  
   private static final String INTEGER = Integer.class.getName(); 
   
 
@@ -32,7 +39,10 @@ public class CriterionExpression implements DynamicExpression {
   
   private boolean isDynamic = false;
   private Map identifierValueMap = null;
-  private Map identifierDescriptionMap = null;
+  private Map identifierInputDescriptionMap = null;
+  
+  private String inputHandlerClass = null;
+  private String inputHandlerDescription = null;
   
   private Map typeSQL = null;
   
@@ -56,6 +66,9 @@ public class CriterionExpression implements DynamicExpression {
   protected void initialize(QueryConditionPart condition, SQLQuery sqlQuery)	{
   	String field = condition.getField();
   	String path = condition.getPath();
+  	// set Handler 
+  	String inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
+  	String inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
   	List fieldValueList = sqlQuery.getUniqueNameForField(path,field);
   	if (fieldValueList.size() != 1)	{
   		// something wrong
@@ -65,36 +78,70 @@ public class CriterionExpression implements DynamicExpression {
   	valueField = (String) fieldValueList.get(0);
     String type = condition.getType();
     comparison = (String) typeSQL.get(type);
-    String pattern = condition.getPattern();
+    Object pattern = null;
+    if (condition.hasMoreThanOnePattern()) {
+    	pattern = condition.getPatterns();
+    }
+    else {
+    	pattern = condition.getPattern();
+    }
     isDynamic = condition.isDynamic();
   	identifierValueMap = new HashMap();
    	identifierValueMap.put(identifier, pattern);
    	String description = condition.getDescription();
-   	identifierDescriptionMap = new HashMap();
+   	identifierInputDescriptionMap = new HashMap();
    	if (description == null || description.length() == 0)	{
   		StringBuffer buffer = new StringBuffer(valueField).append(" ").append(type);
   		description =  buffer.toString();
    	}
-		identifierDescriptionMap.put(identifier, description);
+		identifierInputDescriptionMap.put(identifier, new InputDescription(description, inputHandlerClass, inputHandlerDescription));
   }
 
   public String toSQLString() {
     StringBuffer expression = 
       new StringBuffer(valueField).append(WHITE_SPACE);
     expression.append(comparison);
-    String pattern = (String) identifierValueMap.get(identifier);
+    Object pattern = identifierValueMap.get(identifier);
+    // if the pattern is a collection use OR operator
+    if (pattern != null && pattern instanceof Collection) {
+    	Iterator iterator = ((Collection) pattern).iterator();
+    	if (((Collection) pattern).size() == 1) {
+				return getSingleCondition( (String) iterator.next()).toString();
+    	}
+			StringBuffer buffer = new StringBuffer();
+    	while (iterator.hasNext()) {
+    		String singlePattern = (String) iterator.next();
+    		buffer.append(BRACKET_OPEN).append(WHITE_SPACE);
+    		StringBuffer singleCondition = getSingleCondition( singlePattern);
+    		buffer.append(singleCondition);
+    		buffer.append(WHITE_SPACE).append(BRACKET_CLOSE);
+    		if (iterator.hasNext()) {
+    			buffer.append(WHITE_SPACE).append(OR).append(WHITE_SPACE);
+    		}
+    	}
+    	return buffer.toString();
+    }    	
+   	return getSingleCondition((String) pattern).toString();
+  }
+  
+  private StringBuffer getSingleCondition(String pattern) {
+    StringBuffer expression = 
+      new StringBuffer(valueField).append(WHITE_SPACE);
+    expression.append(comparison);
     if (pattern != null)  {
       expression.append(WHITE_SPACE);
+      // if it is an integer do not use apostrophe: age = 22
       if (INTEGER.equals(firstColumnClass)) {
         expression.append(pattern);
       }
+      // else use apostrophe: name = 'Thomas'
       else {
         expression.append(APOSTROPHE).append(pattern).append(APOSTROPHE);
       }
     }
-    return expression.toString();
+    return expression;
   }
-  
+    	
   public boolean isDynamic() {
   	return isDynamic;
   }
@@ -107,12 +154,37 @@ public class CriterionExpression implements DynamicExpression {
   	return identifierValueMap;
   }
   
-  public Map getIdentifierDescriptionMap()	{
-  	return identifierDescriptionMap;
+  public Map getIdentifierInputDescriptionMap()	{
+  	return identifierInputDescriptionMap;
   }
   
   public void setIdentifierValueMap(Map identifierValueMap)	{
   	this.identifierValueMap = identifierValueMap;
+  }
+  
+  public String getInputHandlerDescription() {
+  	return inputHandlerDescription;
+  }
+  
+  public InputHandler getInputHandler() {
+  	InputHandler inputHandler = null;
+  	try {
+  		inputHandler = (InputHandler) Class.forName(inputHandlerClass).newInstance();
+  	}
+		catch (ClassNotFoundException ex) {
+			//TODO: thi implement log 
+//			log(ex);
+//			logError("[CriterionExpression] Could not retrieve handler class");
+		}
+		catch (InstantiationException ex) {
+//			log(ex);
+//			logError("[CriterionExpression] Could not instanciate handler class");
+		}
+		catch (IllegalAccessException ex) {
+//			log(ex);
+//			logError("[CriterionExpression] Could not instanciate handler class");
+		}
+		return inputHandler;
   }
   
   public boolean isValid() {

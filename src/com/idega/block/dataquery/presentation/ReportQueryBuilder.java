@@ -29,7 +29,9 @@ import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 import com.idega.block.dataquery.data.xml.QueryPart;
 import com.idega.block.dataquery.data.xml.QueryXMLConstants;
+import com.idega.block.datareport.presentation.InputHandlerChooser;
 import com.idega.business.IBOLookup;
+import com.idega.business.InputHandler;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.data.IWTreeNode;
 import com.idega.core.file.data.ICFile;
@@ -88,6 +90,7 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_ADD = "add";
 	private static final String PARAM_DROP = "drop";
 	private static final String PARAM_SET_EXPRESSION = "setExpression";
+	private static final String PARAM_SET_HANDLER = "setHandler";
 	private static final String PARAM_DYNAMIC = "dynamic";
 	public static final String PARAM_QUIT = "quit";
 	private static final String PARAM_QUERY_AS_SOURCE = "source_query";
@@ -111,6 +114,9 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_LOCK = "lock";
 	private static final String PARAM_FUNCTION = "mkfunction";
 	private static final String PARAM_FUNC_TYPE = "mkfunctype";
+	
+	private static final String FORM_NAME = "reportQueryBuilderForm";
+	
 	private int heightOfStepTable = 300;
 	private int step = 1;
 	private int queryFolderID = -1;
@@ -202,6 +208,7 @@ public class ReportQueryBuilder extends Block {
 				//System.err.println("this step is after process" + step);
 				Table table = new Table(1, 3);
 				Form form = new Form();
+				form.setName(FORM_NAME);
 				// thomas changed: queryFolder  id is always set
 				// if (queryFolderID > 0 && step < 5)
 				if (queryFolderID > 0) {
@@ -263,6 +270,15 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 	private void processForm(IWContext iwc) throws IOException {
+		// first of all set new handler classes
+		if (iwc.isParameterSet(PARAM_SET_HANDLER)) {
+			String handlerClass = InputHandlerChooser.parseInputHandler(iwc);
+			if (handlerClass != null && iwc.isParameterSet(PARAM_COND_FIELD)) {
+				String field = iwc.getParameter(PARAM_COND_FIELD);
+				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
+				helper.setInputHandler(fieldPart.getPath(), fieldPart.getName(), handlerClass);
+			}
+		}
 		//		destroy sessionbean and close window if set
 		if (iwc.isParameterSet(PARAM_QUIT)) {
 			//if(closeParentWindow)
@@ -293,16 +309,22 @@ public class ReportQueryBuilder extends Block {
 			
 			String field = iwc.getParameter(PARAM_COND_FIELD);
 			String equator = iwc.getParameter(PARAM_COND_TYPE);
-			String pattern = iwc.getParameter(PARAM_CONDITION);
+			String[] patterns = iwc.getParameterValues(PARAM_CONDITION);
 			String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
-			if (!"".equals(pattern) || iwc.isParameterSet(PARAM_DYNAMIC)){
+			if (!"".equals(patterns) || iwc.isParameterSet(PARAM_DYNAMIC)){
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
 				helper.addHiddenField(fieldPart);
-				if(pattern ==null || "".equals(pattern)){
-					pattern = defaultDynamicPattern;
+				List patternsAsList = null;
+				if(patterns ==null || "".equals(patterns)){
+					patternsAsList = new ArrayList();
+					patternsAsList.add(defaultDynamicPattern);
+				}
+				else {
+					// change to collection-based API
+					patternsAsList = Arrays.asList(patterns);
 				}
 				int id = helper.getNextIdForCondition();
-				QueryConditionPart part = new QueryConditionPart(id, fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, pattern, description);
+				QueryConditionPart part = new QueryConditionPart(id, fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, patternsAsList, description);
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 				helper.addCondition(part);
@@ -905,7 +927,7 @@ public class ReportQueryBuilder extends Block {
 				String type = fieldPart.getTypeClass();
 							
 				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type, false);
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
 				resultFields.add(newFieldPart);
 			}
 			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
@@ -981,7 +1003,7 @@ public class ReportQueryBuilder extends Block {
 				String type = fieldPart.getTypeClass();
 							
 				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type, false);
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
 				resultFields.add(newFieldPart);
 			}
 			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
@@ -1164,7 +1186,7 @@ public class ReportQueryBuilder extends Block {
 		table.setColor(3,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 4, row);
 		table.setColor(4,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 5, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_operator", "Operator")), 5, row);
 		table.setColor(5,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 6, row);
 		table.setColor(6,row,"#dfdfdf");
@@ -1186,13 +1208,64 @@ public class ReportQueryBuilder extends Block {
 			for (Iterator iter = conditions.iterator(); iter.hasNext();) {
 				QueryConditionPart part = (QueryConditionPart) iter.next();
 				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(part.getField());
+				InputHandler fieldInputHandler = null;
 				if (field != null) {
 					table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 3, row);
 					table.add(field.getName(), 4, row);
+					fieldInputHandler = getInputHandler(field);
 				}
 				table.add(part.getId(), 2, row);
 				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 5, row);
-				table.add(part.getPattern(), 6, row);
+				// display the pattern
+				if (part.hasMoreThanOnePattern()) {
+					Collection patternColl = part.getPatterns();
+					if (fieldInputHandler != null) {
+						String[] patternArray = (String[]) patternColl.toArray();
+						Object resultingObjects = null;
+						String display = null;
+						try {
+							resultingObjects = fieldInputHandler.getResultingObject(patternArray, iwc);
+							display = fieldInputHandler.getDisplayNameOfValue(resultingObjects, iwc);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							log(e);
+							display = "";
+						}
+						table.add(display, 6, row);
+					}
+					else {
+						StringBuffer buffer = new StringBuffer();
+						Iterator objectIterator = patternColl.iterator();
+						while (objectIterator.hasNext()) {
+							String display = (String) objectIterator.next();
+							buffer.append(display);
+							if (objectIterator.hasNext()) {
+								buffer.append(" , ");
+							}
+						}
+						table.add(buffer.toString(), 6, row);
+					}
+				}
+				else {
+					String singlePattern = part.getPattern();
+					if (fieldInputHandler != null) {
+						String[] patternArray = { singlePattern };
+						Object resultingObjects = null;
+						String display = null;
+						try {
+							resultingObjects = fieldInputHandler.getResultingObject(patternArray, iwc);
+							display = fieldInputHandler.getDisplayNameOfValue(resultingObjects, iwc);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							log(e);
+							display = "";
+						}
+						table.add(display, 6, row);
+					}
+					else {
+						table.add(singlePattern, 6, row);
+					}
+				}
 				table.add(part.getDescription(), 7, row);
 				
 								
@@ -1213,10 +1286,26 @@ public class ReportQueryBuilder extends Block {
 
 		DropdownMenu equators = getConditionTypeDropdown();
 		DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc);//getFieldDropdown();
+		chosenFields.setOnClick(FORM_NAME + ".submit()");
+		// set the prior selected field
+		String fieldPartCode = iwc.getParameter(PARAM_COND_FIELD);
+		QueryFieldPart fieldPart = null;
+		PresentationObject inputWidget = null;
+		if (fieldPartCode != null) {
+			fieldPart = QueryFieldPart.decode(fieldPartCode);
+			chosenFields.setSelectedElement(fieldPartCode);
+			InputHandler inputHandler = getInputHandler(fieldPart);
+			if (inputHandler != null) {
+				inputWidget = inputHandler.getHandlerObject(PARAM_CONDITION, null, iwc);
+			}
+		}
+		// take the default input handler
+		if (inputWidget == null) {
+			inputWidget = new TextInput(PARAM_CONDITION);
+		}
 		table.add(chosenFields, 4, row);
 		table.add(equators, 5, row);
-		TextInput pattern = new TextInput(PARAM_CONDITION);
-		table.add(pattern, 6, row);
+		table.add(inputWidget, 6, row);
 		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
 		table.add(description, 7, row);
 		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 8, row);
@@ -1245,6 +1334,19 @@ public class ReportQueryBuilder extends Block {
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
 		buffer.append(": ( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )");
 		table.add(buffer.toString(), 4, row);
+		
+		// add input handler chooser
+		if (expertMode) {
+			row++;
+			InputHandlerChooser inputHandlerChooser = new InputHandlerChooser();
+			if (fieldPart != null) {
+				inputHandlerChooser.setField(fieldPart.getName());
+				inputHandlerChooser.setEntity(fieldPart.getEntity());
+			}
+			table.mergeCells(4, row, 7, row);
+			table.add(inputHandlerChooser, 4, row);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set handler", "Set handler"), PARAM_SET_HANDLER, PARAM_SET_HANDLER),8 ,row);
+		}
 		return table;
 	}
 
@@ -1399,12 +1501,9 @@ public class ReportQueryBuilder extends Block {
 	}
 
 	public Map getMapOfFieldsByName() {
-		int size = 0;
-		if (helper.hasFields())
-			size = helper.getListOfVisibleFields().size();
-		Map map = new HashMap(size);
+		Map map = new HashMap();
 		if (helper.hasFields()) {
-			Iterator iter = helper.getListOfVisibleFields().iterator();
+			Iterator iter = helper.getListOfFields().iterator();
 			while (iter.hasNext()) {
 				QueryFieldPart part = (QueryFieldPart) iter.next();
 				map.put(part.getName(), part);
@@ -1654,6 +1753,38 @@ public class ReportQueryBuilder extends Block {
 		}
   }	
  
+  private InputHandler getInputHandler(QueryFieldPart fieldPart) {
+  	InputHandler inputHandler = null;
+  	String predefinedClassName = fieldPart.getHandlerClass();
+  	String currentDefinedClassName = helper.getInputHandler(fieldPart.getPath(), fieldPart.getName());
+  	String className = null;
+  	if (currentDefinedClassName != null) {
+  		className = currentDefinedClassName;
+  	}
+  	else if (predefinedClassName != null) {
+  		className = predefinedClassName;
+  	}
+  	else {
+  		return null;
+  	}
+		try {
+			inputHandler = (InputHandler) Class.forName(className).newInstance();
+		}
+		catch (ClassNotFoundException ex) {
+			log(ex);
+			logError("[ReportQueryBuilder] Could not retrieve handler class");
+		}
+		catch (InstantiationException ex) {
+			log(ex);
+			logError("[ReportQueryBuilder] Could not instanciate handler class");
+		}
+		catch (IllegalAccessException ex) {
+			log(ex);
+			logError("[ReportQueryBuilder] Could not instanciate handler class");
+		}
+		return inputHandler;
+	}
+	
   
 
 	public UserBusiness getUserBusiness()	{

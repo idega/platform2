@@ -32,7 +32,7 @@ public class SelectStatement implements DynamicExpression {
   private List orderByClauses = new ArrayList();
   
   private Map identifierValueMap = new HashMap();
-  private Map identifierDescriptionMap = new HashMap(); 
+  private Map identifierInputDescriptionMap = new HashMap(); 
 
   public void addInnerJoin(Expression join) {
     innerClauses.add(join);
@@ -49,9 +49,9 @@ public class SelectStatement implements DynamicExpression {
   public void addWhereClause(DynamicExpression criterion) {
   	if (criterion.isDynamic())	{
   		Map identifierValueMap = criterion.getIdentifierValueMap();
-  		Map identifierDescriptionMap = criterion.getIdentifierDescriptionMap();
+  		Map identifierInputDescriptionMap = criterion.getIdentifierInputDescriptionMap();
   		this.identifierValueMap.putAll(identifierValueMap);
-  		this.identifierDescriptionMap.putAll(identifierDescriptionMap);
+  		this.identifierInputDescriptionMap.putAll(identifierInputDescriptionMap);
   	}
     whereClauses.add(criterion);
   }
@@ -68,8 +68,8 @@ public class SelectStatement implements DynamicExpression {
   	return identifierValueMap;
   }
   
-  public Map getIdentifierDescriptionMap() {
-  	return identifierDescriptionMap;
+  public Map getIdentifierInputDescriptionMap() {
+  	return identifierInputDescriptionMap;
   }
   
   public void setIdentifierValueMap(Map identifierValueMap)	{

@@ -16,6 +16,7 @@ import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
+import com.idega.block.dataquery.data.sql.InputDescription;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
@@ -29,6 +30,7 @@ import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.business.IBOLookup;
+import com.idega.business.InputHandler;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -220,11 +222,8 @@ public class ReportQueryOverview extends Block {
 		}
 		return action;
 	}
-    
-		
-		    
-    
-    
+
+	
   private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc ) throws RemoteException {
   	User currentUser = iwc.getCurrentUser();
   	GroupBusiness groupBusiness = getGroupBusiness();
@@ -242,8 +241,8 @@ public class ReportQueryOverview extends Block {
   	Collection parentGroups = new ArrayList();
   	parentGroups.add(topGroup);
   	try {
-  		// brilliant implementation in GroupBusiness!!!!!!
-  		// null is returned instead of an empty collection!!!! This is really brilliant.
+  		// bad implementation in GroupBusiness
+  		// null is returned instead of an empty collection
   		//TODO: implement a better version of that method
   	Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
   	if (coll != null) {
@@ -446,6 +445,7 @@ public class ReportQueryOverview extends Block {
 			//
 	    if (query.isDynamic()) {
 	    	Map identifierValueMap = query.getIdentifierValueMap();
+	    	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
 	    	boolean calculateAccess = false;
 	    	boolean containsOnlyAccessVariable = 
 	    		(	(calculateAccess = identifierValueMap.containsKey(USER_ACCESS_VARIABLE))  || 
@@ -454,11 +454,11 @@ public class ReportQueryOverview extends Block {
 	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
 	    			! containsOnlyAccessVariable) {
 	    		// show input fields
-					showInputFields(query, identifierValueMap, resourceBundle);
+					showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
 	    	}
 	    	else {
 	    		// get the values of the input fields
-	    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
+	    		Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap,  identifierInputDescriptionMap, iwc);
 	    		if (calculateAccess) {
 	    			setAccessCondition(modifiedValues, iwc);
 	    		}
@@ -475,7 +475,7 @@ public class ReportQueryOverview extends Block {
 	     			addErrorMessage(errorMessage);
 	     		}
 	     		if ( ! containsOnlyAccessVariable) {
-	    			showInputFields(query, modifiedValues, resourceBundle);
+	    			showInputFields(query, modifiedValues,  identifierInputDescriptionMap, resourceBundle, iwc);
 	     		}
 	     		else {
 	     			getListOfQueries(bundle, resourceBundle, iwc);
@@ -526,10 +526,9 @@ public class ReportQueryOverview extends Block {
 	}
 		
 	
-	private void showInputFields(SQLQuery query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
-    Map identifierDescriptionMap = query.getIdentifierDescriptionMap();
+	private void showInputFields(SQLQuery query, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
     String name = query.getName();
-    PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierDescriptionMap, resourceBundle);
+    PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
     Form form = new Form();
     addParametersToForm(form);
     form.add(presentationObject);
@@ -572,15 +571,16 @@ public class ReportQueryOverview extends Block {
     
     			
     	
-    	
-	private Map getModifiedIdentiferValueMap(Map identifierValueMap, IWContext iwc)	{
+   // parsing of the request      	
+	private Map getModifiedIdentiferValueMapByParsingRequest(Map identifierValueMap, Map  identifierInputDescriptionMap, IWContext iwc)	{
 		Map result = new HashMap();
 		Iterator iterator = identifierValueMap.keySet().iterator();
 		while (iterator.hasNext()) {
 			String key = (String) iterator.next();
 			if (iwc.isParameterSet(key))	{
-				String value = (String) iwc.getParameter(key);
-				result.put(key, value);
+				String[] value = iwc.getParameterValues(key);
+				// change to collection-based API
+				result.put(key, Arrays.asList(value));
 			}
 			else {
 				result.put(key, "");
@@ -628,7 +628,7 @@ public class ReportQueryOverview extends Block {
 				    	
     	
     	
-  private PresentationObject getInputFields(String queryName, Map identifierValueMap, Map identifierDescriptionMap, IWResourceBundle resourceBundle)	{
+  private PresentationObject getInputFields(String queryName, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
 
   	// create a nice headline for the confused user
   	String currentQuery = resourceBundle.getLocalizedString("ro_current_query", "Current Query");
@@ -646,11 +646,25 @@ public class ReportQueryOverview extends Block {
   		String key = (String) entry.getKey();
   		if (! USER_ACCESS_VARIABLE.equals(key) && 
   				!GROUP_ACCESS_VARIABLE.equals(key)) {
-	  		String description = (String) identifierDescriptionMap.get(key);
-	  		String value = (String) identifierValueMap.get(key);
-	  		TextInput textInput = new TextInput(key, value);
+	  		InputDescription inputDescription = (InputDescription) identifierInputDescriptionMap.get(key);
+	  		Object object = identifierValueMap.get(key);
+	  		String value = null;
+	  		if (object instanceof Collection) {
+	  			Iterator objectIterator = ((Collection) object).iterator();
+	  			//TODO thi remove hack, extend interface of inputhandler
+	  			while (objectIterator.hasNext()) {
+	  				value = (String) objectIterator.next();
+	  			}
+	  		}
+	  		else {
+	  			value = (String) object;
+	  		}
+	  		String inputHandlerClass = inputDescription.getInputHandler();
+	  		String description = inputDescription.getDescription();
+	  		InputHandler inputHandler = getInputHandler(inputHandlerClass);
+	  		PresentationObject input = (inputHandler != null) ? inputHandler.getHandlerObject(key, value, iwc) : new TextInput(key, value);
 	  		table.add(description, 1, i);
-	  		table.add(textInput, 2, i++);
+	  		table.add(input, 2, i++);
   		}
   	}
   	String okayText = resourceBundle.getLocalizedString("ro_okay", "Okay");
@@ -894,6 +908,28 @@ public class ReportQueryOverview extends Block {
 		}
   }
  	
+  private InputHandler getInputHandler(String className) {
+  	if (className == null) {
+  		return null;
+  	}
+  	InputHandler inputHandler = null;
+		try {
+			inputHandler = (InputHandler) Class.forName(className).newInstance();
+		}
+		catch (ClassNotFoundException ex) {
+			log(ex);
+			logError("[ReportOverview] Could not retrieve handler class");
+		}
+		catch (InstantiationException ex) {
+			log(ex);
+			logError("[ReportOverview] Could not instanciate handler class");
+		}
+		catch (IllegalAccessException ex) {
+			log(ex);
+			logError("[ReportOverview] Could not instanciate handler class");
+		}
+		return inputHandler;
+  }
 
 
 }

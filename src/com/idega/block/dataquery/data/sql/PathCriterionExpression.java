@@ -261,7 +261,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		return null;
 	}
 	
-	public Map getIdentifierDescriptionMap()	{
+	public Map getIdentifierInputDescriptionMap()	{
 		// never used because isDynamic returns always false
 		return null;
 	}

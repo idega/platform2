@@ -22,7 +22,7 @@ public class DirectSQLStatement implements DynamicExpression {
 	private String sqlStatement;
 	
 	private Map identifierValueMap = new HashMap();
-  private Map identifierDescriptionMap = new HashMap(); 
+  private Map identifierInputDescriptionMap = new HashMap(); 
   
   private Set keys;
   
@@ -32,7 +32,7 @@ public class DirectSQLStatement implements DynamicExpression {
   	sqlStatement = sqlPart.getStatement();
   	Map variableValueMap = sqlPart.getVariableValueMap();
   	identifierValueMap.putAll(variableValueMap);
-  	identifierDescriptionMap.putAll(sqlPart.getDescriptionValueMap());
+  	identifierInputDescriptionMap.putAll(sqlPart.getInputDescriptionValueMap());
   	keys = variableValueMap.keySet();
   }
 
@@ -57,8 +57,8 @@ public class DirectSQLStatement implements DynamicExpression {
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#getIdentifierDescriptionMap()
 	 */
-	public Map getIdentifierDescriptionMap() {
-		return identifierDescriptionMap;
+	public Map getIdentifierInputDescriptionMap() {
+		return identifierInputDescriptionMap;
 	}
 
 	/* (non-Javadoc)

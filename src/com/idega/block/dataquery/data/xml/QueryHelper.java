@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.idega.block.dataquery.data.Query;
 import com.idega.data.GenericEntity;
+import com.idega.util.datastructures.HashMatrix;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -43,6 +44,13 @@ public class QueryHelper {
 	private int step = 0;
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false, fieldsLock = false;
+	
+	// the matrix below is only used during the query builder process as a temporary value holder
+	// example: 
+	// a field (identified by path and name) has a (predefined) handler.
+	// if the user changes the handler of that field in the query builder the new value is first stored only in the matrix below,
+	// but when the query is saved the handler is stored in the query.
+	private HashMatrix entityFieldHandler = new HashMatrix();
 	
 	private QueryHelper previousQuery;
 	private QueryHelper nextQuery;
@@ -223,12 +231,19 @@ public class QueryHelper {
 
 		//	FIELD PART (STEP 3)
 		if (listOfFields != null && !listOfFields.isEmpty() && sqlPart == null) {
-			Iterator iter = listOfFields.iterator();
 			XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
-			if (fieldsLock)
+			if (fieldsLock) {
 				fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+			}
+			Iterator iter = listOfFields.iterator();
 			while (iter.hasNext()) {
-				fields.addContent(((QueryPart) iter.next()).getQueryElement());
+				// set inputhandler 
+				QueryFieldPart fieldPart = (QueryFieldPart) iter.next();
+				String inputHandler = (String) entityFieldHandler.get(fieldPart.getPath(),fieldPart.getName());
+				if (inputHandler != null) {
+					fieldPart.setHandlerClass(inputHandler);
+				}
+				fields.addContent(fieldPart.getQueryElement());
 			}
 			root.addContent(fields);
 			
@@ -492,13 +507,6 @@ public class QueryHelper {
 	}
 	
 	public void addHiddenField(QueryFieldPart field)	{
-		field.setHidden(false);
-		if (hasFieldPart(field)) {
-			// a visible field is already there and not hidden, do not change that field
-			field.setHidden(true);
-			return;
-		}
-		// add the hidden field
 		field.setHidden(true);
 		addField(field);
 	}
@@ -755,6 +763,14 @@ public class QueryHelper {
 
 	public QueryHelper nextQuery()	{
 		return nextQuery;
+	}
+	
+	public void setInputHandler(String entityPath, String field, String handlerClass) {
+		entityFieldHandler.put(entityPath, field, handlerClass);
+	}
+	
+	public String getInputHandler(String entityPath, String field) {
+		return (String) entityFieldHandler.get(entityPath, field);
 	}
 
 }

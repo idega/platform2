@@ -51,13 +51,13 @@ public class CriteriaExpression implements DynamicExpression {
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#getIdentifierDescriptionMap()
 	 */
-	public Map getIdentifierDescriptionMap() {
+	public Map getIdentifierInputDescriptionMap() {
 		Map resultMap = new HashMap();
 		Iterator iterator = idCriterionMap.values().iterator();
 		while(iterator.hasNext())	{
 			CriterionExpression expression = (CriterionExpression) iterator.next();
 			if (expression.isDynamic())	{
-				resultMap.putAll(expression.getIdentifierDescriptionMap());
+				resultMap.putAll(expression.getIdentifierInputDescriptionMap());
 			}
 		}
 		return resultMap;

@@ -169,10 +169,10 @@ public class SQLQuery implements DynamicExpression {
   	return myMap;
   }
   
-  public Map getIdentifierDescriptionMap()	{
-  	Map myMap = query.getIdentifierDescriptionMap();
+  public Map getIdentifierInputDescriptionMap()	{
+  	Map myMap = query.getIdentifierInputDescriptionMap();
   	if (hasPreviousQuery()) {
-  		myMap.putAll(previousQuery().getIdentifierDescriptionMap());
+  		myMap.putAll(previousQuery().getIdentifierInputDescriptionMap());
   	}
   	return myMap;
   }
@@ -440,7 +440,17 @@ public class SQLQuery implements DynamicExpression {
     QueryFieldPart field = getField(path, fieldName);
     return getUniqueNameForField(field);
   }
-    
+  
+  protected String getInputHandlerForField(String path, String fieldName) {
+  	QueryFieldPart field = getField(path, fieldName);
+  	return field.getHandlerClass();
+  }
+  
+  protected String getHandlerDescriptionForField(String path, String fieldName) {
+  	QueryFieldPart field = getField(path, fieldName);
+  	return field.getHandlerDescription();
+  }
+  
   protected String getUniqueNameForEntityByTableName(String tableName, String entityPath)	{
 		//TODO: thi add something else perhaps the name of that query to handle subqueries
 		String alias = (String) aliasMatrix.get(tableName, entityPath);

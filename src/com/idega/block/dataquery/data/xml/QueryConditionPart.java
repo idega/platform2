@@ -6,6 +6,10 @@
  */
 package com.idega.block.dataquery.data.xml;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.idega.data.IDOEntityDefinition;
@@ -32,7 +36,11 @@ public class QueryConditionPart implements QueryPart {
 	private String entity = null;
 	private String path = null;
 	private String type = null;
+	
 	private String pattern = null;
+	// variabe above xor variable below is set
+	private Collection patterns = null;
+	
 	private String description = null;
 	private boolean lock = false;
 	private boolean dynamic = false;
@@ -65,6 +73,17 @@ public class QueryConditionPart implements QueryPart {
 		this.description = description;
 	}
 	
+	public QueryConditionPart(int idNumber, String entity,String path, String field, String type, Collection patterns, String description) {
+		this(new StringBuffer(PREFIX).append(idNumber).toString(), entity, path, field, type, patterns, description);
+	}
+
+	
+	public QueryConditionPart(String id, String entity,String path, String field, String type, Collection patterns, String description){
+		this(id, entity, path, field, type, (String) null, description);
+		this.patterns = patterns;
+	}
+
+	
 	public QueryConditionPart(XMLElement xml){
 		id = xml.getAttribute(QueryXMLConstants.ID).getValue();
 		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
@@ -72,8 +91,17 @@ public class QueryConditionPart implements QueryPart {
 		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
 		type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()){
-			XMLElement xmlPattern = xml.getChild(QueryXMLConstants.PATTERN);
-			pattern = xmlPattern.getTextTrim();
+			List xmlPatterns = xml.getChildren(QueryXMLConstants.PATTERN);
+			Iterator iterator = xmlPatterns.iterator();
+			if (xmlPatterns.size() == 1) {
+				pattern = ((XMLElement) iterator.next()).getTextTrim();
+			}
+			else {
+				patterns = new ArrayList();
+				while (iterator.hasNext()) {
+					patterns.add(((XMLElement) iterator.next()).getTextTrim());
+				}
+			}
 			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
 			lock = xmlLock!=null;
 			XMLElement xmlDyna = xml.getChild(QueryXMLConstants.DYNAMIC);
@@ -90,9 +118,16 @@ public class QueryConditionPart implements QueryPart {
 		el.setAttribute(QueryXMLConstants.PATH, path);
 		el.setAttribute(QueryXMLConstants.FIELD,field);
 		el.setAttribute(QueryXMLConstants.TYPE,type);
-		XMLElement xmlPattern = new XMLElement(QueryXMLConstants.PATTERN);
-		xmlPattern.addContent(pattern);
-		el.addContent(xmlPattern);
+		if (patterns != null) {
+			Iterator iterator = patterns.iterator();
+			while (iterator.hasNext()) {
+				String singlePattern = (String) iterator.next();
+				addPattern(singlePattern, el);
+			}
+		}
+		else {
+			addPattern(pattern, el);
+		}
 		if (description != null) 	{
 			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.DESCRIPTION);
 			descriptionElement.addContent(description);
@@ -106,6 +141,14 @@ public class QueryConditionPart implements QueryPart {
 		return el;
 	}
 	
+	private void addPattern(String pattern, XMLElement el) {
+		XMLElement xmlPattern = new XMLElement(QueryXMLConstants.PATTERN);
+		xmlPattern.addContent(pattern);
+		el.addContent(xmlPattern);
+	}
+
+		
+		
 	/**
 	 * @return
 	 */
@@ -155,6 +198,11 @@ public class QueryConditionPart implements QueryPart {
 		return field;
 	}
 
+	public Collection getPatterns() {
+		return patterns;
+	}
+	
+	
 	/**
 	 * @return
 	 */
@@ -213,17 +261,43 @@ public class QueryConditionPart implements QueryPart {
 		buffer.append(path).append(';');
 		buffer.append(field).append(';');
 		buffer.append(type).append(';');
-		buffer.append(pattern).append(';');
+		if (patterns != null) {
+			Iterator iterator = patterns.iterator();
+			while (iterator.hasNext()) {
+				String singlePattern = (String) iterator.next();
+				buffer.append(singlePattern).append(';');
+			}
+		}
+		else {
+			buffer.append(pattern).append(';');
+		}
 		buffer.append(description);
 		return buffer.toString();
 	}
 	
 	public static QueryConditionPart decode(String encoded){
 		StringTokenizer toker = new StringTokenizer(encoded,";");
-		if(toker.countTokens()==7){
-			return new QueryConditionPart(toker.nextToken(), toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(), toker.nextToken());
+		int tokenNumber = toker.countTokens();
+		String id = toker.nextToken();
+		String entity = toker.nextToken();
+		String path = toker.nextToken();
+		String field = toker.nextToken();
+		String type = toker.nextToken();
+		if (tokenNumber == 7) {
+			String pattern = toker.nextToken();
+			String description = toker.nextToken();
+			return new QueryConditionPart(id, entity, path, field, type, pattern, description);
 		}
-		return null;
+		else {
+			List patterns = new ArrayList();
+			int counter = 6;
+			while (toker.hasMoreTokens() && counter < tokenNumber) {
+				patterns.add(toker.nextToken());
+				counter++;
+			}
+			String description = toker.nextToken();
+			return new QueryConditionPart(id, entity, path, field, type, patterns, description);
+		}
 	}
 	
 
@@ -241,6 +315,9 @@ public class QueryConditionPart implements QueryPart {
 		this.lock = locked;
 	}
 
+	public boolean hasMoreThanOnePattern() {
+		return patterns !=  null;
+	}
 
 	/**
 	 * @return

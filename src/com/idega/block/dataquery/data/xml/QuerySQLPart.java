@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.idega.block.dataquery.data.sql.InputDescription;
 import com.idega.xml.XMLElement;
 
 /**
@@ -27,11 +28,11 @@ public class QuerySQLPart implements QueryPart {
 	
 	private Map keyValueMap = new HashMap();
 	private Map keyTypeMap = new HashMap();
-	private Map keyDescriptionMap = new HashMap();
+	private Map keyInputDescriptionMap = new HashMap();
 	
 	private List  resultFieldOrder = new ArrayList();
 	private Map resultFieldTypeMap = new HashMap();
-	private Map resultDescriptionMap = new HashMap(); 
+	private Map resultInputDescriptionMap = new HashMap(); 
 	
 	public QuerySQLPart(String statement) {
 		this.statement = statement;
@@ -54,13 +55,17 @@ public class QuerySQLPart implements QueryPart {
 				String key = element.getChild(QueryXMLConstants.SQL_VARIABLE_KEY).getTextTrim();
 				String value = element .getChild(QueryXMLConstants.SQL_VARIABLE_VALUE).getTextTrim();
 				String description = element.getChild(QueryXMLConstants.SQL_VARIABLE_DESCRIPTION).getTextTrim();
-				setVariable(key, type, value, description);
+				String handler = element.getTextTrim(QueryXMLConstants.HANDLER);
+				String handlerDescription = element.getTextTrim(QueryXMLConstants.HANDLER_DESCRIPTION);
+				setVariable(key, type, value, description, handlerDescription, handler);
 			}
 			if (name.equals(QueryXMLConstants.SQL_RESULT))	{
 				String field = element.getChild(QueryXMLConstants.SQL_RESULT_FIELD).getTextTrim();
 				String type = element.getChild(QueryXMLConstants.SQL_RESULT_TYPE).getTextTrim();
 				String description = element.getChild(QueryXMLConstants.SQL_RESULT_DESCRIPTION).getTextTrim();
-				setField(field, type, description);
+				String handler = element.getTextTrim(QueryXMLConstants.HANDLER);
+				String handlerDescription = element.getTextTrim(QueryXMLConstants.HANDLER_DESCRIPTION);
+				setField(field, type, description, handlerDescription, handler);
 			}	
 		}
 	}
@@ -87,7 +92,7 @@ public class QuerySQLPart implements QueryPart {
 		while (fieldIterator.hasNext())	{
 			String field = (String) fieldIterator.next();
 			String type = (String) resultFieldTypeMap.get(field);
-			String description = (String) resultDescriptionMap.get(field); 
+			InputDescription inputDescription = (InputDescription) resultInputDescriptionMap.get(field); 
 			
 			XMLElement resultFieldElement = new XMLElement(QueryXMLConstants.SQL_RESULT);
 			
@@ -100,9 +105,22 @@ public class QuerySQLPart implements QueryPart {
 			resultFieldElement.addContent(typeElement);
 			
 			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.SQL_RESULT_DESCRIPTION);
-			descriptionElement.setText(description);
+			descriptionElement.setText(inputDescription.getDescription());
 			resultFieldElement.addContent(descriptionElement);
 			
+			String inputHandler = inputDescription.getInputHandler();
+			if (inputHandler != null) {
+				XMLElement inputHandlerElement = new XMLElement(QueryXMLConstants.HANDLER);
+				inputHandlerElement.setText(inputHandler);
+				resultFieldElement.addContent(inputHandlerElement);
+			}
+			
+			String handlerDescription = inputDescription.getHandlerDescription();
+			if (handlerDescription != null) {
+				XMLElement handlerDescriptionElement = new XMLElement(QueryXMLConstants.HANDLER_DESCRIPTION);
+				handlerDescriptionElement.setText(handlerDescription);
+				resultFieldElement.addContent(handlerDescriptionElement);
+			}
 			sqlElement.addContent(resultFieldElement);
 		}
 			
@@ -113,7 +131,7 @@ public class QuerySQLPart implements QueryPart {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
-			String description = (String) keyDescriptionMap.get(key);
+			InputDescription inputDescription = (InputDescription) keyInputDescriptionMap.get(key);
 			String type = (String) keyTypeMap.get(key);
 			
 			XMLElement variableElement = new XMLElement(QueryXMLConstants.SQL_VARIABLE);
@@ -131,9 +149,23 @@ public class QuerySQLPart implements QueryPart {
 			variableElement.addContent(valueElement);
 			
 			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.SQL_VARIABLE_DESCRIPTION);
-			descriptionElement.setText(description);
+			descriptionElement.setText(inputDescription.getDescription());
 			variableElement.addContent(descriptionElement);
 			
+			String inputHandler = inputDescription.getInputHandler();
+			if (inputHandler != null) {
+				XMLElement inputHandlerElement = new XMLElement(QueryXMLConstants.HANDLER);
+				inputHandlerElement.setText(inputHandler);
+				variableElement.addContent(inputHandlerElement);
+			}
+			
+			String handlerDescription = inputDescription.getHandlerDescription();
+			if (handlerDescription != null) {
+				XMLElement handlerDescriptionElement = new XMLElement(QueryXMLConstants.HANDLER_DESCRIPTION);
+				handlerDescriptionElement.setText(handlerDescription);
+				variableElement.addContent(handlerDescriptionElement);
+			}
+
 			sqlElement.addContent(variableElement);
 		}
 		return sqlElement;
@@ -155,20 +187,20 @@ public class QuerySQLPart implements QueryPart {
 		return keyValueMap;
 	}
 	
-	public Map getDescriptionValueMap()	{
-		return keyDescriptionMap;
+	public Map getInputDescriptionValueMap()	{
+		return keyInputDescriptionMap;
 	}
 	
-	public void setVariable(String key, String type,  String value, String description) {
+	public void setVariable(String key, String type,  String value, String description, String handlerDescription, String handler) {
 		keyTypeMap.put(key, type);
 		keyValueMap.put(key, value);
-		keyDescriptionMap.put(key, description);
+		keyInputDescriptionMap.put(key, new InputDescription(description, handler, handlerDescription));
 	}
 		
-	public void setField(String field, String type, String description)	{
+	public void setField(String field, String type, String description, String handlerDescription, String handler)	{
 		resultFieldOrder.add(field);
 		resultFieldTypeMap.put(field, type);
-		resultDescriptionMap.put(field,description);
+		resultInputDescriptionMap.put(field, new InputDescription(description, handler, handlerDescription));
 	}
 	
 	public List getFieldNames()	{
@@ -181,7 +213,8 @@ public class QuerySQLPart implements QueryPart {
 		while (iterator.hasNext())	{
 			String field = (String) iterator.next();
 			String type = (String) resultFieldTypeMap.get(field);
-			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type, false);
+			InputDescription inputDescription = (InputDescription) resultInputDescriptionMap.get(field);
+			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type, inputDescription.getInputHandler(), inputDescription.getHandlerDescription());
 			fields.add(fieldPart);
 		}
 		return fields;

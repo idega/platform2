@@ -59,10 +59,34 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 	}
 	
 		
+	public Collection getInputHandlerNames()	{
+		try {
+			ICObjectHome objectHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
+			Collection coll = objectHome.findAllByObjectType(ICObjectBMPBean.COMPONENT_TYPE_INPUTHANDLER);
+			ArrayList list = new ArrayList(coll.size());
+			for (Iterator iter = coll.iterator(); iter.hasNext();) {
+				ICObject ICObj = (ICObject) iter.next();
+        String className = ICObj.getClassName();
+	      list.add(className);
+			}
+			return list;
+		}
+		catch (IDOLookupException e) {
+			log(e);
+			log("[QueryService] Can't find ICObject home.");
+		}
+		catch (FinderException e) {
+			log(e);
+			log("[QueryService] Can't find InputHandler");
+		}
+		return null;
+	}
+
+	
 	/**
 	 * @return null if nothing found
 	 */
-	public Collection getSourceQueryEntityParts()throws RemoteException{
+	public Collection getSourceQueryEntityParts() {
 		try {
 			ICObjectHome objectHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
 			Collection coll = objectHome.findAllByObjectType(ICObjectBMPBean.COMPONENT_TYPE_DATA);
@@ -293,7 +317,7 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 	}
 	
 	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName, String path, EntityAttribute attribute){
-		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName(), false);
+		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
 	}
 	
 	

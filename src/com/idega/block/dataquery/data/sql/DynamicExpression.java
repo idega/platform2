@@ -17,7 +17,7 @@ public interface DynamicExpression extends Expression {
 	
 	public Map getIdentifierValueMap();
 	
-	public Map getIdentifierDescriptionMap();
+	public Map getIdentifierInputDescriptionMap();
 	
 	public void setIdentifierValueMap(Map identifierValueMap);
 	
