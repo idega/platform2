@@ -86,7 +86,7 @@ public abstract class BillingThread extends Thread{
 		this.iwc = iwc;
 	}
 	
-	public static String getBathRunSignatureKey () {
+	public static String getBatchRunSignatureKey () {
 		return BATCH_TEXT;
 	}
 

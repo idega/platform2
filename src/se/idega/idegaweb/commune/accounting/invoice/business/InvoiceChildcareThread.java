@@ -244,18 +244,18 @@ public class InvoiceChildcareThread extends BillingThread{
 					
 					//Moved up for better logging
 					//Get all the parameters needed to select the correct contract
-					SchoolClassMember schoolClassMember = null;
+					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
+					User child = null;
 					try{
-						schoolClassMember = contract.getSchoolClassMember();
+						child = schoolClassMember.getStudent();
+						errorRelated.append("Child "+contract.getChild().getName());
 					}catch (NullPointerException e){
 						throw new NoSchoolClassMemberException("");
 					}
-					User child = schoolClassMember.getStudent();
 //					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
-					String childcareType =schoolType.getLocalizationKey();
 					errorRelated.append("SchoolType "+schoolType.getName());
-					errorRelated.append("Child "+contract.getChild().getName());
+					String childcareType =schoolType.getLocalizationKey();
 					errorRelated.append("Child P# "+contract.getChild().getPersonalID());
 	
 					

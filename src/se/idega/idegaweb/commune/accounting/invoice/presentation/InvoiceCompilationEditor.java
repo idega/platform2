@@ -86,10 +86,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/12 09:28:54 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/14 08:19:29 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.114 $
+ * @version $Revision: 1.115 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -2023,14 +2023,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 	
 	private static boolean isManualRecord (final InvoiceRecord record) {
-		final String autoSignature = BillingThread.getBathRunSignatureKey ();
+		return true;
+		/* temporary application ordered by lotta - will be replaced by below soon
+		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
+		*/
 	}
 	
 	private Text getSmallSignature (final String string) {
 		final StringBuffer result = new StringBuffer ();
-		final String autoSignature = BillingThread.getBathRunSignatureKey ();
+		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		if (null != string) {
 			if (string.equals (autoSignature)) {
 				result.append (localize (string, string));

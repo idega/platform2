@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/13 07:40:32 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/14 08:19:29 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1111,14 +1111,17 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
 	
 	private static boolean isManualRecord (final PaymentRecord record) {
-		final String autoSignature = BillingThread.getBathRunSignatureKey ();
+		return true;
+		/* temporary application ordered by lotta - will be replaced by below soon
+		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
+		*/
 	}
 	
 	private Text getSmallSignature (final String string) {
 		final StringBuffer result = new StringBuffer ();
-		final String autoSignature = BillingThread.getBathRunSignatureKey ();
+		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		if (null != string) {
 			if (string.equals (autoSignature)) {
 				result.append (localize (string, string));
