@@ -414,7 +414,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     browser.setDefaultNumberOfRows(Math.min(entities.size(), 20));
     browser.setEntities("dummy_string", entities);
-    browser.setLinesBetween(true);
+    browser.setCellpadding(2);
+    browser.setCellspacing(0);
+    browser.setBorder(2);
     return browser;
   }
   
@@ -621,7 +623,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
       String text;
       if (shouldBeChecked) {
-        text = "=";
+        // black dot
+        text = String.valueOf('\u0087');
       }
       else {
         text = "_";

@@ -1453,8 +1453,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     try {
       manager.begin();
       // add work report group to work report 
-      WorkReport workReport = getWorkReportById(workReportID);
-      workReport.addLeague(newGroup);
+      if (newGroup != null) {
+        Collection coll = getLeaguesOfWorkReportById(workReportID);
+        if (! coll.contains(newGroup))  {
+          WorkReport workReport = getWorkReportById(workReportID);
+          workReport.addLeague(newGroup);
+        }
+      }
       if (oldGroup != null) {
         oldGroup.removeEntity(entity);
         oldGroup.store();
