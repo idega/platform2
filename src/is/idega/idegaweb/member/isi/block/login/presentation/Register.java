@@ -202,7 +202,7 @@ public class Register extends Block {
 		if(kt!=null) {
 			_kt = kt;
 		}
-		if(password==null) {
+		if(password==null || password.length()==0) {
 			return _iwrb.getLocalizedString("register.no_password", "No password entered");
 		}
 		if(!password.equals(passwordConfirmed)) {
