@@ -2,7 +2,7 @@ package com.idega.block.albumcollection.data;
 
 import com.idega.data.*;
 import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.Date;
 
 
 /**
@@ -17,6 +17,7 @@ import java.sql.Time;
 public class Album extends GenericEntity {
 
   public static final String _COLUMNNAME_NAME = "name";
+  public static final String _COLUMNNAME_DESCRIPTION = "description";
   public static final String _COLUMNNAME_NUMBER = "number";
   public static final String _COLUMNNAME_PUBLISHINGDAY = "publishingday";
   public static final String _COLUMNNAME_COVER_FRONT = "cover_front";
@@ -34,8 +35,9 @@ public class Album extends GenericEntity {
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(_COLUMNNAME_NAME,"Nafn",true,true,String.class,255);
+    this.addAttribute(_COLUMNNAME_DESCRIPTION,"Um plötuna",true,true,String.class,1000);
     this.addAttribute(_COLUMNNAME_NUMBER,"Númer",true,true,Integer.class);
-    this.addAttribute(_COLUMNNAME_PUBLISHINGDAY,"Útgáfudagur",true,true,java.sql.Time.class);
+    this.addAttribute(_COLUMNNAME_PUBLISHINGDAY,"Útgáfudagur",true,true,java.sql.Date.class);
     this.addAttribute(_COLUMNNAME_ALBUM_TYPE_ID,"Gerð",true,true,Integer.class,"one_to_many",AlbumType.class);
     this.addAttribute(_COLUMNNAME_COVER_FRONT,"Framhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
     this.addAttribute(_COLUMNNAME_COVER_BACK,"Bakhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
@@ -58,6 +60,15 @@ public class Album extends GenericEntity {
     setColumn(_COLUMNNAME_NAME, name);
   }
 
+  public String getDescription(){
+    return (String) getColumnValue(_COLUMNNAME_DESCRIPTION);
+  }
+
+  public void setDescription(String description){
+    setColumn(_COLUMNNAME_DESCRIPTION,description);
+  }
+
+
   public String getOrder(){
     return getStringColumnValue(_COLUMNNAME_NUMBER);
   }
@@ -66,13 +77,27 @@ public class Album extends GenericEntity {
     setColumn(_COLUMNNAME_NUMBER, order);
   }
 
-  public Time getPublishingDay(){
-    return (Time)this.getColumnValue(_COLUMNNAME_PUBLISHINGDAY);
+  public Date getPublishingDay(){
+    return (Date)this.getColumnValue(_COLUMNNAME_PUBLISHINGDAY);
   }
 
-  public void setPublishingDay(Time time){
-    this.setColumn(_COLUMNNAME_PUBLISHINGDAY,time);
+  public void setPublishingDay(Date date){
+    this.setColumn(_COLUMNNAME_PUBLISHINGDAY,date);
   }
+
+  public int getAlbumTypeId(){
+    return this.getIntColumnValue(_COLUMNNAME_ALBUM_TYPE_ID);
+  }
+
+  public void setAlbumTypeId(int id){
+    this.setColumn(_COLUMNNAME_ALBUM_TYPE_ID,id);
+  }
+
+  public void setAlbumTypeId(Integer id){
+    this.setColumn(_COLUMNNAME_ALBUM_TYPE_ID,id);
+  }
+
+
 
   public int getFrontCoverFileId(){
     return getIntColumnValue(_COLUMNNAME_COVER_FRONT);

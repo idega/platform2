@@ -48,5 +48,13 @@ public class Author extends GenericEntity {
     setColumn(_COLUMNNAME_NAME, name);
   }
 
+  public String getDisplayName(){
+    return getStringColumnValue(_COLUMNNAME_DISPLAY_NAME);
+  }
+
+  public void setDisplayName(String displayName){
+    setColumn(_COLUMNNAME_DISPLAY_NAME, displayName);
+  }
+
 
 }

@@ -45,4 +45,13 @@ public class Performer extends GenericEntity {
   public void setName(String name){
     setColumn(_COLUMNNAME_NAME, name);
   }
+
+  public String getDisplayName(){
+    return getStringColumnValue(_COLUMNNAME_DISPLAY_NAME);
+  }
+
+  public void setDisplayName(String displayName){
+    setColumn(_COLUMNNAME_DISPLAY_NAME, displayName);
+  }
+
 }
