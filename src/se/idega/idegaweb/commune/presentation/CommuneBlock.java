@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.presentation;
 
+import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
@@ -41,6 +42,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   private String smallErrorTextFontStyle = DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE;
 
   private IWResourceBundle iwrb = null;
+  private IBPage formResponsePage;
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -209,5 +211,13 @@ public class CommuneBlock extends com.idega.presentation.Block {
     Text t = new Text(s);
     t.setFontStyle(getSmallErrorTextFontStyle());
     return t;
+  }
+
+  public IBPage getResponsePage(){
+    return this.formResponsePage;
+  }
+
+  public void setResponsePage(IBPage page){
+    this.formResponsePage = page;
   }
 }
