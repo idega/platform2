@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/11 18:29:50 $ by $Author: laddi $
- * @version $Revision: 1.67 $
+ * Last modified: $Date: 2003/11/12 10:40:54 $ by $Author: goranb $
+ * @version $Revision: 1.68 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -880,8 +880,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	  */
 	 public Collection ejbHomeGetInvoiceIntervalTypes() {
 	 	String[] typeArr = { 	KEY_INVOICE_INTERVAL_VALUE_MONTH,
-										KEY_INVOICE_INTERVAL_VALUE_TERM,
 										KEY_INVOICE_INTERVAL_VALUE_QUARTER, 
+										KEY_INVOICE_INTERVAL_VALUE_TERM,
 										KEY_INVOICE_INTERVAL_VALUE_YEAR	};
 										
 		Vector typeVec = new Vector();
