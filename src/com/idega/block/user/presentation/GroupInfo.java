@@ -126,14 +126,12 @@ public class GroupInfo extends Block {
 		if(_showAddress) {
 			String address = null;
 			try {
-				Collection addresses = group.getAddresses(null);
-				if(addresses!=null && addresses.size()>0) {
-					address = emptyIfNull(((Address) addresses.iterator().next()).getName());
-				}
-			} catch(Exception e) {
-				System.out.println("Could not get an address for group");
+				address = _biz.getGroupAddress(iwc, group).getName();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			if(_showEmptyFields || (address!=null && address.length()>0)) {
 				String addressLabel = _iwrb.getLocalizedString("address", "Address: ");
 				addTextToTable(table, row++, addressLabel, address);
