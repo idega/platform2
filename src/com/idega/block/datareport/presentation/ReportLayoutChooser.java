@@ -495,6 +495,7 @@ public class ReportLayoutChooser extends Block {
       // execute sql statement
       // sqlStatement = "SELECT FIRST_NAME FROM IC_USER";
       List displayNames = query.getDisplayNames();
+      System.out.println("JASPERREPORT: "+sqlStatement);
       queryResult = bridge.executeStatement(sqlStatement, displayNames);
     }
     catch (RemoteException rm) {
