@@ -142,7 +142,7 @@ public class AccountTariffer extends Finance {
 			String SDiscount = iwc.getParameter(prmDiscount);
 			int discount = SDiscount != null && !SDiscount.equals("") ? Integer.parseInt(SDiscount) : -1;
 			System.out.println(discount);
-			AssessmentBusiness assBuiz = getAssessmentService(iwc);
+			//AssessmentBusiness assBuiz = getAssessmentService(iwc);
 			String[] qtys = iwc.getParameterValues(prmQuantity);
 			String[] ids = iwc.getParameterValues(prmTariffIds);
 			if (qtys != null && qtys.length > 0 && ids != null && qtys.length == ids.length) {

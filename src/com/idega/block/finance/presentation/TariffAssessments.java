@@ -265,7 +265,7 @@ public class TariffAssessments extends Finance {
 	}
 	
 	private void initDates(IWContext iwc){
-		IWCalendar cal = new IWCalendar();
+		//IWCalendar cal = new IWCalendar();
 		IWTimestamp Today = IWTimestamp.RightNow();
 	
 		IWTimestamp from = IWTimestamp.RightNow();
