@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.67 2005/01/17 15:44:08 anders Exp $
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.68 2005/01/19 08:11:06 anders Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/17 15:44:08 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/19 08:11:06 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -265,9 +265,9 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		return this.findByPrimaryKey(pk);
 	}
 	
-	public SchoolClassMember findNotTerminatedByStudentSeasonSchoolAndCategory(int studentId, SchoolSeason season, int schoolId, SchoolCategory category) throws FinderException {
+	public SchoolClassMember findNotTerminatedByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindNotTerminatedByStudentSeasonSchoolAndCategory(studentId, season, schoolId, category);
+		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindNotTerminatedByStudentSchoolAndCategory(studentId, schoolId, category);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}

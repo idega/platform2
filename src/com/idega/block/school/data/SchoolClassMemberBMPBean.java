@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/01/17 15:44:08 $ by $Author: anders $
- * @version $Revision: 1.127 $
+ *         Last modified: $Date: 2005/01/19 08:11:06 $ by $Author: anders $
+ * @version $Revision: 1.128 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -719,7 +719,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return (Integer) this.idoFindOnePKByQuery(query);
 	}
 	
-	public Integer ejbFindNotTerminatedByStudentSeasonSchoolAndCategory(int studentId, SchoolSeason season, int schoolId, SchoolCategory category) throws FinderException {
+	public Integer ejbFindNotTerminatedByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category) throws FinderException {
 		Table table = new Table(this);
 		Table typeTable = new Table(SchoolType.class);
 		Table schoolClassTable = new Table(SchoolClass.class);
@@ -736,7 +736,6 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		query.addCriteria(new MatchCriteria(schoolClassTable, SchoolClassBMPBean.SCHOOL, MatchCriteria.EQUALS, schoolId));
 		query.addCriteria(new MatchCriteria(typeTable, SchoolTypeBMPBean.SCHOOLCATEGORY, MatchCriteria.EQUALS, category));
 		Date today = new Date(System.currentTimeMillis());
-		query.addCriteria(new MatchCriteria(schoolClassTable, SchoolClassBMPBean.SEASON, MatchCriteria.EQUALS, season));
 		Criteria a = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.GREATER, today);
 		Criteria b = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.IS, MatchCriteria.NULL);
 		query.addCriteria(new OR(a, b));
