@@ -6,10 +6,10 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.data.IDOException;
-import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
@@ -593,7 +593,7 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 			throws FinderException {
 		try {
 			return idoFindPKsBySQL(getSQLBySubjectAndStatus(subjectID, status,
-					null, false), numberOfRecords, startingIndex);
+					order, false), numberOfRecords, startingIndex);
 		} catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());
 		}
@@ -611,6 +611,7 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 
 		Table campusApplication = new Table(this, "c");
 		Table application = new Table(Application.class, "a");
+		Table applicant = new Table(Applicant.class,"b");
 
 		SelectQuery query = new SelectQuery(campusApplication);
 		query.setAsCountQuery(count);
@@ -621,6 +622,7 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 			query.addColumn(new WildCardColumn());
 
 		query.addJoin(campusApplication, application);
+		query.addJoin(application,applicant);
 		if (subjectID != null && subjectID.intValue() > 0)
 			query.addCriteria(new MatchCriteria(new Column(application,
 					ApplicationBMPBean.getSubjectIdColumnName()),
@@ -629,8 +631,8 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 			query.addCriteria(new MatchCriteria(new Column(application,
 					ApplicationBMPBean.getStatusColumnName()),
 					MatchCriteria.EQUALS, status));
-		if (order != null)
-			query.addOrder(application, order, true);
+		if (order != null && !count)
+			query.addOrder(applicant, order, true);
 		return query.toString();
 	}
 
