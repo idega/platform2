@@ -323,6 +323,7 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   public boolean deleteBlock(int ICObjectInstanceId) {
-    return CategoryBusiness.disconnectBlock(ICObjectInstanceId);
+    //return super.removeInstanceCategories();
+    return CategoryBusiness.getInstance().disconnectBlock(ICObjectInstanceId);
   }
 }
