@@ -1,5 +1,6 @@
 package com.idega.block.datareport.data;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import dori.jasper.engine.design.JasperDesign;
@@ -37,7 +38,7 @@ public class DesignBox {
 	 * @return Returns the parameterMap.
 	 */
 	public Map getParameterMap() {
-		return parameterMap;
+		return (parameterMap == null) ? new HashMap(0) : parameterMap;
 	}
 
 	/**

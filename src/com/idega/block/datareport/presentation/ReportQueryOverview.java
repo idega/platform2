@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,7 +57,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.StringAlphabeticalComparator;
-import com.idega.util.datastructures.QueueMap;
 
 import dori.jasper.engine.JRException;
 import dori.jasper.engine.JasperPrint;
@@ -93,6 +93,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   public static final String DESIGN_LAYOUT_KEY = "design_layout_key";
   public static final String NAME_KEY = "name_key";
   public static final String GROUP_NAME_KEY = "group_name_key";
+  public static final String IS_PRIVATE_KEY = "is_private_key";
   
   public static final String VALUES_COMMITTED_KEY = "value_committed_key";
   public static final String SHOW_LIST_KEY = "show_list_key";
@@ -246,7 +247,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
 		}
   	Collection parentGroups = new ArrayList();
-  	parentGroups.add(topGroup);
   	try {
   		// bad implementation in GroupBusiness
   		// null is returned instead of an empty collection
@@ -264,7 +264,19 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	//List queryRepresentations = new ArrayList();
   	//To keep them ordered alphabetically
 	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
-	
+		// add own queries
+	  String topGroupName = topGroup.getName();
+ 		String usersPrivateFolderName = getPrivateQueryFolderNameForGroup(topGroup);
+ 		ICFile usersPrivateFolderFile = getFile(usersPrivateFolderName);
+ 		if (usersPrivateFolderFile != null) {
+ 			getQueriesFromFolder(usersPrivateFolderFile, queryRepresentations, topGroupName, true, true);
+ 		}
+ 		String usersPublicFolderName = getPublicQueryFolderNameForGroup(topGroup);
+ 		ICFile usersPublicFolderFile = getFile(usersPublicFolderName);
+ 		if (usersPublicFolderFile != null) {
+ 			getQueriesFromFolder(usersPublicFolderFile, queryRepresentations, topGroupName, false, true);
+ 		} 		
+		// add public queries
   	Iterator parentGroupsIterator = parentGroups.iterator();
   	while (parentGroupsIterator.hasNext()) {
   		Group group = (Group) parentGroupsIterator.next();
@@ -274,43 +286,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   		ICFile folderFile = getFile(publicFolderName);
   		
   		if (folderFile != null) {
-  			// bad implementation:
-  			// if the children list is empty null is returned. 
-  			//TODO: thi: change the implementation
-  			Iterator iterator = folderFile.getChildren();
-  			if (iterator == null) {
-  				iterator = (new ArrayList(0)).iterator();
-  			}
-  			while (iterator.hasNext())	{
-  				ICTreeNode node = (ICTreeNode) iterator.next();
-  				int id = node.getNodeID();
-  				String name = node.getNodeName();
-				int countOfSameName = 2;
-				
-				boolean alreadyAddedKey = queryRepresentations.containsKey(name);
-				if(alreadyAddedKey){
-					String newName = name;
-					while(alreadyAddedKey){
-						//probably crappy code its 4am and i dead tired - Eiki
-						//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
-						newName = new String(name+countOfSameName);
-						alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
-						countOfSameName++;
-					}
-					name = newName;
-				}
-  				
-				
-  				// show only the query with a specified id if desired 
-  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
-  					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
-  					queryRepresentations.put(name,representation);
-  				}
-  			}
+  			getQueriesFromFolder(folderFile, queryRepresentations, groupName, false, false);
   		}
   	}
-  	
-  	
   	Form form = new Form();
   	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, form);
   	addParametersToBrowser(browser);
@@ -330,6 +308,47 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	add(form);
   }
   	
+  	private void getQueriesFromFolder(ICFile folderFile, TreeMap queryRepresentations, String groupName, boolean isPrivate, boolean belongsToUser) { 
+			// bad implementation:
+			// if the children list is empty null is returned. 
+			//TODO: thi: change the implementation
+			Iterator iterator = folderFile.getChildren();
+			if (iterator == null) {
+				iterator = (new ArrayList(0)).iterator();
+			}
+			while (iterator.hasNext())	{
+				ICTreeNode node = (ICTreeNode) iterator.next();
+				int id = node.getNodeID();
+				String name = node.getNodeName();
+			int countOfSameName = 2;
+			
+			boolean alreadyAddedKey = queryRepresentations.containsKey(name);
+			if(alreadyAddedKey){
+				String newName = name;
+				while(alreadyAddedKey){
+					//probably crappy code its 4am and i dead tired - Eiki
+					//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
+					newName = new String(name+countOfSameName);
+					alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
+					countOfSameName++;
+				}
+				name = newName;
+			}
+				
+			
+				// show only the query with a specified id if desired 
+				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+					QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
+					queryRepresentations.put(name,representation);
+				}
+			}  
+  	}
+
+	protected String getPrivateQueryFolderNameForGroup(Group group) {
+	String privateFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("private").toString();
+	return privateFolderName;
+}
+ 
 	protected String getPublicQueryFolderNameForGroup(Group group) {
 	String publicFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("public").toString();
 	return publicFolderName;
@@ -417,16 +436,17 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
 		ButtonConverter excelConverter = new ButtonConverter(bundle.getImage("/shared/xls.gif"));
 
-		browser.setMandatoryColumnWithConverter(1, DELETE_KEY, new CheckBoxConverter(DELETE_KEY));
+		browser.setMandatoryColumnWithConverter(1, DELETE_KEY, new DeleteCheckBox(DELETE_KEY));
 		browser.setMandatoryColumn(2, NAME_KEY);
 		browser.setMandatoryColumn(3, GROUP_NAME_KEY);
-		browser.setMandatoryColumnWithConverter(4, DESIGN_LAYOUT_KEY, dropDownLayoutConverter);
+		browser.setMandatoryColumn(4, IS_PRIVATE_KEY);
+		browser.setMandatoryColumnWithConverter(5, DESIGN_LAYOUT_KEY, dropDownLayoutConverter);
 		
-		browser.setMandatoryColumnWithConverter(5, HTML_KEY, htmlConverter);
-		browser.setMandatoryColumnWithConverter(6, PDF_KEY, pdfConverter);
-		browser.setMandatoryColumnWithConverter(7, EXCEL_KEY, excelConverter);
+		browser.setMandatoryColumnWithConverter(6, HTML_KEY, htmlConverter);
+		browser.setMandatoryColumnWithConverter(7, PDF_KEY, pdfConverter);
+		browser.setMandatoryColumnWithConverter(8, EXCEL_KEY, excelConverter);
 		
-//		browser.setMandatoryColumnWithConverter(8, EDIT_QUERY_KEY, editQueryConverter);
+//		browser.setMandatoryColumnWithConverter(9, EDIT_QUERY_KEY, editQueryConverter);
 		return browser;
 	}		
   		
@@ -437,7 +457,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			
 			public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc)	{
 				if (optionMap == null) {
-					optionMap = new QueueMap();
+					optionMap = new LinkedHashMap();
 					optionMap.put("-1", "dynamic");
 					if(designFolder!=null){
 		  				Iterator iterator = designFolder.getChildren();
@@ -504,7 +524,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	    		query.setIdentifierValueMap(modifiedValues);
 	    		// show result of query
 	    		List executedSQLStatements = new ArrayList();
-	    		boolean isOkay = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
+	    		errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
 	    		
 	    		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
 	    			addExecutedSQLQueries(executedSQLStatements);
@@ -521,11 +541,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 				}
 					
 	    		debug(queryExecuted.toString());
-	    		//
-	    		
-	    		if (! isOkay)	{
-	    			errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
-	    		}	
+	    			    			
 	     		// show again the input fields
 	     		if (errorMessage != null)	{
 	     			addErrorMessage(errorMessage);
@@ -547,11 +563,8 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	    //
 	    else {
 	    	List executedSQLStatements = new ArrayList();
-	    	boolean isOkay = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
+	    	errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
 	    	addExecutedSQLQueries(executedSQLStatements);
-	    	if (! isOkay)	{
-	    		errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
-	    	}
 	    }
 		}
 		// show list if query is not dynamic and if an error occurred
@@ -592,12 +605,12 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	}
 
 	
-	private boolean executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLQueries, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
+	private String executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLQueries, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
 		QueryResult queryResult = bridge.executeQueries(query, executedSQLQueries);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{
 			// nothing to do
-			return false;
+			return resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 		}
 		// get design
 		JasperReportBusiness reportBusiness = getReportBusiness();
@@ -606,6 +619,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     Map designParameters = new HashMap();
     designParameters.put(REPORT_HEADLINE_KEY, query.getName());
     JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, designBox);
+    if (print == null) {
+    	return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
+    }
     // create html report
     String uri;
     String format = (String) parameterMap.get(CURRENT_OUTPUT_FORMAT);
@@ -622,7 +638,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     //getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
 	//openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
     getParentPage().setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
-    return true;
+    return null;
 	}
     
 	private DesignBox getDesignBox(SQLQuery query, JasperReportBusiness reportBusiness, IWResourceBundle resourceBundle, IWContext iwc) {
@@ -920,11 +936,15 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	private int id;
   	private String name;
   	private String groupName;
+  	private boolean belongsToUser;
+  	private boolean isPrivate;
   	
-  	public QueryRepresentation(int id, String name, String groupName)	{
+  	public QueryRepresentation(int id, String name, String groupName, boolean isPrivate, boolean belongsToUser)	{
   		this.id = id;
   		this.name = name;
   		this.groupName = groupName;
+  		this.belongsToUser = belongsToUser;
+  		this.isPrivate = isPrivate;
   	}
   	
 		public Object getColumnValue(String columnName) {
@@ -934,12 +954,20 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			else if (GROUP_NAME_KEY.equals(columnName))	{
 				return groupName;
 			} 
+			else if (IS_PRIVATE_KEY.equals(columnName)) {
+				return isPrivate ? "X" : "";
+			}
 			return name;
 		}
   
  		public Object getPrimaryKey() {
  			return new Integer(id);
  		}
+ 		
+ 		public boolean belongsToUser() {
+ 			return belongsToUser;
+ 		}
+ 		
   }
   
   // link to query builder converter
@@ -1001,6 +1029,24 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		return inputHandler;
   }
 
+  class DeleteCheckBox extends CheckBoxConverter {
+  	
+  	public DeleteCheckBox(String name) {
+  		super(name);
+  	}
+  	
+	  public PresentationObject getPresentationObject(
+	    Object entity,
+	    EntityPath path,
+	    EntityBrowser browser,
+	    IWContext iwc) { 
+	  	if (((QueryRepresentation) entity).belongsToUser()) {
+	  		return super.getPresentationObject(entity, path, browser, iwc);
+	  	}
+	  	// return checkbox if query  
+	  	return Text.emptyString();
+	  }
+  }
 
 }
 

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +32,7 @@ import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
 
@@ -81,6 +84,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     dataSource.resetDataSource(); // resets only the DataSource functionality (sets the pointer to the first row)
     try {
     	Map map = designBox.getParameterMap();
+    	map.putAll(parameterMap);
     	JasperDesign design = designBox.getDesign();
       print = getReport(dataSource, map, design);
     }
@@ -306,7 +310,17 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   	
   	Map parameterMap = new HashMap();
   	
-  	DynamicReportDesign design = new DynamicReportDesign("GeneratedDesign");
+  	DynamicReportDesign design = DynamicReportDesign.getInstanceThatShowsDateAndUser("GeneratedDesign");
+  	// add date 
+  	Date date = new Date();
+  	String pattern = "dd.MM.yyyy, HH:mm";
+  	SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+  	String formatedDate = dateFormat.format(date);
+  	parameterMap.put(DynamicReportDesign.PRM_DATE, formatedDate);
+  	// add user
+  	User user = iwc.getCurrentUser();
+  	String userName = user.getName();
+  	parameterMap.put(DynamicReportDesign.PRM_USER, userName);
   	//set title
   	String queryName = query.getName();
   	parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME, queryName);
@@ -317,7 +331,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		totalWidth = ((columnSpacing + columnWidth) * fields.size())  - columnSpacing;
   	}
   	design.setColumnWidth(totalWidth);
-  	design.setPageWidth(columnWidth + pageMargin + pageMargin);
+  	design.setPageWidth(totalWidth + pageMargin + pageMargin);
   	// set fields
   	Iterator fieldIterator = fields.iterator();
   	while (fieldIterator.hasNext()) {

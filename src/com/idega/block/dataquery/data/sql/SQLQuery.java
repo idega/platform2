@@ -43,6 +43,8 @@ public class SQLQuery implements DynamicExpression {
   
   private String name;
   
+  private String uniqueIdentifier;
+  
   private String postStatement = null;
   
   // tablename : path : number
@@ -111,11 +113,12 @@ public class SQLQuery implements DynamicExpression {
   protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery) {
   	this.previousQuery = previousQuery;
   	this.counter = counter;
+  	this.uniqueIdentifier = uniqueIdentifier;
   	name = queryHelper.getName();
   	// add all already existing table names
   	beanClassNameTableNameMap.putAll(queryTablesNames);
   	entityQueryEntity.putAll(entityQueryEntityMap);
-  	// create table name for this instance
+  	// create table name for this instance (unique identifier is user id) 
   	String myTableName = new StringBuffer("Q_").append(uniqueIdentifier).
   	append("_").append(++counter).toString();
   	// add the table name for this instance to the map
@@ -281,8 +284,10 @@ public class SQLQuery implements DynamicExpression {
   		String identifier = Integer.toString(++counter);
   		setFields(queryHelper);
   		// set post statement
-  		postStatement = querySQLPart.getPostStatement();
-  		return new DirectSQLStatement(querySQLPart, identifier, this);
+  		DirectSQLStatement statement =  new DirectSQLStatement(querySQLPart, identifier, uniqueIdentifier, this);
+  		postStatement = statement.getPostStatement();
+  		// byebye
+  		return statement;
   	}
   	// no direct sql !
     

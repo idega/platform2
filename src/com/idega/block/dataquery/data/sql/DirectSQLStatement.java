@@ -19,21 +19,27 @@ import com.idega.util.StringHandler;
  */
 public class DirectSQLStatement implements DynamicExpression {
 	
+	static public final String UNIQUE_IDENTIFIER = "UNIQUE_IDENTIFIER"; 
+	
 	private String sqlStatement;
+	
+	private String uniqueIdentifier;
+	
+	private String postStatement; 
 	
 	private Map identifierValueMap = new HashMap();
   private Map identifierInputDescriptionMap = new HashMap(); 
   
   private Set keys;
   
-  private Map keyValueMap = new HashMap();
-  
-  public DirectSQLStatement(QuerySQLPart sqlPart, Object identifier, SQLQuery sqlQuery)	{
+  public DirectSQLStatement(QuerySQLPart sqlPart, Object identifier, String uniqueIdentifier, SQLQuery sqlQuery)	{
   	sqlStatement = sqlPart.getStatement();
   	Map variableValueMap = sqlPart.getVariableValueMap();
   	identifierValueMap.putAll(variableValueMap);
   	identifierInputDescriptionMap.putAll(sqlPart.getInputDescriptionValueMap());
   	keys = variableValueMap.keySet();
+  	this.uniqueIdentifier = uniqueIdentifier.toString();
+  	postStatement = sqlPart.getPostStatement();
   }
 
 	public void setSQLStatement(String sqlStatement) 	{
@@ -73,7 +79,7 @@ public class DirectSQLStatement implements DynamicExpression {
 	 */
 	public String toSQLString() {
 		Iterator iterator = identifierValueMap.entrySet().iterator();
-		String result = sqlStatement;
+		String result = StringHandler.replace(sqlStatement, UNIQUE_IDENTIFIER, uniqueIdentifier);
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
@@ -83,6 +89,10 @@ public class DirectSQLStatement implements DynamicExpression {
 			}
 		}
 		return result;
+	}
+	
+	public String getPostStatement() {
+		return (postStatement == null) ? null : StringHandler.replace(postStatement, UNIQUE_IDENTIFIER, uniqueIdentifier);
 	}
 		
 	/* (non-Javadoc)

@@ -63,7 +63,7 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 	public void setXmlFileID(int i){
 		xmlFileID = i;
 	}
-	public ICFile storeQuery(String name,int folderID)  throws IOException {
+	public ICFile storeQuery(String name,int folderID, boolean isPrivate)  throws IOException {
 		XMLData data = XMLData.getInstanceWithoutExistingFile();
 		if(xmlFileID>0){
 			data.setXmlFileId(xmlFileID);
@@ -85,10 +85,10 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 			groupType.add("general");
 			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType, getUserContext());
 		}
-
+		String suffix  = (isPrivate) ? "_private" : "_public";
 		String groupName = group.getPrimaryKey().toString();
 		if(folderID>0 && query !=null) {
-			String folderName = new StringBuffer(groupName).append("_public").toString();
+			String folderName = new StringBuffer(groupName).append(suffix).toString();
 			ICFile subFolder = getFile(folderName);
 			if (subFolder == null) {
 				try {
@@ -111,7 +111,7 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 	private ICFile getFile(String name)	{
   	try {
       ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByFileName(name);
+      ICFile file = home.findByFileName(name);
       return file;
     }
     catch(RemoteException ex){
@@ -132,18 +132,19 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 		}
 	}
 	
-  private ICFile getNewXMLFile()  {
-    try {
-      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile xmlFile = (ICFile) home.create();
-      return xmlFile;
-    }
-    // FinderException, RemoteException
-    catch (Exception ex)  {
-      throw new RuntimeException("[XMLData]: Message was: " + ex.getMessage());
-    }
-    
-  }
+// unused method	
+//  private ICFile getNewXMLFile()  {
+//    try {
+//      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+//      ICFile xmlFile = (ICFile) home.create();
+//      return xmlFile;
+//    }
+//    // FinderException, RemoteException
+//    catch (Exception ex)  {
+//      throw new RuntimeException("[XMLData]: Message was: " + ex.getMessage());
+//    }
+//    
+//  }
 	
 	
 	
