@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.12 2005/01/05 07:28:10 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.13 2005/02/08 12:17:13 anna Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -31,6 +31,7 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.app.UserApplication;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -39,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
@@ -176,7 +177,7 @@ public class MeetingReport extends MeetingFeeBlock {
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.congregation", "Congregation")), 1, row);
 		table.add(congregMenu, 2, row++);
-		// table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.speaker","Speaker")),1,row);
+		// table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.chairman","Chairman")),1,row);
 		table.setHeight(row++, 12);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_location", "Meeting location")), 1, row++);
@@ -292,10 +293,20 @@ public class MeetingReport extends MeetingFeeBlock {
 		table.setCellspacing(0);
 		table.setColumns(6);
 		int row = 1;
-	
+	  
+		//vi›bætt
+		Group parish = null;
+		Collection supervisors = null;
+		//vi›bætt
+		
 		String congregation = null;
+		
 		try {
-			congregation = getUserBusiness(iwc).getGroupBusiness().getGroupByGroupID(Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_CONGREGATION))).getName();
+			//vi›bætt
+			parish = getUserBusiness(iwc).getGroupBusiness().getGroupByGroupID(Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_CONGREGATION)));
+			supervisors = parish.getChildGroups(new String[]{"supervisor"}, true);
+			//vi›bætt
+			congregation = parish.getName();
 		}
 		catch (RemoteException re) {
 			log(re);
@@ -306,9 +317,8 @@ public class MeetingReport extends MeetingFeeBlock {
 		catch (NumberFormatException nfe) {
 			log(nfe);
 		}
+		//String userName = iwc.getCurrentUser().getName();
 		
-		String userName = iwc.getCurrentUser().getName();
-
 		boolean inCommune = new Boolean(iwc.getParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION)).booleanValue();
 		String location = null;
 		if (inCommune) {
@@ -317,6 +327,18 @@ public class MeetingReport extends MeetingFeeBlock {
 		else {
 			location = getResourceBundle().getLocalizedString("meeting.fee.outside_commune", "Outside commune");
 		}
+		
+		//vi›bætt	
+		if (supervisors != null) {
+			
+			String supervisorName = null; 
+			Iterator iterator = supervisors.iterator();
+			if (iterator.hasNext()) {
+			User superv = (User) iterator.next();
+			supervisorName = superv.getName();
+			}	
+		//vi›bætt
+			
 		
 		IWTimestamp meetingDate = new IWTimestamp(iwc.getParameter(PARAMETER_MEETING_FEE_DATE));
 		String comment = iwc.getParameter(PARAMETER_MEETING_FEE_COMMENT);
@@ -328,7 +350,9 @@ public class MeetingReport extends MeetingFeeBlock {
 		
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.speaker","Speaker")),1,row);
-		table.add(getText(userName), 2, row++); 
+		//NB! UserName should show the name of the supervisor of the same group as this user belongs to!!!
+		table.add(getText(supervisorName), 2, row++);
+		//table.add(getText(userName), 2, row++); 
 		table.setHeight(row++, 12);
 		
 		table.mergeCells(2, row, table.getColumns(), row);
@@ -376,7 +400,7 @@ public class MeetingReport extends MeetingFeeBlock {
 
 			table.add(getAmount(iwc, user), 6, row++);
 		}
-
+		}
 		table.setCellpaddingLeft(1, 0);
 
 		return table;
