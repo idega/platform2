@@ -54,9 +54,11 @@ public class CommuneUserTagMap extends HashMap {
         peer.setContent(user.getPersonalID());
         put(peer.getAlias(), peer);   
         
-        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.BIRTHDATE);
-        peer.setContent(user.getDateOfBirth().toString());
-        put(peer.getAlias(), peer);        
+        if(user.getDateOfBirth()!=null){
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.BIRTHDATE);
+        	peer.setContent(user.getDateOfBirth().toString());
+        	put(peer.getAlias(), peer);        
+        }
                
         if(ub!=null){
         	try{

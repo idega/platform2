@@ -130,6 +130,14 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		return super.ejbFindAllCasesByUser(user);
 	}
 	
+	public Collection ejbFindPrintedMessages()throws FinderException,RemoteException{
+		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusReady()));
+	}
+	
+	public Collection ejbFindUnPrintedMessages()throws FinderException,RemoteException{
+		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusOpen()));
+	}
+	
 	public Collection ejbFindPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException,RemoteException {
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusReady(),from,to);
 		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());

@@ -13,10 +13,12 @@ public interface DocumentBusiness extends com.idega.business.IBOService
  public int getPrintedLettersCountByStatusAndType(java.lang.String p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getPrintedLettersCountByType(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection getPrintedMessages(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection getPrintedMessages(java.lang.String p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome getSystemArchivationMessageHome() throws java.rmi.RemoteException;
  public int getUnPrintedDefaultLettersCount()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int[] getUnPrintedLettersIDs(java.lang.String p0) throws java.rmi.RemoteException;
  public java.util.Collection getUnPrintedMessages(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection getUnPrintedMessages(java.lang.String p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public int getUnPrintedPasswordLettersCount()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getUnprintedLettersCountByType(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getUnprintedMessagesCountByType(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;

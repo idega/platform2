@@ -99,22 +99,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
       int action = parseAction(iwc);
       switch(action){
       	case ACTION_VIEW_MESSAGE_OVERVIEW:
-      		//viewMessageOverview(iwc);
       		viewMessages(iwc);
       		break;
         case ACTION_VIEW_MESSAGE_LIST:
           viewMessages(iwc);
           break;
-        case ACTION_VIEW_MESSAGE:
-          viewMessage(iwc);
-          break;
-        case ACTION_SHOW_DELETE_INFO:
-          showDeleteInfo(iwc);
-          break;
-        case ACTION_DELETE_MESSAGE:
-          deleteMessage(iwc);
-          viewMessages(iwc);
-        	break;
         case ACTION_PRINT_UNPRINTED_MESSAGES:
           printAllUnPrintedMessages(iwc);
           viewMessages(iwc);
@@ -207,8 +196,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
   private void printAllUnPrintedMessages(IWContext iwc)throws Exception{
 	int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
-	//getDocumentBusiness(iwc).printAllUnPrintedLetters(userID,currentType);
-	Collection unPrintedLetters = getDocumentBusiness(iwc).getPrintedLetterMessageHome().findUnPrintedLettersByType(currentType);
+	Collection unPrintedLetters = getDocumentBusiness(iwc).getUnPrintedMessages(currentType);
 	getDocumentBusiness(iwc).writeBulkPDF(unPrintedLetters,iwc.getCurrentUser(),"BulkLetterPDF",iwc.getApplicationSettings().getDefaultLocale(),currentType);
   }
   
@@ -495,177 +483,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		
 		
   	
-  }
-
-  private void viewMessageOverview(IWContext iwc)throws Exception{
-
-	if ( iwc.isLoggedOn() ) {
-	   add(getLocalizedHeader("printdoc.letters", "Letters for printing"));
-		//messageList.skip();
-	}
-	else{
-	    add(getLocalizedHeader("printdoc.not_logged_on", "You must be logged on to use this function"));
-	}
-  }
-
-
-  private void viewMessageList(IWContext iwc)throws Exception{
-    add(getLocalizedHeader("printdoc.pending_letters", "Pending letters for printout"));
-    add(new Break(2));
-
-    Form f = new Form();
-    Table table = new Table(1,3);
-    table.setWidth(Table.HUNDRED_PERCENT);
-    table.setCellpaddingAndCellspacing(0);
-    f.add(table);
-
-    ColumnList messageList = new ColumnList(4);
-    table.add(messageList,1,1);
-    messageList.setWidth(Table.HUNDRED_PERCENT);
-    messageList.setBackroundColor("#e0e0e0");
-    messageList.setHeader(localize("printdoc.subject","Subject"),1);
-    messageList.setHeader(localize("printdoc.date","Date"),2);
-    messageList.setHeader(localize("printdoc.for_user","For user"),3);
-
-    if ( iwc.isLoggedOn() ) {
-    	MessageBusiness messageBusiness = getMessageBusiness(iwc);
-    	User user = iwc.getCurrentUser();
-	    Collection messages = messageBusiness.getUnPrintedLetterMessages();
-	    Link subject = null;
-	    Text date = null;
-	    CheckBox deleteCheck = null;
-	    boolean isRead = false;
-	    DateFormat dateFormat = com.idega.util.CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
-
-	    if ( messages != null ) {
-	    	Vector messageVector = new Vector(messages);
-	    	Collections.sort(messageVector,new MessageComparator());
-		    Iterator iter = messageVector.iterator();
-		    while (iter.hasNext()) {
-		      Message msg = (Message)iter.next();
-		      User owner = msg.getOwner();
-		      Text tOwnerName = getSmallText(owner.getName());
-		      Date msgDate = new Date(msg.getCreated().getTime());
-
-		      isRead = getMessageBusiness(iwc).isMessageRead(msg);
-		      subject = new Link(msg.getSubject());
-		      subject.addParameter(PARAM_VIEW_MESSAGE,"true");
-		      subject.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-		      if ( !isRead )
-		      	subject.setBold();
-		      date = this.getSmallText(dateFormat.format(msgDate));
-		      if ( !isRead )
-		      	date.setBold();
-		      deleteCheck = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-
-		      messageList.add(subject);
-		      messageList.add(date);
-		      messageList.add(tOwnerName);
-		      messageList.add(deleteCheck);
-		    }
-	    }
-
-	    Table submitTable = new Table(3,1);
-	    submitTable.setCellpaddingAndCellspacing(0);
-	    submitTable.setWidth(2,1,"6");
-	    table.add(submitTable,1,3);
-
-	    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("printdoc.delete", "Delete", iwc),PARAM_SHOW_DELETE_INFO,"true");
-	    deleteButton.setAsImageButton(true);
-	    submitTable.add(deleteButton,1,1);
-
-    }
-
-    add(f);
-  }
-
-  private void viewMessage(IWContext iwc)throws Exception{
-    Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID),iwc);
-    getMessageBusiness(iwc).markMessageAsRead(msg);
-
-    add(getLocalizedHeader("printdoc.message","Message"));
-    add(new Break(2));
-    add(getLocalizedText("printdoc.from","From"));
-    add(getText(": "));
-    //add(getLink(msg.getSenderName()));
-    add(new Break(2));
-    add(getLocalizedText("printdoc.date","Date"));
-    add(getText(": "+(new IWTimestamp(msg.getCreated())).getLocaleDate(iwc)));
-    add(new Break(2));
-    add(getLocalizedText("printdoc.subject","Subject"));
-    add(getText(": "+msg.getSubject()));
-    add(new Break(2));
-    add(getText(msg.getBody()));
-
-    add(new Break(2));
-    Table t = new Table();
-    t.setWidth(Table.HUNDRED_PERCENT);
-    t.setAlignment(1,1,"right");
-    Link l = getLocalizedLink("printdoc.back", "Back");
-    l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-    l.setAsImageButton(true);
-    t.add(l,1,1);
-    add(t);
-  }
-
-  private void showDeleteInfo(IWContext iwc)throws Exception{
-    String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
-    int msgId = 0;
-    int nrOfMessagesToDelete = 0;
-    if(ids!=null){
-      nrOfMessagesToDelete = ids.length;
-      msgId = Integer.parseInt(ids[0]);
-    }
-
-    if(nrOfMessagesToDelete==1){
-      add(getLocalizedHeader("printdoc.delete_message","Delete message"));
-    }else{
-      add(getLocalizedHeader("printdoc.delete_messages","Delete messages"));
-    }
-    add(new Break(2));
-
-    String s = null;
-    if(nrOfMessagesToDelete==0){
-      s = localize("printdoc.no_messages_to_delete","No messages selected. You have to mark the message(s) to delete.");
-    }else if(nrOfMessagesToDelete==1){
-      Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
-      s = localize("printdoc.one_message_to_delete","Do you really want to delete the message with subject: ")+msg.getSubject()+"?";
-    }else{
-      s = localize("printdoc.messages_to_delete","Do you really want to delete the selected messages?");
-    }
-
-    Table t = new Table(1,5);
-    t.setWidth(Table.HUNDRED_PERCENT);
-    t.add(getText(s),1,1);
-    t.setAlignment(1,1,"center");
-    if(nrOfMessagesToDelete==0){
-      Link l = getLocalizedLink("printdoc.back","back");
-      l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-      l.setAsImageButton(true);
-      t.add(l,1,4);
-    }else{
-      Link l = getLocalizedLink("printdoc.ok","OK");
-      l.addParameter(PARAM_DELETE_MESSAGE,"true");
-      for(int i=0; i<ids.length; i++){
-        l.addParameter(PARAM_MESSAGE_ID,ids[i]);
-      }
-      l.setAsImageButton(true);
-      t.add(l,1,4);
-      t.add(getText(" "),1,4);
-      l = getLocalizedLink("printdoc.cancel","Cancel");
-      l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-      l.setAsImageButton(true);
-      t.add(l,1,4);
-    }
-    t.setAlignment(1,4,"center");
-    add(t);
-  }
-
-  private void deleteMessage(IWContext iwc)throws Exception{
-    String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
-    for(int i=0; i<ids.length; i++){
-      //getMessageBusiness(iwc).deleteUserMessage(Integer.parseInt(ids[i]));
-    }
   }
 
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.25 2002/12/31 13:52:32 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.26 2002/12/31 17:04:37 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -71,7 +71,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			return (MessageHome) this.getIDOHome(UserMessage.class);
 		}
 		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
-			return (MessageHome) this.getIDOHome(SystemArchivationMessage.class);
+			return getSystemArchivationMessageHome();
 		}
 		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
 			return getPrintedLetterMessageHome();
@@ -84,6 +84,15 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	protected PrintedLetterMessageHome getPrintedLetterMessageHome()throws RemoteException{
 		try{
 			return (PrintedLetterMessageHome) this.getIDOHome(PrintedLetterMessage.class);
+		}
+		catch(RemoteException rme){
+			throw new IBORuntimeException(rme);	
+		}
+	}
+	
+	protected SystemArchivationMessageHome getSystemArchivationMessageHome()throws RemoteException{
+		try{
+			return (SystemArchivationMessageHome) this.getIDOHome(SystemArchivationMessage.class);
 		}
 		catch(RemoteException rme){
 			throw new IBORuntimeException(rme);	

@@ -8,8 +8,8 @@ public class SystemArchivationMessageHomeImpl extends com.idega.data.IDOFactory 
  }
 
 
- public SystemArchivationMessage create() throws javax.ejb.CreateException{
-  return (SystemArchivationMessage) super.createIDO();
+ public Message create() throws javax.ejb.CreateException{
+  return (Message) super.createIDO();
  }
 
 
@@ -34,8 +34,22 @@ public java.util.Collection findUnPrintedMessages(com.idega.util.IWTimestamp p0,
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
- public SystemArchivationMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (SystemArchivationMessage) super.findByPrimaryKeyIDO(pk);
+public java.util.Collection findPrintedMessages()throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SystemArchivationMessageBMPBean)entity).ejbFindPrintedMessages();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findUnPrintedMessages()throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SystemArchivationMessageBMPBean)entity).ejbFindUnPrintedMessages();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+ public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+  return (Message) super.findByPrimaryKeyIDO(pk);
  }
 
 
