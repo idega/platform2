@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl2.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: TextControl2.java,v 1.2 2001/06/14 20:27:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,9 +27,9 @@ public class TextControl2 extends TextControl {
       T.setBorder(0);
       //T.setAlignment("CENTER");
 
-    Link L = new Link("Reglur um notkun Garðsbúðar","/regulations.jsp");
+    Link L = new Link("Reglur um notkun Garðsbúðar","/main/regulations.jsp");
     L.addParameter(strAction,ACT1);
-    Link L2 = new Link("Úthlutunarreglur","/regulations.jsp");
+    Link L2 = new Link("Úthlutunarreglur","/main/regulations.jsp");
     L2.addParameter(strAction,ACT2);
 
     Text texti = new Text("Reglur fyrir Garðana");
