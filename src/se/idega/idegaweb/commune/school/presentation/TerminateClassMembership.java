@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/02/05 15:15:36 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/24 12:17:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -68,6 +68,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	public static final String MEMBER_KEY = PREFIX + "member";
 	private static final String MEMBERSHIPOF_DEFAULT = "Placeringen av ";
 	private static final String MEMBERSHIPOF_KEY = PREFIX + "membershipOf";
+	private static final String ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY = PREFIX + "only_unended_placements_searchable";
 	private static final String PROVIDERNOTFOUND_DEFAULT
 		= "Anordnare ej funnen i databas";
 	private static final String PROVIDERNOTFOUND_KEY
@@ -302,8 +303,11 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 		searchForm.setOnSubmit("return checkInfoForm()");
 		searchForm.add (searcher);
 		table.add (searchForm, 1, 1);
-		
-		if (null != foundUser) {
+		if (null == foundUser) {
+			final String message = localize (ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY,
+																			 ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY);
+			table.add (getSmallText (message), 1, 2);
+		} else {
 			// exactly one user found - display user and termination form
 			final Table terminateTable = new Table ();
 			terminateTable.add (getStudentTable (context, foundUser), 1, 2);
@@ -313,7 +317,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 													 TERMINATEMEMBERSHIP_DEFAULT), 1, 3);
 			final Form terminateForm = new Form ();
 			terminateForm.add (terminateTable);
-			table.add (terminateForm, 1, 1);
+			table.add (terminateForm, 1, 3);
 		}
 		return table;
 	}
