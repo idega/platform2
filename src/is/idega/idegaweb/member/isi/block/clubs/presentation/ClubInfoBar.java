@@ -106,20 +106,20 @@ public class ClubInfoBar extends Block {
 			
 		});
 		
+		String divName = division.getShortName();
+	    if (divName == null || divName.equals("")) {
+		    divName = division.getName();
+		}
 		CSSMenu topLevelMenu;
 		if(divisionInfoPageId!=null) {
-		    String divName = division.getShortName();
-		    if (divName == null || divName.equals("")) {
-			    divName = division.getName();
-			}
 		    Link link = new Link(divName);
 			link.setPage(Integer.parseInt(divisionInfoPageId));
 			if(_callingDomain!=null && _callingDomain.length()>0) {
 				link.setHostname(_callingDomain);
 			}
-			topLevelMenu = menuBar.createCSSMenu(division.getName(), link);
+			topLevelMenu = menuBar.createCSSMenu(divName, link);
 		} else {
-			topLevelMenu = menuBar.createCSSMenu(division.getName());
+			topLevelMenu = menuBar.createCSSMenu(divName);
 		}
 		menuBar.add(topLevelMenu);
 		
