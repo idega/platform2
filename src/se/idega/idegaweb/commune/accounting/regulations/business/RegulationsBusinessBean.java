@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.34 2003/10/03 15:18:31 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.35 2003/10/04 22:43:56 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -143,7 +143,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		if (conditionOrder.length() == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_ORDER_EMPTY, "Villkorsordning saknas!");			
 		}
-	
 		try {
 			home = (RegulationHome) IDOLookup.getHome(Regulation.class);
 
@@ -158,10 +157,18 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 			
 			if (amount.length() != 0) {
-				amountVal = Integer.parseInt(amount);
+				try {
+					amountVal = Integer.parseInt(amount);
+				} catch ( NumberFormatException e) {
+					amountVal = 0;
+				}
 			}
 			if (discount.length() != 0) {
-				discountVal = Float.parseFloat(discount);
+				try {
+					discountVal = Float.parseFloat(discount);
+				} catch ( NumberFormatException e) {
+					discountVal = 0;
+				}
 			}
 			
 			conditionOrderID = conditionOrder.length() != 0 ? new Integer(conditionOrder) : null;  
