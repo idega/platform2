@@ -1608,7 +1608,13 @@ public class HotelBookingForm extends BookingForm {
 
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
-
+    String key = iwc.getParameter(this.parameterPriceCategoryKey);
+		String count2Chk = iwc.getParameter(parameterCountToCheck);
+		if (count2Chk != null) {
+			try {
+				iMany = Integer.parseInt(count2Chk);
+			}catch (Exception e){}
+		}
 
     String sOnline = iwc.getParameter(this.parameterOnlineBooking);
     boolean onlineOnly = false;
@@ -1622,19 +1628,21 @@ public class HotelBookingForm extends BookingForm {
 
     ProductPrice[] pPrices = {};
     if (tFrame == null) {
-      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly);
+      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly, key);
     }else {
-      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), -1, onlineOnly);
+      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), -1, onlineOnly, key);
     }
     
-    int current = 0;
-    for (int i = 0; i < pPrices.length; i++) {
-      try {
-        current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
-      }catch (NumberFormatException n) {
-        current = 0;
-      }
-      iMany += current;
+    if ( iMany == 0) {
+	    int current = 0;
+	    for (int i = 0; i < pPrices.length; i++) {
+	      try {
+	        current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
+	      }catch (NumberFormatException n) {
+	        current = 0;
+	      }
+	      iMany += current;
+	    }
     }
 
 		if (!bookIfTooFew && iMany < 1) {
@@ -1693,18 +1701,7 @@ public class HotelBookingForm extends BookingForm {
 						fromStamp.addDays(1);	    			
 	    		}
 
-					if (supplier != null) {
-						totalRooms = hotel.getNumberOfUnits();
-						if (totalRooms < 1) {
-							ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-							ServiceDay sDay = sDayHome.create();
-							sDay = sDay.getServiceDay(_product.getID() , fromStamp.getDayOfWeek());
-			  
-							if (sDay != null) {
-								totalRooms = sDay.getMax();
-							}
-						}
-					}else if (_reseller != null) {
+					if (_reseller != null) {
 						Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
 						if (cont != null) {
 							totalRooms = cont.getAlotment();
@@ -1721,6 +1718,18 @@ public class HotelBookingForm extends BookingForm {
 								}
 							}
 						}	
+					}
+					else {
+						totalRooms = hotel.getNumberOfUnits();
+						if (totalRooms < 1) {
+							ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+							ServiceDay sDay = sDayHome.create();
+							sDay = sDay.getServiceDay(_product.getID() , fromStamp.getDayOfWeek());
+			  
+							if (sDay != null) {
+								totalRooms = sDay.getMax();
+							}
+						}
 					}
 
 					if (totalRooms > 0) {
@@ -1804,5 +1813,9 @@ public class HotelBookingForm extends BookingForm {
 		throws RemoteException, IDOException {
 
 	}
+	
+	public String getPriceCategorySearchKey() {
+		return HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY;
+	}	
 
 }
