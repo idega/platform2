@@ -23,27 +23,21 @@ public class RunGroupMap extends MultivaluedHashMap {
 	 */
 	public Object put(Object key, Object value) {
 		Collection values = getCollection(key);
-		boolean containsOne = false;
 		if (values == null) {
 			values = new TreeSet(new RunResultsComparator());
-			containsOne = true;
 		}
 		values.add(value);
 		
 		Counter counter = new Counter();
-		if (containsOne) {
-			int index = 0;
-			Iterator iter = values.iterator();
-			while (iter.hasNext()) {
-				Run element = (Run) iter.next();
-				if (index < 3) {
-					counter.addSeconds(element.getRunTime());
-				}
-				index++;
+		
+		int index = 0;
+		Iterator iter = values.iterator();
+		while (iter.hasNext()) {
+			Run element = (Run) iter.next();
+			if (index < 3) {
+				counter.addSeconds(element.getRunTime());
 			}
-		}
-		else {
-			counter.addSeconds(((Run) value).getRunTime());
+			index++;
 		}
 		
 		((RunGroup) key).setCounter(counter);
