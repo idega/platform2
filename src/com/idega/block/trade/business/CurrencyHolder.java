@@ -29,6 +29,7 @@ public static final String SDR = "XDR";
 public static final String EURO = "EUR";
 
 private String currencyName_ = null;
+private String currencyAbbreviation_ = null;
 private float buyValue_ = -1;
 private float sellValue_ = -1;
 private float middleValue_ = -1;
@@ -64,6 +65,9 @@ private int currencyID_ = -1;
     timestamp_ = timestamp;
   }
 
+  public void setCurrencyAbbreviation(String abbreviation) {
+    currencyAbbreviation_ = abbreviation;
+  }
 
   /* Getters */
   public int getCurrencyID() {
@@ -88,6 +92,10 @@ private int currencyID_ = -1;
 
   public IWTimestamp getTimestamp() {
     return timestamp_;
+  }
+
+  public String getCurrencyAbbreviation() {
+    return currencyAbbreviation_;
   }
 
 }

@@ -9,27 +9,19 @@ package com.idega.block.trade.business;
  * @version 1.0
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.Collections;
-import com.idega.data.EntityBulkUpdater;
-import com.idega.io.FileGrabber;
-import com.idega.util.IWTimestamp;
-import com.idega.util.FileUtil;
-import com.idega.util.text.TextSoap;
-import com.idega.xml.XMLDocument;
-import com.idega.xml.XMLElement;
-import com.idega.xml.XMLException;
-import com.idega.xml.XMLParser;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWBundle;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import java.io.*;
+import java.rmi.*;
+import java.util.*;
+
+
 import com.idega.block.trade.data.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.util.*;
+import com.idega.util.text.*;
+import com.idega.xml.*;
 
 public class CurrencyBusiness {
 
@@ -56,32 +48,34 @@ public class CurrencyBusiness {
 	public static HashMap currencyMap;
 	public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 
-	public static void getCurrencyMap(IWBundle bundle) {
+	public static void getCurrencyMap(IWBundle bundle) throws RemoteException{
 		IWTimestamp stamp = new IWTimestamp();
 		file = null;
-		
+
 		try {
 			String path = bundle.getResourcesRealPath() + FileUtil.getFileSeparator() + filterSource;
 			fileString = FileUtil.getStringFromFile(path);
 		}
 		catch (IOException e) {
+                  e.printStackTrace(System.err);
 			fileString = null;
 		}
-		
+
 		String url = null;
 		String currency_name = null;
 		String buy_value = null;
 		String sell_value = null;
 		String middle_value = null;
-		
+
 		if ( fileString != null ) {
 			try {
+                          /** @todo setja Abbreviation inn */
 				url = (String) TextSoap.FindAllBetween(fileString, siteURL, siteEndURL).firstElement();
-				currency_name = (String) TextSoap.FindAllBetween(fileString,currency,currencyEnd).firstElement();	
-				buy_value = (String) TextSoap.FindAllBetween(fileString,buyValue,buyEndValue).firstElement();	
-				sell_value = (String) TextSoap.FindAllBetween(fileString,sellValue,sellEndValue).firstElement();	
-				middle_value = (String) TextSoap.FindAllBetween(fileString,middleValue,middleEndValue).firstElement();	
-				defaultCurrency = (String) TextSoap.FindAllBetween(fileString,currencyDefault,currencyDefaultEnd).firstElement();	
+				currency_name = (String) TextSoap.FindAllBetween(fileString,currency,currencyEnd).firstElement();
+				buy_value = (String) TextSoap.FindAllBetween(fileString,buyValue,buyEndValue).firstElement();
+				sell_value = (String) TextSoap.FindAllBetween(fileString,sellValue,sellEndValue).firstElement();
+				middle_value = (String) TextSoap.FindAllBetween(fileString,middleValue,middleEndValue).firstElement();
+				defaultCurrency = (String) TextSoap.FindAllBetween(fileString,currencyDefault,currencyDefaultEnd).firstElement();
 			}
 			catch (Exception e) {
 			}
@@ -128,14 +122,21 @@ public class CurrencyBusiness {
 				currencyMap.put(holder.getCurrencyName(), holder);
 			}
 			addDefaultCurrency();
-			saveCurrencyValuesToDatabase();
+
+                        saveCurrencyValuesToDatabase();
 		}
 		else {
 			getValuesFromDatabase();
 		}
 
-		if (getCurrencyHolder(defaultCurrency) == null) {
-			addDefaultCurrency();
+		if (getCurrencyHolder(defaultCurrency) == null && currencyMap != null) {
+			CurrencyHolder defaultHolder = new CurrencyHolder();
+			defaultHolder.setCurrencyName(defaultCurrency);
+                        defaultHolder.setCurrencyAbbreviation(defaultCurrency);
+			defaultHolder.setBuyValue(1);
+			defaultHolder.setSellValue(1);
+			defaultHolder.setMiddleValue(1);
+			currencyMap.put(holder.getCurrencyName(), defaultHolder);
 		}
 
 		System.out.println("Default currency: " + defaultCurrency);
@@ -168,8 +169,6 @@ public class CurrencyBusiness {
 	}
 
 	public static void addDefaultCurrency() {
-		if ( currencyMap == null )
-			currencyMap = new HashMap();
 		CurrencyHolder holder = new CurrencyHolder();
 		holder.setCurrencyName(defaultCurrency);
 		holder.setBuyValue(1);
@@ -178,7 +177,7 @@ public class CurrencyBusiness {
 		currencyMap.put(holder.getCurrencyName(), holder);
 	}
 
-	public static void saveCurrencyValuesToDatabase() {
+	public static void saveCurrencyValuesToDatabase() throws RemoteException {
 		if (currencyMap != null) {
 			EntityBulkUpdater bulk = new EntityBulkUpdater();
 			IWTimestamp stamp = new IWTimestamp();
@@ -223,21 +222,45 @@ public class CurrencyBusiness {
 		}
 	}
 
-	public static HashMap saveCurrenciesToDatabase() {
+	public static HashMap saveCurrenciesToDatabase() throws RemoteException {
 		EntityBulkUpdater bulk = new EntityBulkUpdater();
 		Currency currency = null;
 		boolean execute = false;
 
+                String currAbbr;
+                CurrencyHome home = (CurrencyHome) IDOLookup.getHome(CurrencyHome.class);
+                boolean update;
+
 		Iterator iter = currencyMap.keySet().iterator();
 		HashMap map = getValuesFromDB();
 		while (iter.hasNext()) {
-			CurrencyHolder holder = (CurrencyHolder) currencyMap.get((String) iter.next());
+                  currAbbr = (String) iter.next();
+			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currAbbr);
 			if (holder != null && !map.containsKey(holder.getCurrencyName())) {
-				currency = ((com.idega.block.trade.data.CurrencyHome) com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
-				currency.setCurrencyAbbreviation(holder.getCurrencyName());
-				currency.setCurrencyName(holder.getCurrencyName());
-				bulk.add(currency, bulk.insert);
-				execute = true;
+                          try {
+                            currency = home.getCurrencyByAbbreviation(holder.getCurrencyAbbreviation());
+                            update = true;
+                            if (currency == null) {
+                              currency = home.create();
+                              update = false;
+                            }
+
+                            currency.setCurrencyAbbreviation(holder.getCurrencyName());
+                            currency.setCurrencyName(holder.getCurrencyName());
+                            if (update) {
+                              System.out.println("[CurrencyBusiness] Updating existing currency : "+currency.getCurrencyName()+" (id: "+currency.getID()+")");
+                              bulk.add(currency, bulk.update);
+                            }else {
+                              System.out.println("[CurrencyBusiness] Creating new currency : "+currency.getCurrencyName());
+                              bulk.add(currency, bulk.insert);
+                            }
+
+                            execute = true;
+                          }catch (FinderException fe) {
+                            fe.printStackTrace(System.err);
+                          }catch (CreateException ce) {
+                            ce.printStackTrace(System.err);
+                          }
 			}
 		}
 
@@ -276,6 +299,8 @@ public class CurrencyBusiness {
 					holder = new CurrencyHolder();
 					holder.setBuyValue(value.getBuyValue());
 					holder.setCurrencyName(currency.getCurrencyAbbreviation());
+                                        holder.setCurrencyAbbreviation(currency.getCurrencyAbbreviation());
+                                        holder.setCurrencyID(currency.getID());
 					holder.setMiddleValue(value.getMiddleValue());
 					holder.setSellValue(value.getSellValue());
 					map.put(holder.getCurrencyName(), holder);
