@@ -39,7 +39,7 @@ public class AccountUserBMPBean extends UserBMPBean implements AccountUser{
 	    String first = nm.getFirstName();
 	    String middle = nm.getMiddleName();
 	    String last = nm.getLastName();
-	    if(first != null || middle !=null || last !=null){
+	    if(first != null || middle !=null || last !=null || pid!=null){
 	      sql.append(" where ");
 	      if(first!=null &&  !"".equals(first)){
 	        if(!isfirst)
