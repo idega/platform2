@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -988,6 +989,26 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		try {
 			UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
 			userStatusService.setUserAsDeceased(userID,deceasedDate);
+			// remove custodian relations
+			MemberFamilyLogic familyService = getMemberFamilyLogic();
+			User currentUser = getUser(userID);
+			try {
+				Collection custodyChildren = familyService.getChildrenInCustodyOf(currentUser);
+				if(custodyChildren!=null && !custodyChildren.isEmpty()){
+					for (Iterator iter = custodyChildren.iterator(); iter.hasNext();) {
+						User child = (User) iter.next();
+						System.out.println("removing custodian "+currentUser.getName()+" for "+child.getName());
+						familyService.removeAsCustodianFor(currentUser,child);
+						
+					}
+				}
+			}
+			catch (NoChildrenFound e1) {
+				
+			}
+			catch (RemoveException e1) {
+				e1.printStackTrace();
+			}
 			return true;
 		}
 		catch (RemoteException e) {
