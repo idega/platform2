@@ -32,6 +32,13 @@ public java.util.Collection findByUser(com.idega.user.data.User p0)throws javax.
 	return theReturn;
 }
 
+public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((SchoolUserBMPBean)entity).ejbHomeFindBySchool(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public java.lang.Object getSchoolUserId(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.lang.Object theReturn = ((SchoolUserBMPBean)entity).ejbHomeGetSchoolUserId(p0,p1,p2);

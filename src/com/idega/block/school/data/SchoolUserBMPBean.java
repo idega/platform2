@@ -130,6 +130,19 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return this.idoFindIDsBySQL(sql.toString());		
 	}
 	
+	public Collection ejbHomeFindBySchool(School school) throws FinderException {
+		IDOQuery sql = idoQuery();
+			sql.appendSelect()
+			 .append("*")
+			 .appendFrom()
+			 .append(TABLE_NAME)
+			 .appendWhere()
+			 .append(COLUMN_NAME_SCHOOL_ID)
+			 .appendEqualSign()
+			 .append(school.getPrimaryKey().toString());
+		return this.idoFindIDsBySQL(sql.toString());			
+	}
+	
 	public Object ejbHomeGetSchoolUserId(School school, User user, int userType) throws FinderException{
 		IDOQuery sql = idoQuery();
 			sql.appendSelect()
