@@ -29,6 +29,7 @@ import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneType;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.GroupBusiness;
@@ -106,7 +107,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			Date dateFromFilter,
 			Date dateToFilter,
 			Collection divisionsFilter,
-			Collection groupsFilter)
+			Collection groupsFilter,
+			String personalIDFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -177,7 +179,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //then iterate the map and insert into the final report collection.
 		
 		 String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
-		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter, personalIDFilter);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
 		 //Iterating through reports and creating report data
@@ -240,7 +242,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 	 reportCollection.addAll(datas);
 		 }
 	
-		 ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField };
+		 ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, nameField, personalIDField, entryDateField };
 		 Comparator comparator = new FieldsComparator(sortFields);
 		 Collections.sort(reportCollection, comparator);
 		 
@@ -255,7 +257,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			Date dateFromFilter,
 			Date dateToFilter,
 			Collection divisionsFilter,
-			Collection groupsFilter)
+			Collection groupsFilter,
+			String personalIDFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -312,17 +315,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
 		reportCollection.addField(paymentTypeField);
 		
-		ReportableField sentField = new ReportableField(FIELD_NAME_SENT, String.class);
-		sentField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SENT, "Sent"), currentLocale);
-		reportCollection.addField(sentField);
-		
 		//Gathering data	 
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
 	
 		String[] types = {FinanceEntryBMPBean.TYPE_PAYMENT };
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter, personalIDFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		Group division = null;
 		Group group = null;
@@ -354,7 +353,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			}
 			paymentType = financeEntry.getPaymentType();
 			if (paymentType != null)
-				paymentTypeString = paymentType.getName();
+				paymentTypeString = _iwrb.getLocalizedString(paymentType.getLocalizationKey(), paymentType.getName());
 			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
@@ -366,7 +365,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
 			data.addData(paymentTypeField, paymentTypeString );
-			data.addData(sentField, "" );
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
@@ -383,7 +381,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField};
+		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, nameField, personalIDField, entryDateField};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
@@ -398,7 +396,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			Date dateFromFilter,
 			Date dateToFilter,
 			Collection divisionsFilter,
-			Collection groupsFilter)
+			Collection groupsFilter,
+			String personalIDFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -473,13 +472,12 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then iterate the map and insert into the final report collection.
 		
 		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter, personalIDFilter);
 		Map financeEntriesByPersons = new TreeMap();
 		Group division = null;
 		Group group = null;
 		User user = null;
 		ClubTariffType tariffType = null;
-		Phone phone = null;
 		//Iterating through reports and creating report data 
 		
 		Iterator iter = finEntries.iterator();
@@ -505,17 +503,12 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
+				phoneNumber = getPhoneNumber(user);
 			}
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
 				tariffTypeString = tariffType.getName();
-			Collection phones = user.getPhones();
-			Iterator phIt =	phones.iterator();
-			while (phIt.hasNext()) {
-				phone = (Phone) phIt.next();
-				if (phone!=null)
-					phoneNumber = phone.getNumber();
-			}
+
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
@@ -545,7 +538,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {nameField, divisionField, groupField, entryDateField };
+		ReportableField[] sortFields = new ReportableField[] {nameField, personalIDField, divisionField, groupField, entryDateField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
@@ -560,7 +553,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			Date dateFromFilter,
 			Date dateToFilter,
 			Collection divisionsFilter,
-			Collection groupsFilter)
+			Collection groupsFilter,
+			String personalIDFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -631,7 +625,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then iterate the map and insert into the final report collection.
 		
 		String[] types = null;
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter, personalIDFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data 
@@ -639,7 +633,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		Group group = null;
 		User user = null;
 		ClubTariffType tariffType = null;
-		Phone phone = null;
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
@@ -663,17 +656,12 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
+				phoneNumber = getPhoneNumber(user);
 			}
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
 				tariffTypeString = tariffType.getName();
-			Collection phones = user.getPhones();
-			Iterator phIt =	phones.iterator();
-			while (phIt.hasNext()) {
-				phone = (Phone) phIt.next();
-				if (phone!=null)
-					phoneNumber = phone.getNumber();
-			}
+			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
@@ -702,8 +690,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		Comparator dateComparator = new DateComparator();
-		ReportableField[] sortFields = new ReportableField[] {divisionField, entryDateField, groupField, personalIDField };
-		Comparator[] comparators = new Comparator[] {null, dateComparator, null, null};
+		ReportableField[] sortFields = new ReportableField[] {divisionField, entryDateField, groupField, nameField, personalIDField };
+		Comparator[] comparators = new Comparator[] {null, dateComparator, null, null, null};
 		Comparator comparator = new FieldsComparator(sortFields, comparators);
 		Collections.sort(reportCollection, comparator);
 		
@@ -717,7 +705,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	public ReportableCollection getLatePaymentListByDivisionsGroupsAndDateIntervalFiltering(
 			Collection divisionsFilter,
 			Collection groupsFilter,
-			String order)
+			String order,
+			String personalIDFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -788,7 +777,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then iterate the map and insert into the final report collection.
 		
 		String[] types = null;
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByPaymentDateDivisionsAndGroups(club, types, divisionsFilter, groupsFilter);
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByPaymentDateDivisionsAndGroups(club, types, divisionsFilter, groupsFilter, personalIDFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data 
@@ -798,7 +787,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		User user = null;
 		AssessmentRound assmRnd = null;
 		ClubTariffType tariffType = null;
-		Phone phone = null;
 		
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
@@ -822,19 +810,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				if (personalID != null && personalID.length() == 10) {
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
+				phoneNumber = getPhoneNumber(user);
 			}
 			assmRnd = financeEntry.getAssessmentRound();
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
 				tariffTypeString = tariffType.getName();
-			Collection phones = user.getPhones();
-			Iterator phIt =	phones.iterator();
-			while (phIt.hasNext()) {
-				phone = (Phone) phIt.next();
-				if (phone!=null)
-					phoneNumber = phone.getNumber();
-			}
-			
+
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
@@ -867,16 +849,16 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		ReportableField[] sortFields = null;
 		Comparator[] comparators = null;
 		if (order.equals(IWMemberConstants.ORDER_BY_NAME)) {
-			sortFields = new ReportableField[] {divisionField, nameField, groupField, paymentDateField};
-			comparators = new Comparator[] {null, null, null, dateComparator};
+			sortFields = new ReportableField[] {divisionField, nameField, personalIDField, groupField, paymentDateField};
+			comparators = new Comparator[] {null, null, null, null, dateComparator};
 		}
 		else if (order.equals(IWMemberConstants.ORDER_BY_GROUP_NAME)) {
-			sortFields = new ReportableField[] {divisionField, groupField, nameField, paymentDateField};
-			comparators = new Comparator[] {null, null, null, dateComparator};
+			sortFields = new ReportableField[] {divisionField, groupField, nameField, personalIDField, paymentDateField};
+			comparators = new Comparator[] {null, null, null, null, dateComparator};
 		}
 		else if (order.equals(IWMemberConstants.ORDER_BY_ENTRY_DATE)) {
-			sortFields = new ReportableField[] {divisionField, paymentDateField, groupField, nameField};
-			comparators = new Comparator[] {null, dateComparator, null, null};
+			sortFields = new ReportableField[] {divisionField, paymentDateField, groupField, nameField, personalIDField};
+			comparators = new Comparator[] {null, dateComparator, null, null, null};
 		}
 
 		Comparator comparator = new FieldsComparator(sortFields, comparators);
@@ -892,7 +874,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	public ReportableCollection getPaymentListByDivisionsGroupsAndDateIntervalFiltering(
 			Date entryDateFilter,
 			Collection divisionsFilter,
-			Collection groupsFilter)
+			Collection groupsFilter,
+			String personalIDFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -959,7 +942,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then iterate the map and insert into the final report collection.
 		
 		String type = FinanceEntryBMPBean.TYPE_PAYMENT;
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, type, entryDateFilter, divisionsFilter, groupsFilter);
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, type, entryDateFilter, divisionsFilter, groupsFilter, personalIDFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data
@@ -994,7 +977,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			}
 			paymentType = financeEntry.getPaymentType();
 			if (paymentType != null)
-				paymentTypeString = paymentType.getName();
+				paymentTypeString = _iwrb.getLocalizedString(paymentType.getLocalizationKey(), paymentType.getName());
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
 				tariffTypeString = tariffType.getName();
@@ -1026,7 +1009,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, paymentTypeField, groupField, nameField };
+		ReportableField[] sortFields = new ReportableField[] {divisionField, paymentTypeField, groupField, nameField, personalIDField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
@@ -1055,6 +1038,39 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		}
 		else 
 			return club;
+	}
+	
+	private String getPhoneNumber(User user) {
+		Collection phones = user.getPhones();
+		String phoneNumber = "";
+		if (!phones.isEmpty()) {
+			Phone phone = null;
+			int tempPhoneType = 0;			
+			int selectedPhoneType = 0;
+			
+			Iterator phIt =	phones.iterator();
+			while (phIt.hasNext()) {
+				phone = (Phone) phIt.next();
+				if (phone != null) {
+					tempPhoneType = phone.getPhoneTypeId();
+					if (tempPhoneType != PhoneType.FAX_NUMBER_ID) {
+						if (tempPhoneType == PhoneType.MOBILE_PHONE_ID) {							
+							phoneNumber = phone.getNumber();
+							break;
+						}
+						else if (tempPhoneType == PhoneType.HOME_PHONE_ID && selectedPhoneType != PhoneType.HOME_PHONE_ID) {
+							phoneNumber = phone.getNumber();
+							selectedPhoneType = phone.getPhoneTypeId();
+						}
+						else if (tempPhoneType == PhoneType.WORK_PHONE_ID && selectedPhoneType != PhoneType.WORK_PHONE_ID) {
+							phoneNumber = phone.getNumber();
+							selectedPhoneType = phone.getPhoneTypeId();
+						}
+					}
+				}
+			}
+		}
+		return phoneNumber;
 	}
 	
 	class DateComparator implements Comparator {

@@ -1018,27 +1018,27 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 	
-	public Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(Group club, String[] types, java.sql.Date dateFrom, java.sql.Date dateTo, Collection divisionsFilter, Collection groupsFilter){
+	public Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(Group club, String[] types, java.sql.Date dateFrom, java.sql.Date dateTo, Collection divisionsFilter, Collection groupsFilter, String personalID){
 		try {
-			return getFinanceEntryHome().findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,types,dateFrom,dateTo,divisionsFilter,groupsFilter);
+			return getFinanceEntryHome().findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,types,dateFrom,dateTo,divisionsFilter,groupsFilter, personalID);
 		}
 		catch (FinderException e) {
 			return ListUtil.getEmptyList();
 		}
 	}
 
-	public Collection getFinanceEntriesByPaymentDateDivisionsAndGroups(Group club, String[] types, Collection divisionsFilter, Collection groupsFilter){
+	public Collection getFinanceEntriesByPaymentDateDivisionsAndGroups(Group club, String[] types, Collection divisionsFilter, Collection groupsFilter, String personalID){
 		try {
-			return getFinanceEntryHome().findAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,types,divisionsFilter,groupsFilter);
+			return getFinanceEntryHome().findAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,types,divisionsFilter,groupsFilter, personalID);
 		}
 		catch (FinderException e) {
 			return ListUtil.getEmptyList();
 		}
 	}
 
-	public Collection getFinanceEntriesByEntryDateDivisionsAndGroups(Group club, String type, Date entryDate, Collection divisionsFilter, Collection groupsFilter){
+	public Collection getFinanceEntriesByEntryDateDivisionsAndGroups(Group club, String type, Date entryDate, Collection divisionsFilter, Collection groupsFilter, String personalID){
 		try {
-			return getFinanceEntryHome().findAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,type,entryDate,divisionsFilter,groupsFilter);
+			return getFinanceEntryHome().findAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,type,entryDate,divisionsFilter,groupsFilter, personalID);
 		}
 		catch (FinderException e) {
 			return ListUtil.getEmptyList();

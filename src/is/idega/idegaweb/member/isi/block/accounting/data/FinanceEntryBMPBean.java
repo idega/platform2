@@ -21,6 +21,7 @@ import com.idega.data.IDOUtil;
 import com.idega.data.PrimaryKey;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -500,7 +501,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			Date dateFrom,
 			Date dateTo,
 			Collection divisions,
-			Collection groups)
+			Collection groups,
+			String personalID)
 	throws FinderException {
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
@@ -509,6 +511,15 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		stampTo.addHours(23);
 		stampTo.addMinutes(59);
 		stampTo.addSeconds(59);
+		//final String F_ = "f."; // sql alias for finance records
+		//final String U_ = "u."; // sql alias for user
+		//final String [] tableNames = { ENTITY_NAME, UserBMPBean.SQL_TABLE_NAME };
+		//final String [] tableAliases = { "f", "u" };
+		
+		//sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
+		//sql.appendWhereEquals(F_ + COLUMN_USER_ID, U_ + UserBMPBean.FIELD_USER_ID );
+		
+		//sql.appendAnd().appendWithinStamps(COLUMN_DATE_OF_ENTRY, stampFrom.getTimestamp(), stampTo.getTimestamp());
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().appendWithinStamps(COLUMN_DATE_OF_ENTRY, stampFrom.getTimestamp(), stampTo.getTimestamp());
@@ -522,6 +533,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		//if (personalID != null)
+		//	sql.appendAndEqualsQuoted(COLUMN_DIVISION_ID, personalID);
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
@@ -546,7 +559,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			Group club,
 			String[] types,
 			Collection divisions,
-			Collection groups)
+			Collection groups,
+			String personalID)
 	throws FinderException {
 		IWTimestamp now = new IWTimestamp();
 		now.addDays(1);
@@ -557,9 +571,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		final String A_ = "a."; // sql alias for assessment round 
 		final String [] tableNames = { ENTITY_NAME, AssessmentRoundBMPBean.ENTITY_NAME };
 		final String [] tableAliases = { "f", "a" };
+		//final String U_ = "u."; // sql alias for user
+		//final String [] tableNames = { ENTITY_NAME, AssessmentRoundBMPBean.ENTITY_NAME, UserBMPBean.SQL_TABLE_NAME };
+		//final String [] tableAliases = { "f", "a", "u" };
 				
 		sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
 		sql.appendWhereEquals(F_ + COLUMN_ASSESSMENT_ROUND_ID, A_ + "ISI_ASS_ROUND_ID" );
+		//sql.appendWhereEquals(F_ + COLUMN_ASSESSMENT_ROUND_ID, A_ + "ISI_ASS_ROUND_ID");
+		//sql.appendAndEquals(F_ + COLUMN_USER_ID, U_ + UserBMPBean.FIELD_USER_ID );
 		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanSign().append(now.getDate());
 		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
@@ -570,6 +589,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(F_ + COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(F_ + COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		//if (personalID != null)
+		//	sql.appendAndEqualsQuoted(COLUMN_DIVISION_ID, personalID);
 		return idoFindIDsBySQL(sql.toString());
 	}
 
@@ -587,7 +608,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			String type,
 			Date entryDate,
 			Collection divisions,
-			Collection groups)
+			Collection groups,
+			String personalID)
 	throws FinderException {
 		IWTimestamp stampFrom = new IWTimestamp(entryDate);
 		IWTimestamp stampTo = new IWTimestamp(entryDate);
@@ -598,6 +620,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(ENTITY_NAME);
 		sql.appendWhereEqualsQuoted(COLUMN_TYPE, type);
+		//final String F_ = "f."; // sql alias for finance records
+		//final String U_ = "u."; // sql alias for user
+		//final String [] tableNames = { ENTITY_NAME, UserBMPBean.SQL_TABLE_NAME };
+		//final String [] tableAliases = { "f", "u" };
+		
+		//sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
+		//sql.appendWhereEquals(F_ + COLUMN_USER_ID, U_ + UserBMPBean.FIELD_USER_ID );
+		//sql.appendAndEqualsQuoted(COLUMN_TYPE, type);
 		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_NO);
 		sql.appendAnd().appendWithinStamps(COLUMN_DATE_OF_ENTRY, stampFrom.getTimestamp(), stampTo.getTimestamp());
 		if (club != null)
@@ -606,6 +636,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		//if (personalID != null)
+		//	sql.appendAndEquals(COLUMN_DIVISION_ID, personalID);
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
