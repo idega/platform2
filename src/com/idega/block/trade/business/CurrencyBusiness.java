@@ -57,7 +57,10 @@ public class CurrencyBusiness {
 	public static String fileString;
 	public static HashMap currencyMap;
 	public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
-
+	
+	public static String currencyUrl = null;
+	public static IWTimestamp lastUpdate = null;
+	
 	public static void getCurrencyMap(IWBundle bundle) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp();
 		file = null;
@@ -96,6 +99,8 @@ public class CurrencyBusiness {
 		XMLElement rootElement = null;
 		try {
 			rootElement = parser.parse(url).getRootElement();
+			currencyUrl = url;
+			lastUpdate = IWTimestamp.RightNow();
 		}
 		catch (XMLException e) {
 				e.printStackTrace(System.err);
@@ -376,5 +381,12 @@ public class CurrencyBusiness {
 		} 
 		return null;
 	}
+	
+	public static String getCurrencyUrl() {
+		return currencyUrl;
+	}
 
+	public static IWTimestamp getLastUpdate() {
+		return lastUpdate;
+	}
 }
