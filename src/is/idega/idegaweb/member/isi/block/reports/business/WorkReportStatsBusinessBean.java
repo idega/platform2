@@ -2963,6 +2963,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
 						addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
 						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+						
 						addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
 						addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
 						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
@@ -3031,6 +3032,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
 					addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
 					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+					
 					addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
 					addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
 					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
@@ -3039,21 +3041,22 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
 					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
 
-//sum stuff
-					addToIntegerCountFromFieldInAnotherReportableData(incomeSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(expensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rigidMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(debtsSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebtsSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingExpensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpensesSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoneySum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingDebtsSum,divDataSum,regData);
-					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebtsSum,divDataSum,regData);
+					//sum stuff
+					addToIntegerCountFromFieldInAnotherReportableData(income, incomeSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(expenses,expensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses, incomeMinusExpensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rollingMoney, rollingMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,rigidMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(debts,debtsSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,rollingMoneyMinusDebtsSum,divDataSum,regData);
+					
+					addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,comparingIncomeSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,comparingExpensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,comparingIncomeMinusExpensesSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,comparingRollingMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,comparingRigidMoneySum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,comparingDebtsSum,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,comparingRollingMoneyMinusDebtsSum,divDataSum,regData);
 					
 					
 					recordsMapKeyedByLeagueIdentifierAndClubsName.put(allSumKey,divDataSum);
@@ -5031,6 +5034,21 @@ private ReportableData addToIntegerCountFromFieldInAnotherReportableData(Reporta
 		} 
 		
 		reportableData.addData(reportableField,count);//swap
+	}
+	
+	return reportableData;
+}
+
+
+private ReportableData addToIntegerCountFromFieldInAnotherReportableData(ReportableField reportableFieldFrom,ReportableField reportableFieldTo, ReportableData reportableData, ReportableData dataToGetCountFrom) {
+	if(reportableData!=null && dataToGetCountFrom!=null){//update count
+		Integer count = (Integer)dataToGetCountFrom.getFieldValue(reportableFieldFrom);
+		Integer oldCount = (Integer)reportableData.getFieldValue(reportableFieldTo);
+		if(count!=null && oldCount!=null) {
+			count = new Integer(oldCount.intValue()+count.intValue());
+		} 
+		
+		reportableData.addData(reportableFieldTo,count);//swap
 	}
 	
 	return reportableData;
