@@ -67,7 +67,6 @@ import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClassMember;
-
 import com.idega.core.data.Address;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.Phone;
