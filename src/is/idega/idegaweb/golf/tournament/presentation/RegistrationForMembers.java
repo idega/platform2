@@ -17,14 +17,20 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Paragraph;
+import com.idega.presentation.text.Strong;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.text.TextSoap;
 
@@ -33,13 +39,14 @@ import com.idega.util.text.TextSoap;
  */
 public class RegistrationForMembers extends GolfBlock {
 
-
+	public static final String PRM_TOURNAMENT_ID = "tournament_id";
+	public static final String PRM_ACTION = "action";
 
   CloseButton closeButton = new CloseButton();
 
   public void main(IWContext modinfo) throws Exception {
   	IWResourceBundle iwrb = getResourceBundle();
-      String tournament_id = modinfo.getParameter("tournament_id");
+      String tournament_id = modinfo.getParameter(PRM_TOURNAMENT_ID);
 
       if (tournament_id != null)  {
           setTournament(modinfo, ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)));
@@ -54,12 +61,19 @@ public class RegistrationForMembers extends GolfBlock {
 
               if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament,member) ) {
 
-                  String action = modinfo.getParameter("action");
+                  String action = modinfo.getParameter(PRM_ACTION);
 
                   if (action == null) {
+                  	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.endsWith(modinfo.getMarkupLanguage())){
+                  		Paragraph p = new Paragraph();
+                  		p.add(getLocalizedMessage("tournament.error_occurred","Error occurred"));
+                  		add(p);
+                  		
+                  	}else{
                   	  add(getLocalizedMessage("tournament.error_occurred","Error occurred"));
-                      add(Text.getBreak());
-                      add(getButton(new CloseButton()));
+                  	  add(Text.getBreak());
+                       add(getButton(new CloseButton()));
+                  	}
                   }else if (action.equalsIgnoreCase("open")) {
                       register(modinfo, iwrb);
                   }else if (action.equals("directRegistrationMembersChosen")) {
@@ -67,17 +81,37 @@ public class RegistrationForMembers extends GolfBlock {
                   }
               }
               else {
+              	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.endsWith(modinfo.getMarkupLanguage())){
+              		Paragraph p = new Paragraph();
+              		p.add(getMessageText(member.getName() +" "+ localize("tournament.is_registered_in_the_tournament_named","is registered in the tournament named") +" \""+tournament.getName()+"\" "));
+              		add(p);
+              	}else{
                   add("<center>");
                   add(getMessageText(member.getName() +" "+ localize("tournament.is_registered_in_the_tournament_named","is registered in the tournament named") +" \""+tournament.getName()+"\" "));
                   add("</center>");
+              	}
               }
           }else {
+          	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.endsWith(modinfo.getMarkupLanguage())){
+          		Paragraph p = new Paragraph();
+          		p.add(getLocalizedMessage("tournament.no_tournament_selected","No tournament selected"));
+	             add(p);
+          		
+          	}else{
               add(getLocalizedMessage("tournament.no_tournament_selected","No tournament selected"));
               add(Text.getBreak());
               add(closeButton);
+              }
           }
       }
       else {
+      	
+      	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+      		Paragraph p = new Paragraph();
+      		p.add(getLocalizedMessage("tournament.you_have_to_register_to_the_system_using_login_and_password","You have to register to the system using login and password"));
+             add(p);
+      		
+      	}else{
           add("<center>");
           add(Text.getBreak());
           add(getLocalizedMessage("tournament.you_have_to_register_to_the_system_using_login_and_password","You have to register to the system using login and password"));
@@ -85,6 +119,7 @@ public class RegistrationForMembers extends GolfBlock {
           add(Text.getBreak());
           add(closeButton);
           add("</center>");
+      	}
       }
 
   }
@@ -120,7 +155,11 @@ public class RegistrationForMembers extends GolfBlock {
           if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament,member) ) {
               String subAction = modinfo.getParameter("subAction");
               if (subAction == null) {
-                  notOnlineRegistration(modinfo);
+              	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+              		notOnlineRegistrationWML(modinfo);
+              	} else {
+              		notOnlineRegistration(modinfo);
+              	}
               }else if (subAction.equals("yes")) {
                   String tournament_group_id = modinfo.getParameter("tournament_group");
                   if (tournament_group_id == null) {
@@ -132,13 +171,20 @@ public class RegistrationForMembers extends GolfBlock {
               }
           }
           else {
-          	add(Text.getBreak());
-              add("<center>");
-              add(getLocalizedMessage("tournament.you_are_already_registered_to_this_tournament","You are already registered to this tournament"));
-              add(Text.getBreak());
-              add(Text.getBreak());
-              add(closeButton);
-              add("</center>");
+          	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+          		Paragraph p = new Paragraph();
+          		p.add(getLocalizedMessage("tournament.you_are_already_registered_to_this_tournament","You are already registered to this tournament"));
+	             add(p);
+          		
+          	}else{
+	          	add(Text.getBreak());
+	              add("<center>");
+	              add(getLocalizedMessage("tournament.you_are_already_registered_to_this_tournament","You are already registered to this tournament"));
+	              add(Text.getBreak());
+	              add(Text.getBreak());
+	              add(closeButton);
+	              add("</center>");
+          	}
           }
 
       }
@@ -153,14 +199,14 @@ public class RegistrationForMembers extends GolfBlock {
           table.setAlignment("center");
 
       Form yesForm  = new Form();
-          yesForm.maintainParameter("action");
+          yesForm.maintainParameter(PRM_ACTION);
 
           yesForm.add(new HiddenInput("subAction","yes"));
           SubmitButton yes = new SubmitButton(localize("tournament.yes","Yes"));
           yesForm.add(yes);
 
       Form noForm  = new Form();
-          noForm.maintainParameter("action");
+          noForm.maintainParameter(PRM_ACTION);
           noForm.add(new HiddenInput("subAction","no"));
           CloseButton no = new CloseButton(localize("tournament.no","no"));
           noForm.add(no);
@@ -177,6 +223,36 @@ public class RegistrationForMembers extends GolfBlock {
       add(Text.getBreak());
       add(table);
   }
+  
+  public void notOnlineRegistrationWML(IWContext modinfo) {
+    Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
+
+    Table table = new Table();
+
+    Paragraph p = new Paragraph();
+    p.add(new Text(localize("tournament.register","Register")+" \""+member.getName()+"\" "+localize("tournament.to_the_tournament_named","to the tournament named")+" \""+getTournament(modinfo).getName() +"\"?"));
+    add(p);
+    
+    
+    Link yes = new Link(localize("tournament.yes","Yes"));
+    yes.maintainParameter(PRM_ACTION,modinfo);
+    yes.addParameter("subAction","yes");
+    
+    Link no = new Link(localize("tournament.cancel","Cancel"));
+    no.maintainParameter(PRM_ACTION,modinfo);
+    no.addParameter("subAction","no");
+
+    Paragraph p2 = new Paragraph();
+    Strong s = new Strong();
+    s.add(yes);
+    p2.add(s);
+    p2.add(new Text(" | "));
+    Strong s2 = new Strong();
+    s2.add(no);
+    p2.add(s2);
+
+    add(p2);
+}
 
   public void getAvailableGroups(IWContext modinfo) throws SQLException, RemoteException{
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
@@ -188,44 +264,71 @@ public class RegistrationForMembers extends GolfBlock {
 
       if (tGroups.length != 0) {
           if (groups.size() != 0)  {
-              Form form = new Form();
-                  form.maintainParameter("action");
-                  form.maintainParameter("subAction");
-              Table table = new Table();
-                  table.setBorder(0);
-                  table.setAlignment("center");
+          	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+          		Form form = new Form();
+	                form.maintainParameter("action");
+	                form.maintainParameter("subAction");
+	
+	            DropdownMenu groupsMenu = new DropdownMenu(groups);
+	
+	            Label l = new Label(localize("tournament.choose_group_to_play_in","Choose group to play in"),groupsMenu);
+	            form.add(l);
+	            form.add(groupsMenu);
+	
+	            SubmitButton afram = getTournamentBusiness(modinfo).getAheadButton(modinfo,"","");
+	            form.add(afram);
+	
+	            add(form);
+          	} else {
+          	    Form form = new Form();
+	                form.maintainParameter("action");
+	                form.maintainParameter("subAction");
+	            Table table = new Table();
+	                table.setBorder(0);
+	                table.setAlignment("center");
+	
+	            DropdownMenu groupsMenu = new DropdownMenu(groups);
+	
+	            table.add(getLocalizedText("tournament.choose_group_to_play_in","Choose group to play in"));
+	            table.mergeCells(1,1,2,1);
+	            table.add(member.getName(),1,2);
+	            table.add(groupsMenu,2,2);
+	
+	            SubmitButton afram = getTournamentBusiness(modinfo).getAheadButton(modinfo,"","");
+	            table.setAlignment(2,3,"right");
+	            table.add(afram,2,3);
+	
+	
+	            add(Text.getBreak());
+	            form.add(table);
+	            add(form);
 
-              DropdownMenu groupsMenu = new DropdownMenu(groups);
-
-              table.add(getLocalizedText("tournament.choose_group_to_play_in","Choose group to play in"));
-              table.mergeCells(1,1,2,1);
-              table.add(member.getName(),1,2);
-              table.add(groupsMenu,2,2);
-
-              SubmitButton afram = getTournamentBusiness(modinfo).getAheadButton(modinfo,"","");
-              table.setAlignment(2,3,"right");
-              table.add(afram,2,3);
-
-
-              add(Text.getBreak());
-              form.add(table);
-              add(form);
-
+          	}
+              
 
           }else {
-          	  add(Text.getBreak());
-              add("<center>");
-              add(getLocalizedMessage("tournament.you_do_not_have_permission_to_register","You do not have permission to register"));
-              add(Text.getBreak());
-              add(getLocalizedMessage("tournament.contact_the_club","Contact the club"));
-              add(Text.getBreak());
-              add(Text.getBreak());
-              add(closeButton);
-              add("</center>");
+          	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+          		Paragraph p = new Paragraph();
+          		p.add(getLocalizedMessage("tournament.you_do_not_have_permission_to_register","You do not have permission to register"));
+	             p.add(new Break());
+	             p.add(getLocalizedMessage("tournament.contact_the_club","Contact the club"));
+	             add(p);
+          		
+          	}else{
+	          	 add(Text.getBreak());
+	              add("<center>");
+	              add(getLocalizedMessage("tournament.you_do_not_have_permission_to_register","You do not have permission to register"));
+	              add(Text.getBreak());
+	              add(getLocalizedMessage("tournament.contact_the_club","Contact the club"));
+	              add(Text.getBreak());
+	              add(Text.getBreak());
+	              add(closeButton);
+	              add("</center>");
+          	}
             }
       }
       else {
-          incorrectSetup();
+          incorrectSetup(modinfo);
       }
 
   }
@@ -234,11 +337,17 @@ public class RegistrationForMembers extends GolfBlock {
   public void performRegistrationNotOnline(IWContext modinfo,String tournament_group_id) throws RemoteException, SQLException{
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
       Tournament tournament = getTournament(modinfo);
-
       getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_id);
-      add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
-      add(Text.getBreak());
-      add(getButton(new CloseButton()));
+      
+      if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+  		Paragraph p = new Paragraph();
+  		p.add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
+        add(p);
+  	  } else {
+        add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
+        add(Text.getBreak());
+        add(getButton(new CloseButton()));
+  	  }
 
   }
 
@@ -286,15 +395,72 @@ public class RegistrationForMembers extends GolfBlock {
 
       }
       else {
-          incorrectSetup();
+          incorrectSetup(modinfo);
       }
 
 
   }
+  
+  public void getDirectRegistrationTableWML(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException, SQLException {
+    Tournament tournament = getTournament(modinfo);
+    String tournament_round_id = modinfo.getParameter("tournament_round");
+
+    if (tournament_round_id == null) {
+        TournamentRound[] tRounds = (TournamentRound[]) tournament.getTournamentRounds();
+        if (tRounds.length > 0 ) {
+            tournament_round_id = Integer.toString(tRounds[0].getID());
+        }
+    }
+
+    if (tournament_round_id != null) {
+
+    	  add(Text.getBreak());
+        add("<center>");
+
+        Table table = new Table();
+          table.setWidth("90%");
+
+          table.setAlignment(2,1,"left");
+          table.setAlignment(2,2,"left");
+          table.setAlignment(1,1,"right");
+          table.setAlignment(1,2,"right");
+
+          addHeading(localize("tournament.tournament_registration","Tournament registration"));
+          table.add("1",1,1);
+          
+          table.add(getLocalizedText("tournament.choose_teetime_and_enter_ssn_in_the_textbox.__it_is_posible_to_register_more_than_one_at_a_time","Choose teetime and enter social security number.  It is posible to register more than one at a time."),2,1);
+
+          table.add("2",1,2);
+          table.add(getText(localize("tournament.press_the","Press the")+" \""+localize("tournament.save","Save")+"\" "+localize("tournament.button_located_at_the_bottom_of_the_page","button located at the bottom of the page.")),2,2);
+
+        TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
+        form.setSubmitButtonParameter("action", "open");
+
+        add(table);
+        add("<hr>");
+        add(Text.getBreak());
+        add(form);
+        add("</center>");
+
+    }
+    else {
+        incorrectSetup(modinfo);
+    }
 
 
-  public void incorrectSetup() {
-  	add(Text.getBreak());
+}
+
+
+
+  public void incorrectSetup(IWContext modinfo) {
+  	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+  		Paragraph p = new Paragraph();
+  		p.add(getLocalizedMessage("tournament.tournament_setup_is_not_right","Tournament setup is not right"));
+  		p.add(Text.getBreak());
+  		p.add(getLocalizedMessage("tournament.contact_the_club","Contact the club"));
+        add(p);
+  	} else {
+  	  add(Text.getBreak());
   	  add("<center>");
       add(getLocalizedMessage("tournament.tournament_setup_is_not_right","Tournament setup is not right"));
       add(Text.getBreak());
@@ -303,6 +469,7 @@ public class RegistrationForMembers extends GolfBlock {
       add(Text.getBreak());
       add(closeButton);
       add("</center>");
+  	}
   }
 
 
