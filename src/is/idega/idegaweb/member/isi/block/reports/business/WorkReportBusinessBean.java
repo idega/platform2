@@ -278,7 +278,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
 						
 						try {
-							User user = this.getUser(ssn);
+							User user = this.getUser(ssn); 
 							WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
 							
 							try {
@@ -333,6 +333,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						catch (CreateException e2) {
 							//failed to create move on.
 							e2.printStackTrace();
+						}
+						catch (FinderException ex){
+							ex.printStackTrace();
 						}
 					}
 					
