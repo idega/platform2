@@ -8,8 +8,11 @@ public interface InvoiceRecordHome extends com.idega.data.IDOHome
  public java.util.Collection findByContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract p0)throws javax.ejb.FinderException;
  public java.util.Collection findByInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0)throws javax.ejb.FinderException;
  public java.util.Collection findByPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0)throws javax.ejb.FinderException;
+ public java.util.Collection findByPaymentRecords(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord [] p0)throws javax.ejb.FinderException;
+ public java.util.Collection findByPaymentRecordOrderedByStudentName(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0)throws javax.ejb.FinderException;
  public int getNumberOfHandledChildrenForSchoolTypesAndMonth(java.util.Collection p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException;
  public int getPlacementCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public double getTotalAmountForSchoolTypesAndMonth(java.util.Collection p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException;
 
+	int getIndividualCountByPaymentRecords (se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord [] paymentRecords)throws com.idega.data.IDOException;
 }

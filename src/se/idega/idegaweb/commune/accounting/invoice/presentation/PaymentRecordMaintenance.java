@@ -74,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/20 09:05:13 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/20 15:35:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.102 $
+ * @version $Revision: 1.103 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -435,7 +435,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final School school = schoolBusiness.getSchool
 				(new Integer (header.getSchoolID ()));
 		final Collection invoiceRecords
-				= home.findByPaymentRecord (record);
+				= home.findByPaymentRecordOrderedByStudentName (record);
 		
 		// render
 		final Table table = createTable (2);

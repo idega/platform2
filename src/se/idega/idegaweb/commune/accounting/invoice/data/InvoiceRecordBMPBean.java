@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -335,6 +336,44 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 	public Collection ejbFindByPaymentRecord (PaymentRecord paymentRecord)
         throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this);
+		sql.appendWhereEquals (COLUMN_PAYMENT_RECORD_ID, paymentRecord);
+		return idoFindPKsByQuery (sql);
+	}
+
+	public Collection ejbFindByPaymentRecords (PaymentRecord [] paymentRecords)
+        throws FinderException {
+		if (0 >= paymentRecords.length) throw new FinderException ();
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this);
+		sql.appendWhere (COLUMN_PAYMENT_RECORD_ID).append (" in ( ");
+		sql.appendCommaDelimited (Arrays.asList (paymentRecords));
+		sql.append (" ) ");
+		return idoFindPKsByQuery (sql);
+	}
+
+	public int ejbHomeGetIndividualCountByPaymentRecords (PaymentRecord [] paymentRecords) throws IDOException {
+		if (0 >= paymentRecords.length) return 0;
+		final String R_ = "r."; // sql alias for invoice record
+		final String M_ = "m."; // sql alias for schoolclassmember
+		final String [] tableNames =
+				{ getTableName (), SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER };
+		final String [] tableAliases = { "r", "m" };
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelect ().append (" count (distinct "
+																+ M_ + SchoolClassMemberBMPBean.MEMBER + ") ");
+		sql.appendFrom (tableNames, tableAliases);
+		sql.appendWhere (R_ + COLUMN_PAYMENT_RECORD_ID).append (" in ( ");
+		sql.appendCommaDelimited (Arrays.asList (paymentRecords));
+		sql.append (" ) ");
+		sql.appendAndEquals (R_ + COLUMN_SCHOOL_CLASS_MEMBER_ID,
+												 M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public Collection ejbFindByPaymentRecordOrderedByStudentName (PaymentRecord paymentRecord)
+        throws FinderException {
 		final String R_ = "r."; // sql alias for invoice record
 		final String U_ = "u."; // sql alias for user
 		final String M_ = "m."; // sql alias for schoolclassmember
@@ -343,7 +382,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 					SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER };
 		final String [] tableAliases = { "r", "u", "m" };
 		final IDOQuery sql = idoQuery ();
-		sql.appendSelect().append (R_).appendStar ();
+		sql.appendSelect().append (R_ + getIDColumnName());
 		sql.appendFrom (tableNames, tableAliases);
 		sql.appendWhereEquals (R_ + COLUMN_PAYMENT_RECORD_ID, paymentRecord);
 		sql.appendAndEquals (R_ + COLUMN_SCHOOL_CLASS_MEMBER_ID,

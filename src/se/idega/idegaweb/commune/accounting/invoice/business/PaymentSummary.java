@@ -1,15 +1,8 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
-import com.idega.user.data.User;
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -19,22 +12,19 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 
 /**
- * Last modified: $Date: 2004/01/20 20:03:02 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/20 15:35:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PaymentSummary {
 	private int placementCount = 0;
-	private Set individuals = new HashSet ();
+	private int individualCount = 0;
 	private long totalAmountVatExcluded = 0;
 	private long totalAmountVat = 0;
 
-	public PaymentSummary (final PaymentRecord [] records)
-		throws RemoteException, FinderException {
+	public PaymentSummary (final PaymentRecord [] records) throws RemoteException {
 		// get home objects
-		final SchoolClassMemberHome placementHome
-				= (SchoolClassMemberHome) IDOLookup.getHome (SchoolClassMember.class);
 		final InvoiceRecordHome invoiceRecordHome
 				= (InvoiceRecordHome) IDOLookup.getHome (InvoiceRecord.class);
 		final RegulationSpecTypeHome regSpecTypeHome
@@ -62,8 +52,22 @@ public class PaymentSummary {
 			} else {
 				totalAmountVatExcluded += amountExcl;
 			}
+		}		
+
+		try {
+			individualCount
+					= invoiceRecordHome.getIndividualCountByPaymentRecords (records);
+		} catch (IDOException e) {
+			e.printStackTrace ();
+		}
+	}
+
+	/*	
+	private static int getIndividualCount(final PaymentRecord[] records, final SchoolClassMemberHome placementHome, final InvoiceRecordHome invoiceRecordHome) {
+		final Set result = new HashSet ();
+		try {
 			final Collection invoiceRecords
-					= invoiceRecordHome.findByPaymentRecord (paymentRecord);
+					= invoiceRecordHome.findByPaymentRecords (records);
 			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
 				final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
 				try {
@@ -72,20 +76,24 @@ public class PaymentSummary {
 					final SchoolClassMember placement
 							= placementHome.findByPrimaryKey (placementId);
 					final User user = placement.getStudent ();
-					individuals.add (user.getPrimaryKey ());
+					result.add (user.getPrimaryKey ());
 				} catch (Exception e) {
 					e.printStackTrace ();
 				}
 			}
-		}		
+		} catch (FinderException e) {
+			// no problem, no invoice records found
+		}
+		return result.size ();
 	}
-	
+	*/
+
 	public long getPlacementCount () {
 		return placementCount;
 	}
 
 	public long getIndividualsCount () {
-		return individuals.size (); 
+		return individualCount; 
 	}
 
 	public long getTotalAmountVatExcluded () {

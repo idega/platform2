@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.15 2004/02/16 12:50:56 staffan Exp $
+ * $Id: ControlListBusinessBean.java,v 1.16 2004/02/20 15:35:14 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,11 +37,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * Last modified: $Date: 2004/02/16 12:50:56 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/20 15:35:14 $ by $Author: staffan $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
@@ -142,9 +142,11 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 		(final InvoiceBusiness invoiceBusiness, final String schoolCategory,
 		 final School school, final Date period) throws RemoteException,
 																										FinderException {
-		return new PaymentSummary
-				(invoiceBusiness.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
-				 (schoolCategory, (Integer) school.getPrimaryKey (), period, period));
+		final PaymentRecord [] records
+				= invoiceBusiness.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
+				(schoolCategory, (Integer) school.getPrimaryKey (), period, period);
+		final PaymentSummary result = new PaymentSummary (records);
+		return result;		
 	}
 
 	private Collection getProvidersFromPaymentHeadersByPeriodAndSchoolCategory(Date from, String sc) {
