@@ -2,6 +2,7 @@ package is.idega.idegaweb.marathon.business;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOService;
 import com.idega.user.data.Group;
@@ -10,7 +11,7 @@ import com.idega.user.data.Group;
 /**
  * @author gimmi
  */
-public interface MarathonFileImportHandler extends IBOService {
+public interface MarathonFileImportHandler extends IBOService, ImportFileHandler{
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.MarathonFileImportHandlerBean#handleRecords
