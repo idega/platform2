@@ -245,7 +245,7 @@ public class PIDChecker {
 	}
 
 	/**
-	 * Gets a random int on the range from 1-12
+	 * Gets a random int on the range from 1-28 
 	 * @return
 	 */
 	public  int getRandomMonthDay(){
