@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationComparator.java,v 1.4 2003/10/23 21:10:33 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.5 2003/11/03 16:41:57 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,19 +10,22 @@
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
 
 import java.util.Comparator;
+
 import com.idega.data.GenericEntity;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.core.location.data.Commune;
+
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.resource.data.Resource;
-import com.idega.block.school.data.SchoolStudyPath;
 
 /**
  * RegulationComparator compares objects for the dropdowns
  * <p>
- * $Id: RegulationComparator.java,v 1.4 2003/10/23 21:10:33 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.5 2003/11/03 16:41:57 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RegulationComparator implements Comparator {
 
@@ -53,6 +56,12 @@ public class RegulationComparator implements Comparator {
 				// Gotta find a better way to do this /Kelly
 				s1 = ""+((SchoolStudyPath) o1).getCode();
 				s2 = ""+((SchoolStudyPath) o2).getCode();
+			}
+			if (o1.getClass().getName().indexOf("CommuneBMPBean") != -1) {
+				// Nasty hack to get the StudyPath entity with special methods to order properly
+				// Gotta find a better way to do this /Kelly
+				s1 = ""+((Commune) o1).getCommuneName();
+				s2 = ""+((Commune) o2).getCommuneName();
 			}
 			
 			return s1.compareTo(s2);
