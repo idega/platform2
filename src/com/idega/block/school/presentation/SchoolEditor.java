@@ -13,9 +13,12 @@ import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
 import com.idega.block.school.data.*;
 import com.idega.block.school.business.*;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Map;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -118,7 +121,7 @@ public class SchoolEditor extends Block {
     }
   }
 
-  public PresentationObject getListTable(School ent) {
+  public PresentationObject getListTable(School ent)throws RemoteException {
     Table T = new Table();
     int row = 1;
 
@@ -136,7 +139,7 @@ public class SchoolEditor extends Block {
     T.add(newLink,1,row);
     row++;
 
-    T.add(tFormat.format(iwrb.getLocalizedString("type","Type")),col++,row);
+    //T.add(tFormat.format(iwrb.getLocalizedString("type","Type")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("area","Area")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("address","Address")),col++,row);
@@ -150,6 +153,8 @@ public class SchoolEditor extends Block {
 
     java.util.Iterator iter = schools.iterator();
     School school ;
+    SchoolAreaHome areaHome = (SchoolAreaHome)IDOLookup.getHome(SchoolArea.class);
+    SchoolArea area;
     col = 1;
     while(iter.hasNext()){
       Object obj = iter.next();
@@ -159,8 +164,9 @@ public class SchoolEditor extends Block {
       Link L = new Link(tFormat.format("edit"));
       L.addParameter("sch_school_id",((Integer)school.getPrimaryKey()).intValue());
       T.add(L,col++,row);
-      T.add(tFormat.format(school.getSchoolTypeId()),col++,row);
-      T.add(tFormat.format(school.getSchoolAreaId()),col++,row);
+      //T.add(tFormat.format(school.getSchoolTypeId()),col++,row);
+      area = areaHome.findByPrimaryKey(new Integer(school.getSchoolAreaId()));
+      T.add(tFormat.format(area.getName()),col++,row);
       T.add(tFormat.format(school.getSchoolName()),col++,row);
       T.add(tFormat.format(school.getSchoolAddress()),col++,row);
       T.add(tFormat.format(school.getSchoolZipCode()),col++,row);
