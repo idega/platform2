@@ -187,7 +187,6 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		application.setOrdinaryWorkingHours(new Integer(ordinaryWorkingHours));
 		application.setVacationType(type);
 		application.setComment(comment);
-
 		if (extraInfo != null) {
 			Iterator iter = extraInfo.iterator();
 			while (iter.hasNext()) {
