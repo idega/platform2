@@ -439,7 +439,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public Map getSchoolAndSchoolTypeRelatedSchoolCourses(School school, Object schoolTypeId) {
 		try {
 			SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
-			Collection courses = scHome.findSchoolCourses(school, schoolTypeId); 
+			Collection courses = scHome.findStudyPaths(school, schoolTypeId); 
 			if (courses != null && !courses.isEmpty()) {
 				HashMap map = new HashMap(courses.size());
 				Iterator iter = courses.iterator();
