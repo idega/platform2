@@ -30,7 +30,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.StringHandler;
@@ -67,7 +66,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	/**
 	 * The method invoked when the login presentation module sends a login to this class
 	 */
-	public boolean actionPerformed(IWContext iwc) throws IWException {
+	public boolean actionPerformed(IWContext iwc) {
 		NBSResult result = null;
 		try {
 			// Get the server object.

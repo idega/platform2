@@ -13,7 +13,6 @@ import se.idega.idegaweb.commune.accounting.business.AccountingSession;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 
@@ -25,7 +24,7 @@ public class AccountingEventListener implements IWPageEventListener {
 	/* (non-Javadoc)
 	 * @see com.idega.event.IWPageEventListener#actionPerformed(com.idega.presentation.IWContext)
 	 */
-	public boolean actionPerformed(IWContext iwc) throws IWException {
+	public boolean actionPerformed(IWContext iwc) {
 		try {
 			AccountingSession session = getAccountingSession(iwc);
 			if (iwc.isParameterSet(session.getParameterOperationalField())) {

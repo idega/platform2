@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/11/27 09:16:47 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/12 08:38:50 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.47 $
+ * @version $Revision: 1.48 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -571,7 +571,7 @@ public class ViewpointForm extends CommuneBlock {
 	}
 
 	private void answerViewpoint(final IWContext context) throws
-        RemoteException, CreateException, FinderException, RemoveException {
+        RemoteException, CreateException, FinderException {
 		// 1. parse input 
 		final int viewpointId
                 = Integer.parseInt(context.getParameter(PARAM_VIEWPOINT_ID));
