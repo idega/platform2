@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.132 2004/06/06 20:33:47 laddi Exp $
+ * $Id: NewsReader.java,v 1.133 2004/06/09 00:27:35 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.block.news.presentation;
 
 import java.text.DateFormat;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -218,59 +219,80 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
 		Locale locale = iwc.getCurrentLocale();
 		String sNewsId = null;
-		if (viewNews) sNewsId = iwc.getParameter(prmMore + getInstanceIDString(iwc));
-		ICCategory newsCategory = null;
-		String prm = prmListCategory + getInstanceIDString(iwc);
-		boolean info = false;
-		if (iwc.isParameterSet(prm)) {
-			if (iwc.getParameter(prm).equalsIgnoreCase("true"))
-				info = true;
-			else
-				info = false;
-		}
-
-		if (iCategoryId <= 0) {
-			String sCategoryId = iwc.getParameter(prmNewsCategoryId);
-			if (sCategoryId != null)
-				iCategoryId = Integer.parseInt(sCategoryId);
-			else {
-				//if(getICObjectInstanceID() > 0){
-				//		  iCategoryId =
-				// NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
-				iCategoryId = getCategoryId();
-				if (iCategoryId <= 0) {
-					newobjinst = true;
+		boolean beInvisible = false;
+		if (viewNews) {
+			if(visibleNewsRangeStart>0) {
+				Enumeration enum = iwc.getParameterNames();
+				while (enum.hasMoreElements()) {
+					String pName = (String) enum.nextElement();
+					if(pName.startsWith(prmMore)) {
+						if(visibleNewsRangeStart==1) {
+							sNewsId = iwc.getParameter(pName);
+						} else {
+							beInvisible=true;
+						}
+						break;
+					}
 				}
+			} else {
+				sNewsId = iwc.getParameter(prmMore + getInstanceIDString(iwc));
 			}
 		}
-		Table T = new Table(1, 1);
-		T.setCellpadding(0);
-		T.setCellpadding(0);
-		T.setWidth("100%");
-		if (hasEdit || hasAdd || hasInfo) {
-			T.add(getAdminPart(iCategoryId, false, newobjinst, info, iwc), 1, 1);
-		}
-		if (iCategoryId > 0) {
-			newsCategory = CategoryFinder.getInstance().getCategory(iCategoryId);
-			if (newsCategory != null) {
-				if (sNewsId != null) {
-					int id = Integer.parseInt(sNewsId);
-					NewsHelper nh = NewsFinder.getNewsHelper(id);
-					T.add(getNewsTable(nh, locale, true, false, iwc, true), 1, 1);
-				}
-				else if (info) {
-					T.add(getCategoryList(locale, iwc), 1, 1);
-				}
+		
+		if(!beInvisible) {
+			ICCategory newsCategory = null;
+			String prm = prmListCategory + getInstanceIDString(iwc);
+			boolean info = false;
+			if (iwc.isParameterSet(prm)) {
+				if (iwc.getParameter(prm).equalsIgnoreCase("true"))
+					info = true;
+				else
+					info = false;
+			}
+	
+			if (iCategoryId <= 0) {
+				String sCategoryId = iwc.getParameter(prmNewsCategoryId);
+				if (sCategoryId != null)
+					iCategoryId = Integer.parseInt(sCategoryId);
 				else {
-					String cprm = prmCollection + getInstanceIDString(iwc);
-					T.add(publishNews(iwc, locale, iwc.isParameterSet(cprm)), 1, 1);
+					//if(getICObjectInstanceID() > 0){
+					//		  iCategoryId =
+					// NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
+					iCategoryId = getCategoryId();
+					if (iCategoryId <= 0) {
+						newobjinst = true;
+					}
 				}
 			}
+			Table T = new Table(1, 1);
+			T.setCellpadding(0);
+			T.setCellpadding(0);
+			T.setWidth("100%");
+			if (hasEdit || hasAdd || hasInfo) {
+				T.add(getAdminPart(iCategoryId, false, newobjinst, info, iwc), 1, 1);
+			}
+			if (iCategoryId > 0) {
+				newsCategory = CategoryFinder.getInstance().getCategory(iCategoryId);
+				if (newsCategory != null) {
+					if (sNewsId != null) {
+						int id = Integer.parseInt(sNewsId);
+						NewsHelper nh = NewsFinder.getNewsHelper(id);
+						T.add(getNewsTable(nh, locale, true, false, iwc, true), 1, 1);
+					}
+					else if (info) {
+						T.add(getCategoryList(locale, iwc), 1, 1);
+					}
+					else {
+						String cprm = prmCollection + getInstanceIDString(iwc);
+						T.add(publishNews(iwc, locale, iwc.isParameterSet(cprm)), 1, 1);
+					}
+				}
+			}
+			else {
+				T.add(new Text(iwrb.getLocalizedString("no_news_category", "No news category")));
+			}
+			super.add(T);
 		}
-		else {
-			T.add(new Text(iwrb.getLocalizedString("no_news_category", "No news category")));
-		}
-		super.add(T);
 	}
 
 	private PresentationObject getAdminPart(int iCategoryId, boolean enableDelete, boolean newObjInst, boolean info, IWContext iwc) {
@@ -1287,7 +1309,22 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String returnString = "";
 		String parName = prmMore + getInstanceIDString(iwc);
-		if (iwc.isParameterSet(parName)) returnString += iwc.getParameter(parName);
+		if (iwc.isParameterSet(parName)) {
+			returnString += parName+"="+iwc.getParameter(parName);
+		} else {
+			if (viewNews) {
+				if(visibleNewsRangeStart>0) {
+					Enumeration enum = iwc.getParameterNames();
+					while (enum.hasMoreElements()) {
+						String pName = (String) enum.nextElement();
+						if(pName.startsWith(prmMore)) {
+							returnString += pName+"="+iwc.getParameter(pName);
+							break;
+						}
+					}
+				}
+			}
+		}
 		parName = prmListCategory + getInstanceIDString(iwc);
 		if (iwc.isParameterSet(parName)) returnString += parName + "=" + iwc.getParameter(parName);
 		parName = prmNewsCategoryId;
