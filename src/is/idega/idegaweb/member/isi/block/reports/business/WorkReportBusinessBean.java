@@ -1670,21 +1670,24 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				// get users
 				//The behaviour used to be that if the division has no board (and therefor users) we used the mainboard users.
 //				Passing the mainboard users is no longer used but I did not remove it because they might want that behaviour back.
-				
-				Collection users = getBoardUsersFromClubDivision(divisionGroup,mainBoardUsers);
-				if(users!=null && !users.isEmpty()){
-					//create the board members
-					createWorkReportBoardMembers(users, workReportId, league, idExistingMemberMap);
-				}
-				// should this be done for the mainboard also??
-				// should it be created if there are no users? I don't think so because it is just contact info and stuff?
-				try {
-					createWorkReportDivisionBoard(workReportId, divisionGroup, league);
-				}
-				catch (CreateException ex) {
-					System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: "
-							+ ex.getMessage());
-					ex.printStackTrace(System.err);
+				if(league!=null){
+					Collection users = getBoardUsersFromClubDivision(divisionGroup,mainBoardUsers);
+					if(users!=null && !users.isEmpty()){
+						//create the board members
+						createWorkReportBoardMembers(users, workReportId, league, idExistingMemberMap);
+					}
+					// should this be done for the mainboard also??
+					// should it be created if there are no users? I don't think so because it is just contact info and stuff?
+					try {
+						createWorkReportDivisionBoard(workReportId, divisionGroup, league);
+					}
+					catch (CreateException ex) {
+						System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: "
+								+ ex.getMessage());
+						ex.printStackTrace(System.err);
+					}
+				}else{
+					System.err.println("[WorkReportBusiness] A league connection is missing for the division group: "+divisionGroup.getName()+" id:"+divisionGroup.getPrimaryKey());
 				}
 			}
 		}
