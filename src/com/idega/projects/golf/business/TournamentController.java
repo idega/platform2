@@ -362,9 +362,11 @@ public class TournamentController{
         return errors;
     }
 
-
-
     public static boolean setupStartingtime(com.idega.projects.golf.entity.Member member, Tournament tournament, int tournament_round_id, int startingGroup) throws SQLException{
+		return setupStartingtime(member,tournament, tournament_round_id,startingGroup, 1);
+	}
+
+    public static boolean setupStartingtime(com.idega.projects.golf.entity.Member member, Tournament tournament, int tournament_round_id, int startingGroup, int tee_number) throws SQLException{
         int howManyEachGroup = tournament.getNumberInGroup();
         TournamentRound tourRound = new TournamentRound(tournament_round_id);
 
@@ -380,6 +382,7 @@ public class TournamentController{
             startingtime.setCardName("");
             startingtime.setCardNum("");
             startingtime.setGroupNum(startingGroup);
+            startingtime.setTeeNumber(tee_number);
         startingtime.insert();
 
         startingtime.addTo(tourRound);
