@@ -64,6 +64,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.SelectPanel;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -794,13 +795,16 @@ public abstract class AbstractSearchForm extends Block{
 					}catch (Exception e) {
 						System.out.println("Error changing setting dateinputs");
 					}
+				} else if (object[i] instanceof SelectPanel) {
+					String values[] = iwc.getParameterValues(object[i].getName());
+					((SelectPanel)object[i]).setSelectedElements(values);
 				} else {
 					try {
 						((InterfaceObject)object[i]).setContent(value);
 					}catch (Exception e) {
 						System.out.println("Error changing po to io");
 					}
-				}
+				} 
 			}
 
 			if ( errorFields != null && errorFields.contains(object[i].getName())) {
