@@ -203,7 +203,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 
 	
 	
-	public int ejbHomeGetCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+	private int getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(int age,String gender, WorkReport report,WorkReportGroup league) {
 		IDOQuery sql = idoQuery();
 		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
@@ -213,8 +213,13 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
-		.appendAnd()
-		.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+		.appendAnd();
+		if(gender!=null){
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
+			.appendAnd();
+		}
+		
+		sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 		.appendLessThanOrEqualsSign()
 		.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
 		.appendAnd()
@@ -237,6 +242,73 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			e.printStackTrace();
 			return 0;
 		}
+	}
+	
+	private int getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(int age,String gender, WorkReport report,WorkReportGroup league) {
+		IDOQuery sql = idoQuery();
+		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
+		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
+		String IDColumnName = getIDColumnName();
+		
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		.append(getNameOfMiddleTable(this,league)).append(" middle ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
+		.appendAnd();
+		if(gender!=null){
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
+			.appendAnd();
+		}
+		
+		sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+		.appendGreaterThanSign()
+		.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
+		.appendAnd()
+		.append("memb.")
+		.append(IDColumnName)
+		.appendEqualSign()
+		.append("middle.")
+		.append(IDColumnName)
+		.appendAnd()
+		.append("middle.")
+		.append(leagueIDColumnName)
+		.appendEqualSign()
+		.append(league.getPrimaryKey());
+		
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	//equal or older
+	public int ejbHomeGetCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(age,null,report,league);
+	}
+	
+	public int ejbHomeGetCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(age,MALE,report,league);
+	}
+	
+	public int ejbHomeGetCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(age,FEMALE,report,league);
+	}
+	
+	//younger
+	public int ejbHomeGetCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(age,null,report,league);
+	}
+	
+	public int ejbHomeGetCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(age,MALE,report,league);
+	}
+	
+	public int ejbHomeGetCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(age,FEMALE,report,league);
 	}
 	
 	

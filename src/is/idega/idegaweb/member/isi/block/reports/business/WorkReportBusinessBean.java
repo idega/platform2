@@ -118,6 +118,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return count;
 	}
+	
+	
 
 	public int getTotalCountOfWorkReportsByStatusAndYear(String status, int year) {
 
@@ -152,6 +154,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 **/
 	public int getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age, WorkReport report , WorkReportGroup wrGroup){
 		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,wrGroup);
+	}
+	
+	public int getCountOfPlayersInLeagueForWorkReportByWorkReportIdAndWorkReportGroupId(int reportId, int wrGroupId) {
+		int count = 0;
+		try {
+			WorkReportDivisionBoard board = getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId,wrGroupId);
+			count = board.getNumberOfPlayers();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
 	
 

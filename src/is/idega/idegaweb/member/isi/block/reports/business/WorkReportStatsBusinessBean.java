@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
@@ -124,8 +126,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
 			WorkReport report = (WorkReport) iter.next();
-			ReportableData data = new ReportableData();
 
+			ReportableData data = new ReportableData();
+			
 			//WorkReport data
 			data.addData(clubName, report.getGroupName());
 			data.addData(
@@ -138,6 +141,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			data.addData(womenOverOrEqualAgeLimit, new Integer(5));
 			data.addData(menUnderAgeLimit, new Integer(3));
 			data.addData(menOverOrEqualAgeLimit, new Integer(2));
+			
+
 
 			reportData.add(data);
 
@@ -249,6 +254,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
 			WorkReport report = (WorkReport) iter.next();
+			//get last years report for comparison
+			WorkReport lastYearReport=null;
+			try {
+				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),report.getYearOfReport().intValue());
+			}
+			catch (FinderException e1) {
+				//e1.printStackTrace();
+				System.err.println("WorkReportStatsBusiness : No report for year before :"+year);
+			}
+			
 			String cName = report.getGroupName();
 			String regUniAbbr = report.getRegionalUnionAbbreviation();
 
@@ -268,12 +283,18 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					data.addData(clubName, cName);
 					data.addData(regionalUnionAbbreviation, (regUniAbbr != null) ? regUniAbbr : report.getRegionalUnionGroupId().toString());
 //					get the stats
-					int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
+					//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
 								  
-					data.addData(womenUnderAgeLimit, new Integer(5));
-					data.addData(womenOverOrEqualAgeLimit, new Integer(playerCount));
-					data.addData(menUnderAgeLimit, new Integer(0));
-					data.addData(menOverOrEqualAgeLimit, new Integer(playerCount));
+					data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+					data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+					data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+					data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+					
+					if(lastYearReport!=null){
+						Integer lastYear = new Integer(getWorkReportBusiness().getCountOfPlayersInLeagueForWorkReportByWorkReportIdAndWorkReportGroupId(((Integer)lastYearReport.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue()));
+						data.addData(comparingYearStat,lastYear);
+					}
+			
 					//for the page separations
 					StringBuffer leagueBuf = new StringBuffer();
 					leagueBuf.append( (league.getNumber()!=null)? league.getNumber() : "" )
