@@ -9,22 +9,25 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
+import is.idega.idegaweb.golf.startingtime.business.TeetimeSearchResult;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
@@ -121,84 +124,93 @@ public class TeeTimeSearch extends GolfBlock {
 		
 		boolean results = (modinfo.getParameter("results") != null);
 		
-		if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
-			if(!results) {
-				add(getWapSearchForm(modinfo, funcDate));
-			}
-		} else {
-			add(getSearchForm(modinfo, funcDate));
-		}
+		boolean result_part = (modinfo.getParameter("part")!=null);
 		
-		if (results) {
-			if (modinfo.getParameterValues("fields") != null && modinfo.getParameter("fjoldi") != null && !modinfo.getParameter("fjoldi").equals("")) {
-				if (numericString(modinfo.getParameter("fjoldi"))) {
-					String[] myParameters = modinfo.getParameterValues("fields");
-					int fields;
-					for (int i = 0; i < myParameters.length; i++) {
-						fields = Integer.parseInt(myParameters[i]);
-						myField = getFieldInfo(fields, modinfo.getParameter("date").toString());
-						Today = getFieldInfo(fields, funcDate.toSQLDateString());
-						try {
-							Groups = search(funcDate, modinfo, myField, Today, Integer.parseInt(modinfo.getParameter("fjoldi").toString()), modinfo.getParameter("date").toString(), modinfo.getParameter("ftime").toString(), modinfo.getParameter("ltime").toString(), 0, 36);
-							if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
-								addWapResults(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns);
-							} else {
-								this.add(getResultTable(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns));
-							}
-						} catch (Exception E) {
-							E.printStackTrace();
-							if (E.getMessage().equals("Error1")) {
-								Table Error1 = new Table(1, 1);
-								Error1.setWidth(_blockWidth);
-								Error1.setHeight(1, "21");
-								//Error1.setBorder(1);
-								Error1.setColumnAlignment(1, "center");
-								Error1.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error1", "_")), 1, 1);
-								this.add(Error1);
-								break;
-							}
-							if (E.getMessage().equals("Error2")) {
-								Table Error2 = new Table(1, 1);
-								Error2.setWidth(_blockWidth);
-								Error2.setHeight(1, "21");
-								//Error2.setBorder(1);
-								Error2.setColumnAlignment(1, "center");
-								Error2.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error2", "_")), 1, 1);
-								this.add(Error2);
-								break;
-							}
-							if (E.getMessage().equals("Error3")) {
-								Table Error3 = new Table(1, 3);
+		if(result_part){
+			addWapResults(modinfo, null, null, null);
+		} else {
 
-								Error3.setWidth(_blockWidth);
-								Error3.setHeight(1, "30");
-								Error3.setHeight(2, "25");
-								Error3.setCellspacing(0);
-								//Error3.setBorder(1);
-								Error3.setColumnAlignment(1, "center");
-								Error3.add(this.getSmallErrorText(getFieldName(myField.get_field_id())), 1, 1);
-								Error3.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error3", "_")), 1, 2);
-								this.add(Error3);
+		
+			if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+				if(!results) {
+					add(getWapSearchForm(modinfo, funcDate));
+				}
+			} else {
+				add(getSearchForm(modinfo, funcDate));
+			}
+			
+			if (results) {
+				if (modinfo.getParameterValues("fields") != null && modinfo.getParameter("fjoldi") != null && !modinfo.getParameter("fjoldi").equals("")) {
+					if (numericString(modinfo.getParameter("fjoldi"))) {
+						String[] myParameters = modinfo.getParameterValues("fields");
+						int fields;
+						for (int i = 0; i < myParameters.length; i++) {
+							fields = Integer.parseInt(myParameters[i]);
+							myField = getFieldInfo(fields, modinfo.getParameter("date").toString());
+							Today = getFieldInfo(fields, funcDate.toSQLDateString());
+							try {
+								Groups = search(funcDate, modinfo, myField, Today, Integer.parseInt(modinfo.getParameter("fjoldi").toString()), modinfo.getParameter("date").toString(), modinfo.getParameter("ftime").toString(), modinfo.getParameter("ltime").toString(), 0, 36);
+								if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+									addWapResults(modinfo, Groups, myField, modinfo.getParameter("date").toString());
+								} else {
+									this.add(getResultTable(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns));
+								}
+															
+							} catch (Exception E) {
+								E.printStackTrace();
+								if (E.getMessage().equals("Error1")) {
+									Table Error1 = new Table(1, 1);
+									Error1.setWidth(_blockWidth);
+									Error1.setHeight(1, "21");
+									//Error1.setBorder(1);
+									Error1.setColumnAlignment(1, "center");
+									Error1.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error1", "_")), 1, 1);
+									this.add(Error1);
+									break;
+								}
+								if (E.getMessage().equals("Error2")) {
+									Table Error2 = new Table(1, 1);
+									Error2.setWidth(_blockWidth);
+									Error2.setHeight(1, "21");
+									//Error2.setBorder(1);
+									Error2.setColumnAlignment(1, "center");
+									Error2.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error2", "_")), 1, 1);
+									this.add(Error2);
+									break;
+								}
+								if (E.getMessage().equals("Error3")) {
+									Table Error3 = new Table(1, 3);
+	
+									Error3.setWidth(_blockWidth);
+									Error3.setHeight(1, "30");
+									Error3.setHeight(2, "25");
+									Error3.setCellspacing(0);
+									//Error3.setBorder(1);
+									Error3.setColumnAlignment(1, "center");
+									Error3.add(this.getSmallErrorText(getFieldName(myField.get_field_id())), 1, 1);
+									Error3.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error3", "_")), 1, 2);
+									this.add(Error3);
+								}
 							}
 						}
+					} else {
+						Table Error = new Table(1, 1);
+						Error.setWidth(_blockWidth);
+						Error.setHeight(1, "21");
+	
+						Error.setColumnAlignment(1, "center");
+						Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error4", "_")), 1, 1);
+						this.add(Error);
 					}
 				} else {
 					Table Error = new Table(1, 1);
 					Error.setWidth(_blockWidth);
 					Error.setHeight(1, "21");
-
+	
 					Error.setColumnAlignment(1, "center");
-					Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error4", "_")), 1, 1);
+					Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error5", "_")), 1, 1);
 					this.add(Error);
 				}
-			} else {
-				Table Error = new Table(1, 1);
-				Error.setWidth(_blockWidth);
-				Error.setHeight(1, "21");
-
-				Error.setColumnAlignment(1, "center");
-				Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error5", "_")), 1, 1);
-				this.add(Error);
 			}
 		}
 	}
@@ -519,24 +531,47 @@ public class TeeTimeSearch extends GolfBlock {
 		return myTable;
 	}
 	
-	public void addWapResults(IWContext modinfo, Vector Groups, GolfField info, String date1, int resultCol) throws SQLException, IOException, FinderException {
+	public void addWapResults(IWContext modinfo, Vector Groups, GolfField info2, String date) throws SQLException, IOException, FinderException {
 		
-		Vector myVector = new Vector();
-		Vector boolVector = new Vector();
-
-		myVector = (Vector) Groups.elementAt(0);
-		boolVector = (Vector) Groups.elementAt(1);
-
-		int count = 0;
-
-		for (int i = 0; i < boolVector.size(); i++) {
-			if (((Boolean) boolVector.elementAt(i)).booleanValue()) count++;
+		Form myForm = new Form();
+		myForm.setClassToInstanciateAndSendTo(RegisterTime.class);
+		
+		TeetimeSearchResult result = (TeetimeSearchResult)IBOLookup.getSessionInstance(modinfo,TeetimeSearchResult.class);		
+		
+		if(Groups != null){
+			Vector myVector = new Vector();
+			Vector boolVector = new Vector();
+			Vector resultList = new Vector();
+			
+			myVector = (Vector) Groups.elementAt(0);
+			boolVector = (Vector) Groups.elementAt(1);			
+			
+			for (int i = 0; i < boolVector.size(); i++) {
+				if (((Boolean) boolVector.elementAt(i)).booleanValue()){
+					resultList.add(myVector.elementAt(i));
+				}
+			}
+			
+			result.cachResult(resultList,info2,date);
+			
+		} else if(!result.isInitialized()){
+			add(localize("start.session_timeout","Session has expired"));
+			return;
 		}
+		
+		myForm.addParameter("search", "1");					
+		myForm.addParameter("field_id",result.getFieldInfo().get_field_id());
+		myForm.addParameter("date", result.getDate());
+		myForm.addParameter("union_id", getFieldUnion(result.getFieldInfo().get_field_id()));
+		myForm.addParameter("skraMarga",modinfo.getParameter("fjoldi"));
+		
+		myForm.addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
+		
 
 		
-		String headerString = getFieldName(info.get_field_id());
+		String headerString = getFieldName(result.getFieldInfo().get_field_id());
 		
-
+		int count = result.getResultSize();
 
 		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
 			headerString += (" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
@@ -554,52 +589,44 @@ public class TeeTimeSearch extends GolfBlock {
 
 		boolean first = true;
 
-		Link[] Times = new Link[count];
-		int links = 0;
-		int hour = 0;
-		int rows = 0;
+//		Link[] Times = new Link[count];
+//		int links = 0;
+		//int hour = 0;
+//		int rows = 0;
+		
+		DropdownMenu radio = new DropdownMenu("line");
 
 		if (count != 0) {
-
-			for (int i = 0; i < boolVector.size(); i++) {
-				if (((Boolean) boolVector.elementAt(i)).booleanValue()) {
-
-					hour = getHours(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info) + ":00");
-
-					Times[links] = getLink(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info));
-
-					if (hour < 13)
-						Times[links].addParameter("hvenaer", "0");
-					else if (hour < 17)
-						Times[links].addParameter("hvenaer", "1");
-					else
-						Times[links].addParameter("hvenaer", "2");
-
-					if(_teeTimeTablePage != null) {
-						Times[links].setPage(_teeTimeTablePage);
-					}
-
-					Times[links].addParameter("search", "1");					
-					Times[links].addParameter("field_id",info.get_field_id());
-					Times[links].addParameter("date", date1);
-					Times[links].addParameter("union_id", getFieldUnion(info.get_field_id()));
-					Times[links].addParameter("line",myVector.elementAt(i).toString());
-					Times[links].addParameter("skraMarga",modinfo.getParameter("fjoldi"));
-					
-					Times[links].addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
-					Times[links].setClassToInstanciate(RegisterTime.class);
-					
-					add(new Break());
-					add(Times[links]);
-					links++;
-				}
+			String part = modinfo.getParameter("part");
+			List l;
+			if("next".equals(part)){
+				l = result.next();
+			} else if("prev".equals(part)) {
+				l=result.prev();
+			} else {
+				l=result.current();
+			}
+			for (Iterator iter = l.iterator(); iter.hasNext();) {
+				String element = (String) iter.next().toString();
+				radio.addMenuElement(element,TimeVsGroupnum(Integer.parseInt(element), result.getFieldInfo()));
 			}
 			
-			add(new Break());
-
+			myForm.add(radio);
+			if(result.hasPrevious()){
+				Link prev = new Link(localize("prev","Previous"));
+				prev.addParameter("part","prev");
+				add(prev);
+			}
+			if(result.hasNext()){
+				Link next = new Link(localize("next","Next"));
+				next.addParameter("part","next");
+				add(next);
+			}
+			myForm.add(new SubmitButton(localize("start.reserve","Reserve")));
+			
+			add(myForm);
 		}
 	}
-
 
 	public Vector search(IWTimestamp funcDate, IWContext modinfo, GolfField info, GolfField today, int fjoldi, String date, String firstTime, String lastTime, int firstHandicap, int LastHandicap) throws SQLException, IOException, Exception {
 
