@@ -1,6 +1,8 @@
 package com.idega.block.trade.stockroom.data;
 
-import java.sql.SQLException;
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.user.data.GroupBMPBean;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -11,18 +13,13 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ResellerStaffGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements com.idega.block.trade.stockroom.data.ResellerStaffGroup {
+public class ResellerStaffGroupBMPBean extends GroupBMPBean implements com.idega.block.trade.stockroom.data.ResellerStaffGroup {
   public static final String GROUP_TYPE_VALUE = "sr_reseller_staff";
 
 
   public ResellerStaffGroupBMPBean() {
     super();
   }
-
-  public ResellerStaffGroupBMPBean(int id) throws SQLException {
-    super(id);
-  }
-
 
   public String getGroupTypeValue() {
     return GROUP_TYPE_VALUE;
@@ -36,5 +33,12 @@ public class ResellerStaffGroupBMPBean extends com.idega.core.data.GenericGroupB
   protected boolean identicalGroupExistsInDatabase() throws Exception {
     return false;
   }
-
+  
+  public Collection ejbFindGroupsByName(String name) throws FinderException {
+  	return super.ejbFindGroupsByName(name);
+  }
+  
+  public Collection ejbFindGroupsByNameAndDescription(String name, String description) throws FinderException {
+  	return super.ejbFindGroupsByNameAndDescription(name, description);
+  }
   }

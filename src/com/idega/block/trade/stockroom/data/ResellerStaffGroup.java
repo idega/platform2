@@ -1,7 +1,15 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.user.data.Group;
 
-public interface ResellerStaffGroup extends com.idega.core.data.GenericGroup
-{
- public java.lang.String getGroupTypeValue();
+
+/**
+ * @author gimmi
+ */
+public interface ResellerStaffGroup extends Group {
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean#getGroupTypeValue
+	 */
+	public String getGroupTypeValue();
 }

@@ -1,12 +1,26 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.data.IDOHome;
 
-public interface SupplierStaffGroupHome extends com.idega.data.IDOHome
-{
- public SupplierStaffGroup create() throws javax.ejb.CreateException;
- public SupplierStaffGroup createLegacy();
- public SupplierStaffGroup findByPrimaryKey(int id) throws javax.ejb.FinderException;
- public SupplierStaffGroup findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public SupplierStaffGroup findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
 
+/**
+ * @author gimmi
+ */
+public interface SupplierStaffGroupHome extends IDOHome {
+
+	public SupplierStaffGroup create() throws javax.ejb.CreateException;
+
+	public SupplierStaffGroup findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean#ejbFindGroupsByName
+	 */
+	public Collection findGroupsByName(String name) throws FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean#ejbFindGroupsByNameAndDescription
+	 */
+	public Collection findGroupsByNameAndDescription(String name, String description) throws FinderException;
 }

@@ -1,43 +1,39 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.data.IDOFactory;
 
-public class SupplierStaffGroupHomeImpl extends com.idega.data.IDOFactory implements SupplierStaffGroupHome
-{
- protected Class getEntityInterfaceClass(){
-  return SupplierStaffGroup.class;
- }
 
- public SupplierStaffGroup create() throws javax.ejb.CreateException{
-  return (SupplierStaffGroup) super.idoCreate();
- }
+/**
+ * @author gimmi
+ */
+public class SupplierStaffGroupHomeImpl extends IDOFactory implements SupplierStaffGroupHome {
 
- public SupplierStaffGroup createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
+	protected Class getEntityInterfaceClass() {
+		return SupplierStaffGroup.class;
 	}
 
- }
-
- public SupplierStaffGroup findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (SupplierStaffGroup) super.idoFindByPrimaryKey(id);
- }
-
- public SupplierStaffGroup findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (SupplierStaffGroup) super.idoFindByPrimaryKey(pk);
- }
-
- public SupplierStaffGroup findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
+	public SupplierStaffGroup create() throws javax.ejb.CreateException {
+		return (SupplierStaffGroup) super.createIDO();
 	}
 
- }
+	public SupplierStaffGroup findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (SupplierStaffGroup) super.findByPrimaryKeyIDO(pk);
+	}
 
+	public Collection findGroupsByName(String name) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SupplierStaffGroupBMPBean) entity).ejbFindGroupsByName(name);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
+	public Collection findGroupsByNameAndDescription(String name, String description) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SupplierStaffGroupBMPBean) entity).ejbFindGroupsByNameAndDescription(name,
+				description);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -1,5 +1,9 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.user.data.GroupBMPBean;
+
 
 /**
  * Title:        IW Trade
@@ -10,7 +14,7 @@ package com.idega.block.trade.stockroom.data;
  * @version 1.0
  */
 
-public class SupplierStaffGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
+public class SupplierStaffGroupBMPBean extends GroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
 //public class SupplierStaffGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
   public static final String GROUP_TYPE_VALUE = "sr_supplier_staff";
 
@@ -35,6 +39,14 @@ public class SupplierStaffGroupBMPBean extends com.idega.core.data.GenericGroupB
 
   protected boolean identicalGroupExistsInDatabase() throws Exception {
     return false;
+  }
+  
+  public Collection ejbFindGroupsByName(String name) throws FinderException {
+  	return super.ejbFindGroupsByName(name);
+  }
+  
+  public Collection ejbFindGroupsByNameAndDescription(String name, String description) throws FinderException {
+  	return super.ejbFindGroupsByNameAndDescription(name, description);
   }
 
   } // Class SupplierStaffGroup
