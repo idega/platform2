@@ -390,8 +390,10 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			removeContracts.setDisabled(true);			
 		} else {
 			java.sql.Date earliestPossibleRemoveDate = new java.sql.Date(getEarliestPossibleContractRemoveDate().getTime());
-			if (getBusiness().getNumberOfFutureContracts(applicationId, earliestPossibleRemoveDate) > 0 ||
-					getBusiness().hasFutureLogs(applicationId, earliestPossibleRemoveDate)) {
+			IWTimestamp futureDate = new IWTimestamp(earliestPossibleRemoveDate);
+			futureDate.addDays(1);
+			if (getBusiness().getNumberOfFutureContracts(applicationId, futureDate.getDate()) > 0 ||
+					getBusiness().hasFutureLogs(applicationId, futureDate.getDate())) {
 				removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
 			} else {
 				removeContracts.setOnSubmitFunction("removeContract", "function removeContract() { alert('" + localize("child_care.only_admin_delete_future_contract", "Earliest possible date to remove contract is") + 
@@ -408,7 +410,6 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			IWTimestamp t = new IWTimestamp();
 			t.setDay(1);
 			t.addMonths(3);
-			t.addDays(1);
 			earliestPossibleRemoveDate = t.getDate();
 		} else {
 			PlacementHelper helper = getBusiness().getPlacementHelper(new Integer(getSession().getApplicationID()));
