@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/29 15:51:17 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/02 10:41:12 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.75 $
+ * @version $Revision: 1.76 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -318,9 +318,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				else if (schoolYear <= 6) {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
-						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB))
+						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)) {
 							createPaymentsForFritidsklubb(regBus, provider, schoolClassMember, conditions, placementTimes);
 							break;
+						}
 					}
 				}
 			}
