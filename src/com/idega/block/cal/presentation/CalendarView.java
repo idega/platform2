@@ -556,6 +556,9 @@ public class CalendarView extends Block{
 				user = iwc.getCurrentUser();
 				userID = (Integer) user.getPrimaryKey();
 			}
+			else {
+				userID = new Integer(-1);
+			}
 			for(int h=0; h<listOfEntries.size(); h++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
 				CalendarLedger ledger = null;
