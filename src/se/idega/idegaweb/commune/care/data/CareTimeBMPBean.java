@@ -1,5 +1,5 @@
 /*
- * $Id: CareTimeBMPBean.java,v 1.1 2004/12/02 12:39:08 laddi Exp $
+ * $Id: CareTimeBMPBean.java,v 1.2 2004/12/02 13:18:22 laddi Exp $
  * Created on 11.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.idega.data.query.WildCardColumn;
  * Last modified: 11.11.2004 08:54:09 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CareTimeBMPBean extends GenericEntity implements CareTime {
 
@@ -40,6 +40,14 @@ public class CareTimeBMPBean extends GenericEntity implements CareTime {
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
+
+  public String getIDColumnName(){
+    return COLUMN_NAME_CODE;
+  }
+
+  public Class getPrimaryKeyClass(){
+    return String.class;
+  }
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#insertStartData()
