@@ -29,6 +29,13 @@ public class PlayerSelectionBox extends GroupSelectionBox implements InputHandle
 		setName(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 	}
 	
+	public String getDisplayForResultingObject(Object value, IWContext iwc) {
+		if (value == null) {
+			return this.getResourceBundle(iwc).getLocalizedString("PlayerSelectionBox.all_or_none_selected","All");
+		}
+		return super.getDisplayForResultingObject(value, iwc);
+	}
+	
 	//only allow this league to select itself
 	protected Collection getGroups(IWContext iwc) throws RemoteException {
 		Integer groupID = setUserTypeAndReturnGroupId(iwc);
@@ -56,7 +63,7 @@ public class PlayerSelectionBox extends GroupSelectionBox implements InputHandle
 		return super.getNameForGroup(group)+" ("+group.getParentNode().getNodeName()+")";
 	}
 	
-	protected void getClubPlayers(Collection divisions, Group group) {
+	private void getClubPlayers(Collection divisions, Group group) {
 		if (divisions == null)
 			divisions = new ArrayList();
 		

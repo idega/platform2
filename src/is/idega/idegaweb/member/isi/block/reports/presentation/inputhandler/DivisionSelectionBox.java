@@ -32,6 +32,13 @@ public class DivisionSelectionBox extends GroupSelectionBox implements InputHand
 		setName(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
 	}
 	
+	public String getDisplayForResultingObject(Object value, IWContext iwc) {
+		if (value == null) {
+			return this.getResourceBundle(iwc).getLocalizedString("DivisionSelectionBox.all_or_none_selected","All");
+		}
+		return super.getDisplayForResultingObject(value, iwc);
+	}
+
 	//only allow this league to select itself
 	protected Collection getGroups(IWContext iwc) throws RemoteException {
 		Integer groupID = setUserTypeAndReturnGroupId(iwc);
@@ -55,7 +62,7 @@ public class DivisionSelectionBox extends GroupSelectionBox implements InputHand
 		}	
 	}
 	
-	protected void getClubDivisions(Collection divisions, Group group) {
+	private void getClubDivisions(Collection divisions, Group group) {
 		if (divisions == null)
 			divisions = new ArrayList();
 		
