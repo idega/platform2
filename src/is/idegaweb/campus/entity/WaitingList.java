@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.4 2001/06/25 22:57:18 palli Exp $
+ * $Id: WaitingList.java,v 1.5 2001/07/12 13:39:24 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,8 +22,8 @@ public class WaitingList extends GenericEntity {
   private static final String complexId_ = "bu_complex_id";
   private static final String apartmentTypeId_ = "bu_apartment_type_id";
   private static final String applicantId_ = "app_applicant_id";
-  private static final String waitingListTypeId_ = "app_wl_type_id";
   private static final String order_ = "ordered";
+  private static final String type_ = "type";
 
   public WaitingList() {
     super();
@@ -38,8 +38,9 @@ public class WaitingList extends GenericEntity {
     addAttribute(complexId_,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
     addAttribute(apartmentTypeId_,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
     addAttribute(applicantId_,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
-    addAttribute(waitingListTypeId_,"Waiting list type",true,true,"java.lang.Integer","one-to-many","is.idegaweb.campus.entity.WaitingListType");
     addAttribute(order_,"Order",true,true,"java.lang.Integer");
+    addAttribute(type_,"Waiting list type",true,true,"java.lang.String");
+    setMaxLength(type_,1);
   }
 
   public String getEntityName() {
@@ -58,8 +59,8 @@ public class WaitingList extends GenericEntity {
     return(applicantId_);
   }
 
-  public String getWaitingListTypeIdColumnName() {
-    return(waitingListTypeId_);
+  public String getTypeColumnName() {
+    return(type_);
   }
 
   public String getOrderColumnName() {
@@ -71,7 +72,7 @@ public class WaitingList extends GenericEntity {
   }
 
   public Integer getComplexId() {
-    return((Integer)getColumnValue(complexId_));
+    return(getIntegerColumnValue(complexId_));
   }
 
   public void setApartmentTypeId(int id) {
@@ -83,7 +84,7 @@ public class WaitingList extends GenericEntity {
   }
 
   public Integer getApartmentTypeId() {
-    return((Integer)getColumnValue(apartmentTypeId_));
+    return(getIntegerColumnValue(apartmentTypeId_));
   }
 
   public void setApplicantId(int id) {
@@ -95,19 +96,15 @@ public class WaitingList extends GenericEntity {
   }
 
   public Integer getApplicantId() {
-    return((Integer)getColumnValue(applicantId_));
+    return(getIntegerColumnValue(applicantId_));
   }
 
-  public void setWaitingListTypeId(int id) {
-    setColumn(waitingListTypeId_,id);
+  public void setType(String type) {
+    setColumn(type_,type);
   }
 
-  public void setWaitingListTypeId(Integer id) {
-    setColumn(waitingListTypeId_,id);
-  }
-
-  public Integer getWaitingListTypeId() {
-    return((Integer)getColumnValue(waitingListTypeId_));
+  public String getType() {
+    return(getStringColumnValue(type_));
   }
 
   public void setOrder(int order) {
@@ -119,6 +116,6 @@ public class WaitingList extends GenericEntity {
   }
 
   public Integer getOrder() {
-    return((Integer)getColumnValue(order_));
+    return(getIntegerColumnValue(order_));
   }
 }
