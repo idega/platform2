@@ -1,15 +1,18 @@
 package com.idega.block.trade.stockroom.presentation;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import javax.ejb.FinderException;
-import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.category.business.CategoryComparator;
+import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.data.ICCategory;
+import com.idega.block.category.data.ICCategoryHome;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.category.presentation.CategoryWindow;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
@@ -20,6 +23,7 @@ import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -49,6 +53,11 @@ public class ProductCatalog extends CategoryBlock {
 	private static final String _ORDER_BY = "prod_cat_order_by";
 	public static final String CACHE_KEY = "prod_cat_cache_key";
 	public static final String CATEGORY_ID = "pr_cat_id";
+	
+	private HashMap colors;
+	private HashMap indents;
+	private HashMap pages;
+	
 	int productsPerPage = 10;
 	int currentPage = 1;
 	int orderBy = -1;
@@ -65,6 +74,8 @@ public class ProductCatalog extends CategoryBlock {
 	public String _headerFontStyle = null;
 	private String _teaserFontStyle = null;
 	private String _anchorString = "prodCatAnchorID_";
+	private String _backgroundColor = null;
+	private String _headerBackgroundColor = null;
 	String _width = null;
 	ICPage _productLinkPage = null;
 	String _windowString = null;
@@ -94,8 +105,13 @@ public class ProductCatalog extends CategoryBlock {
 	private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
 	private AbstractProductCatalogLayout layout = null;
 	public String _topColor;
+	
+	Collection expandedCategories = new Vector();
+	
+	
+	
 	public ProductCatalog() {
-		super.setCacheable(getCacheKey(), 999999999); //CACHE_KEY, 999999999);
+		super.setCacheable(getCacheKey(), 0);
 		super.setAutoCreate(false);
 	}
 	public String getCacheKey() {
@@ -150,7 +166,38 @@ public class ProductCatalog extends CategoryBlock {
 		}
 		catch (NumberFormatException n) {
 		}
+		
+		
+		expandedCategories = new Vector();
+		String selCat = iwc.getParameter(CATEGORY_ID);
+		
+		if (selCat != null) {
+			addCategoryAsExpanded(selCat);
+		}
 	}
+	
+	public boolean isCacheable(IWContext iwc) {
+		return false;
+	}
+	
+	private void addCategoryAsExpanded(String selCat) {
+		expandedCategories.add(selCat);
+		try {
+			ICCategory icCat = ((ICCategoryHome) IDOLookup.getHome(ICCategory.class)).findByPrimaryKey(new Integer(selCat));
+			addCategoryAsExpanded(icCat.getParentEntity().getPrimaryKey().toString());
+		}
+		catch (Exception e) {
+			expandedCategories.remove(selCat);
+			//e.printStackTrace();
+		}
+	}
+	
+	boolean isCategoryExpanded(ICCategory category) {
+		return expandedCategories.contains(category.getPrimaryKey().toString());
+	}
+	
+	
+	
 	private void catalog(IWContext iwc) throws RemoteException, FinderException {
 		try {
 			Link createLink = ProductEditorWindow.getEditorLink(-1);
@@ -190,6 +237,8 @@ public class ProductCatalog extends CategoryBlock {
 			table.setCellspacing(0);
 			if (_width != null) {
 				table.setWidth(_width);
+			} else {
+				table.setWidth(Table.HUNDRED_PERCENT);
 			}
 			PresentationObject po = layout.getCatalog(this, iwc, productCategories);
 			table.add(po);
@@ -271,6 +320,7 @@ public class ProductCatalog extends CategoryBlock {
 	}
 	public void setProductLinkPage(ICPage page) {
 		this._productLinkPage = page;
+		setPage(page, 1);
 	}
 	public void setProductAsLink(boolean isLink) {
 		this._productIsLink = isLink;
@@ -342,12 +392,20 @@ public class ProductCatalog extends CategoryBlock {
 	public void setOrderBy(int orderProductsBy) {
 		this._orderProductsBy = orderProductsBy;
 	}
+	
+	Text getHeader(String content) {
+		Text text = new Text(content);
+		if (_headerFontStyle != null) {
+			text.setFontStyle(_headerFontStyle);
+		}
+		return text;
+	}
+	
 	Text getText(String content) {
 		Text text = new Text(content);
 		if (_fontStyle != null) {
 			text.setFontStyle(_fontStyle);
 		}
-		//text.setHorizontalAlignment(Paragraph.HORIZONTAL_ALIGN_JUSTIFY);
 		return text;
 	}
 	Text getCategoryText(String content) {
@@ -453,10 +511,11 @@ public class ProductCatalog extends CategoryBlock {
 			return null;
 		}
 	}
-	Link getCategoryLink(ICCategory category, String nameText) {
+	Link getCategoryLink(ICCategory category, String nameText, int level) {
 		Link categoryLink = new Link(getCategoryText(nameText));
-		if (_productLinkPage != null) {
-			categoryLink.setPage(_productLinkPage);
+		ICPage page = getPage(level);
+		if (page != null) {
+			categoryLink.setPage(page);
 		}
 		if (_addCategoryID) {
 			categoryLink.addParameter(CATEGORY_ID, category.getID());
@@ -557,10 +616,82 @@ public class ProductCatalog extends CategoryBlock {
 	private ProductBusiness getProductBusiness() throws RemoteException {
 		return (ProductBusiness) IBOLookup.getServiceInstance(this.iwc, ProductBusiness.class);
 	}
-	/**
-	 * @param i
-	 */
 	public void setIndent(int i) {
 		_indent = i;
+		setIndent(i, 1);
 	}
+	
+	public void setIndent(int indent, int level) {
+		if (indents == null) {
+			indents = new HashMap();
+		}
+		indents.put(new Integer(level), new Integer(indent));
+	}
+	
+	public int getIndent() {
+		return getIndent(1);
+	}
+	
+	public int getIndent(int level) {
+		try {
+			Object obj = indents.get( new Integer(level));
+			if (obj == null) {
+				return _indent;
+			}
+			return ((Integer) obj).intValue();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return 0;
+		} catch (NullPointerException e) {
+			return 0;
+		}
+	}
+	
+	public void setColor(String color, int level) {
+		if (colors == null) {
+			colors = new HashMap();
+		}
+		this.colors.put(new Integer(level), color);
+	}
+	
+	public String getColor(int level) {
+		try {
+			return (String) colors.get( new Integer(level));
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return null;
+		} catch (NullPointerException e) {
+			return null;
+		}
+	}
+	
+	public void setPage(ICPage page, int level) {
+		if (pages == null) {
+			pages = new HashMap();
+		}
+		pages.put(new Integer(level), page);
+	}
+	
+	public ICPage getPage(int level) {
+		if ( pages != null) {
+			return (ICPage) pages.get( new Integer(level));
+		} else {
+			return null;
+		}
+	}
+	
+	public void setBackgroundColor(String color) {
+		this._backgroundColor = color;
+	}
+	
+	public String getBackgroundColor() {
+		return this._backgroundColor;
+	}
+	
+	public void setHeaderBackgroundColor(String color) {
+		this._headerBackgroundColor = color;
+	}
+	
+	public String getHeaderBackgroundColor() {
+		return this._headerBackgroundColor;
+	}
+		
 }
