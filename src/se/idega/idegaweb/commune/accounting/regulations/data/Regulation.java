@@ -8,6 +8,7 @@ public interface Regulation extends com.idega.data.IDOEntity
  public java.lang.String getChangedSign();
  public java.lang.Integer getConditionOrder();
  public se.idega.idegaweb.commune.accounting.regulations.data.ConditionType getConditionType();
+ public float getDiscount();
  public java.lang.String getLocalizationKey();
  public java.lang.String getName();
  public com.idega.block.school.data.SchoolType getOperation();
@@ -24,6 +25,7 @@ public interface Regulation extends com.idega.data.IDOEntity
  public void setChangedSign(java.lang.String p0);
  public void setConditionOrder(int p0);
  public void setConditionType(int p0);
+ public void setDiscount(float p0);
  public void setLocalizationKey(java.lang.String p0);
  public void setName(java.lang.String p0);
  public void setOperation(int p0);

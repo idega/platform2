@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.4 2003/09/06 22:44:56 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.5 2003/09/11 14:33:52 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolType;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.4 2003/09/06 22:44:56 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.5 2003/09/11 14:33:52 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -35,6 +35,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	private static final String COLUMN_PERIOD_TO = "period_to";
 	private static final String COLUMN_CHANGED_DATE = "changed_date";
 	private static final String COLUMN_CHANGED_SIGN = "changed_sign";
+	private static final String COLUMN_DISCOUNT = "discount";
 	private static final String COLUMN_NAME = "name";
 	private static final String COLUMN_AMOUNT = "amount";
 	private static final String COLUMN_OPERATION_ID = "operation_id";
@@ -66,6 +67,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_CHANGED_SIGN, "Ändrings signatur", true, true, String.class);
 		addAttribute(COLUMN_NAME, "Name", true, true, java.lang.String.class);
 		addAttribute(COLUMN_AMOUNT, "Amount", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_DISCOUNT, "Discount", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_CONDITION_ORDER, "Condition order", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_VAT_ELIGIBLE, "VAT Eligible", true, true, java.lang.Integer.class);
 		
@@ -96,7 +98,8 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		setNullable(COLUMN_VAT_RULE_ID, true);
 		
 	}
-
+	
+	public float getDiscount() { return getFloatColumnValue(COLUMN_DISCOUNT); }
 	public Date getPeriodFrom() { return getDateColumnValue(COLUMN_PERIOD_FROM); }
 	public Date getPeriodTo() { return getDateColumnValue(COLUMN_PERIOD_TO); }
 	public Timestamp getChangedDate() { return (Timestamp) getColumnValue(COLUMN_CHANGED_DATE); }
@@ -131,6 +134,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public void setChangedDate(Timestamp date){setColumn(COLUMN_CHANGED_DATE, date);}
 	public void setChangedSign(String sign){setColumn(COLUMN_CHANGED_SIGN, sign);}
 	public void setName(String name) { setColumn(COLUMN_NAME, name); }	
+	public void setDiscount(float discount) { setColumn(COLUMN_DISCOUNT, discount); }	
 	public void setLocalizationKey(String name) { setColumn(COLUMN_NAME, name); }	
 	public void setAmount(int amount) { setColumn(COLUMN_AMOUNT, amount); }	
 	public void setConditionOrder(int value) { setColumn(COLUMN_CONDITION_ORDER, value); }	
