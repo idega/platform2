@@ -37,8 +37,9 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 		applicationTable.setWidth(Table.HUNDRED_PERCENT);
 		applicationTable.setCellpadding(getCellpadding());
 		applicationTable.setCellspacing(getCellspacing());
-		applicationTable.setColumns(4);
+		applicationTable.setColumns(5);
 		applicationTable.setRowColor(1, getHeaderColor());
+		applicationTable.setWidth(5, 12);
 		int row = 1;
 		int column = 1;
 		
@@ -54,6 +55,8 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 			Address address;
 			Phone phone;
 			Link link;
+			Link viewContract;
+			boolean hasContract = false;
 			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -63,10 +66,17 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 				address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 				phone = getBusiness().getUserBusiness().getChildHomePhone(child);
 				
-				if (row % 2 == 0)
-					applicationTable.setRowColor(row, getZebraColor1());
-				else
-					applicationTable.setRowColor(row, getZebraColor2());
+				if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
+					hasContract = true;
+					applicationTable.setRowColor(row, CONTRACT_COLOR);
+				}
+				else {
+					hasContract = false;
+					if (row % 2 == 0)
+						applicationTable.setRowColor(row, getZebraColor1());
+					else
+						applicationTable.setRowColor(row, getZebraColor2());
+				}
 				
 				link = getSmallLink(child.getNameLastFirst(true));
 				link.setEventListener(ChildCareEventListener.class);
@@ -82,9 +92,16 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 				else
 					applicationTable.add(getSmallText("-"), column++, row);
 				if (phone != null)
-					applicationTable.add(getSmallText(phone.getNumber()), column++, row++);
+					applicationTable.add(getSmallText(phone.getNumber()), column++, row);
 				else
-					applicationTable.add(getSmallText("-"), column++, row++);
+					applicationTable.add(getSmallText("-"), column++, row);
+				if (hasContract) {
+					viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
+					viewContract.setFile(application.getContractFileId());
+					viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+					applicationTable.add(viewContract, column, row);
+				}
+				row++;
 			}
 			applicationTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
