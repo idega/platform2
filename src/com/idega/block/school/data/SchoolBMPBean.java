@@ -265,6 +265,10 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
 	}
 
+	private Date getCurrentDate() {
+		return new Date(System.currentTimeMillis());
+	}
+	
 	public Collection ejbFindAllBySchoolType(Collection typeIds) throws javax.ejb.FinderException {
 		if (typeIds == null || typeIds.size() < 1) {
 			return null;
@@ -273,31 +277,36 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 			StringBuffer select = new StringBuffer("select distinct s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id in (");
 			select.append(getIDOUtil().convertListToCommaseparatedString(typeIds));
 			select.append(") and m.sch_school_id = s.sch_school_id");
+			select.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 			select.append(" order by s.").append(NAME);
 			return super.idoFindPKsBySQL(select.toString());
 		}
 	}
 
 	public Collection ejbFindAllBySchoolType(int typeId) throws javax.ejb.FinderException {
-		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id order by s."+NAME;
+		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id " +
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+				" order by s."+NAME;
 		return super.idoFindPKsBySQL(select);
 	}
 
 	public Collection ejbFindAllBySchoolName(String schoolName) throws javax.ejb.FinderException {
-		return super.idoFindAllIDsByColumnBySQL(NAME, schoolName);
+		String select = "select * from " + SCHOOL + " where " + NAME + " = '" + schoolName + "'" +
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')";
+		return super.idoFindPKsBySQL(select);
 	}
 
 	public Integer ejbFindBySchoolName(String schoolName) throws javax.ejb.FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.NAME,schoolName);
+		String select = "select * from " + SCHOOL + " where " + NAME + " = '" + schoolName + "'" +
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')";
 		
-		return (Integer)super.idoFindOnePKByQuery(sql);
+		return (Integer)super.idoFindOnePKBySQL(select);
 	}
 
 	public Collection ejbFindAllCentralizedAdministrated() throws javax.ejb.FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.CENTRALIZED_ADMINISTRATION, "Y");
-		
+		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		return super.idoFindPKsByQuery(sql);
 	}
 	
@@ -310,16 +319,29 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 			select.append(getIDOUtil().convertListToCommaseparatedString(typeIds));
 			select.append(") and m.sch_school_id = s.sch_school_id");
 			select.append(" and s."+CENTRALIZED_ADMINISTRATION+" like 'Y'");			
+			select.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 			select.append(" order by s.").append(NAME);
 			return super.idoFindPKsBySQL(select.toString());
 		}
 	}
 
 	public Collection ejbFindAllBySchoolArea(int areaId) throws javax.ejb.FinderException {
-		return super.idoFindPKsBySQL("select * from " + SCHOOL + " where " + SCHOOLAREA + " = " + areaId + " order by " + NAME);
+		String sql = "select * from " + SCHOOL + " where " + SCHOOLAREA + " = " + areaId + 
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+				" order by " + NAME;
+		return super.idoFindPKsBySQL(sql);
 	}
 
 	public Collection ejbFindAllSchools() throws javax.ejb.FinderException {
+		String sql = "select * from " + SCHOOL + " where " + 
+				" (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+				" order by upper(" + NAME + ")";
+		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
+	}
+
+	public Collection ejbFindAllSchoolsIncludingTerminated() throws javax.ejb.FinderException {
+		String sql = "select * from " + SCHOOL + " where " + 
+				" order by upper(" + NAME + ")";
 		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
 	}
 
@@ -385,6 +407,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(type);
 		sql.append(" and a.sch_school_area_id = ");
 		sql.append(area);
+		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		sql.append(" order by s.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());
@@ -423,6 +446,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		}
 		sql.append(" and a.sch_school_area_id = ");
 		sql.append(area);
+		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		sql.append(" order by s.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());
@@ -438,6 +462,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(" and r.related_ic_group_id = ");
 		sql.append(schoolGroup.getPrimaryKey().toString());
 		sql.append(" ) ");
+		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		sql.append(" order by s.").append(NAME);
 		return super.idoFindPKsBySQL(sql.toString());
 	}
@@ -448,6 +473,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(" where middle.sch_school_ID = ").append(school.getPrimaryKey().toString());
 		sql.append(" and middle.sch_school_year_ID = ").append(year.getPrimaryKey().toString());
 		sql.append(" and middle.sch_school_id = s.sch_school_id");
+		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		return super.idoGetNumberOfRecords(sql.toString());
 	}
 
