@@ -132,8 +132,15 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					report.setGroupType(club.getGroupType());
 					
 					//tegund felags?
+					//IWMemberConstants.META_DATA_CLUB_TYPE
 					
-					//ovirkt?
+					
+					//status ovirkt?
+					//META_DATA_CLUB_STATUS
+					String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
+					if(IWMemberConstants.META_DATA_CLUB_STATUS_INACTIVE_CLUB.equals(status)){
+						report.setAsInactive();
+					}
 					
 					
 					

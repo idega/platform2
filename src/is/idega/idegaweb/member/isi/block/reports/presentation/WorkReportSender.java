@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 
 /**
@@ -144,6 +145,8 @@ public class WorkReportSender extends WorkReportSelector {
 		Form form = new Form();
 		form.add(iwrb.getLocalizedString("workreportsender.review_comments","The check has ended. Please review the comments and either fix what needs to be fixed or send the report by clicking the button."));
 		form.addBreak();
+		form.addBreak();
+		
 		if(text.equals("")){
 			form.add(iwrb.getLocalizedString("workreportsender.no_comments","No comments."));
 		}
@@ -152,12 +155,13 @@ public class WorkReportSender extends WorkReportSelector {
 		}
 		
 		form.addBreak();
-		addBreak();
+		form.addBreak();
 		SubmitButton check = new SubmitButton(iwrb.getLocalizedString("workreportsender.send","send report"));
 		form.add(new HiddenInput(PARAM_SEND,"TRUE"));
 		form.add(new HiddenInput(PARAM_TEXT,text));
 		check.setAsImageButton(true);
 		form.add(check);
+		form.add(new PrintButton(iwrb.getLocalizedImageButton("workreportsender.print","print")));
 		form.maintainParameters(this.getParametersToMaintain());
 		
 		return form;
