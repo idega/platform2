@@ -398,6 +398,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendAnd().append("a."+COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
 		sql.appendAnd().appendLeftParenthesis().append("a."+COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);
 		sql.appendOr().append("a."+COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+
+		//Temp Patch for Lotta until they have fixed the problem
+		sql.appendAnd().append("a."+COLUMN_CARE_TIME).appendGreaterThanSign().append("0");
+
 		System.out.println("SQL: "+sql);
 		return idoFindPKsByQuery(sql);
 	}
