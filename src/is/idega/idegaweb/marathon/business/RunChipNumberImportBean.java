@@ -49,7 +49,7 @@ public class RunChipNumberImportBean extends IBOServiceBean  implements RunChipN
 			chipBunchNumber = chipBunchNumber.substring(chipBunchNumber.indexOf("_") + 1);
 			
 			RunHome runHome = (RunHome) IDOLookup.getHome(Run.class);
-			Collection runners = runHome.findAllWithoutChipNumber();
+			Collection runners = runHome.findAllWithoutChipNumber(126);
 			if (!runners.isEmpty()) {
 				int runnersCount = runners.size();
 				Iterator iterator = runners.iterator();

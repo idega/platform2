@@ -43,6 +43,6 @@ public interface RunHome extends IDOHome {
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindAllWithoutChipNumber
 	 */
-	public Collection findAllWithoutChipNumber() throws FinderException;
+	public Collection findAllWithoutChipNumber(int distanceIDtoIgnore) throws FinderException;
 
 }

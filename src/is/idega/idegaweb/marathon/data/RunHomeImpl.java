@@ -56,9 +56,9 @@ public class RunHomeImpl extends IDOFactory implements RunHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllWithoutChipNumber() throws FinderException {
+	public Collection findAllWithoutChipNumber(int distanceIDtoIgnore) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((RunBMPBean) entity).ejbFindAllWithoutChipNumber();
+		java.util.Collection ids = ((RunBMPBean) entity).ejbFindAllWithoutChipNumber(distanceIDtoIgnore);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

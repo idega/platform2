@@ -331,9 +331,12 @@ public class RunBMPBean extends GenericEntity implements Run {
 		return super.idoFindPKsByQuery(query);
 	}
 	
-	public Collection ejbFindAllWithoutChipNumber() throws FinderException {
+	public Collection ejbFindAllWithoutChipNumber(int distanceIDtoIgnore) throws FinderException {
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhere().append(getColumnNameChipNumber()).appendIsNull().appendOr().append(getColumnNameChipNumber()).append("= ''");
+		if (distanceIDtoIgnore != -1) {
+			query.appendAnd().append(getColumnNameRunDistanceGroupID()).appendNOTEqual().append(distanceIDtoIgnore);
+		}
 		return super.idoFindPKsByQuery(query);		
 	}
 }
