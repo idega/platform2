@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.23 2001/10/09 22:49:50 aron Exp $
+ * $Id: Tabber.java,v 1.24 2001/10/12 03:53:09 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.allocation.CampusAllocation;
 import is.idegaweb.campus.finance.presentation.CampusFinance;
+import is.idegaweb.campus.templates.*;
 
 //import is.idegaweb.campus.tariffs.CampusFinance;
 import is.idegaweb.campus.templates.CampusPage;
@@ -142,7 +143,7 @@ public class Tabber extends Block {
       Link2.addParameter(strAction,ACT21);
 
       Image allocation = iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif");
-      Link Link3 = CF.getLink(CF.ADM_ALLOCATION,allocation);
+      Link Link3 = CF.getLink(allocation,CF.ADM_ALLOCATION,CampusAdminPage.class);
       Link3.addParameter(strAction,ACT22);
 
       Image apartments = iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif");

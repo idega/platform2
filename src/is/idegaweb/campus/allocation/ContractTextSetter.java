@@ -58,13 +58,11 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     if(isAdmin){
       //add(getPDFLink(new Image("/pics/print.gif")));
       if(iwc.getParameter("savetitle")!=null){
-          add(getHomeLink());
           updateTitleForm(iwc);
           add(getMainTable());
 
       }
       else if(iwc.getParameter("savetext")!=null){
-        add(getHomeLink());
         updateForm(iwc);
         add(getMainTable());
       }
@@ -73,23 +71,18 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
       }
       else if(iwc.getParameter("conf_delete")!=null){
         deleteText(iwc);
-        add(getHomeLink());
         add(getMainTable());
       }
       else if(iwc.getParameter("text_id")!=null || iwc.getParameter("new_text")!=null){
-        add(getUpLink());
         add(getSetupForm(iwc));
       }
       else if(iwc.getParameter("new_title")!=null){
-        add(getUpLink());
         add(getTitleForm(iwc));
       }
       else if(iwc.getParameter("title_id")!=null){
-        add(getUpLink());
         add(getTitleForm(iwc));
       }
       else {
-        add(getHomeLink());
         add(getMainTable());
       }
 
@@ -120,7 +113,6 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 
 
     int row = 1;
-
     T.add(getPDFLink(new Image("/pics/print.gif")),1,row);
     T.add(getNewLink(),2,row);
     row++;
@@ -185,6 +177,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     }
     SubmitButton save = new SubmitButton("savetitle","Save");
     text.setLength(80);
+    T.add(getUpLink(),1,row++);
     T.add(Edit.formatText(iwrb.getLocalizedString("text","Text")),1,row++);
     T.add(text,1,row++);
     T.add(save,1,row);
@@ -193,9 +186,9 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
   }
 
   private PresentationObject getSetupForm(IWContext iwc){
-    Table Frame = new Table(2,1);
+    //Table Frame = new Table(2,1);
     Table T = new Table();
-
+    T.add(getUpLink(),1,1);
     T.add(getNewLink(),1,1);
 
     int row = 2;
@@ -208,7 +201,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
       try {
         ContractText CT = new ContractText(Integer.parseInt(sId));
         name = new TextInput("name",CT.getName());
-        text = getTextArea("text",CT.getText());
+        text = getTextArea("texti",CT.getText());
 
         CB.setChecked(CT.getUseTags());
         intDrop.setSelectedElement(String.valueOf(CT.getOrdinal()));
@@ -222,7 +215,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     else{
       try {
         name = new TextInput("name");
-        text = getTextArea("text","");
+        text = getTextArea("texti","");
         int max = new ContractText().getMaxColumnValue(ContractText.getOrdinalColumnName())+1;
         intDrop.setSelectedElement(String.valueOf(max));
        }
@@ -232,18 +225,26 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     }
     SubmitButton save = new SubmitButton("savetext","Save");
     SubmitButton delete = new SubmitButton("delete","Delete");
+    DropdownMenu tagDrop = getTagDrop("tags");
+    tagDrop.setOnChange("this.form.texti.value += this.options[this.selectedIndex].value;");
     name.setLength(80);
     T.add(Edit.formatText(iwrb.getLocalizedString("title","Title")),1,row++);
     T.add(name,1,row++);
     T.add(Edit.formatText(iwrb.getLocalizedString("text","Text")),1,row++);
     T.add(text,1,row++);
-    T.add(intDrop,1,row);
-    T.add(CB,1,row);
-    T.add(save,1,row);
-    T.add(delete,1,row);
+
+    Table bottomTable = new Table();
+    bottomTable.setWidth("100%");
+    bottomTable.add(intDrop,1,1);
+    bottomTable.add(CB,2,1);
+    bottomTable.add(save,3,1);
+    bottomTable.add(tagDrop,4,1);
+    bottomTable.add(delete,5,1);
+
+    T.add(bottomTable,1,row);
 
 
-
+/*
     String[] tags = CampusContractWriter.getTags();
     Table T2 = new Table();
     row = 1;
@@ -251,13 +252,14 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     for (int i = 0; i < tags.length; i++) {
       T2.add("["+tags[i]+"]",1,row++);
     }
-
-    Frame.add(T,1,1);
     Frame.add(T2,2,1);
-    Frame.setBorder(1);
+*/
+   // Frame.add(T,1,1);
+
+   // Frame.setBorder(1);
 
     Form myForm = new Form();
-    myForm.add(Frame);
+    myForm.add(T);
     return myForm;
   }
 
@@ -296,7 +298,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     String sTextId = iwc.getParameter("text_id");
     String sOrdinal = iwc.getParameter("ordinal");
     String sName = iwc.getParameter("name");
-    String sText = iwc.getParameter("text");
+    String sText = iwc.getParameter("texti");
     String sUseTags = iwc.getParameter("usetags");
 
     ContractText CT = null;
@@ -402,9 +404,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     }
   }
 
-  private Link getHomeLink(){
-    return new Link(new Image("/pics/list.gif"),"/allocation/index.jsp");
-  }
+
   private Link getUpLink(){
     return new Link(new Image("/pics/list.gif"));
   }
@@ -427,6 +427,16 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
     Link L = new Link(MO,W);
     L.addParameter("test","test");
     return L;
+  }
+
+  private DropdownMenu getTagDrop(String name){
+    String[] tags = CampusContractWriter.getTags();
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addDisabledMenuElement("tag",iwrb.getLocalizedString("tags","Tags"));
+    for (int i = 0; i < tags.length; i++) {
+      drp.addMenuElement(" ["+tags[i]+"]",iwrb.getLocalizedString(tags[i],tags[i]));
+    }
+    return drp;
   }
 
   private DropdownMenu getIntegerDrop(String name,int from, int to){

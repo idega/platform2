@@ -267,6 +267,7 @@ public class CampusContracts extends PresentationObjectContainer{
     if(L!=null){
       Image printImage =  iwb.getImage("/print.gif");
       Image registerImage = iwb.getImage("/pen.gif");
+      Image resignImage = iwb.getImage("/scissors.gif");
       int len = L.size();
       int row = 2;
       int col = 1;
@@ -285,7 +286,7 @@ public class CampusContracts extends PresentationObjectContainer{
           if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
             T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col,row);
           else if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
-            T.add(getReSignLink(printImage,C.getID()),col,row);
+            T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
           if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted) || C.getStatus().equalsIgnoreCase(Contract.statusSigned)  )
             T.add(getSignedLink(registerImage,C.getID()),col,row);
