@@ -10,7 +10,6 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.IBOLookup;
-import com.idega.business.InputHandler;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
