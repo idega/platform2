@@ -51,6 +51,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getSchoolZipArea();
  public java.lang.String getSchoolZipCode();
  public java.sql.Date getTerminationDate();
+ public boolean getUnvisibleForCitizen();
  public void initializeAttributes();
  public void removeFromClass(java.lang.Class p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeImages()throws com.idega.data.IDORelationshipException;
@@ -85,4 +86,5 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setSchoolZipArea(java.lang.String p0);
  public void setSchoolZipCode(java.lang.String p0);
  public void setTerminationDate(java.sql.Date p0);
+ public void setUnvisibleForCitizen(boolean p0);
 }

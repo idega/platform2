@@ -83,7 +83,8 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	//MANY TO MANY RELATIONSHIP TABLES
 	public final static String M2M_TX_TEXT_SCH_SCHOOL="TX_TEXT_SCH_SCHOOL";
 	public final static String M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL="TX_LOCALIZED_TEXT_SCH_SCHOOL";
-
+	public final static String UNVISIBLE_FOR_CITIZEN = "unvisible for citizen";
+	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
 		//this.addAttribute(SCHOOLTYPE,"Schooltype",true,true,Integer.class,this.MANY_TO_ONE,SchoolType.class);
@@ -126,6 +127,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(TERMINATION_DATE, "termination date", true, true, Date.class);
 		addManyToOneRelationship(COUNTRY, Country.class);
 		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);
+		addAttribute(UNVISIBLE_FOR_CITIZEN, "Do not show this provider for citizens", true, true, Boolean.class);
 		this.addMetaDataRelationship();
 	}
 	public String getEntityName() {
@@ -302,6 +304,14 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 	public void setCentralizedAdministration(boolean b) {
 		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
+	}
+	
+	public boolean getUnvisibleForCitizen() {
+		return getBooleanColumnValue(UNVISIBLE_FOR_CITIZEN, false);
+	}
+	
+	public void setUnvisibleForCitizen(boolean b) {
+		setColumn(UNVISIBLE_FOR_CITIZEN, b);
 	}
 	
 	private Date getCurrentDate() {
