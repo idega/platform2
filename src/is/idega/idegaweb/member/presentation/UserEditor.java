@@ -118,19 +118,21 @@ public class UserEditor extends Block {
 
 	private String textFontStyle = "font-weight:plain;";
 	private String headerFontStyle = "font-weight:bold;";
+	
+	private UserSearcher searcher = null;
+	
+	
 
 	/**
 	 * Constructs a new UserEditor with an empty list of relationtypes
 	 */
 	public UserEditor() {
-		relationTypes = new ArrayList();
-		//addRelationType("FAM_PARENT");
-		//addRelationType("FAM_CHILD");
-
+		this(new ArrayList());
 	}
 
 	public UserEditor(List relationTypes) {
 		this.relationTypes = relationTypes;
+		searcher = new UserSearcher();
 	}
 
 	/* (non-Javadoc)
@@ -206,8 +208,8 @@ public class UserEditor extends Block {
 	 */
 	public void presentate(IWContext iwc) throws RemoteException {
 		mainTable = new Table();
-		UserSearcher searcher = new UserSearcher();
-		searcher.setShowMiddleNameInSearch(false);
+		
+		
 		mainTable.add((searcher), 1, mainRow++);
 		if (user != null) {
 			searcher.setUser(user);
@@ -223,6 +225,7 @@ public class UserEditor extends Block {
 			catch (FinderException e1) {
 				e1.printStackTrace();
 			}
+		
 		}
 
 		if (user != null) {
@@ -236,6 +239,7 @@ public class UserEditor extends Block {
 				}
 			presentateButtons(iwc);
 		}
+		
 
 		Form form = new Form();
 
@@ -257,7 +261,7 @@ public class UserEditor extends Block {
 		if (relationTypes != null && !relationTypes.isEmpty()) {
 			for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
 				String type = (String) iter.next();
-				Text tTypeName = new Text(iwrb.getLocalizedString(type, type));
+				Text tTypeName = new Text(iwrb.getLocalizedString("is_"+type+"_of", "Is "+type.toLowerCase()+" of"));
 				relationsTable.add(tTypeName, 1, row);
 				if (relations.containsKey(type)) {
 					List list = (List) relations.get(type);
@@ -285,9 +289,11 @@ public class UserEditor extends Block {
 	public void presentateButtons(IWContext iwc) {
 		Table buttonTable = new Table();
 		int row = 1, col = 1;
-		SubmitButton save =
-			new SubmitButton(iwrb.getLocalizedImageButton("mbe.save", "Save"),PRM_SAVE,user.getPrimaryKey().toString());
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("mbe.save", "Save"),PRM_SAVE,user.getPrimaryKey().toString());
+		SubmitButton clear = new SubmitButton(iwrb.getLocalizedImageButton("mbe.clear", "Clear"));
+		
 		buttonTable.add(save, col++, row);
+		buttonTable.add(clear,col++,row);
 		if (showUserRelations) {
 			for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
 				String type = (String) iter.next();
@@ -302,7 +308,7 @@ public class UserEditor extends Block {
 		Link registerLink =
 			new Link(
 				iwb.getImageButton(
-					iwrb.getLocalizedString("mbe.register", "Register") + " " + iwrb.getLocalizedString(type, type)));
+					iwrb.getLocalizedString("mbe.register_as_"+type, "Register as "+type) ));
 		registerLink.setWindowToOpen(connectorWindowClass);
 		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, user.getPrimaryKey().toString());
 		registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
@@ -313,7 +319,7 @@ public class UserEditor extends Block {
 			Link registerLink =
 				new Link(
 					iwb.getImageButton(
-						iwrb.getLocalizedString("mbe.remove", "Remove") + " " + iwrb.getLocalizedString(type, type)));
+						iwrb.getLocalizedString("mbe.remove_"+type, "Remove "+type) ));
 			registerLink.setWindowToOpen(connectorWindowClass);
 			registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, user.getPrimaryKey().toString());
 			registerLink.addParameter(UserRelationConnector.PARAM_RELATED_USER_ID,relatedUserID.toString());
@@ -330,9 +336,21 @@ public class UserEditor extends Block {
 		UserBusiness userService = getUserService(iwc);
 		Table infoTable = new Table();
 		Table addressTable = new Table();
+		int row = 1;
 		addressTable.setCellspacing(4);
 		Address primaryAddress = userService.getUsersMainAddress(user);
 		Address coAddress = userService.getUsersCoAddress(user);
+		
+		//		deceased layout section
+		// TODO check for deceased date
+		Text tDeceased = new Text(iwrb.getLocalizedString("mbe.deceased", "Deceased"));
+		setStyle(tDeceased,STYLENAME_HEADER);
+		DateInput deceasedInput = new DateInput(prm_deceased_date);
+		addressTable.add(tDeceased, 1, row);
+		addressTable.add(deceasedInput, 2, row++);
+
+		mainTable.add(addressTable, 1, mainRow++);
+		mainTable.add(Text.getBreak(),1,mainRow++);
 
 		// address layout section
 		Text tAddress = new Text(iwrb.getLocalizedString("mbe.address", "Address"));
@@ -347,14 +365,16 @@ public class UserEditor extends Block {
 		setStyle(tStreetAddress,STYLENAME_HEADER);
 		setStyle(tPostalAddress,STYLENAME_HEADER);
 
-		addressTable.add(tAddress, 1, 1);
-		addressTable.add(Text.getNonBrakingSpace(),1,2);
-		addressTable.add(Text.getNonBrakingSpace(),1,2);
-		addressTable.add(Text.getNonBrakingSpace(),1,3);
-		addressTable.add(Text.getNonBrakingSpace(),1,3);
+		addressTable.add(tAddress, 1, row++);
+		addressTable.add(tStreetAddress, 1, row);
+		addressTable.add(Text.getNonBrakingSpace(),1,row);
+		addressTable.add(Text.getNonBrakingSpace(),1,row++);
+		addressTable.add(tPostalAddress, 1, row);
+		addressTable.add(Text.getNonBrakingSpace(),1,row);
+		addressTable.add(Text.getNonBrakingSpace(),1,row++);
 		
-		addressTable.add(tStreetAddress, 1, 2);
-		addressTable.add(tPostalAddress, 1, 3);
+		
+		
 		
 		Country defaultCountry = null;
 		try {
@@ -383,9 +403,9 @@ public class UserEditor extends Block {
 			coPostalAddressInput.setCountry(defaultCountry);
 		}
 
-		addressTable.add(tPrimary, 2, 1);
-		addressTable.add(primaryStreetAddressInput, 2, 2);
-		addressTable.add(primaryPostalAddressInput, 2, 3);
+		addressTable.add(tPrimary, 2, 2);
+		addressTable.add(primaryStreetAddressInput, 2, 3);
+		addressTable.add(primaryPostalAddressInput, 2, 4);
 		if (primaryAddress != null) {
 			primaryStreetAddressInput.setContent(primaryAddress.getStreetAddress());
 			addressTable.add(getOldParameter(prm_mainaddress_street,primaryAddress.getStreetAddress()));
@@ -393,9 +413,9 @@ public class UserEditor extends Block {
 			primaryPostalAddressInput.setSelectedElement(primaryAddress.getPostalCodeID());
 			addressTable.add(getOldParameter(prm_mainaddress_postal,String.valueOf(primaryAddress.getPostalCodeID())));
 		}
-		addressTable.add(tCO, 3, 1);
-		addressTable.add(coStreetAddressInput, 3, 2);
-		addressTable.add(coPostalAddressInput, 3, 3);
+		addressTable.add(tCO, 3,2);
+		addressTable.add(coStreetAddressInput, 3,3);
+		addressTable.add(coPostalAddressInput, 3, 4);
 
 		if (coAddress != null) {
 			coStreetAddressInput.setContent(coAddress.getStreetAddress());
@@ -409,8 +429,8 @@ public class UserEditor extends Block {
 		Text tPhone = new Text(iwrb.getLocalizedString("mbe.phone", "Phone"));
 		setStyle(tPhone,STYLENAME_HEADER);
 		TextInput phoneInput = new TextInput(prm_main_phone);
-		addressTable.add(tPhone, 1, 5);
-		addressTable.add(phoneInput, 2, 5);
+		addressTable.add(tPhone, 1, 6);
+		addressTable.add(phoneInput, 2, 6);
 		try {
 			Phone phone = userService.getUsersHomePhone(user);
 			if (phone != null) {
@@ -427,23 +447,15 @@ public class UserEditor extends Block {
 		setStyle(tEmail,STYLENAME_HEADER);
 		TextInput emailInput = new TextInput(prm_email_address);
 		emailInput.setAsEmail();
-		addressTable.add(tEmail, 1, 7);
-		addressTable.add(emailInput, 2, 7);
+		addressTable.add(tEmail, 1, 8);
+		addressTable.add(emailInput, 2, 8);
 		Email email = userService.getUserMail(user);
 		if (email != null) {
 			emailInput.setContent(email.getEmailAddress());
 			addressTable.add(getOldParameter(prm_email_address,email.getEmailAddress()));
 		}
 
-		// deceased layout section
-		Text tDeceased = new Text(iwrb.getLocalizedString("mbe.deceased", "Deceased"));
-		setStyle(tDeceased,STYLENAME_HEADER);
-		DateInput deceasedInput = new DateInput(prm_deceased_date);
-		addressTable.add(tDeceased, 1, 9);
-		addressTable.add(deceasedInput, 2, 9);
-
-		mainTable.add(addressTable, 1, mainRow++);
-		mainTable.add(Text.getBreak(),1,mainRow++);
+		
 	}
 
 	/**
@@ -603,5 +615,109 @@ public class UserEditor extends Block {
 		return (CountryHome) IDOLookup.getHome(Country.class);
 	}
 	
+
+	/**
+	 * @return
+	 */
+	public Class getConnectorWindowClass() {
+		return connectorWindowClass;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getHeaderFontStyle() {
+		return headerFontStyle;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getHeaderStyle() {
+		return headerStyle;
+	}
+
+	/**
+	 * @return
+	 */
+	public UserSearcher getSearcher() {
+		return searcher;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowAllRelationTypes() {
+		return showAllRelationTypes;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowUserRelations() {
+		return showUserRelations;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getTextFontStyle() {
+		return textFontStyle;
+	}
+
+	/**
+	 * @param class1
+	 */
+	public void setConnectorWindowClass(Class class1) {
+		connectorWindowClass = class1;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setHeaderFontStyle(String string) {
+		headerFontStyle = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setHeaderStyle(String string) {
+		headerStyle = string;
+	}
+
+	/**
+	 * @param searcher
+	 */
+	public void setSearcher(UserSearcher searcher) {
+		this.searcher = searcher;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowAllRelationTypes(boolean b) {
+		showAllRelationTypes = b;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowUserRelations(boolean b) {
+		showUserRelations = b;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setTextFontStyle(String string) {
+		textFontStyle = string;
+	}
+	
+	public synchronized Object clone() {
+		UserEditor obj = (UserEditor)super.clone();
+		obj.searcher = (UserSearcher)searcher.clone();
+		return obj;
+	}
 
 }

@@ -85,26 +85,26 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		try {
 			MemberFamilyLogic logic = getMemberFamilyLogic(iwc);
 			UserHome userHome  = getUserHome();
-			User user = userHome.findByPrimaryKey(relatedUserID);
-			User relatedUser = userHome.findByPrimaryKey(userID);
+			User user = userHome.findByPrimaryKey(userID);
+			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
 			if (relationType.equals(logic.getChildRelationType())) {
-				logic.setAsChildFor(relatedUser, user);
+				logic.setAsChildFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getParentRelationType())) {
-				logic.setAsParentFor(relatedUser, user);
+				logic.setAsParentFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSpouseRelationType())) {
-				logic.setAsSpouseFor(relatedUser, user);
+				logic.setAsSpouseFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSiblingRelationType())) {
-				logic.setAsSiblingFor(relatedUser, user);
+				logic.setAsSiblingFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getCustodianRelationType())) {
-				logic.setAsCustodianFor(relatedUser, user);
+				logic.setAsCustodianFor(user,relatedUser);
 			}
 			else if (relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)) {
-				logic.setAsParentFor(relatedUser, user);
-				logic.setAsCustodianFor(relatedUser, user);
+				logic.setAsParentFor(user,relatedUser);
+				logic.setAsCustodianFor(user,relatedUser);
 			}
 			else
 				super.createRelation(iwc, userID, relatedUserID, relationType);
@@ -127,26 +127,26 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		try {
 			MemberFamilyLogic logic = getMemberFamilyLogic(iwc); 
 			UserHome userHome = getUserHome();
-			User user = userHome.findByPrimaryKey(relatedUserID);
-			User relatedUser = userHome.findByPrimaryKey(userID);
+			User user = userHome.findByPrimaryKey(userID);
+			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
 			if (relationType.equals(logic.getChildRelationType())) {
-				logic.removeAsChildFor(relatedUser, user);
+				logic.removeAsChildFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getParentRelationType())) {
-				logic.removeAsParentFor(relatedUser, user);
+				logic.removeAsParentFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSpouseRelationType())) {
-				logic.removeAsSpouseFor(relatedUser, user);
+				logic.removeAsSpouseFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSiblingRelationType())) {
-				logic.removeAsSiblingFor(relatedUser, user);
+				logic.removeAsSiblingFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getCustodianRelationType())) {
-				logic.removeAsCustodianFor(relatedUser, user);
+				logic.removeAsCustodianFor(user,relatedUser);
 			}
 			else if (relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)) {
-				logic.removeAsParentFor(relatedUser, user);
-				logic.removeAsCustodianFor(relatedUser, user);
+				logic.removeAsParentFor(user,relatedUser);
+				logic.removeAsCustodianFor(user,relatedUser);
 			}
 		}
 		catch (FinderException e) {

@@ -140,7 +140,7 @@ public class UserRelationConnector extends Window {
 		mainTable.add(tCurrentUser, 1, row);
 		Text tCurrentUserName = new Text(user.getName());
 		Text tCurrentUserPersonalID = new Text(user.getPersonalID());
-		mainTable.add(tCurrentUserPersonalID, 1, row);
+		mainTable.add(tCurrentUserPersonalID, 1, row++);
 		mainTable.add(Text.getNonBrakingSpace(), 1, row);
 		mainTable.add(Text.getNonBrakingSpace(), 1, row);
 		mainTable.add(tCurrentUserName, 1, row);
@@ -153,7 +153,7 @@ public class UserRelationConnector extends Window {
 		if (relatedUser != null) {
 			Text tRelatedUserName = new Text(relatedUser.getName());
 			Text tRelatedUserPersonalID = new Text(relatedUser.getPersonalID());
-			mainTable.add(tRelatedUserPersonalID, 1, row);
+			mainTable.add(tRelatedUserPersonalID, 1, row++);
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(tRelatedUserName, 1, row);
@@ -161,7 +161,7 @@ public class UserRelationConnector extends Window {
 			
 			Text tRelationtype = new Text(iwrb.getLocalizedString("relation_type","Relation type"));
 			tRelationtype.setBold();
-			mainTable.add(tRelationtype,1,row);
+			mainTable.add(tRelationtype,1,row++);
 			mainTable.add(Text.getNonBrakingSpace(),1,row);
 			mainTable.add(Text.getNonBrakingSpace(),1,row);
 			mainTable.add(getRelationMenu(iwc),1,row);

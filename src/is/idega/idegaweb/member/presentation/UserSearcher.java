@@ -28,6 +28,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.text.TextSoap;
 
 /**
  * UserSearcher small adjustable search block, used to search for users in database.
@@ -85,19 +86,47 @@ public class UserSearcher extends Block {
 	/** list of maintainparameters */
 	private List maintainedParameters = new Vector();
 	
+	/** personalID input length */
+	private int personalIDLength = 10;
+	/** firstname input length */
+	private int firstNameLength = 10;
+	/** middlename input length */
+	private int middleNameLength = 10;
+	/**lastname input length */
+	private int lastNameLength = 10;
+	
+	/** stacked view flag : if stacked heading appears above inputs*/
 	private boolean stacked = true;
+	/** First letter in names case insensitive*/
+	private boolean firstLetterCaseInsensitive = true;
 	
 	
 
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		process(iwc);
+		String message = null;
+		try {
+			process(iwc);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			message = iwrb.getLocalizedString("usrch.service_available","Search service not available"); 
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			message = iwrb.getLocalizedString("usrch.no_user_found","No user found"); 
+		}
 		Table T = new Table();
 		T.add(presentateCurrentUserSearch(iwc), 1, 1);
 		if (hasManyUsers) {
 			T.add(presentateFoundUsers(iwc),1,2);
 		}
+		if(message!=null){
+			Text tMessage = new Text(message);
+			T.add(tMessage,1,3);
+		}
+			
 		add(T);
 
 	}
@@ -111,7 +140,7 @@ public class UserSearcher extends Block {
 		if(processed)
 			return;
 		if(iwc.isParameterSet(SEARCH_COMMITTED)){
-					processSearch( iwc);
+			processSearch( iwc);
 		}
 		else if (iwc.isParameterSet(PRM_USER_ID))
 			userID = Integer.valueOf(iwc.getParameter(PRM_USER_ID));
@@ -135,12 +164,27 @@ public class UserSearcher extends Block {
 		String middle = iwc.getParameter(SEARCH_MIDDLE_NAME);
 		String last = iwc.getParameter(SEARCH_LAST_NAME);
 		String pid = iwc.getParameter(SEARCH_PERSONAL_ID);
+		if(firstLetterCaseInsensitive){
+			if(first!=null)
+				first  = TextSoap.capitalize(first);
+			if(middle!=null)
+				middle = TextSoap.capitalize(middle);
+			if(last!=null)
+				last = TextSoap.capitalize(last);
+		}
 		usersFound = home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true);
 		System.out.println("users found " + usersFound.size());
-		if (user == null && usersFound != null && !usersFound.isEmpty()) {
-			hasManyUsers = usersFound.size() > 1;
-			if(!hasManyUsers)
-				user = (User)usersFound.iterator().next();
+		if (user == null && usersFound != null ) {
+			// if some users found
+			if(!usersFound.isEmpty()){
+				hasManyUsers = usersFound.size() > 1;
+				if(!hasManyUsers)
+					user = (User)usersFound.iterator().next();
+			}
+			// if no user found
+			else{
+				throw new FinderException("No user was found");
+			}
 		}
 	}
 
@@ -157,7 +201,7 @@ public class UserSearcher extends Block {
 			setStyle(tPersonalID,STYLENAME_HEADER);
 			searchTable.add(tPersonalID, col, row);
 			TextInput input = new TextInput(SEARCH_PERSONAL_ID);
-			input.setLength(10);
+			input.setLength(personalIDLength);
 			if (user != null && user.getPersonalID() != null) {
 				input.setContent(user.getPersonalID());
 			}
@@ -171,7 +215,7 @@ public class UserSearcher extends Block {
 			setStyle(tLastName,STYLENAME_HEADER);
 			searchTable.add(tLastName, col, row);
 			TextInput input = new TextInput(SEARCH_LAST_NAME);
-			input.setLength(10);
+			input.setLength(lastNameLength);
 			if (user != null && user.getLastName() != null) {
 				input.setContent(user.getLastName());
 			}
@@ -185,7 +229,7 @@ public class UserSearcher extends Block {
 			setStyle(tMiddleName,STYLENAME_HEADER);
 			searchTable.add(tMiddleName, col, row);
 			TextInput input = new TextInput(SEARCH_MIDDLE_NAME);
-			input.setLength(10);
+			input.setLength(middleNameLength);
 			if (user != null && user.getMiddleName() != null) {
 				input.setContent(user.getMiddleName());
 			}
@@ -199,7 +243,7 @@ public class UserSearcher extends Block {
 			setStyle(tFirstName,STYLENAME_HEADER);
 			searchTable.add(tFirstName, col, row);
 			TextInput input = new TextInput(SEARCH_FIRST_NAME);
-			input.setLength(10);
+			input.setLength(firstNameLength);
 			if (user != null) {
 				input.setContent(user.getFirstName());
 			}
@@ -384,6 +428,132 @@ public class UserSearcher extends Block {
 		map.put(STYLENAME_HEADER,headerFontStyle);
 		map.put(STYLENAME_TEXT,textFontStyle);
 		return map;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getFirstNameLength() {
+		return firstNameLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getHeaderFontStyle() {
+		return headerFontStyle;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getLastNameLength() {
+		return lastNameLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getMiddleNameLength() {
+		return middleNameLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPersonalIDLength() {
+		return personalIDLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowFirstNameInSearch() {
+		return showFirstNameInSearch;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowLastNameInSearch() {
+		return showLastNameInSearch;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowMiddleNameInSearch() {
+		return showMiddleNameInSearch;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isShowPersonalIDInSearch() {
+		return showPersonalIDInSearch;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isStacked() {
+		return stacked;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getTextFontStyle() {
+		return textFontStyle;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setFirstNameLength(int i) {
+		firstNameLength = i;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setHeaderFontStyle(String string) {
+		headerFontStyle = string;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setLastNameLength(int i) {
+		lastNameLength = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setMiddleNameLength(int i) {
+		middleNameLength = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPersonalIDLength(int i) {
+		personalIDLength = i;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setStacked(boolean b) {
+		stacked = b;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setTextFontStyle(String string) {
+		textFontStyle = string;
 	}
 
 }
