@@ -21,8 +21,8 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
   
   public ReportOverviewWindow() {
     setResizable(true);
-    setWidth(900);
-    setHeight(500);
+    setWidth(1024);
+    setHeight(768);
     setScrollbar(true);
   }
 
