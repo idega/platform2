@@ -385,7 +385,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, String.valueOf(applicationId)));
 		
 		SubmitButton removeContracts = (SubmitButton) getStyledInterface(new SubmitButton("remove", localize("child_care.remove_future_contracts","Remove future contracts")));
-		if (!getBusiness().hasFutureContracts(applicationId)) {
+		if (!getBusiness().hasFutureContracts(applicationId) && !getBusiness().hasFutureLogs(applicationId, new java.sql.Date(System.currentTimeMillis()))) {
 			removeContracts.setDisabled(true);			
 		} else {
 			java.sql.Date earliestPossibleRemoveDate = new java.sql.Date(getEarliestPossibleContractRemoveDate().getTime());
