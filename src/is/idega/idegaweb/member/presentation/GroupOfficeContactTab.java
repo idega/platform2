@@ -134,13 +134,13 @@ public class GroupOfficeContactTab extends UserGroupTab {
 		faxPhoneMenu = new DropdownMenu(phoneTypes, faxPhoneMenuName);
 		for (int i = 0; i < phoneTypes.length; i++) {
 			if (i == 0) {
-				homePhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
+				homePhoneMenu.setSelectedElement(phoneTypes[i].getPrimaryKey().toString());
 			} else if (i == 1) {
-				workPhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
+				workPhoneMenu.setSelectedElement(phoneTypes[i].getPrimaryKey().toString());
 			} else if (i == 2) {
-				mobilePhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
+				mobilePhoneMenu.setSelectedElement(phoneTypes[i].getPrimaryKey().toString());
 			} else if (i == 3) {
-				faxPhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
+				faxPhoneMenu.setSelectedElement(phoneTypes[i].getPrimaryKey().toString());
 			}
 		}
 		emailField = new TextInput(emailFieldName);
