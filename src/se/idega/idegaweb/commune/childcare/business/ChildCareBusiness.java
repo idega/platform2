@@ -41,6 +41,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection findAllApplicationsWithChecksToRedeem() throws java.rmi.RemoteException;
  public java.util.Collection findAllEmploymentTypes() throws java.rmi.RemoteException;
  public java.util.Collection findAllGrantedApplications() throws java.rmi.RemoteException;
+ public java.util.Collection findSentInAndRejectedApplicationsByArea(Object area, int monthsInQueue, int weeksToPlacementDate, boolean firstHandOnly, String caseCode) throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findUnhandledApplicationsNotInCommune() throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getAcceptedApplicationsByChild(int p0) throws java.rmi.RemoteException;
  public java.util.Collection getAcceptedApplicationsByProvider(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -143,6 +144,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.lang.String getXMLContractTxtURL(com.idega.idegaweb.IWBundle p0,java.util.Locale p1) throws java.rmi.RemoteException;
  public boolean hasActiveApplication(int p0) throws java.rmi.RemoteException;
  public boolean hasActiveApplication(int p0,java.lang.String p1) throws java.rmi.RemoteException;
+ public boolean hasActiveApplications(int childID, String caseCode, java.sql.Date activeDate) throws java.rmi.RemoteException;
  public boolean hasActiveContract(int p0) throws java.rmi.RemoteException;
  public boolean hasActivePlacement(int p0) throws java.rmi.RemoteException;
  public boolean hasActivePlacementNotWithProvider(int p0,int p1) throws java.rmi.RemoteException;
@@ -194,4 +196,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void setChildCareQueueExported(se.idega.idegaweb.commune.childcare.data.ChildCareQueue p0) throws java.rmi.RemoteException;
  public void updateMissingPlacements() throws java.rmi.RemoteException;
  public void updatePrognosis(int p0,int p1,int p2,int p3,int p4) throws java.rmi.RemoteException;
+ public String getStatusString(char status) throws java.rmi.RemoteException;
 }

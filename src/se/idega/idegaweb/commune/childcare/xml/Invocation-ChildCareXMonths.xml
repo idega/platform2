@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE invoke >
+
+<invoke>
+
+	<method_description name="getChildCareReport">
+
+		<class_description class="se.idega.idegaweb.commune.childcare.business.ChildCareReportBusiness" default_display_name="ChildCareReportBusiness" type="IBOSessionBean" />
+	
+		<input>
+		
+			<class_description class="java.lang.Integer" default_display_name="Weeks to placement" name="weeks">
+				<localized_name name="Weeks" locale="sv_SE"/>
+				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.TextInputHandler" />
+			</class_description>
+		
+			<class_description class="java.lang.Integer" default_display_name="Months from queue date" name="months">
+				<localized_name name="Months" locale="sv_SE"/>
+				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.TextInputHandler" />
+			</class_description>
+		
+			<class_description class="java.lang.Object" default_display_name="School area" name="school_area">
+				<localized_name name="School area" locale="sv_SE"/>
+				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.SchoolAreaDropDownMenu" />
+			</class_description>
+
+			<class_description class="java.lang.Boolean" default_display_name="Choice type" name="choice_type">
+				<localized_name name="Choice type" locale="sv_SE"/>
+				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.ChoicesDropDownMenu" />
+			</class_description>
+		
+		</input>
+	
+		<output>
+		
+			<class_description class="com.idega.block.datareport.util.ReportableCollection" default_display_name="" />
+		
+		</output>
+
+	</method_description>
+
+</invoke>

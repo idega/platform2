@@ -33,32 +33,32 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements ChildCareApplication, Case {
-	protected final static String ENTITY_NAME = "comm_childcare";
+	public final static String ENTITY_NAME = "comm_childcare";
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Application for child care";
 	
-	protected final static String PROVIDER_ID = "provider_id";
-	protected final static String FROM_DATE = "from_date";
-	protected final static String CHILD_ID = "child_id";
-	protected final static String QUEUE_DATE = "queue_date";
-	protected final static String METHOD = "method";
-	protected final static String CARE_TIME = "care_time";
-	protected final static String CHOICE_NUMBER = "choice_number";
-	protected final static String CHECK_ID = "check_id";
-	protected final static String CONTRACT_ID = "contract_id";
-	protected final static String CONTRACT_FILE_ID = "contract_file_id";
-	protected final static String OFFER_VALID_UNTIL = "offer_valid_until";
-	protected final static String REJECTION_DATE = "rejection_date";
-	protected final static String PROGNOSIS = "prognosis";
-	protected final static String PRESENTATION = "presentation";
-	protected final static String CC_MESSAGE = "cc_message";
-	protected final static String QUEUE_ORDER = "queue_order";
-	protected final static String APPLICATION_STATUS = "application_status";
-	protected final static String HAS_PRIORITY = "has_priority";
-	protected final static String HAS_DATE_SET = "has_date_set";
-	protected final static String HAS_QUEUE_PRIORITY = "has_queue_priority";
-	protected final static String PRESCHOOL = "preschool";
-	protected final static String LAST_REPLY_DATE = "last_reply_date";
+	public final static String PROVIDER_ID = "provider_id";
+	public final static String FROM_DATE = "from_date";
+	public final static String CHILD_ID = "child_id";
+	public final static String QUEUE_DATE = "queue_date";
+	public final static String METHOD = "method";
+	public final static String CARE_TIME = "care_time";
+	public final static String CHOICE_NUMBER = "choice_number";
+	public final static String CHECK_ID = "check_id";
+	public final static String CONTRACT_ID = "contract_id";
+	public final static String CONTRACT_FILE_ID = "contract_file_id";
+	public final static String OFFER_VALID_UNTIL = "offer_valid_until";
+	public final static String REJECTION_DATE = "rejection_date";
+	public final static String PROGNOSIS = "prognosis";
+	public final static String PRESENTATION = "presentation";
+	public final static String CC_MESSAGE = "cc_message";
+	public final static String QUEUE_ORDER = "queue_order";
+	public final static String APPLICATION_STATUS = "application_status";
+	public final static String HAS_PRIORITY = "has_priority";
+	public final static String HAS_DATE_SET = "has_date_set";
+	public final static String HAS_QUEUE_PRIORITY = "has_queue_priority";
+	public final static String PRESCHOOL = "preschool";
+	public final static String LAST_REPLY_DATE = "last_reply_date";
 	
 
 	protected final static String EXTRA_CONTRACT = "extra_contract";
@@ -496,7 +496,34 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
-	}		
+	}
+	
+	public Collection ejbFindAllByAreaAndApplicationStatus(Object areaID, String applicationStatus[], String caseCode, Date queueDate, Date placementDate, boolean firstHandOnly) throws FinderException {
+		IDOQuery inQuery = idoQuery();
+		inQuery.appendSelect().append("ic_user_id").appendFrom().append("sch_class_member");
+		
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, sch_school s, ic_user u");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,"s.sch_school_id");
+		sql.appendAndEquals("c."+CHILD_ID,"u.ic_user_id");
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		}
+		sql.appendAnd().append("c."+APPLICATION_STATUS).appendInArrayWithSingleQuotes(applicationStatus);
+		if (areaID != null) {
+			sql.appendAndEquals("s.sch_school_area_id", areaID);
+		}
+		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
+		sql.appendAnd().append(FROM_DATE).appendLessThanSign().append(placementDate);
+		if (firstHandOnly) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
+		sql.appendAnd().append(CHILD_ID).appendNotIn(inQuery);
+		sql.appendOrderBy("u.last_name, u.first_name, u.last_name, c."+APPLICATION_STATUS+", c."+QUEUE_DATE);
+
+		return idoFindPKsBySQL(sql.toString());
+	}
 	
 	public Collection ejbFindAllCasesByProviderStatusNotRejected(int providerId, String caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();

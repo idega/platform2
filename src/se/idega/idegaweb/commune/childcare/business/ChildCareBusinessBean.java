@@ -792,7 +792,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 	
-	private boolean hasActiveApplications(int childID, String caseCode, Date activeDate) {
+	public boolean hasActiveApplications(int childID, String caseCode, Date activeDate) {
 		String[] caseStatus = { getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
 		try {
 			return getChildCareApplicationHome().getNumberOfApplicationsByStatusAndActiveDate(childID, caseStatus, caseCode, activeDate) > 0;
@@ -3515,5 +3515,59 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
+	
+	public Collection findSentInAndRejectedApplicationsByArea(Object area, int monthsInQueue, int weeksToPlacementDate, boolean firstHandOnly, String caseCode) throws FinderException {
+		IWTimestamp months = new IWTimestamp();
+		months.addMonths(-monthsInQueue);
+		
+		IWTimestamp weeks = new IWTimestamp();
+		weeks.addWeeks(weeksToPlacementDate);
+		
+		String applicationStatus[] = {String.valueOf(getStatusSentIn()), String.valueOf(getStatusRejected())};
+		return getChildCareApplicationHome().findAllByAreaAndApplicationStatus(area, applicationStatus, caseCode, months.getDate(), weeks.getDate(), firstHandOnly);
+	}
 
+	public String getStatusString(char status) {
+		if (status == getStatusCancelled()) {
+			return getLocalizedString("child_care.status_cancelled","Cancelled");
+		}
+		else if (status == getStatusContract()) {
+			return getLocalizedString("child_care.status_contract","Contract");
+		}
+		else if (status == getStatusRejected()) {
+			return getLocalizedString("child_care.status_rejected","Rejected");
+		}
+		else if (status == getStatusAccepted()) {
+			return getLocalizedString("child_care.status_accepted","Accepted");
+		}
+		else if (status == getStatusMoved()) {
+			return getLocalizedString("child_care.status_moved","Moved");
+		}
+		else if (status == getStatusSentIn()) {
+			return getLocalizedString("child_care.status_open","Open");
+		}
+		else if (status == getStatusParentsAccept()) {
+			return getLocalizedString("child_care.status_parents_accept","Parents accept");
+		}
+		else if (status == getStatusReady()) {
+			return getLocalizedString("child_care.status_ready","Ready");
+		}
+		else if (status == getStatusNotAnswered()) {
+			return getLocalizedString("child_care.status_not_answered","Not answered");
+		}
+		else if (status == getStatusPriority()) {
+			return getLocalizedString("child_care.status_priority","Priority");
+		}
+		else if (status == getStatusNewChoice()) {
+			return getLocalizedString("child_care.status_new_choice","New Choice");
+		}
+		else if (status == STATUS_DELETED) {
+			return getLocalizedString("cihld_care.status_deleted", "Deleted");
+		}
+		else if (status == STATUS_TIMED_OUT) {
+			return getLocalizedString("cihld_care.status_timed_out", "Timed out");
+		}
+		
+		return "";
+	}
 }
