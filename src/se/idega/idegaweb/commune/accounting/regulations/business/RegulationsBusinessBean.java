@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.64 2003/11/14 13:32:41 staffan Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.65 2003/11/17 12:15:15 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1541,6 +1541,47 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		return match;
 	}
+	
+	/**
+	 * 
+	 * @param regulation
+	 * @return
+	 */
+	
+	public SchoolType getSchoolType(Regulation regulation){
+		Collection cond = null;
+		try{
+			cond = getConditionHome().findAllConditionsByRegulation(regulation);
+		} catch (RemoteException ex) {
+			ex.printStackTrace();
+			return null;
+		} catch (FinderException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+
+		Iterator i = cond.iterator();
+		boolean match = false;
+		while (i.hasNext() && !match) {
+			Condition regCond = (Condition) i.next();
+			if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
+				int id = regCond.getIntervalID();
+				try {
+					return getSchoolTypeHome().findByPrimaryKey(new Integer(id));
+				}
+				catch (RemoteException ex) {
+					ex.printStackTrace();
+					return null;
+				}
+				catch (FinderException ex) {
+					ex.printStackTrace();
+					return null;
+				}
+			}
+		}		
+		return null;
+	}
+		
 
 	/**
 	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the specific regulation

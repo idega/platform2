@@ -41,4 +41,5 @@ public interface RegulationsBusiness extends com.idega.business.IBOService
  public void saveCondition(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws se.idega.idegaweb.commune.accounting.regulations.business.RegulationException,java.rmi.RemoteException, java.rmi.RemoteException;
  public int saveRegulation(java.lang.String p0,java.sql.Date p1,java.sql.Date p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,java.lang.String p10,java.lang.String p11,java.lang.String p12,java.lang.String p13,java.lang.String p14,java.lang.String p15)throws se.idega.idegaweb.commune.accounting.regulations.business.RegulationException,java.rmi.RemoteException, java.rmi.RemoteException;
  public void saveRegulationSpecType(int p0,java.lang.String p1,int p2)throws se.idega.idegaweb.commune.accounting.regulations.business.RegulationException, java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolType getSchoolType(se.idega.idegaweb.commune.accounting.regulations.data.Regulation regulation);
 }
