@@ -19,8 +19,8 @@ import com.idega.util.idegaTimestamp;
 
 public class ContractFiler extends JModuleObject {
 
-  public static String prmOneId ="contract_id" ,prmTest="test",prmManyIds="many_ids";
-  public static String prmSeperator = "_",prmFileName = "fname";
+  public  String prmOneId ="contract_id" ,prmTest="test",prmManyIds="many_ids";
+  public  String prmSeperator = "_",prmFileName = "fname";
   public ContractFiler() {
   }
 

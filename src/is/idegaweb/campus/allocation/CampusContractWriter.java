@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.12 2001/08/20 01:05:25 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.13 2001/08/20 02:57:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -89,8 +89,9 @@ public class CampusContractWriter{
         document.addAuthor("Idegaweb Campus");
         document.addSubject("");
         document.open();
+        document.newPage();
 
-        HeaderFooter footer = new HeaderFooter(new Phrase("",textFont),true);
+        HeaderFooter  footer = new HeaderFooter(new Phrase("",textFont),true);
         footer.setBorder(0);
         footer.setAlignment(Element.ALIGN_CENTER);
         document.setFooter(footer);
@@ -103,6 +104,7 @@ public class CampusContractWriter{
         Paragraph cTitle = new Paragraph(title , titleFont);
         // for each contract id
         for (int j = 0; j < ids.length; j++) {
+          document.setPageCount(1);
           bEntity = ids[j] > 0 ? true:false;
           Chapter chapter = new Chapter(cTitle, 1);
           chapter.setNumberDepth(0);
@@ -110,7 +112,7 @@ public class CampusContractWriter{
           Chapter subChapter;
           Section subSection;
           Phrase phrase;
-          System.err.println("inside chapter : "+ids[j]);
+          //System.err.println("inside chapter : "+ids[j]);
           Hashtable H = getHashTags(ids[j],iwrb,nameFont,tagFont,textFont);
           if(L!=null){
             int len = L.size();
@@ -139,12 +141,15 @@ public class CampusContractWriter{
                 }
               }
               catch (SQLException ex) {
-
+                ex.printStackTrace();
               }
             }
           }
           document.add(chapter);
+
           document.newPage();
+
+
         }
         document.close();
         try {
