@@ -125,6 +125,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
 	}
+	
+	public String getChildCareCaseCode() {
+		return CASE_CODE_KEY;
+	}
+
+	public String getAfterSchoolCareCaseCode() {
+		return AFTER_SCHOOL_CASE_CODE_KEY;
+	}
 
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
@@ -750,12 +758,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getUnhandledApplicationsByChild(int childID) {
+	public Collection getUnhandledApplicationsByChild(int childID, String caseCode) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusPreliminary().getStatus() };
 
-			return home.findApplicationByChildAndNotInStatus(childID, caseStatus);
+			return home.findApplicationByChildAndNotInStatus(childID, caseStatus, caseCode);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return null;
@@ -763,6 +771,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public Collection getUnhandledApplicationsByChild(int childID) {
+		return getUnhandledApplicationsByChild(childID, null);
 	}
 
 	public ChildCareApplication getUnhandledApplicationsByChildAndProvider(int childID, int providerID) throws FinderException, RemoteException {

@@ -93,6 +93,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public char getStatusRejected() throws java.rmi.RemoteException;
  public char getStatusSentIn() throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByChild(int p0) throws java.rmi.RemoteException;
+ public java.util.Collection getUnhandledApplicationsByChild(int p0, String p1) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getUnhandledApplicationsByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByProvider(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByProvider(com.idega.user.data.User p0) throws java.rmi.RemoteException;
@@ -155,4 +156,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin, boolean canCreateMultiple) throws java.rmi.RemoteException, se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
  public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin, boolean canCreateMultiple, com.idega.util.IWTimestamp lastReplyDate, String preSchool, boolean extraContract, String extraContractMessage, boolean extraContractOther, String extraContractOtherMessage) throws java.rmi.RemoteException, se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
  public java.util.Collection findUnhandledApplicationsNotInCommune() throws java.rmi.RemoteException;
- }
+ public String getChildCareCaseCode() throws java.rmi.RemoteException;
+ public String getAfterSchoolCareCaseCode() throws java.rmi.RemoteException;
+}

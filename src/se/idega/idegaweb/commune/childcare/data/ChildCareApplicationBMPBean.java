@@ -625,11 +625,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public Collection ejbFindApplicationByChildAndNotInStatus(int childID, String[] caseStatus) throws FinderException {
+		return ejbFindApplicationByChildAndNotInStatus(childID, caseStatus, null);
+	}
+	
+	public Collection ejbFindApplicationByChildAndNotInStatus(int childID, String[] caseStatus, String caseCode) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		}
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy(CHOICE_NUMBER);
 		return super.idoFindPKsByQuery(sql);
