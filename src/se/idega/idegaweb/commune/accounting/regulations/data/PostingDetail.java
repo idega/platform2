@@ -9,13 +9,17 @@ package se.idega.idegaweb.commune.accounting.regulations.data;
 public class PostingDetail {
 	private String term;
 	private float amount;
+	private float vat;
+	private int vatRegulationID;
 	
 	public PostingDetail(){
 	}
 	
-	public PostingDetail(String t, int a){
+	public PostingDetail(String t, float a, float v, int vID){
 		term = t;
 		amount = a;
+		vat = v;
+		vatRegulationID = vID;
 	}
 	
 	public float getAmount() {
@@ -33,4 +37,21 @@ public class PostingDetail {
 	public void setTerm(String string) {
 		term = string;
 	}
+
+	public float getVat() {
+		return vat;
+	}
+
+	public void setVat(float f) {
+		vat = f;
+	}
+
+	public float getVatRegulationID() {
+		return vatRegulationID;
+	}
+
+	public void setVatRegulationID(int i) {
+		vatRegulationID = i;
+	}
+
 }
