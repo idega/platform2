@@ -2,7 +2,6 @@ package se.idega.idegaweb.commune.business;
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoChildrenFound;
 import is.idega.block.family.business.NoCustodianFound;
-
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -10,17 +9,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.idegaweb.commune.user.data.Citizen;
-import se.idega.idegaweb.commune.user.data.CitizenHome;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -708,9 +702,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public boolean hasBankLogin(User user) {
 		if (user == null){
 			return false;
-		} else {
-			return NBSLoginBusinessBean.createNBSLoginBusiness().hasBankLogin(user);			
 		}
+		return NBSLoginBusinessBean.createNBSLoginBusiness().hasBankLogin(user);			
 	}
 	
 
@@ -873,6 +866,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 							return this.getUsersHomePhone(parent);
 						}
 						catch (NoPhoneFoundException npfe) {
+							// empty
 						}
 					}
 				}
@@ -961,9 +955,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			if(Integer.parseInt(pin.substring(10,11)) % 2 == 0 ){
 				return home.getFemaleGender();
 			}
-			else{
-				return home.getMaleGender();
-			}
+			return home.getMaleGender();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -1111,6 +1103,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				this.getRootCitizenGroup().removeUser(deceasedUser,currentPerformingUser);
 			}
 			catch(Exception e){
+				// empty
 			}
 			try{
 				//HACK to get the current user:
@@ -1118,6 +1111,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				this.getRootOtherCommuneCitizensGroup().removeUser(deceasedUser,currentPerformingUser);
 			}
 			catch(Exception e){
+				// empty
 			}
 			
 			//Try to remove phones and emails from user if he has any
@@ -1150,6 +1144,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 						loginInfo.store();
 					}
 					catch(Exception e){
+						// empty
 					}
 					//Try to remove login:					
 					/*try {
@@ -1180,7 +1175,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			} catch (IDOStoreException e1) {
 				logError("Invoice reciver could not be set as null for deceased user "+userID);
 			} catch (FinderException e1) {
-				
+				// empty				
 			}
 			
 			return true;
@@ -1230,21 +1225,6 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				return temp;
 			return string;
 		}
-	}
-	
-	public Citizen getCitizen(int userID) {
-		Citizen citizen = null;
-		try {
-			CitizenHome home = (CitizenHome) this.getIDOHome(Citizen.class);
-			citizen = home.findByPrimaryKey(new Integer(userID));
-		}
-		catch (RemoteException re){
-			log(re);
-		}
-		catch (FinderException fe){
-			log(fe);
-		}
-		return citizen;
 	}
 	
 	public String getNameLastFirst(User user, boolean comma){

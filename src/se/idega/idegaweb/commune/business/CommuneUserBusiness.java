@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.41 2004/09/18 17:25:27 aron Exp $
+ * $Id: CommuneUserBusiness.java,v 1.42 2004/10/05 14:49:07 thomas Exp $
  * Created on 18.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,17 +10,12 @@
 package se.idega.idegaweb.commune.business;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.user.data.Citizen;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOService;
@@ -35,10 +30,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/18 17:25:27 $ by $Author: aron $
+ *  Last modified: $Date: 2004/10/05 14:49:07 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
     /**
@@ -341,11 +336,6 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
      */
     public Collection findSchoolChildrenBySearchCondition(String searchString)
             throws java.rmi.RemoteException;
-
-    /**
-     * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getCitizen
-     */
-    public Citizen getCitizen(int userID) throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getNameLastFirst
