@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.68 2004/11/02 21:22:41 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.69 2005/01/20 09:27:20 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -334,7 +334,8 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 			boolean canSendEmail = getIfCanSendEmail();
 			boolean sendLetterEvenWhenHavingEmail=getIfCreateLetterMessageHavingEmail();
 			//By default: copies in-parameter value:
-			boolean doSendLetter=msgValue.sendLetterIfNoEmail.booleanValue();
+//			boolean doSendLetter=msgValue.sendLetterIfNoEmail.booleanValue();
+			boolean doSendLetter=msgValue.alwaysSendLetter.booleanValue() | sendLetterEvenWhenHavingEmail;
 			
 			if (sendToBox) {
 			    msgValue.messageType = getTypeUserMessage();
@@ -353,30 +354,23 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 					if (canSendEmail)
 						try {
 							sendMessage(mail.getEmailAddress(),msgValue.subject,msgValue.body);
-							if(!sendLetterEvenWhenHavingEmail){
-								//do not send message letter when having email address
-								doSendLetter=false;
-							}
 						}
 						catch (Exception e) {
+							doSendLetter |= msgValue.sendLetterIfNoEmail.booleanValue();
 							System.err.println("Couldn't send message to user via e-mail.");
 						}
+				} else {
+					doSendLetter |= msgValue.sendLetterIfNoEmail.booleanValue();
 				}
 				//else {
 				//	if (pSendLetterIfNoEmail)
 				//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 				//}
-				
-				
-				
 			}
 			//else {
 			//	if (pSendLetterIfNoEmail)
 			//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			//}
-			if (msgValue.alwaysSendLetter.booleanValue()) {
-				doSendLetter = true;
-			}
 			if(doSendLetter){
 				createPrintedLetterMessage(msgValue);
 			}
@@ -616,7 +610,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 		return message;
 	}
 
-	public PrintedLetterMessage createPrintedPasswordLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
+	public PrintedLetterMessage createPrintedPasswordLetterMessage(User user, String subject, String body) throws CreateException {
 		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
 		PrintedLetterMessage message = home.create();
 		message.setOwner(user);
@@ -632,7 +626,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 		return message;
 	}
 	
-	public PrintedLetterMessage createPasswordMessage(User user, String username,String password) throws CreateException, RemoteException {
+	public PrintedLetterMessage createPasswordMessage(User user, String username,String password) throws CreateException {
 		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
 		PrintedLetterMessage message = home.create();
 		message.setOwner(user);
@@ -671,7 +665,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 		return message;
 	}
 	
-	 public Message createPrintedLetterMessage(int userID, String subject,String body)throws CreateException, RemoteException  {
+	 public Message createPrintedLetterMessage(int userID, String subject,String body)throws CreateException {
 	     try {
 	         MessageValue msgValue = new MessageValue();
             msgValue.receiver = getUser(userID);
