@@ -514,6 +514,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     EntityBrowser browser = EntityBrowser.getInstanceUsingExternalForm();
     browser.setLeadingEntity(WorkReportMember.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
+    browser.setScrollableWithHeightAndWidth(460, 720);
     // maintain parameters
     List parameters = getParametersToMaintain();
     Iterator para = parameters.iterator();
