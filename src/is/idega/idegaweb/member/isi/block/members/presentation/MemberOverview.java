@@ -357,6 +357,7 @@ public class MemberOverview extends Block {
 												   // (notice that the first
 												   // column is the '+' or '-')
 		table.add(link, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row); 
 		for (int i = 0; i < length; i++) {
 			if (headers[i] != null) {
 				Text histText = getStyleText(headers[i], STYLENAME_HEADER);
