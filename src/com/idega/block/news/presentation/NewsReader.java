@@ -456,26 +456,28 @@ public class NewsReader extends Block implements IWBlock{
 			newsBody = setTextAttributes(newsBody);
 			T.add(newsInfo,1,1);
 
-			//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
-			List files = newsHelper.getContentHelper().getFiles();
-			if(files!=null){
-				try{
-				Table imageTable = new Table(1, 2);
-				ICFile imagefile = (ICFile)files.get(0);
-				int imid = imagefile.getID();
-				String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+				if(showImages){
+				//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+				List files = newsHelper.getContentHelper().getFiles();
+				if(files!=null){
+					try{
+					Table imageTable = new Table(1, 2);
+					ICFile imagefile = (ICFile)files.get(0);
+					int imid = imagefile.getID();
+					String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
 
-				Image newsImage = new Image(imid);
-				if(att != null)
-					newsImage.setAttributes(getAttributeMap(att));
-				//newsImage.setAlignment("right");
-				//imageTable.setAlignment("right");
-				//imageTable.setVerticalAlignment("top");
-				//imageTable.add(newsImage, 1, 1);
-				T.add(newsImage,1,3);
-				}
-				catch(SQLException ex){
-					ex.printStackTrace();
+					Image newsImage = new Image(imid);
+					if(att != null)
+						newsImage.setAttributes(getAttributeMap(att));
+					//newsImage.setAlignment("right");
+					//imageTable.setAlignment("right");
+					//imageTable.setVerticalAlignment("top");
+					//imageTable.add(newsImage, 1, 1);
+					T.add(newsImage,1,3);
+					}
+					catch(SQLException ex){
+						ex.printStackTrace();
+					}
 				}
 			}
 			//else
@@ -491,7 +493,7 @@ public class NewsReader extends Block implements IWBlock{
 			}
 
 			if ( alignWithHeadline && headlineImageURL!=null){
-				T.add(iwrb.getImage(headlineImageURL), 1, 2);
+				T.add(iwb.getImage(headlineImageURL), 1, 2);
       }
 
 
