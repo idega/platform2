@@ -435,19 +435,35 @@ public class TourDesigner extends TravelManager {
             active_yearly.setSelected(timeframe.getIfYearly());
           }
 
-          name.setContent(service.getName());
+          name.setContent(product.getProductName());
           number.setContent(product.getNumber());
           description.setContent(ProductBusiness.getProductDescription(product, iwc));
 
           int[] days = ServiceDay.getDaysOfWeek(service.getID());
           for (int i = 0; i < days.length; i++) {
-              if (days[i] == ServiceDay.SUNDAY) sundays.setChecked(true);
-              else if (days[i] == ServiceDay.MONDAY) mondays.setChecked(true);
-              else if (days[i] == ServiceDay.TUESDAY) tuesdays.setChecked(true);
-              else if (days[i] == ServiceDay.WEDNESDAY) wednesdays.setChecked(true);
-              else if (days[i] == ServiceDay.THURSDAY) thursdays.setChecked(true);
-              else if (days[i] == ServiceDay.FRIDAY) fridays.setChecked(true);
-              else if (days[i] == ServiceDay.SATURDAY) saturdays.setChecked(true);
+            switch (days[i]) {
+              case ServiceDay.SUNDAY:
+                sundays.setChecked(true);
+                break;
+              case ServiceDay.MONDAY:
+                mondays.setChecked(true);
+                break;
+              case ServiceDay.TUESDAY:
+                tuesdays.setChecked(true);
+                break;
+              case ServiceDay.WEDNESDAY:
+                wednesdays.setChecked(true);
+                break;
+              case ServiceDay.THURSDAY:
+                thursdays.setChecked(true);
+                break;
+              case ServiceDay.FRIDAY:
+                fridays.setChecked(true);
+                break;
+              case ServiceDay.SATURDAY:
+                saturdays.setChecked(true);
+                break;
+            }
           }
 
           if (depAddress != null)

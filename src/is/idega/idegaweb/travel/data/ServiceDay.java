@@ -15,25 +15,22 @@ import java.util.GregorianCalendar;
  */
 
 public class ServiceDay extends GenericEntity {
-
-  public static int SUNDAY = GregorianCalendar.SUNDAY;
-  public static int MONDAY = GregorianCalendar.MONDAY;
-  public static int TUESDAY = GregorianCalendar.TUESDAY;
-  public static int WEDNESDAY = GregorianCalendar.WEDNESDAY;
-  public static int THURSDAY = GregorianCalendar.THURSDAY;
-  public static int FRIDAY = GregorianCalendar.FRIDAY;
-  public static int SATURDAY = GregorianCalendar.SATURDAY;
+  public static final int SUNDAY = GregorianCalendar.SUNDAY;
+  public static final int MONDAY = GregorianCalendar.MONDAY;
+  public static final int TUESDAY = GregorianCalendar.TUESDAY;
+  public static final int WEDNESDAY = GregorianCalendar.WEDNESDAY;
+  public static final int THURSDAY = GregorianCalendar.THURSDAY;
+  public static final int FRIDAY = GregorianCalendar.FRIDAY;
+  public static final int SATURDAY = GregorianCalendar.SATURDAY;
 
   public ServiceDay() {
   }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
     addAttribute(getColumnNameDayOfWeek(), "Day of week", true, true, Integer.class);
-/*
-    this.setAsPrimaryKey(getIDColumnName(),true);
-    this.setAsPrimaryKey(getColumnNameDayOfWeek(),true);
-*/
   }
+
   public String getEntityName() {
     return getServiceDaysTableName();
   }
@@ -101,12 +98,8 @@ public class ServiceDay extends GenericEntity {
 
   }
 
-
   public static String getServiceDaysTableName() {return "TB_SERVICE_DAY";}
   public static String getColumnNameServiceId() {return "SERVICE_ID";}
   public static String getColumnNameDayOfWeek() {return "DAY_OF_WEEK";}
-
-
-
 
 }
