@@ -43,7 +43,9 @@ public class QueryHelper {
 	private QueryBooleanExpressionPart booleanExpression = null;
 	private int step = 0;
 	private boolean isTemplate = false;
-	private boolean entitiesLock = false, fieldsLock = false;
+	private boolean entitiesLock = false;
+	private boolean fieldsLock = false;
+	private String id;
 	
 	// the matrix below is only used during the query builder process as a temporary value holder
 	// example: 
@@ -60,6 +62,7 @@ public class QueryHelper {
 
 	public QueryHelper(Query query) throws XMLException, Exception {
 		this(query.getFileValue());
+		this.id = query.getPrimaryKey().toString();
 	}
 
 	public QueryHelper(InputStream stream) throws XMLException, Exception {
@@ -181,12 +184,13 @@ public class QueryHelper {
 	}
 
 	public XMLDocument createDocument() {
-		if (doc == null)  {
+		//if (doc == null)  {
 			doc = new XMLDocument(getUpdatedRootElement());
-		}
-		else {
-			initializeRootElement();
-		}
+		//}
+		//else {
+			//getUpdatedRootElement();
+			//initializeRootElement();
+		//}
 		return doc;
 	}
 			
@@ -530,7 +534,18 @@ public class QueryHelper {
 	
 	
 	public void addQuery(QueryHelper queryHelper)	{
+		if (previousQuery !=null)	{
+			String previousId = previousQuery.getId();
+			String newId = queryHelper.getId();
+			if ( previousId != null && previousId.equals(newId)) {
+				//do nothing
+				return;
+			}
+		}
 		this.previousQuery = queryHelper;
+		clearFields();
+		clearOrderConditions();
+		clearConditions();
 	}
 
 	
@@ -771,6 +786,10 @@ public class QueryHelper {
 	
 	public String getInputHandler(String entityPath, String field) {
 		return (String) entityFieldHandler.get(entityPath, field);
+	}
+	
+	public String getId() {
+		return id;
 	}
 
 }
