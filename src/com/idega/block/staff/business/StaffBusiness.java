@@ -731,17 +731,26 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
 
   public static void delete(int userId) {
-
     try {
-
       StaffEntity delStaff = ((com.idega.block.staff.data.StaffEntityHome)com.idega.data.IDOLookup.getHomeLegacy(StaffEntity.class)).findByPrimaryKeyLegacy(userId);
-
       delStaff.delete();
-
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } catch (NullPointerException e) {
+      // No staffEntity
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    catch (SQLException e) {
-
+    try {
+      StaffInfo delStaff = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).findByPrimaryKeyLegacy(userId);
+      delStaff.delete();
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } catch (NullPointerException e) {
+      // No staffEntity
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
   }

@@ -231,9 +231,9 @@ public class ParticipantList extends AbstractContentList {
     this.setSebraColor("#F4F4DB","#FFFFFF");
 
     this.setColumnWidth(1,"4");
-    this.setColumnWidth(2,"220");
+    this.setColumnWidth(2,"200");
     this.setColumnWidth(3,"4");
-    this.setColumnWidth(4,"167");
+    this.setColumnWidth(4,"187");
     this.setColumnWidth(5,"4");
     this.setColumnWidth(6,"75");
     this.setColumnWidth(7,"4");
@@ -623,9 +623,9 @@ public class ParticipantList extends AbstractContentList {
 
       this.setColumnWidth(1,"40");
       this.setColumnWidth(2,"4");
-      this.setColumnWidth(3,"220");
+      this.setColumnWidth(3,"200");
       this.setColumnWidth(4,"4");
-      this.setColumnWidth(5,"167");
+      this.setColumnWidth(5,"187");
       this.setColumnWidth(6,"4");
       this.setColumnWidth(7,"75");
       this.setColumnWidth(8,"4");
