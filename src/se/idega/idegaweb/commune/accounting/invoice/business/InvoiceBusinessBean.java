@@ -67,11 +67,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/04 10:36:42 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/04 14:11:23 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.117 $
+ * @version $Revision: 1.118 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -613,15 +613,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final PostingDetail postingDetail, PlacementTimes checkPeriod,
 		 final Date startPlacementDate, final Date endPlacementDate,
 		 final String createdBySignature)	throws RemoteException, CreateException {
-		final InvoiceRecord result = getInvoiceRecordHome ().create ();
-		result.setCreatedBy (createdBySignature);
-		result.setDateCreated (new Date (System.currentTimeMillis ()));
-		result.setDays (checkPeriod.getDays ());
-		if (null != paymentRecord) {
-			result.setPaymentRecord (paymentRecord);
-		}
+		final InvoiceRecord result = createInvoiceRecord
+				(paymentRecord, placement, checkPeriod, startPlacementDate,
+				 endPlacementDate, createdBySignature);
 		if (null != postingDetail) {
-			result.setAmount(AccountingUtil.roundAmount(checkPeriod.getMonths () * postingDetail.getAmount ()));
+			result.setAmount (AccountingUtil.roundAmount
+												(checkPeriod.getMonths ()
+												 * postingDetail.getAmount ()));
 			result.setInvoiceText(postingDetail.getTerm());
 			result.setRuleText(postingDetail.getTerm());
 			result.setOrderId(postingDetail.getOrderID());
@@ -633,6 +631,22 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			} catch (Exception e) {
 				e.printStackTrace ();
 			}
+		}
+		result.store ();
+		return result;
+	}
+
+	public InvoiceRecord createInvoiceRecord
+		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
+		 final PlacementTimes checkPeriod, final Date startPlacementDate,
+		 final Date endPlacementDate, final String createdBySignature)
+		throws RemoteException, CreateException {
+		final InvoiceRecord result = getInvoiceRecordHome ().create ();
+		result.setCreatedBy (createdBySignature);
+		result.setDateCreated (new Date (System.currentTimeMillis ()));
+		result.setDays (checkPeriod.getDays ());
+		if (null != paymentRecord) {
+			result.setPaymentRecord (paymentRecord);
 		}
 		result.setPeriodStartCheck (checkPeriod.getFirstCheckDay ().getDate ());
 		result.setPeriodEndCheck (checkPeriod.getLastCheckDay ().getDate ());
@@ -1034,7 +1048,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		final Date endDate = null != member && null != member.getRemovedDate ()
 				? new Date (member.getRemovedDate ().getTime ()) : null;
 		final InvoiceRecord result = createInvoiceRecord
-				(paymentRecord, member, null, placementTimes, startDate, endDate,
+				(paymentRecord, member, placementTimes, startDate, endDate,
 				 getSignature (registrator));
 		final School school = paymentHeader.getSchool ();
 		result.setProvider (school);
@@ -1043,14 +1057,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		final Regulation regulation
 				= findRegulation (paymentRecord, schoolCategory, period);
 		if (null != regulation) {
-			final String regulationName = regulation.getName ();
 			final RegulationSpecType regSpecType = regulation.getRegSpecType ();
-			final Integer regSpecTypeId	= (Integer) regSpecType.getPrimaryKey ();
-			final RegulationsBusiness regulationsBusiness
-					= getRegulationsBusiness ();
-			final SchoolType schoolType
-					= regulationsBusiness.getSchoolType (regulation);
-			final PostingBusiness postingBusiness = getPostingBusiness ();
+			result.setRegSpecType (regSpecType);
+			final String regulationName = regulation.getName ();
 			result.setRuleText (regulationName);
 			result.setInvoiceText (regulationName);
 			result.setInvoiceText2 (" ");
@@ -1063,7 +1072,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 
 			// set postings
 			try {
-				final String [] paymentPostings = postingBusiness.getPostingStrings
+				final Integer regSpecTypeId	= (Integer) regSpecType.getPrimaryKey ();
+				final SchoolType schoolType
+						= getRegulationsBusiness ().getSchoolType (regulation);
+				final String [] paymentPostings
+						= getPostingBusiness ().getPostingStrings
 						(schoolCategory, schoolType, regSpecTypeId.intValue (),
 						 new Provider (school), period);
 				result.setOwnPosting (paymentPostings [0]);

@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/02/21 09:54:43 $ by $Author: laddi $
+ * Last modified: $Date: 2004/03/04 14:11:23 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -437,23 +437,27 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 																									: LIGHT_BLUE);
 			int offset = 0;
 			for (int j = 0; j < fields.length; j++) {
+				final StringBuffer value = new StringBuffer ();
 				final PostingField field = fields [j];
-				if (field.getJustification ()
-						== PostingFieldBMPBean.JUSTIFY_RIGHT) {
-					table.getDefaultCell ().setHorizontalAlignment
-							(Element.ALIGN_RIGHT);
-				} else {
-					table.getDefaultCell ().setHorizontalAlignment
-							(Element.ALIGN_LEFT);
+				if (null != field) {
+					if (field.getJustification ()
+							== PostingFieldBMPBean.JUSTIFY_RIGHT) {
+						table.getDefaultCell ().setHorizontalAlignment
+								(Element.ALIGN_RIGHT);
+					} else {
+						table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+					}
+					if (null != postingString) {
+						final int endPosition = min (offset + field.getLen (),
+																				 postingString.length ());
+						value.append (postingString.substring
+													(offset, endPosition).trim ());
+						offset = endPosition;
+					}
 				}
-				final int endPosition = min (offset + field.getLen (),
-																		 postingString.length ());
-				addPhrase (table, postingString.substring
-									 (offset, endPosition).trim ());
-				offset = endPosition;
+				addPhrase (table, value.toString ());
 			}
-			table.getDefaultCell ().setHorizontalAlignment
-					(Element.ALIGN_RIGHT);
+			table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 			addPhrase (table, getFormattedAmount (record.getTotalAmount ()));
 		}
 		return table;
