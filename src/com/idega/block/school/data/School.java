@@ -20,7 +20,6 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public com.idega.core.location.data.Country getCountry();
  public int getCountryId();
  public java.lang.String getExtraProviderId();
- public boolean getHasCompensationByInvoice();
  public com.idega.user.data.Group getHeadmasterGroup()throws java.rmi.RemoteException,javax.ejb.FinderException;
  public int getHeadmasterGroupId();
  public int getHeadmasterUserId();
@@ -58,7 +57,6 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setCommunePK(java.lang.Object p0);
  public void setCountryId(int p0);
  public void setExtraProviderId(java.lang.String p0);
- public void setHasCompensationByInvoice(boolean p0);
  public void setHeadmasterGroupId(int p0);
  public void setHeadmasterUserId(int p0);
  public void setImage(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORelationshipException;

@@ -75,7 +75,6 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
 	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";
-	public final static String COMPENSATION_BY_INVOICE = "comp_by_invoice";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -117,7 +116,6 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(TERMINATION_DATE, "termination date", true, true, Date.class);
 		addManyToOneRelationship(COUNTRY, Country.class);
 		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);		
-		this.addAttribute(COMPENSATION_BY_INVOICE, "Compensation by invoice", true, true, Boolean.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -653,14 +651,6 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		setColumn(MANAGEMENT_TYPE, managementType);
 	}
 	
-	public boolean getHasCompensationByInvoice() {
-		return getBooleanColumnValue(COMPENSATION_BY_INVOICE,false);
-	}
-	
-	public void setHasCompensationByInvoice(boolean hasCompensation) {
-		setColumn(COMPENSATION_BY_INVOICE,hasCompensation);
-	}
-
 	public Collection getImages() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(ICFile.class);
 	}
