@@ -10,9 +10,7 @@ import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.handler.UserPinLookupToGroupImportHandler;
 import com.idega.user.presentation.FamilyTab;
 import com.idega.user.presentation.UserClubMemberExchangeWindow;
-import com.idega.user.presentation.UserConstants;
 import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
-import com.idega.user.util.ICUserConstants;
 
 /**
  * <p>Title: idegaWeb</p>
