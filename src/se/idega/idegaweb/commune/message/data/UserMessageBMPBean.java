@@ -25,6 +25,7 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
   private static final String COLUMN_BODY="BODY";
   private static final String COLUMN_SENDER="TEMP_SENDER";
   private static final String COLUMN_DATE="TEMP_DATE";
+	private static final String COLUMN_SENT_BY="SENDER";
 
   private static final String CASE_CODE_KEY="SYMEDAN";
   private static final String CASE_CODE_DESCRIPTION="User Message";
@@ -40,7 +41,7 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
     //this.addAttribute(COLUMN_SENDER,"Message sender",Integer.class);//temp
     this.addAttribute(COLUMN_DATE,"Message sender",String.class);//temp
     this.addAttribute(COLUMN_SENDER,"Message sender",String.class);//temp
-    //this.addManyToOneRelationship(COLUMN_SENDER, User.class);
+    this.addManyToOneRelationship(COLUMN_SENT_BY, User.class);
     //this.setNullable(COLUMN_SENDER, true);
   }
 
@@ -75,6 +76,14 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
   public void setSender(int userID)throws java.rmi.RemoteException{
     this.setColumn(COLUMN_SENDER,userID);
   }
+
+	public int getSentBy()throws java.rmi.RemoteException{
+		return this.getIntColumnValue(COLUMN_SENT_BY);
+	}
+
+	public void setSentBy(int userID)throws java.rmi.RemoteException{
+		this.setColumn(COLUMN_SENT_BY,userID);
+	}
 
   public Collection ejbFindMessages(User user)throws FinderException,java.rmi.RemoteException{
     return super.ejbFindAllCasesByUser(user);
