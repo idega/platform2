@@ -72,30 +72,35 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
     table.add(header, 1, row);
 
-    table.mergeCells(1, row, 2, row++);
-
     if (productViewer._useHRasSeperator) {
-      table.mergeCells(1, row, 2, row);
       HorizontalRule hr = new HorizontalRule("100%");
       table.add(hr, 1, row++);
     }
     else {
       if (productViewer._seperator != null) {
-	table.mergeCells(1, row, 2, row);
 	table.add(productViewer._seperator, 1, row++);
       }
     }
-    table.add(description, 1, row);
     if (_product != null) {
+      Table imageTable = new Table(1,1);
+      imageTable.setCellpadding(0);
+      imageTable.setCellspacing(0);
+      imageTable.setAlignment(productViewer._imageAlignment);
       ProductItemImages pii = new ProductItemImages(_product);
 	pii.setVerticalView(true);
 	pii.setImageAlignment(Table.HORIZONTAL_ALIGN_CENTER);
-	if ( productViewer._imageWidth != null )
-	  pii.setWidth(productViewer._imageWidth);
-      table.add(pii, 2, row);
-      table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_CENTER);
-      table.setVerticalAlignment(2,row, Table.VERTICAL_ALIGN_TOP);
+	if ( productViewer._imageWidth != null ) {
+	  try {
+	    pii.setWidth(Integer.parseInt(productViewer._imageWidth));
+	  }
+	  catch (NumberFormatException e) {
+	    pii.setWidth(0);
+	  }
+	}
+      imageTable.add(pii);
+      table.add(imageTable, 1, row);
     }
+    table.add(description, 1, row);
 
     table.setVerticalAlignment(1,1, Table.VERTICAL_ALIGN_BOTTOM);
     table.setVerticalAlignment(2,1, Table.VERTICAL_ALIGN_BOTTOM);

@@ -57,9 +57,9 @@ public class ProductItemImages extends ProductItem {
     List images = null;
     try {
       if (_product != null) {
-        images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+	images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
       }else {
-        images = new Vector();
+	images = new Vector();
       }
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
@@ -80,25 +80,26 @@ public class ProductItemImages extends ProductItem {
 
     try {
       for (int i = 0; i < images.size(); i++) {
-        file = (ICFile) images.get(i);
-        image = new Image(file.getID());
-        if ( _width > 0 ) {
-          image.setWidth( _width );
-        }
-        if ( _height > 0 ) {
-          image.setWidth( _height );
-        }
-        if ( _alignment != null ) {
-          table.setAlignment( column , row , _alignment);
-        }
-        table.add(image, column, row);
+	file = (ICFile) images.get(i);
+	image = new Image(file.getID());
+	if ( _width > 0 ) {
+	  System.out.println("Setting image width: "+_width);
+	  image.setWidth( _width );
+	}
+	if ( _height > 0 ) {
+	  image.setHeight( _height );
+	}
+	if ( _alignment != null ) {
+	  table.setAlignment( column , row , _alignment);
+	}
+	table.add(image, column, row);
 
 
-        if (this._horizontalView) {
-          ++column;
-        }else {
-          ++row;
-        }
+	if (this._horizontalView) {
+	  ++column;
+	}else {
+	  ++row;
+	}
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);

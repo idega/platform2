@@ -42,6 +42,7 @@ public class ProductViewer extends Block {
   boolean _showRandom = false;
   String _imageWidth = null;
   String _textAlignment = Paragraph.HORIZONTAL_ALIGN_LEFT;
+  String _imageAlignment = Paragraph.HORIZONTAL_ALIGN_RIGHT;
 
   public ProductViewer() { }
 
@@ -174,6 +175,10 @@ public class ProductViewer extends Block {
 
   public void setDescriptionAlignment(String alignment) {
     _textAlignment = alignment;
+  }
+
+  public void setImageAlignment(String alignment) {
+    _imageAlignment = alignment;
   }
 
   public void setLayoutClassName(String className) {
