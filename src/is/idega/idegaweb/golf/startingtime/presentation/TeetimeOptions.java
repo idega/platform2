@@ -68,7 +68,7 @@ public class TeetimeOptions extends is.idega.idegaweb.golf.templates.page.Jmodul
 public void main(IWContext iwc) throws Exception {
     super.main(iwc);
 
-    if(iwc.getRequest().getParameter("btnSkra.x") != null)
+    if(iwc.getParameter("btnSkra.x") != null)
     {
             Form myForm = new Form();
             if( !storeConfig(iwc)){
@@ -101,7 +101,7 @@ public DropdownMenu dropdownInterval(String dropdownName, int first, int next, i
 
 public HiddenInput insertHiddenInput(String inpName, String value, Form theForm){
 	HiddenInput myObject = new HiddenInput(inpName, value);
-	theForm.addObject( myObject );
+	theForm.add( myObject );
 
 	return myObject;
 }
@@ -313,7 +313,7 @@ public DropdownMenu insertDropdown(String dropdownName, idegaCalendar funcDate, 
 	DropdownMenu myDropdown = new DropdownMenu(dropdownName);
 
 	for (int i = 0; i < 25 ; i++){
-		myDropdown.addMenuElement(stamp.toSQLDateString() , stamp.getDateString(true,iwc));
+		myDropdown.addMenuElement(stamp.toSQLDateString() , stamp.getLocaleDate(iwc));//) getDateString(true,iwc));
 		stamp.addDays(1);
 	}
 
@@ -358,13 +358,13 @@ public boolean storeConfig(IWContext iwc)throws SQLException, IOException
 	try
 	{
 		StartingtimeFieldConfig conf = new StartingtimeFieldConfig();
-		String FieldID = iwc.getRequest().getParameter("fieldID");
-		String DaysShown = iwc.getRequest().getParameter("daysShown");
-                String pubReg = iwc.getRequest().getParameter("public_reg");
-		BeginDate = iwc.getRequest().getParameter("beginDate");
-		String Interval = iwc.getRequest().getParameter("interval");
-		String OpenTime = iwc.getRequest().getParameter("openTime");
-		String CloseTime = iwc.getRequest().getParameter("closeTime");
+		String FieldID = iwc.getParameter("fieldID");
+		String DaysShown = iwc.getParameter("daysShown");
+                String pubReg = iwc.getParameter("public_reg");
+		BeginDate = iwc.getParameter("beginDate");
+		String Interval = iwc.getParameter("interval");
+		String OpenTime = iwc.getParameter("openTime");
+		String CloseTime = iwc.getParameter("closeTime");
 
                 boolean pReg = (pubReg != null && pubReg.equals("true") );
 
@@ -474,9 +474,9 @@ public void drawTable(IWContext iwc)throws IOException
         firstTable.add(new CheckBox("public_reg","true"), 2, 7);
 
 
-	if(iwc.getRequest().getParameter("interval") != null)
+	if(iwc.getParameter("interval") != null)
 	{
-		String Bil = iwc.getRequest().getParameter("interval");
+		String Bil = iwc.getParameter("interval");
 		if(! Bil.equals("0")){
 			firstTable.addText(iwrb.getLocalizedString("start.options.opentime","Opentime"), 3, 4);
 			firstTable.add(insertDropdown_opentime("openTime", Integer.parseInt(Bil) ), 3, 5);
