@@ -695,6 +695,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		HSSFSheet accEntries = excel.getSheetAt(SHEET_ACCOUNT_PART);
 		int currRow = 2;
+		int leaguesStartColumn = 7;
 		int lastRow = accEntries.getLastRowNum();
 
 		System.out.println("Current row is at: " + currRow);
@@ -707,34 +708,187 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		//get the top row to get a list of leagues to use.
 		HSSFRow headerRow = (HSSFRow)accEntries.getRow(currRow);
-		Map leaguesMap = getLeaguesMapFromRow(headerRow, year,7);
+		Map leaguesMap = getLeaguesMapFromRow(headerRow, year,leaguesStartColumn);
+
+		
+		int numberOfLeagues = 1;
+		if (leaguesMap != null)
+			numberOfLeagues = leaguesMap.size();
+
+		String accKey = null;
 
 		//Get the revenue part
 		for (currRow++; currRow < 8; currRow++) {
 			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-			HSSFCell cell = row.getCell((short)0);
-			System.out.println("Key = " + cell.getStringCellValue());
+			HSSFCell cell = row.getCell((short)1);
+			if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				accKey = Integer.toString((int)cell.getNumericCellValue());
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+				accKey = cell.getStringCellValue();
+			else
+				accKey = null;
+				
+			WorkReportAccountKey eAccKey = null;
+			try {
+				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
+			}
+			catch(FinderException e) {
+				return false;
+			}
+
+			for (int i = 0; i < numberOfLeagues; i++) {
+				HSSFCell c =  row.getCell((short)(leaguesStartColumn+i));
+				double val = 0.0;
+				if (c != null)
+					val = c.getNumericCellValue();
+					
+				System.out.println("val = " + val);
+				
+				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn+i));
+				
+				if (val != 0.0) {
+					try {
+						WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+						rec.setAccountKey(eAccKey);
+						rec.setWorkReportGroup(league);
+						rec.setReportId(workReportId);
+						rec.setAmount((float)val);
+						rec.store();
+					}
+					catch(Exception e) {
+						return false;
+					}
+				}				
+			}
 		}
 
 		//Get the revenue part
 		for (currRow = 11; currRow < 26; currRow++) {
 			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-			HSSFCell cell = row.getCell((short)0);
-			System.out.println("Key = " + cell.getStringCellValue());
+			HSSFCell cell = row.getCell((short)1);
+			if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				accKey = Integer.toString((int)cell.getNumericCellValue());
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+				accKey = cell.getStringCellValue();
+			else
+				accKey = null;
+
+			WorkReportAccountKey eAccKey = null;
+			try {
+				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
+			}
+			catch(FinderException e) {
+				return false;
+			}
+
+			for (int i = 0; i < numberOfLeagues; i++) {
+				HSSFCell c =  row.getCell((short)(leaguesStartColumn+i));
+				double val = 0.0;
+				if (c != null)
+					val = c.getNumericCellValue();
+					
+				System.out.println("val = " + val);
+				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn+i));
+				if (val != 0.0) {
+					try {
+						WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+						rec.setAccountKey(eAccKey);
+						rec.setWorkReportGroup(league);
+						rec.setReportId(workReportId);
+						rec.setAmount((float)val);
+						rec.store();
+					}
+					catch(Exception e) {
+						return false;
+					}
+				}				
+			}
 		}
 
 		//Get the asset part
 		for (currRow = 33; currRow < 35; currRow++) {
 			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-			HSSFCell cell = row.getCell((short)0);
-			System.out.println("Key = " + cell.getStringCellValue());
+			HSSFCell cell = row.getCell((short)1);
+			if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				accKey = Integer.toString((int)cell.getNumericCellValue());
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+				accKey = cell.getStringCellValue();
+			else
+				accKey = null;
+
+			WorkReportAccountKey eAccKey = null;
+			try {
+				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
+			}
+			catch(FinderException e) {
+				return false;
+			}
+
+			for (int i = 0; i < numberOfLeagues; i++) {
+				HSSFCell c =  row.getCell((short)(leaguesStartColumn+i));
+				double val = 0.0;
+				if (c != null)
+					val = c.getNumericCellValue();
+					
+				System.out.println("val = " + val);
+				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn+i));
+				if (val != 0.0) {
+					try {
+						WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+						rec.setAccountKey(eAccKey);
+						rec.setWorkReportGroup(league);
+						rec.setReportId(workReportId);
+						rec.setAmount((float)val);
+						rec.store();
+					}
+					catch(Exception e) {
+						return false;
+					}
+				}				
+			}
 		}
 
 		//Get the dept part
 		for (currRow = 38; currRow < 42; currRow++) {
 			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-			HSSFCell cell = row.getCell((short)0);
-			System.out.println("Key = " + cell.getStringCellValue());
+			HSSFCell cell = row.getCell((short)1);
+			if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				accKey = Integer.toString((int)cell.getNumericCellValue());
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+				accKey = cell.getStringCellValue();
+			else
+				accKey = null;
+
+			WorkReportAccountKey eAccKey = null;
+			try {
+				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
+			}
+			catch(FinderException e) {
+				return false;
+			}
+
+			for (int i = 0; i < numberOfLeagues; i++) {
+				HSSFCell c =  row.getCell((short)(leaguesStartColumn+i));
+				double val = 0.0;
+				if (c != null)
+					val = c.getNumericCellValue();
+					
+				System.out.println("val = " + val);
+				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn+i));
+				if (val != 0.0) {
+					try {
+						WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+						rec.setAccountKey(eAccKey);
+						rec.setWorkReportGroup(league);
+						rec.setReportId(workReportId);
+						rec.setAmount((float)val);
+						rec.store();
+					}
+					catch(Exception e) {
+						return false;
+					}
+				}				
+			}
 		}
 
 		/*
