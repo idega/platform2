@@ -1,0 +1,15 @@
+Add missing many-to-many relation from sch_school_class to sch_school_year:
+insert into sch_school_class_year (sch_school_class_id, sch_school_year_id)
+ select sch_school_class_id, sch_school_year_id from sch_school_class
+  where sch_school_year_id is not null
+  and sch_school_class_id not in (select sch_school_class_id from sch_school_class_year)
+  
+Add missing many-to-many relation from sch_school_class to ic_user:
+insert into sch_school_class_teacher (sch_school_class_id, ic_user_id)
+ select sch_school_class_id, ic_user_id from sch_school_class
+  where ic_user_id is not null
+  and sch_school_class_id not in (select sch_school_class_id from sch_school_class_teacher)
+  
+Drop columns:
+alter table sch_school_class drop column sch_school_class_id
+alter table sch_school_class drop column ic_user_id
