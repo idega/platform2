@@ -101,6 +101,7 @@ public class ProductCatalog extends CategoryBlock {
 	boolean _allowMulitpleCategories = true;
 	boolean _useParameterCategory = false;
 	Image _iconImage;
+	Image _iconPhoto;
 	List productCategories;
 	private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
 	private AbstractProductCatalogLayout layout = null;
@@ -700,5 +701,8 @@ public class ProductCatalog extends CategoryBlock {
 	public String getHeaderBackgroundColor() {
 		return this._headerBackgroundColor;
 	}
-		
+	
+	public void setPhotoIcon(Image image) {
+		this._iconPhoto = image;
+	}
 }

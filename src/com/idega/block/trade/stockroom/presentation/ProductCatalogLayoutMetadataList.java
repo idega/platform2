@@ -105,7 +105,13 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 				try {
 					image = new Image( new Integer(( (ICFile) images.next()).getPrimaryKey().toString()).intValue() );
 					Window window = new Window(image);
+
 					Link link = new Link(productCatalog.getText(Integer.toString(counter)));
+					
+					if (productCatalog._iconPhoto != null) {
+						link = new Link(productCatalog._iconPhoto);
+					}
+					
 					link.setWindow(window);
 					
 					table.add(link, imageColumn, row);
