@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.36 2001/09/19 11:37:44 laddi Exp $
+ * $Id: Link.java,v 1.37 2001/09/24 09:58:23 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -268,7 +268,7 @@ public class Link extends Text {
 
       if (_parameterString == null) {
         _parameterString = new StringBuffer();
-        _parameterString.append("&");
+        _parameterString.append("?");
       }
       else  {
         _parameterString.append("&");
