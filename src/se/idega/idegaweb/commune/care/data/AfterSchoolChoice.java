@@ -1,6 +1,5 @@
-package se.idega.idegaweb.commune.school.data;
+package se.idega.idegaweb.commune.care.data;
 
-import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 
 
 public interface AfterSchoolChoice extends ChildCareApplication

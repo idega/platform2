@@ -16,8 +16,8 @@ import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import se.idega.idegaweb.commune.school.data.AfterSchoolChoice;
-import se.idega.idegaweb.commune.school.data.AfterSchoolChoiceHome;
+import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
+import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
 
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;

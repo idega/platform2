@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.school.data;
+package se.idega.idegaweb.commune.care.data;
 
 
 public interface AfterSchoolChoiceHome extends com.idega.data.IDOHome
