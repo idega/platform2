@@ -28,7 +28,7 @@ import com.idega.business.IBOLookup;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.block.presentation.FolderBlock;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -55,13 +55,13 @@ import dori.jasper.engine.design.JasperDesign;
  * @author		2003 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version		1.0
  */
-public class ReportGenerator extends FolderBlock {
+public class ReportGenerator extends Block {
 	
 	public final static String STYLE = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000;";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	public final static String PRIFIX_PRM = "dr_";
 	private static final String PRM_DR_GEN_STATE="dr_gen_state";
-
+	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.datareport";
 	
 	private Integer _queryPK=null;
 	private Vector _dynamicFields=new Vector();
@@ -78,6 +78,10 @@ public class ReportGenerator extends FolderBlock {
 	 */
 	public ReportGenerator() {
 		super();
+	}
+	
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 	
 	
@@ -162,6 +166,7 @@ public class ReportGenerator extends FolderBlock {
 				submForm.add(_fieldTable);
 				this.add(submForm);
 			} else {
+				
 				generateDataSource(iwc);
 				generateLayout(iwc);
 				generateReport(iwc);
