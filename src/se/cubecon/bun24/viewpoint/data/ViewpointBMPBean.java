@@ -54,7 +54,6 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public void initializeAttributes () {
 		addGeneralCaseRelation();
-        // FIXME_XX Ta bort konstanter 10000 m fl
 		addAttribute (COLUMN_CATEGORY, "Category", String.class);
        	addAttribute (COLUMN_USER_ID, "User", true, true, Integer.class,
                       "many-to-one", User.class);
@@ -119,8 +118,9 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         (final Group [] groups) throws FinderException, RemoteException {
         final StringBuffer sql = new StringBuffer ();
         if (groups.length == 0) return new ArrayList (); // return empty list
-        sql.append ("select * from vp_viewpoint, proc_case where ");
-        sql.append ("vp_viewpoint.vp_viewpoint_id = proc_case.proc_case_id");
+        sql.append ("select * from " + ENTITY_NAME + ", proc_case");
+        sql.append (" where " + ENTITY_NAME + "." + ENTITY_NAME + "_id");
+        sql.append (" = proc_case.proc_case_id");
         sql.append (" and proc_case.user_id is null");
         for (int i = 0; i < groups.length; i++) {
             sql.append (i == 0 ? " and (" : " or ");
@@ -129,6 +129,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
             sql.append ("proc_case.handler_group_id = '" + groupId + "'");
         }
         sql.append (")");
+        System.out.println (sql);
         final Collection viewpoints = idoFindIDsBySQL (sql.toString ());
         return viewpoints;
     }

@@ -38,6 +38,70 @@ public class ViewpointForm extends CommuneBlock {
     public final static int ACCEPTTOHANDLEVIEWPOINT_ACTION = 7;
     public final static int ANSWERVIEWPOINT_ACTION = 8;
 
+    public final static String ANSWER_KEY = "viewpoint.answer";
+    public final static String ANSWER_DEFAULT = "Svar till medborgare";
+    public final static String CATEGORY_KEY = "viewpoint.category";
+    public final static String CATEGORY_DEFAULT = "Kategori";
+    public final static String CONFIRMANSWERSENT_KEY
+        = "viewpoint.confirmAnswerSent";
+    public final static String CONFIRMANSWERSENT_DEFAULT
+        = "Ditt svar har nu skickats till medborgaren.";
+    public final static String CONFIRMENTERVIEWPOINT_KEY
+        = "viewpoint.confirmEnterViewpoint";
+    public final static String CONFIRMENTERVIEWPOINT_DEFAULT
+        = "Tack för din synpunkt. Den är nu registrerade som ett ärende på "
+        + "BUN24. En handläggare kommer att hantera och besvara ärendet.";
+    public final static String CONFIRMSETHANDLER_KEY
+        = "viewpoint.confirmSetHandler";
+    public final static String CONFIRMSETHANDLER_DEFAULT
+        = "Du är nu registrerad som handläggare för det här ärendet.";
+    public final static String CONTINUE_KEY = "viewpoint.continue";
+    public final static String CONTINUE_DEFAULT = "Fortsätt...";
+    public final static String DESCRIPTION1_KEY = "viewpoint.description1";
+    public final static String DESCRIPTION1_DEFAULT
+        = "När du använder 'Synpunkter' i BUN24 så ska du ange vilken typ av "
+        + "synpunkter du vill lämna. Det möjliggör för oss att länka dem till "
+        + "rätt tjänsteman för snabb handläggning och respons. De olika "
+        + "kategorierna ger också möjlighet till en systematisk uppföljning av "
+        + "hur medborgarna uppfattar verksamhet och service i kommunen.";
+    public final static String DESCRIPTION2_KEY = "viewpoint.description2";
+    public final static String DESCRIPTION2_DEFAULT
+        = "Problem ska i första hand lösas där de uppstår. Om du har "
+        + "synpunkter på hur en enskild skola eller förskola fungerar så ska "
+        + "du därför i första hand vända dig till personal, rektor eller "
+        + "förskolechef.";
+    public final static String ENTERSUBCATEGORY_KEY
+        = "viewpoint.enterSubCategory";
+    public final static String ENTERSUBCATEGORY_DEFAULT
+        = "Vilket underområde vill du ge synpunkter om?";
+    public final static String ENTERTOPCATEGORY_KEY
+        = "viewpoint.enterTopCategory";
+    public final static String ENTERTOPCATEGORY_DEFAULT
+        = "Vilket område vill du ge synpunkter om?";
+    public final static String FROMCITIZEN_KEY = "viewpoint.fromCitizen";
+    public final static String FROMCITIZEN_DEFAULT = "Från medborgare";
+    public final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY
+        = "viewpoint.iAcceptToHandleThisViewpoint";
+    public final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
+        = "Jag accepterar att handlägga den här synpunkten";
+    public final static String MESSAGE_KEY = "viewpoint.message";
+    public final static String MESSAGE_DEFAULT = "Meddelande";
+    public final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
+    public final static String NOTLOGGEDON_DEFAULT
+        = "Du måste vara inloggad för att använda den här funktionen.";
+    public final static String SENDANSWERTOCITIZEN_KEY
+        = "viewpoint.sendAnswerToCitizen";
+    public final static String SENDANSWERTOCITIZEN_DEFAULT
+        = "Skicka svar till medborgare";
+    public final static String SUBJECT_KEY = "viewpoint.subject";
+    public final static String SUBJECT_DEFAULT = "Rubrik";
+    public final static String SUBMITVIEWPOINT_KEY
+        = "viewpoint.submitViewpoint";
+    public final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
+    public final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
+    public final static String VIEWPOINTS_DEFAULT = "Synpunkter";
+    public final static String UNKNOWN_PAGE = "Unknown Page";
+
 	public void main (final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
 
@@ -64,8 +128,8 @@ public class ViewpointForm extends CommuneBlock {
                     break;
 
                 case NOTLOGGEDON_ACTION:
-                    add (getLocalizedHeader ("viewpoint.notLoggedOn",
-                 "Du måste vara inloggad för att använda den här funktionen."));
+                    add (getLocalizedHeader (NOTLOGGEDON_KEY,
+                                             NOTLOGGEDON_DEFAULT));
                     break;
 
                 case ACCEPTTOHANDLEVIEWPOINT_ACTION:
@@ -77,7 +141,7 @@ public class ViewpointForm extends CommuneBlock {
                     break;
 
                 default:
-                    add ("Unknown Page");
+                    add (UNKNOWN_PAGE);
                     break;
             }
         } catch (final Exception exception) {
@@ -113,10 +177,9 @@ public class ViewpointForm extends CommuneBlock {
 		form.add (new HiddenInput (PARAM_ACTION,
                                    ACCEPTTOHANDLEVIEWPOINT_ACTION + ""));
 		form.add (new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
-		SubmitButton submit
-                = new SubmitButton (getResourceBundle().getLocalizedString
-                                    ("viewpoint.iAcceptToHandleThisViewpoint",
-                                     "I accept to handle this viewpoint"));
+		SubmitButton submit = new SubmitButton
+                (getLocalizedString (IACCEPTTOHANDLETHISVIEWPOINT_KEY,
+                                     IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT));
 		submit.setAsImageButton(true);
 		final Table table = new Table (1, 9);
         int row = 1;
@@ -124,18 +187,18 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (getLocalizedHeader ("viewpoint.category", "Category"), 1,
+        table.add (getLocalizedHeader (CATEGORY_KEY, CATEGORY_DEFAULT), 1,
                    row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getCategory ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.fromCitizen", "From Citizen"),
+        table.add (getLocalizedHeader (FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT),
                    1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (user.getName ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.subject", "Subject"), 1, row);
+        table.add (getLocalizedHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getSubject ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.message", "Message"), 1, row);
+        table.add (getLocalizedHeader (MESSAGE_KEY, MESSAGE_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getMessage ()), 1, row++);
 		table.add (submit, 1, row++);
@@ -155,7 +218,8 @@ public class ViewpointForm extends CommuneBlock {
 
         // 3. print feedback
  		final Text text = new Text
-                ("You are now registered as the handler of this case.");
+                (getLocalizedString (CONFIRMSETHANDLER_KEY,
+                                     CONFIRMSETHANDLER_DEFAULT));
 		text.setWidth (Table.HUNDRED_PERCENT);
 		final Table table = new Table (1, 1);
         int row = 1;
@@ -180,8 +244,9 @@ public class ViewpointForm extends CommuneBlock {
         viewpointBusiness.answerAndDeregisterViewpoint (viewpointId, answer);
 
         // 3. print feedback
- 		final Text text = new Text
-                ("Your answered has now been sent to the Citizen.");
+ 		final Text text
+                = new Text (getLocalizedString (CONFIRMANSWERSENT_KEY,
+                                                CONFIRMANSWERSENT_DEFAULT));
 		text.setWidth (Table.HUNDRED_PERCENT);
 		final Table table = new Table (1, 1);
         int row = 1;
@@ -210,10 +275,9 @@ public class ViewpointForm extends CommuneBlock {
 		final TextArea textArea = new TextArea (PARAM_ANSWER);
         textArea.setColumns (40);
         textArea.setRows (10);
-		SubmitButton submit
-                = new SubmitButton (getResourceBundle().getLocalizedString
-                                    ("viewpoint.sendAnswerToCitizen",
-                                     "Send answer to citizen"));
+		SubmitButton submit = new SubmitButton (getLocalizedString
+                                                (SENDANSWERTOCITIZEN_KEY,
+                                                 SENDANSWERTOCITIZEN_DEFAULT));
 		submit.setAsImageButton(true);
 		final Table table = new Table (1, 10);
         int row = 1;
@@ -221,22 +285,20 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (getLocalizedHeader ("viewpoint.category", "Category"), 1,
-                   row);
+        table.add (getLocalizedHeader (CATEGORY_KEY, CATEGORY_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getCategory ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.fromCitizen", "From Citizen"),
-                   1, row);
+        table.add (getLocalizedHeader (FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT), 1,
+                   row);
 		table.add(new Break(), 1, row);
         table.add (new Text (user.getName ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.subject", "Subject"), 1, row);
+        table.add (getLocalizedHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getSubject ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.message", "Message"), 1, row);
+        table.add (getLocalizedHeader (MESSAGE_KEY, MESSAGE_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getMessage ()), 1, row++);
-        table.add (getLocalizedHeader ("viewpoint.answer", "Answer to Citizen"),
-                   1, row);
+        table.add (getLocalizedHeader (ANSWER_KEY, ANSWER_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (textArea, 1, row++);
 		table.add (submit, 1, row++);
@@ -258,7 +320,9 @@ public class ViewpointForm extends CommuneBlock {
                 (iwc.getCurrentUser (), iwc.getParameter (PARAM_SUBJECT),
                  iwc.getParameter (PARAM_MESSAGE), category.getName (),
                  handlerGroupId);
- 		final Text text1 = new Text ("Tack för dina synpunkter. De är nu registrerade som ett ärende på BUN24. En handläggare kommer att hantera och besvara ärendet.");
+ 		final Text text1
+                = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
+                                                CONFIRMENTERVIEWPOINT_DEFAULT));
 		text1.setWidth (Table.HUNDRED_PERCENT);
 		final Table table = new Table (1, 1);
         int row = 1;
@@ -272,6 +336,11 @@ public class ViewpointForm extends CommuneBlock {
 
 	private void showSubCategoriesForm (final IWContext iwc)
         throws RemoteException, FinderException {
+        if (!iwc.isParameterSet (PARAM_CATEGORY)) {
+            showTopCategoriesForm (iwc);
+            return;
+        }
+        
 		final Form form = new Form();
 		form.add (new HiddenInput (PARAM_ACTION,
                                    REGISTERVIEWPOINT_ACTION + ""));
@@ -291,7 +360,7 @@ public class ViewpointForm extends CommuneBlock {
         textArea.setRows (10);
 		SubmitButton submit = new SubmitButton
                 (getResourceBundle().getLocalizedString
-                 ("viewpoint.submitViewpoint", "Skicka synpunkt"));
+                 (SUBMITVIEWPOINT_KEY, SUBMITVIEWPOINT_DEFAULT));
 		submit.setAsImageButton(true);
 
 		final Table table = new Table (1, 5);
@@ -300,16 +369,14 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (getLocalizedHeader
-                   ("viewpoint.enterSubCategory",
-                    "Vilket underområde vill du ge synpunkter om?"), 1, row++);
+        table.add (getLocalizedHeader (ENTERSUBCATEGORY_KEY,
+                                       ENTERSUBCATEGORY_DEFAULT), 1, row++);
         table.add (dropdown, 1, row++);
-        table.add (getLocalizedHeader
-                   ("viewpoint.subject", "Rubrik"), 1, row);
+        table.add (getLocalizedHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (textInput, 1, row++);
-        table.add (getLocalizedHeader
-                   ("viewpoint.details", "Synpunkter"), 1, row);
+        table.add (getLocalizedHeader (VIEWPOINTS_KEY, VIEWPOINTS_DEFAULT), 1,
+                   row);
 		table.add(new Break(), 1, row);
         table.add (textArea, 1, row++);
 		table.add (submit, 1, row++);
@@ -323,11 +390,13 @@ public class ViewpointForm extends CommuneBlock {
 		final Form form = new Form();
 		form.add (new HiddenInput (PARAM_ACTION, SHOWSUBCATEGORIESFORM_ACTION
                                    + ""));
-
- 		final Text text1 = new Text ("Problem ska i första hand lösas där de uppstår. Om du har synpunkter på hur en enskild skola eller förskola fungerar så ska du därför i första hand vända dig till personal, rektor eller förskolechef.");
+        final String description1 = getLocalizedString (DESCRIPTION1_KEY,
+                                                        DESCRIPTION1_DEFAULT);
+ 		final Text text1 = new Text (description1);
 		text1.setWidth (Table.HUNDRED_PERCENT);
-
-        final Text text2 = new Text ("När du använder \"Synpunkter\" i BUN24 så ska du ange vilken typ av synpunkter du vill lämna. Det möjliggör för oss att länka dem till rätt tjänsteman för snabb handläggning och respons. De olika kategorierna ger också möjlighet till en systematisk uppföljning av hur medborgarna uppfattar verksamhet och service i kommunen.");
+        final String description2 = getLocalizedString (DESCRIPTION2_KEY,
+                                                        DESCRIPTION2_DEFAULT);
+        final Text text2 = new Text (description2);
 		text2.setWidth (Table.HUNDRED_PERCENT);
         final RadioGroup radioGroup = new RadioGroup (PARAM_CATEGORY);
         final TopCategory [] categories
@@ -338,9 +407,8 @@ public class ViewpointForm extends CommuneBlock {
                                        new Text (categories [i].getName ()));
             radioGroup.setSelected (id);
         }
-		SubmitButton submit
-                = new SubmitButton (getResourceBundle().getLocalizedString
-                                    ("viewpoint.continue", "Continue"));
+		SubmitButton submit = new SubmitButton
+                (getLocalizedString (CONTINUE_KEY, CONTINUE_DEFAULT));
 		submit.setAsImageButton(true);
 
 		final Table table = new Table (1,5);
@@ -351,15 +419,18 @@ public class ViewpointForm extends CommuneBlock {
 		table.setColor (getBackgroundColor());
         table.add (text1, 1, row++);
         table.add (text2, 1, row++);
-        table.add (getLocalizedHeader
-                   ("viewpoint.enterTopCategory",
-                    "Vilket område vill du ge synpunkter om?"), 1, row++);
+        table.add (getLocalizedHeader (ENTERTOPCATEGORY_KEY,
+                                       ENTERTOPCATEGORY_DEFAULT), 1, row++);
         table.add (radioGroup, 1, row++);
 		table.add (submit, 1, row++);
 
 		form.add (table);
 		add (form);
 	}
+
+    private String getLocalizedString (final String key, final String value) {
+        return getResourceBundle ().getLocalizedString (key, value);
+    }
 
 	private ViewpointBusiness getViewpointBusiness (IWContext iwc)
         throws RemoteException {
