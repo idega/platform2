@@ -87,6 +87,7 @@ private boolean phones = false;
       data.append("Fæğingardagur"); data.append("\t");
       data.append("Kyn"); data.append("\t");
       data.append("Virkur/Óvirkur"); data.append("\t");
+      data.append("Skráğur"); data.append("\t");
       data.append("Forgjöf fyrir"); data.append("\t");
       data.append("Forgjöf eftir");data.append("\t");
       data.append("Mismunur"); data.append("\t");
@@ -220,6 +221,15 @@ private boolean phones = false;
                 else {
                   s = "Óvirkur";
                 }
+                data.append(s);
+              }
+              data.append("\t");
+
+              if ( umi != null ) {
+                if ( umi.getRegistrationDate() != null )
+                  s = (new idegaTimestamp(umi.getRegistrationDate())).toSQLDateString();
+                else
+                  s = "";
                 data.append(s);
               }
               data.append("\t");
