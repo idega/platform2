@@ -60,6 +60,7 @@ public abstract class GolfBlock extends Block {
 	public final static String STYLENAME_BIG_HEADER = "BigHeader";
 	public final static String STYLENAME_SMALL_HEADER = "SmallHeader";
 	public final static String STYLENAME_SMALL_HEADER_LINK = "SmallHeaderLink";
+	public final static String STYLENAME_MESSAGE = "Message";
 	public final static String STYLENAME_LINK = "Link";
 	public final static String STYLENAME_SMALL_LINK = "SmallLink";
 	public final static String STYLENAME_LIST_HEADER = "ListHeader";
@@ -410,7 +411,15 @@ public abstract class GolfBlock extends Block {
 	public Link getSmallHeaderLink(String s) {
 		return getStyleLink(new Link(s), STYLENAME_SMALL_HEADER_LINK);
 	}
+	
+	public Text getMessageText(String message) {
+		return getStyleText(message, STYLENAME_MESSAGE);
+	}
 
+	public Text getLocalizedMessage(String key,String defaultText) {
+		return getMessageText(localize(key,defaultText));
+	}
+	
 	public Text getLocalizedSmallHeader(String s, String d) {
 		return getSmallHeader(localize(s, d));
 	}

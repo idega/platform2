@@ -47,7 +47,7 @@ public class StartingTimeAdmin extends GolfBlock {
 
 	public void main(IWContext modinfo) throws Exception {
 		this.empty();
-		getParentPage().setTitle("Field configuration");
+		getParentPage().setTitle(localize("start.field_configuration","Field configuration"));
 		try {
 			
 			String fieldId = (String) modinfo.getSession().getAttribute("field_id");
@@ -392,21 +392,15 @@ public class StartingTimeAdmin extends GolfBlock {
 	}
 
 	public void setFeedBack(Form myForm, boolean isOk) {
-		//setGraphic(myForm);
 		String btnCloseUrl = "/pics/rastimask/Takkar/TLoka1.gif";
 		String btnBackUrl = "/pics/rastimask/Takkar/Ttilbaka1.gif";
 
 		Table myTable = new Table(2, 7);
-		//Text txt = new Text("Skráning hefur ekki tekist. Hugsanlegar
-		// ástæður:", true, false, true)
 		if (isOk) {
-			myTable.add(new Text("Skr‡ning hefur tekist!", true, false, true), 2, 3);
+			myTable.add(getLocalizedMessage("start.registration_was_successful","Registration was successful"), 2, 3);
 			myTable.add(new CloseButton(getResourceBundle().getImage(btnCloseUrl)), 2, 7);
 		} else {
-			myTable.add(new Text("Skr‡ning hefur ekki tekist. Hugsanlegar ‡st¾Ýur:", true, false, true), 2, 2);
-			myTable.addText("* Stilling er til fyrir ßessa dagsetningu ‡ ßessum velli", 2, 3);
-			myTable.addText("* Ekki hefur veriÝ valiÝ bil ‡ milli holla og opnunar og lokunart’mi", 2, 4);
-			myTable.addText("- AÝ šÝrum kosti, hafÝu samband viÝ idega", 2, 5);
+			myTable.add(getLocalizedMessage("start.registration_was_not_successful","Registration was not successful"), 2, 2);
 			myTable.add(new BackButton(getResourceBundle().getImage(btnBackUrl)), 2, 7);
 		}
 
@@ -431,26 +425,26 @@ public class StartingTimeAdmin extends GolfBlock {
 		Form myForm = new Form();
 		//setGraphic(myForm);
 
-		// Velja völl
-		firstTable.addText("Všllur", 1, 1);
+		// Choose field
+		firstTable.add(getLocalizedSmallText("field","Field"), 1, 1);
 		firstTable.add(FieldDropdown("fieldID", modinfo), 1, 2);
 
-		// Velja dags. sem stillingar taka gildi
-		firstTable.addText("Tekur gildi", 3, 1);
+		// Choose the day when the configuration should be activated
+		firstTable.add(getLocalizedSmallText("start.activated","Activated"), 3, 1);
 		firstTable.add(insertDropdown("beginDate", funcDate, modinfo), 3, 2);
 
-		// Velja fjölda daga í skráningu
+		// Choose how many days are free for registration
 		firstTable.setAlignment(4, 2, "right");
-		firstTable.addText("Dagar ’ skr‡ningu: fŽlagar", 4, 1);
+		firstTable.add(getLocalizedSmallText("start.days_in_registration:members","Days in registration: Members"), 4, 1);
 		firstTable.add(insertDropdown("daysShown", 1, 28), 4, 2);
-		firstTable.addText("aÝrir", 5, 1);
+		firstTable.add(getLocalizedSmallText("start.others","Others"), 5, 1);
 		firstTable.add(insertDropdown("daysShownNonMember", 1, 28), 5, 2);
 
-		// Velja bil milli holla
-		firstTable.addText("Bil milli holla", 1, 4);
+		// choose interval
+		firstTable.add(getLocalizedSmallText("start.interval","Interval"), 1, 4);
 		firstTable.add(dropdownInterval(modinfo,"interval", 8, 10, 12), 1, 5);
 
-		firstTable.add(new Text("Netskr‡ning fŽlagar"), 1, 7);
+		firstTable.add(getLocalizedSmallText("start.online_registration_members","On-line registration: members"), 1, 7);
 		CheckBox pBox = new CheckBox("public_reg", "true");
 		if(_currentFieldConfig != null) {
 			pBox.setChecked(_currentFieldConfig.publicRegistration());
@@ -459,7 +453,7 @@ public class StartingTimeAdmin extends GolfBlock {
 		}
 		firstTable.add(pBox, 2, 7);
 		
-		firstTable.add(new Text("Netskr‡ning aÝrir"), 1, 8);
+		firstTable.add(getLocalizedSmallText("start.online_registration_others","On-line registration: others"), 1, 8);
 		CheckBox mBox = new CheckBox("nonmember_reg", "true");
 		if(_currentFieldConfig != null) {
 			mBox.setChecked(_currentFieldConfig.getNonMemberRegistration());
@@ -471,17 +465,17 @@ public class StartingTimeAdmin extends GolfBlock {
 		if (modinfo.getRequest().getParameter("interval") != null) {
 			String Bil = modinfo.getRequest().getParameter("interval");
 			if (!Bil.equals("0")) {
-				firstTable.addText("Fyrsta holl:", 3, 4);
+				firstTable.add(getLocalizedSmallText("start.first_group:", "First group:"), 3, 4);
 				firstTable.add(insertDropdown_opentime("openTime", Integer.parseInt(Bil)), 3, 5);
-				firstTable.addText("S’Ýasta holl:", 4, 4);
+				firstTable.add(getLocalizedSmallText("start.last_group:", "Last group:"), 4, 4);
 				firstTable.add(insertDropdown_closetime("closeTime", Integer.parseInt(Bil)), 4, 5);
 			}
 		} else if(_currentFieldConfig != null) {
 			String Bil = String.valueOf(_currentFieldConfig.getMinutesBetweenStart());
 			if (!Bil.equals("0")) {
-				firstTable.addText("Fyrsta holl:", 3, 4);
+				firstTable.add(getLocalizedSmallText("start.first_group:", "First group:"), 3, 4);
 				firstTable.add(insertDropdown_opentime("openTime", Integer.parseInt(Bil)), 3, 5);
-				firstTable.addText("S’Ýasta holl:", 4, 4);
+				firstTable.add(getLocalizedSmallText("start.last_group:", "Last group:"), 4, 4);
 				firstTable.add(insertDropdown_closetime("closeTime", Integer.parseInt(Bil)), 4, 5);
 			}
 		}
@@ -492,9 +486,8 @@ public class StartingTimeAdmin extends GolfBlock {
 		firstTable.add(new SubmitButton(getResourceBundle().getImage(btnSkraUrl), "btnSkra"), 3, 9);
 		firstTable.add(new CloseButton(getResourceBundle().getImage(btnCancelUrl)), 4, 9);
 
-		//	 stilli form, adda töflunni inn í það og forminu svo á síðuna.
+
 		myForm.setMethod("post");
-		//myForm.setAction("admin.jsp");
 		myForm.add(firstTable);
 		add(myForm);
 	}

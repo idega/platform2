@@ -214,7 +214,7 @@ public class ClubNavigation extends GolfBlock {
 		String returner = "";
 		switch (location) {
 			case 1 :
-				returner = "Höfuğborgarsvæğiğ";
+				returner = "Hšfuİborgarsv¾İiİ";
 				break;
 			case 2 :
 				returner = "Reykjanes";
@@ -223,25 +223,25 @@ public class ClubNavigation extends GolfBlock {
 				returner = "Vesturland";
 				break;
 			case 4 :
-				returner = "Vestfirğir";
+				returner = "Vestfirİir";
 				break;
 			case 5 :
-				returner = "Norğurland vestra";
+				returner = "Norİurland vestra";
 				break;
 			case 6 :
-				returner = "Norğurland eystra";
+				returner = "Norİurland eystra";
 				break;
 			case 7 :
 				returner = "Austurland";
 				break;
 			case 8 :
-				returner = "Suğurland";
+				returner = "Suİurland";
 				break;
 			case 10 :
-				returner = "Allt landiğ";
+				returner = "Allt landiİ";
 				break;
 			case 12 :
-				returner = "Ağrir";
+				returner = "Aİrir";
 				break;
 		}
 		return returner;

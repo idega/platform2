@@ -44,8 +44,7 @@ import com.idega.util.text.TextSoap;
 /**
  * Title: Golf Description: Copyright: Copyright (c) 2001 Company: idega.is
  * 
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst
- *         Sæmundsson </a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Gudmundur Agust Saemundssonn </a>
  * @version 1.0
  */
 
@@ -263,37 +262,37 @@ public class AdminRegisterTime extends GolfWindow {
 		startTable.setAlignment(5, 1, "center");
 		startTable.setAlignment(6, 1, "center");
 
-		Text textProxy = new Text("");
+		Text textProxy = getSmallText("");
 		textProxy.setFontColor("#FFFFFF");
 
 		Text time = (Text) textProxy.clone();
-		time.setText(iwrb.getLocalizedString("start.time", "Time"));
+		time.setText(_iwrb.getLocalizedString("start.time", "Time"));
 		time.setBold();
 		headerTable.add(time, 1, 1);
 
 		Text name = (Text) textProxy.clone();
-		name.setText(iwrb.getLocalizedString("start.social_nr", "Social nr.") + " (" + iwrb.getLocalizedString("start.name", "Name") + ")");
+		name.setText(_iwrb.getLocalizedString("start.social_nr", "Social nr.") + " (" + _iwrb.getLocalizedString("start.name", "Name") + ")");
 		name.setBold();
 		headerTable.add(name, 2, 1);
 
 		Text club = (Text) textProxy.clone();
-		club.setText("(" + iwrb.getLocalizedString("start.club", "Club") + ")");
+		club.setText("(" + _iwrb.getLocalizedString("start.club", "Club") + ")");
 		club.setBold();
 		headerTable.add(club, 3, 1);
 
 		Text handicap = (Text) textProxy.clone();
-		handicap.setText("(" + iwrb.getLocalizedString("start.handicap", "Handicap") + ")");
+		handicap.setText("(" + _iwrb.getLocalizedString("start.handicap", "Handicap") + ")");
 		handicap.setBold();
 		headerTable.add(handicap, 4, 1);
 
 		Text showed = (Text) textProxy.clone();
-		showed.setText(iwrb.getLocalizedString("start.showed", "Showed"));
+		showed.setText(_iwrb.getLocalizedString("start.showed", "Showed"));
 		showed.setBold();
 		headerTable.add(showed, 5, 1);
 
 		if (!forPrinting) {
 			Text delete = (Text) textProxy.clone();
-			delete.setText(iwrb.getLocalizedString("start.delete", "Delete"));
+			delete.setText(_iwrb.getLocalizedString("start.delete", "Delete"));
 			delete.setBold();
 			headerTable.add(delete, 6, 1);
 		}
@@ -433,7 +432,7 @@ public class AdminRegisterTime extends GolfWindow {
 		boolean firstColor = true;
 		int count = 0;
 		int min = 0;
-		Text templ = new Text("");
+		Text templ = getSmallText("");
 		for (int i = 1; i < loop; i++) {
 
 			String tName = getTournamentName(tournamentGroups, (int) (((firstGroup - 1) * countInGroups + i - 2) / countInGroups + 1));
@@ -560,23 +559,20 @@ public class AdminRegisterTime extends GolfWindow {
 
 		switch (daytime) {
 			case 1:
-				sDayTime = " - " + iwrb.getLocalizedString("start.afternoon", "afternoon") + " - ";
+				sDayTime = " - " + _iwrb.getLocalizedString("start.afternoon", "afternoon") + " - ";
 				break;
 			case 2:
-				sDayTime = " - " + iwrb.getLocalizedString("start.evening", "evening") + " - ";
+				sDayTime = " - " + _iwrb.getLocalizedString("start.evening", "evening") + " - ";
 				break;
 			case 0:
-				sDayTime = " - " + iwrb.getLocalizedString("start.morning", "morning") + " - ";
+				sDayTime = " - " + _iwrb.getLocalizedString("start.morning", "morning") + " - ";
 				break;
 			default:
 				sDayTime = " - ";
 				break;
 		}
 
-		Text dateText = new Text(business.getFieldName(Integer.parseInt(this.currentField)) + sDayTime + this.currentDay.getLocaleDate(modinfo.getCurrentLocale()));
-		dateText.setBold();
-		dateText.setFontSize(3);
-		dateText.setFontColor("#000000");
+		Text dateText = getSmallHeader(business.getFieldName(Integer.parseInt(this.currentField)) + sDayTime + this.currentDay.getLocaleDate(modinfo.getCurrentLocale()));
 		Table dateTable = new Table(2, 1);
 		dateTable.add(dateText);
 		dateTable.setAlignment("center");
@@ -589,7 +585,7 @@ public class AdminRegisterTime extends GolfWindow {
 			Window popUp = new MemberSearchWindow("Leit aÝ meÝlimi");
 			popUp.setWidth(600);
 			popUp.setHeight(500);
-			Link theSearch = new Link(iwrb.getImage("buttons/search_for_member.gif"), popUp);
+			Link theSearch = new Link(_iwrb.getImage("buttons/search_for_member.gif"), popUp);
 			theSearch.addParameter("action", "getSearch");
 			dateTable.add(theSearch, 2, 1);
 		}
@@ -607,7 +603,7 @@ public class AdminRegisterTime extends GolfWindow {
 		//    SubmitButton save = new SubmitButton(new
 		// Image("/pics/formtakks/vista.gif","Vista"), saveParameterString,
 		// "do");
-		SubmitButton save = new SubmitButton(this.iwrb.getImage("buttons/save.gif", "Vista"), saveParameterString, "do");
+		SubmitButton save = new SubmitButton(this._iwrb.getImage("buttons/save.gif", "Vista"), saveParameterString, "do");
 		Table submSave = new Table();
 		submSave.add(save);
 		submSave.setAlignment("center");
@@ -749,7 +745,7 @@ public class AdminRegisterTime extends GolfWindow {
 	}
 
 	public void noPermission() {
-		Text satyOut = new Text(this.iwrb.getLocalizedString("start.no_permission", "No permission"));
+		Text satyOut = getErrorText(this._iwrb.getLocalizedString("start.no_permission", "No permission"));
 		satyOut.setFontSize(4);
 		Table AlignmentTable = new Table();
 		AlignmentTable.setBorder(0);
@@ -863,13 +859,13 @@ public class AdminRegisterTime extends GolfWindow {
 
 				switch (daytime) {
 					case 1:
-						sDayTimeString = " - " + iwrb.getLocalizedString("start.afternoon", "afternoon") + " - ";
+						sDayTimeString = " - " + _iwrb.getLocalizedString("start.afternoon", "afternoon") + " - ";
 						break;
 					case 2:
-						sDayTimeString = " - " + iwrb.getLocalizedString("start.evening", "evening") + " - ";
+						sDayTimeString = " - " + _iwrb.getLocalizedString("start.evening", "evening") + " - ";
 						break;
 					case 0:
-						sDayTimeString = " - " + iwrb.getLocalizedString("start.morning", "morning") + " - ";
+						sDayTimeString = " - " + _iwrb.getLocalizedString("start.morning", "morning") + " - ";
 						break;
 					default:
 						sDayTimeString = " - ";
@@ -881,7 +877,7 @@ public class AdminRegisterTime extends GolfWindow {
 				if (!forPrinting) {
 					Paragraph p = new Paragraph();
 					p.setAlign("center");
-					Link print = new Link(iwrb.getLocalizedString("startingtime.print", "print"));
+					Link print = new Link(_iwrb.getLocalizedString("startingtime.print", "print"));
 					print.setWindowToOpen(AdminRegisterTeeTimeWindow.class);
 					print.addParameter("date", date);
 					print.addParameter("field_id", currentField);

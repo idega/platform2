@@ -122,14 +122,14 @@ public class StartingTimeAdminChange extends GolfBlock {
 		String txtCardNoUrl = "/pics/rastimask/Heiti-Graphic/Gkortnumer.gif";
 		String txtDateUrl = "/pics/rastimask/Heiti-Graphic/Gdags.gif";
 
-		myTable.addText("Eyða", 1, 1);
-		myTable.addText("Nafn", 2, 1);
-		myTable.addText("Klúbbur", 3, 1);
-		myTable.addText("Forgjöf", 4, 1);
-		myTable.addText("Sérkort", 5, 1);
-		myTable.addText("Kortanúmer", 6, 1);
-		myTable.addText("Dagsetning", 7, 1);
-		myTable.addText("Tími", 8, 1);
+		myTable.add(getLocalizedText("start.delete","Delete"), 1, 1);
+		myTable.add(getLocalizedText("start.name","Name"), 2, 1);
+		myTable.add(getLocalizedText("start.club","Club"), 3, 1);
+		myTable.add(getLocalizedText("start.handycap","Handycap"), 4, 1);
+		myTable.add(getLocalizedText("start.vip_card","VIP card"), 5, 1);
+		myTable.add(getLocalizedText("start.card_number","Card number"), 6, 1);
+		myTable.add(getLocalizedText("start.date","Date"), 7, 1);
+		myTable.add(getLocalizedText("start.time","Time"), 8, 1);
 
 	}
 
@@ -310,7 +310,7 @@ public class StartingTimeAdminChange extends GolfBlock {
 
 		Table myTable = new Table(2, 3);
 
-		myTable.addText("Nauðsynlegt er að hafa nafn. Ef þú vilt afturkalla skráningu, veldu þá \"Eyða\" boxið", 2, 1);
+		myTable.add(getErrorText(localize("start.error1","NauÝsynlegt er aÝ hafa nafn. Ef ßœ vilt afturkalla skr‡ningu, veldu ß‡ \"EyÝa\" boxiÝ")), 2, 1);
 
 		myTable.add(getResourceBundle().getImage(borderPicUrl), 1, 1);
 		myTable.add(getResourceBundle().getImage(borderPicUrl), 1, 2);
@@ -423,8 +423,8 @@ public class StartingTimeAdminChange extends GolfBlock {
 					myTable.add(insertEditBox("cardNo", "&nbsp;", 6), 6, i + 2);
 				else
 					myTable.add(insertEditBox("cardNo", stime.getCardNum(), 6), 6, i + 2);
-				myTable.addText(formatDate(funcDate, stime.getStartingtimeDate().toString()), 7, i + 2);
-				myTable.addText(group_num, 8, i + 2);
+				myTable.add(getText(formatDate(funcDate, stime.getStartingtimeDate().toString())), 7, i + 2);
+				myTable.add(getText(group_num), 8, i + 2);
 				if (admin)
 					myTable.add(insertHyperlink(stime.getMember().getName(), stime.getMemberID(), StartingTimeAdminChange.class), 9, i + 2);
 			}
@@ -438,7 +438,7 @@ public class StartingTimeAdminChange extends GolfBlock {
 				// "/pics/rastimask/Heiti-Graphic/Gskraningaradili.gif";
 				//myTable.add(new SubmitButton(new Image(txtSkraNameUrl),
 				// "steSkraName"), 9, 1);
-				myTable.addText("Skráningaraðili", 9, 1);
+				myTable.add(getLocalizedText("start.owner","Owner"), 9, 1);
 			}
 
 			myTable.mergeCells(5, i + 2, 7, i + 2);
@@ -460,8 +460,6 @@ public class StartingTimeAdminChange extends GolfBlock {
 	}
 
 	private Link insertHyperlink(String name, int value, String action) {
-		//Text text = new Text(name);
-		//text.setFontColor("green");
 		Link myLink = new Link(name);
 		myLink.setURL(action);
 		myLink.addParameter(name, new Integer(value).toString());
@@ -469,8 +467,6 @@ public class StartingTimeAdminChange extends GolfBlock {
 	}
 	
 	private Link insertHyperlink(String name, int value, Class action) {
-		//Text text = new Text(name);
-		//text.setFontColor("green");
 		Link myLink = new Link(name,action);
 		myLink.addParameter(name, new Integer(value).toString());
 		return myLink;

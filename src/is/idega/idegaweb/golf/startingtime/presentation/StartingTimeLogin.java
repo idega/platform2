@@ -65,7 +65,7 @@ public class StartingTimeLogin extends GolfBlock {
 					Form myForm = new Form();
 					add(myForm);
 					setGraphic(myForm);
-					Text dayReserved = new Text("Dagur frátekinn fyrir mót");
+					Text dayReserved = getMessageText("Dagur fr‡tekinn fyrir m—t");
 					dayReserved.setFontSize(4);
 					Table AlignmentTable = new Table();
 					AlignmentTable.setBorder(0);
@@ -294,12 +294,12 @@ public class StartingTimeLogin extends GolfBlock {
 			 * Image(txtCardUrl), 6, 1);
 			 */
 
-			myTable.addText("Tími", 2, 1);
-			myTable.addText("Nafn", 3, 1);
-			myTable.addText("Klúbbur", 4, 1);
-			myTable.addText("Forgjöf", 5, 1);
-			myTable.addText("Sérkort", 6, 1);
-			myTable.addText("Kortanúmer", 7, 1);
+			myTable.add(getLocalizedText("start.time","Time"), 2, 1);
+			myTable.add(getLocalizedText("start.name","Name"), 3, 1);
+			myTable.add(getLocalizedText("start.club","Club"), 4, 1);
+			myTable.add(getLocalizedText("start.handycap","Handycap"), 5, 1);
+			myTable.add(getLocalizedText("start.vip_card","VIP card"), 6, 1);
+			myTable.add(getLocalizedText("start.cardnumber","Cardnumber"), 7, 1);
 
 			//myTable.setBorder(1);
 
@@ -321,7 +321,7 @@ public class StartingTimeLogin extends GolfBlock {
 			for (; i < skraMarga + 1; i++) {
 				//myTable.add(new Image(picUrl_5, "", 51, skraMarga*3), 1, i+1);
 				myTable.setWidth(1, "25");
-				myTable.addText(lines[i - 1], 2, i + 1);
+				myTable.add(getText(lines[i - 1]), 2, i + 1);
 				myTable.setAlignment(2, i + 1, "left");
 
 				if (admin || clubadmin || clubworker) {
@@ -488,10 +488,10 @@ public class StartingTimeLogin extends GolfBlock {
 
 		Table myTable = new Table(2, 3);
 		if (inputErr) {
-			myTable.addText("Nauðsynlegt er að skrá eins marga og teknir voru frá", 2, 1);
+			myTable.add(getErrorText(localize("start.error02","NauÝsynlegt er aÝ skr‡ eins marga og teknir voru fr‡")), 2, 1);
 		}
 		else
-			myTable.addText("Þetta holl er því miður fullt. Gjörðu svo vel að velja þér nýjan tíma", 2, 1);
+			myTable.add(getErrorText(localize("start.error03","Þetta holl er ßv’ miÝur fullt. GjšrÝu svo vel aÝ velja ßŽr nàjan t’ma")), 2, 1);
 		//myTable.add(new Image(borderPicUrl), 1, 1);
 		//myTable.add(new Image(borderPicUrl), 1, 2);
 		//myTable.add(new Image(borderPicUrl), 1, 3);

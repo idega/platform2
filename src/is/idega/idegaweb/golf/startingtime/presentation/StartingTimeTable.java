@@ -117,14 +117,14 @@ public class StartingTimeTable extends GolfBlock {
 					add(getConfigLinks(modinfo, "admin"));
 					add(User(modinfo, funcDate));
 				}
-				else if (isUser(modinfo)) {//|| isDeveloper() // isUser er overwritað fall
-														// sem kannar hvort getMember() skili null þ.e. ef
-														// skráður inn, fellur ekki að skilyriði eitt, þá
+				else if (isUser(modinfo)) {//|| isDeveloper() // isUser er overwritaÝ fall
+														// sem kannar hvort getMember() skili null ß.e. ef
+														// skr‡Ýur inn, fellur ekki aÝ skilyriÝi eitt, ß‡
 														// User
-					add(getConfigLinks(modinfo, "others")); // þangað til að klúbbar vilja leifa
-																				 // almenna skráningu þá þarf
-																				 // væntanlega nýtt tékk og nýjan dálk
-																				 // í töflu
+					add(getConfigLinks(modinfo, "others")); // ßangaÝ til aÝ klœbbar vilja leifa
+																				 // almenna skr‡ningu ß‡ ßarf
+																				 // v¾ntanlega nàtt tŽkk og nàjan d‡lk
+																				 // ’ tšflu
 					add(User(modinfo, funcDate));
 				}
 				else {
@@ -133,7 +133,7 @@ public class StartingTimeTable extends GolfBlock {
 				}
 			}
 			else {
-				add(new Text("Session expired"));
+				add(getErrorText(localize("start.session_expired","Session expired")));
 			}
 
 		}
@@ -287,7 +287,7 @@ public class StartingTimeTable extends GolfBlock {
 		else {
 
 			mainTable = new Table();
-			mainTable.add(new Text("Session expired"));
+			mainTable.add(getErrorText(localize("start.session_expired","Session expired")));
 
 		}
 		return mainTable;
@@ -336,10 +336,10 @@ public class StartingTimeTable extends GolfBlock {
 		myTable.setColumnVerticalAlignment(1, "baseline");
 		myTable.setAlignment("center");
 
-		Text one = new Text("1.");
-		Text two = new Text("2.");
-		Text three = new Text("3.");
-		Text four = new Text("4.");
+		Text one = getSmallText("1.");
+		Text two = getSmallText("2.");
+		Text three = getSmallText("3.");
+		Text four = getSmallText("4.");
 
 		one.setFontColor("white");
 		two.setFontColor("white");
@@ -424,7 +424,7 @@ public class StartingTimeTable extends GolfBlock {
 			}
 		}
 
-		Text templateText = new Text("");
+		Text templateText = getSmallText("");
 		templateText.setFontSize(1);
 
 		//	 stilling á töflum byrjar
@@ -459,7 +459,7 @@ public class StartingTimeTable extends GolfBlock {
 		myTable.setColumnAlignment(1, "center");
 		myTable.setColumnVerticalAlignment(1, "middle");
 
-		Text tTime = new Text();
+		Text tTime = getText("");
 		java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
 		tTime.setFontStyle("letter-spacing:0px;font-family:Arial,Helvetica,sans-serif;background-color:#FFFFFF;font-size:18px;color:#2C4E3B;border-width:1px;font-weight:bold;border-style:solid;");
 		Text timeText;
@@ -558,7 +558,7 @@ public class StartingTimeTable extends GolfBlock {
 				Text tempHandycap = (Text) templateText.clone();
 				tempHandycap.setText(handycap);
 				Text tempName = (Text) templateText.clone();
-				tempName.setText("&nbsp;" + name);
+				tempName.setText(Text.NON_BREAKING_SPACE + name);
 				Text tempClub = (Text) templateText.clone();
 				tempClub.setText(club);
 
@@ -1060,8 +1060,8 @@ public class StartingTimeTable extends GolfBlock {
 		fTable.add(mainForm, 1, 2);
 
 		if (plainUser) {
-			Text fjoldi = new Text(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"));
-			Text timi = new Text(getResourceBundle().getLocalizedString("start.time", "Time"));
+			Text fjoldi = getSmallHeader(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"));
+			Text timi = getSmallHeader(getResourceBundle().getLocalizedString("start.time", "Time"));
 
 			fjoldi.setFontColor("white");
 			timi.setFontColor("white");
@@ -1090,7 +1090,7 @@ public class StartingTimeTable extends GolfBlock {
 	}
 
 	public Table lineUpTournamentDay(IWContext modinfo, List Tournaments) {
-		Text dayReserved = new Text("Dagur fr‡tekinn fyrir m—t");
+		Text dayReserved = getMessageText(localize("start.message1","Dagur fr‡tekinn fyrir m—t"));
 		dayReserved.setFontSize(4);
 		Table AlignmentTable = new Table();
 		AlignmentTable.setBorder(0);
@@ -1102,7 +1102,7 @@ public class StartingTimeTable extends GolfBlock {
 		AlignmentTable.setAlignment("center");
 		AlignmentTable.add(Text.getBreak());
 		AlignmentTable.add(Text.getBreak());
-		AlignmentTable.add(new Text("Hafið samband við klúbb vegna skráninga í dag.<br>Rástíma má sjá í mótaskrá"));
+		AlignmentTable.add(getMessageText(localize("start.message1b","HafiÝ samband viÝ klœbb vegna skr‡ninga ’ dag.<br>R‡st’ma m‡ sj‡ ’ m—taskr‡")));
 
 		return AlignmentTable;
 	}

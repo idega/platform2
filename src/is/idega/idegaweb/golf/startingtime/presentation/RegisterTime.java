@@ -35,7 +35,7 @@ import com.idega.util.IWTimestamp;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a>
  * @version 1.0
  */
 
@@ -68,7 +68,7 @@ public class RegisterTime extends GolfWindow {
     this.add(myForm);
     business = new TeeTimeBusiness();
     unionDropdown = (DropdownMenu)GolfCacher.getUnionAbbreviationDropdown("club").clone();
-    templText = new Text("");
+    templText = getSmallText("");
     templText.setFontSize(1);
   }
 
@@ -188,10 +188,10 @@ public class RegisterTime extends GolfWindow {
               myTable.setHeight(1,"30");
 
 
-              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.time", "Time")+"</b>", 2, 1);
-              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.social_nr","Social nr.")+"</b>", 3, 1);
-              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.vip_card","VIP card")+"</b>", 5, 1);
-              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.card_number","Card number")+"</b>", 6, 1);
+              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.time", "Time")), 2, 1);
+              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.social_nr","Social nr.")), 3, 1);
+              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.vip_card","VIP card")), 5, 1);
+              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.card_number","Card number")), 6, 1);
 
               myTable.setColumnAlignment(1,"center");
               myTable.setColumnAlignment(5,"center");
@@ -215,7 +215,7 @@ public class RegisterTime extends GolfWindow {
               for ( ;i < skraMarga+1 ; i++)
               {
                   myTable.setWidth(1, "25");
-                  myTable.addText("<b>"+lines[i-1]+"</b>", 2, i+1);
+                  myTable.add(getSmallText(lines[i-1]), 2, i+1);
                   myTable.add(new HiddenInput("group_num",Integer.toString(groupNums[i-1])),2, i+1);
                   myTable.setAlignment(2, i+1, "left");
 
@@ -235,8 +235,8 @@ public class RegisterTime extends GolfWindow {
               //setPlayers(modinfo);
 
               myTable.mergeCells(4, i+2, 6, i+2);
-              myTable.add(insertButton(this.iwrb.getImage("buttons/book.gif"),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
-              myTable.add(new SubmitButton(this.iwrb.getImage("buttons/cancel.gif"),closeParameterString, "true"), 4, i+2);
+              myTable.add(insertButton(this._iwrb.getImage("buttons/book.gif"),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
+              myTable.add(new SubmitButton(this._iwrb.getImage("buttons/cancel.gif"),closeParameterString, "true"), 4, i+2);
               myTable.setAlignment(4, i+2, "right");
               frameTable.empty();
               frameTable.add(myTable);
@@ -317,7 +317,7 @@ public class RegisterTime extends GolfWindow {
               if(illegal.size() > 0){
 
                 Text myText = (Text)templText.clone();
-                myText.setText("villa kom upp í eftirfarandi: ");
+                myText.setText(localize("start.error_in_following","Error in following:"));
 
                 Table tempTable = new Table(3,illegal.size());
 
@@ -345,41 +345,41 @@ public class RegisterTime extends GolfWindow {
 
                 if(ones){
                   Text noError = (Text)templText.clone();
-                  noError.setText("...aðrir voru skráðir inn");
+                  noError.setText(localize("start.all_others_where_registered","All others where registered"));
                   frameTable.add(Text.getBreak());
                   frameTable.add(noError);
                 }
 
                 if(fullGroup){
                   Text Error = (Text)templText.clone();
-                  Error.setText("Holl sem reynt var að skrá í er fullt ");
+                  Error.setText("Holl sem reynt var aÝ skr‡ ’ er fullt ");
                   frameTable.add(Text.getBreak());
                   frameTable.add(Error);
                 }
 
                 if(fullOwnerQuota){
                   Text ownerQuota = (Text)templText.clone();
-                  ownerQuota.setText("Hefur ekki réttindi til að skrá fleiri á þessum velli í dag");
+                  ownerQuota.setText("Hefur ekki rŽttindi til aaÝ skr‡ fleiri ‡ ßessum velli ’ dag");
                   frameTable.add(Text.getBreak());
                   frameTable.add(ownerQuota);
 
                   Text comment = (Text)templText.clone();
-                  comment.setText("Hafið samband við klúbbinn ef skrá á fleiri");
+                  comment.setText("HafiÝ samband viÝ klœbbinn ef skr‡ ‡ fleiri");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 } else if(fullMemberQuota){
                   Text memberQuota = (Text)templText.clone();
-                  memberQuota.setText("Ekki má skrá sama mann oftar en einu sinni á dag í netskráningu");
+                  memberQuota.setText("Ekki m‡ skr‡ sama mann oftar en einu sinni ‡ dag ’ netskr‡ningu");
                   frameTable.add(Text.getBreak());
                   frameTable.add(memberQuota);
 
                   Text comment = (Text)templText.clone();
-                  comment.setText("Hafið samband við klúbbinn til að klára þessa skráningu");
+                  comment.setText("HafiÝ samband viÝ klœbbinn til aÝ kl‡ra ßessa skr‡ningu");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 }else{
                   Text comment = (Text)templText.clone();
-                  comment.setText("Reynið aftur eða hafið samband við klúbbinn");
+                  comment.setText("ReyniÝ aftur eÝa hafiÝ samband viÝ klœbbinn");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 }
@@ -387,7 +387,7 @@ public class RegisterTime extends GolfWindow {
                   //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
                   frameTable.add(Text.getBreak());
                   frameTable.add(Text.getBreak());
-                  frameTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
+                  frameTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")));
 
               }else{
                 this.setParentToReload();
@@ -396,25 +396,25 @@ public class RegisterTime extends GolfWindow {
 
           }else{
             Text comment = (Text)templText.clone();
-            comment.setText("Enginn skráðist");
+            comment.setText("Enginn skr‡Ýist");
             frameTable.add(Text.getBreak());
             frameTable.add(comment);
 
             //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
             frameTable.add(Text.getBreak());
             frameTable.add(Text.getBreak());
-            frameTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
+            frameTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")));
           }
         }else{
           Text comment = (Text)templText.clone();
-          comment.setText("Enginn skráðist");
+          comment.setText("Enginn skr‡Ýist");
           frameTable.add(Text.getBreak());
           frameTable.add(comment);
 
           //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
           frameTable.add(Text.getBreak());
           frameTable.add(Text.getBreak());
-          frameTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
+          frameTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")));
         }
     }
 
@@ -422,12 +422,12 @@ public class RegisterTime extends GolfWindow {
     {
             Table myTable = new Table(2, 3);
             if(inputErr){
-                    myTable.addText("Nauðsynlegt er að skrá eins marga og teknir voru frá", 2, 1);
+                    myTable.add(getErrorText("NauÝsynlegt er aÝ skr‡ eins marga og teknir voru fr‡"), 2, 1);
                     myTable.add(new BackButton("Til baka"), 2, 3);
             }
             else{
-                    myTable.addText("Þetta holl er því miður fullt. Gjörðu svo vel að velja þér nýjan tíma", 2, 1);
-                    myTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")), 2, 3);
+                    myTable.add(getErrorText("Þetta holl er ßv’ miÝur fullt. GjšrÝu svo vel aÝ velja ßŽr nàjan t’ma"), 2, 1);
+                    myTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")), 2, 3);
             }
 
             myTable.setAlignment(2, 3, "center");
@@ -473,7 +473,7 @@ public class RegisterTime extends GolfWindow {
 
 
  public void noPermission(){
-    Text satyOut = new Text(this.iwrb.getLocalizedString("start.no_permission","No permission"));
+    Text satyOut = getErrorText(this._iwrb.getLocalizedString("start.no_permission","No permission"));
     satyOut.setFontSize(4);
     Table AlignmentTable = new Table();
     AlignmentTable.setBorder(0);
@@ -491,7 +491,7 @@ public class RegisterTime extends GolfWindow {
 
 public void main(IWContext modinfo) throws Exception {
     super.main(modinfo);
-    this.setTitle(this.iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
+    this.setTitle(this._iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
 
 
     //Check if the Close button was pressed

@@ -28,6 +28,6 @@ public class HandicapRegisterWindow extends GolfWindow {
     
     public void main(IWContext iwc) throws Exception {
   			super.main(iwc);
-    		addHeading(iwrb.getLocalizedString("handicap.register_scorecard", "Register scorecard"));
+    		addHeading(_iwrb.getLocalizedString("handicap.register_scorecard", "Register scorecard"));
     }
 }
