@@ -1,5 +1,4 @@
 package se.idega.idegaweb.commune.business;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.*;
@@ -14,7 +13,6 @@ import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 /**
  * Title:        se.idega.idegaweb.commune.business.CommuneUserBusinessBean
  * Description:	Use this business class to handle Citizen information
@@ -23,108 +21,195 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * @author AguraIT and idega
  * @version 1.0
  */
-public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness
-{
+public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness {
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
-
-
+	private final String ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
 	public User createCitizen(String firstname, String middlename, String lastname, String personalID)
-		throws CreateException, RemoteException
-	{
+		throws CreateException, RemoteException {
 		return this.createCitizen(firstname, middlename, lastname, personalID, null, null);
 	}
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname, personalID,
-     * gender and date of birth where middlename, personalID,gender,dateofbirth
-     * can be null.<br>
+	   * gender and date of birth where middlename, personalID,gender,dateofbirth
+	   * can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
-	public User createCitizen
-        (final String firstname, final String middlename, final String lastname,
-         final String personalID, final Gender gender,
-         final IWTimestamp dateOfBirth) 
-        throws CreateException, RemoteException	{
-        User newUser = null;
+	public User createCitizen(
+		final String firstname,
+		final String middlename,
+		final String lastname,
+		final String personalID,
+		final Gender gender,
+		final IWTimestamp dateOfBirth)
+		throws CreateException, RemoteException {
+		User newUser = null;
 		try {
-            final Group rootGroup = getRootCitizenGroup();
-
-
-           /* System.out.println ("firstname='" + firstname + "'\n" +
-                                "middlename='" + middlename + "'\n" +
-                                "lastname='" + lastname + "'\n" +
-                                "personalID='" + personalID + "'\n" +
-                                "gender='" + gender + "'\n" +
-                                "dateOfBirth='" + dateOfBirth + "'\n" +
-                                "rootGroup='" + rootGroup + "'\n");*/
-
-			newUser = createUser (firstname, middlename, lastname,
-                                           personalID, gender, dateOfBirth,
-                                           rootGroup);
-		} catch (final Exception e) {
-            e.printStackTrace ();
-			throw new IDOCreateException (e);
+			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, getRootCitizenGroup());
+		}
+		catch (final Exception e) {
+			e.printStackTrace();
+			throw new IDOCreateException(e);
 		}
 		return newUser;
 	}
+	
+	
+	/**
+	 * Creates a new citizen with a firstname,middlename, lastname, personalID,
+		 * gender and date of birth where middlename, personalID,gender,dateofbirth
+		 * can be null.<br>
+	 * Also adds the citizen to the Commune Root Group.
+	 */
+	public User createCitizen(
+		final String firstname,
+		final String middlename,
+		final String lastname,
+		final String personalID,
+		final Gender gender,
+		final IWTimestamp dateOfBirth,
+		final Group rootGroup)
+		throws CreateException, RemoteException {
+		User newUser = null;
+		try {
+			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, rootGroup);
+		}
+		catch (final Exception e) {
+			e.printStackTrace();
+			throw new IDOCreateException(e);
+		}
+		return newUser;
+	}
+	
+	
 	/**
 	 * Finds and updates or Creates a new citizen with a firstname,middlename, lastname and personalID.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
-	public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID)
+	public User createCitizenByPersonalIDIfDoesNotExist(
+		String firstName,
+		String middleName,
+		String lastName,
+		String personalID)
 		throws CreateException, RemoteException {
-		return createCitizenByPersonalIDIfDoesNotExist
-                (firstName, middleName, lastName, personalID, null, null);
+		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, null, null);
 	}
-
-	public User createCitizenByPersonalIDIfDoesNotExist
-        (String firstName, String middleName, String lastName,
-         String personalID, Gender gender,
-         IWTimestamp dateOfBirth)
+	public User createCitizenByPersonalIDIfDoesNotExist(
+		String firstName,
+		String middleName,
+		String lastName,
+		String personalID,
+		Gender gender,
+		IWTimestamp dateOfBirth)
 		throws CreateException, RemoteException {
-
 		User user = null;
 		try {
-
-            final UserHome home = getUserHome();
-			user = home.findByPersonalID (personalID);
-		
+			final UserHome home = getUserHome();
+			user = home.findByPersonalID(personalID);
 			//update if found
-			
 			StringBuffer fullName = new StringBuffer();
-
-	  		firstName = (firstName==null) ? "" : firstName;
-	  		middleName = (middleName==null) ? "" : middleName;
-	  		lastName = (lastName==null) ? "" : lastName;
-	
-	  		fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
-
+			firstName = (firstName == null) ? "" : firstName;
+			middleName = (middleName == null) ? "" : middleName;
+			lastName = (lastName == null) ? "" : lastName;
+			fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
 			user.setFullName(fullName.toString());
-      		if(gender!=null) user.setGender( (Integer)gender.getPrimaryKey() );
-      		if(dateOfBirth!=null) user.setDateOfBirth(dateOfBirth.getDate());
-      		user.store();
-			
-			
-			
-        } catch (final FinderException e) {
-        	//create a new user
-          	if (user == null) {
-            	user = createCitizen (firstName, middleName, lastName,personalID, gender, dateOfBirth);
-            }
-        } 
-        
-        
+			if (gender != null)
+				user.setGender((Integer) gender.getPrimaryKey());
+			if (dateOfBirth != null)
+				user.setDateOfBirth(dateOfBirth.getDate());
+			user.store();
+		}
+		catch (final FinderException e) {
+			//create a new user
+			if (user == null) {
+				user = createCitizen(firstName, middleName, lastName, personalID, gender, dateOfBirth);
+			}
+		}
 		return user;
 	}
-
+	
+	
+	/**
+	 * Creates a new special citizen with a firstname,middlename, lastname,
+	 * personalID, gender and date of birth where middlename, personalID,gender,
+	 * dateofbirth can be null.<br> Also adds the citizen to the Commune Special
+	 * Citizen Root Group.
+	 */
+	public User createSpecialCitizen(
+		final String firstname,
+		final String middlename,
+		final String lastname,
+		final String personalID,
+		final Gender gender,
+		final IWTimestamp dateOfBirth)
+		throws CreateException, RemoteException {
+		User newUser = null;
+		try {
+			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, getRootSpecialCitizenGroup());
+		}
+		catch (final Exception e) {
+			e.printStackTrace();
+			throw new IDOCreateException(e);
+		}
+		return newUser;
+	}
+	
+	/**
+	 * Finds and updates or Creates a new special citizen with a firstname,
+	 * middlename, lastname and personalID.<br> Also adds the citizen to the
+	 * Commune Special Citizen Root Group (people who don't live in Nacka).
+	 */
+	public User createSpecialCitizenByPersonalIDIfDoesNotExist(
+		String firstName,
+		String middleName,
+		String lastName,
+		String personalID)
+		throws CreateException, RemoteException {
+		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, null, null);
+	}
+	public User createSpecialCitizenByPersonalIDIfDoesNotExist(
+		String firstName,
+		String middleName,
+		String lastName,
+		String personalID,
+		Gender gender,
+		IWTimestamp dateOfBirth)
+		throws CreateException, RemoteException {
+		User user = null;
+		try {
+			final UserHome home = getUserHome();
+			user = home.findByPersonalID(personalID);
+			//update if found
+			StringBuffer fullName = new StringBuffer();
+			firstName = (firstName == null) ? "" : firstName;
+			middleName = (middleName == null) ? "" : middleName;
+			lastName = (lastName == null) ? "" : lastName;
+			fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
+			user.setFullName(fullName.toString());
+			if (gender != null)
+				user.setGender((Integer) gender.getPrimaryKey());
+			if (dateOfBirth != null)
+				user.setDateOfBirth(dateOfBirth.getDate());
+			user.store();
+		}
+		catch (final FinderException e) {
+			//create a new user
+			if (user == null) {
+				user = createSpecialCitizen(firstName, middleName, lastName, personalID, gender, dateOfBirth);
+			}
+		}
+		return user;
+	}
+	
+	
 	/**
 	 * Creates a new Commune Administrator with a firstname,middlename, lastname and personalID where middlename and personalID can be null
 	 */
-	public User createCommuneAdministrator(String firstname, String middlename, String lastname) throws CreateException, RemoteException
-	{
+	public User createCommuneAdministrator(String firstname, String middlename, String lastname)
+		throws CreateException, RemoteException {
 		User newUser;
 		/**
 		 * @todo: put the user in an administrator group
@@ -136,8 +221,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Creates a new Administrator whith a with a firstname,middlename, lastname and school where middlename  can be null
 	 */
 	public User createProviderAdministrator(String firstname, String middlename, String lastname, School school)
-		throws javax.ejb.FinderException, CreateException, RemoteException
-	{
+		throws javax.ejb.FinderException, CreateException, RemoteException {
 		User newUser;
 		SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		Group rootSchoolAdminGroup = getRootProviderAdministratorGroup();
@@ -151,8 +235,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Creates a new Administrator whith a with a firstname,middlename, lastname and school where middlename  can be null
 	 */
 	public User createSchoolAdministrator(String firstname, String middlename, String lastname, School school)
-		throws javax.ejb.FinderException, CreateException, RemoteException
-	{
+		throws javax.ejb.FinderException, CreateException, RemoteException {
 		User newUser;
 		SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		Group rootSchoolAdminGroup = getRootSchoolAdministratorGroup();
@@ -171,47 +254,69 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	//{
 	//		return generateUserLogin(user);
 	//}
-
 	/**
 	 * Creates (if not available) and returns the default usergroup all
-     * citizens, read from imports, are members of.
+	   * citizens, read from imports, are members of.
 	 * throws a CreateException if it failed to locate or create the group.
 	 */
-	public Group getRootCitizenGroup()
-        throws CreateException, FinderException, RemoteException {
+	public Group getRootCitizenGroup() throws CreateException, FinderException, RemoteException {
 		Group rootGroup = null;
 		//create the default group
-        final IWApplicationContext iwc = getIWApplicationContext ();
-        final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = (String) settings.getProperty
-                (ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
-
+		final IWApplicationContext iwc = getIWApplicationContext();
+		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		String groupId = (String) settings.getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
-            final GroupHome groupHome = getGroupHome();
-			rootGroup = groupHome.findByPrimaryKey (new Integer(groupId));
-		} else {
+			final GroupHome groupHome = getGroupHome();
+			rootGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+		}
+		else {
 			System.err.println("trying to store Commune Root group");
 			/**@todo this seems a wrong way to do things**/
-			final GroupTypeHome typeHome
-                    = (GroupTypeHome) getIDOHome(GroupType.class);
+			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
 			final GroupType type = typeHome.create();
-            final GroupBusiness groupBusiness = getGroupBusiness();
-			rootGroup = groupBusiness.createGroup
-                    ("Commune Citizens", "The Commune Root Group.",
-                     type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME,
-                                 (Integer) rootGroup.getPrimaryKey());
+			final GroupBusiness groupBusiness = getGroupBusiness();
+			rootGroup =
+				groupBusiness.createGroup("Commune Citizens", "The Commune Root Group.", type.getGeneralGroupTypeString());
+			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootGroup.getPrimaryKey());
 		}
 		return rootGroup;
 	}
-
+	/**
+	 * Creates (if not available) and returns the default usergroup for  all
+	 * citizens not living in the commune, read from imports. throws a
+	 * CreateException if it failed to locate or create the group.
+	 */
+	public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException {
+		Group rootGroup = null;
+		//create the default group
+		final IWApplicationContext iwc = getIWApplicationContext();
+		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		String groupId = (String) settings.getProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		if (groupId != null) {
+			final GroupHome groupHome = getGroupHome();
+			rootGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("trying to store Non Commune Citizen Root group");
+			/**@todo this seems a wrong way to do things**/
+			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
+			final GroupType type = typeHome.create();
+			final GroupBusiness groupBusiness = getGroupBusiness();
+			rootGroup =
+				groupBusiness.createGroup(
+					"Commune Citizens",
+					"The Non Commune Commune Root Group.",
+					type.getGeneralGroupTypeString());
+			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootGroup.getPrimaryKey());
+		}
+		return rootGroup;
+	}
 	/**
 	* Returns or creates (if not available) the default usergroup all provider(childcare) administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
 	* @throws FinderException if it failed to locate the group.
 	*/
-	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException
-	{
+	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException {
 		return getSchoolBusiness().getRootProviderAdministratorGroup();
 		/*
 		Group rootGroup = null;
@@ -243,51 +348,48 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	* @throws CreateException if it failed to create the group.
 	* @throws FinderException if it failed to locate the group.
 	*/
-	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException
-	{
+	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
 		return getSchoolBusiness().getRootSchoolAdministratorGroup();
-/*		
-		Group rootGroup = null;
-		//create the default group
-		String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "school_administrators_group_id";
-		IWBundle bundle = getCommuneBundle();
-		String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
-		if (groupId != null)
-		{
-			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
-		} else
-		{
-			System.err.println("trying to store Commune Root school administrators group");
-			//@todo this seems a wrong way to do things
-			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-			GroupType type = typeHome.create();
-			rootGroup =
-				getUserBusiness().getGroupBusiness().createGroup(
-					"School Administrators",
-					"The Commune Root School Administrators Group.",
-					type.getGeneralGroupTypeString());
-			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
-		}
-		return rootGroup;
-*/
+		/*		
+				Group rootGroup = null;
+				//create the default group
+				String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "school_administrators_group_id";
+				IWBundle bundle = getCommuneBundle();
+				String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
+				if (groupId != null)
+				{
+					rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+				} else
+				{
+					System.err.println("trying to store Commune Root school administrators group");
+					//@todo this seems a wrong way to do things
+					GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+					GroupType type = typeHome.create();
+					rootGroup =
+						getUserBusiness().getGroupBusiness().createGroup(
+							"School Administrators",
+							"The Commune Root School Administrators Group.",
+							type.getGeneralGroupTypeString());
+					bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
+				}
+				return rootGroup;
+		*/
 	}
 	/**
 	* Returns or creates (if not available) the default usergroup all commune administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
 	* @throws FinderException if it failed to locate the group.
 	*/
-	public Group getRootCommuneAdministratorGroup() throws CreateException, FinderException, RemoteException
-	{
+	public Group getRootCommuneAdministratorGroup() throws CreateException, FinderException, RemoteException {
 		Group rootGroup = null;
 		//create the default group
 		String ROOT_COMMUNE_ADMINISTRATORS_GROUP = "commune_administrators_group_id";
 		IWBundle bundle = getCommuneBundle();
 		String groupId = bundle.getProperty(ROOT_COMMUNE_ADMINISTRATORS_GROUP);
-		if (groupId != null)
-		{
+		if (groupId != null) {
 			rootGroup = getGroupHome().findByPrimaryKey(new Integer(groupId));
-		} else
-		{
+		}
+		else {
 			System.err.println("trying to store Commune administrators Root group");
 			/**@todo this seems a wrong way to do things**/
 			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
@@ -306,21 +408,17 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	* @return Collection of com.idega.user.data.User objects with all the users in the CommuneAdministrators group.
 	* @throws FinderException if it failed to locate the group or its users.
 	*/
-	public Collection getAllCommuneAdministrators() throws FinderException
-	{
-		try
-		{
+	public Collection getAllCommuneAdministrators() throws FinderException {
+		try {
 			return getUsersInPrimaryGroup(getRootCommuneAdministratorGroup());
-		} catch (Exception e)
-		{
+		}
+		catch (Exception e) {
 			throw new IDOFinderException(e);
 		}
 	}
-	protected IWBundle getCommuneBundle()
-	{
+	protected IWBundle getCommuneBundle() {
 		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 	}
-
 	/**
 	 * Method getFirstManagingSchoolForUser.
 	 * If there is no school that the user manages then the method throws a FinderException.
@@ -333,7 +431,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			Group rootGroup = getRootSchoolAdministratorGroup();
 			// if user is a SchoolAdministrator
 			if (user.getPrimaryGroup().equals(rootGroup)) {
-				Collection schools = ((SchoolBusiness)IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
+				Collection schools =
+					((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class))
+						.getSchoolHome()
+						.findAllBySchoolGroup(user);
 				if (!schools.isEmpty()) {
 					Iterator iter = schools.iterator();
 					while (iter.hasNext()) {
@@ -346,20 +447,15 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-
 		throw new FinderException("No school found that " + user.getName() + " manages");
 	}
-	
-	public boolean hasCitizenAccount(User user)throws RemoteException{
+	public boolean hasCitizenAccount(User user) throws RemoteException {
 		return hasUserLogin(user);
 	}
-	
-	public boolean hasCitizenAccount(int userID)throws RemoteException{
+	public boolean hasCitizenAccount(int userID) throws RemoteException {
 		return hasUserLogin(userID);
 	}
-	
-	public SchoolBusiness getSchoolBusiness() throws RemoteException{
+	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}
-
 }

@@ -4,7 +4,10 @@ import java.rmi.RemoteException;
 import javax.ejb.*;
 
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Gender;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 public interface CommuneUserBusiness extends com.idega.business.IBOService, UserBusiness
 {
@@ -30,4 +33,30 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
  public com.idega.user.data.Group getRootSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasCitizenAccount(com.idega.user.data.User user)throws RemoteException;
  public boolean hasCitizenAccount(int userID)throws RemoteException;
+ public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException;
+ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
+	 String firstName,
+	 String middleName,
+	 String lastName,
+	 String personalID)
+	 throws CreateException, RemoteException;
+public User createSpecialCitizenByPersonalIDIfDoesNotExist(
+			String firstName,
+			String middleName,
+			String lastName,
+			String personalID,
+			Gender gender,
+			IWTimestamp dateOfBirth)
+			throws CreateException, RemoteException;
+	public User createSpecialCitizen(
+			final String firstname,
+			final String middlename,
+			final String lastname,
+			final String personalID,
+			final Gender gender,
+			final IWTimestamp dateOfBirth)
+			throws CreateException, RemoteException;
+			
+			
+			
 }
