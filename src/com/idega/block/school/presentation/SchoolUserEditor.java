@@ -989,14 +989,18 @@ public class SchoolUserEditor extends Block {
 
 		table.add(inp, 1, row);
 		table.add(utInp, 1, row);
+		
+		table.add(getTextNormal(_iwrb.getLocalizedString("school.name","Name")), 1, row);
+		table.add(getTextNormal(_iwrb.getLocalizedString("school.email","Email")), 3, row++);
+		
 		if (!_hideLogin) {
 			table.add(login, 7, row);
 		}
-
 		table.add(pName, 1, row);
 		if (emails != null) {
 			Email email;
 			Iterator iEm = emails.iterator();
+			
 			while (iEm.hasNext()) {
 				email = (Email) iEm.next();
 				TextInput pEmail = new TextInput(semail + "_" + hmId + "_" + email.getPrimaryKey(), email.getEmailAddress());
@@ -1014,6 +1018,7 @@ public class SchoolUserEditor extends Block {
 		mRow = row;
 		row = uRow;
 		if (phones != null) {
+			table.add(getTextNormal(_iwrb.getLocalizedString("school.phone","Phone")), 5, row++);
 			Phone phone;
 			Iterator iPh = phones.iterator();
 			while (iPh.hasNext()) {
