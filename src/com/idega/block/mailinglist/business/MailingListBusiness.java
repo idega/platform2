@@ -8,15 +8,16 @@ package com.idega.block.mailinglist.business;
  * @author <a href="bjarni@idega.is">Bjarni Viljhalmsson</a>
  * @version 1.0
  */
-import com.idega.block.mailinglist.data.*;
-import com.idega.block.mailinglist.presentation.EmailProgramViewTable;
-import com.idega.presentation.IWContext;
-import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
+import com.idega.block.mailinglist.data.EmailLetterData;
+import com.idega.block.mailinglist.data.MailAccount;
+import com.idega.block.mailinglist.data.Mailinglist;
+import com.idega.block.mailinglist.presentation.EmailProgramViewTable;
 import com.idega.core.user.data.User;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.SimpleQuerier;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 
 public class MailingListBusiness {
 

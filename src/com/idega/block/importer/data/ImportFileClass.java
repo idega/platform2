@@ -1,6 +1,5 @@
 package com.idega.block.importer.data;
 
-import javax.ejb.*;
 
 public interface ImportFileClass extends com.idega.data.IDOEntity
 {

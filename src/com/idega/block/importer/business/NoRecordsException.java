@@ -1,5 +1,4 @@
 package com.idega.block.importer.business;
-import com.idega.core.data.ICFileType;
 
 /**
  * Title: se.idega.idegaweb.commune.block.importer.business.NoRecordsException

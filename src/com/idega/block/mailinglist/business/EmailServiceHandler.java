@@ -1,26 +1,21 @@
 package com.idega.block.mailinglist.business;
 
-import java.util.Properties;
-import java.util.Date;
-import java.util.Vector;
 import java.io.IOException;
-import java.sql.Timestamp;
-import com.idega.core.data.ICFile;
-import com.idega.presentation.IWContext;
-import com.idega.util.IWTimestamp;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.Store;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.mail.Address;
 import javax.mail.Flags;
 import javax.mail.Folder;
-import javax.mail.URLName;
-import javax.mail.Address;
+import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Part;
 import javax.mail.Multipart;
-import javax.mail.internet.MimeMultipart;
-import java.io.IOException;
+import javax.mail.Part;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.URLName;
+
+import com.idega.presentation.IWContext;
 
 /**
  * Title:

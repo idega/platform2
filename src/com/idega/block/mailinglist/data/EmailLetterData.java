@@ -1,6 +1,5 @@
 package com.idega.block.mailinglist.data;
 
-import javax.ejb.*;
 
 public interface EmailLetterData extends com.idega.data.IDOLegacyEntity
 {

@@ -1,7 +1,6 @@
 package com.idega.block.importer.data;
 
 import java.io.File;
-import java.util.Collection;
 
 /**
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>

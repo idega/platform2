@@ -9,17 +9,18 @@ package com.idega.block.mailinglist.presentation;
  * @version 1.0
  */
 
+import java.sql.SQLException;
+
+import com.idega.block.mailinglist.business.MailingListBusiness;
+import com.idega.block.mailinglist.data.MailAccount;
+import com.idega.block.mailinglist.data.Mailinglist;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.block.mailinglist.data.*;
-import com.idega.block.mailinglist.business.MailingListBusiness;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.Table;
-import java.sql.SQLException;
-import java.util.*;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 public class MailinglistPresentation extends Block {
 

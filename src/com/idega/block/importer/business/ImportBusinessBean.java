@@ -6,10 +6,13 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.importer.data.*;
+import com.idega.block.importer.data.ImportFile;
+import com.idega.block.importer.data.ImportFileClass;
+import com.idega.block.importer.data.ImportFileClassHome;
+import com.idega.block.importer.data.ImportHandler;
+import com.idega.block.importer.data.ImportHandlerHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.data.Group;
 
 
 /**

@@ -1,7 +1,6 @@
 package com.idega.block.importer.business;
 
 import java.util.Collection;
-import javax.ejb.*;
 
 public interface ImportBusiness extends com.idega.business.IBOService
 {

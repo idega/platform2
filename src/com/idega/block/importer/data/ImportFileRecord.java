@@ -1,7 +1,5 @@
 package com.idega.block.importer.data;
 
-import javax.ejb.*;
-
 import com.idega.core.data.ICFile;
 
 public interface ImportFileRecord extends ICFile

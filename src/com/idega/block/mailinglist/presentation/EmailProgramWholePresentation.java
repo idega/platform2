@@ -1,20 +1,19 @@
 package com.idega.block.mailinglist.presentation;
 
-import com.idega.block.mailinglist.data.*;
-import com.idega.block.mailinglist.business.*;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Block;
-import com.idega.data.EntityFinder;
-import java.util.List;
-import java.util.Iterator;
-import java.sql.SQLException;
 import java.io.IOException;
-import javax.mail.MessagingException;
+import java.sql.SQLException;
+
 import javax.mail.Folder;
+import javax.mail.MessagingException;
+
+import com.idega.block.mailinglist.business.EmailServiceHandler;
+import com.idega.block.mailinglist.business.EmailServices;
+import com.idega.block.mailinglist.business.MailingListBusiness;
+import com.idega.block.mailinglist.data.EmailLetterData;
+import com.idega.block.mailinglist.data.Mailinglist;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 
 
 /**

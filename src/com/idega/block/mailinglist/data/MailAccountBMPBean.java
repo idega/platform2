@@ -1,10 +1,7 @@
 package com.idega.block.mailinglist.data;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.lang.Integer;
-import java.lang.String;
-import com.idega.data.*;
+
 import com.idega.core.user.data.User;
 
 

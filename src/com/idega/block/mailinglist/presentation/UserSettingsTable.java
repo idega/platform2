@@ -1,9 +1,8 @@
 package com.idega.block.mailinglist.presentation;
 
 
-import com.idega.block.mailinglist.data.MailAccount;
 import com.idega.block.mailinglist.data.Account;
-import com.idega.presentation.Block;
+import com.idega.block.mailinglist.data.MailAccount;
 import com.idega.presentation.IWContext;
 
 

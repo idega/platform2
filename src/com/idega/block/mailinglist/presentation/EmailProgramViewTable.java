@@ -1,20 +1,20 @@
 package com.idega.block.mailinglist.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.block.mailinglist.data.*;
-import com.idega.block.mailinglist.business.EmailServiceHandler;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-
-import java.sql.SQLException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+
+import com.idega.block.mailinglist.business.EmailServiceHandler;
+import com.idega.block.mailinglist.data.EmailLetterData;
+import com.idega.block.mailinglist.data.MailAccount;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:        idegaWeb Classes

@@ -1,7 +1,6 @@
 package com.idega.block.importer.data;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 import javax.ejb.FinderException;
 

@@ -1,6 +1,5 @@
 package com.idega.block.mailinglist.data;
 
-import javax.ejb.*;
 
 public interface MailAccount extends com.idega.block.mailinglist.data.Account
 {

@@ -8,9 +8,10 @@ package com.idega.block.mailinglist.data;
  * @author <a href="bjarni@idega.is">Bjarni Viljhalmsson</a>
  * @version 1.0
  */
-import com.idega.data.IDOLegacyEntity;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
 import com.idega.core.data.ICFile;
-import java.sql.*;
 
 public class EmailLetterDataBMPBean extends com.idega.data.GenericEntity implements com.idega.block.mailinglist.data.EmailLetterData {
 

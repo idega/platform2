@@ -1,11 +1,11 @@
 package com.idega.block.importer.data;
 
-import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import java.util.Iterator;
-import java.util.Collection;
-import com.idega.data.*;
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOLookup;
 
 
 /**
