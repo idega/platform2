@@ -159,7 +159,7 @@ public class InitialData extends TravelManager {
             if (selected == null)  selected = this.parameterViewSupplierInfo;
             Form form = null;
             if (selected.equals(this.parameterViewSupplierInfo)) {
-              form = getSupplierCreation(supplier.getID());
+              form = getSupplierCreation(iwc, supplier.getID());
             }else if (selected.equals(this.parameterViewHotelPickup)) {
               try {
                 HotelPickupPlaceDesigner hppd = new HotelPickupPlaceDesigner(iwc);
@@ -288,10 +288,10 @@ public class InitialData extends TravelManager {
               }
             }
             else if (action.equals(this.parameterNew)) {
-              add(getSupplierCreation(-1));
+              add(getSupplierCreation(iwc, -1));
             }
             else if (action.equals(this.parameterEdit)) {
-              add(getSupplierCreation(Integer.parseInt(iwc.getParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()))));
+              add(getSupplierCreation(iwc, Integer.parseInt(iwc.getParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()))));
             }
             else if (action.equals(this.parameterInvalidate)) {
               String supplier_id = iwc.getParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName());
@@ -421,7 +421,7 @@ public class InitialData extends TravelManager {
   }
 
 
-  public Form getSupplierCreation(int supplier_id) throws SQLException, RemoteException{
+  public Form getSupplierCreation(IWContext iwc, int supplier_id) throws SQLException, RemoteException{
       Form form = new Form();
 
       Table table = new Table();
@@ -629,7 +629,7 @@ public class InitialData extends TravelManager {
         table.setAlignment(1,row,"left");
         table.add(lBack,1,row);
       }
-      if (isInPermissionGroup || isSuperAdmin) {
+      if (super.isTravelAdministrator(iwc) ) {
         table.setAlignment(2,row,"right");
         table.add(submit,2,row);
       }
