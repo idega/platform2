@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialConnectionUpdateThread.java,v 1.1 2005/01/04 15:44:23 palli Exp $ Created
+ * $Id: SpecialConnectionUpdateThread.java,v 1.2 2005/01/13 11:36:25 palli Exp $ Created
  * on Jan 4, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.GroupHome;
 
 /**
  * 
- * Last modified: $Date: 2005/01/04 15:44:23 $ by $Author: palli $
+ * Last modified: $Date: 2005/01/13 11:36:25 $ by $Author: palli $
  * 
  * @author <a href="mailto:palli@idega.com">palli </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SpecialConnectionUpdateThread extends Thread {
 
@@ -105,9 +105,11 @@ public class SpecialConnectionUpdateThread extends Thread {
 	}
 
 	/*
-	 * 1. Find all groups conntected to the league 2. Find the club/division 3.
-	 * Go through all division children and match to the player group templates
+	 * 1. Find all groups conntected to the league 
+	 * 2. Find the club/division 
+	 * 3. Go through all division children and match to the player group templates
 	 * 4. If any are missing, create them
+	 * 5. If any aliases are missing to groups, then create them
 	 */
 	private void addMissingGroupsToClubs(Group league, Group divisionTemplate, IWContext iwc) {
 		try {
@@ -154,7 +156,7 @@ public class SpecialConnectionUpdateThread extends Thread {
 				while (it.hasNext()) {
 					Group division = (Group) it.next();
 					Group club = findClubForGroup(division);
-					while (club == null) {
+					if (club != null) {
 						updateDivision(division, divisionTemplate, club, leaguePlayerGroup, iwc);
 					}
 				}
