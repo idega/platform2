@@ -27,7 +27,7 @@ import com.idega.util.IWTimestamp;
  * 
  * @author Joakim
  */
-public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord {
+public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord  {
 	public static final String ENTITY_NAME = "cacc_invoice_record";
 
 	public static final String COLUMN_INVOICE_HEADER = "invoice_header";
@@ -391,4 +391,26 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		sql.append(" rec.").append(COLUMN_SCHOOL_TYPE_ID).appendInCollection(schoolTypes);
 		return idoGetNumberOfRecords(sql);
 	}
+	
+	public double ejbHomeGetTotalAmountForSchoolTypesAndMonth(Collection schoolTypes, CalendarMonth month) throws IDOException {
+		// get the first and the last date of the month
+		Date firstDate = month.getFirstDateOfMonth();
+		Date lastDate = month.getLastDateOfMonth();
+		IDOQuery sql = idoQuery();
+		// select sum(AMOUNT) from cacc_invoice_record
+		sql.appendSelectSumFrom(COLUMN_AMOUNT, getEntityName());
+		// where
+		sql.appendWhere();
+		//  period_start_check <= '2003-11-30' and period_end_check >= '2003-11-01'
+		sql.append(COLUMN_PERIOD_START_CHECK).appendLessThanOrEqualsSign().append(lastDate);
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_END_CHECK).appendGreaterThanOrEqualsSign().append(firstDate);
+		// and
+		sql.appendAnd();
+		// sch_school_type_id in (4,2,3) 
+		sql.append(COLUMN_SCHOOL_TYPE_ID).appendInCollection(schoolTypes);
+		return idoGetValueFromSingleValueResultSet(sql);
+	}
+
+		
 }		

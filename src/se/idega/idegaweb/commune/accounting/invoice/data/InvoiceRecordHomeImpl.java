@@ -46,5 +46,12 @@ public int getPlacementCountForSchoolCategoryAndPeriod(java.lang.String p0,java.
 	return theReturn;
 }
 
+public double getTotalAmountForSchoolTypesAndMonth(java.util.Collection p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	double theReturn = ((InvoiceRecordBMPBean)entity).ejbHomeGetTotalAmountForSchoolTypesAndMonth(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }

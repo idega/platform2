@@ -56,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/08 17:07:44 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/09 16:18:16 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.82 $
+ * @version $Revision: 1.83 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -253,6 +253,16 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		Date period = batchRun.getPeriod();
 		String schoolCategoryID = batchRun.getSchoolCategoryID();
 		return getPaymentRecordHome().getTotAmountForSchoolCategoryAndPeriod(schoolCategoryID, period);
+	}
+	
+	public double getTotalAmountOfInvoices(BatchRun batchRun) throws RemoteException, IDOException {
+		// get the month
+		CalendarMonth month = batchRun.getMonth();
+		String schoolCategoryID = batchRun.getSchoolCategoryID();
+		SchoolBusiness schoolBusiness = getSchoolBusiness();
+		Collection schoolTypes = schoolBusiness.findAllSchoolTypesInCategory(schoolCategoryID);
+		InvoiceRecordHome invoiceRecordHome = getInvoiceRecordHome();
+		return invoiceRecordHome.getTotalAmountForSchoolTypesAndMonth(schoolTypes, month);
 	}
 	
 	public int getNumberOfHandledChildren(BatchRun batchRun) throws RemoteException, IDOException {
