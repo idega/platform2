@@ -476,11 +476,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (statsForPersons == null)
 				statsForPersons = new Vector();
 			statsForPersons.add(data);
-			financeEntriesByPersons.put(personalID, statsForPersons);			 	
-			//}
-			//catch (Exception e) {
-			//	e.printStackTrace();
-			//}
+			financeEntriesByPersons.put(personalID, statsForPersons);
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = financeEntriesByPersons.keySet().iterator();
@@ -716,8 +712,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then iterate the map and insert into the final report collection.
 		
 		String[] types = null;
-		Timestamp paymentDate = IWTimestamp.getTimestampRightNow();
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByPaymentDateDivisionsAndGroups(club, types, paymentDate, divisionsFilter, groupsFilter);
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByPaymentDateDivisionsAndGroups(club, types, divisionsFilter, groupsFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data 
@@ -819,8 +814,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	 * Report A29.6 of the ISI Specs
 	 */
 	public ReportableCollection getPaymentListByDivisionsGroupsAndDateIntervalFiltering(
-			Date dateFromFilter,
-			Date dateToFilter,
+			Date entryDateFilter,
 			Collection divisionsFilter,
 			Collection groupsFilter)
 	throws RemoteException {
@@ -871,13 +865,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
-		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
-		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
-		reportCollection.addField(entryDateField);
-		
-		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
-		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
-		reportCollection.addField(amountEqualizedField);
+		ReportableField paymentModeField = new ReportableField(FIELD_NAME_PAYMENT_MODE, String.class);
+		paymentModeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_MODE, "Payment mode"), currentLocale);
+		reportCollection.addField(paymentModeField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
 		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
@@ -892,8 +882,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
 		
-		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		String[] types = { FinanceEntryBMPBean.TYPE_PAYMENT};
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, types, entryDateFilter, divisionsFilter, groupsFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data 
@@ -917,8 +907,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(nameField, user.getName() );
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
-			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(paymentModeField, financeEntry.getPaymentType() );
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
 			
@@ -926,11 +915,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			if (statsForDivision == null)
 				statsForDivision = new Vector();
 			statsForDivision.add(data);
-			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
-			//}
-			//catch (Exception e) {
-			//	e.printStackTrace();
-			//}
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
@@ -941,7 +926,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField };
+		ReportableField[] sortFields = new ReportableField[] {divisionField, paymentModeField, groupField, nameField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
