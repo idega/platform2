@@ -53,7 +53,7 @@ public class PublicBooking extends Block  {
   Supplier supplier;
   int productId = -1;
 
-	private String PARAMETER_REFERRAL_URL = "pb_spm_ru";
+	public static String PARAMETER_REFERRAL_URL = "pb_spm_ru";
   private IWTimestamp stamp;
   private String parameterProductId = LinkGenerator.parameterProductId;
   private DecimalFormat df = new DecimalFormat("0.00");
@@ -82,12 +82,16 @@ public class PublicBooking extends Block  {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-	public String getRefererUrl(IWContext iwc) {
+	public static String getRefererUrl(IWContext iwc) {
 		String tmpUrl = iwc.getParameter(PARAMETER_REFERRAL_URL);
 		if (tmpUrl == null){
 			tmpUrl = (String) iwc.getSessionAttribute(PARAMETER_REFERRAL_URL);
 			if (tmpUrl == null) {
 				tmpUrl = iwc.getReferer();
+				System.out.println("URI : "+iwc.getRequest().getServerName());
+				if (tmpUrl != null && (tmpUrl.indexOf(iwc.getRequest().getServerName()) > -1)) {
+					return null;
+				} 
 			}
 		}
 		iwc.setSessionAttribute(PARAMETER_REFERRAL_URL, tmpUrl);
