@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.25 2003/09/12 15:30:01 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.26 2003/09/15 17:34:39 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -990,7 +990,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 	
 	/**
-	 * Returns the text, sum, vat and vat type using the contract
+	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the specific regulation
+	 * and contract
+	 * 
 	 * @param totalSum
 	 * @param contract
 	 * @return PostingDetail
