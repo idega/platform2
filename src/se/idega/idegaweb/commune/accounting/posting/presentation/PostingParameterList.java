@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.7 2003/08/25 21:42:52 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.8 2003/08/25 21:45:06 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.7 2003/08/25 21:42:52 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.8 2003/08/25 21:45:06 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -189,16 +189,11 @@ public class PostingParameterList extends AccountingBlock {
 			pBiz.findAllPostingParameters();
 
 			Collection items = pBiz.findPostingParametersByPeriode(currentFromDate, currentToDate);
-//			Collection items = pBiz.findAllPostingParameters();
 			if(items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
 					PostingParameters p = (PostingParameters) iter.next();
 					list.add(formatDate(p.getPeriodeFrom(), 4) + "-" + formatDate(p.getPeriodeTo(), 4));
-//					list.add(localize(p.getActivity().getTextKey(), p.getActivity().getTextKey()));
-//					list.add(localize(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey()));
-//					list.add(localize(p.getCompanyType().getTextKey(), p.getCompanyType().getTextKey()));
-//					list.add(localize(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey()));
 
 					list.add(p.getActivity().getTextKey(), p.getActivity().getTextKey());
 					list.add(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey());
