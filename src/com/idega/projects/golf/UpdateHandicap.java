@@ -57,7 +57,9 @@ public class UpdateHandicap {
 
             for (int m=0; m < scorecard.length; m++) {
 
-                System.out.println("Date: "+new idegaTimestamp(scorecard[m].getScorecardDate()).toSQLDateString());
+                if ( scorecard[m].getScorecardDate() != null ) {
+                  System.out.println("Date: "+new idegaTimestamp(scorecard[m].getScorecardDate()).toSQLDateString());
+                }
                 round = new TournamentRound(scorecard[m].getTournamentRoundId());
                 rounds = (TournamentRound[]) (new TournamentRound()).findAllByColumn("tournament_id",round.getTournamentID());
 
