@@ -28,6 +28,8 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.util.LocaleUtil;
 import com.lowagie.text.DocumentException;
@@ -69,16 +71,17 @@ import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/21 09:56:09 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/23 13:00:02 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.104 $
+ * @version $Revision: 1.105 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1342,7 +1345,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			table.add (new HiddenInput
 								 (PROVIDER_KEY,	"" + loggedInUsersProvider.getPrimaryKey ()),
 								 col, row);
-		} else if (null != schoolCategory) {
+		} else if (isCentralAdministrator (context) && null != schoolCategory) {
 			final DropdownMenu providerDropdown = (DropdownMenu)
 					getStyledInterface (new DropdownMenu (PROVIDER_KEY));
 			final Collection schools
@@ -1362,7 +1365,37 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			table.add (providerDropdown, col++, row);
 		}
 	}
-	
+
+	private boolean isCentralAdministrator (final IWContext context) {
+		try {
+			// first see if we have cached certificate
+			final String sessionKey = getClass () + ".isCentralAdministrator";
+			final User verifiedCentralAdmin
+					= (User) context.getSessionAttribute (sessionKey);
+			final User user = context.getCurrentUser ();
+			if (null != verifiedCentralAdmin && user.equals (verifiedCentralAdmin)) {
+				// certificate were cached
+				return true;
+			}
+			
+			// since no cert were cached, check current users group instaed
+			final int groupId
+					= getCommuneUserBusiness ().getRootAdministratorGroupID ();
+			final GroupHome home =	(GroupHome) IDOLookup.getHome (Group.class);
+			final Group communeGroup = home.findByPrimaryKey (new Integer (groupId));
+			if (user != null && communeGroup != null
+					&& (user.hasRelationTo (communeGroup)
+							|| user.getPrimaryKey ().equals (new Integer (1)))) {
+				// user is allaowed, cache certificate and return true
+				context.setSessionAttribute (sessionKey, user);
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		return false;
+	}
+
 	private void addSmallText (final Table table, final String string,
 														 final int col, final int row) {
 		table.add (getSmallText (null != string && !string.equals (null + "")
@@ -1695,5 +1728,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	CheckAmountBusiness getCheckAmountBusiness () throws RemoteException {
 		return (CheckAmountBusiness) IBOLookup.getServiceInstance
 				(getIWApplicationContext (), CheckAmountBusiness.class);
+	}
+
+	CommuneUserBusiness getCommuneUserBusiness () throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance
+				(getIWApplicationContext (), CommuneUserBusiness.class);
 	}
 }
