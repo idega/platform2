@@ -208,10 +208,10 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
           DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(primaryKey, field, iwc);
         if (entityPathValueContainerFromTextEditor.isValid()) {
-          setValuesOfWorkReportMember(entityPathValueContainerFromTextEditor, member, workReportBusiness);
+          setValuesOfWorkReportMember(entityPathValueContainerFromTextEditor, member, workReportBusiness, iwc);
         }
         if (entityPathValueContainerFromDropDownMenu.isValid()) {
-          setValuesOfWorkReportMember(entityPathValueContainerFromDropDownMenu, member, workReportBusiness);
+          setValuesOfWorkReportMember(entityPathValueContainerFromDropDownMenu, member, workReportBusiness, iwc);
         }
       }
       // update the connections to leagues
@@ -523,7 +523,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
   }
 
-  private void setValuesOfWorkReportMember(EntityPathValueContainer valueContainer, WorkReportMember member, WorkReportBusiness workReportBusiness)  {
+  private void setValuesOfWorkReportMember(EntityPathValueContainer valueContainer, WorkReportMember member, WorkReportBusiness workReportBusiness, IWApplicationContext iwac)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
     
@@ -537,6 +537,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         personalIdnotCorrect = true;
         return;
       }
+      WorkReportMember wrMember = findWorkReportMember(socialSecurityNumber, iwac);
+      if (wrMember != null) {
+        memberAlreadyExist = true;
+        return;
+      }
+
       member.setName(user.getName());
       member.setUserId(((Integer) user.getPrimaryKey()).intValue());
       member.setPersonalId(value.toString());
