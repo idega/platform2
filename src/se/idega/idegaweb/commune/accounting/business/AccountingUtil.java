@@ -6,10 +6,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * Last modified: $Date: 2004/03/10 08:11:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/10 10:53:28 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AccountingUtil {
 	public static long roundAmount (float f) {
@@ -45,14 +45,14 @@ public class AccountingUtil {
 	 * Evaluates the difference in days between to dates. This method is aware of
 	 * some obstacles, otherwise easy forgotten:
 	 * <ul>
-	 * <li> Daylight saving effects - days could be 23, 24 or 25 hours<li/>
-	 * <li> Leap years - years could be 365 or 366 days<li/>
-	 * <li> Time differences - there's one day between 23:55:55 and 00:05:05 next
-	 * day, even though only 10 minutes have passed</li>
+	 * <li> Daylight saving effects - days could be 23, 24 or 25 hours</li>
+	 * <li> Leap years - years could be 365 or 366 days</li>
+	 * <li> Time differences in dates - there's one day between 23:55:55 and
+	 * 00:05:05 next day, even though only 10 minutes have passed</li>
 	 * <li> Negative intervals - if endCalendar is before startCalendar, then a 
 	 * negative result will be returned</li>
 	 * <li> Intervals spanning over new years</li>
-	 * <ul/>
+	 * </ul>
 	 * <p/>
 	 * See examples below to understand the algorithm:
 	 * <pre>
