@@ -130,43 +130,48 @@ public class TournamentResultsDetailed extends JModuleObject {
         int strokeSize = strokes.size();
         for ( int b = 0; b < strokeSize; b++ ) {
           strokeValue = ((Double)strokes.elementAt(b)).intValue();
-          parValue = ((Integer)pars.elementAt(b)).intValue();
 
-          difference += strokeValue - parValue;
-          totalStrokes += strokeValue;
+          if (strokeValue > 0) {
 
-          Text stroke = (Text) blackText.clone();
-            stroke.setText(Integer.toString(strokeValue));
-          Text differ = getDifference(difference);
+              parValue = ((Integer)pars.elementAt(b)).intValue();
 
-          String color = this.getBackgroundColor(strokeValue,parValue);
-          if ( color != null ) {
-            myTable.setColor(column,row,color);
-            stroke.setFontColor("#FFFFFF");
-          }
+              difference += strokeValue - parValue;
+              totalStrokes += strokeValue;
 
-          myTable.add(stroke,column,row);
-          myTable.add(differ,column,row+1);
-          column++;
+              Text stroke = (Text) blackText.clone();
+                stroke.setText(Integer.toString(strokeValue));
+              Text differ = getDifference(difference);
 
-          if ( b+1 == 9 ) {
-            outScore = totalStrokes;
-            Text outValueText = (Text) blackText.clone();
-              outValueText.setText(Integer.toString(outScore));
-              outValueText.setFontColor(getColor(outScore,outValue));
-            myTable.add(outValueText,column,row);
-            myTable.add(differ,column,row+1);
-            column++;
-          }
+              String color = this.getBackgroundColor(strokeValue,parValue);
+              if ( color != null ) {
+                myTable.setColor(column,row,color);
+                stroke.setFontColor("#FFFFFF");
+              }
 
-          if ( b+1 == 18 ) {
-            inScore = totalStrokes - outScore;
-            Text inValueText = (Text) blackText.clone();
-              inValueText.setText(Integer.toString(inScore));
-              inValueText.setFontColor(getColor(inScore,inValue));
-            myTable.add(inValueText,column,row);
-            myTable.add(differ,column,row+1);
-            column++;
+              myTable.add(stroke,column,row);
+              myTable.add(differ,column,row+1);
+              column++;
+
+              if ( b+1 == 9 ) {
+                outScore = totalStrokes;
+                Text outValueText = (Text) blackText.clone();
+                  outValueText.setText(Integer.toString(outScore));
+                  outValueText.setFontColor(getColor(outScore,outValue));
+                myTable.add(outValueText,column,row);
+                myTable.add(differ,column,row+1);
+                column++;
+              }
+
+              if ( b+1 == 18 ) {
+                inScore = totalStrokes - outScore;
+                Text inValueText = (Text) blackText.clone();
+                  inValueText.setText(Integer.toString(inScore));
+                  inValueText.setFontColor(getColor(inScore,inValue));
+                myTable.add(inValueText,column,row);
+                myTable.add(differ,column,row+1);
+                column++;
+              }
+
           }
 
         }
