@@ -127,6 +127,36 @@ public class AccessControl{
 			}
         }
 
+
+
+	public static boolean isClubWorker(ModuleInfo modinfo)throws SQLException{
+		Member member = getMember(modinfo);
+                if(member!=null && member instanceof com.idega.projects.golf.entity.Member){
+                  com.idega.projects.golf.entity.Member membi = (com.idega.projects.golf.entity.Member)member;
+                  Group[] access = membi.getGroups(); //  (member).getGenericGroups();
+                  for(int i = 0; i < access.length; i++){
+                    if ("administrator".equals(access[i].getName())){
+                            return true;
+                    }
+
+                    if ("club_worker".equals(access[i].getName())){
+                      Object ID = modinfo.getSessionAttribute("golf_union_id");
+                      if( ID != null){
+                        int uni_id = membi.getMainUnionID();
+                        if (uni_id == Integer.parseInt( ((String)ID) ) ){
+                          return true;
+                        }
+                      }
+
+                    }
+
+                  }
+                }
+                return false;
+	}
+
+
+
         public static boolean isUser(ModuleInfo modinfo) {
 			if (modinfo.getSession().getAttribute("member_access") != null) {
 				if (modinfo.getSession().getAttribute("member_access").equals("user")) {
