@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
+import java.util.Collection;
+
 import com.idega.block.process.business.CaseBusiness;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness {
@@ -199,4 +201,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void updateMissingPlacements() throws java.rmi.RemoteException;
  public void updatePrognosis(int p0,int p1,int p2,int p3,int p4) throws java.rmi.RemoteException;
  public String getStatusString(char status) throws java.rmi.RemoteException;
+ public Collection getPreSchoolTypes() throws java.rmi.RemoteException;
+ public Collection getFamilyDayCareTypes() throws java.rmi.RemoteException;
+ public Collection getFamilyAfterSchoolTypes() throws java.rmi.RemoteException;
 }
