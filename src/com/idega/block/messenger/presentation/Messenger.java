@@ -16,7 +16,7 @@ import com.idega.idegaweb.IWBundle;
  */
 
 public class Messenger extends Block {
-  private static Applet messenger;
+  private Applet messenger;
   private IWBundle iwb;
   private IWResourceBundle iwrb;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.messenger";
@@ -43,21 +43,21 @@ public class Messenger extends Block {
         messenger = new Applet();
         messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
         messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
-
         messenger.setCodebase(".");
-
-        messenger.setParam(SESSION_ID,iwc.getSession().getId());
-        messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
         messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
         messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
-        messenger.setParam(USER_NAME,com.idega.block.login.business.LoginBusiness.getUser(iwc).getName());
-
-        messenger.setWidth(width);
-        messenger.setHeight(height);
-
       }
-      add(messenger);
+
+      Applet myMessenger = (Applet) messenger.clone();
+
+      myMessenger.setParam(SESSION_ID,iwc.getSession().getId());
+      myMessenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
+      myMessenger.setParam(USER_NAME,com.idega.block.login.business.LoginBusiness.getUser(iwc).getName());
+      myMessenger.setWidth(width);
+      myMessenger.setHeight(height);
+
+      add(myMessenger);
     }
    // else add("You are not logged on");
   }
