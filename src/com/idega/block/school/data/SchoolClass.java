@@ -23,7 +23,6 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public boolean getValid();
  public boolean hasRelationToSchoolYear(com.idega.block.school.data.SchoolYear p0);
  public boolean hasRelationToTeacher(com.idega.user.data.User p0);
- public void initializeAttributes();
  public void removeFromSchoolYear()throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromUser()throws com.idega.data.IDORemoveRelationshipException;
  public void removeSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDORemoveRelationshipException;
