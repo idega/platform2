@@ -379,6 +379,10 @@ public class TournamentResultsDetailed extends JModuleObject {
 
       ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,tournamentRounds_,null);
       result = handler.getTournamentMembers();
+
+      System.err.println("Fyrir comparator");
+      ResultComparator com = new ResultComparator(ResultComparator.TOTALSTROKES);
+      Collections.sort(result,com);
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
