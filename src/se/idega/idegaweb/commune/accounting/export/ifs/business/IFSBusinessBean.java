@@ -11,7 +11,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -243,7 +243,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
 				fileName3.append(now.getDateString("yyyyMMdd_hhmm"));
 
-				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate);
+				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 				createInvoiceFiles(fileName3.toString(), schoolCategory);
 			}
 			else if (schoolCategory.equals(school.getPrimaryKey())) {
@@ -254,7 +254,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
 				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
 
-				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate);
+				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 			}
 			else if (schoolCategory.equals(highSchool.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
@@ -264,7 +264,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
 				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
 
-				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate);
+				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 			}
 			else {
 				//What to do then?
@@ -285,7 +285,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 	}
 
-	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate)
+	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale)
 		throws FinderException, IOException, StudyPathException, RemoteException {
 		Collection phInCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(schoolCategory, 'P');
 		Collection phOutsideCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(schoolCategory, 'P');
@@ -451,9 +451,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 
 		if (phOutsideCommune != null && !phOutsideCommune.isEmpty()) {
-			DecimalFormat format = new DecimalFormat("0,00");
+			NumberFormat format = NumberFormat.getInstance(currentLocale);
 			format.setMaximumFractionDigits(2);
 			format.setMinimumFractionDigits(2);
+			format.setMinimumIntegerDigits(1);
 			//			format.
 			FileWriter writer = new FileWriter(fileName2.toString());
 			BufferedWriter bWriter = new BufferedWriter(writer);
