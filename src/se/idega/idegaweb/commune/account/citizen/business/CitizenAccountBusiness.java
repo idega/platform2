@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
+import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import javax.ejb.*;
@@ -20,8 +21,8 @@ public interface CitizenAccountBusiness extends com.idega.business.IBOService
  public java.util.List getListOfUnapprovedApplications() throws java.rmi.RemoteException;
  public java.lang.String getRejectMessageSubject() throws java.rmi.RemoteException;
  public com.idega.user.data.User getUser(java.lang.String p0) throws java.rmi.RemoteException;
- public java.lang.Integer insertApplication(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,boolean p9,int p10,java.lang.String p11)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.Integer insertApplication(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4)throws com.idega.core.accesscontrol.business.UserHasLoginException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.Integer insertApplication(IWContext iwc,java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,boolean p9,int p10,java.lang.String p11)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.Integer insertApplication(IWContext iwc,com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4)throws com.idega.core.accesscontrol.business.UserHasLoginException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.Integer insertChildren(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public java.lang.Integer insertCohabitant(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public java.lang.Integer insertMovingTo(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;

@@ -15,7 +15,7 @@ import java.util.Vector;
 import se.nexus.nbs.sdk.NBSMessageHttp;
 
 import com.idega.builder.business.BuilderLogic;
-//import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Applet;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
@@ -78,10 +78,8 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 
 	private final static String BIDT_JAR_PATH_PROPERTY = "bidt_jar_path";
 	private final static String BIDT_CAB_PATH_PROPERTY = "bidt_cab_path";
-
-	//TODO: (Roar) the jar file should be stored in the bundle		
-	private final static String DEFAULT_JAR_ARCHIVE = "/nacka/archive/cbt_bidt_2_3_11.jar";
-	private final static String DEFAULT_CAB_ARCHIVE = "/nacka/archive/cbt_bidt_2_3_11.cab";
+	private final static String DEFAULT_JAR_ARCHIVE = "archive/cbt_bidt_2_3_11.jar";
+	private final static String DEFAULT_CAB_ARCHIVE = "archive/cbt_bidt_2_3_11.cab";
 
 
 	public NBSSigningApplet(NBSMessageHttp nbsMessageHttp) {
@@ -97,9 +95,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		int appletStart = html.indexOf("<APPLET");
 		int appletEnd = html.indexOf("</APPLET>");
 		String appletString = html.substring(appletStart, appletEnd);
-		
-//		System.out.println("appletString");
-//		System.out.println(appletString);
 
 //		<APPLET align="top" width="560" height="310" mayscript
 //				code="com.ibm.cbt_bidt_2_3_11.thinclient.SignApplet2.class"        
@@ -128,14 +123,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		int appletConfEnd = appletString.indexOf(">");
 		String appletConfString = appletString.substring(appletConfStart, appletConfEnd) + ">";
 		String appletParmString = appletString.substring((appletConfEnd+1),appletString.length());
-		
-//		System.out.println("appletConfString:");
-//				System.out.println(appletConfString);
-//		System.out.println("appletParmString:");
-//				System.out.println(appletParmString);
-
-
-
 		
 		//prosess the appletConfString
 //		<APPLET align="top" width="560" height="310" mayscript
@@ -179,8 +166,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		this.setCabFilepath(iwc);
 		
 		String lowerCaseAppletParmString = appletParmString.toLowerCase();
-		//System.out.println("lowerCase:\n "+lowerCaseAppletParmString);
-		
 		Vector appletParameters = new Vector();
 		
 		int lastEnd =0;
@@ -198,8 +183,7 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 			lastEnd=end;
 		} while(start!=-1 && end!=-1);
 		
-		
-		//System.out.println("Parameters:");
+
 		start = -1;
 		end = -1;
 		String nameAttributeName = "name=";
@@ -227,8 +211,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 				}
 			}
 			
-			//System.out.println("#"+appletParameters.get(i)+"#");
-			//System.out.println("parm="+name+",value="+value+".");
 			applet.setParam(name,value);
 		}
 		
@@ -242,9 +224,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		int formStart = html.indexOf("<FORM ");
 		int formEnd = html.indexOf("</FORM>");
 		String formString = html.substring(formStart, formEnd);
-		
-		System.out.println("formString:");
-				System.out.println(formString);
 		
 //		<FORM   NAME="LogonForm"
 //				METHOD="POST"
@@ -292,7 +271,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		} while(start!=-1 && end!=-1);
 
 
-		//System.out.println("Inputs:");
 		start = -1;
 		end = -1;
 		nameAttributeName = "name=";
@@ -319,9 +297,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 					value = value.substring(1,value.lastIndexOf('\"'));
 				}
 			}
-	
-			//System.out.println("#"+formInputs.get(i)+"#");
-			//System.out.println("parm="+name+",value="+value+".");
 			loginForm.addParameter(name,value);
 		}
 		if (_loggedOnPageID != null){
@@ -363,12 +338,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		int scritpEnd = html.indexOf("</script>");
 		String scriptString = html.substring(scriptStart, scritpEnd) + "</script>";
 		
-		System.out.println("scriptString:");
-		System.out.println(scriptString);
-		
-		
-		 
-		
 //		<script language="JavaScript">
 //		
 //		  function onSignOK(signMessage) {
@@ -404,99 +373,13 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 	}
 	
 	private String getAttributeValue(String theString, String attribute,String endTag){
-		//attribute = "height=\"";
-		
 		int start = theString.indexOf(attribute);
 		int end = theString.indexOf(endTag,start+attribute.length());
 		String attributeValue = theString.substring(start+attribute.length(),end);
-		//System.out.println(attribute+attributeValue+endTag);
 		return attributeValue;
 	}
 	
 	
-	public void print(IWContext iwc) throws Exception {
-		System.out.println("NBSApplet.print()");
-		super.print(iwc);
-		/*
-		String html = new String(_nbsMessageHttp.toHttpMessage().getBody());
-		
-		//removing <html>, <heading> etc.
-		int start = html.indexOf("<APPLET");
-		int end = html.indexOf("</script>");
-		html = html.substring(start, end) + "</script>";
-
-		//Changing the archive path
-		start = html.indexOf("archive=");
-		end = html.indexOf(".jar", start);
-		html = html.substring(0, start) + " archive=\"" + getJarFilepath(iwc) + "\" " + html.substring(end + 5);
-
-		//Changing the form action	TODO: (Roar) read correct url from propertyfile(?)			
-		start = html.indexOf("ACTION=");
-		end = html.indexOf(">", start);
-		html = html.substring(0, start) + " ACTION=\"\" " + html.substring(end);
-
-		//Adding idegaweb session informatin to the form
-		start = html.indexOf("</FORM>");
-		StringBuffer buffer = new StringBuffer();
-
-		buffer.append(" <INPUT  NAME=ib_page VALUE=\"");
-		buffer.append(((_loggedOnPageID != null) ? _loggedOnPageID : iwc.getParameter("ib_page")));
-		buffer.append("\" TYPE=HIDDEN>\n");
-		buffer.append(" <INPUT  NAME=ib_error_page VALUE=\"");
-		buffer.append(((_errorPageID != null) ? _errorPageID : iwc.getParameter("ib_page")));
-		buffer.append("\" TYPE=HIDDEN>\n");
-		buffer.append(" <INPUT  NAME=idega_session_id VALUE=\"");
-		buffer.append(iwc.getSessionId()); // iwc.getParameter("idega_session_id")
-		buffer.append("\" TYPE=HIDDEN>\n");
-		buffer.append(" <INPUT  NAME=iw_language VALUE=\"");
-		buffer.append(iwc.getParameter("iw_language"));
-		buffer.append("\" TYPE=HIDDEN>\n");
-
-		int size = _parameters.size();
-		for (int i = 0; i < size; i++) {
-			Parameter parm = (Parameter)_parameters.get(i);
-			buffer.append(" <INPUT  NAME=");
-			buffer.append(parm.getName());
-			buffer.append("VALUE=\"");
-			buffer.append(parm.getValue());
-			buffer.append("\" TYPE=HIDDEN>\n");
-		}
-
-		//if some eventListenerClassName is set then a hidden input is added to the form 
-		//same as form.setEventListener(String str) 
-		buffer.append(((_eventListenerClassName != null) ? (" <INPUT  NAME=" + IWMainApplication.IdegaEventListenerClassParameter + " VALUE=\"" + IWMainApplication.getEncryptedClassName(_eventListenerClassName) + "\" TYPE=HIDDEN>\n") : ("")));
-
-		html = html.substring(0, start) + buffer.toString() + html.substring(start);
-
-		print(html);
-		
-		
-		//getting the script
-		int scriptStart = html.indexOf("<script ");
-		int scritpEnd = html.indexOf("</script>");	
-	  	String scriptString = html.substring(scriptStart, scritpEnd) + "</script>";
-		//print(scriptString);
-		
-		*/
-		
-		
-//		<script language="JavaScript">
-//		
-//		  function onSignOK(signMessage) {
-//			document.LogonForm.cbtInput.value = signMessage;
-//			document.LogonForm.submit()
-//		  }
-//		     
-//		  function onSignCancel(reason, message) { 
-//			  alert(reason+"; "+message);
-//			location = "error.jsp?text="+message;
-//		  }   
-//		</script>
-		
-		
-	}
-	
-
 	/**
 	 * @return 
 	 */
@@ -533,16 +416,18 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 	}
 
 	private String getJarFilepath(IWContext iwc) {
-		String path = getBundle(iwc).getProperty(BIDT_JAR_PATH_PROPERTY);
-		System.out.println("Jar file path: " + path);
-		return path != null ? path : DEFAULT_JAR_ARCHIVE;
+		IWBundle iwb = this.getBundle(iwc);
+		String jarArchive = iwb.getProperty(BIDT_JAR_PATH_PROPERTY);
+		String path = iwb.getVirtualPathWithFileNameString(((jarArchive!=null)?jarArchive:DEFAULT_JAR_ARCHIVE));
 
+		return path;
 	}
 	
 	private void setCabFilepath(IWContext iwc) {
-		String path = getBundle(iwc).getProperty(BIDT_CAB_PATH_PROPERTY);
-		System.out.println("Cab file path: " + path);
-		appletParameterMap.put(PARM_CABBASE, path != null ? path : DEFAULT_CAB_ARCHIVE);
+		IWBundle iwb = this.getBundle(iwc);
+		String cabArchive = iwb.getProperty(BIDT_CAB_PATH_PROPERTY);
+		String path = iwb.getVirtualPathWithFileNameString(((cabArchive!=null)?cabArchive:DEFAULT_CAB_ARCHIVE));
+		appletParameterMap.put(PARM_CABBASE, path);
 	}
 
 	public void addParameter(Parameter parm) {

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.53 2003/05/30 18:27:25 gummi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.54 2003/06/05 17:58:34 gummi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,25 +24,33 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.block.pki.business.NBSLoggedOnInfo;
+import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.presentation.NBSLogin;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
+import se.nexus.nbs.sdk.NBSAuthResult;
+import se.nexus.nbs.sdk.NBSResult;
 
+import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.Converter;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -51,11 +60,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/05/30 18:27:25 $ by $Author: gummi $
+ * Last modified: $Date: 2003/06/05 17:58:34 $ by $Author: gummi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.53 $
+ * @version $Revision: 1.54 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -143,6 +152,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY = "caa_field_can_not_be_empty";
 	private final static String ERROR_NO_INSERT_DEFAULT = "Kunde inte lagra ansökan.";
 	private final static String ERROR_NO_INSERT_KEY = "caa_unable_to_insert";
+	
+	private boolean sendUserToHomePage = true;
 
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -167,6 +178,14 @@ public class CitizenAccountApplication extends CommuneBlock {
 		catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
+	}
+
+	/**
+	 * @param iwc
+	 */
+	private void welcomeNotesInFinalStep(IWContext iwc) {
+		// TODO(gummi) Auto-generated method stub
+		
 	}
 
 	private void viewSimpleApplicationForm(final IWContext iwc) {
@@ -203,13 +222,23 @@ public class CitizenAccountApplication extends CommuneBlock {
 				add(text);
 				viewUnknownCitizenApplicationForm1(iwc);
 			}
-			else if (null == business.insertApplication(user, ssn, email, phoneHome, phoneWork)) {
+			else if (null == business.insertApplication(iwc,user, ssn, email, phoneHome, phoneWork)) {
 				// known user applied, but couldn't be submitted
 				throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
 			}
 			else {
 				// known user applied and was submitted
-				if (getResponsePage() != null) {
+				
+				NBSLoginBusinessBean loginBusiness = NBSLoginBusinessBean.createNBSLoginBusiness();
+				NBSLoggedOnInfo info = loginBusiness.getBankIDLoggedOnInfo(iwc);
+				
+				if(info != null && sendUserToHomePage){
+					Group primaryGroup = user.getPrimaryGroup();
+					if (user.getHomePageID() != -1)
+						iwc.forwardToIBPage(this.getParentPage(), user.getHomePage());
+					if (primaryGroup != null && primaryGroup.getHomePageID() != -1)
+						iwc.forwardToIBPage(this.getParentPage(), primaryGroup.getHomePage());
+				} else if (getResponsePage() != null) {
 					iwc.forwardToIBPage(getParentPage(), getResponsePage());
 				}
 				else {
@@ -232,6 +261,15 @@ public class CitizenAccountApplication extends CommuneBlock {
 			viewSimpleApplicationForm(iwc);
 		}
 	}
+
+
+	/**
+	 * Set if the form should send the user to his home page after login.
+	 **/
+	public void setToSendUserToHomePage(boolean doSendToHomePage) {
+		sendUserToHomePage = doSendToHomePage;
+	}
+
 
 	private boolean citizenLivesInNacka(final IWContext iwc, final User citizen) throws RemoteException, CreateException, FinderException {
 		final int primary = citizen.getPrimaryGroupID();
@@ -477,7 +515,7 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 			return;
 		}
 
-		applicationId = business.insertApplication(name, ssn, email, phoneHome, phoneWork, street, zipCode, city, civilStatus, hasCohabitant, childrenCount, applicationReason);
+		applicationId = business.insertApplication(iwc,name, ssn, email, phoneHome, phoneWork, street, zipCode, city, civilStatus, hasCohabitant, childrenCount, applicationReason);
 
 		if (null != applicationId && hasCohabitant) {
 			final String cohabitantFirstName = parameters.get(FIRST_NAME_KEY + COHABITANT_KEY).toString();
@@ -554,11 +592,55 @@ private Table createTable() {
 private void addSimpleInputs(final Table table, final IWContext iwc) {
 	table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, 1);
 	TextInput ssnInput = getSingleInput(iwc, SSN_KEY, 12, true);
-	String ssn = iwc.getParameter(NBSLogin.PRM_PERSONAL_ID);
-	if(ssn!=null){
-		ssnInput.setValue(ssn);
-	}
 	table.add(ssnInput, 3, 1);
+	
+	NBSLoginBusinessBean NBSLBusiness = NBSLoginBusinessBean.createNBSLoginBusiness();
+	String unlockAction = "nbs_unlock_action";
+	if(iwc.getParameter(unlockAction)!= null){
+		NBSLBusiness.logOutBankID(iwc);
+	}
+	
+	NBSLoggedOnInfo info = NBSLBusiness.getBankIDLoggedOnInfo(iwc);
+	if(info !=null){
+		String persID = info.getNBSPersonalID();
+		if(persID!= null){
+			ssnInput.setValue(persID);
+			ssnInput.setDisabled(true);
+			
+			String unlockString = "Unlock input";
+			IWBundle iwb = this.getBundle(iwc);
+			if(iwb != null){
+				IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+				if(iwrb != null){
+					unlockString = iwrb.getLocalizedString("unlock", "Unlock input");
+				}
+			}
+			
+			Link unlockLink = new Link(unlockString);
+			Enumeration enum = iwc.getParameterNames();
+			if(enum != null){
+				while(enum.hasMoreElements()){
+					String parameterName = (String)enum.nextElement();
+					unlockLink.maintainParameter(parameterName,iwc);
+				}
+			}
+			unlockLink.addParameter(NBSLogin.PRM_PERSONAL_ID,persID);
+			unlockLink.addParameter(unlockAction,"true");
+			
+			table.add(Text.getNonBrakingSpace(), 3, 1);	
+			table.add(unlockLink, 3, 1);	
+			
+			//HiddenInput ssnHInput = new HiddenInput(SSN_KEY,persID);
+			//table.add(ssnHInput, 3, 1);	
+		}	
+	} else {
+		String ssn = iwc.getParameter(NBSLogin.PRM_PERSONAL_ID);
+		if(ssn!=null){
+			ssnInput.setValue(ssn);
+		}
+	}
+	
+	
 	table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
 	table.add(getSingleInput(iwc, EMAIL_KEY, 40, false), 3, 2);
 	table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, 3);

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.52 2003/04/30 09:39:11 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.53 2003/06/05 17:58:34 gummi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,8 @@ import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import se.idega.block.pki.business.NBSLoggedOnInfo;
+import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean;
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
 import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
@@ -58,6 +60,7 @@ import com.idega.core.data.PhoneHome;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
@@ -66,11 +69,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/04/30 09:39:11 $ by $Author: staffan $
+ * Last modified: $Date: 2003/06/05 17:58:34 $ by $Author: gummi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.52 $
+ * @version $Revision: 1.53 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -91,11 +94,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 	 * @return Integer appliaction id or null if insertion was unsuccessful
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-	public Integer insertApplication (User user, String ssn, String email,
+	public Integer insertApplication (IWContext iwc, User user, String ssn, String email,
                                       String phoneHome, String phoneWork)
         throws UserHasLoginException, RemoteException {
         CitizenAccount application = null;
         UserTransaction transaction = null;
+		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
+		NBSLoggedOnInfo info = loginBusiness.getBankIDLoggedOnInfo(iwc);
 		try {
             transaction = getSessionContext ().getUserTransaction ();
             transaction.begin ();
@@ -120,13 +125,18 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 			int applicationID
                     = ((Integer) application.getPrimaryKey()).intValue();
 			if (acceptApplicationOnCreation) {
-                acceptApplication(applicationID, user);
+				if(info != null){
+					acceptApplication(applicationID, user,false);
+				} else {
+					acceptApplication(applicationID, user);
+				}
 			}
             transaction.commit ();
 		}
 		catch (Exception e) {
             if (transaction != null) {
                 try {
+					//application = null;
                     transaction.rollback ();
                 } catch (SystemException se) {
                     se.printStackTrace ();
@@ -139,14 +149,26 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 
 			return null;
 		}
-
+		//logg in if BankID auth. is ok and acceptApplicationOnCreation is true
+		//...
+		if(application != null && acceptApplicationOnCreation){
+			
+			if(info != null){
+				try {
+					loginBusiness.logInByPersonalID(iwc,info.getNBSPersonalID());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		
 		return (Integer) (application == null ? null
                           : application.getPrimaryKey());
 	}
 
 
     public Integer insertApplication
-        (final String name, final String ssn, final String email,
+        (IWContext iwc,final String name, final String ssn, final String email,
          final String phoneHome, final String phoneWork,
          final String street, final String zipCode, final String city,
          final String civilStatus, final boolean hasCohabitant,
@@ -422,7 +444,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 	}
 
 	public void acceptApplication
-        (final int applicationID, final User performer)
+        (final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage)
         throws RemoteException, CreateException, FinderException {
         UserTransaction transaction = null;
         try {
@@ -592,7 +614,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
             }
             applicant.setOwner (user);
             applicant.store ();
-            super.acceptApplication (applicationID, performer);
+            super.acceptApplication (applicationID, performer, createUserMessage, createPasswordMessage);
             transaction.commit ();
 		} catch (Exception e) {
             if (transaction != null) {

@@ -15,6 +15,7 @@ import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
 import com.idega.block.login.presentation.Login;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -34,6 +35,8 @@ import com.idega.presentation.ui.Parameter;
 public class NBSLogin extends Login {
 
 	
+
+	private boolean _forwardToApplicationPage = true;
 
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
 	
@@ -97,13 +100,12 @@ public class NBSLogin extends Login {
 			IWBundle iwb = this.getBundle(iwc);
 			IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 			
-			//String action = iwc.getParameter("nbs_login_action");
-
-//			if(action != null && action.equals("try_again")){
-//				NBSLoginBusinessBean.removeNBSException(iwc);
-//				NBSLoginBusinessBean.removeException(iwc);
-//			}
 			
+//			String action = iwc.getParameter("nbs_login_action");
+//			if(action != null && action.equals("try_again")){
+//				(new NBSLoginBusinessBean()).logOutBankID(iwc);
+//			}
+
 			//this.add(new Text("<br>NBSLogin<br>"));
 
 			boolean showLoginApplet = true;
@@ -141,7 +143,6 @@ public class NBSLogin extends Login {
 						Text tCode = new Text(code);
 						tCode.setBold();
 						this.add(tCode);
-						
 					}
 					//String message = nbsEX.getMessage();
 					this.add(message);
@@ -175,8 +176,10 @@ public class NBSLogin extends Login {
 						if(start != -1 && end != -1){
 							personalID = message.substring(start,end);
 						}
-						
-						message = iwrb.getLocalizedString(NBSLoginBusinessBean.IWEX_PKI_USR_NOT_REGISTERED,"User has no account");
+						if(_forwardToApplicationPage && _applicationPage != null){
+							iwc.forwardToIBPage(this.getParentPage(),_applicationPage);
+						}
+						message = iwrb.getLocalizedString(NBSLoginBusinessBean.IWEX_USER_HAS_NO_ACCOUNT,"User has no account");
 					}
 					
 					Link tryAgain = new Link(iwrb.getLocalizedString("try_again","Try again"));
@@ -195,6 +198,12 @@ public class NBSLogin extends Login {
 						
 						this.add(applicationLink);
 						this.add(" | ");
+						
+						
+						//
+						if(message.startsWith(NBSLoginBusinessBean.IWEX_USER_HAS_NO_ACCOUNT)){
+							iwc.forwardToIBPage(this.getParentPage(),_applicationPage);
+						}
 					}
 					this.add(tryAgain);
 										
@@ -221,7 +230,7 @@ public class NBSLogin extends Login {
 			}
 
 			if (showLoginApplet) {
-				System.out.println("Showing applet");
+				//System.out.println("Showing applet");
 				NBSSigningApplet applet = new NBSSigningApplet(initAuthenticate(iwc));
 
 				//applet.setAction(IWMainApplication.getIWMainApplication(iwc.getServletContext()).getTranslatedURIWithContext(_pkiServletUrl));
@@ -363,10 +372,6 @@ public class NBSLogin extends Login {
 	}
 
 	public NBSMessageHttp initAuthenticate(IWContext iwc) throws NBSException, Exception {
-		//System.out.println("initAuthenticate()");
-
-		//System.out.println("toBeSigned: " + toBeSigned);	
-
 		NBSServerHttp server = new NBSLoginBusinessBean().getNBSServer(iwc);
 		HttpMessage httpReq = new HttpMessage();
 		ServletUtil.servletRequestToHttpMessage(iwc.getRequest(), httpReq);
@@ -449,6 +454,10 @@ public class NBSLogin extends Login {
 
 	public void setAppletWidth(String width) {
 		_appletWidth = width;
+	}
+	
+	public void forwardToApplicationPage(boolean value){
+		_forwardToApplicationPage = value;
 	}
 
 }

@@ -8,6 +8,8 @@ package se.idega.block.pki.business;
 
 import java.io.File;
 
+import javax.ejb.EJBException;
+
 import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSAuthResult;
 import se.nexus.nbs.sdk.NBSException;
@@ -16,6 +18,7 @@ import se.nexus.nbs.sdk.NBSServerFactory;
 import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
+import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -47,6 +50,8 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 
 	public final static String IWEX_PKI_USR_NOT_REGISTERED ="IWEX_PKI_USR_NOT_REGISTERED";
 	public final static String IWEX_USER_HAS_NO_ACCOUNT = "IWEX_USER_HAS_NO_ACCOUNT";
+	
+	private final static String NBS_BANKID_LOGIN_RESULT = "nbs_bankid_login_result";
 
 	/** Names for objects stored in the servlet context or session. */
 	private final static String SERVER_FACTORY = "se.idega.block.pki.ServerFactory", SERVER = "se.idega.block.pki.Server", SERVLET_URI = "se.nexus.cbt.ServletURI";
@@ -63,14 +68,8 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	 * The method invoked when the login presentation module sends a login to this class
 	 */
 	public boolean actionPerformed(IWContext iwc) throws IWException {
-		System.out.println("NBSLoginBusiness.actionPerformed(...) - begins");
-		//NBSLoginBusinessBean.removeNBSException(iwc);
-		//NBSLoginBusinessBean.removeException(iwc);
 		NBSResult result = null;
-
-
 		try {
-
 			// Get the server object.
 			NBSServerHttp server = this.getNBSServer(iwc);
 			HttpMessage httpReq = new HttpMessage();
@@ -79,21 +78,17 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			// No action specified means that a message
 			// probably has been received.
 
-			System.out.println("NBSLoginBusiness - Message received");
-
-			//							System.out.println("ib_page"+" = "+req.getParameter("ib_page"));
-			//							System.out.println("ib_error_page"+" = "+req.getParameter("ib_error_page"));
-
 			// Process the message.
-
 			result = server.handleMessage(httpReq);
 
 			// Interpret the result.
 			int type = result.getType();
 			switch (type) {
 				case (NBSResult.TYPE_AUTH) :
-
-					System.out.println("NBSResult = TYPE_AUTH");
+					this.logOutBankID(iwc);
+					NBSLoggedOnInfo info = (NBSLoggedOnInfo)createLoggedOnInfo(iwc);
+					info.setNbsAuthResult((NBSAuthResult)result);
+					this.setBankIDLoggedOnInfo(iwc,(NBSLoggedOnInfo) info);
 					logInUser(iwc, result);
 
 					break;
@@ -106,16 +101,15 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			}
 		} catch (NBSException mpse) {
 			this.carryOnNBSException(iwc, mpse);
-			System.err.println(mpse.getMessage());
-			mpse.printStackTrace();
+			//System.err.println(mpse.getMessage());
+			//mpse.printStackTrace();
 			//printErrorCode(res, mpse.getCode(), mpse.getMessage());
 		} catch (Exception e) {
 			this.carryOnException(iwc, e);
-			e.printStackTrace();
-			System.out.println("Exception");
+			//System.out.println("Exception:"+e.getMessage());
+			//e.printStackTrace();
 			//printErrorMessage(res, e.getMessage());
 		}
-		System.out.println("NBSLoginBusiness.actionPerformed(...) - ends");
 		return true;
 	}
 
@@ -124,15 +118,16 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	 * @param loginRecords - all login records for one user
 	 * @return LoginTable record to log on the system
 	 */
-	protected LoginTable chooseLoginRecord(IWContext iwc, LoginTable[] loginRecords, User user) throws Exception {
+	public LoginTable chooseLoginRecord(IWContext iwc, LoginTable[] loginRecords, User user) throws Exception{
 		LoginTable chosenRecord = null;
-		if (loginRecords != null)
+		if (loginRecords != null) {
 			for (int i = 0; i < loginRecords.length; i++) {
 				String type = loginRecords[i].getLoginType();
 				if (type != null && type.equals(PKI_LOGIN_TYPE)) {
 					chosenRecord = loginRecords[i];
 				}
 			}
+		}
 
 		if (chosenRecord == null) {
 
@@ -143,7 +138,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 				chosenRecord.store();
 				return chosenRecord;
 			} else {				
-				Exception e = new LoginCreateException(IWEX_USER_HAS_NO_ACCOUNT+"#"+user.getPersonalID()+"#");
+				Exception e = new Exception(IWEX_USER_HAS_NO_ACCOUNT+"#"+user.getPersonalID()+"#");
 				this.carryOnException(iwc,e);
 				throw e;
 			}
@@ -212,26 +207,17 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 
 		String personalIDKey = "serialNumber";
 		String personalID = authResult.getSubjectAttributeValue(personalIDKey);
-		//String commonName = authResult.getSubjectAttributeValue(nameKey);
-		//String country = authResult.getSubjectAttributeValue(countryKey);
-		//String organization = authResult.getSubjectAttributeValue(organizationKey);
-		try {
-
-			//TODO Change this implementation to a more graceful usage of IWContext or equivalent
-			iwc.setServletContext(iwc.getServletContext());
-			//
-
+		try{
 			loginSuccessful = this.logInByPersonalID(iwc, personalID);
 			
 			if(!loginSuccessful){
 				throw new Exception(IWEX_PKI_USR_NOT_REGISTERED+"#"+personalID+"#");
 			}
-
 			System.out.println("idegaWeb Login " + ((loginSuccessful) ? "successful" : "failed") + " for personalId : '" + personalID + "'");
 		} catch (Exception ex) {
 			this.carryOnException(iwc,ex);
-			System.out.println("idegaWeb Login failed for personalId : '" + personalID + "'");
-			ex.printStackTrace();
+			//System.out.println("idegaWeb Login failed for personalId : '" + personalID + "'");
+			//ex.printStackTrace();
 			
 		}
 		return loginSuccessful;
@@ -285,5 +271,72 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	public static Exception getException(IWContext iwc) {
 		return (Exception)iwc.getSessionAttribute(PKI_EXCEPTION);
 	}
+	
+	public LoggedOnInfo createLoggedOnInfo(IWContext iwc){
+		LoggedOnInfo info = getBankIDLoggedOnInfo(iwc);
+		if (info == null){
+			info = new NBSLoggedOnInfo();
+		}
+		return info;
+	}
+	
+	public NBSLoggedOnInfo getBankIDLoggedOnInfo(IWContext iwc){
+		return (NBSLoggedOnInfo)iwc.getSessionAttribute(NBS_BANKID_LOGIN_RESULT);
+	}
+	
+	private void setBankIDLoggedOnInfo(IWContext iwc, NBSLoggedOnInfo info){
+		iwc.setSessionAttribute(NBS_BANKID_LOGIN_RESULT,info);
+	}
+	
+	public void logOutBankID(IWContext iwc){
+		iwc.removeSessionAttribute(NBS_BANKID_LOGIN_RESULT);
+	}
+	
+	public void logOut(IWContext iwc) throws Exception
+	{
+		super.logOut(iwc);
+		this.logOutBankID(iwc);		
+	}
+	
+	
+	/**
+	 * temp: same implementation as in superclass
+	 */
+	public boolean logInByPersonalID(IWContext iwc, String personalID) throws Exception
+	{
+		boolean returner = false;
+		try
+		{
+			com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
+			LoginTable[] login_table = 
+				(LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(
+					com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(),
+					user.getPrimaryKey().toString());
 
+			LoginTable lTable = this.chooseLoginRecord(iwc, login_table,user);
+			if(lTable != null){
+				returner = logIn(iwc, lTable, lTable.getUserLogin());
+				if (returner)
+					onLoginSuccessful(iwc);
+			} else {
+				try {
+					throw new LoginCreateException("No record chosen");
+				} catch (LoginCreateException e1) {
+					e1.printStackTrace();
+				}
+			}
+
+		}
+		catch (EJBException e)
+		{
+			returner = false;
+		}
+		return returner;
+		
+	}
+	
+	public static NBSLoginBusinessBean createNBSLoginBusiness(){
+		return new NBSLoginBusinessBean();
+	}
+	
 }
