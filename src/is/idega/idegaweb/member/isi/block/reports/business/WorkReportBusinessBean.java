@@ -574,7 +574,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		int sheets = excel.getNumberOfSheets();
-		if (sheets != 3)
+		if (sheets > 3)
 			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
 				
 		HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
@@ -631,6 +631,17 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 						member.store();
 
+						WorkReportGroup mainBoard = null;
+						try {
+							/**
+							 * @todo Palli: Must remove this hardcoding. This should be put in a property somewhere.
+							 */
+							mainBoard = getWorkReportGroupHome().findWorkReportGroupByNameAndYear("AÐA", year);
+						}
+						catch (FinderException e1) {
+							throw new WorkReportImportException("workreportimportexception.main_board_not_found");
+						}
+
 						//find which leagues the member belongs to
 						//and create the many to many connections
 						for (int j = 5; j < lastCell; j++) {
@@ -645,6 +656,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 									if (league != null) {
 										try {
 											league.addEntity(member);
+											mainBoard.addEntity(member);
 										}
 										catch (IDOAddRelationshipException e5) {
 											e5.printStackTrace();
@@ -698,7 +710,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		int sheets = excel.getNumberOfSheets();
-		if (sheets != 3)
+		if (sheets > 3)
 			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
 		
 
@@ -806,7 +818,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 
 			i++;
-
 		}
 
 		return true;
@@ -837,7 +848,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		int sheets = excel.getNumberOfSheets();
-		if (sheets != 3)
+		if (sheets > 3)
 			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
 
 		HSSFSheet accEntries = excel.getSheetAt(SHEET_ACCOUNT_PART);
@@ -850,7 +861,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		if (lastRow != 42) {
 			System.err.println("Wrong number of lines in account sheet");
-			return false;
+				throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
 		}
 
 		//get the top row to get a list of leagues to use.
@@ -885,7 +896,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			catch(FinderException e) {
 				e.printStackTrace();
-				return false;
+				throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
 			}
 
 			for (int i = 0; i < numberOfLeagues; i++) {
@@ -917,7 +928,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch(Exception e) {
 						e.printStackTrace();
-						return false;
+						throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
 					}
 				}				
 			}
@@ -940,7 +951,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			catch(FinderException e) {
 				e.printStackTrace();
-				return false;
+				throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
 			}
 
 			for (int i = 0; i < numberOfLeagues; i++) {
@@ -968,7 +979,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch(Exception e) {
 						e.printStackTrace();
-						return false;
+						throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
 					}
 				}				
 			}
@@ -991,7 +1002,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			catch(FinderException e) {
 				e.printStackTrace();
-				return false;
+				throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
 			}
 
 			for (int i = 0; i < numberOfLeagues; i++) {
@@ -1020,7 +1031,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch(Exception e) {
 						e.printStackTrace();
-						return false;
+						throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
 					}
 				}				
 			}
@@ -1043,7 +1054,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			catch(FinderException e) {
 				e.printStackTrace();
-				return false;
+				throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
 			}
 
 			for (int i = 0; i < numberOfLeagues; i++) {
@@ -1072,7 +1083,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch(Exception e) {
 						e.printStackTrace();
-						return false;
+						throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
 					}
 				}				
 			}
