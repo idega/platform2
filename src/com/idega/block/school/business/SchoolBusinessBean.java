@@ -1,12 +1,16 @@
 package com.idega.block.school.business;
 import com.idega.block.school.data.*;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.data.*;
 import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import javax.ejb.*;
@@ -168,6 +172,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			{
 				newSchool = shome.create();
 			}
+			if(newSchool.getHeadmasterGroupId() < 0){
+			
+				newSchool.setHeadmasterGroupId( ( (Integer) getNewSchoolGroup(name,name).getPrimaryKey()).intValue() );
+		
+			}
 		}
 		catch (javax.ejb.FinderException fe)
 		{
@@ -177,6 +186,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		{
 			throw new java.rmi.RemoteException(ce.getMessage());
 		}
+		
+		
 		newSchool.setSchoolAddress(address);
 		newSchool.setSchoolAreaId(area_id);
 		newSchool.setSchoolInfo(info);
@@ -266,4 +277,46 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		return null;
 	}
+	
+	public Group getNewSchoolGroup(String name, String info)throws CreateException,FinderException,RemoteException{
+		GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+		GroupType type = typeHome.create();
+		
+		Group rootGroup = this.getRootSchoolGroup();
+		Group schoolGroup = getUserBusiness().getGroupBusiness().createGroup(name,info,type.getGeneralGroupTypeString());
+		rootGroup.addGroup(schoolGroup);
+		return schoolGroup;
+	}
+	
+	public Group getRootSchoolGroup()throws CreateException,FinderException,RemoteException{
+		String ROOT_SCHOOL_GROUP_ID_PARAMETER = "root_school_group_id";
+	    Group rootGroup = null;
+	    //create the default group
+	    IWBundle bundle = this.getIWApplicationContext().getApplication().getBundle("com.idega.block.school");
+	   String groupId =  bundle.getProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER);
+	    //String groupId = (String) this.getIWApplicationContext().getApplicationSettings().getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
+	    if( groupId!=null ){
+	      rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+	      
+	    }
+	    else{
+	      System.err.println("trying to store School Root group");
+	      /**@todo this seems a wrong way to do things**/
+	      GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+	      GroupType type = typeHome.create();
+	
+	
+	      rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Root Group","The School Root Group.",type.getGeneralGroupTypeString());
+		  bundle.setProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER, rootGroup.getPrimaryKey().toString());
+	     
+	    }
+
+    return rootGroup;
+  }
+  
+  protected UserBusiness getUserBusiness()throws RemoteException{
+    return (UserBusiness)this.getServiceInstance(UserBusiness.class);
+  }
+
+
 }
