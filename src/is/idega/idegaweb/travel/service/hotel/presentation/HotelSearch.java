@@ -107,7 +107,7 @@ public class HotelSearch extends AbstractSearchForm {
 				max = Float.parseFloat(sMaxRating);
 			} catch (Exception e) {}
 		
-			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
+			Collection postalCodes = getBookingForm().getPostalCodeIds(iwc);
 			
 			Object[] suppIds = getSupplierIDs();
 
@@ -118,7 +118,7 @@ public class HotelSearch extends AbstractSearchForm {
 			
 			if (suppIds.length > 0) {
 //				coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
-				coll = hHome.find(null, null, roomTypeIds, hotelTypeIds, postalCodeIds, suppIds, min, max, supplierName);
+				coll = hHome.find(null, null, roomTypeIds, hotelTypeIds, postalCodes, suppIds, min, max, supplierName);
 			}
 			
 			return coll;
@@ -186,8 +186,8 @@ public class HotelSearch extends AbstractSearchForm {
 		//manyDays.setContent("1");
 		//manyDays.setSize(3);
 		//manyDays.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in")}, new PresentationObject[]{fromDate}, false, true);
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_out","Check out")}, new PresentationObject[]{toDate});
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in_date","Check in date")}, new PresentationObject[]{fromDate}, false, true);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_out_date","Check out date")}, new PresentationObject[]{toDate});
 		
 		Collection hotelTypes = new Vector();
 		try {
@@ -225,9 +225,9 @@ public class HotelSearch extends AbstractSearchForm {
 		}
 		DropdownMenu min = getDropdownWithNumbers(PARAMETER_MIN_RATING, 1, 5);
 		DropdownMenu max = getDropdownWithNumbers(PARAMETER_MAX_RATING, 1, 5);
-		min.addMenuElementFirst("-1", "");
+		min.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.search.any", "Any"));
 		min.setSelectedElement("-1");
-		max.addMenuElementFirst("-1", "");
+		max.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.search.any", "Any"));
 		max.setSelectedElement("-1");
 		
 		if (hotelTypes != null) {

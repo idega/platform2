@@ -95,14 +95,14 @@ public class CarRentalSearch extends AbstractSearchForm {
 			supplierName = supplierName.trim();
 		}
 		try {
-			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
+			Collection postalCodes = getBookingForm().getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
 			CarRentalHome crHome = (CarRentalHome) IDOLookup.getHome(CarRental.class);
 
 			Collection coll = new Vector();
 			if (suppIds.length > 0) {
 //			coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
-				coll = crHome.find(null, null, postalCodeIds, suppIds, supplierName);
+				coll = crHome.find(null, null, postalCodes, suppIds, supplierName);
 			}
 			return coll;
 			//handleResults(coll);

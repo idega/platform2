@@ -155,7 +155,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 				ie.addErrorField(PARAMETER_TOUR_TYPE_ID);
 			}
 
-			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
+			Collection postalCodes = getBookingForm().getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
 
 			TourHome tHome = (TourHome) IDOLookup.getHome(Tour.class);
@@ -167,7 +167,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 			Collection coll = new Vector();
 			
 			if (suppIds.length > 0) {
-				coll = tHome.find(null, null, tourTypeIds, postalCodeIds, suppIds, supplierName);
+				coll = tHome.find(null, null, tourTypeIds, postalCodes, suppIds, supplierName);
 			}
 			
 			return coll;
