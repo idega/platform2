@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.14 2003/10/09 13:38:41 anders Exp $
+ * $Id: AgeEditor.java,v 1.15 2003/10/09 15:28:29 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,23 +21,26 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Break;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 
 /** 
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/09 13:38:41 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/09 15:28:29 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -76,14 +79,14 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_TITLE_ADD = KP + "title_add";
 	private final static String KEY_TITLE_EDIT = KP + "title_edit";
 	private final static String KEY_TITLE_DELETE_CONFIRM = KP + "title_delete_confirm";
-	private final static String KEY_SCHOOL = KP + "school";
 	private final static String KEY_PERIOD = KP + "period";
 	private final static String KEY_AGE_FROM = KP + "age_from";
 	private final static String KEY_AGE_TO = KP + "age_to";
 	private final static String KEY_DESCRIPTION = KP+ "description";
 	private final static String KEY_RULE_TYPE_SELECTOR_HEADER = KP+ "rule_type_selector_header";
 	private final static String KEY_CUT_DATE = KP + "cut_date";
-	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
+	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
+	private final static String KEY_OPERATIONAL_FIELD_MISSING = KP + "operational_field_missing";
 	private final static String KEY_SEARCH = KP + "search";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
@@ -164,6 +167,9 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the default action for this block.
 	 */	
 	private void handleDefaultAction(IWContext iwc) {
+		add(new OperationalFieldsMenu());
+		add(new Break());
+		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Regelverk beräkna ålder");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -176,6 +182,9 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the search action for this block.
 	 */	
 	private void handleSearchAction(IWContext iwc) {		
+		add(new OperationalFieldsMenu());
+		add(new Break());
+		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEARCH, "Regelverk beräkna ålder - sökresultat");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -309,8 +318,6 @@ public class AgeEditor extends AccountingBlock {
 	 */
 	private Table getSearchPanel(IWContext iwc) {
 		Table table = new Table();
-		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
-		table.add(getLocalizedText(KEY_SCHOOL, "Skola"), 2, 1);
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 2);
 		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_FROM, getParameter(iwc, PARAMETER_SEARCH_PERIOD_FROM), 60), 2, 2);
 		table.add(getText(" - "), 2, 2);
@@ -440,19 +447,30 @@ public class AgeEditor extends AccountingBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 1);
-		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, 1);
-		table.add(getText(" - "), 2, 1);
-		table.add(getTextInput(PARAMETER_PERIOD_TO, periodTo, 60), 2, 1);
-		table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder från"), 1, 2);
-		table.add(getTextInput(PARAMETER_AGE_FROM, ageFrom, 30), 2, 2);
-		table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, 3);
-		table.add(getTextInput(PARAMETER_AGE_TO, ageTo, 30), 2, 3);
-		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Regel"), 1, 4);
+		int row = 1;
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverskamhet"), 1, row);
+		String operationalField = null;
+		try {
+			operationalField = getSession().getOperationalField();
+		} catch (RemoteException e) {}
+		if (operationalField == null) {
+			table.add(getErrorText(localize(KEY_OPERATIONAL_FIELD_MISSING, "Ingen huvudverskamhet vald")), 2, row++);
+		} else {
+			table.add(getText(localizeOperationalField(iwc, operationalField)), 2, row++);
+		}
+		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, row);
+		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, row);
+		table.add(getText(" - "), 2, row);
+		table.add(getTextInput(PARAMETER_PERIOD_TO, periodTo, 60), 2, row++);
+		table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder från"), 1, row);
+		table.add(getTextInput(PARAMETER_AGE_FROM, ageFrom, 30), 2, row++);
+		table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, row);
+		table.add(getTextInput(PARAMETER_AGE_TO, ageTo, 30), 2, row++);
+		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Regel"), 1, row);
 //		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, 4);
-		table.add(getRuleDropdownMenu(iwc, PARAMETER_DESCRIPTION, description), 2, 4);
-		table.add(getLocalizedLabel(KEY_CUT_DATE, "Brytdatum"), 1, 5);
-		table.add(getTextInput(PARAMETER_CUT_DATE, cutDate, 60), 2, 5);
+		table.add(getRuleDropdownMenu(iwc, PARAMETER_DESCRIPTION, description), 2, row++);
+		table.add(getLocalizedLabel(KEY_CUT_DATE, "Brytdatum"), 1, row);
+		table.add(getTextInput(PARAMETER_CUT_DATE, cutDate, 60), 2, row++);
 
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
@@ -481,13 +499,6 @@ public class AgeEditor extends AccountingBlock {
 		
 		return app;		
 	}
-
-	/*
-	 * Returns an age business object
-	 */
-	private AgeBusiness getAgeBusiness(IWContext iwc) throws RemoteException {
-		return (AgeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
-	}	
 	
 	/*
 	 * Returns a DropdownMenu for age rule types. 
@@ -521,5 +532,32 @@ public class AgeEditor extends AccountingBlock {
 			cutDateString = s.substring(4, 8);
 		}
 		return cutDateString;
+	}
+
+	/*
+	 * Returns a localized string for the specified operational field
+	 */
+	private String localizeOperationalField(IWContext iwc, String operationalField) {
+		String localizedText = "";
+		try {
+			VATBusiness vb = getVATBusiness(iwc);
+			String localizationKey = vb.getOperationalFieldLocalizationKey(operationalField);
+			localizedText = localize(localizationKey, localizationKey);
+		} catch (RemoteException e) {}
+		return localizedText;
+	}
+
+	/*
+	 * Returns an age business object
+	 */
+	private AgeBusiness getAgeBusiness(IWContext iwc) throws RemoteException {
+		return (AgeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
+	}	
+
+	/*
+	 * Returns a VAT business object
+	 */
+	private VATBusiness getVATBusiness(IWContext iwc) throws RemoteException {
+		return (VATBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
 }
