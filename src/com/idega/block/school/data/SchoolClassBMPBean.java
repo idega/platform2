@@ -89,6 +89,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public void setSchoolYearId(int year){
     this.setColumn(SCHOOLYEAR,year);
   }
+	public void setSchoolYearId(Integer year){
+		this.setColumn(SCHOOLYEAR,year);
+	}
   public int getSchoolYearId(){
     return this.getIntColumnValue(SCHOOLYEAR);
   }
@@ -104,6 +107,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public void setTeacherId(int id){
     this.setColumn(TEACHER,id);
   }
+	public void setTeacherId(Integer id){
+		this.setColumn(TEACHER,id);
+	}
   public int getTeacherId(){
     return this.getIntColumnValue(TEACHER);
   }
