@@ -77,6 +77,10 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   
   private List fieldList;
   
+  // used to create an unique identifier for instances of
+  // WorkReportDivisionBoardHelper if the are based on the same WorkReportDivisionBoard 
+  protected int numberOfCallsOfWorkReportDivisionBoardHelper = 0;
+  
   { 
     fieldList = new ArrayList();
     fieldList.add(LEAGUE);
@@ -122,7 +126,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       // do not create an entry
       // do not delete an entry
     }
-    // does the user want to delete an existings entries?
+    // does the user want to delete existing entries?
     if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
       List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
       if (! entriesToDelete.isEmpty())  {
@@ -370,7 +374,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private void deleteWorkReportDivisionBoard(List ids, IWContext iwc) {
     Iterator iterator = ids.iterator();
     while (iterator.hasNext())  {
-      Integer id = (Integer) iterator.next();
+      Integer id = decodePrimaryKey((Integer) iterator.next());
       WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
       if (board != null) {
         try {
@@ -436,7 +440,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private void updateWorkReportDivisionBoard(EntityPathValueContainer valueContainer, IWContext iwc)  {
     // precondition: value container is valid, that is its method isValid() returns true.
     // get the corresponding entity
-    Integer id = valueContainer.getEntityId();
+    Integer id = decodePrimaryKey(valueContainer.getEntityId());
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
     if (board == null)  {
@@ -497,7 +501,17 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       }
     }
   }
-}
+  
+  /** Decodes the hidden original primary key. See {@link encodePrimaryKey(Integer)}.
+   * @return the original primary key
+   */
+  private Integer decodePrimaryKey(Integer primaryKey)  {
+    String primaryKeyAsString = primaryKey.toString();
+    int index = primaryKeyAsString.indexOf("8");
+    return new Integer(primaryKeyAsString.substring(++index));
+  }
+
+
 
   /** 
    * WorkReportDivisionBoardHelper:
@@ -509,13 +523,13 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     
     String league = null;
     Object board = null;
-    
-    public WorkReportDivisionBoardHelper()  {
-    }
-    
+    Integer primaryKey = null;
+
     public WorkReportDivisionBoardHelper(String league, Object board) {
       this.league = league;
       this.board = board;
+      Integer primaryKey = (Integer) ((EntityRepresentation) board).getPrimaryKey();
+      this.primaryKey = encodePrimaryKey(primaryKey);
     }
     
     public void setLeague(String league)  {
@@ -534,6 +548,27 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }  
     
     public Object getPrimaryKey() {
-      return ((EntityRepresentation) board).getPrimaryKey();
+      return primaryKey;
     }
+    
+    /**
+     * Creates a new unique primary key, that depends on the original primary key and the 
+     * number of invocations of this inner class.
+     * 8 is used as a delimiter, number of calls is converted to an octal representation. 
+     * Note: This method uses a variable of the outer class.
+     * For example:
+     * primary key is 81234.
+     * number of calls is 12, will be changed to 14 (octal representation)
+     * new primary key is 14881234 (14-8-81234).
+     * @param primary key - the original primary key
+     * @return a new unique number
+     */
+    private Integer encodePrimaryKey(Integer primaryKey)  {
+      numberOfCallsOfWorkReportDivisionBoardHelper++;
+      StringBuffer buffer = new StringBuffer(Integer.toOctalString(numberOfCallsOfWorkReportDivisionBoardHelper)); 
+      buffer.append("8").append(primaryKey.intValue());
+      return new Integer(buffer.toString());
+    }
+    
   }
+}
