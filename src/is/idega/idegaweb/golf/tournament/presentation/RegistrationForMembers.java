@@ -276,7 +276,7 @@ public class RegistrationForMembers extends GolfBlock {
             table.add(getText(localize("tournament.press_the","Press the")+" \""+localize("tournament.save","Save")+"\" "+localize("tournament.button_located_at_the_bottom_of_the_page","button located at the bottom of the page.")),2,2);
 
           TournamentStartingtimeList form = TournamentController.getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
-          form.setSubmitButtonParameter("action", "directRegistrationMembersChosen");
+          form.setSubmitButtonParameter("action", "open");
 
           add(table);
           add("<hr>");
