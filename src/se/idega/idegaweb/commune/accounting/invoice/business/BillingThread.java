@@ -445,6 +445,7 @@ public abstract class BillingThread extends Thread{
 			error.setRelated(related);
 			error.setDescription(desc);
 			error.setOrder(errorOrder);
+			error.setTest(testRun);			
 			error.store();
 			errorOrder++;
 		} catch (Exception e) {

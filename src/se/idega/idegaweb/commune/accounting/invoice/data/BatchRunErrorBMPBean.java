@@ -90,14 +90,9 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 	public Collection ejbFindByBatchRun(BatchRun batchRun, boolean test) throws javax.ejb.FinderException {
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(COLUMN_BATCH_RUN_ID, ((Integer)batchRun.getPrimaryKey()).intValue());
-		if (test){
-			query.appendAndEqualsTrue(COLUMN_TEST);
-		}
-		else{ 
-			query.appendAndNotEqualsTrue(COLUMN_TEST);
-		}
+		query.appendAndEquals(COLUMN_TEST, test);
 		query.appendOrderBy(COLUMN_ORDER);
-		return idoFindPKsByQuery(query);
+		return idoFindPKsByQuery(query); 
 	}
 
 

@@ -95,11 +95,7 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	public Integer ejbFindBySchoolCategory(SchoolCategory schoolCategory, boolean test) throws javax.ejb.FinderException {
 		IDOQuery query = this.idoQueryGetSelect();
 		query.appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
-		if (test){
-			query.appendAndEqualsTrue(COLUMN_TEST);
-		} else {
-			query.appendAndNotEqualsTrue(COLUMN_TEST); //handle null as false
-		}
+		query.appendAndEquals(COLUMN_TEST, test);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }
