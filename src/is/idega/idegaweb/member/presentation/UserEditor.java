@@ -42,6 +42,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
@@ -69,6 +70,7 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
+import com.sun.rsasign.t;
 /**
  * The <code>UserEditor</code> handles user relations and addresses.
  * It contains a configurable unstrict user search. If more than one
@@ -161,17 +163,20 @@ public class UserEditor extends Block {
 	protected String deceasedFontStyleName = null;
 	protected String buttonStyleName = null;
 	protected String interfaceStyleName = null;
+    protected String seperatorBackgroundColor = "#6da7fd";
 	private UserSearcher searcher = null;
 	private boolean showMiddleNameInput = true;
 	private int nameInputLength = 25;
 	private int personalIdInputLength = 15;
-	private int streetInputLength = 40;
-	private int emailInputLength = 40;
+	private int streetInputLength = 30;
+	private int emailInputLength = 30;
 	private int postalcodeInputLength = 10;
 	private int postalnameInputLength = 30;
 	private int phoneInputLength = 30;
 	private boolean allowPersonalIdEdit = true;
 	private boolean warnIfPostalExists = false;
+	private boolean warnIfPersonalIDIsIllegal =true;
+	private boolean showSeperators = true;
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
@@ -265,6 +270,7 @@ public class UserEditor extends Block {
 	public void presentate(IWContext iwc) throws RemoteException {
 		mainTable = new Table();
 		if (!isNewUserView()) {
+			addSeperator(iwrb.getLocalizedString("mbe.search","Search"));
 			addToMainPart(searcher);
 			addToMainPart(Text.getBreak());
 			searcher.setOwnFormContainer(false);
@@ -291,10 +297,14 @@ public class UserEditor extends Block {
 			addSearchButtonObject(newUser);
 		}
 		if (user != null || isNewUserView()) {
+			
 			presentateUserName(iwc);
+			
 //			presentateCommuneSelection(iwc);
 			presentateUserGroup(iwc);
+			addToMainPart(Text.getBreak());
 			presentateUserInfo(iwc);
+			
 			if (showUserRelations) {
 				try {
 					presentateUserRelations(iwc);
@@ -303,8 +313,27 @@ public class UserEditor extends Block {
 					e.printStackTrace();
 				}
 			}
+			addToMainPart(Text.getBreak());
 			presentateButtons(iwc);
 		}
+		
+		/*
+		Table blackColumn = new Table(1,1);
+		blackColumn.setCellpadding(0);
+		blackColumn.setColor(1,1,"#000000");
+		blackColumn.setHeight(1,1,"100%");
+		
+	
+		//blackColumn.setColor("#6da7fd");
+		
+		mainTable.add(blackColumn,1,1);
+		mainTable.add(blackColumn,3,1);
+		mainTable.mergeCells(1,1,1,mainTable.getRows());
+		
+		mainTable.mergeCells(3,1,3,mainTable.getRows());
+		mainTable.setColumnAlignment(2,Table.VERTICAL_ALIGN_TOP);
+		*/
+		//mainTable.setBorder(1);
 		Form form = new Form();
 		form.setOnSubmit("return checkInfoForm()");
 		form.add(mainTable);
@@ -315,6 +344,7 @@ public class UserEditor extends Block {
 	 * @param iwc the context
 	 */
 	protected void presentateUserRelations(IWContext iwc) throws RemoteException {
+		addSeperator(iwrb.getLocalizedString("mbe.user_relation","User relations"));
 		Table relationsTable = new Table();
 		relationsTable.setCellspacing(4);
 		int row = 1;
@@ -359,6 +389,36 @@ public class UserEditor extends Block {
 		}
 		addToMainPart(relationsTable);
 	}
+	
+	protected void addSeperator(String header){
+		if(showSeperators){
+			Table tSep = new Table(3,1);
+			tSep.setCellpadding(0);	
+			tSep.setWidth(1,30);
+			tSep.setNoWrap(2,1);
+			Text theader = getHeader(header);
+			
+			theader.setFontSize(Text.FONT_SIZE_7_HTML_1);
+			tSep.add(theader,2,1);
+			tSep.setWidth(3,Table.HUNDRED_PERCENT);
+			Table tcolor = new Table(1,1);
+			 tcolor.setCellpadding(0);
+			 tcolor.setWidth(Table.HUNDRED_PERCENT);
+			 tcolor.setColor(1,1,"#000000");
+			 //tcolor.setColor(seperatorBackgroundColor);
+			
+			 Table tcolor1 = new Table(1,1);
+			 tcolor1.setCellpadding(0);
+			 tcolor1.setWidth(30);
+			 tcolor1.setColor(1,1,"#000000");
+			 //tcolor1.setColor(seperatorBackgroundColor);
+			
+			tSep.add(tcolor1,1,1);
+			tSep.add(tcolor,3,1);
+			addToMainPart(tSep);
+		}
+	}
+	
 	protected Link getRelatedUserLink(User relatedUser) {
 		Link relatedLink = new Link(relatedUser.getName());
 		relatedLink.addParameter(searcher.getUniqueUserParameter((Integer) relatedUser.getPrimaryKey()));
@@ -370,6 +430,7 @@ public class UserEditor extends Block {
 	 * @param iwc
 	 */
 	protected void presentateButtons(IWContext iwc) {
+		addSeperator(iwrb.getLocalizedString("mbe.actions","Actions"));
 		buttonTable = new Table();
 		actionButtonTable = new Table();
 		presentateButtonSave(iwc);
@@ -427,7 +488,7 @@ public class UserEditor extends Block {
 			String type = (String) iter.next();
 			SubmitButton registerButton =
 				getConnectorButton(
-					iwc,
+					iwc,null,
 					(iwrb.getLocalizedString("mbe.register_as_" + type, "Register as " + type)),
 					(Integer) user.getPrimaryKey(),
 					type,
@@ -492,11 +553,17 @@ public class UserEditor extends Block {
 	 */
 	protected SubmitButton getConnectorButton(
 		IWContext iwc,
-		String display,
+		Image displayImage,String displayString,
 		Integer roleUserID,
 		String type,
 		String reverseType,Integer editorPageID) {
-		SubmitButton button = new SubmitButton(display);
+		SubmitButton button = null;
+		if(displayImage!=null){
+			if(displayString!=null) displayImage.setToolTip(displayString);
+			button = new SubmitButton(displayImage);
+		}
+		else
+			button = new SubmitButton(displayString);
 		URLUtil URL = new URLUtil(Window.getWindowURL(connectorWindowClass, iwc));
 		//String URL = Window.getWindowURL(connectorWindowClass, iwc);
 		URL.addParameter(UserRelationConnector.PARAM_USER_ID ,roleUserID.toString());
@@ -544,6 +611,7 @@ public class UserEditor extends Block {
 	}
 	
 	protected void presentateUserName(IWContext iwc) {
+		
 		Table nameTable = new Table();
 		Text tPersonalID = new Text(iwrb.getLocalizedString("mbe.personal_id", "Personal ID"));
 		tPersonalID.setStyleClass(headerFontStyleName);
@@ -553,18 +621,26 @@ public class UserEditor extends Block {
 		tMiddleName.setStyleClass(headerFontStyleName);
 		Text tLastName = new Text(iwrb.getLocalizedString("mbe.last_name", "Last name"));
 		tLastName.setStyleClass(headerFontStyleName);
+		
 		TextInput personalIdInput = new TextInput(prm_personal_id);
 		personalIdInput.setLength(personalIdInputLength);
 		personalIdInput.setStyleClass(interfaceStyleName);
+		personalIdInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput firstNameInput = new TextInput(prm_first_name);
 		firstNameInput.setLength(nameInputLength);
 		firstNameInput.setStyleClass(interfaceStyleName);
+		firstNameInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput middleNameInput = new TextInput(prm_middle_name);
 		middleNameInput.setLength(nameInputLength);
 		middleNameInput.setStyleClass(interfaceStyleName);
+		middleNameInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput lastNameInput = new TextInput(prm_last_name);
 		lastNameInput.setLength(nameInputLength);
 		lastNameInput.setStyleClass(interfaceStyleName);
+		lastNameInput.keepStatusOnAction(isNewUserView());
 		if (user != null) {
 			if (user.getPersonalID() != null) {
 				personalIdInput.setContent(user.getPersonalID());
@@ -585,12 +661,15 @@ public class UserEditor extends Block {
 		}
 		int col = 1;
 		nameTable.add(tPersonalID, col, 1);
-		if (isAllowPersonalIdEdit(user) || user == null)
+		if (isAllowPersonalIdEdit(user) || user == null){
 			nameTable.add(personalIdInput, col++, 2);
+			addSeperator(iwrb.getLocalizedString("mbe.create_user","Create User"));
+		}
 		else if (user != null) {
 			Text tPid = new Text(user.getPersonalID());
 			tPid.setStyleClass(textFontStyleName);
 			nameTable.add(tPid, col++, 2);
+			addSeperator(iwrb.getLocalizedString("mbe.chosen_user","Chosen User"));
 		}
 		nameTable.add(tLastName, col, 1);
 		nameTable.add(lastNameInput, col++, 2);
@@ -604,6 +683,7 @@ public class UserEditor extends Block {
 	}
 	
 	protected void presentateUserGroup(IWContext iwc) {
+		addSeperator(iwrb.getLocalizedString("mbe.chosen_group","Chosen group"));
 		Table groupTable = new Table();
 		Text tGroupTitle = new Text(iwrb.getLocalizedString("mbe.primary_group", "Primary group"));
 		tGroupTitle.setStyleClass(headerFontStyleName);
@@ -655,6 +735,7 @@ public class UserEditor extends Block {
 	 * @param iwc the context
 	*/
 	protected void presentateUserInfo(IWContext iwc) throws RemoteException {
+		addSeperator(iwrb.getLocalizedString("mbe.user_info","User info"));
 		UserBusiness userService = getUserService(iwc);
 		Page p = this.getParentPage();
 		if (p != null) {
@@ -764,31 +845,52 @@ public class UserEditor extends Block {
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
 		primaryStreetAddressInput.setStyleClass(interfaceStyleName);
 		primaryStreetAddressInput.setLength(streetInputLength);
+		primaryStreetAddressInput.keepStatusOnAction(isNewUserView());
+			
 		TextInput primaryPostalCodeInput = new TextInput(prm_mainaddress_postal_code);
 		primaryPostalCodeInput.setStyleClass(interfaceStyleName);
 		primaryPostalCodeInput.setLength(postalcodeInputLength);
+		primaryPostalCodeInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput primaryPostalNameInput = new TextInput(prm_mainaddress_postal_name);
 		primaryPostalNameInput.setStyleClass(interfaceStyleName);
 		primaryPostalNameInput.setLength(postalnameInputLength);
+		primaryPostalNameInput.keepStatusOnAction(isNewUserView());
+		
 		DropdownMenu primaryCommunes = new DropdownMenu(prm_maincommune_id);
+		primaryCommunes.setStyleClass(interfaceStyleName);
+		primaryCommunes.keepStatusOnAction(isNewUserView());
 		SelectorUtility su = new SelectorUtility();
 		su.getSelectorFromIDOEntities(primaryCommunes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
+		
 		CountryDropdownMenu primaryCountryInput = new CountryDropdownMenu(prm_mainaddress_country);
 		primaryCountryInput.setStyleClass(interfaceStyleName);
+		primaryCountryInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput coStreetAddressInput = new TextInput(prm_coaddress_street);
 		coStreetAddressInput.setStyleClass(interfaceStyleName);
 		coStreetAddressInput.setLength(streetInputLength);
+		coStreetAddressInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput coPostalCodeInput = new TextInput(prm_coaddress_postal_code);
 		coPostalCodeInput.setStyleClass(interfaceStyleName);
 		coPostalCodeInput.setLength(postalcodeInputLength);
+		coPostalCodeInput.keepStatusOnAction(isNewUserView());
+		
 		TextInput coPostalNameInput = new TextInput(prm_coaddress_postal_name);
 		coPostalNameInput.setStyleClass(interfaceStyleName);
 		coPostalNameInput.setLength(postalnameInputLength);
+		coPostalNameInput.keepStatusOnAction(isNewUserView());
+		
 		DropdownMenu coCommunes = new DropdownMenu(prm_cocommune_id);
 		su.getSelectorFromIDOEntities(coCommunes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
+		coCommunes.setStyleClass(interfaceStyleName);
+		coCommunes.keepStatusOnAction(isNewUserView());
+		
 		CountryDropdownMenu coCountryInput = (CountryDropdownMenu) primaryCountryInput.clone();
 		coCountryInput.setName(prm_coaddress_country);
 		coCountryInput.setStyleClass(interfaceStyleName);
+		coCountryInput.keepStatusOnAction(isNewUserView());
 		/*
 		PostalCodeDropdownMenu coPostalAddressInput = new PostalCodeDropdownMenu();
 		coPostalAddressInput.setName(prm_coaddress_postal);
@@ -900,9 +1002,12 @@ public class UserEditor extends Block {
 		// phone layout section
 		Text tPhone = new Text(iwrb.getLocalizedString("mbe.phone", "Phone"));
 		tPhone.setStyleClass(headerFontStyleName);
+		
 		TextInput phoneInput = new TextInput(prm_main_phone);
 		phoneInput.setLength(phoneInputLength);
 		phoneInput.setStyleClass(interfaceStyleName);
+		phoneInput.keepStatusOnAction(isNewUserView());
+		
 		addressTable.add(tPhone, 1, row);
 		addressTable.add(phoneInput, 2, row++);
 		try {
@@ -921,6 +1026,8 @@ public class UserEditor extends Block {
 		TextInput emailInput = new TextInput(prm_email_address);
 		emailInput.setStyleClass(interfaceStyleName);
 		emailInput.setLength(emailInputLength);
+		emailInput.keepStatusOnAction(isNewUserView());
+		
 		emailInput.setAsEmail();
 		addressTable.add(tEmail, 1, row);
 		addressTable.add(emailInput, 2, row++);
@@ -989,7 +1096,17 @@ public class UserEditor extends Block {
 			catch (NumberFormatException e1) {
 				e1.printStackTrace();
 			}
-			user = createUser(iwc, pid, fname, mname, lname, groupID);
+			if(isValidPersonalID(pid) && !"".equals(fname) && !"".equals(lname)){
+				user = createUser(iwc, pid, fname, mname, lname, groupID);
+			}
+			else{
+				String mainPostalExists =
+				iwrb.getLocalizedString(
+						"mbe.warning.fields_missing",
+						"Please provide a legal personalID and nonempty names");
+				this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+			   setNewUserView(true);
+			}
 		}
 		else {
 			user = userService.getUser(userID);
@@ -1002,8 +1119,17 @@ public class UserEditor extends Block {
 					|| isNewValue(iwc, prm_primary_group_id)) {
 					String pid = null, first = null, middle = null, last = null;
 					Integer groupID = null;
-					if (isNewValue(iwc, prm_personal_id) && isValidPersonalID(iwc.getParameter(prm_personal_id))) {
-						pid = iwc.getParameter(prm_personal_id);
+					if (isNewValue(iwc, prm_personal_id) ){
+						if(isValidPersonalID(iwc.getParameter(prm_personal_id))) {
+							pid = iwc.getParameter(prm_personal_id);
+						}
+						else if(warnIfPersonalIDIsIllegal){
+							String mainPostalExists =
+							iwrb.getLocalizedString(
+									"mbe.warning.personal_id_illegal",
+									"Personal ID is illegally formatted");
+							this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+						}
 					}
 					if (isNewValue(iwc, prm_first_name)) {
 						first = iwc.getParameter(prm_first_name);
@@ -1033,6 +1159,8 @@ public class UserEditor extends Block {
 			userID = (Integer) user.getPrimaryKey();
 		else
 			userID = null;
+		
+		if(userID!=null){
 		try {
 			// main address part
 			if (isRemovedValue(iwc, prm_mainaddress_street)) {
@@ -1281,6 +1409,7 @@ public class UserEditor extends Block {
 		catch (CreateException e) {
 			e.printStackTrace();
 			throw new RemoteException(e.getMessage());
+		}
 		}
 	}
 	/**
@@ -1594,7 +1723,7 @@ public class UserEditor extends Block {
 	 * @param object
 	 */
 	public void addToMainPart(PresentationObject object) {
-		mainTable.add(object, 1, mainRow++);
+		mainTable.add(object, 2, mainRow++);
 	}
 	/**
 	 * Gets a styled Text object using the header text style
@@ -1885,6 +2014,18 @@ public class UserEditor extends Block {
 	
 	public boolean isWarnIfPostalExists(){
 		return warnIfPostalExists;
+	}
+	
+	public void setShowSeperators(boolean flag){
+		showSeperators = flag;
+	}
+	
+	public boolean isShowSeperators(){
+		return showSeperators;
+	}
+	
+	public void setWarnIfPersonalIDIsIllegal(boolean flag){
+		this.warnIfPersonalIDIsIllegal = flag;
 	}
 	
 	
