@@ -26,7 +26,7 @@ import com.idega.data.EntityFinder;
  * @version 1.0
  */
 
-public class ContractTextSetter extends com.idega.presentation.PresentationObjectContainer{
+public class ContractTextSetter extends com.idega.presentation.Block{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
   private final static String IS ="IS";
@@ -45,6 +45,15 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
   public ContractTextSetter() {
 
   }
+
+  public String getLocalizedNameKey(){
+    return "contracttext";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Contracttext";
+  }
+
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;

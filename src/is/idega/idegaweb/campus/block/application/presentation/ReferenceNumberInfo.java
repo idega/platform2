@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.3 2002/01/08 15:26:43 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.4 2002/01/10 01:06:18 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package is.idega.idegaweb.campus.block.application.presentation;
 
+import is.idega.idegaweb.campus.presentation.CampusColors;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
@@ -27,6 +28,7 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.Text;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Table;
+import com.idega.presentation.Image;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Form;
@@ -284,13 +286,53 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
       else {
         String userid = (String)li.get(0);
         String passwd = (String)li.get(1);
-        Text idText = new Text("userid : ");
-        add(idText);
-        add(userid);
-        add(Text.getBreak());
-        Text passwdText = new Text("passwd : ");
-        add(passwdText);
-        add(passwd);
+        Text headerText = new Text(_iwrb.getLocalizedString("user_login","User login"));
+        headerText.setFontColor(CampusColors.WHITE);
+        headerText.setBold();
+        Text idText = new Text(_iwrb.getLocalizedString("userid","Userid"));
+        idText.setBold();
+        //add(idText);
+        //add(userid);
+        //add(Text.getBreak());
+        Text passwdText = new Text(_iwrb.getLocalizedString("password","Password"));
+        passwdText.setBold();
+        //add(passwdText);
+        //add(passwd);
+        Text msg = new Text(_iwrb.getLocalizedString("change_password","Change your password by clicking your name when logged in"));
+
+        Table dummyTable = new Table(3,3);
+        dummyTable.setWidth("100%");
+        dummyTable.setAlignment(2,2,"center");
+        dummyTable.setHeight(1,"100");
+
+        Table table = new Table();
+          table.setCellspacing(1);
+          table.setCellpadding(3);
+          table.mergeCells(1,1,2,1);
+          //table.setWidth("100%");
+
+          table.add(headerText,1,1);
+          table.add(idText,1,2);
+          table.add(passwdText,1,3);
+          table.add(userid,2,2);
+          table.add(passwd,2,3);
+
+          table.setHorizontalZebraColored(CampusColors.WHITE,CampusColors.LIGHTGREY);
+          table.setColumnColor(1,CampusColors.DARKGREY);
+          table.setColor(1,1,CampusColors.DARKBLUE);
+          table.setColumnVerticalAlignment(1,"top");
+          table.setColumnVerticalAlignment(2,"top");
+          table.mergeCells(1,4,2,4);
+          Image image = table.getTransparentCell(iwc);
+          image.setHeight(6);
+          table.add(image,1,4);
+          table.setColor(1,4,CampusColors.DARKRED);
+          table.mergeCells(1,5,2,5);
+          table.add(msg,1,5);
+          table.setRowColor(5,CampusColors.WHITE);
+
+        dummyTable.add(table,2,2);
+        add(dummyTable);
         iwc.removeSessionAttribute("DUMMY_LOGIN");
         iwc.removeSessionAttribute("referenceNumber");
       }

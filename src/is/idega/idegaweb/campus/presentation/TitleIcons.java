@@ -21,17 +21,17 @@ protected IWBundle iwb;
 private String icon;
 private Image image;
 
-	public TitleIcons(){
-	  this.icon = MAINMENU;
-	}
+  public TitleIcons(){
+    this.icon = MAINMENU;
+  }
 
   public TitleIcons(String icon) {
     this.icon = icon;
   }
 
-	public void setIconType(String type){
-	  icon = type;
-	}
+  public void setIconType(String type){
+    icon = type;
+  }
 
   public void main(IWContext iwc) {
     iwrb = getResourceBundle(iwc);
