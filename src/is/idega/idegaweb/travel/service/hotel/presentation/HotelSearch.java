@@ -86,11 +86,11 @@ public class HotelSearch extends AbstractSearchForm {
 			PriceCategory priceCat = pcHome.findByKey(HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY);
 			IWTimestamp from = from = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
 
-			//System.out.println("Before : ");
-			//showCollectionContent(coll);
+			System.out.println("Before : ");
+			showCollectionContent(coll);
 			coll = getSearchBusiness(iwc).sortProducts(coll, priceCat);
-			//System.out.println("After : ");
-			//showCollectionContent(coll);
+			System.out.println("After : ");
+			showCollectionContent(coll);
 
 			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
 			int mapSize = map.size();
