@@ -2,7 +2,7 @@ package com.idega.block.messenger.data;
 
 import java.io.Serializable;
 import java.util.Vector;
-import com.idega.block.messenger.presentation.IdegaClient;
+import com.idega.block.messenger.presentation.MessengerApplet;
 import com.idega.block.messenger.data.Message;
 /**
  * Title:        idega classes
@@ -24,7 +24,7 @@ public class Packet implements Serializable{
   private String clientId;
 
   public void process(){}
-  public void process(IdegaClient client){}
+  public void process(MessengerApplet client){}
 
   /*
   public void setPacketType(int packetType){

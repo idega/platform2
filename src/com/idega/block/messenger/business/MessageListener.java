@@ -1,6 +1,6 @@
 package com.idega.block.messenger.business;
 
-import com.idega.block.messenger.presentation.IdegaClient;
+import com.idega.block.messenger.presentation.MessengerApplet;
 
 /**
  * Title:        com.idega.block.messenger.business
@@ -12,12 +12,12 @@ import com.idega.block.messenger.presentation.IdegaClient;
  */
 
 public class MessageListener implements Runnable{
-  private IdegaClient client;
+  private MessengerApplet client;
   private Thread t;
   private long threadSleep = 500;//0.5 sec
   private boolean runThread = true;
 
-  public MessageListener(IdegaClient client) {
+  public MessageListener(MessengerApplet client) {
     this.client = client;
   }
 
