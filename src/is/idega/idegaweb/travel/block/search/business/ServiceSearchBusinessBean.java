@@ -294,10 +294,17 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				int betw = 1;
 				try {
 					betw = Integer.parseInt(iwc.getParameter(AbstractSearchForm.PARAMETER_MANY_DAYS));
-				} catch (NumberFormatException n) {}
-				
-				to = new IWTimestamp(from);
-				to.addDays(betw);
+					to = new IWTimestamp(from);
+					to.addDays(betw);
+				} catch (NumberFormatException n) {
+					try {
+						to = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_TO_DATE));
+					} catch (Exception e) {
+						//e.printStackTrace();
+						to = new IWTimestamp(from);
+						to.addDays(betw);
+					}
+				}
 			}catch (Exception e) {
 				System.out.println("error getting stamps : "+e.getMessage());
 				e.printStackTrace();
@@ -312,6 +319,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			while (iter.hasNext() && from != null && to != null) {
 				try {
 					product =  pHome.findByPrimaryKey(iter.next());
+					//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
 					bf = getServiceHandler().getBookingForm(iwc, product);
 					addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
 					addressId = -1;

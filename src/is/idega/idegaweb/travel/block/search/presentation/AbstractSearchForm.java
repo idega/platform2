@@ -96,6 +96,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	public static String PARAMETER_POSTAL_CODE_NAME = "hs_pcn";
 	public static String PARAMETER_FROM_DATE = BookingForm.parameterFromDate;//"hs_fd";
+	public static String PARAMETER_TO_DATE = BookingForm.parameterToDate;
 	public static String ERROR_NO_BOOKING_COUNT = "ErrorNoBookingCount";
 	/** Used for checkbooking */
 	public static String PARAMETER_MANY_DAYS = BookingForm.parameterManyDays;
@@ -161,10 +162,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	
 	protected abstract String getServiceName(IWResourceBundle iwrb);
 	protected abstract void setupSearchForm();
+	protected abstract void setupSpecialFieldsForBookingForm(List errorFields);
 	protected abstract void getResults() throws RemoteException, InvalidSearchException;
 	protected abstract Image getHeaderImage(IWResourceBundle iwrb);
 	protected abstract String getPriceCategoryKey();
 	protected abstract String getUnitName();
+	protected abstract List getErrorFormFields();
 	
 	
 	protected abstract String getParameterTypeCountName();
@@ -395,6 +398,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			STATE = STATE_SHOW_BOOKING_FORM;
 		} else if (action.equals(ACTION_CONFIRM)) {
 			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey(), cvcIsUsed);
+			List tmp = getErrorFormFields();
+			if (tmp != null) {
+				errorFields.addAll(tmp);
+			}
+			//errorFields.addAll(getErrorFormFields());
 			if (errorFields == null || errorFields.isEmpty() ) {
 				STATE = STATE_CHECK_BOOKING;
 			} else {
@@ -536,6 +544,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email","Email")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
 		formTable.mergeCells(2, (row-1), 3, (row-1));
 
+		setupSpecialFieldsForBookingForm(errorFields);
+		
 		TextInput expMonth = new TextInput(PARAMETER_CC_MONTH);
 		expMonth.setSize(3);
 		expMonth.setMaxlength(2);
@@ -870,7 +880,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
-		link.maintainParameter(getParameterTypeCountName(), iwc);
+		link.addParameter(getParameterTypeCountName(), getCount());
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
 		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
 
@@ -905,8 +915,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		float total = -1;
 		String returner = "";
 
-		String sCount = iwc.getParameter(getParameterTypeCountName());
-		int count = Integer.parseInt(sCount);
+		int count = getCount();
 		int days = 1;
 		try {
 			days = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
@@ -924,6 +933,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 		returner += Text.BREAK+iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+total+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
 		return returner;
+	}
+
+	protected int getCount() {
+		String sCount = iwc.getParameter(getParameterTypeCountName());
+		int count = Integer.parseInt(sCount);
+		return count;
 	}
 
 	protected void addInputLine(String[] text, PresentationObject[] object) {
