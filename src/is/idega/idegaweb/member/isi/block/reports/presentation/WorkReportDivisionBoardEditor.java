@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
@@ -40,6 +41,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -59,6 +61,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
+  private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
 
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
   private static final String NO_LEAGUE_VALUE = "no_league_value";
@@ -118,6 +121,10 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   
   private String parseAction(IWContext iwc) {
     String action = "";
+    if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
+      setWorkReportAsFinished(iwc);
+      return action;
+    }
     // does the user want to cancel something?
     if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
       return action;
@@ -207,6 +214,17 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   
   private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    WorkReport workReport = null;
+    try {
+      workReport = workReportBusiness.getWorkReportById(getWorkReportId()); 
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
     try {
       // create data from the database
       workReportBusiness.createWorkReportData(getWorkReportId());
@@ -292,10 +310,18 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
     PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
     PresentationObject cancelButton = getCancelButton(resourceBundle);
-    Table buttonTable = new Table(3,1);
+    Table buttonTable = new Table(4,1);
     buttonTable.add(newEntryButton,1,1);
     buttonTable.add(deleteEntriesButton,2,1);
     buttonTable.add(cancelButton, 3,1);
+    if (! workReport.isBoardPartDone()) {
+      buttonTable.add(getFinishButton(resourceBundle), 4, 1);
+    }
+    else {
+      Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
+      text.setBold();
+      buttonTable.add(text, 4,1);
+    }
     mainTable.add(buttonTable,1,2);
     return mainTable;    
   }
@@ -322,11 +348,18 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   }  
 
   private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
-    String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
+    String cancelText = resourceBundle.getLocalizedString("wr_division_board_editor_cancel", "Cancel");
     SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
   }    
+
+  private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
+    String finishText = resourceBundle.getLocalizedString("wr_division_board_editor_finish", "Finish");
+    SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     // define converter
@@ -556,6 +589,23 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       }
     }
   }
+
+  private void setWorkReportAsFinished(IWContext iwc)  {
+    int workReportId = getWorkReportId();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
+      workReport.setBoardPartDone(true);
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+  }
+
 
   /** 
    * WorkReportDivisionBoardHelper:

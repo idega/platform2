@@ -67,9 +67,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardmembereditor.step_name";
   
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
-  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
+  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+  private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
   
   private static final String LEAGUE_NAME = "FIN_league_name";
   
@@ -135,6 +136,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   private String parseAction(IWContext iwc) {
     String action = "";
+    if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
+      setWorkReportAsFinished(iwc);
+      return action;
+    }
     // does the user want to cancel something?
     if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
       return action;
@@ -436,10 +441,18 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 //    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
     PresentationObject cancelButton = getCancelButton(resourceBundle);
     // add buttons
-    Table buttonTable = new Table(1,1);
+    Table buttonTable = new Table(2,1);
 //    buttonTable.add(newEntryButton,1,1);
 //    buttonTable.add(deleteEntriesButton,2,1);
     buttonTable.add(cancelButton, 1,1);
+    if (! workReport.isAccountPartDone()) {
+      buttonTable.add(getFinishButton(resourceBundle), 2, 1);
+    }
+    else {
+      Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
+      text.setBold();
+      buttonTable.add(text, 2 , 1);
+    }
     mainTable.add(buttonTable,1,2);
     return mainTable;
   }
@@ -491,6 +504,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     button.setAsImageButton(true);
     return button;
   }     
+  
+  private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
+    String finishText = resourceBundle.getLocalizedString("wr_account_editor_finish", "Finish");
+    SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
 
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     EntityBrowser browser = new EntityBrowser();
@@ -867,7 +887,22 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // do not forget to store
     record.store();
   }
-    
+  
+  private void setWorkReportAsFinished(IWContext iwc)  {
+    int workReportId = getWorkReportId();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
+      workReport.setAccountPartDone(true);
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+  }
     
   /** 
    * WorkReportAccountGroupHelper:

@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
@@ -73,6 +74,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
+  private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
 
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
   
@@ -161,6 +163,10 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private String parseAction(IWContext iwc, IWResourceBundle resourceBundle) {
     String action = "";
+    if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
+      setWorkReportAsFinished(iwc);
+      return action;
+    }
     // does the user want to cancel something?
     if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
       return action;
@@ -282,6 +288,18 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
     } 
+    WorkReport workReport = null;
+    try {
+      workReport = workReportBusiness.getWorkReportById(getWorkReportId()); 
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+
     // get members
     Collection members;
     try {
@@ -344,11 +362,21 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
     PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
     PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
-    Table buttonTable = new Table(4,1);
+    Table buttonTable = new Table(5,1);
     buttonTable.add(inputField,1,1);
     buttonTable.add(newEntryButton,2,1);
     buttonTable.add(deleteEntriesButton,3,1);
     buttonTable.add(cancelButton, 4,1);
+    if (! workReport.isMembersPartDone()) {
+      buttonTable.add(getFinishButton(resourceBundle), 5, 1);
+    }
+    else {
+      Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part is finished."));
+      text.setBold();
+      buttonTable.add(text, 5 , 1);
+    }
+    
+
     mainTable.add(buttonTable,1,2);
     return mainTable;    
   }
@@ -392,6 +420,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     link.setAsImageButton(true);
     return link;
   }    
+
+  private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
+    String finishText = resourceBundle.getLocalizedString("wr_member_editor_finish", "Finish");
+    SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form, IWContext iwc)  {
     // define converter
@@ -665,6 +700,22 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
     }
   }  
+
+  private void setWorkReportAsFinished(IWContext iwc)  {
+    int workReportId = getWorkReportId();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
+      workReport.setMembersPartDone(true);
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+  }
 
   /** 
    * CheckBoxConverterHelper:
