@@ -14,6 +14,7 @@ import com.idega.projects.golf.GolfField;
 import com.idega.util.idegaTimestamp;
 import com.idega.projects.golf.entity.TournamentDay;
 import com.idega.projects.golf.entity.Tournament;
+import com.idega.projects.golf.entity.TournamentRound;
 import com.idega.data.EntityFinder;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.textObject.Link;
@@ -291,7 +292,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
                       }else if(business.countOwnersEntries(Integer.parseInt(this.currentMember),this.currentField,this.currentDay) >= maxPerOwnerPerDay ){
                         illegal.add(k++,new Integer(j));
                         fullQuota = true;
-                      }else{
+                      }else /*if(business.countMembersEntries){}else*/{
                         business.setStartingtime(Integer.parseInt(lines[j]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()),this.currentMember, tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), playerCard[j], playerCardNo[j]);
                         ones = true;
                       }
@@ -521,15 +522,17 @@ public void main(ModuleInfo modinfo) throws Exception {
 
     if(keepOn){
       TournamentDay tempTD = new TournamentDay();
-      List Tournaments = EntityFinder.findAll(new Tournament(),"select tournament.* from tournament,tournament_day where tournament_day.tournament_id=tournament.tournament_id and tournament_day.day_date = '"+currentDay.toSQLDateString()+"' and tournament.field_id = " + currentField );
-      if(Tournaments != null ){
-/*        if("true".equals(modinfo.getParameter(closeParameterString))){
-          this.close();
-          this.print(modinfo);
-*///        }else{
+//      List Tournaments = EntityFinder.findAll(new Tournament(),"select tournament.* from tournament,tournament_day where tournament_day.tournament_id=tournament.tournament_id and tournament_day.day_date = '"+currentDay.toSQLDateString()+"' and tournament.field_id = " + currentField );
+      List TournamentRounds = EntityFinder.findAll(new TournamentRound(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + currentField );
+
+      if(TournamentRounds != null ){
+          List Tournaments = new Vector();
+          for (int i = 0; i < TournamentRounds.size(); i++) {
+            Tournaments.add(i,((TournamentRound)TournamentRounds.get(i)).getTournament());
+          }
+
           fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
           lineUpTournamentDay(modinfo, Tournaments );
-//        }
       }else{
         myForm.maintainParameter("secure_num");
         myForm.maintainParameter("line");
