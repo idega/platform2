@@ -70,73 +70,80 @@ public class ChildCareContracts extends ChildCareBlock {
 					application = (ChildCareApplication) iter.next();
 					contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 					child = application.getChild();
-					created = new IWTimestamp(contract.getCreatedDate());
-					validFrom = new IWTimestamp(contract.getValidFromDate());
-					if (application.getRejectionDate() != null) {
-						IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
-						isCancelled = cancelledDate.isEarlierThan(dateNow);
-					}
-					else
-						isCancelled = false;
-						
-					if (dateNow.isEarlierThan(validFrom))
-						isNotYetActive = true;
-					else
-						isNotYetActive = false;
-					
-					viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-					viewContract.setFile(contract.getContractFileID());
-					viewContract.setTarget(Link.TARGET_NEW_WINDOW);
-					
-					if (isNotYetActive) {
-						alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
-						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_VALID_FROM_DATE);
-					}
-					else {
-						alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
-						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
-					}
-					alterCareTime.setWindowToOpen(ChildCareWindow.class);
-					alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
-					alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					
+
 					if (row % 2 == 0)
 						table.setRowColor(row, getZebraColor1());
 					else
 						table.setRowColor(row, getZebraColor2());
-	
-					if (isNotYetActive) {
-						showComment = true;
-						table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
-					}
-					
-					if (getResponsePage() != null) {
-						archive = getSmallLink(child.getNameLastFirst(true));
-						archive.setEventListener(ChildCareEventListener.class);
-						archive.addParameter(getSession().getParameterUserID(), application.getChildId());
-						archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
-						archive.setPage(getResponsePage());
-						table.add(archive, column++, row);
-					}
-					else
-						table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
-					table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-					table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-					table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-					if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
-						table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
-					else
-						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
-					column++;
-					table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
-					
-					table.setWidth(column, row, 12);
-					table.add(viewContract, column++, row);
-	
-					if (allowAlter && application.getApplicationStatus() == getBusiness().getStatusReady()) {
+		
+					if (contract != null) {
+						created = new IWTimestamp(contract.getCreatedDate());
+						validFrom = new IWTimestamp(contract.getValidFromDate());
+						if (application.getRejectionDate() != null) {
+							IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
+							isCancelled = cancelledDate.isEarlierThan(dateNow);
+						}
+						else
+							isCancelled = false;
+							
+						if (dateNow.isEarlierThan(validFrom))
+							isNotYetActive = true;
+						else
+							isNotYetActive = false;
+						
+						viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
+						viewContract.setFile(contract.getContractFileID());
+						viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+						
+						if (isNotYetActive) {
+							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
+							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_VALID_FROM_DATE);
+						}
+						else {
+							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
+							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
+						}
+						alterCareTime.setWindowToOpen(ChildCareWindow.class);
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+						
+						if (isNotYetActive) {
+							showComment = true;
+							table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
+						}
+						
+						if (getResponsePage() != null) {
+							archive = getSmallLink(child.getNameLastFirst(true));
+							archive.setEventListener(ChildCareEventListener.class);
+							archive.addParameter(getSession().getParameterUserID(), application.getChildId());
+							archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
+							archive.setPage(getResponsePage());
+							table.add(archive, column++, row);
+						}
+						else
+							table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
+						table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+						table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+						if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
+							table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
+						else
+							table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
+						column++;
+						table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
+						
 						table.setWidth(column, row, 12);
-						if (getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue()) < 2)
-							table.add(alterCareTime, column++, row);
+						table.add(viewContract, column++, row);
+		
+						if (allowAlter && application.getApplicationStatus() == getBusiness().getStatusReady()) {
+							table.setWidth(column, row, 12);
+							if (getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue()) < 2)
+								table.add(alterCareTime, column++, row);
+						}
+					}
+					else {
+						table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 					}
 					row++;
 				}
