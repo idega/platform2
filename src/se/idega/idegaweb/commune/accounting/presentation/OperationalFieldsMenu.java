@@ -3,10 +3,8 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
-import java.rmi.RemoteException;
+import se.idega.idegaweb.commune.accounting.event.AccountingEventListener;
 
-import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -14,7 +12,7 @@ import com.idega.presentation.ui.Form;
 /**
  * @author laddi
  */
-public class OperationalFieldsMenu extends AccountingBlock implements IWPageEventListener {
+public class OperationalFieldsMenu extends AccountingBlock {
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -28,30 +26,13 @@ public class OperationalFieldsMenu extends AccountingBlock implements IWPageEven
 		
 		if (getParentForm() == null) {
 			Form form = new Form();
-			form.setEventListener(this.getClass());
+			form.setEventListener(AccountingEventListener.class);
 			form.add(operationalField);
 			add(form);
 		}
 		else {
-			getParentForm().setEventListener(this.getClass());
+			getParentForm().setEventListener(AccountingEventListener.class);
 			add(operationalField);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.business.IWEventListener#actionPerformed(com.idega.presentation.IWContext)
-	 */
-	public boolean actionPerformed(IWContext iwc) throws IWException {
-		try {
-			if (iwc.isParameterSet(getSession().getParameterOperationalField())) {
-				getSession().setOperationalField(iwc.getParameter(getSession().getParameterOperationalField()));
-				return true;
-			}
-		}
-		catch (RemoteException e) {
-			return false;
-		}
-		
-		return false;
 	}
 }
