@@ -29,6 +29,7 @@ import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxAsLinkConverter;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
@@ -84,6 +85,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private static final String SECOND_PHONE = WorkReportDivisionBoard.class.getName()+".SECOND_PHONE";
   private static final String FAX = WorkReportDivisionBoard.class.getName()+".FAX";
   private static final String EMAIL = WorkReportDivisionBoard.class.getName()+".EMAIL";
+  private static final String HAS_NATIONAL_LEAGUE = "HAS_NATIONAL_LEAGUE";
   
   private static List FIELD_LIST;
   
@@ -202,6 +204,11 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         if (entityPathValueContainerFromDropDownMenu.isValid()) {
           setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, board, workReportBusiness);
         }
+      }
+      boolean wasChecked = board.hasNationalLeague();
+      boolean isChecked = CheckBoxConverter.isEntityCheckedUsingDefaultKey(iwc, primaryKey);
+      if (wasChecked ^ isChecked) {
+        board.setHasNationalLeague(isChecked);
       }
       board.store();
       return action;
@@ -362,15 +369,21 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     okayConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter textConverter = new WorkReportTextConverter();
     DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
+    WorkReportHasNationalLeagueConverter nationalLeagueConverter = new WorkReportHasNationalLeagueConverter();
+    nationalLeagueConverter.maintainParameters(this.getParametersToMaintain());
+    
+    
     // define if the converters should be editable or not
     checkBoxConverter.setEditable(editable);
     textEditorConverter.setEditable(editable);
     dropDownPostalCodeConverter.setEditable(editable);
+    nationalLeagueConverter.setEditable(editable);
     // WorkReportTextConverter is not an editor 
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay", okayConverter,
       LEAGUE, textConverter,
+      HAS_NATIONAL_LEAGUE, nationalLeagueConverter,
       HOME_PAGE, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
       STREET_NAME, textEditorConverter,
@@ -640,6 +653,15 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }
     
   }
+  
+  class WorkReportHasNationalLeagueConverter extends CheckBoxAsLinkConverter {
+    
+    protected boolean shouldEntityBeChecked(Object entity, Integer primaryKey) {
+      WorkReportDivisionBoardHelper board = (WorkReportDivisionBoardHelper) entity;
+      return  board.hasNationalLeague();
+    }
+
+  }
 
   /** 
    * WorkReportDivisionBoardHelper:
@@ -677,6 +699,10 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     
     public Object getPrimaryKey() {
       return ((EntityRepresentation) board).getPrimaryKey();
+    }
+    
+    public boolean hasNationalLeague()  {
+      return ((WorkReportDivisionBoard) board).hasNationalLeague();
     }
   }
 }
