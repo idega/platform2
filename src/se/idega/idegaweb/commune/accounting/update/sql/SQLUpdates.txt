@@ -11,5 +11,5 @@ insert into sch_school_class_teacher (sch_school_class_id, ic_user_id)
   and sch_school_class_id not in (select sch_school_class_id from sch_school_class_teacher)
   
 Drop columns:
-alter table sch_school_class drop column sch_school_class_id
+alter table sch_school_class drop column sch_school_year_id
 alter table sch_school_class drop column ic_user_id
