@@ -52,7 +52,7 @@ public class CitizenChildren extends CommuneBlock {
 	private boolean addLoggedInUser = false;
 
 	public CitizenChildren() {
-		buttonLabel = getText("");
+		
 		//ssnLabel = getText("");
 	}
 
@@ -101,6 +101,12 @@ public class CitizenChildren extends CommuneBlock {
 
 	public static Parameter getChildSSNParameter(int child_ssn) {
 		return new Parameter(prmChildSSN, String.valueOf(child_ssn));
+	}
+	
+	private Text getButtonLabel(){
+	    if(buttonLabel==null)
+	        buttonLabel = getText("");
+	    return buttonLabel;
 	}
 
 	public void setLocalizedButtonLabel(String localeString, String text) {
@@ -167,7 +173,7 @@ public class CitizenChildren extends CommuneBlock {
 			submitTable.setWidth(2, "4");
 			
 			TextInput inputSSN = (TextInput) getStyledInterface(new TextInput(prmChildSSN));
-			String label = buttonLabel.getLocalizedText(iwc);
+			String label = getButtonLabel().getLocalizedText(iwc);
 
 			SubmitButton submit = (SubmitButton) getButton(new SubmitButton(label, prmSubmitName, "true"));
 			T.setHeight(row++,12);
