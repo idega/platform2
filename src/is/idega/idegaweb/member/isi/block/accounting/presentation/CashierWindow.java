@@ -316,9 +316,9 @@ public class CashierWindow extends StyledIWAdminWindow {
                 "isi_acc_cashierwindow.paymentOverview",
                 "Payment overview (A.29)")));
         addParametersToMenuItems(paymentOverview, ACTION_REPORTS);
-        paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.2.xml");
-        paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.2.xml");
-        paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentOverview");
+        paymentOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.2.xml");
+        paymentOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.2.xml");
+        paymentOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentOverview");
 
         LinkContainer debtOverview = new LinkContainer();
         debtOverview.setStyleClass(styledLink);
