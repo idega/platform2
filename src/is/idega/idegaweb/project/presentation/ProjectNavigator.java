@@ -18,6 +18,7 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IFrameContent;
 import com.idega.business.GenericState;
+import com.idega.core.accesscontrol.business.AccessController;
 
 
 import java.util.List;
@@ -296,7 +297,20 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       if(business == null){
         business = ProjectBusiness.getInstance();
       }
-      return business.getProjectDPTPageLinks(state.getSelectedCategories());
+      List l = business.getProjectDPTPageLinks(state.getSelectedCategories());
+
+      // remove projects one has no permission for
+      if(l != null){
+        Iterator iter = l.iterator();
+        while (iter.hasNext()) {
+          PageLink item = (PageLink)iter.next();
+          boolean remove = !iwc.getAccessController().hasPermission(AccessController._PERMISSIONKEY_VIEW,AccessController._CATEGORY_PAGE_INSTANCE,Integer.toString(item.getPageId()),iwc);
+          if(remove){
+            iter.remove();
+          }
+        }
+              }
+      return l;
     }
 
 
