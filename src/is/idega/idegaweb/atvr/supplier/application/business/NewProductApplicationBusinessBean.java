@@ -34,6 +34,7 @@ import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.util.IWTimestamp;
 
 /**
  * This class does something very clever.....
@@ -211,9 +212,13 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 				String pending_cat = bundle.getProperty("npaa_pending_cat");
 				String current_cat = bundle.getProperty("npaa_current_cat");
 
+				IWTimestamp now = new IWTimestamp();  
+
 				while (it.hasNext()) {
 					File file = (File) it.next();
 					String name = file.getName();
+					String bxLinkName = null;
+					System.out.println("name = " + name);
 					StringTokenizer tok = new StringTokenizer(name, "_.");
 					int num = tok.countTokens() - 1;
 					String ssn = null;
@@ -241,22 +246,31 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 					if (pos > -1)
 						ssn = ssn.substring(0,pos) + ssn.substring(pos+1);
 
-					System.out.println("ssn = " + ssn);
-
-//					BoxLink bx = ((BoxLinkHome) IDOLookup.getHome(BoxLink.class)).create();
-
 					User user = null;
+					int userId = -1;
 					try {
 						user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(ssn);
 					}
 					catch (FinderException ex) {
 					}
+					
+					
+					bxLinkName = now.getDateString("dd-MM-yyyy");
+					if (user != null) {
+						userId = ((Integer)user.getPrimaryKey()).intValue();
+					}
+					else {
+						String defaultUserId = bundle.getProperty("npaa_default_user","-1");
+						userId = Integer.parseInt(defaultUserId);
+						bxLinkName = bxLinkName + "_" + name;
+					}
 
 					ICFile icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
 					icfile.setFileValue(new FileInputStream(file));
+					icfile.setName(name);
 					icfile.store();
 
-					if (user != null) {
+					if (userId > 0) {
 						int boxid = -1;
 						int catid = -1;
 						
@@ -287,16 +301,7 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 
 						if (boxid > -1 && catid > -1) {
 							int localeId = ICLocaleBusiness.getLocaleId(getIWApplicationContext().getApplication().getSettings().getApplicationLocale());
-							BoxBusiness.saveLink(((Integer)user.getPrimaryKey()).intValue(),boxid,catid,-1,name,((Integer)icfile.getPrimaryKey()).intValue(),-1,null,"_blank",localeId);
-//							bx.setBoxCategoryID(boxid);
-//							bx.setBoxID(catid);
-//							bx.setCreationDate(IWTimestamp.getTimestampRightNow());
-//							bx.setName(name);
-//							bx.setFileID(((Integer)icfile.getPrimaryKey()).intValue());
-//							bx.setTarget("_blank");
-//							bx.setUserID(((Integer)user.getPrimaryKey()).intValue());
-//							
-//							bx.store();
+							BoxBusiness.saveLink(userId,boxid,catid,-1,bxLinkName,((Integer)icfile.getPrimaryKey()).intValue(),-1,null,"_blank",localeId);
 						}
 					}
 					
