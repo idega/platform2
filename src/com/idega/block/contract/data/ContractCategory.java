@@ -48,7 +48,7 @@ public class ContractCategory extends GenericEntity{
   public static String getEntityTableName(){return "CON_CATEGORY";}
   public static String getColumnNameName(){return "NAME";}
   public static String getColumnNameDescription(){return "DESCRIPTION";}
-	public static String getColumnNameCreated(){return "CREATED";}
+	public static String getColumnNameCreated(){return "CREATED_DATE";}
 	public static String getValidColumnName(){return "VALID";}
 
   public String getEntityName(){
