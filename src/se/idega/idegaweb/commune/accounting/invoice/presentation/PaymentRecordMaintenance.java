@@ -74,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/08 14:30:13 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/09 08:07:11 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.57 $
+ * @version $Revision: 1.58 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -440,14 +440,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			}
 			table.getDefaultCell ().setHorizontalAlignment
 					(Element.ALIGN_RIGHT);
-			addPhrase (table, integerFormatter.format
-								 (roundAmount (record.getTotalAmount ())));
+			addPhrase (table, getFormattedAmount (record.getTotalAmount ()));
 		}
 		return table;
-	}
-	
-	private long roundAmount (final float f) {
-		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
 	}
 	
 	private PdfPTable getRecordsHeaderPdfTable (final IWContext context)
@@ -552,14 +547,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 							 localize (TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 												 TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, integerFormatter.format (totalAmountVatExcluded));
+		addPhrase (summaryTable, getFormattedAmount (totalAmountVatExcluded));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_VAT_KEY, TOTAL_AMOUNT_VAT_DEFAULT)
 							 + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, totalAmountVat + "");
+		addPhrase (summaryTable, getFormattedAmount (totalAmountVat));
 		return summaryTable;
 	}
 	
@@ -573,11 +568,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addPhrase (table, record.getPaymentText ());
 		table.getDefaultCell ().setHorizontalAlignment
 				(Element.ALIGN_RIGHT);
-		addPhrase (table, record.getPlacements () + "");
-		addPhrase (table, integerFormatter.format (roundAmount
-																							 (record.getPieceAmount ())));
-		addPhrase (table, integerFormatter.format (roundAmount
-																							 (record.getTotalAmount ())));
+		addPhrase (table, integerFormatter.format (record.getPlacements ()));
+		addPhrase (table, getFormattedAmount (record.getPieceAmount ()));
+		addPhrase (table, getFormattedAmount (record.getTotalAmount ()));
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
@@ -714,7 +707,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		map.put (ADJUSTED_SIGNATURE_KEY,
 						 getSmallSignature (record.getChangedBy ()));
 		addSmallText (map, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
-		addSmallText (map, AMOUNT_KEY, roundAmount (record.getTotalAmount ()));
+		addSmallText (map, AMOUNT_KEY,
+									getFormattedAmount (record.getTotalAmount ()));
 		map.put (CREATED_SIGNATURE_KEY,
 						 getSmallSignature (record.getCreatedBy ()));
 		addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
@@ -727,12 +721,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
 		addSmallPeriodText (map, PERIOD_KEY, record.getPeriod ());
 		addSmallText (map, PIECE_AMOUNT_KEY,
-									roundAmount (record.getPieceAmount ()));
+									getFormattedAmount (record.getPieceAmount ()));
 		addSmallText (map, NUMBER_OF_PLACEMENTS_KEY, record.getPlacements ());
 		addSmallText (map, STATUS_KEY, record.getStatus () + "");
 		addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
 		addSmallText (map, VAT_AMOUNT_KEY,
-									roundAmount (record.getTotalAmountVAT ()));
+									getFormattedAmount (record.getTotalAmountVAT ()));
 		final String ruleSpecType = record.getRuleSpecType ();
 		addSmallText (map, REGULATION_SPEC_TYPE_KEY,  ruleSpecType, ruleSpecType);
 		if (0 < record.getVATRuleRegulationId ()) {
@@ -994,17 +988,20 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_PLACEMENTS_KEY,
 										TOTAL_AMOUNT_PLACEMENTS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, placements.size () + "");
+		addSmallText (table, col++, row++,
+									integerFormatter.format (placements.size ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_INDIVIDUALS_KEY,
 										TOTAL_AMOUNT_INDIVIDUALS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, individuals.size () + "");
+		addSmallText (table, col++, row++,
+									integerFormatter.format (individuals.size ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 										TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, totalAmountVatExcluded + "");
+		addSmallText (table, col++, row++,
+									getFormattedAmount (totalAmountVatExcluded));
 		return table;
 	}
 	
@@ -1014,8 +1011,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final String checkPeriod = getFormattedDate
 				(record.getPeriodStartCheck ()) + " - "
 				+ getFormattedDate (record.getPeriodEndCheck ());
-		final String days = record.getDays () + "";
-		final String amount = roundAmount (record.getAmount ()) + "";
+		final String days = integerFormatter.format (record.getDays ());
+		final String amount = getFormattedAmount (record.getAmount ());
 		final String placementPeriod
 				= getFormattedDate (record.getPeriodStartPlacement ()) + " - "
 				+ getFormattedDate (record.getPeriodEndPlacement ());
@@ -1088,22 +1085,26 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_PLACEMENTS_KEY,
 										TOTAL_AMOUNT_PLACEMENTS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, placementCount + "");
+		addSmallText (table, col++, row++,
+									integerFormatter.format (placementCount));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_INDIVIDUALS_KEY,
 										TOTAL_AMOUNT_INDIVIDUALS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, individuals.size () + "");
+		addSmallText (table, col++, row++,
+									integerFormatter.format (individuals.size ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 										TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, totalAmountVatExcluded + "");
+		addSmallText (table, col++, row++,
+									getFormattedAmount (totalAmountVatExcluded));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_KEY,
 										TOTAL_AMOUNT_VAT_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row++, totalAmountVat + "");
+		addSmallText (table, col++, row++, 
+									getFormattedAmount (totalAmountVat));
 		return table;
 	}
 	
@@ -1182,9 +1183,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final String periodText = getFormattedPeriod (period);
 		final Link paymentTextLink = createSmallLink (record.getPaymentText (),
 																									showRecordLinkParameters);
-		final Link placementLink = createSmallLink (record.getPlacements() + "",
-																								showDetailsLinkParameters);
-		final long  totalAmount = roundAmount (record.getTotalAmount ());
+		final Link placementLink
+				= createSmallLink (integerFormatter.format (record.getPlacements()),
+													 showDetailsLinkParameters);
 		final String note = record.getNotes ();
 		final Link editLink = createIconLink (getEditIcon (),
 																					showRecordLinkParameters);
@@ -1197,7 +1198,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add (placementLink, col++, row);
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		addSmallText (table, col++, row, totalAmount + "");
+		addSmallText (table, col++, row,
+									getFormattedAmount (record.getTotalAmount ()));
 		addSmallText (table, col++, row, note);
 		table.add (editLink, col++, row);
 	}
@@ -1573,19 +1575,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return mainTable;
 	}
 	
-	/*
-	private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
-		final DropdownMenu dropdown = (DropdownMenu)
-				getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
-		for (int i = 0; i < rules.length; i++) {
-			final VATRule rule = rules [i];
-			final String ruleName = rule.getVATRule ();
-			dropdown.addMenuElement (rule.getPrimaryKey () + "",
-															 localize (ruleName, ruleName));
-		}
-		return dropdown;
-	}*/
-	
 	private DropdownMenu getLocalizedDropdownForVAT (final Collection  rules) {
 		final DropdownMenu dropdown = (DropdownMenu)
 		getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
@@ -1825,7 +1814,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private void addStyledInput (final java.util.Map map, final String key,
 															 final float number) {
-		addStyledInput (map, key, roundAmount (number) + "");
+		addStyledInput (map, key, getFormattedAmount (number));
 	}
 	
 	private void addSmallText (final java.util.Map map, final String mapKey,
@@ -1843,7 +1832,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private void addSmallText (final java.util.Map map, final String key,
 														 final long value) {
-		map.put (key, getSmallText (-1 != value ? value + "" : "0"));
+		map.put (key, getSmallText (-1 != value ? integerFormatter.format (value) : "0"));
 	}
 	
 	private void addSmallText (final java.util.Map map, final String key,
@@ -1929,6 +1918,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			}
 		}
 		return school;
+	}
+	
+	private long roundAmount (final float f) {
+		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
+	}
+	
+	private String getFormattedAmount (final float f) {
+		return integerFormatter.format (roundAmount (f));
 	}
 	
 	public ICPage getProviderAuthorizationPage () {

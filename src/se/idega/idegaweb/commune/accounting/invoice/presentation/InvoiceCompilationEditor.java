@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/08 14:30:13 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/09 08:07:11 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.108 $
+ * @version $Revision: 1.109 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -743,9 +743,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		inputs.put (ADJUSTED_SIGNATURE_KEY,
 								getSmallSignature (record.getChangedBy ()));
 		inputs.put (AMOUNT_KEY, getStyledInput
-								(AMOUNT_KEY, roundAmount (record.getAmount ()) +""));
-		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY,
-																								roundAmount (record.getAmountVAT ()) + ""));
+								(AMOUNT_KEY, getFormattedAmount (record.getAmount ())));
+		inputs.put (VAT_AMOUNT_KEY, getStyledInput
+								(VAT_AMOUNT_KEY, getFormattedAmount (record.getAmountVAT ())));
 		inputs.put (NOTE_KEY, getStyledWideInput (NOTE_KEY,
 																							record.getNotes ()));
 		final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
@@ -794,9 +794,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		if (null != placement) {
 			addSmallText (details, PLACEMENT_KEY, getProviderName (placement));
 		}
-		addSmallText (details, AMOUNT_KEY, roundAmount (record.getAmount ()));
+		addSmallText (details, AMOUNT_KEY, getFormattedAmount (record.getAmount ()));
 		addSmallText (details, VAT_AMOUNT_KEY,
-									roundAmount (record.getAmountVAT ()));
+									getFormattedAmount (record.getAmountVAT ()));
 		details.put (ADJUSTED_SIGNATURE_KEY,
 								 getSmallSignature (record.getChangedBy ()));
 		details.put (CREATED_SIGNATURE_KEY,
@@ -1054,7 +1054,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		inputs.put (ORDER_ID_KEY, new HiddenInput
 								(ORDER_ID_KEY, regulation.getConditionOrder () + ""));
 		inputs.put (AMOUNT_KEY, getStyledInput
-		            (AMOUNT_KEY, regulation.getAmount () + ""));
+		            (AMOUNT_KEY, getFormattedAmount (regulation.getAmount ())));
 		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
 		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
 		            (business.getAllRegulationSpecTypes (), regSpecType));
@@ -1484,8 +1484,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				}
 				addPhrase (table, value.toString ());
 			}
-			addPhrase (table,
-								 integerFormatter.format (roundAmount (record.getAmount ())));
+			addPhrase (table, getFormattedAmount (record.getAmount ()));
 		}
 		return table;
 	}
@@ -1532,8 +1531,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		addPhrase (table, invoiceText.toString ());
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (table, record.getDays () + "");
-		addPhrase (table,
-							 integerFormatter.format (roundAmount (record.getAmount ())));
+		addPhrase (table, getFormattedAmount (record.getAmount ()));
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
@@ -1600,6 +1598,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	
 	private long roundAmount (final float f) {
 		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
+	}
+	
+	private String getFormattedAmount (final float f) {
+		return integerFormatter.format (roundAmount (f));
+	}
+	
+	private String getFormattedAmount (final Integer integer) {
+		final int i = null == integer ? 0 : integer.intValue ();
+		return integerFormatter.format (i);
 	}
 	
 	private Table getSearcherResultTable (final Collection users,
@@ -1701,12 +1708,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				= null != period ? periodFormatter.format (period) : "?";
 		final Link periodLink = createSmallLink (periodLinkText,
 																						 editLinkParameters);
-		final long totalAmount = getTotalAmount (header, business);
+		final String totalAmount = getTotalAmount (header, business);
 		table.add (status + "", col++, row);
 		table.add (periodLink, col++, row);
 		table.add (getUserName (custodian), col++, row);
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (totalAmount + "", col++, row);
+		table.add (totalAmount, col++, row);
 		final Link editLink = createIconLink (getEditIcon (),
 																					editLinkParameters);
 		table.add (editLink, col++, row);
@@ -1758,12 +1765,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		addSmallHeader (table, 1, row, TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY,
 										TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT, ":");
 		table.setAlignment (5, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (getTotalAmount (records) + "", 5, row++);
+		table.add (getTotalAmount (records), 5, row++);
 		table.mergeCells (1, row, 4, row);
 		addSmallHeader (table, 1, row, TOTAL_AMOUNT_VAT_KEY,
 										TOTAL_AMOUNT_VAT_DEFAULT, ":");
 		table.setAlignment (5, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (getTotalAmountVat (records) + "", 5, row++);
+		table.add (getTotalAmountVat (records), 5, row++);
 		
 		return table;
 	}
@@ -1793,7 +1800,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add (getSmallText (record.getDays () + ""), col++, row);
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (getSmallText (roundAmount (record.getAmount ()) + ""), col++,
+		table.add (getSmallText (getFormattedAmount (record.getAmount ())), col++,
 							 row);
 		addSmallText (table, record.getNotes (), col++, row);
 		final Link editLink = createIconLink (getEditIcon (),
@@ -2333,7 +2340,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	
 	private void addSmallText (final java.util.Map map, final String key,
 														 final long value) {
-		map.put (key, getSmallText (-1 != value ? value + "" : "0"));
+		map.put (key, getSmallText (-1 != value ? integerFormatter.format (value)
+																: "0"));
 	}
 	
 	private void addSmallDateText (final java.util.Map map, final String key,
@@ -2392,31 +2400,31 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return link;
 	}
 	
-	private long getTotalAmount (final InvoiceHeader header,
-															 final InvoiceBusiness business) {
+	private String getTotalAmount (final InvoiceHeader header,
+																 final InvoiceBusiness business) {
  		final InvoiceRecord[] records;
 		try {
 			records = business.getInvoiceRecordsByInvoiceHeader(header);
 		} catch (RemoteException e) {
-			return 0;
+			return "0";
 		}
 		return getTotalAmount (records);
 	}
 	
-	private long getTotalAmount (final InvoiceRecord [] records) {
+	private String getTotalAmount (final InvoiceRecord [] records) {
 		long totalAmount = 0;
 		for (int i = 0; i < records.length; i++) {
-			totalAmount += records[i].getAmount ();
+			totalAmount += roundAmount (records [i].getAmount ());
 		}
-		return totalAmount;
+		return getFormattedAmount (totalAmount);
 	}
 	
-	private long getTotalAmountVat (final InvoiceRecord [] records) {
+	private String getTotalAmountVat (final InvoiceRecord [] records) {
 		long totalAmountVat = 0;
 		for (int i = 0; i < records.length; i++) {
-			totalAmountVat += records[i].getAmountVAT ();
+			totalAmountVat += roundAmount (records [i].getAmountVAT ());
 		}
-		return totalAmountVat;
+		return getFormattedAmount (totalAmountVat);
 	}
 	
 	private String formatSsn (final String ssn) {
