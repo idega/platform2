@@ -70,7 +70,9 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 		if (divisions == null)
 			divisions = new ArrayList();
 		
-		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
+		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER) ||
+			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_GENERAL) ||
+			group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_TEMPORARY)   ) {
 			divisions.add(group);
 		}
 
