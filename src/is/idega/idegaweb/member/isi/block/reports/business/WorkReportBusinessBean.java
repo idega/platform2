@@ -46,6 +46,7 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -856,11 +857,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     			}
     		}
     		catch (RemoteException ex) {
-    			System.err.println("[WorkReportBusiness]: Can't retrieve Address. Message is: " + ex.getMessage());
-    			ex.printStackTrace(System.err);
+    			logError("[WorkReportBusiness]: Can't retrieve address.");
+    			log(ex);
     			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve Address.");
     		}
-    
+    		catch (IDOCompositePrimaryKeyException compEx) {
+    			logError("[WorkReportBusiness]: Can't retrieve address.");
+    			log(compEx);
+    			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve Address.");
+    		}
+    		catch (IDORelationshipException relEx) {
+    			logError("[WorkReportBusiness]: Can't retrieve address.");
+    			log(relEx);
+    			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve Address.");
+    		}
     		// home phone
     		try {
     			Phone homePhone = groupBusiness.getGroupPhone(clubDivision, PhoneType.HOME_PHONE_ID);
