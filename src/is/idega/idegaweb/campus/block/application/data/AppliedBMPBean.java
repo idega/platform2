@@ -1,6 +1,6 @@
 /*
 
- * $Id: AppliedBMPBean.java,v 1.1 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: AppliedBMPBean.java,v 1.2 2002/06/12 17:22:50 aron Exp $
 
  *
 
@@ -70,13 +70,13 @@ public class AppliedBMPBean extends com.idega.data.GenericEntity implements is.i
 
     addAttribute(getIDColumnName());
 
-    addAttribute(complexId_,"Complex",true,true,java.lang.Integer.class.getClass(),"one-to-many",com.idega.block.building.data.Complex.class.getClass());
+    addAttribute(complexId_,"Complex",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.Complex.class);
 
-    addAttribute(apartmentTypeId_,"Apartment type",true,true,java.lang.Integer.class.getClass(),"one-to-many",com.idega.block.building.data.ApartmentType.class.getClass());
+    addAttribute(apartmentTypeId_,"Apartment type",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.ApartmentType.class);
 
-    addAttribute(applicationId_,"Application",true,true,java.lang.Integer.class.getClass(),"one-to-many",is.idega.idegaweb.campus.block.application.data.CampusApplication.class.getClass());
+    addAttribute(applicationId_,"Application",true,true,java.lang.Integer.class,"one-to-many",is.idega.idegaweb.campus.block.application.data.CampusApplication.class);
 
-    addAttribute(order_,"Order",true,true,java.lang.Integer.class.getClass());
+    addAttribute(order_,"Order",true,true,java.lang.Integer.class);
 
   }
 
