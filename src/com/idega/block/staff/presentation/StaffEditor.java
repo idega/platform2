@@ -188,7 +188,12 @@ public StaffEditor(){
     String area = iwc.getParameter(StaffBusiness.PARAMETER_AREA);
     String beganwork = iwc.getParameter(StaffBusiness.PARAMETER_BEGAN_WORK);
     if ( beganwork != null )
-      _stamp = new idegaTimestamp(beganwork);
+      try {
+        _stamp = new idegaTimestamp(beganwork);
+      }
+      catch (Exception e) {
+        _stamp = null;
+      }
     String imageID = iwc.getParameter(StaffBusiness.PARAMETER_IMAGE_ID);
 
     String[] values = iwc.getParameterValues(StaffBusiness.PARAMETER_META_VALUE);
