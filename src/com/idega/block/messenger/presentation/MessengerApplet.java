@@ -77,7 +77,7 @@ public class MessengerApplet extends Applet implements Runnable{
       userId = this.getParameter(USER_ID, "-1");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
-      resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/"));
+      resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
 
     java.net.URL url;
     Image img;
