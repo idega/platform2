@@ -55,6 +55,7 @@ public class NewProductApplicationForm extends Block {
 	private final static String PARAM_SUB_CATEGORY = "npa_sub_cat";
 	private final static String PARAM_AMOUNT = "npa_amount";
 	private final static String PARAM_WEIGHT = "npa_weigth";
+	private final static String PARAM_MONOXIDE = "npa_monoxide";
 
 	private String _type = "0";
 
@@ -84,6 +85,7 @@ public class NewProductApplicationForm extends Block {
 			String cat = iwc.getParameter(PARAM_FORM_CATEGORY);
 			String sub = iwc.getParameter(PARAM_SUB_CATEGORY);
 			String weight = iwc.getParameter(PARAM_WEIGHT);
+			String monoxide = iwc.getParameter(PARAM_MONOXIDE);
 			
 			appl.setApplicationType(_type);
 			appl.setDescription(desc);
@@ -98,6 +100,7 @@ public class NewProductApplicationForm extends Block {
 //			appl.setProductCategoryId();
 			appl.setSupplierId(iwc.getUserId());
 			appl.setApplicationSent(IWTimestamp.getTimestampRightNow());
+			appl.setCarbonMonoxide(Float.parseFloat(monoxide));
 			
 			getApplicationBusiness(iwc).insertApplication(appl);
 			
@@ -171,7 +174,7 @@ public class NewProductApplicationForm extends Block {
 			form.add(t);
 		}
 		else if (typeId == TYPE_TOBACCO) {
-			Table t = new Table(2, 9);
+			Table t = new Table(2, 10);
 			t.add("Lýsing", 1, 1);
 			t.add("Vöruflokkur", 1, 2);
 			t.add("Flokksdeild", 1, 3);
@@ -179,18 +182,22 @@ public class NewProductApplicationForm extends Block {
 			t.add("Upprunaland", 1, 5);
 			t.add("Tjörumagn", 1, 6);
 			t.add("Þyngd tóbaks", 1, 7);
+			t.add("Magn kolmónoxíðs",1,8);
 
 			TextInput desc = new TextInput(PARAM_DESC);
 			TextInput prod = new TextInput(PARAM_PRODUCER);
 			TextInput ctry = new TextInput(PARAM_COUNTRY);
 			TextInput amount = new TextInput(PARAM_AMOUNT);
 			TextInput weight = new TextInput(PARAM_WEIGHT);
+			TextInput monoxide = new TextInput(PARAM_MONOXIDE);
+			monoxide.setAsFloat();
 
 			t.add(desc, 2, 1);
 			t.add(prod, 2, 4);
 			t.add(ctry, 2, 5);
 			t.add(amount, 2, 6);
 			t.add(weight, 2, 7);
+			t.add(monoxide,2,8);
 
 			int selectedCategory = 0;
 			String selected = iwc.getParameter(PARAM_FORM_CATEGORY);
@@ -205,8 +212,8 @@ public class NewProductApplicationForm extends Block {
 
 			SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Senda");
 			submit.setAsImageButton(true);
-			t.setAlignment(2, 9, "Right");
-			t.add(submit, 2, 9);
+			t.setAlignment(2, 10, "Right");
+			t.add(submit, 2, 10);
 
 			form.add(t);
 		}
