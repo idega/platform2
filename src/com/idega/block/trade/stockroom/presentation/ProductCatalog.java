@@ -45,7 +45,9 @@ import com.idega.presentation.ui.Parameter;
  */
 
 public class ProductCatalog extends CategoryBlock{
-  private String prmClrCache = "prmClCh";
+  int _spaceBetweenEntries = 0;
+	int _indent = 0;
+	private String prmClrCache = "prmClCh";
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
@@ -610,6 +612,10 @@ public class ProductCatalog extends CategoryBlock{
     _spaceBetween = spaceBetween;
   }
 
+	public void setSpaceBetweenEntries(int spaceBetween) {
+		_spaceBetweenEntries = spaceBetween;
+	}
+
   public void setIconSpacing(int iconSpacing) {
     _iconSpacing = iconSpacing;
   }
@@ -628,5 +634,12 @@ public class ProductCatalog extends CategoryBlock{
   private ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(this.iwc, ProductBusiness.class);
   }
+
+	/**
+	 * @param i
+	 */
+	public void setIndent(int i) {
+		_indent = i;
+	}
 
 }
