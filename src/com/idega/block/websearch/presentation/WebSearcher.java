@@ -215,14 +215,16 @@ public class WebSearcher extends Block {
 			
 				hitTable.setColor(bgColor);
 				hitTable.add(new Text("Rank: "+hit.getRank()),1,row++);
-				hitTable.add(new Text("Score: "+hit.getScore()),1,row++);
+				//if detailed ?
+				//hitTable.add(new Text("Score: "+hit.getScore()),1,row++);
 				//hitTable.add(new Text("Published: "+ hit.getPublishedFormated()),1,row++);
 				//hitTable.add(new Text("Content Type: "+hit.getContentType()),1,row++);
 				//hitTable.add(new Text("Keywords: "+hit.getKeywords()),1,row++); veit ekki afhverju thetta skilar alltaf null !?
 				//hitTable.add(new Text("Categories: "+hit.getCategories()),1,row++);
 				//hitTable.add(new Text("Description: "+hit.getDescription()),1,row++);
 				hitTable.add(new Text("Title: "+hit.getTitle()),1,row++);
-				hitTable.add(new Text(hit.getContents()),1,row++);
+				String contents = hit.getContents();
+				if(contents!=null)	hitTable.add(new Text(contents+"..."),1,row++);
 				hitTable.add(new Link(hit.getURL(),hit.getHREF()),1,row);
 				row = 1;
 				results.add(hitTable,1,row2++);

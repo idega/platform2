@@ -289,9 +289,9 @@ public final class Crawler {
             mydoc.add(Field.Keyword("lastModified",DateField.timeToString(lastModified)));
             //mydoc.add(Field. UnStored("contents", handler.getContents()));
             String contents = handler.getContents();
-            if( !"".equals(contents) ) contents+="...";
             
-            mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
+            
+            if( contents!=null ) mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
             
             if (handler.getTitle() != null) {
                 mydoc.add(Field.Text("title", handler.getTitle()));
