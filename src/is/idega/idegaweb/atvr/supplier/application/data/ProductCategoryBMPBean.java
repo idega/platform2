@@ -85,13 +85,13 @@ public class ProductCategoryBMPBean extends GenericEntity implements ProductCate
 		return (Collection)super.idoFindPKsBySQL(sql.toString());		
 	}
 	
-	public Collection ejbFindAllCategoriesBelongingTo(String category) throws FinderException, RemoteException {
+	public Collection ejbFindAllCategoriesBelongingTo(int id) throws FinderException, RemoteException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(BELONGS_TO);
 		sql.append(" = ");
-		sql.append(category);
+		sql.append(id);
 				
 		return (Collection)super.idoFindPKsBySQL(sql.toString());				
 	}

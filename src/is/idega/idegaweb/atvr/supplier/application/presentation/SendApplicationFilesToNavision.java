@@ -9,20 +9,22 @@
  */
 package is.idega.idegaweb.atvr.supplier.application.presentation;
 
+import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
+import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
+import is.idega.idegaweb.atvr.supplier.application.data.ProductCategory;
+
+import java.io.FileWriter;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.SubmitButton;
-
-import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
-import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
-
-import java.io.FileWriter;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
+import com.idega.util.IWTimestamp;
 
 /**
  * This class does something very clever.....
@@ -64,43 +66,102 @@ public class SendApplicationFilesToNavision extends Block {
 				while (it.hasNext()) {
 					NewProductApplication appl = (NewProductApplication) it.next();
 					StringBuffer line = new StringBuffer();
-					line.append(appl.getApplicationType());   //Tegund umsóknar
+					String type = appl.getApplicationType();
+					if (type.equals("0"))   
+						line.append("R"); //Tegund umsóknar
+					else if (type.equals("1"))
+						line.append("S"); //Tegund umsóknar
+					else if (type.equals("2"))
+						line.append("M"); //Tegund umsóknar
+					else if (type.equals("3"))
+						line.append("T"); //Tegund umsóknar
 					line.append(";");
-					line.append("1111111119");                //kennitala birgja
+					User suppl = appl.getSupplier();
+					String ssn = suppl.getPersonalID();
+					if (ssn != null) {
+						ssn = ssn.substring(0,6) + "-" + ssn.substring(6);
+						line.append(ssn); //kennitala birgja
+					}
 					line.append(";");
-					line.append("9999");                      //vörunúmer
+					line.append(""); //vörunúmer
 					line.append(";");
-					line.append("99-9999");                   //vörunúmer gamla
+					line.append(""); //vörunúmer gamla
 					line.append(";");
-					line.append(appl.getDescription());       //Lýsing
+					String desc = appl.getDescription();
+					if (desc != null)
+						line.append(desc); //Lýsing
 					line.append(";");
-					line.append(appl.getDescription2());      //Lýsing 2
+					String desc2 = appl.getDescription2();
+					if (desc2 != null)
+						line.append(desc2); //Lýsing 2
 					line.append(";");
-					line.append(appl.getQuantity());          //Magn (ml)
+					String qty = appl.getQuantity();
+					if (qty != null)
+						line.append(qty); //Magn (ml)
+					else
+						line.append("0");
 					line.append(";");
-					line.append(appl.getStrength());          //Styrkur(%)
+					String str = appl.getStrength();
+					if (str != null)
+						line.append(str); //Styrkur(%)
+					else
+						line.append("0");
 					line.append(";");
-					line.append(appl.getProducer());          //Framleiðandi
+					String prod = appl.getProducer();
+					if (prod != null)
+						line.append(prod); //Framleiðandi
 					line.append(";");
-					line.append(appl.getCountryOfOrigin());   //Framleiðsluland
+					String cntr = appl.getCountryOfOrigin();
+					if (cntr != null)
+						line.append(cntr); //Framleiðsluland
 					line.append(";");
-					line.append(appl.getBarCode());           //Strikamerki
+					String bar = appl.getBarCode();
+					if (bar != null)
+						line.append(bar); //Strikamerki
 					line.append(";");
-					line.append("01.1");                      //Flokksdeild
+					ProductCategory cat = null;
+					if (appl.getProductCategoryId() != -1)
+						cat = appl.getProductCategory();
+					if (cat != null) {
+						line.append(cat.getCategory()); //Flokksdeild
+					}
 					line.append(";");
-					line.append(appl.getAmount());            //Fjöldi í kassa
+					String amnt = appl.getAmount();
+					if (amnt != null && !type.equals("3"))
+						line.append(amnt); //Fjöldi í kassa
+					else
+						line.append("0");
 					line.append(";");
-					line.append(appl.getApplicationSent());   //Dags. umsóknar
+					IWTimestamp sent = new IWTimestamp(appl.getApplicationSent());
+					line.append(sent.getDateString("dd.MM.yy")); //Dags. umsóknar
 					line.append(";");
-					line.append(appl.getAmount());            //Magn tjöru
+					String tar = appl.getAmount();
+					if (tar != null && type.equals("3"))
+						line.append(tar); //Magn tjöru
+					else
+						line.append("0");
 					line.append(";");
-					line.append(appl.getWeigth());            //Þyngd tóbaks
+					String tobw = appl.getWeigth();
+					if (tobw != null && type.equals("3"))
+						line.append(tobw); //Þyngd tóbaks
+					else
+						line.append("0");
 					line.append(";");
-					line.append(appl.getPrice());             //Verð
+					float price = appl.getPrice();
+					if (price != -1)
+						line.append(Float.toString(price)); //Verð
+					else
+						line.append("0");
 					line.append(";");
-					line.append("");                          //Vörunúmer birgja
+					String supplprodid = appl.getSuppliersProductId();
+					if (supplprodid != null)
+						line.append(supplprodid); //Vörunúmer birgja
 					line.append(";");
-					line.append(appl.getCarbonMonoxide());    //Koltvísýringur
+					float mono = appl.getCarbonMonoxide();
+					if (mono != -1 && type.equals("3"))
+						line.append(Float.toString(mono)); //Koltvísýringur
+					else
+						line.append("0");
 					line.append("\n");
 					
 					writer.write(line.toString());
@@ -112,8 +173,6 @@ public class SendApplicationFilesToNavision extends Block {
 			getApplicationBusiness(iwc).markApplicationsAsSent(col);
 			
 			add("Skrá send");
-			
-			
 			
 			return;
 		}

@@ -20,7 +20,7 @@ public java.util.Collection findAllByCategory(java.lang.String p0)throws javax.e
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCategoriesBelongingTo(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllCategoriesBelongingTo(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ProductCategoryBMPBean)entity).ejbFindAllCategoriesBelongingTo(p0);
 	this.idoCheckInPooledEntity(entity);

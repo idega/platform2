@@ -39,14 +39,18 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 	}
 
 	public void start(IWBundle bundle) {
-		_bundle = bundle;
-		_timer = new EventTimer(EventTimer.THREAD_SLEEP_1_HOUR, TIMER_THREAD_NAME);
-		//		_timer = new EventTimer(EventTimer.THREAD_SLEEP_10_SECONDS, TIMER_THREAD_NAME);
-		_timer.addActionListener(this);
-		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
-		// -- Fix for working properly on Interebase with entity-auto-create-on.
-		_timer.start(3 * 60 * 1000);
-		System.out.println("ATVR Reports Daemon Bundle Starter: starting");
+		return;
+		
+//		System.out.println("Entering start method in ATVR Reports Deamon");
+//		_bundle = bundle;
+////		_timer = new EventTimer(EventTimer.THREAD_SLEEP_1_HOUR, TIMER_THREAD_NAME);
+////		_timer = new EventTimer(EventTimer.THREAD_SLEEP_10_SECONDS, TIMER_THREAD_NAME);
+//	_timer = new EventTimer(EventTimer.THREAD_SLEEP_5_MINUTES, TIMER_THREAD_NAME);
+//		_timer.addActionListener(this);
+//		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
+//		// -- Fix for working properly on Interebase with entity-auto-create-on.
+//		_timer.start(3 * 60 * 1000);
+//		System.out.println("ATVR Reports Daemon Bundle Starter: starting");
 	}
 
 	public void actionPerformed(ActionEvent event) {
@@ -54,8 +58,9 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 			if (event.getActionCommand().equalsIgnoreCase(TIMER_THREAD_NAME)) {
 				System.out.println("[ATVR Reports Daemon - " + IWTimestamp.RightNow().toString() + " ] - Checking for reports from Navision");
 				String path = _bundle.getProperty(REPORTS_PATH_PROPERTY_KEY);
+				System.out.println("path = " + path);
 				if (path != null && !path.equals("")) {
-					if (!getNewProductApplicationBusiness(_bundle.getApplication().getIWApplicationContext()).checkForNewReports(path))
+					if (!getNewProductApplicationBusiness(_bundle.getApplication().getIWApplicationContext()).checkForNewReports(path,_bundle))
 						System.out.println("[ATVR Reports Daemon - Unable To Read Reports]");
 				}
 				else {
@@ -63,8 +68,8 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 				}
 			}
 		}
-		catch (Exception x) {
-			x.printStackTrace();
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
