@@ -90,113 +90,12 @@ public class TextFormatter {
   }
 
 
-  public static String formatText(String text) {
-  		return formatText(text, -1, null);
-  }
-  
-  /**
-   *  Description of the Method
-   *
-   *@param  textBody       Description of the Parameter
-   *@param  tableTextSize  Description of the Parameter
-   *@param  tableWidth     Description of the Parameter
-   *@return                Description of the Return Value
-   */
-  public static String formatText(String textBody, int tableTextSize, String tableWidth) {
-
-
-      /*Vector linkVector = createTextLink(textBody);
-      for (int a = 0; a < linkVector.size(); a++) {
-        String link = linkVector.elementAt(a).toString();
-        int comma = link.indexOf(",");
-        link = "<a href=\"" + link.substring(comma + 1, link.length()) + "\" target=\"_blank\">" + link.substring(0, comma) + "</a>";
-        textBody = TextSoap.findAndReplace(textBody, "Link(" + linkVector.elementAt(a).toString() + ")", link);
-      }*/
-
-      //Almenn hreinsun
-      //textBody = TextSoap.findAndReplace(textBody,"*","<li>");
-
-      textBody = TextSoap.findAndReplaceOnPrefixCondition(textBody, "\r\n", ">","<br/>",true);
-
-      textBody = TextSoap.findAndReplace(textBody, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-
-    //Búa til töflu
-    /*if (textBody == null || textBody.equals("")) {
-      textBody = "";
-    }
-
-    Vector tableVector = createTextTable(textBody);
-
-    for (int a = 0; a < tableVector.size(); a++) {
-
-      String tableRow = tableVector.elementAt(a).toString();
-
-      if (a == 0) {
-	tableRow = TextSoap.findAndReplace(tableRow, "|", "</font></td><td valign=\"top\"><font size=\"" + (tableTextSize) + "\">");
-      } else {
-	tableRow = TextSoap.findAndReplace(tableRow, "|", "</font></td><td valign=\"top\"><font size=\"" + tableTextSize + "\">");
-      }
-
-      if (a == 0 || a == tableVector.size() - 1) {
-	if (a == 0) {
-	  tableRow = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"" + tableWidth + "\"><tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\"" + (tableTextSize) + "\">" + tableRow + "</font></td></tr>";
-	}
-
-	if (a == tableVector.size() - 1) {
-	  tableRow = "<tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\"" + tableTextSize + "\">" + tableRow + "</font></td></tr></table>";
-	}
-      } else {
-	tableRow = "<tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\"" + tableTextSize + "\">" + tableRow + "</font></td></tr>";
-      }
-
-      textBody = TextSoap.findAndReplace(textBody, tableVector.elementAt(a).toString(), tableRow);
-    }
-
-    textBody = TextSoap.findAndReplace(textBody, "|\r\n", "");
-    textBody = TextSoap.findAndReplace(textBody, "|", "");
-    //Töflugerð lokið
-
-
-    //Búa til töflu 2
-    if (textBody == null || textBody.equals("")) {
-      textBody = "";
-    }
-    tableVector = createTextTableNoBanner(textBody);
-
-    for (int a = 0; a < tableVector.size(); a++) {
-
-      String tableRow = tableVector.elementAt(a).toString();
-
-      if (a == 0) {
-	tableRow = TextSoap.findAndReplace(tableRow, "?", "</font></td><td><font size=\"" + (tableTextSize + 1) + "\">");
-      } else {
-	tableRow = TextSoap.findAndReplace(tableRow, "?", "</font></td><td><font size=\"" + tableTextSize + "\">");
-      }
-
-      if (a == 0 || a == tableVector.size() - 1) {
-	if (a == 0) {
-	  tableRow = "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\"" + tableWidth + "\"><tr bgcolor=\"#FFFFFF\"><td><font size=\"" + (tableTextSize + 1) + "\">" + tableRow + "</font></td></tr>";
-	}
-
-	if (a == tableVector.size() - 1) {
-	  tableRow = "<tr bgcolor=\"#FFFFFF\"><td><font size=\"" + tableTextSize + "\">" + tableRow + "</font></td></tr></table>";
-	}
-      } else {
-	tableRow = "<tr bgcolor=\"#FFFFFF\"><td><font size=\"" + tableTextSize + "\">" + tableRow + "</font></td></tr>";
-      }
-
-      textBody = TextSoap.findAndReplace(textBody, tableVector.elementAt(a).toString(), tableRow);
-    }
-
-    textBody = TextSoap.findAndReplace(textBody, "?\r\n", "");
-    textBody = TextSoap.findAndReplace(textBody, "?", "");
-   */
-   //Töflugerð lokið
-
-    //Búa til tengla
-
-    return textBody;
-  }
+	/**
+	 *@deprecated Use <code>TextSoap.formatText(String textBody)<code> instead
+	 */
+ public static String formatText(String textBody) {
+ 	return TextSoap.formatText(textBody);
+ }
 
 
   /**
