@@ -197,7 +197,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	          	
 	          	while (iterator.hasNext()) {
 					Email e_mail = (Email) iterator.next();
-					userTable.add("&nbsp;"+e_mail.getName() ,3,line);
+					userTable.add("&nbsp;"+e_mail.getEmailAddress() ,3,line);
 				}
 	          	
 	          }
@@ -210,12 +210,15 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	          	
 	          	while (iterator.hasNext()) {
 					Phone _phone = (Phone) iterator.next();
-					userTable.add("&nbsp;"+_phone.getName() ,4,line);
+					userTable.add("&nbsp;"+_phone.getNumber() ,4,line);
 				}
 	          	
 	          }
 	          
 	          //groups
+	          
+	          //ER EKKI AD FA PARAMETERINN
+	          //VERDUR AD GERA FIND FOLL FYRIR EMAIL,PHONE TIL AD DUPPLIST EKKI
 	          Collection appGroups = app.getGroups();
 	          
 	          if( appGroups!=null && !appGroups.isEmpty() ){
