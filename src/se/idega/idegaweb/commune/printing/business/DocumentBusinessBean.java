@@ -50,7 +50,6 @@ import com.idega.core.file.data.ICFileHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -703,7 +702,6 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 	// Exception{
 	private int createPasswordLetterContent(DocumentPrintContext dpc) throws ContentCreationException {
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
-		IWResourceBundle iwrb = iwb.getResourceBundle(getIWApplicationContext().getApplicationSettings().getDefaultLocale());
 		System.out.println("Default locale: " + getIWApplicationContext().getApplicationSettings().getDefaultLocale().toString());
 		String sAddrString = "";
 		PdfContentByte cb = dpc.getPdfWriter().getDirectContent();
@@ -742,11 +740,6 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 				User owner = msg.getOwner();
 				HashMap tagmap = new CommuneUserTagMap(getIWApplicationContext(), owner);
 				tagmap.putAll(getMessageTagMap(msg, locale));
-
-				XmlPeer image = new XmlPeer(ElementTags.IMAGE, "signature");
-				image.addValue("url", iwrb.getImage("signature.gif").getURL());
-				tagmap.put(image.getAlias(), image);
-				System.out.println("Image tag: " + image.getTag());
 
 				XmlPeer date = new XmlPeer(ElementTags.CHUNK, "date");
 				date.setContent(new IWTimestamp().getDateString("dd.MM.yyyy"));
