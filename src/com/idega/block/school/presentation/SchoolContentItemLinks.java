@@ -44,8 +44,9 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				
 		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());
 		if (manType != null) {
-			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
-			++row;
+//	Hans bad um thetta... held eg, Gimmi			
+//			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
+//			++row;
 			table.add(getText(_iwrb.getLocalizedString(manType)), 1, row);
 			useBreak = true;
 		}
@@ -56,6 +57,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		String zipCode = _school.getSchoolZipCode();
 		String phone = _school.getSchoolPhone();
 		String fax = _school.getSchoolFax();
+		String mapUrl = _school.getMapUrl();
 		if (address != null || zipArea != null || zipCode != null || phone != null || fax != null) {
 			if (useBreak) {
 				++row;
@@ -87,6 +89,12 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				++row;
 				table.add(getText(_iwrb.getLocalizedString("school.fax","Fax")+": "+fax), 1, row);
 			}
+			if (mapUrl != null) {
+				++row;
+				Link link = new Link(getText(_iwrb.getLocalizedString("school.show_map","Show map")), mapUrl);
+				link.setTarget(Link.TARGET_NEW_WINDOW);
+				table.add(link, 1, row);
+			}
 			useBreak = true;
 		}
 		
@@ -108,7 +116,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			e.printStackTrace(System.err);
 		}
 		
-		try {
+/*		try {
 			int assistantHeadmasterId = _school.getAssistantHeadmasterUserId();
 			if (assistantHeadmasterId > 0 ) {
 				if (useBreak) {
@@ -125,7 +133,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		} catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
-
+*/
 		
 		String webPage = _school.getSchoolWebPage();
 		if (webPage != null) {
