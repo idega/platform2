@@ -4,7 +4,6 @@
 package com.idega.block.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
