@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.23 2003/09/19 12:30:44 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.24 2003/09/25 12:04:15 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.23 2003/09/19 12:30:44 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.24 2003/09/25 12:04:15 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -343,7 +343,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		try {
 			int actPK = 0;
 			int regPK = 0;
-			int comPK = 0;
+			String comPK = "";
 			int comBelPK = 0;
 			int schoolYearPK1 = 0;
 			int schoolYearPK2 = 0;
@@ -353,8 +353,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 						pp.getActivity().getPrimaryKey().toString() : "0");	
 				regPK = Integer.parseInt(pp.getRegSpecType() != null ? 
 						pp.getRegSpecType().getPrimaryKey().toString() : "0");
-				comPK = Integer.parseInt(pp.getCompanyType() != null ? 
-						pp.getCompanyType().getPrimaryKey().toString() : "0");
+				comPK = pp.getCompanyType() != null ? 
+						pp.getCompanyType().getPrimaryKey().toString() : "0";
 				comBelPK = Integer.parseInt(pp.getCommuneBelonging() != null ? 
 						pp.getCommuneBelonging().getPrimaryKey().toString() : "0");
 				schoolYearPK1 = Integer.parseInt(pp.getSchoolYear1() != null ? 
@@ -551,7 +551,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType
 	 * @return the drop down menu
 	 */
-	private DropdownMenu companyTypeSelector(IWContext iwc, String name, int refIndex) throws Exception {
+	private DropdownMenu companyTypeSelector(IWContext iwc, String name, String refIndex) throws Exception {
 			DropdownMenu menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllCompanyTypes(), 
 					"getLocalizedKey"));
