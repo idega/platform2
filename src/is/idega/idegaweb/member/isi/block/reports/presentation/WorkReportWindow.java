@@ -38,9 +38,21 @@ public class WorkReportWindow extends IWAdminWindow {
 	
 	public static final String PARAMETER_CLUB_ID = "iwme_wr_club_id";
 
-	private String ACTION = "iwme_wr_act";
-	private String ACTION_SAVE ="iwme_wr_act_sv";
-
+	private static final String ACTION = "iwme_wr_act";
+	private static final String ACTION_SAVE ="iwme_wr_act_sv";
+	
+	private static final String ACTION_WORK_ON_REPORT ="iwme_wr_act_b1";
+	private static final String ACTION_EDIT_MEMBER_LIST ="iwme_wr_act_b2";
+	private static final String ACTION_EDIT_ACCOUNT ="iwme_wr_act_b3";
+	private static final String ACTION_EDIT_BOARD ="iwme_wr_act_b4";
+	private static final String ACTION_UPLOAD_REPORT ="iwme_wr_act_b5"; //b6 is useless
+	private static final String ACTION_IMPORT_MEMBERS ="iwme_wr_act_b7";
+	private static final String ACTION_IMPORT_ACCOUNT ="iwme_wr_act_b8";
+	private static final String ACTION_IMPORT_BOARD ="iwme_wr_act_b9";
+	private static final String ACTION_REPORT_OVERVIEW ="iwme_wr_act_b10";
+	private static final String ACTION_CLOSE_REPORT ="iwme_wr_act_b11";
+	private static final String ACTION_STATISTICS ="iwme_wr_act_b12";
+	
 	private IWResourceBundle iwrb;
 	private List failedInserts;
 
@@ -114,27 +126,38 @@ public class WorkReportWindow extends IWAdminWindow {
 		
 		LinkContainer createReports = new LinkContainer();
 		createReports.add(formatText(iwrb.getLocalizedString("workreportwindow.create_reports","Create reports"),true));
-				
+		
+		//B.5		
 		LinkContainer uploadReport = new LinkContainer();
 		uploadReport.add(formatText(iwrb.getLocalizedString("workreportwindow.upload_report","Upload report"),true));
 		Lists uploadList = new Lists();
+		//B.7
 		uploadList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members","Import member list")));
+		//B.8
 		uploadList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_account","Import account info")));
+		//B.9
 		uploadList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_board","Import board info")));
 		
+		//B.1
 		LinkContainer workOnReport = new LinkContainer();
 		workOnReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report","Select report"),true));
 		Lists editList = new Lists();
+		//B.2
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_members","Edit member list")));
+		//B.3
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account","Edit account info")));
+		//B.4
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board","Edit board info")));
 
+		//B.10
 		LinkContainer reportsOverview = new LinkContainer();
 		reportsOverview.add(formatText(iwrb.getLocalizedString("workreportwindow.report_overview","Reports overview"),true));
-			
+		
+		//B.11
 		LinkContainer closeReport = new LinkContainer();
 		closeReport.add(formatText(iwrb.getLocalizedString("workreportwindow.close_report","Close report"),true));
 		
+		//B.12
 		Text statistics = formatHeadline(iwrb.getLocalizedString("workreportwindow.statistics","Statistics"));
 		
 		Lists statsList = new Lists();
