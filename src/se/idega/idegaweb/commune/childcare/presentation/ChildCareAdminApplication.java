@@ -385,7 +385,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				GenericButton placeInGroup = null;
 
 				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
-					if (application.getContract().isSigned()) {
+					if (! application.getContract().isSigned()) {
 						placeInGroup = (GenericButton) getStyledInterface(new GenericButton("place_in_group", localize("child_care.place_in_group","Place in group")));
 						placeInGroup.setDisabled(true);
 						table.add(placeInGroup, column, 1);
