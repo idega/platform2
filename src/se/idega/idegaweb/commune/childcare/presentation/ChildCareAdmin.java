@@ -293,8 +293,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 					form.add(getSmallErrorText(localize("child_care.clean_queue_failed", "Cleaning of queue failed!")));
 				}
 			}
-		
-			applicationTable.setHeight(row++, 12);
+			row++;
+			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+			applicationTable.setHeight(row, 12);
 			applicationTable.add(form, 1, row);
 		}
 		
