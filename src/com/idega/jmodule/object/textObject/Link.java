@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.35 2001/09/15 23:56:22 eiki Exp $
+ * $Id: Link.java,v 1.36 2001/09/19 11:37:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -216,7 +216,7 @@ public class Link extends Text {
    */
   public void setModuleObject(ModuleObject object) {
     _obj = object;
-    _objectType = OBJECT_TYPE_WINDOW;
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
     object.setParentObject(this);
   }
 
