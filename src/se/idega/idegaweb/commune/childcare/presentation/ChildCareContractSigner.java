@@ -111,6 +111,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 				.init(contract)
 			);
 					
+			iwc.removeSessionAttribute(NBSSigningBlock.INIT_DONE);						
 			iwc.forwardToIBPage(getParentPage(), getResponsePage());		
 			
 			
