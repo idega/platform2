@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopBundleStarter.java,v 1.5 2002/04/15 16:10:09 palli Exp $
+ *  $Id: IShopBundleStarter.java,v 1.6 2002/04/16 14:42:50 palli Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -56,8 +56,9 @@ public class IShopBundleStarter implements IWBundleStartable {
    */
   public void start(IWBundle starterBundle) {
     System.out.println("Starting Intershop initialization");
-    IShopToolbarButton separator = new IShopToolbarButton(starterBundle, true);
-    IShopToolbarButton button = new IShopToolbarButton(starterBundle, false);
+    IShopToolbarButton separator = new IShopToolbarButton(starterBundle, IShopToolbarButton.BUTTON_SEPERATOR);
+    IShopToolbarButton button = new IShopToolbarButton(starterBundle, IShopToolbarButton.BUTTON_EXPORT);
+    IShopToolbarButton button2 = new IShopToolbarButton(starterBundle, IShopToolbarButton.BUTTON_NEW_PAGE);
 
     List l = (List)starterBundle.getApplication().getAttribute(IBApplication.TOOLBAR_ITEMS);
     if (l == null) {
@@ -67,6 +68,7 @@ public class IShopBundleStarter implements IWBundleStartable {
 
     l.add(separator);
     l.add(button);
+    l.add(button2);
 
     StringBuffer path = new StringBuffer(starterBundle.getPropertiesRealPath());
     if (!path.toString().endsWith(FileUtil.getFileSeparator()))
@@ -76,14 +78,14 @@ public class IShopBundleStarter implements IWBundleStartable {
 
     int count = IShopTemplateHome.getInstance().count();
     if (count == 0) {
-      insertInitialData(path.toString());
+      insertInitialData(path.toString(),starterBundle);
     }
   }
 
   /**
    *
    */
-  private void insertInitialData(String pathToPropertiesFile) {
+  private void insertInitialData(String pathToPropertiesFile, IWBundle starterBundle) {
     List l = null;
     try {
       l = EntityFinder.getInstance().findAll(IBDomain.class);
@@ -113,7 +115,15 @@ public class IShopBundleStarter implements IWBundleStartable {
     }
 
     String parent = Integer.toString(main.getStartPageID());
-    int folderId = IBPageHelper.getInstance().createNewPage(parent,"Intershop folder",com.idega.builder.data.IBPageBMPBean.PAGE,"",null);
+    String folder = starterBundle.getProperty("INTERSHOP_FOLDER");
+    int folderId = 0;
+    if (folder == null) {
+      folderId = IBPageHelper.getInstance().createNewPage(parent,"Intershop folder",com.idega.builder.data.IBPageBMPBean.PAGE,"",null);
+      starterBundle.setProperty("INTERSHOP_FOLDER",Integer.toString(folderId));
+    }
+    else {
+      folderId = Integer.parseInt(folder);
+    }
 
     String driver = props.getProperty("drivers");
     String url = props.getProperty("default.url");
@@ -200,6 +210,7 @@ public class IShopBundleStarter implements IWBundleStartable {
           int tmp = IBPageHelper.getInstance().createNewPage(top,className,com.idega.builder.data.IBPageBMPBean.PAGE,"",null);
           parentId = Integer.toString(tmp);
           parents.put(className,parentId);
+          starterBundle.setProperty(className + "_FOLDER",parentId);
         }
 
         int pageId = IBPageHelper.getInstance().createNewPage(parentId,name,com.idega.builder.data.IBPageBMPBean.PAGE,"",null,null,IShopTemplate.SUBTYPE_NAME);
