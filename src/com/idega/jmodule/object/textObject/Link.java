@@ -14,9 +14,9 @@ import com.idega.idegaweb.*;
 //added by gummi@idega.is
 //begin
 import javax.swing.event.EventListenerList;
-import com.idega.event.IWActionEvent;
-import com.idega.event.IWActionListener;
 import java.awt.event.*;
+import com.idega.event.IWLinkEvent;
+import com.idega.event.IWLinkListener;
 //end
 
 /**
@@ -512,14 +512,20 @@ public void print(ModuleInfo modinfo)throws IOException{
 //added by gummi@idega.is
 //begin
 
-  public void addIWActionListener(IWActionListener l,ModuleInfo modinfo){
+  public void addIWLinkListener(IWLinkListener l,ModuleInfo modinfo){
     if (!listenerAdded()){
-      String sessionAddress = this.getID();
-      this.addParameter(sessionEventStorageName,sessionAddress);
-      modinfo.setSessionAttribute(sessionAddress, this);
-      listenerAdded(true);
+      postIWLinkEvent(modinfo);
     }
-    super.addIWActionListener(l, modinfo);
+    super.addIWLinkListener(l, modinfo);
+  }
+
+
+  public void postIWLinkEvent(ModuleInfo modinfo){
+      String sessionAddress = this.getID();
+      IWLinkEvent event = new IWLinkEvent(this,IWLinkEvent.LINK_ACTION_PERFORMED);
+      this.addParameter(sessionEventStorageName,sessionAddress);
+      modinfo.setSessionAttribute(sessionAddress, event);
+      listenerAdded(true);
   }
 
 

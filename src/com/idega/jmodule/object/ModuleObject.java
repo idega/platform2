@@ -16,12 +16,11 @@ import com.idega.idegaweb.IWException;
 //begin
 import com.idega.idegaweb.IWMainApplication;
 import javax.swing.event.EventListenerList;
-import com.idega.event.IWActionEvent;
-import com.idega.event.IWActionListener;
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.AWTEvent;
-import java.awt.EventQueue;
+import com.idega.event.IWEvent;
+import com.idega.event.IWLinkEvent;
+import com.idega.event.IWSubmitEvent;
+import com.idega.event.IWLinkListener;
+import com.idega.event.IWSubmitListener;
 //end
 
 
@@ -52,7 +51,7 @@ private static String emptyString="";
 //begin
 public static String sessionEventStorageName= IWMainApplication.IWEventSessionAddressParameter;  //gummi@idega.is
 public EventListenerList listenerList = new EventListenerList(); //gummi@idega.is
-public IWActionEvent actionEvent = null;  //gummi@idega.is
+//public IWEvent moduleEvent = null;  //gummi@idega.is
 private Hashtable eventAttributes = null;
 private static long InstnceUniqueID;
 private String UniqueInstnceName;
@@ -542,13 +541,21 @@ public IBObjectInstance getIBInstance(ModuleInfo modinfo)throws IWException{
 //added by gummi@idega.is
 //begin
 
-  public void addIWActionListener(IWActionListener l,ModuleInfo modinfo){
-    listenerList.add(IWActionListener.class,l);
+  public void addIWLinkListener(IWLinkListener l,ModuleInfo modinfo){
+    listenerList.add(IWLinkListener.class,l);
+  }
+
+  public IWLinkListener[] getIWLinkListeners(){
+    return (IWLinkListener[])listenerList.getListeners(IWLinkListener.class);
   }
 
 
-  public IWActionListener[] getIWActionListeners(){
-    return (IWActionListener[])listenerList.getListeners(IWActionListener.class);
+  public void addIWSubmitListener(IWSubmitListener l,ModuleInfo modinfo){
+    listenerList.add(IWSubmitListener.class,l);
+  }
+
+  public IWSubmitListener[] getIWSubmitListeners(){
+    return (IWSubmitListener[])listenerList.getListeners(IWSubmitListener.class);
   }
 
 
@@ -570,26 +577,53 @@ public IBObjectInstance getIBInstance(ModuleInfo modinfo)throws IWException{
 
 
 
-
-
-  public void postIWActionEvent () {
-    fireAction();
+   public void dispatchEvent(IWEvent e) {
+        processEvent(e);
   }
 
-  protected void fireAction() {
+
+    protected void processEvent(IWEvent e) {
+
+        if (e instanceof IWLinkEvent) {
+            processIWLinkEvent((IWLinkEvent)e);
+
+        } else if (e instanceof IWSubmitEvent) {
+            processIWSubmitEvent((IWSubmitEvent)e);
+        } else{
+            System.err.println("unable to prosess event: " + e);
+        }
+    }
+
+    protected void processIWLinkEvent(IWLinkEvent e) {
+      ModuleObject obj = (ModuleObject)e.getSource();
       // Guaranteed to return a non-null array
-      IWActionListener[] listeners = getIWActionListeners();
+      IWLinkListener[] listeners = obj.getIWLinkListeners();
       // Process the listeners last to first, notifying
       // those that are interested in this event
       for (int i = listeners.length-1; i>=0; i--) {
-              // Lazily create the event:
-              System.out.println("Listeners" + i);
-              if (actionEvent == null)
-                  actionEvent = new IWActionEvent(this);
-              ((IWActionListener)listeners[i]).actionPerformed(actionEvent);
-
+        ((IWLinkListener)listeners[i]).actionPerformed(e);
       }
-  }
+    }
+
+    protected void processIWSubmitEvent(IWSubmitEvent e) {
+      ModuleObject obj = (ModuleObject)e.getSource();
+      // Guaranteed to return a non-null array
+      IWSubmitListener[] listeners = obj.getIWSubmitListeners();
+      // Process the listeners last to first, notifying
+      // those that are interested in this event
+      for (int i = listeners.length-1; i>=0; i--) {
+        ((IWSubmitListener)listeners[i]).actionPerformed(e);
+      }
+    }
+
+
+
+
+    /**
+     * unimplemented
+     */
+    public void fireEvent(){
+    }
 
   public void listenerAdded(boolean added){
     listenerAdded = added;
