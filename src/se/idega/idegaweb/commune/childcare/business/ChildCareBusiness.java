@@ -104,7 +104,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#updatePrognosis
      */
     public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis,
-            int threeMonthsPriority, int oneYearPriority, int providerCapacity) throws java.rmi.RemoteException;
+            int threeMonthsPriority, int oneYearPriority, int providerCapacity, int vacancies, String providerComments) throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#setChildCareQueueExported

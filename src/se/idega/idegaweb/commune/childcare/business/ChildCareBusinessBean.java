@@ -225,7 +225,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis, int threeMonthsPriority, int oneYearPriority, int providerCapacity) {
+	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis, int threeMonthsPriority, int oneYearPriority, int providerCapacity, int vacancies, String providerComments) {
 		try {
 			ChildCarePrognosis prognosis = getPrognosis(providerID);
 			if (prognosis == null) prognosis = getChildCarePrognosisHome().create();
@@ -236,6 +236,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			prognosis.setThreeMonthsPriority(threeMonthsPriority);
 			prognosis.setOneYearPriority(oneYearPriority);
 			prognosis.setProviderCapacity(providerCapacity);
+			if (vacancies != -1)
+				prognosis.setVacancies(vacancies);
+			
+			prognosis.setProviderComments(providerComments);
 			prognosis.setUpdatedDate(new IWTimestamp().getDate());
 			prognosis.store();
 		}
