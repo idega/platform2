@@ -94,7 +94,11 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
   }
   
   public Collection ejbFindAllSchoolYearBySchoolType(int schoolTypeId) throws FinderException {
-  	return this.idoFindAllIDsByColumnBySQL(SCHOOL_TYPE, Integer.toString(schoolTypeId));
+	IDOQuery sql = idoQuery();
+	sql.appendSelectAllFrom(getEntityName());
+	sql.appendWhereEquals(SCHOOL_TYPE, schoolTypeId);
+	sql.appendOrderBy(getIDColumnName());
+	return super.idoFindPKsByQuery(sql);
   }
 
 	/**
