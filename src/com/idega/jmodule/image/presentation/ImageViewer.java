@@ -22,7 +22,7 @@ private int ifirst = 0;
 
 private boolean backbutton = false;
 private boolean limitNumberOfImage=false;
-private Table outerTable = new Table(1,1);
+private Table outerTable = new Table(1,2);
 private boolean isAdmin = false;
 
 
@@ -31,6 +31,9 @@ private Text textProxy = new Text();
 private Image view;
 private Image delete;
 private Image editor;
+private Image use;
+private Image copy;
+private Image cut;
 
 private String language = "IS";
 
@@ -90,17 +93,20 @@ public void main(ModuleInfo modinfo)throws Exception{
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
-  view = new Image("/pics/jmodules/image/"+language+"/view.gif");
-  delete = new Image("/pics/jmodules/image/"+language+"/delete.gif");
+
+  view = new Image("/pics/jmodules/image/"+language+"/view.gif","View all sizes");
+  delete = new Image("/pics/jmodules/image/"+language+"/delete.gif","Delete this image");
   editor = new Image("/pics/jmodules/image/"+language+"/imageeditor.gif");
+  use = new Image("/pics/jmodules/image/"+language+"/use.gif","Use this image");
+  copy = new Image("/pics/jmodules/image/"+language+"/copy.gif","Copy this image");
+  cut = new Image("/pics/jmodules/image/"+language+"/cut.gif","Cut this image");
 
   String imageId = modinfo.getRequest().getParameter("image_id");
   String imageCategoryId = modinfo.getRequest().getParameter("image_catagory_id");
 
   if(isAdmin) {
-    Form imageEditor = new Form("/image/imageadmin.jsp");
-    imageEditor.add(new SubmitButton(editor));
-    add(imageEditor);
+    Link imageEditor = new Link(editor,"/image/imageadmin.jsp");
+    outerTable.add(imageEditor,1,1);
   }
 
   if(imageId != null){
@@ -128,27 +134,6 @@ public void main(ModuleInfo modinfo)throws Exception{
   }
 
 }
-
-
-public Table getImageTable(ImageEntity[] image)throws IOException,SQLException
-{
-
-	int imageId;
-
-        int k = 0;
-	if( !limitNumberOfImage ) k = image.length;
-        else k = numberOfDisplayedImages;
-
-	for ( int i = 0; i<k ; i++){
-          outerTable.add(displayImage(image[i]), 1, 1);
-
-
-	}
-
-
-return outerTable;
-}
-
 
 public static Table displayImage(int imageId) throws SQLException {
     Table table = new Table();
@@ -189,14 +174,14 @@ private Table displayImage( ImageEntity image ) throws SQLException
     Form imageEdit2 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
     imageEdit2.add(new SubmitButton(delete));
 
-    Form imageEdit3 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
-  //  imageEdit3.add(new SubmitButton(use));
+    Form imageEdit3 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=use");
+    imageEdit3.add(new SubmitButton(use));
 
-    Form imageEdit4 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
-  //  imageEdit4.add(new SubmitButton(copy));
+    Form imageEdit4 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=copy");
+    imageEdit4.add(new SubmitButton(copy));
 
-    Form imageEdit5 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
-  //  imageEdit5.add(new SubmitButton(cut));
+    Form imageEdit5 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=cut");
+    imageEdit5.add(new SubmitButton(cut));
 
 
     editTable.add(imageEdit,1,1);
@@ -214,14 +199,16 @@ return imageTable;
 private Table displayCatagory(int categoryId, ModuleInfo modinfo)  throws SQLException {
   int k = 0;
   String sFirst = modinfo.getParameter("iv_first");//browsing from this image
-  Table table = new Table();
-
   ImageCatagory category = new ImageCatagory(categoryId);
   ImageEntity[] imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
   com.idega.jmodule.object.Image image;
 
   if( limitNumberOfImage ) k = numberOfDisplayedImages;
   else k = imageEntity.length;
+
+  int heigth = k/iNumberInRow;
+  if( k%iNumberInRow!=0 ) heigth++;
+  Table table = new Table(iNumberInRow,heigth);
 
   try {
     if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
@@ -277,7 +264,7 @@ public void setNumberOfDisplayedImages(int numberOfDisplayedImages){
 }
 
 public void setNumberInRow(int NumberOfImagesInOneRow){
-  this.iNumberInRow = iNumberInRow;
+  this.iNumberInRow = NumberOfImagesInOneRow;
 }
 
 
@@ -289,16 +276,28 @@ public void setTableWidth(String width){
   this.outerTable.setWidth(width);
 }
 
-public void setViewImage(String image_name){
-  view = new Image(image_name);
+public void setViewImage(String imageName){
+  view = new Image(imageName);
 }
 
-public void setDeleteImage(String image_name){
-  delete = new Image(image_name);
+public void setDeleteImage(String imageName){
+  delete = new Image(imageName);
 }
 
-public void setEditorImage(String image_name){
-  editor = new Image(image_name);
+public void setEditorImage(String imageName){
+  editor = new Image(imageName);
+}
+
+public void setUseImage(String imageName){
+  use = new Image(imageName);
+}
+
+public void setCopyImage(String imageName){
+  copy = new Image(imageName);
+}
+
+public void setCutImage(String imageName){
+  cut = new Image(imageName);
 }
 
 }
