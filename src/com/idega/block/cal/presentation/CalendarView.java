@@ -504,6 +504,25 @@ public class CalendarView extends Block{
 			topTable.add(nameOfDayTable,i,1);
 //			backTable.setWidth(i,2,"200");
 		}
+		User user = null;
+		Integer userID = null;
+		if(iwc.isLoggedOn()) {
+			user = iwc.getCurrentUser();
+			userID = (Integer) user.getPrimaryKey();
+		}
+		else {
+			userID = new Integer(-2);
+		}
+		Collection viewGroups = null;		
+		if(user != null) {
+			try {
+				viewGroups = getUserBusiness(iwc).getUserGroups(user);
+				
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		while (n <= daycount) {
 			Table dayCell = new Table();
 			dayCell.setCellspacing(0);
@@ -552,32 +571,13 @@ public class CalendarView extends Block{
 					return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
 				}				
 			});
-			User user = null;
-			Integer userID = null;
-			if(iwc.isLoggedOn()) {
-				user = iwc.getCurrentUser();
-				userID = (Integer) user.getPrimaryKey();
-			}
-			else {
-				userID = new Integer(-2);
-			}
+			
 			for(int h=0; h<listOfEntries.size(); h++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
 				CalendarLedger ledger = null;
 				int groupIDInLedger = 0;
 				int coachGroupIDInLedger = 0;
 				boolean isInGroup = false;
-				Collection viewGroups = null;
-				
-				if(user != null) {
-					try {
-						viewGroups = getUserBusiness(iwc).getUserGroups(user);
-						
-					}catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
 				
 				if(entry.getLedgerID() != -1) {
 					ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
@@ -585,7 +585,6 @@ public class CalendarView extends Block{
 						groupIDInLedger = ledger.getGroupID();
 						coachGroupIDInLedger = ledger.getCoachGroupID();
 					}
-
 				}
 				else {
 					groupIDInLedger = -1;
