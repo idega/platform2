@@ -283,8 +283,8 @@ public class GroupMemberList extends Block {
 		if(groupIds!=null && groupIds.length>0) {
 			groupIdsSet.addAll(Arrays.asList(groupIds));
 		}
-		if(_groupIds!=null && _groupIds.length>0) {
-			groupIdsSet.addAll(Arrays.asList(_groupIds));
+		if(_groupIdList!=null && _groupIdList.size()>0) {
+			groupIdsSet.addAll(_groupIdList);
 		}
 		List groups = new ArrayList();
 		Iterator idsIter = groupIdsSet.iterator();
@@ -292,7 +292,7 @@ public class GroupMemberList extends Block {
 		while(idsIter.hasNext()) {
 			try {
 				Object objId = idsIter.next();
-				String id = objId.toString();
+				String id = objId.toString().trim();
 				System.out.println("fetching group with id " + id + " id class is " + objId.getClass().getName());
 				Group group = _biz.getGroup(iwc, id);
 				if(group!=null) {
@@ -315,11 +315,7 @@ public class GroupMemberList extends Block {
 		
 		return groups;
 	}
-	
-	public void setGroupIds(String[] groupIds) {
-		_groupIds = groupIds;
-	}
-	
+		
 	// BEGIN setters/properties for block properties to select what info is shown, names of methods&properties should be self explanatory
 	public void setShowGroupName(boolean value) {
 		_showGroupName = value;
@@ -377,6 +373,10 @@ public class GroupMemberList extends Block {
 		_headlineStyle = style;
 	}
 	
+	public void addGroupId(String id) {
+		_groupIdList.add(id);
+	}
+	
 	private boolean _showGroupName = true;
 	private boolean _showTitle = true;
 	private boolean _showAge = true;
@@ -391,10 +391,10 @@ public class GroupMemberList extends Block {
 	private boolean _showBeganWork = true;
 	private String _textInfoStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
 	private String _headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
+	private List _groupIdList = new ArrayList(); // set with block properties
 	
 	// END setters/properties for block properties to select what info is shown, names of methods&properties should be self explanatory
 	
-	private String[] _groupIds = null;
 	private boolean _sortGroups = true; // if true, the groups to display members for are sorted alphabeticly
 	
 	private UserInfoBusiness _biz = null;
