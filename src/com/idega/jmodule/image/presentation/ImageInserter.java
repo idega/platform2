@@ -87,6 +87,10 @@ public ImageInserter(int imageId, String imSessionImageName) {
     this.adminURL=adminURL;
   }
 
+  public void setImageId(int imageId) {
+    this.imageId=imageId;
+  }
+
   public void setImSessionImageName(String imSessionImageName) {
     this.imSessionImageName=imSessionImageName;
   }

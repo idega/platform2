@@ -11,6 +11,7 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.text.data.*;
+import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.util.text.*;
 public class TextEditor extends JModuleObject{
 
@@ -164,59 +165,12 @@ public TextEditor(boolean isAdmin){
 
 			myTable.add(vista,2,5);
 
-			//Image dót!!
-			Window insertNewsImageWindow = new Window("Nymynd", 480, 420, "/news/insertimage.jsp?submit=new");
-			String image_session_id = (String) Session.getAttribute("image_id");
-			String image_id = null;
-			Table imageTable = new Table(1,2);
-                          imageTable.setAlignment(1,1,"center");
-			imageTable.setAlignment("center");
-                        Image imageModule = new Image();
+                        ImageInserter imageInsert = new ImageInserter();
+                        if ( update ) {
+                          imageInsert.setImageId(text.getImageId());
+                        }
 
-			Text imageText = new Text("Smelltu á myndina<br>til að breyta henni");
-				imageText.setFontColor(textColor);
-
-			if(image_session_id != null){
-				image_id = image_session_id;
-				myForm.add(new HiddenInput("include_image", "Y"));
-                                imageModule = new Image("/servlet/imageModule?image_id="+image_id,"Textamynd",100,100);
-                                imageModule.setBorder(2);
-				imageTable.add(new Link(imageModule,insertNewsImageWindow),1,1);
-				imageTable.add(imageText,1,2);
-				myTable.add(imageTable, 2, 4);
-			}
-			else {
-				if(update){
-					image_id = String.valueOf(text.getImageId());
-					if ( text.getIncludeImage().equals("Y") ) {
-						Session.setAttribute("image_id",image_id);
-						myForm.add(new HiddenInput("include_image", "Y"));
-                                                imageModule = new Image("/servlet/imageModule?image_id="+image_id,"Textamynd",100,100);
-                                                imageModule.setBorder(2);
-                                                imageTable.add(new Link(imageModule,insertNewsImageWindow),1,1);
-					}
-					else {
-                                                imageModule = new Image("/pics/news/x.gif","Textamynd",100,100);
-                                                imageModule.setBorder(2);
-                                                imageTable.add(new Link(imageModule,insertNewsImageWindow),1,1);
-					}
-					imageTable.add(imageText,1,2);
-					myTable.add(imageTable, 2, 4);
-				}
-
-				if (image_id==null||image_id.equals("")){
-					image_id="-1";//ef engin mynd
-                                                imageModule = new Image("/pics/news/x.gif","Textamynd",100,100);
-                                                imageModule.setBorder(2);
-                                                imageTable.add(new Link(imageModule,insertNewsImageWindow),1,1);
-					imageTable.add(imageText,1,2);
-
-				myTable.add(imageTable, 2, 4);
-				}
-
-			}
-
-			myForm.add(new HiddenInput("image_id",image_id));
+                        myTable.add(imageInsert,2,4);
 
 		myForm.add(myTable);
 
@@ -249,7 +203,7 @@ public TextEditor(boolean isAdmin){
 		String text_body = request.getParameter("text_body");
 			if ( text_body == null ) { check = false; }
 
-		String include_image = request.getParameter("include_image");
+		String include_image = request.getParameter("insertImage");
 			if ( include_image == null ) { include_image = "N"; }
 
 		String image_id = request.getParameter("image_id");
