@@ -17,6 +17,7 @@ import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.Window;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
@@ -56,6 +57,7 @@ public class RegistrationReceivedPrintable extends Window {
 			log(fe);
 		}
 		t.add(TextFormatter.formatText(message), 1, 1);
+		t.add(new PrintButton(iwrb.getLocalizedString("print","Print")));
 		
 		add(t);
 	}
@@ -67,6 +69,10 @@ public class RegistrationReceivedPrintable extends Window {
 			throw new IBORuntimeException(e);
 		}
 	}
+	public String getBundleIdentifier() {
+		return IWMarathonConstants.IW_BUNDLE_IDENTIFIER;
+	}
+
 
 	
 }
