@@ -1,5 +1,7 @@
 package is.idegaweb.campus.allocation;
 
+import is.idega.idegaweb.campus;
+
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
