@@ -67,6 +67,9 @@ public class FamilyRelationConnector extends UserRelationConnector {
 				menu.addMenuElement(
 					familyService.getSpouseRelationType(),
 					iwrb.getLocalizedString("usr_fam_win_spouse", "Spouse"));
+				menu.addMenuElement(
+					familyService.getCohabitantRelationType(),
+					iwrb.getLocalizedString("usr_fam_win_cohabitant", "Cohabitant"));
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -86,26 +89,43 @@ public class FamilyRelationConnector extends UserRelationConnector {
 	 */
 	public void createRelation(IWContext iwc, Integer userID, Integer relatedUserID, String relationType,String reverseRelationType)
 		throws RemoteException {
-			System.out.println("adding relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
+			debug("adding relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
 		try {
 			MemberFamilyLogic logic = getMemberFamilyLogic(iwc);
 			UserHome userHome  = getUserHome();
 			User user = userHome.findByPrimaryKey(userID);
 			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
 			if(relationType==null && reverseRelationType!=null){
+				//swapping of relations and users
+				String tmprel = relationType;
 				relationType = reverseRelationType;
+				reverseRelationType = tmprel;
 				User temp = relatedUser;
 				relatedUser = user;
 				user = temp;
-			}
+			}			
+			
 			if (relationType.equals(logic.getChildRelationType())) {
-				logic.setAsChildFor(user,relatedUser);
+				if(reverseRelationType!=null){
+					// if parential child
+					if(reverseRelationType.equalsIgnoreCase(logic.getParentRelationType())){
+						logic.setAsParentFor(relatedUser,user);
+					}
+					else if(reverseRelationType.equalsIgnoreCase(logic.getCustodianRelationType())){
+						logic.setAsCustodianFor(relatedUser,user);
+					}
+				}
+				else
+					logic.setAsChildFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getParentRelationType())) {
 				logic.setAsParentFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSpouseRelationType())) {
 				logic.setAsSpouseFor(user,relatedUser);
+			}
+			else if (relationType.equals(logic.getCohabitantRelationType())) {
+				logic.setAsCohabitantFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSiblingRelationType())) {
 				logic.setAsSiblingFor(user,relatedUser);
@@ -135,7 +155,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 	 */
 	public void removeRelation(IWContext iwc, Integer userID, Integer relatedUserID, String relationType,String reverseRelationType)
 		throws RemoteException {
-			System.out.println("removing relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
+			debug("removing relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
 		try {
 			MemberFamilyLogic logic = getMemberFamilyLogic(iwc); 
 			UserHome userHome = getUserHome();
@@ -155,6 +175,9 @@ public class FamilyRelationConnector extends UserRelationConnector {
 			}
 			else if (relationType.equals(logic.getSpouseRelationType())) {
 				logic.removeAsSpouseFor(user,relatedUser);
+			}
+			else if (relationType.equals(logic.getCohabitantRelationType())) {
+				logic.removeAsCohabitantFor(user,relatedUser);
 			}
 			else if (relationType.equals(logic.getSiblingRelationType())) {
 				logic.removeAsSiblingFor(user,relatedUser);

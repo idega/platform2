@@ -165,15 +165,30 @@ public class UserRelationConnector extends Window {
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(tRelatedUserName, 1, row);
 			row++;
-
-			Text tRelationtype = new Text(iwrb.getLocalizedString("relation_type", "Relation type"));
-			if (hasSelectedReverseType())
-				tRelationtype = new Text(iwrb.getLocalizedString("reverse_relation_type", "Reverse relation type"));
-			tRelationtype.setBold();
-			mainTable.add(tRelationtype, 1, row++);
-			mainTable.add(Text.getNonBrakingSpace(), 1, row);
-			mainTable.add(Text.getNonBrakingSpace(), 1, row);
-			mainTable.add(getRelationMenu(iwc), 1, row);
+			mainTable.add(Text.getBreak(), 1, row);
+			row++;
+			String sUserFirstName = (user.getFirstName());
+			String sRelatedUserFirstName = (relatedUser.getFirstName());
+			String sWillBeRelatedAs = (iwrb.getLocalizedString("related_as","related as"));
+			String sTo = iwrb.getLocalizedString("to","to");
+			if(hasSelectedType() || hasSelectedReverseType()){
+				if(hasSelectedType()){
+					String sRelationtype = (iwrb.getLocalizedString(type, type));
+					String sentence = sUserFirstName+" "+sWillBeRelatedAs+" "+sRelationtype+" "+sTo+" "+sRelatedUserFirstName;
+					mainTable.add(new Text(sentence),1,row++);
+				}
+				
+				if (hasSelectedReverseType()){
+					String sReverseRelationtype = (iwrb.getLocalizedString(rtype,rtype));
+					String sentence = sRelatedUserFirstName+" "+sWillBeRelatedAs+" "+sReverseRelationtype+" "+sTo+" "+sUserFirstName;
+					mainTable.add(new Text(sentence),1,row++);
+				}
+			}
+			else{
+				
+				mainTable.add(getRelationMenu(iwc), 1, row);
+			}
+			
 			row++;
 
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
@@ -246,8 +261,6 @@ public void process(IWContext iwc) throws RemoteException {
 			Integer.valueOf(iwc.getParameter(UserSearcher.getUniqueUserParameterName(searchIdentifer)));
 		switch (action) {
 			case ACTION_ATTACH :
-				System.out.println(
-					"createrelation: " + user.getPrimaryKey().toString() + "," + relatedUserID.toString() + "," + type);
 				createRelation(iwc, (Integer) user.getPrimaryKey(), relatedUserID, type, rtype);
 				break;
 
@@ -365,7 +378,7 @@ public void createRelation(
 		UserHome userHome = getUserHome();
 		User currentUser = userHome.findByPrimaryKey(userID);
 		User relatedUser = userHome.findByPrimaryKey(relatedUserID);
-		currentUser.addUniqueRelation(relatedUser, relationType);
+		currentUser.addRelation(relatedUser, relationType);
 
 	}
 	catch (FinderException e) {
