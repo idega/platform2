@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.87 2002/04/10 01:02:56 laddi Exp $
+ * $Id: NewsReader.java,v 1.88 2002/04/10 03:02:20 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,6 +50,7 @@ import com.idega.block.presentation.CategoryBlock;
 
 public class NewsReader extends CategoryBlock implements IWBlock {
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
+  public final static String CACHE_KEY = "nw_news";
   private boolean hasEdit = false,hasAdd = false,hasInfo = false;;
   private int iCategoryId = -1;
   private String attributeName = null;
@@ -140,6 +141,8 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   private int newsCount = 0;
 
   public NewsReader(){
+    setCacheable(getCacheKey(), 999999999);//cache indefinately
+
     init();
     showAll = true;
 
@@ -1093,6 +1096,11 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+
+  public String getCacheKey(){
+    return CACHE_KEY;
+  }
+
   public String getObjectAlignment(){
     return sObjectAlign ;
   }
