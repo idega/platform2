@@ -45,8 +45,8 @@ public SubmitButton(Image defaultImage, String name, String value){
 	this(name,value);
 	this.defaultImage = defaultImage;
 
-        this.parameterName=parameterName;
-        this.parameterValue=parameterValue;
+        this.parameterName=name;
+        this.parameterValue=value;
         usingControlParameter=true;
 }
 
