@@ -407,6 +407,9 @@ public abstract class ContractFinder {
     return count;
   }
 
+  /**
+   * @deprecated Replaced by findByApplicant(int applicantId)
+   */
   public static Contract findApplicant(int userID){
     Contract contract = null;
     try {
@@ -581,8 +584,21 @@ public abstract class ContractFinder {
       return null;
     }
   }
+
+  /**
+   *
+   */
+  public static Contract findByApplicant(int applicantId){
+    Contract contract = null;
+    try {
+      List L = EntityFinder.findAllByColumn(Contract.getStaticInstance(Contract.class),Contract.getApplicantIdColumnName(),applicantId);
+      if(L!= null)
+        contract = (Contract) L.get(0);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      contract = null;
+    }
+    return contract;
+  }
 }
-
-
-
-
