@@ -58,6 +58,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String HAS_PRIORITY = "has_priority";
 	protected final static String HAS_DATE_SET = "has_date_set";
 	protected final static String HAS_QUEUE_PRIORITY = "has_queue_priority";
+	protected final static String PRESCHOOL = "preschool";	
+	
 	
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -104,6 +106,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(HAS_PRIORITY,"",true,true,java.lang.Boolean.class);
 		addAttribute(HAS_DATE_SET,"",true,true,java.lang.Boolean.class);
 		addAttribute(HAS_QUEUE_PRIORITY,"",true,true,java.lang.Boolean.class);
+		addAttribute(PRESCHOOL,"",true,true,java.lang.String.class);		
 		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
@@ -184,6 +187,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getStringColumnValue(PRESENTATION);	
 	}
 	
+	public String getPreSchool() {
+		return getStringColumnValue(PRESCHOOL);	
+	}	
+	
 	public String getMessage() {
 		return getStringColumnValue(CC_MESSAGE);	
 	}
@@ -199,6 +206,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		else
 			return 'A';
 	}
+	
+	
 	
 	public boolean getHasPriority() {
 		return getBooleanColumnValue(HAS_PRIORITY, false);
@@ -278,6 +287,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 	public void setPresentation(String presentation) {
 		setColumn(PRESENTATION,presentation);	
+	}
+	
+	public void setPreSchool(java.lang.String preSchool){
+		setColumn(PRESCHOOL, preSchool);
 	}
 	
 	public void setMessage(String message) {
