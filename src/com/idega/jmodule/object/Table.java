@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.21 2001/09/20 03:18:42 gummi Exp $
+ * $Id: Table.java,v 1.22 2001/09/24 21:46:50 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -53,6 +53,8 @@ public class Table extends ModuleObjectContainer {
    */
   public Table() {
     this(1,1);
+    setWidth("100%");
+    //setHeight("100%");
     isResizable = true;
   }
 
