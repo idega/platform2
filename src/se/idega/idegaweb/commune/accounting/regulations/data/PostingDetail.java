@@ -24,7 +24,7 @@ public class PostingDetail {
 		setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
 		setTerm(regularPaymentEntry.getPlacing());
 		setVat(regularPaymentEntry.getVAT());
-		setVatRegulationID(regularPaymentEntry.getVatRegulationID());
+		setVatRegulationID(regularPaymentEntry.getVatRegulationId());
 	}
 	
 	public PostingDetail(String t, float a, float v, int vID, String rst){
