@@ -20,6 +20,14 @@ public java.util.Collection findByInvoiceHeader(se.idega.idegaweb.commune.accoun
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((InvoiceRecordBMPBean)entity).ejbFindByPaymentRecord(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+
 public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceRecordBMPBean)entity).ejbFindByMonth(p0);

@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -33,11 +35,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/12 11:20:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/12 14:20:54 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -45,43 +47,64 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  */
 public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PREFIX = "cacc_payrec_";
-
+        
+    private static final String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
+    private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
+    private static final String ADJUSTMENT_SIGNATURE_DEFAULT = "Just.sign";
+    private static final String ADJUSTMENT_SIGNATURE_KEY = PREFIX + "adjustment_signature";
+    private static final String CHECK_AMOUNT_DEFAULT = "Checkbelopp";
+    private static final String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
+    private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
+    private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
+    private static final String DAYS_DEFAULT = "Days";
+    private static final String DAYS_KEY = PREFIX + "days";
     private static final String DELETE_ROW_DEFAULT = "Ta bort post";
     private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
+    private static final String DETAILED_PAYMENT_RECORDS_DEFAULT = "Detaljutbetalningsrader";
+    private static final String DETAILED_PAYMENT_RECORDS_KEY = PREFIX + "detailed_payment_records";
     private static final String EDIT_ROW_DEFAULT = "Ändra post";
     private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
+    private static final String NAME_DEFAULT = "Namn";
+    private static final String NAME_KEY = PREFIX + "name";
     private static final String NOTE_DEFAULT = "Anmärkning";
     private static final String NOTE_KEY = PREFIX + "note";
     private static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
     private static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
     private static final String PAYMENT_DEFAULT = "Utbetalning";
     private static final String PAYMENT_KEY = PREFIX + "payment";
-    private static final String PAYMENT_RECORD_DEFAULT = "Detaljutbetalningsrad";
+    private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningsrad";
     private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
     private static final String PLACEMENT_DEFAULT = "Placering";
     private static final String PLACEMENT_KEY = PREFIX + "placement";
+    private static final String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
+    private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
+    private static final String SSN_DEFAULT = "Personnummer";
+    private static final String SSN_KEY = PREFIX + "ssn";
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
     private static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
-    private static final String TOTAL_AMOUNT_KEY  = PREFIX + "total_amount";
+    private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
+
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
             ACTION_SHOW_RECORD_DETAILS = 1;
-
+    
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
-
+    private static final SimpleDateFormat dateFormatter
+        = new SimpleDateFormat ("yyyy-MM-dd");
+    
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
 	 *
@@ -95,22 +118,22 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             } catch (final Exception dummy) {
                 // do nothing, actionId is default
             }
-
+            
 			switch (actionId) {
                 case ACTION_SHOW_RECORD_DETAILS:
                     showRecordDetails (context);
                     break;
-
+                    
                 default:
                     showPayment (context);
 					break;					
 			}
-
+            
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
 		}
 	}
-
+    
     private void showRecordDetails (final IWContext context)
         throws RemoteException, javax.ejb.FinderException {
         // get business objects
@@ -123,7 +146,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
         final SchoolCategoryHome categoryHome
                 = schoolBusiness.getSchoolCategoryHome ();
-
+        
         // get data objects
         final Integer recordId
                 = new Integer (context.getParameter (PAYMENT_RECORD_KEY));
@@ -134,24 +157,30 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 = categoryHome.findByPrimaryKey (header.getSchoolCategoryID ());
         final School school = schoolBusiness.getSchool
                 (new Integer (header.getSchoolID ()));
- 
-       // render
+        
+        // render
         final Table table = createTable (2);
+        table.setColumnWidth (1, "25%");
         int row = 1; int col = 1;
         addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
-                        MAIN_ACTIVITY_DEFAULT);
+                        MAIN_ACTIVITY_DEFAULT, ":");
         addSmallText (table, col++, row++, category.getLocalizedKey (),
                       category.getName ());
         col = 1;
-        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT);
-        table.add (getSmallText (school.getName ()), col++, row++);
+        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        addSmallText (table, col++, row++, school.getName ());
         col = 1;
-        addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT);
-        table.add (getSmallText (record.getPaymentText ()), col++, row++);
+        addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
+                        ":");
+        addSmallText (table, col++, row++, record.getPaymentText ());
         col = 1;
-        addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT);
-        table.add (getSmallText (periodFormatter.format (record.getPeriod ())),
-                   col++, row++);
+        addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
+        addSmallText (table, col++, row++,
+                      periodFormatter.format (record.getPeriod ()));
+        col = 1;
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getDetailedPaymentRecordListTable (record, business), 1,
+                   row++);
 
         // add to form
         final Form form = new Form ();
@@ -159,9 +188,80 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         form.add (table);
         final Table outerTable = createTable (1);
         outerTable.add (form, 1, 1);
-        add (createMainTable (localize (PAYMENT_KEY, PAYMENT_DEFAULT),
+        add (createMainTable (localize (DETAILED_PAYMENT_RECORDS_KEY,
+                                        DETAILED_PAYMENT_RECORDS_DEFAULT),
                               outerTable));
     }
+
+    private Table getDetailedPaymentRecordListTable
+        (final PaymentRecord paymentRecord, final InvoiceBusiness business)
+    throws RemoteException, javax.ejb.FinderException {
+        // set up header row
+        final String [][] columnNames =
+                {{ STATUS_KEY, STATUS_DEFAULT },
+                 { SSN_KEY, SSN_DEFAULT },
+                 { NAME_KEY, NAME_DEFAULT },
+                 { CHECK_PERIOD_KEY, CHECK_PERIOD_DEFAULT },
+                 { DAYS_KEY, DAYS_DEFAULT },
+                 { CHECK_AMOUNT_KEY, CHECK_AMOUNT_DEFAULT },
+                 { PLACEMENT_PERIOD_KEY, PLACEMENT_PERIOD_DEFAULT },
+                 { ADJUSTMENT_DATE_KEY, ADJUSTMENT_DATE_DEFAULT },
+                 { ADJUSTMENT_SIGNATURE_KEY, ADJUSTMENT_SIGNATURE_DEFAULT }};
+        final Table table = createTable (columnNames.length);
+        table.setColumns (columnNames.length);
+        setIconColumnWidth (table);
+        int row = 1;
+        table.setRowColor(row, getHeaderColor ());
+        for (int i = 0; i < columnNames.length; i++) {
+            addSmallHeader (table, i + 1, row, columnNames [i][0],
+                            columnNames [i][1]);
+        }
+        row++;
+
+        // get detailed records
+        final InvoiceRecordHome home = business.getInvoiceRecordHome ();
+        final Collection invoiceRecords
+                = home.findByPaymentRecord (paymentRecord);
+
+        //render
+        for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
+            final InvoiceRecord invoiceRecord = (InvoiceRecord) i.next ();
+			showDetailedPaymentRecordOnARow (table, row++, invoiceRecord);
+        }
+        
+        return table;
+    }
+
+	private void showDetailedPaymentRecordOnARow
+        (final Table table, final int row, final InvoiceRecord record)
+    throws RemoteException, javax.ejb.FinderException {
+        final String checkPeriod = periodFormatter.format
+                (record.getPeriodStartCheck ()) + " - "
+                + periodFormatter.format (record.getPeriodEndCheck ());
+        final String days = record.getDays () + "";
+        final String amount = ((long) record.getAmount ()) + "";
+        final String placementPeriod = periodFormatter.format
+                (record.getPeriodStartPlacement ()) + " - "
+                + periodFormatter.format (record.getPeriodEndPlacement ());
+        final String dateChanged
+                = dateFormatter.format (record.getDateChanged ());
+        final String changedBy = record.getChangedBy ();
+
+		int col = 1;
+		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+                           : getZebraColor2 ());
+		addSmallText (table, col++, row, "");
+		addSmallText (table, col++, row, "");
+		addSmallText (table, col++, row, "");
+		addSmallText (table, col++, row, checkPeriod);
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		addSmallText (table, col++, row, days);
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		addSmallText (table, col++, row, amount);
+		addSmallText (table, col++, row, checkPeriod);
+		addSmallText (table, col++, row, dateChanged);
+		addSmallText (table, col++, row, changedBy);
+	}
 
     private void showPayment (final IWContext context) throws RemoteException {
         final Table table = createTable (3);
@@ -252,14 +352,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
                            : getZebraColor2 ());
-		table.add (getSmallText (status + ""), col++, row);
-		table.add (getSmallText (periodText), col++, row);
+		addSmallText (table, col++, row, status + "");
+		addSmallText (table, col++, row, periodText);
 		table.add (paymentTextLink, col++, row);
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (getSmallText (placements + ""), col++, row);
+		addSmallText (table, col++, row, placements + "");
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (getSmallText (totalAmount + ""), col++, row);
-		table.add (getSmallText (note), col++, row);
+		addSmallText (table, col++, row, totalAmount + "");
+		addSmallText (table, col++, row, note);
         table.add (editLink, col++, row);
 	}
 
@@ -296,6 +396,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void addSmallText (final Table table, final int col, final int row,
                                final String key, String value) {
         table.add (getSmallText (localize (key, value)), col, row);
+    }
+
+    private void addSmallText (final Table table, final int col, final int row,
+                               final String string) {
+        table.add (getSmallText (null == string || string.equals (null + "")
+                                 ? "" : string), col, row);
     }
 
     private void addSmallHeader (final Table table, final int col,
