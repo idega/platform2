@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import com.idega.block.importer.data.GenericImportFile;
 import com.idega.block.importer.data.ImportFile;
-import com.idega.user.data.UserNationalRegisterImportFile;
+import com.idega.user.handler.UserNationalRegisterImportFile;
 
 /**
  * @author palli

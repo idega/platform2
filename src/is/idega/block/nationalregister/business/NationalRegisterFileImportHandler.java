@@ -1,6 +1,6 @@
 package is.idega.block.nationalregister.business;
 
-import com.idega.user.business.UserNationalRegisterFileImportHandler;
+import com.idega.user.handler.UserNationalRegisterFileImportHandler;
 
 
 public interface NationalRegisterFileImportHandler extends com.idega.business.IBOService,com.idega.block.importer.business.ImportFileHandler, UserNationalRegisterFileImportHandler

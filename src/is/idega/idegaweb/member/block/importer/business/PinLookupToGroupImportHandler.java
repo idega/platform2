@@ -1,6 +1,6 @@
 package is.idega.idegaweb.member.block.importer.business;
 
-import com.idega.user.business.UserPinLookupToGroupImportHandler;
+import com.idega.user.handler.UserPinLookupToGroupImportHandler;
 
 
 public interface PinLookupToGroupImportHandler extends com.idega.business.IBOSession,com.idega.block.importer.business.ImportFileHandler, UserPinLookupToGroupImportHandler

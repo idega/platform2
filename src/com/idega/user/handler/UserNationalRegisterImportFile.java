@@ -1,4 +1,4 @@
-package com.idega.user.business;
+package com.idega.user.handler;
 
 import com.idega.repository.data.ImplementorPlaceholder;
 
@@ -11,6 +11,6 @@ import com.idega.repository.data.ImplementorPlaceholder;
  * @version 1.0
  * Created on Jul 28, 2004
  */
-public interface UserPinLookupToGroupImportHandler	extends ImplementorPlaceholder {
+public interface UserNationalRegisterImportFile extends ImplementorPlaceholder {
 	// a placeholder
 }
