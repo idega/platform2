@@ -8,7 +8,6 @@ import java.util.List;
 import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -110,6 +109,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		}
 		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
+		addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), TITLE_STYLECLASS);
 		
 		
 		String action = iwc.getParameter(ACTION);
@@ -143,64 +143,64 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				selector = new WorkReportSelector();
 				selectorIsSet = true;
 				helpTextKey = ACTION_WORK_SELECT_REPORT + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"), TITLE_STYLECLASS);
 			}
 			if (action.equals(ACTION_EDIT_MEMBER_LIST)) {
 				selector = new WorkReportMemberEditor();
 				selectorIsSet = true;
 				helpTextKey = ACTION_EDIT_MEMBER_LIST + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_EDIT_ACCOUNT)) {
 				selector = new WorkReportAccountEditor();
 				selectorIsSet = true;
 				helpTextKey = ACTION_EDIT_ACCOUNT + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_EDIT_BOARD)) {
 				selector = new WorkReportBoardMemberEditor();
 				selectorIsSet = true;
 				helpTextKey = ACTION_EDIT_BOARD + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_EDIT_DIVISION_BOARD)) {
 				selector = new WorkReportDivisionBoardEditor();
 				selectorIsSet = true;
 				helpTextKey = ACTION_EDIT_DIVISION_BOARD + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_SEND_REPORT)) {
 				selector = new WorkReportSender();
 				selectorIsSet = true;
 				helpTextKey = ACTION_SEND_REPORT + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_IMPORT_MEMBERS)) {
 				selector = new WorkReportMemberImporterConfirm();
 				selectorIsSet = true;
 				helpTextKey = ACTION_IMPORT_MEMBERS + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_IMPORT_ACCOUNT)) {
 				selector = new WorkReportAccountImporter();
 				selectorIsSet = true;
 				helpTextKey = ACTION_IMPORT_ACCOUNT + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_IMPORT_BOARD)) {
 				selector = new WorkReportBoardImporter();
 				selectorIsSet = true;
 				helpTextKey = ACTION_IMPORT_BOARD + "_help";
-				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_REPORT_OVERVIEW)) {
 				Form yearForm = getYearSelectionForm(iwc,year);
@@ -214,8 +214,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				menuTable.add(stats,1,15);
 				helpTextKey = ACTION_REPORT_OVERVIEW + "_help";
 				selectorIsSet = true;
-				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), TITLE_STYLECLASS);
 			}
 			else if( action.equals(ACTION_REPORT_OVERVIEW_CLOSE_VIEW)) {
 				Form yearForm = getYearSelectionForm(iwc,year);
@@ -230,15 +230,15 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				menuTable.add(stats,1,15);
 				helpTextKey = ACTION_REPORT_OVERVIEW_CLOSE_VIEW + "_help";
 				selectorIsSet = true;
-				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
 				table.add(new WorkReportCloser(),2,1);	//not a selector
 				helpTextKey = ACTION_CLOSE_REPORT + "_help";
 				selectorIsSet = true;
-				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_STATISTICS)) {
 				ReportGenerator repGen = new ReportGenerator();
@@ -288,14 +288,14 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				
 				table.add(repGen,2,1);	//not a selector
 				selectorIsSet = true;
-				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"));
-				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.setTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"), TITLE_STYLECLASS);
 			}
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
 				table.add(new WorkReportExporter(),2,1);	//not a selector
 				selectorIsSet = true;
-				addTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"));
-				addTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				setTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"));
+				addTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"), TITLE_STYLECLASS);
 			}
 
 			if (selector != null) {
@@ -320,7 +320,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				
 		}
 		if(!selectorIsSet) {
-			addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);		
+			setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));		
+			addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), TITLE_STYLECLASS);		
 		}
 		
 	}
