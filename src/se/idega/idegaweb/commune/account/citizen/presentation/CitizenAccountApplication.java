@@ -52,11 +52,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/02/26 09:40:51 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/03 09:09:21 $ by $Author: anders $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -130,6 +130,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String YOU_MUST_BE_18_DEFAULT = "Du måste vara 18 år gammal för att kunna ansöka om medborgarkonto";
 	private final static String ZIP_CODE_DEFAULT = "Postnummer";
 	private final static String ZIP_CODE_KEY = "caa_zip_code";
+	private final static String NOT_LIVING_IN_SWEDEN_KEY = "caa_not_living_in_sweden";
 
 	private final static String SIMPLE_FORM_SUBMIT_KEY = "caa_simpleSubmit";
 	private final static String SIMPLE_FORM_SUBMIT_DEFAULT = "Skicka ansökan";
@@ -536,6 +537,11 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 			}
 		}
 
+		String currentCommune = parameters.get(CURRENT_KOMMUN_KEY).toString();
+		int communeId = 0;
+		try {
+			communeId = Integer.valueOf(currentCommune).intValue();
+		} catch (Exception e) {}
 		if (null != applicationId && applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY)) {
 			final String movingInAddress = parameters.get(MOVING_IN_ADDRESS_KEY).toString();
 			final String movingInDate = parameters.get(MOVING_IN_DATE_KEY).toString();
@@ -545,10 +551,14 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 			final String landlordPhone = parameters.get(LANDLORD_PHONE_KEY).toString();
 			final String landlordAddress = parameters.get(LANDLORD_ADDRESS_KEY).toString();
 			business.insertMovingTo(applicationId, movingInAddress, movingInDate, housingType, propertyType, landlordName, landlordPhone, landlordAddress);
-			business.insertPutChildren(applicationId, parameters.get(CURRENT_KOMMUN_KEY).toString());
+			if (communeId > 0) {
+				business.insertPutChildren(applicationId, parameters.get(CURRENT_KOMMUN_KEY).toString());
+			}
 		}
 		else if (null != applicationId && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY))) {
-			business.insertPutChildren(applicationId, parameters.get(CURRENT_KOMMUN_KEY).toString());
+			if (communeId > 0) {
+				business.insertPutChildren(applicationId, parameters.get(CURRENT_KOMMUN_KEY).toString());
+			}
 		}
 	}
 	catch (final ParseException e) {
@@ -877,12 +887,13 @@ private DropdownMenu getCommuneDropdownMenu(IWContext iwc, String parameter, Str
 				Commune commune = (Commune) iter.next();
 				int id = ((Integer) commune.getPrimaryKey()).intValue();
 				if (id != defaultCommuneId) {
-					menu.addMenuElement("" + id, commune.getCommuneName());
+					menu.addMenuElement(id, commune.getCommuneName());
 				}
 			}
 			if (communeId != null) {
 				menu.setSelectedElement(communeId);
 			}
+			menu.addMenuElement(-1, localize(NOT_LIVING_IN_SWEDEN_KEY, "Not living in Sweden"));
 		}		
 	} catch (Exception e) {
 		add(new ExceptionWrapper(e));
