@@ -1114,6 +1114,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public void moveToGroup(int placementID, int schoolClassID) throws RemoteException {
+		try {
+			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(placementID));
+			classMember.setSchoolClassId(schoolClassID);
+			classMember.store();
+		}
+		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void removeFromProvider(int placementID, Timestamp date, boolean parentalLeave, String message) {
 		try {
 			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(placementID));

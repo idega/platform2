@@ -181,4 +181,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean removeContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract childcareContract, com.idega.user.data.User performer) throws java.rmi.RemoteException;
  public boolean changeApplicationStatus(int applicationID, char newStatus, com.idega.user.data.User performer) throws IllegalArgumentException, java.rmi.RemoteException;
  public boolean changeApplicationStatus(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, char newStatus, com.idega.user.data.User performer) throws IllegalArgumentException, java.rmi.RemoteException;
+ public void moveToGroup(int placementID, int schoolClassID) throws java.rmi.RemoteException;
 }
