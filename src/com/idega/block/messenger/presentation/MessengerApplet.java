@@ -39,6 +39,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private static String SERVLET_URL = "servlet_url";
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
+  private static String LOG_OUT = "log_out";
+
 
   private String sessionId;
   private String userId;
@@ -508,6 +510,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       messageDialog.dispose();
       messageDialog = null;
 */
+  /*logout*/
+  packetToServlet = new Packet();
+  packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
+  cycle();
+
   }
 
   /**Get Applet information*/

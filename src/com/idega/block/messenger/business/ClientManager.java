@@ -25,6 +25,8 @@ public class ClientManager implements PacketManager{
   private static String USER_ID = "user_id";
   private static String USER_LIST = "user_list";
   private static String USER_LIST_VERSION = "user_list_version";
+  private static String LOG_OUT = "log_out";
+
   private static String PREFIX = "v.";
   private int version = 0;
 
@@ -79,6 +81,12 @@ public class ClientManager implements PacketManager{
             packetUserListVersion = (String) prop.getValue();
             System.out.println("ClientManager: user list version "+packetUserListVersion);
           }
+          else if( key.equalsIgnoreCase(LOG_OUT) ){
+            sessionId = (String) prop.getValue();
+            clients.remove(sessionId);
+            System.out.println("ClientManager:logging off user "+prop.getValue());
+          }
+
         }
       }
 
