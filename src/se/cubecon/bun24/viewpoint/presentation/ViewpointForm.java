@@ -27,10 +27,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/07 10:03:46 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/08 09:25:54 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -115,9 +115,8 @@ public class ViewpointForm extends CommuneBlock {
         + " en synpunkt måste du antingen ha matat in den själv, vara"
         + " synpunktens handläggare eller ha rättigheter att bli synpunktens"
         + " handläggare.";
-	private final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
-	private final static String NOTLOGGEDON_DEFAULT
-        = "Du måste vara inloggad för att använda den här funktionen.";
+	//private final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
+	//private final static String NOTLOGGEDON_DEFAULT = "Du måste vara inloggad för att använda den här funktionen.";
 	private final static String SSN_KEY = "viewpoint.ssn";
 	private final static String SSN_DEFAULT = "Personnummer";
 	private final static String SENDANSWERTOCITIZEN_KEY
@@ -158,7 +157,7 @@ public class ViewpointForm extends CommuneBlock {
 		try {            
 			switch (getActionId (iwc)) {
                 case SHOWAUTHENTICATIONFORM_ACTION:
-                    showAuthenticationForm (iwc);
+                    showAuthenticationForm ();
                     break;
 
 				case SHOWTOPCATEGORIESFORM_ACTION :
@@ -222,7 +221,7 @@ public class ViewpointForm extends CommuneBlock {
 		return result;
 	}
 
-	private void showAuthenticationForm (final IWContext context) {
+	private void showAuthenticationForm () {
 		final Form form = new Form();
 
 		final Text text1 = new Text (getLocalizedString (DESCRIPTION1_KEY,
@@ -597,14 +596,12 @@ public class ViewpointForm extends CommuneBlock {
         
         if (isAuthenticated (context)) {
             if (context.isLoggedOn ()) {
-                try {
-                    final UserBusiness userBusiness = (UserBusiness)
-                            IBOLookup.getServiceInstance (context,
-                                                          UserBusiness.class);
+                //try {
+                    //  final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance (context, UserBusiness.class);
                     result = context.getCurrentUser ();
-                } catch (RemoteException e) {
+                /*} catch (RemoteException e) {
                     result = null;
-                }
+                }*/
             } else {
                 final HttpSession session = context.getSession ();
                 result = (User) session.getAttribute (USER_KEY);
