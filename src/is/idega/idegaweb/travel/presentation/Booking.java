@@ -23,20 +23,13 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class Booking extends JModuleObject {
-
-  private  TravelManager tm;
+public class Booking extends TravelManager {
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
   String tableBackgroundColor = "#FFFFFF";
   int numberOfTripsToDiplay = 6;
-
-  Text theText = new Text();
-  Text theBoldText = new Text();
-  Text smallText = new Text();
-  Text theSmallBoldText = new Text();
 
   String textColor = "#666699";
 
@@ -46,16 +39,11 @@ public class Booking extends JModuleObject {
 
 
   public void add(ModuleObject mo) {
-    tm.add(mo);
+    super.add(mo);
   }
 
-  public String getBundleIdentifier(){
-    return TravelManager.IW_BUNDLE_IDENTIFIER;
-  }
-
-
-
-  public void main(ModuleInfo modinfo) {
+  public void main(ModuleInfo modinfo) throws SQLException {
+      super.main(modinfo);
       initialize(modinfo);
 
 
@@ -66,28 +54,12 @@ public class Booking extends JModuleObject {
           displayForm(modinfo);
       }
 
-      tm.addBreak();
-      super.add(tm);
+      super.addBreak();
   }
 
   public void initialize(ModuleInfo modinfo) {
-      tm = new TravelManager();
-      bundle = getBundle(modinfo);
-      iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
-      theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-      theText.setFontFace(Text.FONT_FACE_VERDANA);
-      theText.setFontColor(textColor);
-      theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-      theBoldText.setFontFace(Text.FONT_FACE_VERDANA);
-      theBoldText.setFontColor(textColor);
-      theBoldText.setBold();
-      smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-      smallText.setFontFace(Text.FONT_FACE_VERDANA);
-      smallText.setFontColor(textColor);
-      theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA);
-      theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-      theSmallBoldText.setBold();
-      theSmallBoldText.setFontColor(textColor);
+      bundle = super.getBundle();
+      iwrb = super.getResourceBundle();
   }
 
   public void displayForm(ModuleInfo modinfo) {

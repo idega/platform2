@@ -8,6 +8,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.projects.nat.business.NatBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idega.travel.presentation.*;
+import java.sql.SQLException;
 
 public class TravelManager extends JModuleObject {
 
@@ -15,6 +16,12 @@ public class TravelManager extends JModuleObject {
     private IWBundle bundle;
     private IWResourceBundle iwrb;
     Table table = new Table(1,2);
+
+    protected Text theText = new Text();
+    protected Text theBoldText = new Text();
+    protected Text smallText = new Text();
+    protected Text theSmallBoldText = new Text();
+
 
     public TravelManager(){
         super();
@@ -25,11 +32,16 @@ public class TravelManager extends JModuleObject {
       return IW_BUNDLE_IDENTIFIER;
     }
 
+    public IWBundle getBundle() {
+      return bundle;
+    }
 
-    public void main(ModuleInfo modinfo) {
+    public IWResourceBundle getResourceBundle() {
+      return iwrb;
+    }
 
-        bundle = getBundle(modinfo);
-        iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+    public void main(ModuleInfo modinfo) throws SQLException{
+        initializer(modinfo);
 
           table.setBorder(0);
           table.setHeight("100%");
@@ -92,6 +104,27 @@ public class TravelManager extends JModuleObject {
         super.add(table);
     }
 
+
+    public void initializer(ModuleInfo modinfo) {
+        bundle = getBundle(modinfo);
+        iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+
+        theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+        theText.setFontFace(Text.FONT_FACE_VERDANA);
+        theText.setFontColor(NatBusiness.textColor);
+        theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+        theBoldText.setFontFace(Text.FONT_FACE_VERDANA);
+        theBoldText.setBold();
+        theBoldText.setFontColor(NatBusiness.textColor);
+        smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        smallText.setFontFace(Text.FONT_FACE_VERDANA);
+        smallText.setFontColor(NatBusiness.textColor);
+        theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA);
+        theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        theSmallBoldText.setBold();
+        theSmallBoldText.setFontColor(NatBusiness.textColor);
+
+    }
 
     public void add(ModuleObject mo) {
         table.add(mo,1,2);

@@ -23,33 +23,20 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class DailyReport extends JModuleObject {
-
-  private  TravelManager tm;
+public class DailyReport extends TravelManager {
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
-
-
-  Text theText = new Text();
-  Text theBoldText = new Text();
-  Text smallText = new Text();
-  Text theSmallBoldText = new Text();
 
   public DailyReport() {
   }
 
   public void add(ModuleObject mo) {
-    tm.add(mo);
+    super.add(mo);
   }
 
-  public String getBundleIdentifier(){
-    return TravelManager.IW_BUNDLE_IDENTIFIER;
-  }
-
-
-
-  public void main(ModuleInfo modinfo) {
+  public void main(ModuleInfo modinfo) throws SQLException {
+      super.main(modinfo);
       initialize(modinfo);
 
       String action = modinfo.getParameter("action");
@@ -59,25 +46,12 @@ public class DailyReport extends JModuleObject {
           displayForm(modinfo);
       }
 
-      tm.addBreak();
-      super.add(tm);
+      super.addBreak();
   }
 
   public void initialize(ModuleInfo modinfo) {
-      tm = new TravelManager();
-      bundle = getBundle(modinfo);
-      iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
-      theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-      theText.setFontFace(Text.FONT_FACE_VERDANA);
-      theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-      theBoldText.setFontFace(Text.FONT_FACE_VERDANA);
-      theBoldText.setBold();
-      smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-      smallText.setFontFace(Text.FONT_FACE_VERDANA);
-      theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA);
-      theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-      theSmallBoldText.setBold();
-      theSmallBoldText.setFontColor(NatBusiness.textColor);
+      bundle = super.getBundle();
+      iwrb = super.getResourceBundle();
   }
 
   public void displayForm(ModuleInfo modinfo) {

@@ -23,9 +23,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ServiceOverview extends JModuleObject {
-
-  private  TravelManager tm;
+public class ServiceOverview extends TravelManager {
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
@@ -37,19 +35,14 @@ public class ServiceOverview extends JModuleObject {
   }
 
   public void add(ModuleObject mo) {
-    tm.add(mo);
-  }
-
-  public String getBundleIdentifier(){
-    return TravelManager.IW_BUNDLE_IDENTIFIER;
+    super.add(mo);
   }
 
 
-
-  public void main(ModuleInfo modinfo) {
-      tm = new TravelManager();
-      bundle = getBundle(modinfo);
-      iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+  public void main(ModuleInfo modinfo) throws SQLException{
+      super.main(modinfo);
+      bundle = super.getBundle();
+      iwrb = super.getResourceBundle();
 
       String action = modinfo.getParameter("action");
       if (action == null) {action = "";}
@@ -58,8 +51,8 @@ public class ServiceOverview extends JModuleObject {
           displayForm(modinfo);
       }
 
-      tm.addBreak();
-      super.add(tm);
+      super.addBreak();
+      //super.add(tm);
   }
 
 
@@ -88,18 +81,6 @@ public class ServiceOverview extends JModuleObject {
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
-      Text theText = new Text();
-          theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-          theText.setFontFace(Text.FONT_FACE_VERDANA);
-
-      Text theBoldText = new Text();
-          theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-          theBoldText.setFontFace(Text.FONT_FACE_VERDANA);
-          theBoldText.setBold();
-
-      Text smallText = new Text();
-          smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-          smallText.setFontFace(Text.FONT_FACE_VERDANA);
 
       Text tframeText = (Text) theText.clone();
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));

@@ -23,9 +23,9 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ServiceDesigner extends JModuleObject {
+public class ServiceDesigner extends TravelManager {
 
-  private  TravelManager tm;
+//  private  TravelManager tm;
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
@@ -37,19 +37,14 @@ public class ServiceDesigner extends JModuleObject {
   }
 
   public void add(ModuleObject mo) {
-    tm.add(mo);
-  }
-
-  public String getBundleIdentifier(){
-    return TravelManager.IW_BUNDLE_IDENTIFIER;
+    super.add(mo);
   }
 
 
-
-  public void main(ModuleInfo modinfo) {
-      tm = new TravelManager();
-      bundle = getBundle(modinfo);
-      iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+  public void main(ModuleInfo modinfo) throws SQLException{
+      super.main(modinfo);
+      bundle = super.getBundle();
+      iwrb = super.getResourceBundle();
 
       String action = modinfo.getParameter("action");
       if (action == null) {action = "";}
@@ -58,8 +53,8 @@ public class ServiceDesigner extends JModuleObject {
           displayForm(modinfo);
       }
 
-      tm.addBreak();
-      super.add(tm);
+      super.addBreak();
+      //super.add(tm);
   }
 
 
@@ -79,14 +74,14 @@ public class ServiceDesigner extends JModuleObject {
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
-      Text theText = new Text();
+/*      Text theText = new Text();
           theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
           theText.setFontFace(Text.FONT_FACE_VERDANA);
 
       Text smallText = new Text();
           smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
           smallText.setFontFace(Text.FONT_FACE_VERDANA);
-
+*/
 
       TextInput name = new TextInput("name_of_trip");
           name.setSize(40);
@@ -116,9 +111,6 @@ public class ServiceDesigner extends JModuleObject {
       RadioButton hotelPickupYes = new RadioButton("hotel_pickup","yes");
           hotelPickupYes.setSelected();
       RadioButton hotelPickupNo = new RadioButton("hotel_pickup","no");
-
-
-
 
 
       ++row;
