@@ -55,7 +55,7 @@ public class Banner extends Block implements Builderaware {
 	
 
 	public Banner() {
-		super.setCacheable(getCacheKey(), 0);
+		super.setCacheable(getCacheKey(), 999999999);
 	}
 
 	public Banner(int bannerID) {
