@@ -43,9 +43,10 @@ public class ResponseBMPBean extends GenericEntity implements Response{
 
   public void insertStartData()throws SQLException{
     try{
-      Response quest = new ResponseBMPBean();
-      quest.setResponse("My response");
-      quest.store();
+      ResponseHome rhome = (ResponseHome)IDOLookup.getHome(this.getClass());
+      Response resp = rhome.create();
+      resp.setResponse("My First response");
+      resp.store();
     }
     catch(Exception e){
       e.printStackTrace();

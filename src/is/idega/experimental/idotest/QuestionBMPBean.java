@@ -47,7 +47,7 @@ public class QuestionBMPBean extends GenericEntity implements Question{
     try{
       QuestionHome home = (QuestionHome)IDOLookup.getHome(this.getClass());
       Question quest = home.create();
-      quest.setText("My question");
+      quest.setText("My First question");
       quest.store();
     }
     catch(Exception e){
