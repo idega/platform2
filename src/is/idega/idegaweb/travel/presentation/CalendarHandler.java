@@ -34,10 +34,10 @@ public class CalendarHandler extends TravelManager {
   private String backgroundColor = super.backgroundColor;
 
   private String colorForAvailableDay = TravelManager.ORANGE;
-  private String colorForAvailableDayText = backgroundColor;
+  private String colorForAvailableDayText = BLACK;
   private String colorForInquery = TravelManager.YELLOW;
   private String colorForFullyBooked = TravelManager.RED;
-  private String colorForFullyBookedText = TravelManager.WHITE;
+  private String colorForFullyBookedText = BLACK;
   private String colorForToday = "#71CBFB";
 
   private idegaCalendar cal = new idegaCalendar();
@@ -59,6 +59,9 @@ public class CalendarHandler extends TravelManager {
   private Vector parameterName  = new Vector();
   private Vector parameterValue = new Vector();
   private idegaTimestamp _stamp = idegaTimestamp.RightNow();
+
+  private String _fontColor;
+  private boolean _viewInquiries = true;
 
 
   public CalendarHandler(IWContext iwc) throws Exception{
@@ -165,6 +168,21 @@ public class CalendarHandler extends TravelManager {
       Text dec = (Text) theText.clone();
         dec.setFontStyle("text-decoration: none;");
         dec.setText(cal.getShortNameOfMonth(12,iwc).substring(0,3));
+
+      if (this._fontColor != null) {
+        jan.setFontColor(_fontColor);
+        feb.setFontColor(_fontColor);
+        mar.setFontColor(_fontColor);
+        apr.setFontColor(_fontColor);
+        may.setFontColor(_fontColor);
+        jun.setFontColor(_fontColor);
+        jul.setFontColor(_fontColor);
+        aug.setFontColor(_fontColor);
+        sep.setFontColor(_fontColor);
+        oct.setFontColor(_fontColor);
+        nov.setFontColor(_fontColor);
+        dec.setFontColor(_fontColor);
+      }
 
       Link lJan = new Link(jan,_class);
         lJan.setBold();
@@ -309,6 +327,7 @@ public class CalendarHandler extends TravelManager {
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }
           }
+          if (this._viewInquiries)
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(_productId, temp, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
@@ -329,6 +348,7 @@ public class CalendarHandler extends TravelManager {
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }
           }
+          if (this._viewInquiries)
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(_productId, temp,_resellerId, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
@@ -357,22 +377,35 @@ public class CalendarHandler extends TravelManager {
         Text full = (Text) theText.clone();
           full.setText(iwrb.getLocalizedString("travel.fully_booked","Fully booked"));
 
+        if (this._fontColor != null) {
+          avail.setFontColor(_fontColor);
+          inq.setFontColor(_fontColor);
+          today.setFontColor(_fontColor);
+          full.setFontColor(_fontColor);
+        }
+
+        int lRow = 1;
         legend.add(avail,1,1);
         legend.setColor(3,1,colorForAvailableDay);
         legend.setWidth(3,1,"18");
         legend.setHeight(1,"14");
-        legend.add(inq,1,2);
-        legend.setColor(3,2,colorForInquery);
-        legend.setWidth(3,2,"18");
-        legend.setHeight(2,"14");
-        legend.add(today,1,3);
-        legend.setColor(3,3,colorForToday);
-        legend.setWidth(3,3,"18");
-        legend.setHeight(3,"14");
-        legend.add(full,1,4);
-        legend.setColor(3,4,colorForFullyBooked);
-        legend.setWidth(3,4,"18");
-        legend.setHeight(4,"14");
+        if (this._viewInquiries) {
+          ++lRow;
+          legend.add(inq,1,lRow);
+          legend.setColor(3,lRow,colorForInquery);
+          legend.setWidth(3,lRow,"18");
+          legend.setHeight(lRow,"14");
+        }
+        ++lRow;
+        legend.add(today,1,lRow);
+        legend.setColor(3,lRow,colorForToday);
+        legend.setWidth(3,lRow,"18");
+        legend.setHeight(lRow,"14");
+        ++lRow;
+        legend.add(full,1,lRow);
+        legend.setColor(3,lRow,colorForFullyBooked);
+        legend.setWidth(3,lRow,"18");
+        legend.setHeight(lRow,"14");
       table.setAlignment(1,6,"center");
 
       table.mergeCells(1,5,4,5);
@@ -451,8 +484,35 @@ public class CalendarHandler extends TravelManager {
       sm.setDayCellColor(this.backgroundColor);
   }
 
-  public void setDayCellColor(String color) {
+  public void setInActiveCellColor(String color) {
     sm.setInActiveCellColor(color);
   }
 
+  public void setFontColor(String color) {
+    _fontColor = color;
+    sm.setHeaderTextColor(_fontColor);
+    sm.setTextColor(_fontColor);
+    sm.setHeaderColor(_fontColor);
   }
+
+  public void setFullyBookedColor(String color) {
+    this.colorForFullyBooked = color;
+  }
+
+  public void setAvailableDayColor(String color) {
+    this.colorForAvailableDay = color;
+  }
+
+  public void setInquiryColor(String color) {
+    this.colorForInquery = color;
+  }
+
+  public void setTodayColor(String color) {
+    this.colorForToday = color;
+  }
+
+  public void showInquiries(boolean show) {
+    _viewInquiries = show;
+  }
+
+}

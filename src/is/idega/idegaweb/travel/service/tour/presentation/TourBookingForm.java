@@ -679,6 +679,8 @@ public class TourBookingForm extends TravelManager {
           }
           table.add(TotalPassTextInput,2,row);
           table.add(TotalTextInput,2,row);
+          table.setAlignment(1,row,"right");
+          table.setAlignment(2,row,"left");
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
             TextInput ccNumber = new TextInput(this.parameterCCNumber);

@@ -141,53 +141,68 @@ public class PublicBooking extends Block  {
       table.setBackgroundImage(1, 3, background);
       table.setRowColor(4, backgroundColor);
       table.setColor(2, 2, backgroundColor);
-      table.mergeCells(2, 2, 2, 3);
+      table.setColor(2, 3, "#CCCCCC");
       table.setAlignment(1,1,"left");
       table.setVerticalAlignment(1,2,"top");
       table.setVerticalAlignment(1,3,"top");
       table.setVerticalAlignment(2,2,"top");
-      table.setHeight(1, "20");
-      table.setHeight(3, "20");
+      table.setVerticalAlignment(2,3,"top");
+      table.setAlignment(2,2,"center");
+      table.setAlignment(2,3,"center");
+      table.setHeight(2, "20");
+      table.setHeight(4, "20");
       table.setWidth(2, "20");
 
 
       //table.add(seeAndBuy,1,1);
       table.add(leftTop(iwc),1,2);
       table.add(leftBottom(iwc),1,3);
-      table.add(right(iwc),2,2);
+      table.add(rightTop(iwc),2,2);
+      table.add(rightBottom(iwc),2,3);
 
       add(table);
   }
 
 
-  private Table right(IWContext iwc)  {
-    Table table = new Table(1,4);
+  private Table rightTop(IWContext iwc) {
+    Table table = new Table(1,3);
       table.setVerticalAlignment(1,1,"top");
       table.setVerticalAlignment(1,2,"top");
       table.setVerticalAlignment(1,3,"top");
-      table.setVerticalAlignment(1,4,"top");
       table.setAlignment(1,1,"center");
       table.setAlignment(1,2,"center");
       table.setAlignment(1,3,"center");
-      table.setAlignment(1,4,"center");
 
     Image arrow = bundle.getImage("images/white_arrow.gif");
-    Image bookNow = iwrb.getImage("images/book_here.gif");
+    Image bookNow = iwrb.getImage("images/day_requested.gif");
     Text checkAvail = getBoldTextWhite(iwrb.getLocalizedString("travel.check_availability","Check availability and select date by the calendar below"));
 
     table.add(bookNow,1,1);
     table.add(checkAvail,1,2);
     table.add(arrow,1,3);
 
+    return table;
+  }
+
+  private Table rightBottom(IWContext iwc)  {
+    Table table = new Table(1,1);
+      table.setAlignment(1,1,"center");
+      table.setVerticalAlignment(1,1,"top");
+
     try {
       CalendarHandler ch = new CalendarHandler(iwc);
         ch.setProduct(product);
-        ch.setBackgroundColor(this.backgroundColor);
-        ch.setDayCellColor("#6666CC");
+        ch.setBackgroundColor("#CCCCCC");
+        ch.setInActiveCellColor("#666666");
+        ch.setFontColor("#000000");
+        ch.setTodayColor("#99CCFF");
+        ch.setFullyBookedColor("#CC3333");
+        ch.setAvailableDayColor("#FFFFFF");
         ch.addParameterToLink(this.parameterProductId, productId);
         ch.setClassToLinkTo(PublicBooking.class);
         ch.setTimestamp(stamp);
-      table.add(ch.getCalendarTable(iwc),1,4);
+        ch.showInquiries(false);
+      table.add(ch.getCalendarTable(iwc),1,1);
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
@@ -213,6 +228,7 @@ public class PublicBooking extends Block  {
     Table table = new Table();
       aroundTable.add(table,2,2);
     form.add(aroundTable);
+
 
 
     try {
@@ -282,8 +298,8 @@ public class PublicBooking extends Block  {
       table.add(departureFromTextBold,3,2);
 
       table.add(image,1,3);
-      table.add(arrow,1,3);
-      table.setAlignment(1,3,"center");
+//      table.add(arrow,1,3);
+      table.setAlignment(1,3,"left");
 
       table.add(departureTimeText,3,3);
       table.add(space,3,3);
@@ -339,7 +355,7 @@ public class PublicBooking extends Block  {
       table.mergeCells(1,2,2,2);
       table.mergeCells(1,3,1,5);
       table.mergeCells(2,5,3,5);
-      table.setWidth(1,"138");
+//      table.setWidth(1,"138");
       table.setWidth(3,"350");
 
 
