@@ -347,7 +347,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   public void actionPerformed(ActionEvent e){
-    MessageDialog d = (MessageDialog) dialogs.get(Integer.toString(e.getSource().hashCode()));
+    MessageDialog d = (MessageDialog) e.getSource();
     getMessagesFromDialog(d);
   }
 

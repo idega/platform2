@@ -108,7 +108,7 @@ public class MessageDialog extends Dialog implements ActionListener{
         storeMessageString();
         replyMessage.requestFocus();
 
-        if( listener!=null ) listener.actionPerformed(e);
+        if( listener!=null ) listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"send"));
 
         }
   }
