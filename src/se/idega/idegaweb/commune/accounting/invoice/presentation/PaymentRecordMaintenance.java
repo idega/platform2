@@ -79,11 +79,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/03/17 15:46:53 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/23 16:12:45 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.107 $
+ * @version $Revision: 1.108 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -128,11 +128,12 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			int actionId = ACTION_SHOW_PAYMENT;
 			
 			try {
-				actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
+				if (!hasChangedProvider (context)) {
+					actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
+				}
 			} catch (final Exception dummy) {
 				try {
-					actionId = Integer.parseInt (context.getParameter
-																			 (LAST_ACTION_KEY));
+					actionId = Integer.parseInt (context.getParameter (LAST_ACTION_KEY));
 				} catch (final Exception dummy2) {
 					// do nothing, actionId is default
 				}
@@ -1081,47 +1082,6 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return createMainTable (localize (headerKey, headerDefault), content);
 	}
 	
-	/*
-	public static class CheckAmountListWriter	implements MediaWritable {
-		public static PaymentRecordMaintenance outerObject;
-		private Integer providerId;
-		private Date startPeriod;
-		private Date endPeriod;
-		private boolean isShowPosting;
-
-		public String getMimeType () { return "application/pdf"; }
-
-		public void init (final HttpServletRequest request,
-											final IWMainApplication dummy) {
-			providerId = getProviderIdParameter (request);
-			startPeriod	= getPeriodParameter (request, START_PERIOD_KEY);
-			endPeriod = getPeriodParameter (request, END_PERIOD_KEY);
-			isShowPosting = null != request.getParameter (POSTING_KEY);
-		}
-		
-		public void writeTo (OutputStream outputStream) throws IOException {
-			try {
-				final String schoolCategoryId
-						= outerObject.getSession().getOperationalField ();
-				final CheckAmountBusiness checkAmountBusiness
-						= outerObject.getCheckAmountBusiness ();
-				final MemoryFileBuffer buffer
-						= checkAmountBusiness.getInternalCheckAmountListBuffer
-						(schoolCategoryId, providerId, startPeriod, endPeriod,
-						 isShowPosting);
-				final MemoryInputStream mis = new MemoryInputStream (buffer);
-				final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-				while (mis.available() > 0) {	baos.write(mis.read());	}
-				baos.writeTo (outputStream);
-			} catch (DocumentException e) {
-				e.printStackTrace ();
-			} catch (FinderException e) {
-				e.printStackTrace ();
-			}
-		}
-	}
-	*/
-
 	private void addPresentation
 		(final Table table, final java.util.Map map, final String key,
 		 final int col, final int row) {
@@ -1246,6 +1206,16 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return result;
 	}
 
+	private static boolean hasChangedProvider (final IWContext context) {
+		final HttpSession session = context.getRequest ().getSession ();
+		final Integer lastProviderId
+				= (Integer) session.getAttribute (PROVIDER_KEY + "old");
+		final Integer currentProviderId = getProviderIdParameter (context);
+		session.setAttribute (PROVIDER_KEY + "old", currentProviderId);
+		return null != lastProviderId && null != currentProviderId
+				&& !lastProviderId.equals (currentProviderId);
+	}
+
 	private static Integer getProviderIdParameter (final IWContext context) {
 		return getProviderIdParameter(context.getRequest ());
 	}
@@ -1364,6 +1334,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 					}
 				}
 			}
+			providerDropdown.setOnChange ("this.form.submit()");
 			table.add (providerDropdown, col++, row);
 		}
 	}
