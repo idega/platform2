@@ -35,11 +35,15 @@ public class BookingDeleterWindow extends TravelWindow {
   List _bookings = new Vector();
 
   public BookingDeleterWindow() {
+	setScrollbar(true);
+	setResizable(true);
   }
 
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     setTitle("idegaWEB travel");
+	setScrollbar(true);
+	setResizable(true);
     init(iwc);
 
     if (_bookings != null && _bookings.size() > 0) {
