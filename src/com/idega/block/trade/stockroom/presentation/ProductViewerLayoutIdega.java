@@ -93,7 +93,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
       }
     }
 
-    if (_product != null) {
+    if (_product != null && productViewer._showImages) {
       Table imageTable = new Table(1,1);
       imageTable.setCellpadding(0);
       imageTable.setCellspacing(0);

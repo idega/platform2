@@ -50,6 +50,7 @@ public class ProductViewer extends Block {
   boolean _showProductLink = false;
   boolean _showTeaser = false;
   String _spaceBetween = "3";
+  boolean _showImages = true;
 
   public ProductViewer() { }
 
@@ -252,6 +253,10 @@ public class ProductViewer extends Block {
   public void setShowNewestProduct(boolean showNewest) {
     _showNewest = showNewest;
     _showRandom = !showNewest;
+  }
+
+  public void setShowImages(boolean showImages) {
+    _showImages = showImages;
   }
 }
 
