@@ -56,7 +56,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 			if (getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(month, category.getCategory()) == 0) {
 				
 				createBatchRunLogger(category);
-				removeTestInformation(month, category.getCategory());
+				removePreliminaryInformation(month, category.getCategory());
 				//Create all the billing info derrived from the contracts
 				contracts();
 				//Create all the billing info derrived from the regular payments

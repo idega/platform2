@@ -509,10 +509,15 @@ public abstract class BillingThread extends Thread{
 		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndMonth((String) category.getPrimaryKey(), month) > 0;
 	}
 	
-	protected void removeTestInformation(CalendarMonth month, String schoolCategory) throws IDOLookupException, RemoteException, RemoveException {
-		InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-//		invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
-		invoiceBusiness.removePreliminaryPayment(month, schoolCategory);
+	protected void removePreliminaryInformation(CalendarMonth month, String schoolCategory) throws IDOLookupException, RemoteException, RemoveException {
+//		If this is a test run, we should not do anything with other schools data. 
+//		This schools test record will be deleted in TestPosts.handleSave().
+		
+		if (! isTestRun()){ 
+			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+	//		invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
+			invoiceBusiness.removePreliminaryPayment(month, schoolCategory);
+		}
 	}
 
 	protected void batchRunLoggerDone(){
