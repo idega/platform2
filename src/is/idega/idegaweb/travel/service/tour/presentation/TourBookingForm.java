@@ -79,9 +79,7 @@ public class TourBookingForm extends TravelManager {
 
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
-    super.main(iwc);
-    super.debugParameters(iwc);
-    setProduct(iwc, product);
+    super.main(iwc);    setProduct(iwc, product);
     iwrb = super.getResourceBundle(iwc);
     supplier = super.getSupplier();
     setTimestamp(iwc);

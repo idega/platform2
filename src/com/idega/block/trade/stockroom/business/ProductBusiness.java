@@ -389,7 +389,6 @@ public class ProductBusiness {
   public static void removeProductApplication(IWContext iwc, int supplierId) {
     iwc.removeApplicationAttribute(productsApplication+supplierId);
     iwc.getApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+supplierId);
-    System.err.println("productBusiness...invalidating...");
     iwc.getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
   }
 

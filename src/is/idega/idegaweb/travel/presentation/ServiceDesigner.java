@@ -73,7 +73,6 @@ public class ServiceDesigner extends TravelManager {
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
-      super.debugParameters(iwc);
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
@@ -283,24 +282,18 @@ public class ServiceDesigner extends TravelManager {
                 priceDiscountText.setFontColor(super.WHITE);
               Text timeframeText = getTimeframeText(tFrames[k], iwc);
                 timeframeText.setFontColor(super.WHITE);
-//              Text maxUsageText = super.getText(iwrb.getLocalizedString("travel.number_of_times","Number of items"));
-//                maxUsageText.setFontColor(WHITE);
-//              misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
 
 
               table.add(catName,1,row);
               table.add(priceDiscountText,2,row);
               table.add(timeframeText,3,row);
               table.setAlignment(3, row, "right");
-//              table.add(maxUsageText,4,row);
-//              table.setAlignment(4, row, "right");
               table.setRowColor(row,super.backgroundColor);
 
               DecimalFormat df = new DecimalFormat("0.00");
 
               ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)service.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), false);
               for (int i = 0; i < cats.length; i++) {
-                System.err.println("working with : "+cats[i].getName());
                   table.add(new HiddenInput(parameterTimeframeId, Integer.toString(tFrames[k].getID())),1,row);
                   table.add(new HiddenInput(parameterAddressId, Integer.toString(address.getID())),1,row);
                   categoryName = (Text) theText.clone();
@@ -330,34 +323,21 @@ public class ServiceDesigner extends TravelManager {
 
                   HiddenInput hi = new HiddenInput(this.parameterProductPriceId, "-1");
 
-/*                  if (prices.length == 0) {
-                System.err.println("adding price : -1");
-                    table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
-                  }
-*/                  int iMaxUsage = 0;
+                  int iMaxUsage = 0;
 
                   for (int j = 0; j < prices.length; j++) {
                     iMaxUsage = prices[j].getMaxUsage();
                     if (cats[i].getID() == prices[j].getPriceCategoryID()) {
-                      try {
-                        if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
-                          priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
-                        }else {
-                          priceDiscount.setContent(Float.toString(prices[j].getPrice()));
-                        }
-                        hi.setValue(prices[j].getID());
-//                        table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[j].getID())),1,row);//PriceCategoryID())),1,row);
-                      }catch (ArrayIndexOutOfBoundsException a) {
-//                System.err.println("adding price : -1");
-//                        table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                      if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
+                        priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
+                      }else {
+                        priceDiscount.setContent(Float.toString(prices[j].getPrice()));
                       }
-                    }else {
-//                System.err.println("adding price : -1");
-//                      table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                      hi.setValue(prices[j].getID());
+                      break;
                     }
 
                   }
-                System.err.println("adding price : "+hi.getValue());
                   table.add(hi, 1, row);
 
 
@@ -383,10 +363,8 @@ public class ServiceDesigner extends TravelManager {
               }
 
               ProductPrice[] miscPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)service.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), false);
-              System.err.println("misc.length = "+misc.length);
-              System.err.println("miscPrices.length = "+miscPrices.length);
+
               for (int i = 0; i < misc.length; i++) {
-                System.err.println("working with : "+misc[i].getName());
                   table.add(new HiddenInput(parameterTimeframeId, Integer.toString(tFrames[k].getID())),1,row);
                   table.add(new HiddenInput(parameterAddressId, Integer.toString(address.getID())),1,row);
                   categoryName = (Text) theText.clone();
@@ -404,37 +382,21 @@ public class ServiceDesigner extends TravelManager {
                   }
 
                   HiddenInput hi = new HiddenInput(this.parameterProductPriceId, "-1");
-                  //if (miscPrices.length == 0) {
-                //System.err.println("adding price : -1");
-                    //table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
-                  //}
                   int iMaxUsage = 0;
+
 
                   for (int j = 0; j < miscPrices.length; j++) {
                     iMaxUsage = miscPrices[j].getMaxUsage();
-                      System.err.println("price priceCatId = "+miscPrices[j].getPriceCategoryID());
                     if (misc[i].getID() == miscPrices[j].getPriceCategoryID()) {
-                      System.err.println("found price");
-                      try {
-                        if (miscPrices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
-                          priceDiscount.setContent(Integer.toString((int)miscPrices[j].getPrice()));
-                        }else {
-                          priceDiscount.setContent(Float.toString(miscPrices[j].getPrice()));
-                        }
-                        //System.err.println("adding price : "+miscPrices[j].getID());
-                        hi.setValue(miscPrices[j].getID());
-                        //table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(miscPrices[j].getID())),1,row);//PriceCategoryID())),1,row);
-                      }catch (ArrayIndexOutOfBoundsException a) {
-                        //System.err.println("adding price : -1");
-                        //table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                      if (miscPrices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
+                        priceDiscount.setContent(Integer.toString((int)miscPrices[j].getPrice()));
+                      }else {
+                        priceDiscount.setContent(Float.toString(miscPrices[j].getPrice()));
                       }
-                    }else {
-                      //System.err.println("adding price : -1");
-                      //table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                      hi.setValue(miscPrices[j].getID());
+                      break;
                     }
-                    break;
                   }
-                  System.err.println("adding price : "+hi.getValue());
                   table.add(hi, 1, row);
 
 
@@ -500,9 +462,6 @@ public class ServiceDesigner extends TravelManager {
           int iMaxUsage;
           PriceCategory pCategory;
           ProductPrice pPrice;
-          System.err.println("priceDiscount    = "+priceDiscount.length);
-          System.err.println("priceCategoryIds = "+priceCategoryIds.length);
-          System.err.println("productPriceIds  = "+productPriceIds.length);
           for (int i = 0; i < priceDiscount.length; i++) {
             pPrice = null;
             if (!priceDiscount[i].equals("")) {
@@ -513,7 +472,6 @@ public class ServiceDesigner extends TravelManager {
 
               if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
                 priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
-                System.err.println("Setting Discount \""+pCategory.getName()+"\" : "+priceDiscount[i]+" ... productPriceId : "+productPriceId);
                 pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }else if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
                 priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
@@ -524,7 +482,6 @@ public class ServiceDesigner extends TravelManager {
                 }else {
                   price = (float) Float.parseFloat(priceDiscount[i]);
                 }
-                System.err.println("Setting Price \""+pCategory.getName()+"\" : "+priceDiscount[i]+" ... productPriceId : "+productPriceId);
                 pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }
 
