@@ -181,6 +181,7 @@ public abstract class AbstractSearchForm extends Block{
 		form.addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
 		form.add(getHeader());
 		form.add(getLinks());
+		form.add(getText());
 		setupPresentation(formTable);
 		form.add(formTable);
 		form.add(getButtons());
@@ -252,7 +253,7 @@ public abstract class AbstractSearchForm extends Block{
 		}
 		return table;
 	}
-
+	
 	protected Table getHeader() {
 		Table table = new Table();
 		table.setWidth("100%");
@@ -268,6 +269,16 @@ public abstract class AbstractSearchForm extends Block{
 			table.setColor(headerBackgroundColor);				
 		}
 		return table;
+	}
+	protected Table getText(){
+		Text text = new Text("All bookings directly from suppliers");
+		Table table = new Table();
+		table.setWidth("100%");
+		table.setCellpaddingAndCellspacing(0);
+		table.add(text, 1, 1);
+		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		return table;
+		
 	}
 
 	protected void handleSubmit(IWContext iwc) throws RemoteException {
