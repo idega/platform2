@@ -410,7 +410,7 @@ public class ReportOverview extends Block {
     // get the sql statement
     String sqlStatement = query.getSQLStatement();
     //TODO: thi remove that command
-    // add(new Text(sqlStatement));
+    add(new Text(sqlStatement));
     // get the desired display names
     List displayNames = query.getDisplayNames();
     // get the result of the query
