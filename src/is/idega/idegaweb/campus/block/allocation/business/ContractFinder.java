@@ -703,9 +703,12 @@ public abstract class ContractFinder {
 	public static Contract findValidContractByUser(int user){
 		Contract contract = null;
 		try {
-			List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getUserIdColumnName(),user,ContractBMPBean.getRentedColumnName(),'Y');
-			if(L!= null)
+			List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getUserIdColumnName(),user,ContractBMPBean.getRentedColumnName(),"Y");
+			if (L!= null) {
 				contract = (Contract) L.get(L.size()-1);
+			} else {
+				contract = findByUser(user);			    
+			}
 		}
 		catch (SQLException ex) {
 			ex.printStackTrace();

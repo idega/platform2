@@ -81,8 +81,6 @@ public class BasketBusinessBean extends IBOSessionBean implements
      * @param The
      */
     public void removeItem(BasketItem item) {
-        System.out.println("item = " + item);
-        System.out.println("basket = " + basket);
         if (item == null || basket == null) { return; }
 
         if (basket.containsKey(item.getItemID())) {

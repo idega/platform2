@@ -52,24 +52,24 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 		addAttribute(getIDColumnName());
 
 		addAttribute(SYMBOL, "Einkenni", true, true, java.lang.String.class, 2);
-		addAttribute(OLD_ID, "Nafnnúmer", true, true, java.lang.String.class, 8);
+		addAttribute(OLD_ID, "Nafnnumer", true, true, java.lang.String.class, 8);
 		addAttribute(SSN, "Kennitala", true, true, java.lang.String.class, 10);
-		addAttribute(FAMILY_ID, "Fjölskyldunúmer", true, true, java.lang.String.class, 10);
+		addAttribute(FAMILY_ID, "Fjolskyldunumer", true, true, java.lang.String.class, 10);
 		addAttribute(NAME, "Nafn", true, true, java.lang.String.class, 31);
-		addAttribute(COMMUNE, "Sveitarfélag", true, true, java.lang.String.class, 4);
+		addAttribute(COMMUNE, "Sveitarfelag", true, true, java.lang.String.class, 4);
 		addAttribute(STREET, "Gata", true, true, java.lang.String.class, 4);
-		addAttribute(BUILDING, "Hús", true, true, java.lang.String.class, 4);
-		addAttribute(FLOOR, "Hæð", true, true, java.lang.String.class, 3);
+		addAttribute(BUILDING, "Hus", true, true, java.lang.String.class, 4);
+		addAttribute(FLOOR, "Haed", true, true, java.lang.String.class, 3);
 		addAttribute(SEX, "Kyn", true, true, java.lang.String.class, 1);
-		addAttribute(MARITAL_STATUS, "Hjúskaparstaða", true, true, java.lang.String.class, 1);
+		addAttribute(MARITAL_STATUS, "Hjuskaparstada", true, true, java.lang.String.class, 1);
 		addAttribute(EMPTY, "AUTT", true, true, java.lang.String.class, 2);
 		addAttribute(PROHIBIT_MARKING, "Bannmerking", true, true, java.lang.String.class, 1);
-		addAttribute(NATIONALITY, "Ríkisfang", true, true, java.lang.String.class, 2);
-		addAttribute(PLACE_OF_BIRTH, "Fæðingarstaður", true, true, java.lang.String.class, 4);
+		addAttribute(NATIONALITY, "Rikisfang", true, true, java.lang.String.class, 2);
+		addAttribute(PLACE_OF_BIRTH, "Faedingarstadur", true, true, java.lang.String.class, 4);
 		addAttribute(SPOUSE_SSN, "Kennitala maka", true, true, java.lang.String.class, 10);
 		addAttribute(FATE, "Afdrif", true, true, java.lang.String.class, 4);
-		addAttribute(PARISH, "Sókn", true, true, java.lang.String.class, 3);
-		addAttribute(PO, "Póstnúmer", true, true, java.lang.String.class, 3);
+		addAttribute(PARISH, "Sokn", true, true, java.lang.String.class, 3);
+		addAttribute(PO, "Postnumer", true, true, java.lang.String.class, 3);
 		addAttribute(ADDRESS, "Heimili", true, true, java.lang.String.class, 21);
 	}
 
