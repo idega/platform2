@@ -490,7 +490,7 @@ public abstract class AbstractSearchForm extends Block{
 					  if (numberOfDays > 1) {
 							pTable.add(getText(Integer.toString(price)+" (* "+numberOfDays+" "+iwrb.getLocalizedString("travel.search.days","days")+")"),2,1);
 					  } else {
-					  	pTable.add(getText(Integer.toString(price)),2,1);
+						pTable.add(getText(Integer.toString(price)),2,1);
 					  }
 					  pTable.add(pPriceText, 3,1);
 
@@ -581,7 +581,7 @@ public abstract class AbstractSearchForm extends Block{
 				printVoucher.setWindowToOpen(VoucherWindow.class);
 
 			  if (bf._TPosClient != null) {
-			  	Supplier supplier = ( (SupplierHome) IDOLookup.getHome(Supplier.class)).findByPrimaryKey(new Integer(gBooking.getService().getProduct().getSupplierId()));
+				Supplier supplier = ( (SupplierHome) IDOLookup.getHome(Supplier.class)).findByPrimaryKey(new Integer(gBooking.getService().getProduct().getSupplierId()));
 					com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(bf._TPosClient, supplier);
 					iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
 
@@ -653,7 +653,7 @@ public abstract class AbstractSearchForm extends Block{
 					++row;
 					Boolean boolTest = ((Boolean)availability.get(product.getPrimaryKey()));
 					if (boolTest == null) {
-						System.out.println("[AbstractSearchForm] boolTest == null");
+						System.out.println("[AbstractSearchForm] boolTest == null (product = "+product.getProductName(iwc.getCurrentLocaleId())+")");
 						available = false;
 					} else {
 						available = boolTest.booleanValue();
@@ -671,11 +671,11 @@ public abstract class AbstractSearchForm extends Block{
 					if (descriptionText != null) {
 					  TextReader textReader = new TextReader(descriptionText.getID());
 					  if (headerFontStyle != null) {
-					  	textReader.setHeadlineStyle(headerFontStyle);
+						textReader.setHeadlineStyle(headerFontStyle);
 					  }
 					  
 					  if (textFontStyle != null) {
-					  	textReader.setTextStyle(textFontStyle);
+						textReader.setTextStyle(textFontStyle);
 					  }
 						textReader.setCacheable(false);
 					  table.add(textReader,1,row);
