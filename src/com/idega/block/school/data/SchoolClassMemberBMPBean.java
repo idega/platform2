@@ -43,8 +43,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/03/31 09:25:54 $ by $Author: laddi $
- * @version $Revision: 1.105 $
+ *         Last modified: $Date: 2004/03/31 10:55:30 $ by $Author: laddi $
+ * @version $Revision: 1.106 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -760,6 +760,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
 		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID);
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
 		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		if (schoolTypes != null) {
 			sql.appendAnd().append("mb." + this.SCHOOL_TYPE).appendInCollection(schoolTypes);
@@ -1275,6 +1276,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return typeVec;
 	}
 
+	public Collection ejbFindSubGroupPlacements() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).append(" m, sch_school_class c");
+		query.appendWhereEquals("m."+this.SCHOOLCLASS, "c.sch_school_class_id");
+		query.appendAndEquals("c.sub_group", true);
+		return idoFindPKsByQuery(query);
+	}
+	
 	public Collection getSubGroups() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(SchoolClass.class);
 	}

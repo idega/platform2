@@ -230,6 +230,13 @@ public java.util.Collection findByStudentAndTypes(int p0,java.util.Collection p1
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findSubGroupPlacements()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindSubGroupPlacements();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public SchoolClassMember findByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSchool(p0,p1);
