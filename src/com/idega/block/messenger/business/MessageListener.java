@@ -20,6 +20,8 @@ public class MessageListener implements Runnable{
   private boolean runThread = false;
   private Vector dialogs = null;
 
+  int i = 1;
+
   public MessageListener(MessengerApplet applet) {
     this.client = applet;
   }
@@ -37,9 +39,10 @@ public class MessageListener implements Runnable{
   public void run(){
     while(runThread){
       try {
+        System.out.println("IN THREAD count :"+i);
         if( dialogs != null ){
           int length = dialogs.size();
-          System.out.println("IN THREAD before loop");
+          System.out.println("IN THREAD before loop. size = "+length);
           for (int i = 0; i < length; i++) {
 
             System.out.println("IN THREAD INSIDE loop");
@@ -48,6 +51,7 @@ public class MessageListener implements Runnable{
           }
         }
         t.sleep(threadSleep);
+        i++;
       }
       catch (Exception e) {
         e.printStackTrace(System.out);

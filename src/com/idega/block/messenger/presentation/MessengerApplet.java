@@ -101,7 +101,7 @@ public class MessengerApplet extends Applet implements Runnable{
         System.out.println("starting listener");
         listener.start();
         listener.stop();
-        listener.addMessageDialog(dialog);
+        //listener.addMessageDialog(dialog);
         listener.start();
         listenerStarted = true;
       }
