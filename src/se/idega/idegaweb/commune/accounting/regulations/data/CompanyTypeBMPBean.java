@@ -1,5 +1,5 @@
 /*
- * $Id: CompanyTypeBMPBean.java,v 1.6 2003/08/27 07:38:49 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.7 2003/09/02 23:42:55 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: CompanyTypeBMPBean.java,v 1.6 2003/08/27 07:38:49 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.7 2003/09/02 23:42:55 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 	
@@ -44,7 +44,7 @@ public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 
 		CompanyTypeHome home
 				= (CompanyTypeHome) IDOLookup.getHome(CompanyType.class);
-		final String [] data = { "blank", "kommun", "stiftelse", "ab", "ovr_foretag" };
+		final String [] data = { "kommun", "stiftelse", "ab", "ovr_foretag" };
 		for (int i = 0; i < data.length; i++) {
 			CompanyType ct = home.create();
 			ct.setCompanyType(ENTITY_NAME + "." + data[i]);
@@ -66,11 +66,11 @@ public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 		return (String) getStringColumnValue(COLUMN_COMPANY_TYPE);
 	}
 
-	public void setTextKey(String type) { 
+	public void setLocalizationKey(String type) { 
 		setColumn(COLUMN_COMPANY_TYPE, type); 
 	}
 	
-	public String getTextKey() {
+	public String getLocalizationKey() {
 		return (String) getStringColumnValue(COLUMN_COMPANY_TYPE);
 	}
 

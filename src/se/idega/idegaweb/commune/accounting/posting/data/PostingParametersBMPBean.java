@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.10 2003/08/28 18:34:53 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.11 2003/09/02 23:39:53 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,8 +17,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
+import com.idega.block.school.data.SchoolType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
@@ -39,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.10 2003/08/28 18:34:53 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.11 2003/09/02 23:39:53 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -91,7 +90,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		addAttribute(COLUMN_CHANGED_SIGN, "Ändrings sign", true, true, String.class);
 		
 		addAttribute(COLUMN_ACTIVITY_ID, "Verksamhet", true, true, 
-						Integer.class, "many-to-one", ActivityType.class);
+						Integer.class, "many-to-one", SchoolType.class);
 						
 		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "Regelspecificationstyp", true, true, 
 						Integer.class, "many-to-one", RegulationSpecType.class);
@@ -105,7 +104,11 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 		addAttribute(COLUMN_OWN_POSTING_STRING, "Egen konteringsstring", true, true, String.class);
 		addAttribute(COLUMN_DOUBLE_POSTING_STRING, "Mot konteringsstring", true, true, String.class);
-
+		
+		setNullable (COLUMN_ACTIVITY_ID, true);
+		setNullable (COLUMN_REG_SPEC_TYPE_ID, true);
+		setNullable (COLUMN_COMPANY_TYPE_ID, true);
+		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
 	}
 	
 	public String getPostingString() {return (String) getStringColumnValue(COLUMN_OWN_POSTING_STRING);}
@@ -163,8 +166,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return (Date) getColumnValue(COLUMN_PERIODE_TO);
 	}
 
-	public ActivityType getActivity() {
-		return (ActivityType) getColumnValue(COLUMN_ACTIVITY_ID);
+	public SchoolType getActivity(){
+		return (SchoolType) getColumnValue(COLUMN_ACTIVITY_ID);
 	}
 
 	public RegulationSpecType getRegSpecType() {
@@ -176,7 +179,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	}
 
 	public CommuneBelongingType getCommuneBelonging() {
-			return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING_ID);
+		return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING_ID);
 	}
 	
 	public Collection ejbFindPostingParametersByPeriode(Date from, Date to) throws FinderException {

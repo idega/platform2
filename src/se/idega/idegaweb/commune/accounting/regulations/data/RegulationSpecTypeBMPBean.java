@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecTypeBMPBean.java,v 1.9 2003/08/29 00:54:32 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.10 2003/09/02 23:42:55 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.MainRuleBMPBean#
  * <p>
  * 
- * $Id: RegulationSpecTypeBMPBean.java,v 1.9 2003/08/29 00:54:32 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.10 2003/09/02 23:42:55 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RegulationSpecTypeBMPBean extends GenericEntity implements RegulationSpecType {
 	
@@ -46,8 +46,8 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 
 		RegulationSpecTypeHome home
 				= (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
-		final String [] data1 = { "blank", "check", "modersmal", "svenska_2", "laginkomstskydd", "syskonrabatt"};
-		final int [] data2 = { 1, 1, 2, 2, 3, 3};
+		final String [] data1 = { "check", "modersmal", "svenska_2", "laginkomstskydd", "syskonrabatt"};
+		final int [] data2 = { 1, 2, 2, 3, 3};
 		for (int i = 0; i < data1.length; i++) {
 			RegulationSpecType regSpec = home.create();
 			regSpec.setRegSpecType(ENTITY_NAME + "." + data1[i]);
@@ -55,7 +55,6 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 			regSpec.store();
 		}
 	}
-
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
@@ -81,11 +80,11 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 		return (MainRule) getColumnValue(COLUMN_MAIN_RULE_ID);
 	}
 
-	public void setTextKey(String type) { 
+	public void setLocalizationKey(String type) { 
 		setColumn(COLUMN_REG_SPEC_TYPE, type); 
 	}
 	
-	public String getTextKey() {
+	public String getLocalizationKey() {
 		return (String) getStringColumnValue(COLUMN_REG_SPEC_TYPE);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.6 2003/08/27 07:38:49 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.7 2003/09/02 23:42:55 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.6 2003/08/27 07:38:49 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.7 2003/09/02 23:42:55 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
@@ -43,7 +43,7 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 
 		CommuneBelongingTypeHome home
 				= (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
-		final String [] data = { "blank", "nacka", "ej_nacka" };
+		final String [] data = { "nacka", "ej_nacka" };
 		for (int i = 0; i < data.length; i++) {
 			CommuneBelongingType cbType = home.create();
 			cbType.setCommuneBelongingType(ENTITY_NAME + "." + data[i]);
@@ -65,11 +65,11 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 		return (String) getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
 	}
 
-	public void setTextKey(String type) { 
+	public void setLocalizationKey(String type) { 
 		setColumn(COLUMN_COMMUNE_BELONGING_TYPE, type); 
 	}
 	
-	public String getTextKey() {
+	public String getLocalizationKey() {
 		return (String) getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
 	}
 

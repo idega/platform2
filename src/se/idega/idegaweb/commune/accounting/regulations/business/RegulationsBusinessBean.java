@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.10 2003/08/29 15:37:23 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.11 2003/09/02 23:42:30 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -15,6 +15,9 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.ejb.CreateException;
 import java.util.Iterator;
+
+import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.block.school.data.SchoolType;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
@@ -48,14 +51,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 
 	/**
 	 * Gets all Activity types
-	 * @return collection of Activity Types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
+	 * @return collection of Activity Types = School types
+	 * @see import com.idega.block.school.data.SchoolType#
 	 * @author Kjell
 	 */
 	public Collection findAllActivityTypes() {
 		try {
-			ActivityTypeHome home = getActivityTypeHome();
-			return home.findAllActivityTypes();				
+//			ActivityTypeHome home = getActivityTypeHome();
+			SchoolTypeHome home = getSchoolTypeHome();
+			return home.findAllSchoolTypes();				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {
@@ -124,7 +128,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				CommuneBelongingType cbt = (CommuneBelongingType) iter.next();
-				ret += replaceToDot(cbt.getTextKey());
+				ret += replaceToDot(cbt.getLocalizationKey());
 //				ret += cbt.getTextKey().replaceAll("^.*\\.", "");
 //				ret += cbt.getTextKey();
 				if(iter.hasNext()) {
@@ -170,7 +174,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				CompanyType ct = (CompanyType) iter.next();
-				ret += replaceToDot(ct.getTextKey());
+				ret += replaceToDot(ct.getLocalizationKey());
 //				ret += ct.getTextKey().replaceAll("^.*\\.", "");
 //				ret += ct.getTextKey();
 				if(iter.hasNext()) {
@@ -233,7 +237,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				rst = home.create();
 			}
 			rst.setMainRule(mainRuleId);
-			rst.setTextKey(regSpecTypeKey);
+			rst.setLocalizationKey(regSpecTypeKey);
 			rst.store();
 		} catch (CreateException e) { 
 			throw new RegulationException(KEY_CANNOT_SAVE_REG_SPEC_TYPE, DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE);
@@ -276,7 +280,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				RegulationSpecType rst = (RegulationSpecType) iter.next();
-				ret += replaceToDot(rst.getTextKey());
+				ret += replaceToDot(rst.getLocalizationKey());
 //				ret += rst.getTextKey().replaceAll("^.*\\.", "");
 //				ret += rst.getTextKey();
 				if(iter.hasNext()) {
@@ -377,6 +381,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
  
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
+	}
+
+	protected SchoolTypeHome getSchoolTypeHome() throws RemoteException {
+		return (SchoolTypeHome) com.idega.data.IDOLookup.getHome(SchoolType.class);
 	}
 
 	protected CommuneBelongingTypeHome getCommuneBelongingTypeHome() throws RemoteException {

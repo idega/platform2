@@ -16,5 +16,6 @@ public interface RegulationsBusiness extends com.idega.business.IBOService
  public java.lang.String getCommuneBelongingsAsString() throws java.rmi.RemoteException;
  public java.lang.String getCompanyTypesAsString() throws java.rmi.RemoteException;
  public java.lang.String getRegulationSpecTypesAsString() throws java.rmi.RemoteException;
+ public java.lang.String replaceToDot(java.lang.String p0) throws java.rmi.RemoteException;
  public void saveRegulationSpecType(int p0,java.lang.String p1,int p2)throws se.idega.idegaweb.commune.accounting.regulations.business.RegulationException, java.rmi.RemoteException;
 }

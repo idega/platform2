@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.4 2003/08/29 15:36:07 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.5 2003/09/02 23:43:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/08/29 15:36:07 $
+ * $Date: 2003/09/02 23:43:27 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -172,7 +172,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 			add(getRegulationSpecTypeForm(
 					iwc,
 					rst.getPrimaryKey().toString(),
-					rst.getTextKey(),
+					rst.getLocalizationKey(),
 					Integer.parseInt(rst.getMainRule().getPrimaryKey().toString()),
 					null,
 					false)
@@ -295,7 +295,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 			}
 			while (iter.hasNext()) {
 				RegulationSpecType rst = (RegulationSpecType) iter.next();
-				list.add(rst.getTextKey(), rst.getRegSpecType());
+				list.add(rst.getLocalizationKey(), rst.getRegSpecType());
 				list.add(rst.getMainRule().getTextKey(),rst.getMainRule().getMainRule());
 
 				Link edit = new Link(getEditIcon(localize(KEY_CLICK_EDIT, "Redigera")));

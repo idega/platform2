@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.15 2003/08/28 18:32:59 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.16 2003/09/02 23:39:37 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -109,42 +109,36 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		return trim(ps.substring(readPointer, readPointer + fieldLength), field);
 	}
 
-
 	/**
 	 * Hämta konteringsinformation
 	 * Retrieves accounting default information. Matching on the main rules like 
-	 * Verksamhet, Regspectyp, Bolagstyp, kommuntill.hörighet is done via keys to avoid 
-	 * localisation problems in the selectors. 
-	 * 
-	 * The example keys I added here are just for "Check och Peng" education/childcare but could easily be 
-	 * extened to use other areas such as elderly care etc etc. And of course localized.
-	 * We store the keys in the data bean and these are retrived from the regulation framework
-	 * @see se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness#
-	 *    
+	 * Verksamhet, Regspectyp, Bolagstyp, kommuntill.hörighet is done via primary keys
+	 *  
 	 * @param date Date when the transaction took place
 	 * 
-	 * @param activity String containing an identifyer for the activity examples are:
-	 * Skola, Förskola or "". Matching is done on keys: school, pre_school or ""
-	 *  
-	 * @param regSpecType String containing an identifyer for the regulations specifications type 
-	 * examples are:
-	 * Check, Modersmål or "". Matching is done on keys: check, modersmal, ""
-	 *
-	 * @param companyType String containing an identifyer for the company type 
-	 * examples are:
-	 * Kommun, Stiftelse, AB, Övriga företag or "". Matching is done on keys:   
-	 * "kommun", "stiftelse", "ab", "ovr_foretag" or ""
+	 * @param act_id Verksamhet. Related to:
+	 * @see com.idega.block.school.data.SchoolType#
 	 * 
-	 * @param communeBelonging String containing an identifyer for the commune belonging 
-	 * examples are:
-	 * Nacka, EJ Nacka or "". Matching is done on keys:  "nacka", "ej_nacka" or ""
+	 * @param reg_id Reg.Spec type. Related to:
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
+	 * 
+	 * @param com_id Company type
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType#
+	 * This bean will be moved later to the Idega school:com.idega.block.school.data
+	 * 
+	 * @param com_bel_id Commmune belonging type
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType#
+	 * This will probably be moved into the accounting.data
+	 * 
+	 * make parameter 0 for macthing of all
 	 * 
 	 * @return PostingParameters @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters#
 	 * @throws PostingParametersException
 	 * 
 	 * @author Kjell
 	 */
-	public PostingParameters getPostingParameter(Date date, String act_key, String reg_key, String com_key, String com_bel_key) throws PostingParametersException {
+	public PostingParameters getPostingParameter(Date date, int act_id, 
+			int reg_id, int com_id, int com_bel_id) throws PostingParametersException {
 		
 		try {
 			int match;
@@ -156,35 +150,37 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 
 			while(iter.hasNext())  {
 				PostingParameters pp = (PostingParameters) iter.next();
-				String the_act_key = pp.getActivity() != null ? 
-						pp.getActivity().getActivityType() : "";
-				String the_reg_key = pp.getRegSpecType() != null ? 
-						pp.getRegSpecType().getRegSpecType() : "";
-				String the_com_key = pp.getCompanyType() != null ? 
-						pp.getCompanyType().getCompanyType() : "";
-				String the_com_bel_key = pp.getCommuneBelonging() != null ? 
-						pp.getCommuneBelonging().getCommuneBelongingType() : "";
+				String the_act_id = pp.getActivity() != null ? 
+						pp.getActivity().getPrimaryKey().toString() : "0";
+				String the_reg_id = pp.getRegSpecType() != null ? 
+						pp.getRegSpecType().getPrimaryKey().toString() : "0";
+				String the_com_id = pp.getCompanyType() != null ? 
+						pp.getCompanyType().getPrimaryKey().toString() : "0";
+				String the_com_bel_id = pp.getCommuneBelonging() != null ? 
+						pp.getCommuneBelonging().getPrimaryKey().toString() : "0";
 				
 				match = 0;
 				
-				if (the_act_key.indexOf("blank") != -1) 
+				if(act_id == 0) { 
 					match++;
-				if (the_reg_key.indexOf("blank") != -1)
-					match++;	  					
-				if (the_com_key.indexOf("blank") != -1)
-					match++;	  					
-				if (the_com_bel_key.indexOf("blank") != -1)
-					match++;	  		
-								
-				if(act_key.compareToIgnoreCase(the_act_key) != -1 && act_key.length() != 0) 
+				} else if (Integer.parseInt(the_act_id) == act_id) { 
+					match++; 
+				}
+				if(reg_id == 0) { 
 					match++;
-				if(reg_key.compareToIgnoreCase(the_reg_key) != -1 && reg_key.length() != 0) 
+				} else if (Integer.parseInt(the_reg_id) == reg_id) { 
+					match++; 
+				}
+				if(com_id == 0) { 
 					match++;
-				if(com_key.compareToIgnoreCase(the_com_key) != -1 && com_key.length() != 0) 
+				} else if (Integer.parseInt(the_com_id) == com_id) { 
+					match++; 
+				}
+				if(com_bel_id == 0) { 
 					match++;
-				if(com_bel_key.compareToIgnoreCase(the_com_bel_key) != -1 && com_bel_key.length() != 0) 
-					match++;
-				
+				} else if (Integer.parseInt(the_com_bel_id) == com_bel_id) { 
+					match++; 
+				}
 				if (match == 4) {
 					return pp;
 				}
@@ -225,15 +221,15 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			try {
 				home = (PostingParametersHome) IDOLookup.getHome(PostingParameters.class);
 	
-				if(activityID == null) activityID = "1"; 
-				if(regSpecTypeID == null) regSpecTypeID = "1"; 
-				if(companyTypeID == null) companyTypeID = "1"; 
-				if(communeBelongingID == null) communeBelongingID = "1"; 
+				if(activityID == null) activityID = "0"; 
+				if(regSpecTypeID == null) regSpecTypeID = "0"; 
+				if(companyTypeID == null) companyTypeID = "0"; 
+				if(communeBelongingID == null) communeBelongingID = "0"; 
 				
-				if(activityID.indexOf("0") != -1) activityID = "1"; 
-				if(regSpecTypeID.indexOf("0") != -1) regSpecTypeID = "1"; 
-				if(companyTypeID.indexOf("0") != -1) companyTypeID = "1"; 
-				if(communeBelongingID.indexOf("0") != -1) communeBelongingID = "1"; 
+				if(activityID.indexOf("0") != -1) activityID = "0"; 
+				if(regSpecTypeID.indexOf("0") != -1) regSpecTypeID = "0"; 
+				if(companyTypeID.indexOf("0") != -1) companyTypeID = "0"; 
+				if(communeBelongingID.indexOf("0") != -1) communeBelongingID = "0"; 
 
 				parm1 = Integer.parseInt(activityID);
 				parm2 = Integer.parseInt(regSpecTypeID);
@@ -327,16 +323,33 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						eq++;
 					}
 				}
-				if (Integer.parseInt(pp.getActivity().getPrimaryKey().toString()) == code1) {
-					eq++;				
+				System.out.println("" + code1 + ":" + code2 + ":" +code3 +":" +code4);
+				if(pp.getActivity() == null) {
+					if(code1 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getActivity().getPrimaryKey().toString()) == code1) {
+					eq++;
+				}
+				if(pp.getRegSpecType() == null) {
+					if(code2 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getRegSpecType().getPrimaryKey().toString()) == code2) {
+					eq++;
+				}
+				if(pp.getCompanyType() == null) {
+					if(code3 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getCompanyType().getPrimaryKey().toString()) == code3) {
+					eq++;
 				}	
-				if (Integer.parseInt(pp.getRegSpecType().getPrimaryKey().toString()) == code2) {
-					eq++;				
-				}	
-				if (Integer.parseInt(pp.getCompanyType().getPrimaryKey().toString()) == code3) {
-					eq++;				
-				}	
-				if (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) == code4) {
+				if(pp.getCommuneBelonging() == null) {
+					if(code4 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) == code4) {
 					eq++;				
 				}	
 				if(eq == 8) {
