@@ -20,7 +20,6 @@ public interface Regulation extends com.idega.data.IDOEntity
  public se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType getSpecialCalculation();
  public java.lang.Integer getVATEligible();
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVATRegulation();
- public void initializeAttributes();
  public void setAmount(int p0);
  public void setChangedDate(java.sql.Timestamp p0);
  public void setChangedSign(java.lang.String p0);

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.24 2003/12/22 13:11:26 staffan Exp $
+ * $Id: RegulationBMPBean.java,v 1.25 2003/12/29 14:50:54 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.24 2003/12/22 13:11:26 staffan Exp $
+ * $Id: RegulationBMPBean.java,v 1.25 2003/12/29 14:50:54 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -439,10 +439,10 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Regulation ejbFindRegulation(int id) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
-		return (Regulation) idoFindOnePKByQuery(sql);
+	public Object ejbFindRegulation(int id) throws FinderException {
+			IDOQuery sql = idoQuery();
+			sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
+			return idoFindOnePKByQuery(sql);
 	}
 
 	public Object ejbFindRegulationOverlap(String name, Date from, Date to, Regulation r) throws FinderException {
