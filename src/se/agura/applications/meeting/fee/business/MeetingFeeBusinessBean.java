@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.19 2005/03/16 09:49:35 anna Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.20 2005/03/20 11:00:20 eiki Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import com.idega.util.text.Name;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -154,17 +154,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			return (firstHourAmount + proceedingAmount);
 		}
 		return 0;
- 	}
-	
-	public Collection getParishes() {
-		try {
-			String[] types = { AguraConstants.GROUP_TYPE_PARISH, AguraConstants.GROUP_TYPE_PARISH_OFFICE };
-			return getUserBusiness().getGroupBusiness().getGroups(types, true);
-		}
-		catch (Exception e) {
-			throw new IBORuntimeException(e);
-		}
-	}
+ 	}	
 	
 	public Collection getMeetingGroups(User user) {
 		try {

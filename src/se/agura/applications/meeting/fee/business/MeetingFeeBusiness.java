@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusiness.java,v 1.5 2005/03/10 09:10:47 laddi Exp $
+ * $Id: MeetingFeeBusiness.java,v 1.6 2005/03/20 11:00:20 eiki Exp $
  * Created on 10.3.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO laddi Describe Type MeetingFeeBusiness
  * </p>
- *  Last modified: $Date: 2005/03/10 09:10:47 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/03/20 11:00:20 $ by $Author: eiki $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface MeetingFeeBusiness extends ApplicationsBusiness {
 
@@ -73,11 +73,6 @@ public interface MeetingFeeBusiness extends ApplicationsBusiness {
 	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#calculateMeetingFee
 	 */
 	public float calculateMeetingFee(int hours, int minutes, MeetingFeeFormula formula) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#getParishes
-	 */
-	public Collection getParishes() throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#getMeetingGroups
