@@ -55,6 +55,10 @@ public static String FONT_SIZE_24_STYLE_TAG = "24pt";
 public static String FONT_SIZE_34_HTML_7 = "7";
 public static String FONT_SIZE_34_STYLE_TAG = "34pt";
 
+public static String NON_BREAKING_SPACE = "&nbsp;";
+public static String BREAK = "<br>";
+
+
 
 
 
@@ -141,7 +145,7 @@ public void setText(String s){
 }
 
 public void addBreak(){
-	addToText("<br/>");
+	addToText(BREAK);
 }
 
 public void setTeleType(){
@@ -189,7 +193,7 @@ public static Text emptyString(){
 
 public static Text getBreak(){
   if (HTMLbreak == null){
-    HTMLbreak = new Text("<br>");
+    HTMLbreak = new Text(BREAK);
     HTMLbreak.addHTMLFontTag(false);
    // HTMLbreak.setFontSize("1");
   }
@@ -198,7 +202,7 @@ public static Text getBreak(){
 
 public static Text getNonBrakingSpace(){
   if (HTMLnbsp == null){
-    HTMLnbsp = new Text("&nbsp;");
+    HTMLnbsp = new Text(NON_BREAKING_SPACE);
     HTMLnbsp.addHTMLFontTag(false);
     //HTMLnbsp.setFontSize("1");
   }
