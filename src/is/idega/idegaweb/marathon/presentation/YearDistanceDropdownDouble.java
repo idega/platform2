@@ -50,12 +50,12 @@ public class YearDistanceDropdownDouble extends SelectDropdownDouble{
             Map dis = new LinkedHashMap();
             dis.put("-1",iwrb.getLocalizedString("run_year_ddd.select_distance","Select distance..."));
 
-            while(yearIter.hasNext()) {
+ /*           while(yearIter.hasNext()) {
                 Group year = (Group) yearIter.next();
                 dis.putAll(runBiz.getDistancesMap(runGroup,year.getName()));
                 addMenuElement(year.getPrimaryKey().toString(),year.getName(),dis);
           
-            }
+            }*/
         }else {
             addEmptyElement(iwrb.getLocalizedString("year_dis_ddd.no_run","No run is selected..."),
                     iwrb.getLocalizedString("year_dis_ddd.no_run","No run is selected..."));
