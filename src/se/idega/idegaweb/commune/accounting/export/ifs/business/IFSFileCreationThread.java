@@ -76,7 +76,7 @@ public class IFSFileCreationThread extends Thread {
 	protected Locale _currentLocale = null;
 	protected IWApplicationContext _iwac = null;
 
-	private double EXTRA_PAYMENT_PERCENTAGE = 0.06;
+	private float EXTRA_PAYMENT_PERCENTAGE = 0.06f;
 	
 /*	private final static String FILE_TYPE_PREFIX = "n24_ifs";
 	private final static String FILE_TYPE_HVD = "hvd";

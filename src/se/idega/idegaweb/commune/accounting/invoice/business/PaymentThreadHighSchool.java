@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.resource.data.ResourceClassMember;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -139,4 +143,53 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		
 		return detail;
 	}
+	
+	protected Collection getRegulationForResourceArray(RegulationsBusiness regBus, SchoolClassMember schoolClassMember, ResourceClassMember resource, Provider provider) throws RemoteException {
+		Collection resourceConditions = new ArrayList();
+		Collection all = new ArrayList();
+		errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
+		errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
+		errorRelated.append("StudyPath" + schoolClassMember.getStudyPathId());
+		Commune defaultCommune = null;
+		try {
+			defaultCommune = getCommuneHome().findDefaultCommune();
+		}
+		catch(Exception e) {
+			
+		}
+		errorRelated.append("Commune " + defaultCommune.getCommuneName());
+		errorRelated.append("StateSubsidyGrant " + provider.getStateSubsidyGrant());
+		
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
+		if (schoolClassMember.getStudyPathId() != -1)
+			all.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(schoolClassMember.getStudyPathId())));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, defaultCommune.getPrimaryKey()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, new Boolean(provider.getStateSubsidyGrant())));
+		
+		Collection regulationForResourceArray = null;
+		
+		all.add(resourceConditions);
+		regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+				category.getCategory(),
+				PaymentFlowConstant.OUT,
+				calculationDate,
+				RuleTypeConstant.DERIVED,
+				RegSpecConstant.RESOURCE, 
+				all
+		);
+		
+		if (regulationForResourceArray == null || regulationForResourceArray.isEmpty()) {
+			regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+					category.getCategory(),
+					PaymentFlowConstant.OUT,
+					calculationDate,
+					RuleTypeConstant.DERIVED,
+					RegSpecConstant.RESOURCE, 
+					resourceConditions
+			);
+		}
+		
+		return regulationForResourceArray;
+	}	
 }

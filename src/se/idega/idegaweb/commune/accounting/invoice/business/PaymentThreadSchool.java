@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/08 12:38:36 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/11 12:18:25 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.94 $
+ * @version $Revision: 1.95 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -401,32 +401,36 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		return placementIsInPeriod;
 	}
 
+	protected Collection getRegulationForResourceArray(RegulationsBusiness regBus, SchoolClassMember schoolClassMember, ResourceClassMember resource, Provider provider) throws RemoteException {
+		Collection resourceConditions = new ArrayList();
+		errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
+		errorRelated.append("Resource "+resource.getResource().getResourceName());
+		errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
+		errorRelated.append("Statsbidrag "+provider.getStateSubsidyGrant());
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
+		Collection regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+				category.getCategory(),
+				PaymentFlowConstant.OUT,
+				calculationDate,
+				RuleTypeConstant.DERIVED,
+				RegSpecConstant.RESOURCE, resourceConditions
+		);
+		
+		return regulationForResourceArray;
+	}
+	
 	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource) throws EJBException, FinderException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		final Date startDate = resource.getStartDate();
 		final Date endDate = resource.getEndDate();
 		final PlacementTimes placementTimes = calculateTime(startDate, endDate);
 		School school = schoolClassMember.getSchoolClass().getSchool();
-		Collection resourceConditions = new ArrayList();
-		errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
-		errorRelated.append("Resource "+resource.getResource().getResourceName());
-		errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
-		Collection regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-			category.getCategory(),
-			PaymentFlowConstant.OUT,
-			calculationDate,
-			RuleTypeConstant.DERIVED,
-			RegSpecConstant.RESOURCE, resourceConditions
-			);
+		
+		Collection regulationForResourceArray = getRegulationForResourceArray(regBus, schoolClassMember, resource, provider);
 		int regSize = regulationForResourceArray.size();
 
-//		if(regSize!=1){
-			errorRelated.append("# of Regulations "+regSize);
-//			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForResourceNotCorrect");
-//			return;
-//		}
+		errorRelated.append("# of Regulations "+regSize);
 
 		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
 			try {
