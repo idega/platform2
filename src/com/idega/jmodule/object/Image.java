@@ -151,9 +151,9 @@ public Image(int image_id, String name, int width, int height) throws SQLExcepti
 }
 
 private void getImage(ModuleInfo modinfo) throws SQLException{
-
+  IWMainApplication iwma = modinfo.getApplication();
+  iwma
   if( useCaching ){
-    IWMainApplication iwma = modinfo.getApplication();
     Cache cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.jmodule.image.data.ImageEntity",imageId,iwma);
     if( cachedImage != null ){
       image = (ImageEntity) cachedImage.getEntity();
