@@ -15,6 +15,7 @@ import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
 import is.idega.idegaweb.travel.presentation.TravelManager;
+import is.idega.idegaweb.travel.presentation.TravelWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
@@ -184,10 +185,14 @@ public abstract class AbstractSearchForm extends Block{
 		form.add(getHeader());
 		form.add(getLinks());
 		form.add(getText());
+		formTable.add(Text.NON_BREAKING_SPACE, 1, row);
+		++row;
 		setupPresentation();
 		form.add(formTable);
 		form.add(getButtons());
 		outTable.add(form);
+		outTable.add(Text.BREAK);
+		outTable.add(addTermsAndConditions());
 		if (definedProduct != null && (tm.isInPermissionGroup(iwc) || tm.isAdministrator(iwc))) {
 			Link link = getDirectBookingLink();
 			outTable.add(link);
@@ -368,6 +373,30 @@ public abstract class AbstractSearchForm extends Block{
 				checkBooking();
 				break;
 		}
+	}
+	
+	private Table addTermsAndConditions() throws RemoteException {
+		Link terms = new Link(getText(iwrb.getLocalizedString("travel.search.terms_and_conditions", "Terms and conditions")));
+		terms.setWindowToOpen(TravelWindow.class, "600", "400", true, true);
+		terms.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.terms_and_conditions");
+		terms.addParameter(TravelWindow.LOCALIZATION_KEY, "travel.search.terms_and_conditions_text");
+
+		Link privacyStatement = new Link(getText(iwrb.getLocalizedString("travel.search.privacy_statement", "Privacy statement")));
+		privacyStatement.setWindowToOpen(TravelWindow.class, "600", "400", true, true);
+		privacyStatement.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.privacy_statement");
+		privacyStatement.addParameter(TravelWindow.LOCALIZATION_KEY, "travel.search.privacy_statement_text");
+
+		Table table = new Table();
+		table.setCellpaddingAndCellspacing(0);
+		table.setWidth("100%");
+		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(terms, 1, 1);
+
+
+		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(privacyStatement, 1, 2);
+
+		return table;
 	}
 			
 	protected void setupBookingForm() throws RemoteException {
