@@ -144,5 +144,12 @@ public int getNumberOfRelations(com.idega.block.school.data.School p0,com.idega.
 	return theReturn;
 }
 
+public int getNumberOfFreetimeTypes(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((SchoolBMPBean)entity).ejbHomeGetNumberOfFreetimeTypes(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }

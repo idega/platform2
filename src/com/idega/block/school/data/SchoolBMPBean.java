@@ -540,6 +540,16 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		return super.idoGetNumberOfRecords(sql.toString());
 	}
+	
+	public int ejbHomeGetNumberOfFreetimeTypes(int schoolID) throws IDOException {
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom("sch_school_sch_school_type m, sch_school_type t");
+		query.appendWhereEquals("m.sch_school_type_id", "t.sch_school_type_id");
+		query.appendAndEquals("m.sch_school_id", schoolID);
+		query.appendAndEquals("t.is_freetime_type", true);
+		
+		return idoGetNumberOfRecords(query);
+	}
 
 	public Collection ejbFindAllPrivate() throws IDOLookupException, EJBException, FinderException{
 		Integer managementType = (Integer)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
