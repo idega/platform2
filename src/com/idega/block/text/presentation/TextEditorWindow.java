@@ -315,7 +315,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
       getAssociatedScript().addFunction(ONCLICK_FUNCTION_NAME,"function "+ONCLICK_FUNCTION_NAME+"("+TEXT_NAME_PARAMETER_NAME+","+TEXT_ID_PARAMETER_NAME+"){ }");
       getAssociatedScript().addToFunction(ONCLICK_FUNCTION_NAME,AbstractChooserWindow.SELECT_FUNCTION_NAME+"("+TEXT_NAME_PARAMETER_NAME+","+TEXT_ID_PARAMETER_NAME+")");
     if (txText != null) {
-      close.setOnClick(ONCLICK_FUNCTION_NAME+"('"+txText.getName()+"','"+txText.getID()+"')");
+      close.setOnClick(ONCLICK_FUNCTION_NAME+"('"+txText.getID()+"','"+txText.getID()+"')");
     }
     addSubmitButton(save);
     addSubmitButton(close);
