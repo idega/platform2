@@ -146,6 +146,13 @@ public SchoolClassMember findByUserAndSeason(int p0,int p1)throws javax.ejb.Find
 	return this.findByPrimaryKey(pk);
 }
 
+public SchoolClassMember findLatestByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindLatestByUserAndSchool(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public SchoolClassMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (SchoolClassMember) super.findByPrimaryKeyIDO(pk);
  }
