@@ -18,6 +18,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
@@ -39,15 +40,19 @@ public class ClubSelector extends Block {
 	
 	protected int regionalUnionId = -1;
 	protected int clubId = -1;
+	int stepCounter = 0;
 	protected WorkReportBusiness reportBiz;
 	protected IWResourceBundle iwrb;
 	
 	protected List paramsToMaintain = null;
 	protected List steps = null;
 	protected Map localizedStepTexts = new HashMap(); 
+	protected Map localizedStepKeyOrder = new HashMap(); 
+	protected Table stepTable = null;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private static final String STEP_NAME_LOCALIZATION_KEY = "clubselector.step_name";
+	
 	/**
 	 * @return
 	 */
@@ -74,6 +79,7 @@ public class ClubSelector extends Block {
 		super();
 		this.setToDebugParameters(true);
 		addToParametersToMaintainList(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
+		addToParametersToMaintainList(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
 		addToParametersToMaintainList(WorkReportWindow.ACTION);
 		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
@@ -117,6 +123,8 @@ public class ClubSelector extends Block {
 		addStepsTable(iwc);
 		addBreak();
 		
+		
+		
 		//sets this step as bold, if another class calls it this will be overridden
 		setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
@@ -131,11 +139,28 @@ public class ClubSelector extends Block {
 				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
 				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
 			}
+			
+			if(regionalUnionId!=-1 && clubId!=regionalUnionId){
+				Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
+				//add(" / ");
+			}
+			
+			if(clubId!=-1 && clubId!=regionalUnionId){
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(" / "));
+				Text clubText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(clubId).getName(),true,true,false);
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,clubText);
+			}
 		}
 		else{
 			if(paramRegionalUnionId!=null){
 				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
 				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
+				if(regionalUnionId!=-1 && clubId!=regionalUnionId){
+					Text regionalUnionText = new Text(this.getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalUnionId).getName(),true,true,false);
+					addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,regionalUnionText);
+				}
+				
 			}
 						
 			addClubSelectionForm();
@@ -146,10 +171,10 @@ public class ClubSelector extends Block {
 	
 	protected void addStepsTable(IWContext iwc){
 		if(steps!=null && !steps.isEmpty()){
-			Table stepTable = new Table();
+			stepTable = new Table();
 			stepTable.setWidth(Table.HUNDRED_PERCENT);
-			
-			stepTable.setCellpadding(0);
+			stepTable.setColor("#DFDFDF");
+			stepTable.setCellspacing(0);
 			
 			Iterator iter = steps.iterator();
 			int column = 1;
@@ -157,10 +182,12 @@ public class ClubSelector extends Block {
 			while (iter.hasNext()) {
 				String key = (String) iter.next();
 				Text text = new Text(column+". "+iwrb.getLocalizedString(key,key));
+				
+				localizedStepKeyOrder.put(key,new Integer(column));//for later lookup
+				
 				localizedStepTexts.put(key,text);
 				stepTable.add(text,column,1);		
 				stepTable.setWidth(column,200);
-				stepTable.setColor(column,1,"#DFDFDF");
 				column++;
 			}
 			
@@ -244,8 +271,14 @@ public class ClubSelector extends Block {
 		if(steps==null){
 			steps = new Vector();//to keep the order
 		}
+
 		
-		steps.add(stepInWizardNameLocalizedKey);
+		steps.add(stepCounter++,stepInWizardNameLocalizedKey);
+	}
+	
+	protected void addToStepsExtraInfo(String stepLocalizableKey, PresentationObject obj){
+		Integer column = (Integer)localizedStepKeyOrder.get(stepLocalizableKey);
+		stepTable.add(obj,column.intValue(),2);
 	}
 	
 	protected List getSteps(){

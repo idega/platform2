@@ -5,14 +5,9 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -108,6 +103,9 @@ public class WorkReportSelector extends ClubSelector {
 				else{
 					workReportId = Integer.parseInt(paramWorkReportId);
 				}
+				
+				Text yearText = new Text(getWorkReportBusiness(iwc).getWorkReportById(workReportId).getYearOfReport().toString(),true,true,false);
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,yearText);
 				
 				iwc.removeSessionAttribute(WorkReportConstants.WR_SESSION_CLEAR);
 				
