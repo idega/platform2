@@ -114,23 +114,29 @@ public class GroupApplicationTab extends UserTab {
 				addBreak();
 				
 				Group parent = (Group)(groupBiz.getGroupByGroupID(app.getApplicationGroupId()).getParentNode());
-				add("parent : "+parent.getName());
 				
-				Collection allGroups = groupBiz.getChildGroupsRecursive( parent  );
-				Iterator aGroups = allGroups.iterator();
-				while (aGroups.hasNext()) {
-					Group group = (Group) aGroups.next();
-					groupSelection.addToAvailableBox(((Integer)group.getPrimaryKey()).toString(), group.getName());
+				if(parent!=null){
+				
+					add("parent : "+parent.getName());
+					
+					
+					Collection allGroups = groupBiz.getChildGroupsRecursive( parent  );
+					Iterator aGroups = allGroups.iterator();
+					while (aGroups.hasNext()) {
+						Group group = (Group) aGroups.next();
+						groupSelection.addToAvailableBox(((Integer)group.getPrimaryKey()).toString(), group.getName());
+					}
+					
+					Collection selectedGroups = app.getGroups();
+					Iterator sGroups = selectedGroups.iterator();
+					while (sGroups.hasNext()) {
+						Group sGroup = (Group) sGroups.next();
+						groupSelection.addToSelectedBox(((Integer)sGroup.getPrimaryKey()).toString(), sGroup.getName());	
+					}
+					
+					add( groupSelection );	
 				}
 				
-				Collection selectedGroups = app.getGroups();
-				Iterator sGroups = selectedGroups.iterator();
-				while (sGroups.hasNext()) {
-					Group sGroup = (Group) sGroups.next();
-					groupSelection.addToSelectedBox(((Integer)sGroup.getPrimaryKey()).toString(), sGroup.getName());	
-				}
-				
-				add( groupSelection );	
 				
 				//add(new HiddenInput(
 				String userComment = app.getUserComment();
