@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.presentation.ui.DataTable;
+import java.text.DateFormat;
 
 /**
  * Title:
@@ -148,10 +149,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     String sToDate =  getDateString(to);
 
     Form myForm = new Form();
-    DropdownMenu drpAccounts = new DropdownMenu(listAccount,prmAccountId);
-    drpAccounts.setToSubmit();
-    drpAccounts.setAttribute("style",styleAttribute);
-    drpAccounts.setSelectedElement(String.valueOf(iAccountId));
+    //DropdownMenu drpAccounts = new DropdownMenu(listAccount,prmAccountId);
+    //drpAccounts.setToSubmit();
+    //drpAccounts.setAttribute("style",styleAttribute);
+    //drpAccounts.setSelectedElement(String.valueOf(iAccountId));
+    T.add(new HiddenInput(prmAccountId,String.valueOf(iAccountId)));
     TextInput tiFromDate = new TextInput(prmFromDate,sFromDate);
     tiFromDate.setLength(10);
     tiFromDate.setAttribute("style",styleAttribute);
@@ -177,20 +179,21 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
 
     int row = 1;
-
-    T.add(formatText(iwrb.getLocalizedString("account","Account")),1,row);
-    T.add(formatText(iwrb.getLocalizedString("from","From")),2,row);
-    T.add(formatText(iwrb.getLocalizedString("to","To")),3,row);
-    T.add(formatText(iwrb.getLocalizedString("special","Special")),4,row);
+    int col = 1;
+    //T.add(formatText(iwrb.getLocalizedString("account","Account")),1,row);
+    T.add(formatText(iwrb.getLocalizedString("from","From")),col++,row);
+    T.add(formatText(iwrb.getLocalizedString("to","To")),col++,row);
+    T.add(formatText(iwrb.getLocalizedString("special","Special")),col++,row);
 
     row++;
-    T.add(drpAccounts,1,row);
-    T.add(tiFromDate,2,row);
-    T.add(tiToDate,3,row);
-    T.add(specialCheck,4,row);
-    T.add(fetch,5,row);
+    col = 1;
+    //T.add(drpAccounts,1,row);
+    T.add(tiFromDate,col++,row);
+    T.add(tiToDate,col++,row);
+    T.add(specialCheck,col++,row);
+    T.add(fetch,col++,row);
 
-    T.setWidth(6,row,"100%");
+    T.setWidth(col,row,"100%");
 
     myForm.add(new HiddenInput(IWMainApplication.classToInstanciateParameter,"com.idega.block.finance.presentation.AccountViewer"));
     myForm.add(T);
@@ -210,6 +213,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     DataTable T = new DataTable();
     T.setTitlesHorizontal(true);
     T.addTitle(iwrb.getLocalizedString("accounts","Accounts"));
+    T.setWidth("100%");
 
     int row = 1;
     int col = 1;
@@ -219,19 +223,24 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     T.add(tf.format(iwrb.getLocalizedString("balance","Balance")),col++,row);
     row++;
     if(listAccounts != null){
-
-      row = 2;
-
-
-      Text[] TableTexts = new Text[4];
-      TableTexts[0] = new Text(eAccount.getAccountName());
-      TableTexts[1] = new Text(eUser.getName());
-      TableTexts[2] = new Text(getDateString(new idegaTimestamp(eAccount.getLastUpdated())));
-      float b = eAccount.getBalance();
-      boolean debet = b > 0?true:false;
-      TableTexts[3] = new Text(NF.format( (double) b));
-
-
+      Iterator iter = listAccounts.iterator();
+      while(iter.hasNext()){
+        col = 1;
+        FinanceAccount account = (FinanceAccount) iter.next();
+        Link accountLink = new Link(tf.format(account.getAccountName()));
+        accountLink.addParameter(prmAccountId,account.getAccountId());
+        //if(eUser.getID() != account.getUserId())
+          accountLink.addParameter(prmUserId,account.getUserId());
+        T.add(accountLink,col++,row);
+        T.add(tf.format(eUser.getName()),col++,row);
+        T.add(tf.format(getDateString(new idegaTimestamp(eAccount.getLastUpdated()))),col++,row);
+        float b = eAccount.getBalance();
+        boolean debet = b > 0?true:false;
+        T.add(tf.format(NF.format( (double) b)),col++,row);
+        row++;
+      }
+      T.getContentTable().setColumnAlignment(4,"right");
+      T.getContentTable().setColumnAlignment(3,"right");
 
     }
     else{
@@ -299,21 +308,21 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       else
         listEntries = AccountManager.listOfKeySortedEntries(eAccount.getAccountId(),from,to);
       if(clean)
-        return getCleanFinanceEntryTable(listEntries);
+        return getCleanFinanceEntryTable(eAccount,listEntries,from,to);
       else
-        return getFinanceEntryTable(listEntries);
+        return getFinanceEntryTable(eAccount,listEntries,from,to);
     }
     else if(eAccount.getAccountType().equals(Account.typePhone)){
       listEntries = AccountManager.listOfPhoneEntries(eAccount.getAccountId(),from,to);
       if(specialview)
-        return getPhoneEntryReportTable(listEntries);
+        return getPhoneEntryReportTable(eAccount,listEntries,from,to);
       else
-        return getPhoneEntryTable(listEntries);
+        return getPhoneEntryTable(eAccount,listEntries,from,to);
     }
     else return new Text();
   }
 
-  private PresentationObject getPhoneEntryTable(List listEntries){
+  private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,List listEntries,idegaTimestamp from ,idegaTimestamp to){
     int tableDepth = 4;
     int cols = 9;
     if(listEntries != null){
@@ -434,7 +443,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return T;
   }
 
-  private PresentationObject getPhoneEntryReportTable(List listEntries){
+  private PresentationObject getPhoneEntryReportTable(FinanceAccount eAccount,List listEntries,idegaTimestamp from ,idegaTimestamp to){
     int tableDepth = 3;
     Vector other = new Vector();
     Vector mobile = new Vector();
@@ -533,41 +542,27 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return T;
   }
 
-  private PresentationObject getFinanceEntryTable(List listEntries){
-
+  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,idegaTimestamp from ,idegaTimestamp to){
+    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
     int tableDepth = 5;
     if(listEntries != null){
       tableDepth += listEntries.size();
     }
     int row = 1;
-    Table T = new Table(4,tableDepth);
+    DataTable T = new DataTable();
     T.setWidth("100%");
-    //T.setWidth(1,"65");
-    T.setCellspacing(1);
-    T.setCellpadding(3);
-    T.setColumnAlignment(1,"right");
-    T.setColumnAlignment(2,"left");
-    T.setColumnAlignment(3,"left");
-    T.setColumnAlignment(4,"right");
-    T.setAlignment(1,1,"left");
-    T.setAlignment(1,2,"left");
-    T.setWidth(1,"20");
-    //T.setWidth(2,"40%");
-    //T.setWidth(3,"60%");
-    //T.setWidth(4,"25");
+    T.setTitlesHorizontal(true);
 
-    T.setHorizontalZebraColored(FinanceColors.WHITE,FinanceColors.LIGHTGREY);
-    T.setRowColor(1,FinanceColors.DARKBLUE);
-    T.setRowColor(2,FinanceColors.DARKGREY);
 
     String fontColor = sWhiteColor;
     int fontSize = 1;
 
-    Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
-    Title.setFontColor(FinanceColors.WHITE);
-    T.add(Title,1,row);
-    T.mergeCells(1,row,4,row);
-    row++;
+    String title = iwrb.getLocalizedString("entries","Entries")+" "+
+      eAccount.getAccountName()+"   "+df.format(from.getSQLDate())+" - "+df.format(to.getSQLDate());
+
+    T.addTitle(title);
+
+
     Text[] TableTitles = new Text[4];
     TableTitles[0] = new Text(iwrb.getLocalizedString("date","Date"));
     TableTitles[1] = new Text(iwrb.getLocalizedString("description","Description"));
@@ -618,13 +613,10 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       T.add(txTotPrice,4,row++);
     }
 
-    T.mergeCells(1,row,4,row);
-    T.add(image,1,row);
-    T.setColor(1,row,FinanceColors.DARKRED);
     return T;
   }
 
-  private PresentationObject getCleanFinanceEntryTable(List listEntries){
+  private PresentationObject getCleanFinanceEntryTable(FinanceAccount eAccount,List listEntries,idegaTimestamp from ,idegaTimestamp to){
 
     int tableDepth = 3;
     if(listEntries != null){
@@ -733,7 +725,26 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   }
 
   private void checkIds(IWContext iwc){
-    if(iUserId == -1){
+
+    if(iwc.isParameterSet(prmAccountId)){
+      iAccountId = Integer.parseInt(iwc.getParameter(prmAccountId));
+      FinanceAccount acc = FinanceFinder.getInstance().getAccount(iAccountId);
+      if(acc !=null)
+        iUserId = acc.getUserId();
+    }
+    else if(iwc.isParameterSet(prmUserId)){
+      iUserId = Integer.parseInt(iwc.getParameter(prmUserId));
+      eUser = com.idega.core.user.business.UserBusiness.getUser(iUserId);
+    }
+    else if(iwc.isLoggedOn()){
+      eUser = iwc.getUser();
+      iUserId = eUser.getID();
+    }
+
+
+    listAccount = FinanceFinder.getInstance().listOfFinanceAccountByUserId(iUserId);
+      /*
+    if(iUserId <= 0){
       if(iwc.getParameter(prmUserId)!=null){
         iUserId = Integer.parseInt(iwc.getParameter(prmUserId));
       }
@@ -744,19 +755,29 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     if( iwc.getParameter(prmAccountId)!=null ){
       iAccountId = Integer.parseInt(iwc.getParameter(prmAccountId));
     }
-    if( iUserId != -1 && !isAdmin){
+    if( iUserId > 0 ){
       try {
         eUser = new User(iUserId);
       }
       catch (SQLException ex) {
         ex.printStackTrace();
       }
-      listAccount = FinanceFinder.getInstance().listOfFinanceAccountByUserId(iUserId);
     }
+    if(iAccountId >  0 && iUserId <= 0){
+      debug("account id and no user id");
+      FinanceAccount acc = FinanceFinder.getInstance().getAccount(iAccountId);
+      if(acc !=null)
+        iUserId = acc.getUserId();
+    }
+    if(iUserId > 0)
+      listAccount = FinanceFinder.getInstance().listOfFinanceAccountByUserId(iUserId);
+
+   /*
     else if(isAdmin){
-      /** @todo  connect to category */
+      /** @todo  connect to category *//*
       listAccount = FinanceFinder.getInstance().listOfAccountInfo();
     }
+    */
   }
 
   private Link getPrintableLink(PresentationObject obj,idegaTimestamp from,idegaTimestamp to){
@@ -784,6 +805,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   }
 
   public void main( IWContext iwc ) {
+    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
