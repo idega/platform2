@@ -68,17 +68,18 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/28 15:03:18 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 10:39:19 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.89 $
+ * @version $Revision: 1.90 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
  * @see se.idega.idegaweb.commune.accounting.presentation.AccountingBlock
  */
-public class PaymentRecordMaintenance extends AccountingBlock implements InvoiceStrings {
+public class PaymentRecordMaintenance extends AccountingBlock
+	implements InvoiceStrings {
 	private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
@@ -335,7 +336,8 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 		addSmallText (map, REGULATION_SPEC_TYPE_KEY,  ruleSpecType, ruleSpecType);
 		if (0 < record.getVATRuleRegulationId ()) {
 			final InvoiceBusiness business = getInvoiceBusiness (context);
-			final Regulation vatRule = business.getVATRuleRegulation(record.getVATRuleRegulationId ());
+			final Regulation vatRule
+					= business.getVATRuleRegulation(record.getVATRuleRegulationId ());
 			final String ruleName = vatRule.getLocalizationKey();
 			map.put (VAT_RULE_KEY, getSmallText (localize (ruleName,ruleName)));
 		}

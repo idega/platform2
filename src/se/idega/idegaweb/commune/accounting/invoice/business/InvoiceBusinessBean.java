@@ -56,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/16 10:19:53 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 10:39:19 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.85 $
+ * @version $Revision: 1.86 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -554,6 +554,63 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return record;
 	}
 
+	public void saveInvoiceRecord(final Integer recordId, final User currentUser, final Integer placementId, Integer providerId, final String invoiceText, final String invoiceText2, final String ruleText, final String note, final Date checkEndPeriod, final Date checkStartPeriod, final Date placementStartPeriod, final Date placementEndPeriod, final String ownPosting, final String doublePosting, final Integer amount, final Integer vatAmount, final Integer vatRule, final Integer regSpecTypeId) throws RemoteException, FinderException {
+
+		final InvoiceRecord record
+				= getInvoiceRecordHome ().findByPrimaryKey (recordId);
+		final Integer numberOfDays
+				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
+		if (null == providerId && null != placementId) {
+			final SchoolBusiness schoolBusiness = getSchoolBusiness ();
+			final SchoolClassMemberHome placementHome
+					= schoolBusiness.getSchoolClassMemberHome ();
+			final SchoolClassMember placement
+					= placementHome.findByPrimaryKey (placementId);
+			providerId = (Integer)
+					placement.getSchoolClass ().getSchool ().getPrimaryKey ();
+		}
+
+		// set updated values
+		record.setAmount (amount.floatValue ());
+		record.setAmountVAT (vatAmount.floatValue ());
+		final String changedBy = getSignature (currentUser);
+		record.setChangedBy (changedBy);
+		try {
+			final InvoiceHeader header = record.getInvoiceHeader ();
+			header.setChangedBy (changedBy);
+			final Date dateChanged = now ();
+			record.setDateChanged (dateChanged);
+			header.setDateAdjusted (dateChanged);
+			header.store ();
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
+		record.setDoublePosting (doublePosting);
+		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
+													 ? invoiceText : ruleText);
+		record.setInvoiceText2
+				(null != invoiceText2 && 0 < invoiceText2.length ()
+				 ? invoiceText2 : "");
+		record.setNotes (note);
+		record.setOwnPosting (ownPosting);
+		record.setPeriodStartCheck (checkStartPeriod);
+		record.setPeriodEndCheck (checkEndPeriod);
+		record.setPeriodStartPlacement (placementStartPeriod);
+		record.setPeriodEndPlacement (placementEndPeriod);
+		if (null != providerId) record.setProviderId (providerId.intValue ());
+		if (null != placementId) record.setSchoolClassMemberId
+																 (placementId.intValue ());
+		if (null != regSpecTypeId) record.setRegSpecTypeId
+																	 (regSpecTypeId.intValue ());
+		if (null != vatRule) record.setVATRuleRegulation(vatRule.intValue ());
+		record.setRuleText (ruleText);
+		
+		// store updated record
+		record.store ();
+	}
+
+
 	private PaymentRecord createPaymentRecord
 		(final School school,
 		 final SchoolCategory schoolCategory,
@@ -655,26 +712,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			return new RegulationSpecType [0];
 		}
 	}
-	/*
-	public VATRule [] getAllVatRules () throws RemoteException {
-		try {
-			final Collection collection = getVatRuleHome ().findAllVATRules ();
-			return null == collection ? new VATRule [0]
-					: (VATRule []) collection.toArray (new VATRule [0]);
-		} catch (FinderException e) {
-			return new VATRule [0];
-		}
-	}
-	
-	public VATRule getVatRule (int primaryKey) throws RemoteException {
-		try {
-			final VATRule rule = getVatRuleHome ().findByPrimaryKey
-					(new Integer (primaryKey));
-			return rule;
-		} catch (FinderException e) {
-			return null;
-		}
-	}*/
 	
 	public Collection getAllVATRuleRegulations() throws RemoteException{
 		return this.getRegulationsBusiness().findAllVATRuleRegulations();
@@ -687,6 +724,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		///} catch (FinderException e) {
 		//	return null;
 		//}
+	}
+	
+	private Date now () {
+		return new Date (System.currentTimeMillis ());
+	}
+
+	private int dayDiff (final Date date1, final Date date2) {
+		if (null == date1 || null == date2) return 0;
+		long millis1 = date1.getTime ();
+		long millis2 = date2.getTime ();
+		long millisDiff = millis2 - millis1;
+		return 0 <= millisDiff
+				? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
 	}
 	
 	protected RegulationSpecTypeHome getRegulationSpecTypeHome ()

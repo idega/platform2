@@ -42,12 +42,12 @@ import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.awt.Color;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/28 15:03:18 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 10:39:19 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.124 $
+ * @version $Revision: 1.125 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -380,7 +380,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		addPhrase (outerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": "
 							 + getFormattedPeriod (header.getPeriod ()));
 		addPhrase (outerTable, localize (PRINT_DATE_KEY, PRINT_DATE_DEFAULT)
-							 + ": " + dateAndTimeFormatter.format (new Date ()));
+							 + ": " + dateAndTimeFormatter.format (now ()));
 		addPhrase (outerTable, "\n");
 
 		// add invoices info to document
@@ -516,10 +516,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				 invoiceText,
 				 invoiceText2,
 				 note,
-				 getSqlDate (placementStartPeriod),
-				 getSqlDate (placementEndPeriod),
-				 getSqlDate (checkStartPeriod),
-				 getSqlDate (checkEndPeriod),
+				 placementStartPeriod,
+				 placementEndPeriod,
+				 checkStartPeriod,
+				 checkEndPeriod,
 				 amount,
 				 vatAmount,
 				 numberOfDays,
@@ -537,14 +537,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private void saveRecord (final IWContext context)
 		throws RemoteException, FinderException {
 		// get updated values
-		final User currentUser = context.getCurrentUser ();
 		final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
 		final Date checkEndPeriod = getDateParameter (context,
 																									CHECK_END_PERIOD_KEY);
 		final Date checkStartPeriod
 				= getDateParameter (context, CHECK_START_PERIOD_KEY);
-		final Integer numberOfDays
-				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
 		final String doublePosting = getPostingString (context,
 																									 DOUBLE_POSTING_KEY);
 		final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
@@ -558,57 +555,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
 		final Integer placementId = getIntegerParameter (context,
 																										 PLACEMENT_KEY);
-		if (null == providerId && null != placementId) {
-			final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
-			final SchoolClassMemberHome placementHome
-					= schoolBusiness.getSchoolClassMemberHome ();
-			final SchoolClassMember placement
-					= placementHome.findByPrimaryKey (placementId);
-			providerId = (Integer)
-					placement.getSchoolClass ().getSchool ().getPrimaryKey ();
-		}
 		final Integer regSpecTypeId
 				= getIntegerParameter (context, REGULATION_SPEC_TYPE_KEY);
 		final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
 		final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
 		final String ruleText = context.getParameter (RULE_TEXT_KEY);
-		final InvoiceHeader header = getInvoiceHeader (context);
-		final InvoiceRecord record = getInvoiceRecord (context);
-		
-		// set updated values
-		record.setAmount (amount.floatValue ());
-		record.setAmountVAT (vatAmount.floatValue ());
-		final String changedBy = getSignature (currentUser);
-		record.setChangedBy (changedBy);
-		header.setChangedBy (changedBy);
-		final java.sql.Date dateChanged
-				= new java.sql.Date (System.currentTimeMillis ());
-		record.setDateChanged (dateChanged);
-		header.setDateAdjusted (dateChanged);
-		header.store ();
-		if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
-		record.setDoublePosting (doublePosting);
-		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
-													 ? invoiceText : ruleText);
-		record.setInvoiceText2
-				(null != invoiceText2 && 0 < invoiceText2.length ()
-				 ? invoiceText2 : "");
-		record.setNotes (note);
-		record.setOwnPosting (ownPosting);
-		record.setPeriodStartCheck (getSqlDate (checkStartPeriod));
-		record.setPeriodEndCheck (getSqlDate (checkEndPeriod));
-		record.setPeriodStartPlacement (getSqlDate (placementStartPeriod));
-		record.setPeriodEndPlacement (getSqlDate (placementEndPeriod));
-		if (null != providerId) record.setProviderId (providerId.intValue ());
-		if (null != placementId) record.setSchoolClassMemberId
-																 (placementId.intValue ());
-		if (null != regSpecTypeId) record.setRegSpecTypeId
-																	 (regSpecTypeId.intValue ());
-		if (null != vatRule) record.setVATRuleRegulation(vatRule.intValue ());
-		record.setRuleText (ruleText);
-		
-		// store updated record
-		record.store ();
+		final Integer recordId = getIntegerParameter (context, INVOICE_RECORD_KEY);
+		final User currentUser = context.getCurrentUser ();		
+
+		getInvoiceBusiness (context).saveInvoiceRecord
+				(recordId, currentUser, placementId, providerId, invoiceText,
+				 invoiceText2, ruleText, note, checkEndPeriod, checkStartPeriod,
+				 placementStartPeriod, placementEndPeriod, ownPosting, doublePosting,
+				 amount, vatAmount, vatRule, regSpecTypeId);
 		
 		//render
 		showCompilation (context);
@@ -617,9 +576,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private void showNewRecordForm (final IWContext context)
 		throws RemoteException, FinderException, IDOLookupException {
 		final java.util.Map inputs = new java.util.HashMap ();
-		final java.sql.Date now
-				= new java.sql.Date (System.currentTimeMillis ());
-		final CalendarMonth calendarMonth = new CalendarMonth (now);
+		final CalendarMonth calendarMonth = new CalendarMonth (now ());
 		final String lastDateOfMonth = getFormattedDate
 				(calendarMonth.getLastDateOfMonth ());
 		final String firstDateOfMonth = getFormattedDate
@@ -628,7 +585,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final User custodian = header.getCustodian ();
 		final InvoiceBusiness business = getInvoiceBusiness (context);
 		final String searchString = context.getParameter (RULE_TEXT_KEY);
-		final java.sql.Date period = header.getPeriod ();
+		final Date period = header.getPeriod ();
 		final String categoryId =  header.getSchoolCategoryID ();
 		inputs.put (PLACEMENT_KEY, getPlacementsDropdown (context, header));
 		final SchoolClassMember placement = (SchoolClassMember)
@@ -695,9 +652,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private Regulation findRegulation
 		(final IWContext context, final java.util.Map inputs,
 		 final InvoiceHeader header, final InvoiceBusiness business,
-		 final String searchString, final java.sql.Date period,
-		 final String categoryId, final SchoolClassMember placement,
-		 final Provider provider) throws IDOLookupException, RemoteException {
+		 final String searchString, final Date period, final String categoryId,
+		 final SchoolClassMember placement, final Provider provider)
+		throws IDOLookupException, RemoteException {
 		final Collection regulations = new ArrayList ();
 		Regulation matchedRegulation  = null;
 		final RegulationHome home = getRegulationHome ();
@@ -996,6 +953,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 							 row++);
 		table.setHeight (row++, 12);
 		table.mergeCells (1, row, table.getColumns (), row);
+		table.add (new HiddenInput (INVOICE_COMPILATION_KEY,
+																"" + header.getPrimaryKey ()));
 		table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM, NEW_KEY,
 																NEW_DEFAULT), 1, row);
 		addCancelButton (table, 1, row, ACTION_SHOW_COMPILATION_LIST);
@@ -1286,10 +1245,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final int year = new Integer (ssn.substring (0, 4)).intValue ();
 		final int month = new Integer (ssn.substring (4, 6)).intValue ();
 		final int day = new Integer (ssn.substring (6, 8)).intValue ();
-		final Date rightNow = Calendar.getInstance ().getTime();
 		final Calendar birthday18 = Calendar.getInstance ();
 		birthday18.set (year + 18, month - 1, day);
-		return rightNow.after (birthday18.getTime());
+		return now ().after (birthday18.getTime());
 	}
 	
 	private void showNewCompilationForm (final IWContext context)
@@ -1316,9 +1274,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 													searcher.getUser ());
 			col = 1;
 			addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
-			final Date now = new Date ();
 			table.add (getStyledInput (PERIOD_KEY, periodFormatter.format
-																 (now)), col++, row++);
+																 (now ())), col++, row++);
 			table.setHeight (row++, 12);
 			table.mergeCells (1, row, table.getColumns (), row);
 			table.add (getSubmitButton (ACTION_NEW_COMPILATION,
@@ -1346,8 +1303,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final User currentUser = context.getCurrentUser ();
 		final InvoiceBusiness business = getInvoiceBusiness (context);
 		final InvoiceHeader header = business.createInvoiceHeader
-				(operationalField, currentUser, custodianId,
-				 getSqlDate (period));
+				(operationalField, currentUser, custodianId, period);
 		final String [][] parameters =
 				{{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
 				 { INVOICE_COMPILATION_KEY,
@@ -1644,14 +1600,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																									INVOICE_RECORD_KEY);
 		final InvoiceRecordHome recordHome = business.getInvoiceRecordHome ();
 		return null != recordId ? recordHome.findByPrimaryKey (recordId) : null;
-	}
-	
-	private String getSignature (final User user) {
-		if (null == user) return "not logged on user";
-		final String firstName = user.getFirstName ();
-		final String lastName = user.getLastName ();
-		return (firstName != null ? firstName + " " : "")
-				+ (lastName != null ? lastName : "");
 	}
 	
 	private long roundAmount (final float f) {
@@ -1956,15 +1904,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return a < b ? a : b;
 	}
 	
-	private java.sql.Date getSqlDate (final Date date) {
-		return null != date ? new java.sql.Date (date.getTime ()) : null;
-	}
-	
 	private PostingField [] getCurrentPostingFields (final IWContext context)
 		throws RemoteException {
 		final PostingBusiness business = getPostingBusiness (context);
-		final java.sql.Date now = getSqlDate (new Date ());
-		final Collection fields = business.getAllPostingFieldsByDate (now);
+		final Collection fields = business.getAllPostingFieldsByDate (now ());
 		final PostingField [] array = new PostingField [0];
 		return fields != null ? (PostingField []) fields.toArray (array)
 				: array;
@@ -2135,7 +2078,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 															final IWContext context) {
 		int col = 1;
 		addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
-		final Date now = new Date ();
+		final Date now = now ();
 		final Date fromDate = getPeriodParameter (context, START_PERIOD_KEY);
 		final Date endDate = getPeriodParameter (context, END_PERIOD_KEY);
 		table.add (getStyledInput
@@ -2239,7 +2182,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final Date date = getPeriodParameter (context, key);
 		final long dateAsLong = date != null ? date.getTime ()
 				: System.currentTimeMillis ();
-		return new CalendarMonth (new java.sql.Date (dateAsLong));
+		return new CalendarMonth (new Date (dateAsLong));
 	}
 	
 	private static Date getDateParameter (final IWContext iwc, final String key) {
@@ -2267,9 +2210,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		if (month < 1 || month > 12 || day < 1 || day > 31) return null;
 		final Calendar calendar = Calendar.getInstance ();
 		calendar.set (year, month - 1, day);
-		return calendar.getTime ();
+		return new Date (calendar.getTimeInMillis ());
 	}
 	
+	private static Date now () {
+		return new Date (System.currentTimeMillis ());
+	}
+
 	private static Integer getIntegerParameter (final IWContext context,
 																							final String key) {
 		final String rawString = context.getParameter (key);
