@@ -42,8 +42,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	private final static String 
 		SERVER_FACTORY = "se.idega.block.pki.ServerFactory",
 		SERVER = "se.idega.block.pki.Server",
-		SERVLET_URI = "se.nexus.cbt.ServletURI",
-		INIT_DONE = "se.idega.block.pki.INIT_DONE";
+		SERVLET_URI = "se.nexus.cbt.ServletURI";
+	public final static String INIT_DONE = "se.idega.block.pki.INIT_DONE";
 				
 	public final static String NBS_SIGNED_ENTITY = "se.idega.block.pki.business.NBS_SIGNED_ENTITY";
 	
