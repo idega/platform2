@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Hugbúnaður (LI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="LI_lykilord_type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_notandanafn_type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="8"/>
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_kennitala_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_seta_type">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="LI_gengistegund_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="T"/>
+			<xs:enumeration value="S"/>
+			<xs:enumeration value="Z"/>
+			<xs:enumeration value="F"/>
+			<xs:enumeration value="L"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_ISO_takn_gjaldmidils_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CAD"/>
+			<xs:enumeration value="CHF"/>
+			<xs:enumeration value="DKK"/>
+			<xs:enumeration value="NOK"/>
+			<xs:enumeration value="SEK"/>
+			<xs:enumeration value="EUR"/>
+			<xs:enumeration value="GBP"/>
+			<xs:enumeration value="ISK"/>
+			<xs:enumeration value="JPY"/>
+			<xs:enumeration value="USD"/>
+			<xs:enumeration value="XDR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_upphaed_type">
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_gengi_gjaldmidils_type">
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_astand_reiknings_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OPINN"/>
+			<xs:enumeration value="LOKADUR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_bankanr_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_hofudbok_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_reikningsnr_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LI_reikningur_type">
+		<xs:sequence>
+			<xs:element name="utibu" type="LI_bankanr_type"/>
+			<xs:element name="hb" type="LI_hofudbok_type"/>
+			<xs:element name="reikningsnr" type="LI_reikningsnr_type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="LI_villa_type">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_villubod_type">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:complexType name="LI_timi_type">
+		<xs:sequence>
+			<xs:element name="dags_mottekid" type="xs:dateTime"/>
+			<xs:element name="dags_svarad" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="LI_rb_bunkanr_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_faerslulykill_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_tilvisun_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="35"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_textalykill_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_sedilnr_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="7" fixed="true"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_tegund_greidslu_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AB-GIRO"/>
+			<xs:enumeration value="C-GIRO"/>
+			<xs:enumeration value="GREIDSLUSEDILL"/>
+			<xs:enumeration value="MILLIFAERSLA"/>
+			<xs:enumeration value="OTHEKKT_TEGUND"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LI_AB_giro_type">
+		<xs:sequence>
+			<xs:element name="reikningur" type="LI_reikningur_type"/>
+			<xs:element name="tilvisun" type="LI_tilvisun_type"/>
+			<xs:element name="sedilnumer" type="LI_sedilnr_type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_C_giro_type">
+		<xs:sequence>
+			<xs:element name="reikningur" type="LI_reikningur_type"/>
+			<xs:element name="kennitala" type="LI_kennitala_type"/>
+			<xs:element name="sedilnumer" type="LI_sedilnr_type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_geidslusedill_type">
+		<xs:sequence>
+			<xs:element name="reikningur" type="LI_reikningur_type"/>
+			<xs:element name="kennitala" type="LI_kennitala_type">
+				<xs:annotation>
+					<xs:documentation>Ef kröfupottur 62, kennitala greiðanda.  Kröfupottur 66, kennitala kröfuhafa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="gjalddagi" type="xs:date"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_millifaersla_type">
+		<xs:sequence>
+			<xs:element name="reikningur" type="LI_reikningur_type"/>
+			<xs:element name="kennitala" type="LI_kennitala_type"/>
+			<xs:element name="textalykill" type="LI_textalykill_type"/>
+			<xs:element name="tilvisun" type="LI_tilvisun_type" minOccurs="0"/>
+			<xs:element name="sedilnumer" type="LI_sedilnr_type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="LI_id_bunki_type">
+		<xs:restriction base="xs:long"/>
+	</xs:simpleType>
+	<xs:simpleType name="LI_astand_bunka_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OBOKADUR"/>
+			<xs:enumeration value="BOKADUR"/>
+			<xs:enumeration value="VILLA"/>
+			<xs:enumeration value="EYTT"/>
+			<xs:enumeration value="I_VINNSLU"/>
+			<xs:enumeration value="OTHEKKT_ASTAND"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LI_sendingar_type">
+		<xs:choice maxOccurs="3">
+			<xs:element name="snigill" type="LI_er_til_type"/>
+			<xs:element name="tolvupostur" type="LI_tolvupostur_type"/>
+			<xs:element name="sms" type="LI_simanumer_type"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="LI_simanumer_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="7"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_er_til_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="TRUE"/>
+			<xs:enumeration value="FALSE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_token_type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="18"/>
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_astand_bokunar_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MA_BOKA"/>
+			<xs:enumeration value="ER_AD_BOKA"/>
+			<xs:enumeration value="BOKUD_AN_VILLU"/>
+			<xs:enumeration value="BOKUD_MED_VILLU"/>
+			<xs:enumeration value="NIDURFELLD"/>
+			<xs:enumeration value="OTHEKKT_ASTAND"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_strengjategund_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AHAFNAGJALDEYRIR"/>
+			<xs:enumeration value="LAUNAGREIDSLUR"/>
+			<xs:enumeration value="BIRTINGARKERFI_VIGOR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_tolvupostur_type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="6"/>
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_skyring_greidslu_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="35"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_tilvisun_vskm_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="35"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LI_kvittun_vidtakanda_type">
+		<xs:sequence>
+			<xs:element name="kvittun">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="LI_sendingar_type"/>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

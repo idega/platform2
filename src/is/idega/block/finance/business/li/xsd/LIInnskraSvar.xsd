@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:include schemaLocation="LICommonElements.xsd"></xs:include>
+	<xs:element name="LIInnskraSvar">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="timi" type="timi"></xs:element>
+				<xs:element ref="seta"></xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:decimal" use="required"></xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="seta" type="seta"></xs:element>
+	<xs:complexType name="stadaType"></xs:complexType>
+	<xs:element name="villa">
+		<xs:simpleType>
+			<xs:restriction base="xs:integer">
+				<xs:minInclusive value="0"></xs:minInclusive>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="villubod" type="xs:string"></xs:element>
+</xs:schema>

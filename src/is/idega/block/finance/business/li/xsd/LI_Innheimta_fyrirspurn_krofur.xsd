@@ -1,0 +1,23 @@
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Hugbúnaður (LI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" id="LI_Innheimta_fyrirspurn_krofurDataSet">
+	<xs:include schemaLocation="LI_Innheimta_Common_types.xsd"/>
+	<xs:element name="LI_Innheimta_fyrirspurn_krofur">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+				<xs:element name="banki" type="LI_IK_bankanumer_type" minOccurs="0"/>
+				<xs:element name="hofudbok" type="LI_IK_hofudbok_type" minOccurs="0"/>
+				<xs:element name="numer" type="LI_IK_krofunumer_type" minOccurs="0"/>
+				<xs:element name="gjalddagi_fra" type="xs:date"/>
+				<xs:element name="gjalddagi_til" type="xs:date"/>
+				<xs:element name="audkenni" type="LI_IK_audkenni_type" minOccurs="0"/>
+				<xs:element name="hreyfingardagur_fra" type="xs:date" minOccurs="0"/>
+				<xs:element name="hreyfingardagur_til" type="xs:date" minOccurs="0"/>
+				<xs:element name="astand" type="LI_IK_astand_type" minOccurs="0"/>
+				<xs:element name="session_id" type="xs:string" minOccurs="0"/>
+				<!--Ef hreyfingardagur_fra er settur verður að setja hreyfingardagur_til líka til að skilgreina tímabil-->
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

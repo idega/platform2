@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Grímur TT (Landsbanki Islands) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--Simple types-->
+	<xs:simpleType name="LI_IK_kennitala_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{10}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_IK_audkenni_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9A-Za-z]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_IK_bankanumer_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Upphæðartag -->
+	<xs:simpleType name="LI_IK_rauntolu_upphaed_11_2_type">
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="11"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Heiltölu upphæðartag (notað f. kostnaðarliði) -->
+	<xs:simpleType name="LI_IK_heiltolu_upphaed_9_type">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:totalDigits value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Heiltölu upphæðartag (notað f. fjármagnstekjuskatt) -->
+	<xs:simpleType name="LI_IK_heiltolu_upphaed_7_type">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:totalDigits value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Tag fyri mynt -->
+	<xs:simpleType name="LI_IK_mynt_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CAD"/>
+			<xs:enumeration value="CHF"/>
+			<xs:enumeration value="DKK"/>
+			<xs:enumeration value="NOK"/>
+			<xs:enumeration value="SEK"/>
+			<xs:enumeration value="EUR"/>
+			<xs:enumeration value="GBP"/>
+			<xs:enumeration value="ISK"/>
+			<xs:enumeration value="JPY"/>
+			<xs:enumeration value="USD"/>
+			<xs:enumeration value="XDR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Tilvísunarnúmer má vera tölu-, bókstafir og eyður (f. framan eða aftan, ekki inni í "orði"), alls 16 stafa langt -->
+	<xs:simpleType name="LI_IK_tilvisunarnumer_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9A-Za-z ]{16}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Tag fyrir 2 stafa langa strengi sem eingöngu innihalda bókstafi -->
+	<xs:simpleType name="LI_IK_str_2_type">
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Seðilnúmer -->
+	<xs:simpleType name="LI_IK_sedilnumer_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{7}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--Tag fyrir viðskiptanúmer, má vera bókstafir eða tölustafir, mest 16 stafa langt, minnst 1 stafur -->
+	<xs:simpleType name="LI_IK_vidskiptanumer_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9A-Za-z]{1,16}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- gengis index, fjórir aukastafir-->
+	<xs:simpleType name="LI_IK_gengis_index_type">
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="8"/>
+			<xs:fractionDigits value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Tag fyrir bunkanúmer -->
+	<xs:simpleType name="LI_IK_bunkanumer_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9]{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Tag sem segir til um ástand kröfu og er hluti af kröfutagi (krafaType) -->
+	<xs:simpleType name="LI_IK_astand_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ÓGREIDD"/>
+			<xs:enumeration value="GREIDD"/>
+			<xs:enumeration value="NIÐURFELLD"/>
+			<xs:enumeration value="MILLIINNHEIMTA"/>
+			<xs:enumeration value="LÖGFRÆÐIINNHEIMTA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Segir til um af hvaða upphæð á að reikna dráttarvexti -->
+	<xs:simpleType name="LI_IK_vaxtastofnkodi_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="UPPHÆÐ"/>
+			<xs:enumeration value="UPPHÆÐ_OG_VANSKILAGJÖLD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Prósentur, fjórir aukastafir-->
+	<xs:simpleType name="LI_IK_prosent_type">
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="7"/>
+			<xs:fractionDigits value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Greiðsluregla.  Segir til um hvort megi greiða kröfu sem á ógreidda eldri gjalddaga. -->
+	<xs:simpleType name="LI_IK_greidsluregla_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MÁ_GREIÐA_ELDRI_GJALDDAGA"/>
+			<xs:enumeration value="MÁ_EKKI_GREIÐA_ELDRI_GJALDDAGA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Innborgunarregla.  Segir til um hvort greiða megi inn á kröfu eða ekki -->
+	<xs:simpleType name="LI_IK_innborgunarregla_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GREIÐA_MÁ_INN_Á_KRÖFU"/>
+			<xs:enumeration value="EKKI_MÁ_GREIÐA_INN_Á_KRÖFU"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_IK_tegund_greidslu_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BEINGREIÐSLA"/>
+			<xs:enumeration value="HEFÐBUNDIN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Viðmiðunardagsetning fyrir vanskilagjald og afslátt, þ.e hvort dagafjöldi er talin frá gjalddaga eða eindaga -->
+	<xs:simpleType name="LI_IK_vidmidun_dags_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GJALDDAGI"/>
+			<xs:enumeration value="EINDAGI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Texti sem prentaður er á kröfu getur mest orðið 50 stafir -->
+	<xs:simpleType name="LI_IK_hreyfingatexti_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Athugasemd sem prentuð er á kröfu getur mest orðið 80 stafir -->
+	<xs:simpleType name="LI_IK_athugasemd_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="80"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Heimilisfangalína getur mest orðið 50 stafa löng -->
+	<xs:simpleType name="LI_IK_hauslina_type">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--Complex types -->
+	<!-- Samsett tag fyrir heimilisfang, heimilisföng eru notuð ef þarf að senda kröfu á annað heimilisfang en lögheimili greiðanda-->
+	<xs:complexType name="LI_IK_heimilisfang_type">
+		<xs:sequence>
+			<xs:element name="nafn" type="LI_IK_hauslina_type"/>
+			<xs:element name="nafn2" type="LI_IK_hauslina_type" minOccurs="0"/>
+			<xs:element name="heimili" type="LI_IK_hauslina_type"/>
+			<xs:element name="sveitarfelag" type="LI_IK_hauslina_type"/>
+			<xs:element name="simanumer" type="LI_IK_hauslina_type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  Sérstakt tag fyrir hreyfingu (eina prentaða línu) á greiðsluseðli sem prentaður er í banka -->
+	<xs:complexType name="LI_IK_hreyfingar_type">
+		<xs:sequence>
+			<xs:element name="hreyfing" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="texti" type="LI_IK_hreyfingatexti_type"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Tag fyrir dráttarvexti -->
+	<!-- breytt-Grímur Ef "prosent" staki er sleppt eru dráttarvextir Seðlabanka notaðir.
+		360/360 = Dráttarvextir eru reiknaðir frá og með eindaga en eru reiknaðir út frá gjalddaga með reglunni 360/360
+		RAUN/360 =  Dráttarvextir eru reiknaðir frá og með eindaga en eru reiknaðir út frá gjalddaga með reglunni RAUN/360
+		RAUN/RAUN = Dráttarvextir eru reiknaðir frá og með eindaga en eru reiknaðir út frá gjalddaga með reglunni RAUN/RAUN
+		-->
+	<xs:complexType name="LI_IK_drattarvextir_type">
+		<xs:sequence>
+			<xs:element name="prosent" type="LI_IK_prosent_type" minOccurs="0"/>
+			<xs:element name="vaxtastofn" type="LI_IK_vaxtastofnkodi_type" minOccurs="0"/>
+			<xs:element name="regla">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="360/360"/>
+						<xs:enumeration value="RAUN/360"/>
+						<xs:enumeration value="RAUN/RAUN"/>
+						<xs:enumeration value="EITT_PROSENT_A_DAG"/>
+						<xs:enumeration value="ENGIR_DRATTARVEXTIR"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Samsett tag fyrir gengi -->
+	<xs:complexType name="LI_IK_gengi_type">
+		<xs:sequence>
+			<xs:element name="mynt" type="LI_IK_mynt_type"/>
+			<xs:element name="gengi" type="LI_IK_gengis_index_type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_timabil_type">
+		<xs:annotation>
+			<xs:documentation>dagsFra -> dagsTil</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dags_fra" type="xs:date"/>
+			<xs:element name="dags_til" type="xs:date"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--almennt villutag-->
+	<xs:complexType name="LI_IK_villa_type">
+		<xs:annotation>
+			<xs:documentation>almenn villumeðhöndlun, villunúmer og villutexti</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="villunumer" type="xs:integer"/>
+			<xs:element name="villumelding" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Samsett tag fyrir birtingarkerfi -->
+	<xs:complexType name="LI_IK_birtingarkerfi_type">
+		<xs:sequence>
+			<xs:element name="tegund">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="[A-Z]{1}"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="slod" type="xs:anyURI"/>
+			<!-- Auðkenni birtingarkerfis -->
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Villuboð f. stofna/breyta/eyða -->
+	<xs:complexType name="LI_IK_error_krafa_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type" minOccurs="0"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type" minOccurs="0"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type" minOccurs="0"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type" minOccurs="0"/>
+			<xs:element name="gjalddagi" type="xs:date" minOccurs="0"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type" minOccurs="0"/>
+			<xs:element name="villunumer" type="xs:integer"/>
+			<xs:element name="villumelding" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--Tag fyrir staka greiðslu-->
+	<xs:complexType name="LI_IK_greidsla_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type"/>
+			<xs:element name="gjalddagi" type="xs:date"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type"/>
+			<xs:element name="upphaed" type="LI_IK_upphaed_og_mynt_type"/>
+			<xs:element name="eindagi" type="xs:date"/>
+			<xs:element name="audkenni" type="LI_IK_audkenni_type"/>
+			<xs:element name="tilvisunarnumer" type="LI_IK_tilvisunarnumer_type"/>
+			<xs:element name="textalykill" type="LI_IK_str_2_type"/>
+			<xs:element name="innlausnarbanki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hreyfingardagur" type="xs:date"/>
+			<xs:element name="vaxtadagur" type="xs:date"/>
+			<xs:element name="innborgunarupphaed" type="LI_IK_heiltolu_upphaed_9_type"/>
+			<xs:element name="radstofudupphaed" type="LI_IK_heiltolu_upphaed_9_type"/>
+			<xs:element name="heildarupphaed" type="LI_IK_heiltolu_upphaed_9_type"/>
+			<xs:element name="fjarmagnstekjuskattur" type="LI_IK_heiltolu_upphaed_7_type"/>
+			<xs:element name="sedilnumer" type="LI_IK_sedilnumer_type" minOccurs="0"/>
+			<xs:element name="vidskiptanumer" type="LI_IK_vidskiptanumer_type" minOccurs="0"/>
+			<xs:element name="tilkynningarupphaed" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="vanskilagjaldsupphaed" type="LI_IK_rauntolu_upphaed_11_2_type" minOccurs="0"/>
+			<xs:element name="annar_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="annar_vanskila_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="drattarvaxtaupphaed" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="afslattarupphaed" type="LI_IK_rauntolu_upphaed_11_2_type" minOccurs="0"/>
+			<xs:element name="gengi" type="LI_IK_gengi_type" minOccurs="0"/>
+			<xs:element name="bunkanumer" type="LI_IK_bunkanumer_type" minOccurs="0"/>
+			<!-- Einkvæmur lykill kröfu sem er kennitala kröfueiganda, bankanúmer-höfuðbók-kröfunúmer ásamt gjalddaga -->
+			<!-- Kennitala kröfugreiðanda -->
+			<!-- Viðskiptanúmer greiðanda. Einkvæmur lykill greiðanda kröfu hjá kröfuhafa -->
+			<!-- Upphæð kröfu -->
+			<!-- Eindagi kröfu -->
+			<!-- Auðkenni samnings / ráðstöfunarreiknings. Ákveðið í samráði við viðskiptabanka -->
+			<!-- Tilvísun ákveðin af kröfuhafa -->
+			<!-- Númer kröfu. Kemur fram á reikningsyfirliti greiðanda ef krafan er í beingreiðslu -->
+			<!-- Tegund beingreiðslusamnings -->
+			<!-- Bankanúmer þess banka þar sem krafa var greidd -->
+			<!-- Bunkanúmer greiðslu -->
+			<!-- Dagsetning hreyfingar -->
+			<!-- Fjárhagsleg viðmiðunardagssetning -->
+			<!-- Samtals upphæð innborgana inn á höfuðstól kröfu -->
+			<!-- Upphæð sem lögð hefur verið inn á reikning kröfuhafa -->
+			<!-- Greiddir dráttarvextir -->
+			<!-- Heildarupphæð greiðslur -->
+			<!-- Greiddur fjármagnstekjuskattur -->
+			<!-- Upphæð afsláttar -->
+			<!-- Greitt tilkynningagjald -->
+			<!-- Greitt vanskilagjald -->
+			<!-- Greiddur annar vanskilakostnaður-->
+			<!-- Greiddur annar kostnadur -->
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Tag fyrir stofnupplýsingar um kröfu -->
+	<xs:complexType name="LI_IK_krafa_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type"/>
+			<xs:element name="gjalddagi" type="xs:date"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type"/>
+			<xs:element name="nidurfellingardagur" type="xs:date"/>
+			<xs:element name="audkenni" type="LI_IK_audkenni_type"/>
+			<xs:element name="upphaed" type="LI_IK_upphaed_og_mynt_type"/>
+			<xs:element name="tilvisunarnumer" type="LI_IK_tilvisunarnumer_type"/>
+			<xs:element name="eindagi" type="xs:date"/>
+			<xs:element name="sedilnumer" type="LI_IK_sedilnumer_type" minOccurs="0"/>
+			<xs:element name="vidskiptanumer" type="LI_IK_vidskiptanumer_type" minOccurs="0"/>
+			<xs:element name="tilkynningar_og_greidslugjald_1" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="tilkynningar_og_greidslugjald_2" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="vanskilagjald" type="LI_IK_vanskilagjald_type" minOccurs="0"/>
+			<xs:element name="annar_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="annar_vanskila_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="drattarvextir" type="LI_IK_drattarvextir_type" minOccurs="0"/>
+			<xs:element name="gengiskrafa" type="LI_IK_gengiskrafa_type" minOccurs="0"/>
+			<xs:element name="greidsluregla" type="LI_IK_greidsluregla_type" minOccurs="0"/>
+			<xs:element name="afslattur" type="LI_IK_afslattur_type" minOccurs="0"/>
+			<xs:element name="innborgunarregla" type="LI_IK_innborgunarregla_type" minOccurs="0"/>
+			<xs:element name="birtingarkerfi" type="LI_IK_birtingarkerfi_type" minOccurs="0"/>
+			<xs:element name="birting" type="LI_IK_birting_type" minOccurs="0"/>
+			<xs:element name="aunnin_kostnadur" type="LI_IK_heiltolu_upphaed_9_type"/>
+			<xs:element name="astand" type="LI_IK_astand_type"/>
+			<!-- Einkvæmur lykill kröfu sem er kennitala kröfueiganda, bankanúmer-höfuðbók-kröfunúmer ásamt gjalddaga -->
+			<!-- Kennitala kröfugreiðanda -->
+			<!-- Niðurfellingardagur kröfu, hve lengi á krafan að lifa í innheimtukerfi -->
+			<!-- Auðkenni samnings / ráðstöfunarreiknings. Ákveðið í samráði við viðskiptabanka -->
+			<!-- Upphæð kröfu -->
+			<!-- Tilvísun ákveðin af kröfuhafa -->
+			<!-- Eindagi kröfu -->
+			<!-- Númer kröfu. Kemur fram á reikningsyfirliti greiðanda ef krafan er í beingreiðslu -->
+			<!-- Viðskiptanúmer greiðanda. Einkvæmur lykill greiðanda kröfunar hjá kröfuhafa -->
+			<!-- Gjald fyrir útreikning og útskrift greiðsluseðils ásamt sendingu hans til greiðanda -->
+			<!-- Vanskilagjald má vera gefið upp annaðhvort í prósentum eða fastri upphæð -->
+			<!-- Fyrir sérákvörðuð gjöld sem greidd eru af greiðanda kröfu -->
+			<!-- Fyrir sérákvörðuð gjöld, t.d milliinnheimtugjald -->
+			<!-- Segir til um hvernig dráttarvextir eru reiknaðir -->
+			<!-- Notist ef krafa er í erlendri mynt -->
+			<!-- Greiðsluregla.  Segir til um hvort megi greiða kröfu sem á ógreidda eldri gjalddaga. -->
+			<!-- Afsláttur er gefin upp annaðhvort í prósentum eða sem föst upphæð -->
+			<!-- Innborgunarregla segir til um hvort megi greiða inn á kröfu. -->
+			<!-- Upplýsingar um hvar krafa er í birtingarkerfi ef um slíkt er að ræða -->
+			<!-- Prentun tagið er notað ef krafa er prentuð hjá banka / sparisjóð til þess að stýra útprentun kröfunnar -->
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Samsett tag fyrir gengiskröfu -->
+	<xs:complexType name="LI_IK_gengiskrafa_type">
+		<xs:sequence>
+			<xs:element name="gengistegund">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ALMENNT_GENGI_VIÐSKIPTABANKA"/>
+						<xs:enumeration value="MIÐGENGI_SEÐLABANKA"/>
+						<xs:enumeration value="FUNDARGENGI_SEÐLABANKA"/>
+						<xs:enumeration value="SEÐLAGENGI_VIÐSKIPTABANKA"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="mynt" type="LI_IK_mynt_type"/>
+			<xs:element name="gengisbanki">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="SEÐLABANKINN"/>
+						<xs:enumeration value="LANDSBANKINN"/>
+						<xs:enumeration value="BÚNAÐARBANKINN"/>
+						<xs:enumeration value="ÍSLANDSBANKI"/>
+						<xs:enumeration value="SPARISJÓÐIR"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="gengisregla">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="GJALDDAGAGENGI"/>
+						<xs:enumeration value="GREIDSLUDAGSGENGI"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<!-- Tegund gengis -->
+			<!-- 3 stafa tákn myntar -->
+			<!-- Fyrstu 2 stafirnir í banka sem ræður gengisskráningu viðkomandi kröfu -->
+			<!-- Gengisregla, segir til um við hvaða dagsgengi á að miða þegar krafa er greidd og hvaða dráttarvaxtatöflur skal nota við útreikning dráttarvaxta -->
+			<!-- Tegund gengis sem miðað er við -->
+			<!-- Myntkóði kröfu (í hvaða mynt krafa er) -->
+			<!-- Við hvaða bankastofnun miðast gengisskráningin -->
+			<!-- Gengisregla -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_breyta_krofu_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type"/>
+			<xs:element name="gjalddagi" type="xs:date"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type"/>
+			<xs:element name="nidurfellingardagur" type="xs:date"/>
+			<xs:element name="audkenni" type="LI_IK_audkenni_type"/>
+			<xs:element name="upphaed" type="LI_IK_rauntolu_upphaed_11_2_type"/>
+			<xs:element name="tilvisunarnumer" type="LI_IK_tilvisunarnumer_type"/>
+			<xs:element name="eindagi" type="xs:date"/>
+			<xs:element name="sedilnumer" type="LI_IK_sedilnumer_type" minOccurs="0"/>
+			<xs:element name="vidskiptanumer" type="LI_IK_vidskiptanumer_type" minOccurs="0"/>
+			<xs:element name="tilkynningar_og_greidslugjald_1" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="tilkynningar_og_greidslugjald_2" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="annar_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="annar_vanskila_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="greidsluregla" type="LI_IK_greidsluregla_type" minOccurs="0"/>
+			<xs:element name="innborgunarregla" type="LI_IK_innborgunarregla_type" minOccurs="0"/>
+			<xs:element name="vanskilagjald" type="LI_IK_vanskilagjald_type" minOccurs="0"/>
+			<xs:element name="drattarvextir" type="LI_IK_drattarvextir_type" minOccurs="0"/>
+			<xs:element name="gengiskrafa" type="LI_IK_gengiskrafa_type" minOccurs="0"/>
+			<xs:element name="afslattur" type="LI_IK_afslattur_type" minOccurs="0"/>
+			<xs:element name="birtingarkerfi" type="LI_IK_birtingarkerfi_type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_eyda_krofu_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type"/>
+			<xs:element name="gjalddagi" type="xs:date"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type"/>
+			<!-- Þessi svæði verða að koma fram -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_stofna_krofu_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type"/>
+			<xs:element name="gjalddagi" type="xs:date"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type"/>
+			<xs:element name="nidurfellingardagur" type="xs:date"/>
+			<xs:element name="audkenni" type="LI_IK_audkenni_type"/>
+			<xs:element name="upphaed" type="LI_IK_rauntolu_upphaed_11_2_type"/>
+			<xs:element name="tilvisunarnumer" type="LI_IK_tilvisunarnumer_type"/>
+			<xs:element name="eindagi" type="xs:date"/>
+			<xs:element name="sedilnumer" type="LI_IK_sedilnumer_type" minOccurs="0"/>
+			<xs:element name="vidskiptanumer" type="LI_IK_vidskiptanumer_type" minOccurs="0"/>
+			<xs:element name="tilkynningar_og_greidslugjald_1" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="tilkynningar_og_greidslugjald_2" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="annar_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="annar_vanskila_kostnadur" type="LI_IK_heiltolu_upphaed_9_type" minOccurs="0"/>
+			<xs:element name="innborgunarregla" type="LI_IK_innborgunarregla_type" minOccurs="0"/>
+			<xs:element name="greidsluregla" type="LI_IK_greidsluregla_type" minOccurs="0"/>
+			<xs:element name="vanskilagjald" type="LI_IK_vanskilagjald_type" minOccurs="0"/>
+			<xs:element name="drattarvextir" type="LI_IK_drattarvextir_type" minOccurs="0"/>
+			<xs:element name="gengiskrafa" type="LI_IK_gengiskrafa_type" minOccurs="0"/>
+			<xs:element name="afslattur" type="LI_IK_afslattur_type" minOccurs="0"/>
+			<xs:element name="birtingarkerfi" type="LI_IK_birtingarkerfi_type" minOccurs="0"/>
+			<xs:element name="birting" type="LI_IK_birting_type" minOccurs="0"/>
+			<!--
+			=====================================================================================
+				Þessi svæði verða að koma fram til þess að hægt sé að stofna kröfu
+			=====================================================================================
+			-->
+			<!-- Einkvæmur lykill kröfu sem er kennitala kröfueiganda, bankanúmer-höfuðbók-kröfunúmer ásamt gjalddaga -->
+			<!-- Kennitala kröfugreiðanda -->
+			<!-- Niðurfellingardagur kröfu, hve lengi á krafan að lifa í innheimtukerfi -->
+			<!-- Auðkenni samnings / ráðstöfunarreiknings. Ákveðið í samráði við viðskiptabanka -->
+			<!-- Upphæð kröfu -->
+			<!-- Tilvísun ákveðin af kröfuhafa -->
+			<!-- Eindagi kröfu -->
+			<!--
+			=====================================================================================
+			 Þessi svæði eru valkvæm, ef þau eru ekki send með kröfu þá eru sjálfgefin gildi viðkomandi 
+			 kröfuhafa sett inn eftir atvikum samkvæmt samningi við viðskiptabanka / sparisjóð
+			=====================================================================================
+			-->
+			<!-- Númer kröfu. Kemur fram á reikningsyfirliti greiðanda ef krafan er í beingreiðslu -->
+			<!-- Viðskiptanúmer greiðanda. Einkvæmur lykill greiðanda kröfu hjá kröfuhafa -->
+			<!-- Gjald fyrir útreikning og útskrift greiðsluseðils ásamt sendingu hans til greiðanda -->
+			<!-- Vanskilagjald má vera gefið upp annaðhvort í prósentum eða fastri upphæð -->
+			<!-- Fyrir sérákvörðuð gjöld sem greidd eru af greiðanda kröfu -->
+			<!-- Fyrir sérákvörðuð gjöld, t.d milliinnheimtugjald -->
+			<!-- Segir til um hvernig dráttarvextir eru reiknaðir -->
+			<!-- Notist ef krafa er í erlendri mynt -->
+			<!-- Greiðsluregla.  Segir til um hvort megi greiða kröfu sem á ógreidda eldri gjalddaga.. -->
+			<!-- Afsláttur er gefin upp annaðhvort í prósentum eða sem föst upphæð -->
+			<!-- Innborgunarregla segir til um hvort megi greiða inn á kröfu -->
+			<!-- Upplýsingar um hvar krafa er í birtingarkerfi ef um slíkt er að ræða -->
+			<!-- Prentun tagið er notað ef krafa er prentuð hjá banka / sparisjóð til þess að stýra útprentun kröfunnar -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_upphaed_og_mynt_type">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="mynt" type="LI_IK_mynt_type" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_upphaed_og_dagafjoldi_type">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="dagafjoldi" type="xs:positiveInteger" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_prosenta_og_dagafjoldi_type">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="dagafjoldi" type="xs:positiveInteger" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="LI_IK_hofudbok_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LI_IK_krofunumer_type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{6}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LI_IK_afslattur_type">
+		<xs:choice maxOccurs="2">
+			<xs:element name="afslattur_1" type="LI_IK_upphaed_og_dagafjoldi_type"/>
+			<xs:element name="afslattur_2" type="LI_IK_upphaed_og_dagafjoldi_type"/>
+		</xs:choice>
+		<xs:attribute name="vidmidun" type="LI_IK_vidmidun_dags_type" use="required"/>
+		<xs:attribute name="tegund_afslattar" type="LI_IK_tegund_afslattar_og_vanskilagjalds_type" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="LI_IK_tegund_afslattar_og_vanskilagjalds_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="UPPHÆÐ"/>
+			<xs:enumeration value="PRÓSENTA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LI_IK_vanskilagjald_type">
+		<xs:choice maxOccurs="2">
+			<xs:element name="vanskilagjald_1" type="LI_IK_upphaed_og_dagafjoldi_type"/>
+			<xs:element name="vanskilagjald_2" type="LI_IK_upphaed_og_dagafjoldi_type"/>
+		</xs:choice>
+		<xs:attribute name="vidmidun" type="LI_IK_vidmidun_dags_type" use="required"/>
+		<xs:attribute name="tegund_vanskilagjalds" type="LI_IK_tegund_afslattar_og_vanskilagjalds_type" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_birting_type">
+		<xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="athugasemdalina_1" type="LI_IK_athugasemd_type" minOccurs="0"/>
+				<xs:element name="athugasemdalina_2" minOccurs="0"/>
+				<xs:element name="postfang_krofuhafa" type="LI_IK_heimilisfang_type" minOccurs="0"/>
+				<xs:element name="postfang_krofugreidanda" type="LI_IK_heimilisfang_type"/>
+				<xs:element name="hreyfingar" type="LI_IK_hreyfingar_type" minOccurs="0"/>
+				<!-- Heimilisfang kröfuhafa ef annað en lögheimili -->
+				<!-- Breytt póstfang kröfugreiðanda, ef sleppt, þá er notað skráð lögheimili greiðanda -->
+				<!-- Sundurliðun á kröfu -->
+				<!-- Athugasemdir sem prentaðar eru neðanmáls á seðilinn -->
+			</xs:sequence>
+			<xs:element name="xmls" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="tegund" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="PRENTUN"/>
+					<xs:pattern value="PRENTUN_OG_BIRTING"/>
+					<xs:pattern value="BIRTING"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="LI_IK_krofu_lykill_og_greidandi_type">
+		<xs:sequence>
+			<xs:element name="kt_krofuhafa" type="LI_IK_kennitala_type"/>
+			<xs:element name="banki" type="LI_IK_bankanumer_type"/>
+			<xs:element name="hofudbok" type="LI_IK_hofudbok_type"/>
+			<xs:element name="numer" type="LI_IK_krofunumer_type"/>
+			<xs:element name="gjalddagi" type="xs:date"/>
+			<xs:element name="kt_greidanda" type="LI_IK_kennitala_type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

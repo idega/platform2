@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by LI (LI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="lykilord">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="5"/>
+			<xs:maxLength value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="notandanafn">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="8"/>
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="kennitala">
+		<xs:restriction base="xs:string">
+			<xs:length value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="seta">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="gengistegund">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="T"/>
+			<xs:enumeration value="S"/>
+			<xs:enumeration value="Z"/>
+			<xs:enumeration value="F"/>
+			<xs:enumeration value="L"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="isoTaknGjaldmidils">
+		<xs:restriction base="xs:string">
+			<xs:length value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="upphaedKr">
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="gengi">
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="astandReiknings">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OPINN"/>
+			<xs:enumeration value="LOKADUR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="bankaNr">
+		<xs:restriction base="xs:string">
+			<xs:length value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hofudbok">
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="reikningsNr">
+		<xs:restriction base="xs:string">
+			<xs:length value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="reikningur">
+		<xs:sequence>
+			<xs:element name="bankaNr" type="bankaNr"/>
+			<xs:element name="hb" type="hofudbok"/>
+			<xs:element name="reikningsNr" type="reikningsNr"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="villa">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="villubod">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="dagsMottekid">
+		<xs:restriction base="xs:dateTime"/>
+	</xs:simpleType>
+	<xs:simpleType name="dagsSvarad">
+		<xs:restriction base="xs:dateTime"/>
+	</xs:simpleType>
+	<xs:complexType name="timi">
+		<xs:sequence>
+			<xs:element name="dagsMottekid" type="dagsMottekid"/>
+			<xs:element name="dagsSvarad" type="dagsSvarad"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="rbBunkaNr">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="faerslulykill">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tilvisun">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="35"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="textalykill">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sedilNr">
+		<xs:restriction base="xs:string">
+			<xs:length value="7" fixed="true"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tegundGreidslu">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AB-GIRO"/>
+			<xs:enumeration value="C-GIRO"/>
+			<xs:enumeration value="GREIDSLUSEDILL"/>
+			<xs:enumeration value="MILLIFAERSLA"/>
+			<xs:enumeration value="OTHEKKT_TEGUND"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="idBunki">
+		<xs:restriction base="xs:long"/>
+	</xs:simpleType>
+	<xs:simpleType name="astandBunka">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OBOKADUR"/>
+			<xs:enumeration value="BOKADUR"/>
+			<xs:enumeration value="VILLA"/>
+			<xs:enumeration value="EYTT"/>
+			<xs:enumeration value="I_VINNSLU"/>
+			<xs:enumeration value="OTHEKKT_ASTAND"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="sendingarType">
+		<xs:sequence>
+			<xs:element name="snigill" type="erTilType" minOccurs="0"/>
+			<xs:element name="tolvupostur" type="tolvuposturType" minOccurs="0"/>
+			<xs:element name="sms" type="simanumerType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="simanumerType">
+		<xs:restriction base="xs:string">
+			<xs:length value="7"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="erTilType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="True"/>
+			<xs:enumeration value="False"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="astandBokunar">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MA_BOKA"/>
+			<xs:enumeration value="ER_AD_BOKA"/>
+			<xs:enumeration value="BOKUD_AN_VILLU"/>
+			<xs:enumeration value="BOKUD_MED_VILLU"/>
+			<xs:enumeration value="NIDURFELLD"/>
+			<xs:enumeration value="OTHEKKT_ASTAND"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tolvuposturType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="6"/>
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

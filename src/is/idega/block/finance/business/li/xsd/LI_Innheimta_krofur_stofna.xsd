@@ -1,0 +1,20 @@
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Matti (Landsbanki Islands) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" id="LI_Innheimta_krofur_stofnaDataSet">
+	<xs:include schemaLocation="LI_Innheimta_Common_types.xsd"/>
+	<xs:element name="LI_Innheimta_krofur_stofna">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="session_id" type="xs:string" minOccurs="0"/>
+				<xs:element name="krofur">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="krafa" type="LI_IK_stofna_krofu_type" maxOccurs="500"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- Fyrirspurn um greiðslur á tímabili -->
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

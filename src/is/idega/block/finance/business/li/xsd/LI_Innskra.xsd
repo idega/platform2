@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Hugbúnaður (LI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" id="LI_InnskraDataSet">
+	<xs:include schemaLocation="LI_Common_types.xsd"/>
+	<xs:element name="LI_Innskra">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="notandanafn" type="LI_notandanafn_type"/>
+				<xs:element name="lykilord" type="LI_lykilord_type"/>
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" id="LI_Innheimta_krofur_eydaDataSet">
+	<xs:include schemaLocation="LI_Innheimta_Common_types.xsd"/>
+	<xs:element name="LI_Innheimta_krofur_eyda">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="session_id" type="xs:string" minOccurs="0"/>
+				<xs:element name="krofur">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="krafa" type="LI_IK_eyda_krofu_type" maxOccurs="500"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

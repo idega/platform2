@@ -1,0 +1,20 @@
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Hugbúnaður (LI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" id="LI_Innheimta_fyrirspurn_krofur_svarDataSet">
+	<xs:include schemaLocation="LI_Innheimta_Common_types.xsd"/>
+	<xs:element name="LI_Innheimta_fyrirspurn_krofur_svar">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="krofur">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="krafa" type="LI_IK_krafa_type" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="villa" type="LI_IK_villa_type"/>
+				<!-- Fyrirspurn um greiðslur á tímabili -->
+			</xs:choice>
+			<xs:attribute name="version" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
