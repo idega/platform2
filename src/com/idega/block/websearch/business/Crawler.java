@@ -6,15 +6,14 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Iterator;
-
 import org.apache.lucene.analysis.StopAnalyzer;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-
 import com.idega.block.websearch.data.WebSearchIndex;
+import com.idega.idegaweb.IWURL;
 import com.idega.util.FileUtil;
 import com.idega.util.text.TextSoap;
 
@@ -109,10 +108,7 @@ public final class Crawler {
         try {
             
             if (reporting > 0) System.out.println("Websearch: START CRAWLING");
-            
-            
-             
-            
+ 
             File file =  new File(indexPath);
             
             if (!file.exists()) {
@@ -212,7 +208,10 @@ public final class Crawler {
                 }
                 System.out.println();
             }
-            //writer.optimize();
+            
+            //optinmize the search speed
+            writer.optimize();
+            
             writer.close();
             
         } catch (Exception e) {
@@ -238,32 +237,47 @@ public final class Crawler {
     
     
     public void handleLink(String url) {
-        
-        // Evaluatins to be done in lower case.
-        String urlLowCase = url.toLowerCase();
-        
-        if (!(urlLowCase.startsWith("http://") || 
-            urlLowCase.startsWith("https://"))) {
-            // link needs to be evaluated, parsed and completed
-            url = parseHREF(url, urlLowCase);
-            if (url != null) {
-                urlLowCase = url.toLowerCase();
-            }
-        // is full URL
-        } 
-        if (url != null && inScope(urlLowCase)) {
-            // is full URL and in scope.
-            if (!links.contains(urlLowCase)) {
-                links.add(urlLowCase);
-                linkQueue.push(url);
-            }
-        }
-        
+	    	String normalizedURL = normalizedURL(url);
+	    	String lowerCaseURL = normalizedURL.toLowerCase();
+	    	
+	    	if (!(normalizedURL.startsWith("http://") || normalizedURL.startsWith("https://"))) {
+	    		// link needs to be evaluated, parsed and completed
+	    		normalizedURL = parseHREF(normalizedURL, lowerCaseURL);
+	    		if (normalizedURL != null) {
+	    			lowerCaseURL = normalizedURL.toLowerCase();
+	    		}
+	    		// is full URL
+	    	} 
+	    	
+	    	if (normalizedURL != null && inScope(normalizedURL)) {
+	    		// is full URL and in scope.
+	    		if (!links.contains(lowerCaseURL)) {
+	    			links.add(lowerCaseURL);
+	    			linkQueue.push(normalizedURL);
+	    		}
+	    	}
+    	
     }
-     
     
     
-    public final void handlePDF(HttpURLConnection httpCon) throws Exception {
+    
+    /**
+     * Takes an url and rearranges it so all query parameters are in the same order as another url with the same query parameters.
+     * This helps eliminate duplicates. It also changes servlet/IBMainServlet/? and servlet/IBMainServlet? to index.jsp?
+	 * @param url
+	 * @return
+	 */
+	protected String normalizedURL(String url) {
+        //change servlet path to index.jsp if crawling an idegaweb application
+        String normalized = TextSoap.findAndReplace(url,"servlet/IBMainServlet/?", "index.jsp?");
+        normalized = TextSoap.findAndReplace(url,"servlet/IBMainServlet?", "index.jsp?");
+        
+        IWURL temp = new IWURL(normalized);
+      
+        return temp.getFullURL();
+	}
+	
+	public final void handlePDF(HttpURLConnection httpCon) throws Exception {
         
         handler = pdfHandler;
         handler.parse(httpCon.getInputStream());
@@ -340,6 +354,7 @@ public final class Crawler {
                 mydoc.add(Field.UnIndexed("href", href));
             }
             writer.addDocument(mydoc);
+                    
             //writer.close();
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -392,8 +407,8 @@ public final class Crawler {
             }
             url = currentURLPath.substring(0, pos+2) + url.substring(3*back, url.length());
         } else if (urlLowCase.startsWith("javascript:")) {
-            // handle javascript:...
-            url = parseJavaScript(url, urlLowCase);
+            // ignore javascript:...
+            url = null;
         } else if (urlLowCase.startsWith("#")) {
             // internal anchor... ignore.
             url = null;
@@ -417,23 +432,7 @@ public final class Crawler {
         return url;
         
     }
-    public String parseJavaScript(String url, String urlLowCase) {
-        
-        if (urlLowCase.startsWith("pop", 11)) {
-            int start = urlLowCase.indexOf("'", 13);
-            if (start != -1 ) {
-                int end = urlLowCase.indexOf("'", start + 1);
-                if (end != -1) {
-                    url = url.substring(start + 1, end);
-                    return parseHREF(url, url.toLowerCase());
-                }
-            }
-            return null;
-        } else {
-            return null;
-        }
-        
-    }
+
     public String scanPage(String urlString) {
         
         String status = "good";

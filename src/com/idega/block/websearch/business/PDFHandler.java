@@ -238,16 +238,16 @@ public class PDFHandler implements ContentHandler {
         
         //System.out.println("test");
         try {
-            //String path = "z:/webapps/dev/pdf/HealthPlansOnline.pdf";]
-            String path = "z:/webapps/dev/pdf/IntelEthnographyStudy.pdf";
+          
+            String path = "/Users/eiki/Desktop/documents.pdf";
             PDFHandler p = new PDFHandler();
             p.parse(new FileInputStream(path));
-            //System.out.println("Title: " + p.getTitle());
-            //System.out.println("Author: " + p.getAuthor());
-            //System.out.println("Published " + p.getPublished());
-            //System.out.println("Keywords: " + p.getKeywords());
-            //System.out.println("Description: " + p.getDescription());
-            //System.out.println("Content: " + p.getContents());
+            System.out.println("Title: " + p.getTitle());
+            System.out.println("Author: " + p.getAuthor());
+            System.out.println("Published " + p.getPublished());
+            System.out.println("Keywords: " + p.getKeywords());
+            System.out.println("Description: " + p.getDescription());
+            System.out.println("Content: " + p.getContents());
         } catch (Exception e) {e.printStackTrace();}
     }
     /**
