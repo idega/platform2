@@ -1009,19 +1009,26 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.mergeCells(1, 1, 2, 1);
 			Iterator i = fields.iterator();
 
+			//loops through request parameters
 			while (i.hasNext()){
 				String field = (String) i.next();
 				Iterator itags = tags.iterator();
-				while ( itags.hasNext()){
+				TextInput input = new TextInput(PARAMETER_TEXT_FIELD + field);
+				
+				//search for tag with same name and look up type information
+				while (itags.hasNext()){
 					ContractTag tag = (ContractTag) itags.next();
 					System.out.println("Tag: " + tag.getName());
 					if (tag.getName().equals(field)){
+						if (tag.getType().equals(java.lang.Integer.class)){
+							input.setAsIntegers(localize("ccconsign_integer", "Use numbers only for " + field + "."));
+						}
 						System.out.println("Match: " + tag.getName());
 					}
 				}
 				
 				table.add(getSmallHeader(field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase() + ":"), 1, row);
-				table.add(getStyledInterface(new TextInput(PARAMETER_TEXT_FIELD + field)), 2, row);
+				table.add(getStyledInterface(input), 2, row);
 				row ++;
 			}
 		
