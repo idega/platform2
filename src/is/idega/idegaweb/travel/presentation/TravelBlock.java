@@ -15,11 +15,13 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import javax.ejb.FinderException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean;
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
@@ -234,6 +236,10 @@ public class TravelBlock extends Block {
 
   protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
+  }
+  
+  protected TravelStockroomBusiness getServiceBusiness(IWApplicationContext iwac, Product product) throws RemoteException, FinderException {
+  	return this.getServiceHandler(iwac).getServiceBusiness(product);
   }
 
   protected boolean isTravelAdministrator(IWContext iwc) {
