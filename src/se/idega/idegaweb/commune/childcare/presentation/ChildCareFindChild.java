@@ -63,6 +63,13 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	}
 
 	/**
+	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#getSearchSubmitDisplay()
+	 */
+	public String getSearchSubmitDisplay() {
+		return localize("child_care.find_child","Find child");
+	}
+
+	/**
 	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#getNoUserFoundString()
 	 */
 	public String getNoUserFoundString() {

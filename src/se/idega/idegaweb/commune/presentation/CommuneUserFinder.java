@@ -89,7 +89,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		searchInput.keepStatusOnAction(true);
 		table.add(searchInput, 1, 2);
 		
-		SubmitButton searchButton = (SubmitButton) this.getButton(new SubmitButton(localize("search","Search")));
+		SubmitButton searchButton = (SubmitButton) this.getButton(new SubmitButton(getSearchSubmitDisplay()));
 		table.add(searchButton, 1, 4);
 				
 		return form;
@@ -157,6 +157,8 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 	public abstract Class getEventListener();
 	
 	public abstract String getSubmitDisplay();
+	
+	public abstract String getSearchSubmitDisplay();
 	
 	public abstract String getNoUserFoundString();
 	
