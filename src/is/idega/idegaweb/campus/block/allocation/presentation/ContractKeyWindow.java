@@ -196,7 +196,7 @@ public class ContractKeyWindow extends CampusWindow{
       String val = iwc.getParameter("val");
       if(val.equals("return")){
         //ContractBusiness.returnKey(iwc,id);
-      	getContractService(iwc).returnKey(iwc,id);
+      	getContractService(iwc).returnKey(id,iwc.getCurrentUser());
       }
       else if(val.equals("deliver")){
       	String from = iwc.getParameter("deliveredDate");

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.75 2004/07/20 10:53:08 aron Exp $
+ * $Id: CampusAllocator.java,v 1.76 2004/07/30 13:55:28 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
+import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
@@ -443,16 +444,18 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		if (AH != null) {
 			Table Frame = new Table(2, 2);
 			Frame.mergeCells(1, 2, 2, 2);
-			Frame.setVerticalAlignment(1, 2, "top");
+			Frame.setRowVerticalAlignment( 1, Table.VERTICAL_ALIGN_TOP);
+			Frame.setRowVerticalAlignment( 2, Table.VERTICAL_ALIGN_TOP);
 			Frame.add(CA.getViewApplicant(AH.getApplicant(), AH.getCampusApplication()), 1, 1);
-			String sSpouse = AH.getCampusApplication().getSpouseName();
-			String sChildren = AH.getCampusApplication().getChildren();
+			ApplicantFamily family = getApplicationService(iwc).getApplicantFamily(AH.getApplicant());
+	
 			boolean bSpouse = false, bChildren = false;
-			if (sSpouse != null && sSpouse.length() > 0) {
-				Frame.add(CA.getViewSpouse(AH.getApplicant(), AH.getCampusApplication()), 2, 1);
+			if (family.getSpouse()!=null) {
+			
+				Frame.add(CA.getViewSpouse(family.getSpouse(), AH.getCampusApplication()), 2, 1);
 				bSpouse = true;
 			}
-			if (sChildren != null && sChildren.length() > 0) {
+			if (family.getChildren()!=null && !family.getChildren().isEmpty()) {
 				Frame.add(CA.getViewChildren(null, AH.getCampusApplication()), 2, 1);
 				bChildren = true;
 			}

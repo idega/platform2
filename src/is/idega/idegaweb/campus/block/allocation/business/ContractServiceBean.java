@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.21 2004/07/26 12:24:45 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.22 2004/07/30 13:55:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,12 +15,15 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
+import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
+import is.idega.idegaweb.campus.business.CampusGroupException;
+import is.idega.idegaweb.campus.business.CampusUserService;
 import is.idega.idegaweb.campus.data.ApartmentContracts;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
@@ -53,15 +56,9 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
-import com.idega.data.SimpleQuerier;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.database.ConnectionBroker;
 
@@ -131,7 +128,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 				if (newLogin && groupID.intValue() > 0) {
 					User user = getUserService().getUser(userID);
 					createUserLogin(user, groupID, login, pass, generatePasswd);
-					addUserToTenantGroup(groupID,user);
+					//addUserToTenantGroup(groupID,user);
+					getUserService().setAsTenant(user);
 				}
 				deleteFromWaitingList(eContract);
 				changeApplicationStatus(eContract);
@@ -167,7 +165,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	 * @throws RemoteException
 	 */
 	public void addUserToTenantGroup(Integer groupID, User user) throws FinderException, RemoteException {
-		Group group = getUserService().getGroupHome().findByPrimaryKey(groupID);
+		/*Group group = getUserService().getGroupHome().findByPrimaryKey(groupID);
+		
 		int userGroupID = user.getGroupID();
 		String oldGroupId[] = new String[0];
 		try {
@@ -177,8 +176,10 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		}
 		if(oldGroupId[0]!=null)
 			userGroupID = Integer.parseInt(oldGroupId[0]);
-			
+		
 		group.addGroup(userGroupID);
+		*/
+		
 	}
 
 	public void changeApplicationStatus(Contract eContract) throws Exception {
@@ -287,11 +288,12 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 	}
-	public void returnKey(IWApplicationContext iwac, Integer contractID) {
+	public void returnKey( Integer contractID,User currentUser) {
 		try {
 			Contract C = getContractHome().findByPrimaryKey(contractID);
 			C.setEnded();
 			C.store();
+			getUserService().removeAsCurrentTenant(C.getUser(),currentUser);
 			getMailingListService().processMailEvent(contractID.intValue(), LetterParser.RETURN);
 		}
 		catch (IDOStoreException e) {
@@ -301,6 +303,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
+			e.printStackTrace();
+		} catch (CampusGroupException e) {
 			e.printStackTrace();
 		}
 	}
@@ -312,6 +316,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			else
 				C.setStarted(when);
 			C.store();
+			getUserService().setAsCurrentTenant(C.getUser());
 			getMailingListService().processMailEvent(contractID.intValue(), LetterParser.DELIVER);
 		}
 		catch (IDOStoreException e) {
@@ -321,6 +326,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
+			e.printStackTrace();
+		} catch (CampusGroupException e) {
 			e.printStackTrace();
 		}
 	}
@@ -363,6 +370,27 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			LetterParser.ALLOCATION);
 		return contract;
 	}
+	
+	public User createUserFamily(Applicant applicant, String[] emails)throws RemoteException,CreateException,CampusGroupException{
+		User user = createNewUser(applicant,emails);
+		getUserService().setAsTenant(user);
+		ApplicantFamily family = getApplicationService().getApplicantFamily(applicant);
+		Applicant applicantSpouse = family.getSpouse();
+		if(applicantSpouse!=null){
+			User uspouse = createNewUser(applicantSpouse,null);
+			getUserService().setAsTenantSpouse(user,uspouse);
+		}
+		Collection children = family.getChildren();
+		if(children!=null && !children.isEmpty()){
+			for (Iterator iter = children.iterator(); iter.hasNext();) {
+				Applicant applicantChild = (Applicant) iter.next();
+				User child = createNewUser(applicantChild,null);
+				getUserService().setAsTenantChild(user,child);
+			}
+		}
+		return user;
+	}
+	
 	public User createNewUser(Applicant A, String[] emails) throws RemoteException, CreateException {
 		//User user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
 		User user = null;
@@ -399,63 +427,6 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
      
     }
  
-
- 
-
-
-  
-
-
-  public  boolean makeNewContract(IWApplicationContext iwc,User eUser,Applicant eApplicant,int iApartmentId,IWTimestamp from,IWTimestamp to)throws java.rmi.RemoteException{
-    try{
-      Contract eContract = getContractHome().create();
-      eContract.setApartmentId(iApartmentId);
-      eContract.setApplicantId((Integer)eApplicant.getPrimaryKey());
-      eContract.setUserId(((Integer)eUser.getPrimaryKey()).intValue());
-      eContract.setStatusCreated();
-      eContract.setValidFrom(from.getDate());
-      eContract.setValidTo(to.getDate());
-
-        eContract.store();
-        getMailingListService().processMailEvent(((Integer)eContract.getPrimaryKey()).intValue(),LetterParser.ALLOCATION);
-        return true;
-      }
-      catch(Exception ex){
-        return false;
-      }
-  }
-
-  public User makeNewUser(Applicant A,String[] emails){
-
-    try{
-    	User u = null;
-    	
-    	String ssn = A.getSSN();
-    	if(ssn!=null){
-    		
-    			try {
-					u = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(ssn);
-				}
-				catch (RuntimeException e) {
-					e.printStackTrace();
-				}
-    		
-    		
-    	}
-    	else{
-    		u = getUserService().insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
-    	}
-    if(emails !=null && emails.length >0)
-      getUserService().addNewUserEmail( ((Integer) u.getPrimaryKey()).intValue(),emails[0]);
-
-    return u;
-    }
-    catch(Exception ex){
-      ex.printStackTrace();
-    }
-    return null;
-  }
-
 
    public  IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,int monthOverlap){
      IWTimestamp contractDateFrom = IWTimestamp.RightNow();
@@ -730,15 +701,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 								Contract contract = null;
 								try {
 									transaction.begin();
-									User eUser = createNewUser(applicant, emails);
+									User eUser = createUserFamily(applicant, emails);
 									//System.out.println("user created "+eUser.getPrimaryKey());
-									contract =
-										createNewContract(
-											(Integer) eUser.getPrimaryKey(),
-											(Integer) applicant.getPrimaryKey(),
-											apartmentID,
-											from.getDate(),
-											to.getDate());
+									contract =createNewContract((Integer) eUser.getPrimaryKey(),(Integer) applicant.getPrimaryKey(),	apartmentID,	from.getDate(),	to.getDate());
 									transaction.commit();
 								}
 								catch (Exception e1) {
@@ -904,10 +869,12 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	 */
 	public Map getAvailableApartmentDates(Integer aprtTypeID, Integer cplxID) throws FinderException {
 		Hashtable map = new Hashtable();
+		Connection conn = null;
+		Statement stmt = null;
 		try {
 			String sqlString = getAvailableApartmentDatesSQL(aprtTypeID, cplxID);
-			Connection conn = ConnectionBroker.getConnection();
-			Statement stmt = conn.createStatement();
+			conn = ConnectionBroker.getConnection();
+			stmt = conn.createStatement();
 			ResultSet RS = stmt.executeQuery(sqlString);
 			Integer apartmentID;
 			Date date;
@@ -916,9 +883,20 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 				date = RS.getDate(2);
 				map.put(apartmentID, date);
 			}
+			
+			RS.close();
 		}
 		catch (SQLException e) {
 			throw new FinderException(e.getMessage());
+		}
+		finally{
+			try {
+				if(stmt!=null)
+					stmt.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			ConnectionBroker.freeConnection(conn);
 		}
 		return map;
 	}
@@ -938,6 +916,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			.append(" group by c.bu_apartment_id ");
 		return sql.toString();
 	}
+	
+	
 	public Map getApplicantContractsByStatus(String status) throws RemoteException, FinderException {
 		Map map = new Hashtable();
 		Collection contracts = getContractHome().findByStatus(status);
@@ -975,8 +955,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public Map getNewApplicantContracts() throws RemoteException, FinderException {
 		return getApplicantContractsByStatus(ContractBMPBean.statusCreated);
 	}
-	public UserBusiness getUserService() throws RemoteException {
-		return (UserBusiness) getServiceInstance(UserBusiness.class);
+	public CampusUserService getUserService() throws RemoteException {
+		return (CampusUserService) getServiceInstance(CampusUserService.class);
 	}
 	public ContractHome getContractHome() throws RemoteException {
 		return (ContractHome) getIDOHome(Contract.class);
@@ -999,4 +979,5 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public BuildingService getBuildingService() throws RemoteException{
 		return (BuildingService)getServiceInstance(BuildingService.class);
 	}
+	
 }
