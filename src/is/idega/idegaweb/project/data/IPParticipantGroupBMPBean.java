@@ -12,7 +12,7 @@ import java.sql.*;
  * @version 1.0
  */
 
-public class IPParticipantGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements is.idega.idegaweb.project.data.IPParticipantGroup {
+public class IPParticipantGroupBMPBean extends com.idega.user.data.GroupBMPBean implements is.idega.idegaweb.project.data.IPParticipantGroup {
 
   public IPParticipantGroupBMPBean() {
     super();
