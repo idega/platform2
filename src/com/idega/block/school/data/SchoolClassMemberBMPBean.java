@@ -144,7 +144,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
     .appendWhere().append(" mb."+MEMBER).appendEqualSign().append(userID)
     .appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID)
-    .appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y ").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+    .appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
     .appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
     //System.err.println(sql.toString());
     return (Integer)this.idoFindOnePKBySQL(sql.toString());
@@ -156,7 +156,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     .appendWhere().append(" cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
     .appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID)
     .appendAnd().append("cl."+SchoolClassBMPBean.SCHOOLYEAR).appendEqualSign().append(yearID)
-    .appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y ").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+    .appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
     .appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
     return super.idoFindPKsBySQL(sql.toString());
   }
@@ -166,7 +166,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
     .appendWhere().append(" cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
     .appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID)
-    .appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y ").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+    .appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
     .appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
     //System.err.println(sql.toString());
     return super.idoFindPKsBySQL(sql.toString());
