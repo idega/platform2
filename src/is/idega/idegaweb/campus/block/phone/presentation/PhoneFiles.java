@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Title:
@@ -163,20 +164,33 @@ public class PhoneFiles extends Block {
       PhoneFilenameFilter filter = new PhoneFilenameFilter();
       File[] Fs = F.listFiles(filter);
       if(Fs.length > 0){
+        List allFiles = java.util.Arrays.asList(Fs);
+        Vector all = new Vector(allFiles);
+        Vector unreadFiles = new Vector(allFiles);
+        Iterator iter = unreadFiles.iterator();
+        while(iter.hasNext()){
+          F = (File) iter.next();
+          if(M!= null && M.containsKey(F.getName()))
+            iter.remove();
+        }
+        all.removeAll(unreadFiles);
         String name;
         PhoneFileInfo info;
-        java.text.NumberFormat NF = java.text.NumberFormat.getInstance();
+        java.text.NumberFormat NF = java.text.NumberFormat.getCurrencyInstance();
         int row = 2;
         Link V;
-        for (int i = 0; i < Fs.length; i++) {
-          col = 1;
-          name = Fs[i].getName();
-           V = new Link("V");
-            Window W = new Window("","/phone/upload/"+name);
-            W.setResizable(true);
-            V.setWindow(W);
-            T.add(V,1,row);
 
+
+        // Read files
+        Iterator read = all.iterator();
+        while(read.hasNext()){
+          F = (File) read.next();
+          name = F.getName();
+          V = new Link("V");
+          Window W = new Window("","/phone/upload/"+name);
+          W.setResizable(true);
+          V.setWindow(W);
+          T.add(V,1,row);
           if(M!= null && M.containsKey(name)){
             info = (PhoneFileInfo) M.get(name);
 
@@ -187,16 +201,31 @@ public class PhoneFiles extends Block {
             T.add(Edit.formatText(info.getNumberCount()),8,row);
             T.add(Edit.formatText(NF.format(info.getTotalAmount())),9,row);
           }
-          else{
-            Link L = new Link(name);
-            L.addParameter(sAction,ACT1);
-            L.addParameter("filename",name);
-            L.setFontSize(Edit.textFontSize);
-            T.add(L,2,row);
-            T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),4,row);
-          }
-          T.add(Edit.formatText(Long.toString(Fs[i].length()/1000)+" KB"),3,row);
-          T.add(Edit.formatText(new idegaTimestamp(Fs[i].lastModified()).getDateString(true,iwc)),6,row);
+
+          T.add(Edit.formatText(Long.toString(F.length()/1000)+" KB"),3,row);
+          T.add(Edit.formatText(new idegaTimestamp(F.lastModified()).getDateString(true,iwc)),6,row);
+          row++;
+        }
+
+        Iterator unread = unreadFiles.iterator();
+        while(unread.hasNext()){
+          F = (File) unread.next();
+          name = F.getName();
+          V = new Link("V");
+          Window W = new Window("","/phone/upload/"+name);
+          W.setResizable(true);
+          V.setWindow(W);
+          T.add(V,1,row);
+
+          Link L = new Link(name);
+          L.addParameter(sAction,ACT1);
+          L.addParameter("filename",name);
+          L.setFontSize(Edit.textFontSize);
+          T.add(L,2,row);
+          T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),4,row);
+          T.add(Edit.formatText(Long.toString(F.length()/1000)+" KB"),3,row);
+          T.add(Edit.formatText(new idegaTimestamp(F.lastModified()).getDateString(true,iwc)),6,row);
+
           row++;
         }
       }
