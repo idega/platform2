@@ -312,7 +312,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     WorkReportMember member = getWorkReportMemberHome().create();
     
     // add all leagues to the member
-    Collection groups = getUserGroupsDirectlyRelated(user);
+   /* Collection groups = getUserGroupsDirectlyRelated(user);
     Iterator iterator = groups.iterator();
     WorkReport workReport = getWorkReportById(reportID);
     int year = workReport.getYearOfReport().intValue();
@@ -336,7 +336,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         }
       }
       }
-    }  
+    }  */
       
 		if (user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
