@@ -76,7 +76,7 @@ public class SchoolContentEditor extends IWAdminWindow{
   private IWResourceBundle _iwrb;
   private School _school;
  private SchoolUserEditor sue;
-  private String _schoolCategory = "";
+  private boolean _highSchoolCategory = false;
 
 	public SchoolContentEditor() {
     setUnMerged();
@@ -93,11 +93,15 @@ public class SchoolContentEditor extends IWAdminWindow{
 		if (_school != null) {
 	try {
 			Collection coll = _school.getSchoolTypes();
-				Iterator iterCollection = coll.iterator();	
+			Iterator iterCollection = coll.iterator();	
 				
 			while (iterCollection.hasNext()) {									
 				SchoolType schoolType = (SchoolType) iterCollection.next();
-				_schoolCategory =  schoolType.getSchoolCategory();				
+				String schoolCategory =  schoolType.getSchoolCategory();
+				if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+					_highSchoolCategory = true;
+				}
+				
 			}
 										
 		}
@@ -106,7 +110,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 			String action = iwc.getParameter(PARAMETER_ACTION);
 			if (action == null || action.equals("")) {
-				if (_schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+				if (_highSchoolCategory) {
 					mainFormHighSchool(iwc);
 				} else {
 					mainForm(iwc);	
@@ -118,7 +122,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				}else {
 					addLeft(_iwrb.getLocalizedString("school.update_failed", "Update failed"));
 				}
-				if (_schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+				if (_highSchoolCategory) {
 					mainFormHighSchool(iwc);
 				} else {
 					mainForm(iwc);	
