@@ -18,7 +18,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
-import com.idega.util.IWTimestamp;
 
 /**
  * Description: This class displays a double dropdown menu. The first menu displays <br>

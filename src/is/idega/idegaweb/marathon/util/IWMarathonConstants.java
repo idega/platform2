@@ -3,9 +3,6 @@
  */
 package is.idega.idegaweb.marathon.util;
 
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-
 /**
  * Description: <br>
  * Copyright: Idega Software 2004 <br>
