@@ -652,7 +652,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     public Object getEntry(String accountKeyName) {
       Integer primaryKey = (Integer) accountKeyNamePrimaryKey.get(accountKeyName);
       if (primaryKey == null) {
-        return getSpecialValues(accountKeyName));
+        return getSpecialValues(accountKeyName);
       }
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
       // sometimes the record does not exist yet
