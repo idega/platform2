@@ -535,6 +535,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
       Object serviceType;
       User bUser;
       Reseller bReseller;
+      int idForLink = -1;
       for (int i = 0; i < bookings.length; i++) {
         ++row;
         booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
@@ -545,6 +546,9 @@ public class TourBookingOverview extends AbstractBookingOverview {
         bNumbers = getBooker(iwc).getMultipleBookingNumber(booking);
         if ( bNumbers[0] != 0 ) {
           Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
+          idForLink = bNumbers[2];
+        }else {
+        	idForLink = booking.getID();
         }
 
         tempBookings = bookings[i].getTotalCount();
@@ -579,7 +583,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
           TbookedBy.setText(_iwrb.getLocalizedString("travel.online","Online"));
         }
 
-        link = VoucherWindow.getVoucherLink(bookings[i]);
+        link = VoucherWindow.getVoucherLink(idForLink);
         link.setText(Tname);
 
         table.mergeCells(2, row, 5, row);
@@ -593,12 +597,12 @@ public class TourBookingOverview extends AbstractBookingOverview {
 
         link = (Link) changeLink.clone();
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
-        link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,bookings[i].getID());
+        link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,idForLink);
         table.add(link, 9, row);
         table.add(Text.NON_BREAKING_SPACE,9,row);
 
         link = (Link) deleteLink.clone();
-        link.addParameter(BookingDeleterWindow.bookingIdParameter,bookings[i].getID());
+        link.addParameter(BookingDeleterWindow.bookingIdParameter,idForLink);
         table.add(link, 9, row);
 
       }
@@ -609,6 +613,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
       table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
       if (seats > 0) {
         travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress);
+        // TODO Mismunandi eftir hvort supplier eda reseller...
         tempAvail = seats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, travelAddressIds );
         table.add(getHeaderText(Integer.toString(tempAvail)), 7, tempRow);
       }

@@ -538,6 +538,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       Object serviceType;
       User bUser;
       Reseller bReseller;
+      int idForLink;
       for (int i = 0; i < bookings.length; i++) {
         ++row;
         booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
@@ -548,6 +549,9 @@ public class HotelBookingOverview extends AbstractBookingOverview {
         bNumbers = getBooker(iwc).getMultipleBookingNumber(booking);
         if ( bNumbers[0] != 0 ) {
           Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
+          idForLink = bNumbers[2];
+        }else {
+        	idForLink = bookings[i].getID();
         }
 
 //        tempBookings = bookings[i].getTotalCount();
@@ -584,7 +588,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
           TbookedBy.setText(_iwrb.getLocalizedString("travel.online","Online"));
         }
 
-        link = VoucherWindow.getVoucherLink(bookings[i]);
+        link = VoucherWindow.getVoucherLink(idForLink);
         link.setText(Tname);
 
         table.mergeCells(2, row, 5, row);
@@ -598,12 +602,12 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
         link = (Link) changeLink.clone();
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
-        link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,bookings[i].getID());
+        link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,idForLink);
         table.add(link, 9, row);
         table.add(Text.NON_BREAKING_SPACE,9,row);
 
         link = (Link) deleteLink.clone();
-        link.addParameter(BookingDeleterWindow.bookingIdParameter,bookings[i].getID());
+        link.addParameter(BookingDeleterWindow.bookingIdParameter,idForLink);
         table.add(link, 9, row);
 
       }
