@@ -158,8 +158,8 @@ public class Approver extends CampusBlock {
 			table.add(getTextInput("sps_sch","",30),col2,row++);
 			table.add(getTextInput("sps_fac","",30),col2,row++);
 			table.add(getTextInput("sps_div","",30),col2,row++);
-			table.add(new DatePicker("sps_sch_strt",getInterfaceStyle(),iwc.getCurrentLocale()),col2,row++);
-			table.add(new DatePicker("sps_sch_end",getInterfaceStyle(),iwc.getCurrentLocale()),col2,row);
+			table.add(new DatePicker("sps_sch_strt","default",iwc.getCurrentLocale()),col2,row++);
+			table.add(new DatePicker("sps_sch_end","default",iwc.getCurrentLocale()),col2,row);
 			
 			
 			int spouserow = row;
@@ -221,7 +221,7 @@ public class Approver extends CampusBlock {
 		table.add(getSmallHeader(localize("waitinglist","Waitinglist")),col5,row++);
 		
 		row = rowStart+1;
-		table.add(new DatePicker("hire_from",getInterfaceStyle(),iwc.getCurrentLocale()),col6,row++);
+		table.add(new DatePicker("hire_from","default",iwc.getCurrentLocale()),col6,row++);
 		table.add(getCheckBox("furniture",""),col6,row++);
 		table.add(getCheckBox("waitinglist",""),col6,row++);
 		row++;
@@ -248,9 +248,9 @@ public class Approver extends CampusBlock {
 		
 		row = rowStart;
 		table.add(getSmallHeader(localize("study_start","Study start")),col5,row);
-		table.add(new DatePicker("app_sch_strt",getInterfaceStyle(),iwc.getCurrentLocale()),col6,row++);
+		table.add(new DatePicker("app_sch_strt","default",iwc.getCurrentLocale()),col6,row++);
 		table.add(getSmallHeader(localize("study_end","Study end")),col5,row);
-		table.add(new DatePicker("app_sch_end",getInterfaceStyle(),iwc.getCurrentLocale()),col6,row++);
+		table.add(new DatePicker("app_sch_end","default",iwc.getCurrentLocale()),col6,row++);
 		
 		return row;
 	}
@@ -278,7 +278,7 @@ public class Approver extends CampusBlock {
 	
 	public DropdownMenu getTypeSelect(Collection types, String name, String selected, boolean firstEmpty) {
 		DropdownMenu drpTypes = new DropdownMenu(name);
-		drpTypes.setStyleClass(getInterfaceStyle());
+		drpTypes.setStyleClass("default");
 		if (firstEmpty)
 			drpTypes.addMenuElementFirst("-1", "-");
 		for (Iterator iter = types.iterator(); iter.hasNext();) {

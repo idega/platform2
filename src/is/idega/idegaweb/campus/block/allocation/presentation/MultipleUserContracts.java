@@ -44,12 +44,12 @@ public class MultipleUserContracts extends CampusBlock {
 	public void main(IWContext iwc) throws Exception {
 		
 		init(iwc);
-		DatePicker dpFrom = new DatePicker(PRM_PERIOD_FROM,getInterfaceStyle(),iwc.getCurrentLocale());
+		DatePicker dpFrom = new DatePicker(PRM_PERIOD_FROM,"default",iwc.getCurrentLocale());
 		dpFrom.setDate(periodFrom.getDate());
-		dpFrom.setInputStyle(getInterfaceStyle());
-		DatePicker dpTo = new DatePicker(PRM_PERIOD_TO,getInterfaceStyle(),iwc.getCurrentLocale());
+		dpFrom.setInputStyle("default");
+		DatePicker dpTo = new DatePicker(PRM_PERIOD_TO,"default",iwc.getCurrentLocale());
 		dpTo.setDate(periodTo.getDate());
-		dpTo.setInputStyle(getInterfaceStyle());
+		dpTo.setInputStyle("default");
 		SubmitButton btnSearch = (SubmitButton) getStyledInterface(new SubmitButton(localize("contracts.search","Search")));
 		Form searchForm = new Form();
 		Table searchTable = new Table();
