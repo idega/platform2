@@ -502,11 +502,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
-    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnName, address,getBookingDateColumnName() );
+    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address,getBookingDateColumnName() );
   }
 
   public Collection ejbFindBookingsByDateOfBooking(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
-    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnName, address,this.getDateOfBookingColumnName() );
+    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address,this.getDateOfBookingColumnName() );
   }
 
   private Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String dateColumn) throws FinderException, RemoteException{
