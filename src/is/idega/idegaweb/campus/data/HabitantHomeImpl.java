@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class HabitantHomeImpl extends com.idega.data.IDOFactory implements HabitantHome
 {
@@ -40,4 +44,13 @@ public class HabitantHomeImpl extends com.idega.data.IDOFactory implements Habit
  }
 
 
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.data.HabitantHome#findByComplex(java.lang.Integer)
+	 */
+	public Collection findByComplex(Integer complexID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((HabitantBMPBean)entity).ejbFindByComplex(complexID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

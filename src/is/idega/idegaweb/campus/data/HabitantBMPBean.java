@@ -1,11 +1,11 @@
 /*
 <<<<<<< HabitantBMPBean.java
- * $Id: HabitantBMPBean.java,v 1.3 2004/06/05 07:35:42 aron Exp $ Copyright
+ * $Id: HabitantBMPBean.java,v 1.4 2004/07/30 09:12:31 aron Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
 =======
 
- * $Id: HabitantBMPBean.java,v 1.3 2004/06/05 07:35:42 aron Exp $
+ * $Id: HabitantBMPBean.java,v 1.4 2004/07/30 09:12:31 aron Exp $
 
  *
 
@@ -24,6 +24,9 @@
 package is.idega.idegaweb.campus.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company: idega.is
  * 
@@ -191,5 +194,9 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 	 */
 	public String getViewName() {
 		return getEntityTableName();
+	}
+	
+	public Collection ejbFindByComplex(Integer complexID)throws FinderException{
+		return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getColumnComplexId(),complexID));
 	}
 }
