@@ -38,6 +38,7 @@ public class VoucherWindow extends Window {
 
   public VoucherWindow() {
     super.setWidth(Voucher.width+40);
+    super.setHeight(500);
     super.setTitle("Voucher");
     super.setResizable(true);
     super.setMenubar(true);

@@ -196,6 +196,17 @@ public class Voucher extends TravelManager {
         table.add(getText(" "+_iwrb.getLocalizedString("travel.at","at"))+" ",1,2);
         table.add(getText(new idegaTimestamp(_service.getDepartureTime()).toSQLTimeString().substring(0,5)),1,2);
         table.add(Text.BREAK,1,2);
+        try {
+          Address[] addresses = (Address[]) _booking.findRelated((Address) Address.getStaticInstance(Address.class));
+          if (addresses.length >0) {
+            table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,2);
+            table.add(getText(" : "),1,2);
+            table.add(getText(addresses[0].getStreetName()),1,2);
+          }
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
+        table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
         table.add(Text.BREAK,1,2);
