@@ -41,6 +41,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.IWTimestamp;
 /**
  * HouseHoldViewer
  * @author aron 
@@ -65,11 +66,13 @@ public class HouseHoldViewer extends AccountingBlock {
 	private ApplicationForm appForm = null;
 	private int nameInputLength = 25;
 	private int personalIdInputLength = 15;
+	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		nf = NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+		
 		process(iwc);
 		presentate(iwc);
 	}
@@ -113,15 +116,25 @@ public class HouseHoldViewer extends AccountingBlock {
 			for (Iterator iter = parents.iterator(); iter.hasNext();) {
 				User parent = (User) iter.next();
 				Vector childs = new Vector();
-				Collection parentialChildren = userService.getChildrenForUser(parent);
+				Collection parentialChildren = null;
+				try {
+					parentialChildren = userService.getMemberFamilyLogic().getChildrenFor(parent);
+					//System.out.println("parential children "+parentialChildren.size());
+				}
+				catch (NoChildrenFound e2) {
+					e2.printStackTrace();
+				}
 				if (parentialChildren != null)
 					childs.addAll(parentialChildren);
 				Collection custodianChildren = null;
 				try {
 					custodianChildren = userService.getMemberFamilyLogic().getChildrenInCustodyOf(parent);
+					//System.out.println("custodian children "+custodianChildren.size());
 				}
 				catch (NoChildrenFound e1) {
 				}
+				
+				
 				if (custodianChildren != null)
 					childs.addAll(custodianChildren);
 				if (childs != null && !childs.isEmpty()) {
@@ -306,7 +319,7 @@ public class HouseHoldViewer extends AccountingBlock {
 				else {
 					table.skip();
 				}
-				Integer siblingOrder = getSiblingOrder(child);
+				Integer siblingOrder = getSiblingOrder(child,children);
 				if (siblingOrder != null) {
 					table.add(getText(siblingOrder.toString()));
 				}
@@ -501,7 +514,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		return null;
 	}
-	// TODO do some clever calculation
+	//  some clever calculation
 	private int getCalculatedAge(IWContext iwc, User user) {
 		try {
 			if (user.getDateOfBirth() != null)
@@ -518,13 +531,30 @@ public class HouseHoldViewer extends AccountingBlock {
 			return 0;
 	}
 	// TODO get sibling order from database somehow
-	private Integer getSiblingOrder(User child) {
-		System.out.println(child.getPrimaryKey());
+	private Integer getSiblingOrder(User child,Collection children) {
+		if(children!=null && !children.isEmpty()){
+			IWTimestamp birthdate = child.getDateOfBirth()!=null?new IWTimestamp(child.getDateOfBirth()):getBirthDateFromPin(child.getPersonalID());
+			// setting the order as of the oldest child
+			int order = children.size();
+			// lets find if anybody is older
+			for (Iterator iter = children.iterator(); iter.hasNext();) {
+				User sibling = (User) iter.next();
+				// only test the other siblings
+				if(!sibling.getPrimaryKey().toString().equals(child.getPrimaryKey().toString())){
+					IWTimestamp birth = sibling.getDateOfBirth()!=null?new IWTimestamp(sibling.getDateOfBirth()):getBirthDateFromPin(sibling.getPersonalID());
+					//  sibling is older than current child lets lower the order
+					if(birth.isEarlierThan(birthdate))
+						order--;
+				}
+				
+			}
+			return new Integer(order);
+		}
 		return new Integer(1);
 	}
 	// TODO fetch low income invoice record
 	private Object getLowIncome(User user) {
-		System.out.println(user.getPrimaryKey());
+		System.out.println("Unimplemented: getting lowincome for userid"+user.getPrimaryKey());
 		return null;
 	}
 	private CommuneUserBusiness getUserService(IWContext iwc) throws RemoteException {
@@ -668,4 +698,14 @@ public class HouseHoldViewer extends AccountingBlock {
 	public void setUserLowIncomeWindowClass(Class userLowIncomeWindowClass) {
 		this.userLowIncomeWindowClass = userLowIncomeWindowClass;
 	}
+	
+	
+	// TODO taken from commune userbusiness, maybe this should be a public method there
+	private IWTimestamp getBirthDateFromPin(String pin){
+			int dd = Integer.parseInt(pin.substring(6,8));
+			int mm = Integer.parseInt(pin.substring(4,6));
+			int yyyy = Integer.parseInt(pin.substring(0,4));
+			IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
+			return dob;
+		}
 }
