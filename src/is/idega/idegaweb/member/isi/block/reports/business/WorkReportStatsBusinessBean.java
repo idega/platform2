@@ -4620,7 +4620,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								regData.addData(phone, element.getHomePhone());
 								regData.addData(address, element.getStreetName());
 								if (code != null) {
-									regData.addData(postalCode, code.getPostalCode());
+									regData.addData(postalCode, code.getPostalAddress());
 								}
 								regData.addData(email, element.getEmail());
 								reportCollection.add(regData);
@@ -4775,7 +4775,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								regData.addData(personName, element.getName());
 								regData.addData(address, element.getStreetName());
 								if (code != null) {
-									regData.addData(postalCode, code.getPostalCode());
+									regData.addData(postalCode, code.getPostalAddress());
 								}
 								regData.addData(email, element.getEmail());
 								reportCollection.add(regData);
