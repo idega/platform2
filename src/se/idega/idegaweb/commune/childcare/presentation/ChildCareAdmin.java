@@ -6,11 +6,10 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
-//import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.HorizontalRule;
@@ -293,7 +292,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			
 			SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
 			button.setSubmitConfirm(localize("child_care.clean_queue_request", "Do you really want to send the queue request?"));
-			if (iwc.getSessionAttribute(ChildCareBusiness.CLEAN_QUEUE_RUNNING) != null) {
+			if (iwc.getSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING) != null) {
 				form.setDisabled(true);
 			}
 			form.setToDisableOnSubmit(button, true);

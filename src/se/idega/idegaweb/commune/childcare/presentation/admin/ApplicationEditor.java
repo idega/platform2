@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationBMPBean;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
@@ -151,44 +151,44 @@ public class ApplicationEditor extends ChildCareBlock {
 		menu.addMenuElement(String.valueOf(currentStatus), this.getStatusString(currentStatus));
 		
 		switch (currentStatus) {
-			case ChildCareBusiness.STATUS_ACCEPTED :
+			case ChildCareConstants.STATUS_ACCEPTED :
 				break;
-			case ChildCareBusiness.STATUS_CANCELLED :
+			case ChildCareConstants.STATUS_CANCELLED :
 				break;
-			case ChildCareBusiness.STATUS_CONTRACT :
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_REJECTED), this.getStatusString(ChildCareBusiness.STATUS_REJECTED));
-				//menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
+			case ChildCareConstants.STATUS_CONTRACT :
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_REJECTED), this.getStatusString(ChildCareConstants.STATUS_REJECTED));
+				//menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_DELETED), this.getStatusString(ChildCareConstants.STATUS_DELETED));
 				break;
-			case ChildCareBusiness.STATUS_MOVED :
+			case ChildCareConstants.STATUS_MOVED :
 				break;
-			case ChildCareBusiness.STATUS_NEW_CHOICE :
+			case ChildCareConstants.STATUS_NEW_CHOICE :
 				break;
-			case ChildCareBusiness.STATUS_NOT_ANSWERED :
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_ACCEPTED), this.getStatusString(ChildCareBusiness.STATUS_ACCEPTED));
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_SENT_IN), this.getStatusString(ChildCareBusiness.STATUS_SENT_IN));
+			case ChildCareConstants.STATUS_NOT_ANSWERED :
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_ACCEPTED), this.getStatusString(ChildCareConstants.STATUS_ACCEPTED));
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_SENT_IN), this.getStatusString(ChildCareConstants.STATUS_SENT_IN));
 				break;
-			case ChildCareBusiness.STATUS_PARENTS_ACCEPT :
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_REJECTED), this.getStatusString(ChildCareBusiness.STATUS_REJECTED));
-				//menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
+			case ChildCareConstants.STATUS_PARENTS_ACCEPT :
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_REJECTED), this.getStatusString(ChildCareConstants.STATUS_REJECTED));
+				//menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_DELETED), this.getStatusString(ChildCareConstants.STATUS_DELETED));
 				break;
-			case ChildCareBusiness.STATUS_PRIORITY :
+			case ChildCareConstants.STATUS_PRIORITY :
 				break;
-			case ChildCareBusiness.STATUS_READY :
+			case ChildCareConstants.STATUS_READY :
 				break;
-			case ChildCareBusiness.STATUS_REJECTED :
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_ACCEPTED), this.getStatusString(ChildCareBusiness.STATUS_ACCEPTED));
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_SENT_IN), this.getStatusString(ChildCareBusiness.STATUS_SENT_IN));
-				//menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
+			case ChildCareConstants.STATUS_REJECTED :
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_ACCEPTED), this.getStatusString(ChildCareConstants.STATUS_ACCEPTED));
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_SENT_IN), this.getStatusString(ChildCareConstants.STATUS_SENT_IN));
+				//menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_DELETED), this.getStatusString(ChildCareConstants.STATUS_DELETED));
 				break;
-			case ChildCareBusiness.STATUS_SENT_IN :
+			case ChildCareConstants.STATUS_SENT_IN :
 				break;
-			case ChildCareBusiness.STATUS_DELETED :
-				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_SENT_IN), this.getStatusString(ChildCareBusiness.STATUS_SENT_IN));
-				//menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
+			case ChildCareConstants.STATUS_DELETED :
+				menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_SENT_IN), this.getStatusString(ChildCareConstants.STATUS_SENT_IN));
+				//menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_DELETED), this.getStatusString(ChildCareConstants.STATUS_DELETED));
 				break;
 		}
 		
-		menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
+		menu.addMenuElement(String.valueOf(ChildCareConstants.STATUS_DELETED), this.getStatusString(ChildCareConstants.STATUS_DELETED));
 		menu.setSelectedElement(currentStatus);
 		return menu;
 	}

@@ -8,7 +8,11 @@ package se.idega.idegaweb.commune.childcare.business;
 import is.idega.block.family.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -93,6 +97,7 @@ import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.database.ConnectionBroker;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.xml.XmlPeer;
 
@@ -102,7 +107,7 @@ import com.lowagie.text.xml.XmlPeer;
  * @author palli
  * @version 1.0
  */
-public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
+public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness,CaseBusiness {
 
 	public static final String PROPERTIES_CHILD_CARE = "child_care";
 	public static final String PROPERTY_MAX_MONTHS_IN_QUEUE = "max_months_in_queue";
@@ -121,8 +126,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
 
-	private final static String STATUS_NOT_PROCESSED = String.valueOf(STATUS_SENT_IN);
-	private final static String[] STATUS_IN_QUEUE = { String.valueOf(STATUS_SENT_IN), String.valueOf(STATUS_PRIORITY), String.valueOf(STATUS_ACCEPTED), String.valueOf(STATUS_PARENTS_ACCEPT), String.valueOf(STATUS_CONTRACT)};
+	private final static String STATUS_NOT_PROCESSED = String.valueOf(ChildCareConstants.STATUS_SENT_IN);
+	private final static String[] STATUS_IN_QUEUE = { String.valueOf(ChildCareConstants.STATUS_SENT_IN), String.valueOf(ChildCareConstants.STATUS_PRIORITY), String.valueOf(ChildCareConstants.STATUS_ACCEPTED), String.valueOf(ChildCareConstants.STATUS_PARENTS_ACCEPT), String.valueOf(ChildCareConstants.STATUS_CONTRACT)};
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -776,7 +781,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc) throws FinderException {
-		iwuc.setSessionAttribute(CLEAN_QUEUE_RUNNING, "TRUE");
+		iwuc.setSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING, "TRUE");
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
 		int daysToReply = Integer.parseInt(properties.getProperty(PROPERTY_DAYS_TO_REPLY, "30"));
@@ -810,7 +815,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 
 			transaction.commit();
-			iwuc.removeSessionAttribute(CLEAN_QUEUE_RUNNING);
+			iwuc.removeSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING);
 			return true;
 		}
 		catch (Exception e) {
@@ -823,7 +828,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}
 
-		iwuc.removeSessionAttribute(CLEAN_QUEUE_RUNNING);
+		iwuc.removeSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING);
 		return false;
 	}
 
@@ -2919,98 +2924,98 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 * @return char
 	 */
 	public char getStatusAccepted() {
-		return STATUS_ACCEPTED;
+		return ChildCareConstants.STATUS_ACCEPTED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusContract() {
-		return STATUS_CONTRACT;
+		return ChildCareConstants.STATUS_CONTRACT;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusParentsAccept() {
-		return STATUS_PARENTS_ACCEPT;
+		return ChildCareConstants.STATUS_PARENTS_ACCEPT;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusPriority() {
-		return STATUS_PRIORITY;
+		return ChildCareConstants.STATUS_PRIORITY;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusReady() {
-		return STATUS_READY;
+		return ChildCareConstants.STATUS_READY;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusSentIn() {
-		return STATUS_SENT_IN;
+		return ChildCareConstants.STATUS_SENT_IN;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusTimedOut() {
-		return STATUS_TIMED_OUT;
+		return ChildCareConstants.STATUS_TIMED_OUT;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusCancelled() {
-		return STATUS_CANCELLED;
+		return ChildCareConstants.STATUS_CANCELLED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusDenied() {
-		return STATUS_DENIED;
+		return ChildCareConstants.STATUS_DENIED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusDeleted() {
-		return STATUS_DELETED;
+		return ChildCareConstants.STATUS_DELETED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusMoved() {
-		return STATUS_MOVED;
+		return ChildCareConstants.STATUS_MOVED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusRejected() {
-		return STATUS_REJECTED;
+		return ChildCareConstants.STATUS_REJECTED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusNotAnswered() {
-		return STATUS_NOT_ANSWERED;
+		return ChildCareConstants.STATUS_NOT_ANSWERED;
 	}
 
 	/**
 	 * @return char
 	 */
 	public char getStatusNewChoice() {
-		return STATUS_NEW_CHOICE;
+		return ChildCareConstants.STATUS_NEW_CHOICE;
 	}
 
 	public int getQueueTotalByProvider(int providerID) {
@@ -3972,10 +3977,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		else if (status == getStatusDenied()) {
 			return getLocalizedString("child_care.status_denied", "Denied");
 		}
-		else if (status == STATUS_DELETED) {
+		else if (status == ChildCareConstants.STATUS_DELETED) {
 			return getLocalizedString("child_care.status_deleted", "Deleted");
 		}
-		else if (status == STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out", "Timed out"); }
+		else if (status == ChildCareConstants.STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out", "Timed out"); }
 
 		return "";
 	}
@@ -4016,10 +4021,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		else if (status == getStatusDenied()) {
 			return getLocalizedString("child_care.status_denied_abbr", "Denied");
 		}
-		else if (status == STATUS_DELETED) {
+		else if (status == ChildCareConstants.STATUS_DELETED) {
 			return getLocalizedString("child_care.status_deleted_abbr", "Deleted");
 		}
-		else if (status == STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out_abbr", "Timed out"); }
+		else if (status == ChildCareConstants.STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out_abbr", "Timed out"); }
 
 		return "";
 	}
@@ -4056,6 +4061,77 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		return false;
 	}
+	
+	 private String getSQL(){return ""
+	     +" select sch.sch_school_id,sch.school_name,"
+	     +" pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS,"
+	     +" pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY,"
+	     +" count(c.child_id) "
+	     +" from comm_childcare c , proc_case p ,sch_school sch, comm_childcare_prognosis pr,sch_school_sch_school_type m,sch_school_type st,ic_commune comm"
+	     +" WHERE c.COMM_CHILDCARE_ID=p.proc_case_id "
+	     +" and c.provider_id = sch.sch_school_id"
+	     +" and sch.commune = comm.ic_commune_id"
+	     +" and pr.provider_id = sch.sch_school_id"
+	     +" and m.sch_school_id = sch.sch_school_id" 
+	     +" and m.sch_school_type_id = st.sch_school_type_id"
+	     +" and comm.default_commune = 'Y'"
+	     +" and st.school_category = 'CHILD_CARE'"
+	     +" AND p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR')"
+	     +" group by sch.sch_school_id,sch.school_name,"
+	     +" pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS,"
+	     +" pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY";
+	     }
+	     
+	 /**
+	  * Returns a collection of ProviderStat objects
+	  * @return
+	  * @throws FinderException
+	  */
+	     public Collection getProviderStats(Locale sortLocale) throws FinderException{
+	     		Connection conn = null;
+	 		PreparedStatement Stmt = null;
+	 		Vector vector = new Vector();
+	 		try {
+	 			conn = ConnectionBroker.getConnection();
+	 			String s = getSQL();
+	 			Stmt = conn.prepareStatement(s);
+	 			ResultSet RS = Stmt.executeQuery();
+	 			
+	 			while (RS.next()) {
+	 			   ProviderStat bean = new ProviderStat();
+	 			   bean.setProviderID(new Integer(RS.getInt(1)));
+	 			   bean.setProviderName(RS.getString(2));
+	 			   bean.setPrognosisID(new Integer(RS.getInt(3)));
+	 			   bean.setLastUpdate(RS.getDate(4));
+	 			   bean.setThreeMonthsPrognosis(new Integer(RS.getInt(5)));
+	 			   bean.setOneYearPrognosis(new Integer(RS.getInt(6)));
+	 			   bean.setThreeMonthsPriority(new Integer(RS.getInt(7)));
+	 			   bean.setOneYearPriority(new Integer(RS.getInt(8)));
+	 			   bean.setProviderCapacity(new Integer(RS.getInt(9)));
+	 			   bean.setQueueTotal(new Integer(RS.getInt(10)));
+	 			   vector.add(bean);
+	 			}
+	 			RS.close();
+	 			
+	 		} catch (SQLException sqle) {
+	 			throw new FinderException(sqle.getMessage());
+	 		} finally {
+	 			if (Stmt != null) {
+	 				try {
+	 					Stmt.close();
+	 				} catch (SQLException e) {
+	 					e.printStackTrace();
+	 				}
+	 			}
+	 			if (conn != null) {
+	 				ConnectionBroker.freeConnection( conn);
+	 			}
+	 		}
+	 		Collections.sort(vector, new ProviderStatComparator(sortLocale));
+	 		return vector;
+	 		
+	     }
+
 	
 	
 }
