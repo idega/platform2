@@ -1044,13 +1044,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					catch (FinderException e1) {
 						try {
 							wGroup = grHome.create();
+							wGroup.setGroupId(groupId);
+							wGroup.setGroupType(group.getGroupType());
+							wGroup.setYearOfReport(year);
+							
+							
+							
 						}
 						catch (CreateException e) {
 							e.printStackTrace();
 						}
 					}
 	
-					wGroup.setGroupId(groupId);
+					
 					wGroup.setName(group.getName());
 	                String shortName = group.getShortName();
 	                // should not happen but happens....
@@ -1060,8 +1066,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	                }
 					wGroup.setShortName(shortName);
 					wGroup.setNumber(group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-					wGroup.setGroupType(group.getGroupType());
-					wGroup.setYearOfReport(year);
+					
 					
 					wGroup.store();
 	
@@ -1477,7 +1482,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     // create corresponding division board
     WorkReportGroup mainBoardGroup = getMainBoardWorkReportGroup(year);
     try {
-      createWorkReportDivisionBoard(workReportId, null, mainBoardGroup);
+    	//so we don't duplicate them!
+	try {
+		getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId,((Integer)mainBoardGroup.getPrimaryKey()).intValue());
+	}
+	catch (FinderException e) {
+		createWorkReportDivisionBoard(workReportId, null, mainBoardGroup);
+	}
+
     }
     catch (CreateException ex)  {
       System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " 
