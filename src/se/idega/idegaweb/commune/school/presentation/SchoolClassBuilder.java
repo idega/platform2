@@ -6,10 +6,12 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.school.data.SchoolChoice;
 import se.idega.idegaweb.commune.school.event.SchoolEventListener;
 
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -64,6 +66,18 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			getBusiness().getSchoolBusiness().storeSchoolClass(getSchoolClassID(), name, getSchoolID(), getSchoolSeasonID(), getSchoolYearID(), iTeacherId);
 		}	
 		else if (action == ACTION_DELETE) {
+			Collection users = getBusiness().getSchoolBusiness().findStudentsInClass(getSchoolClassID());
+			if (users != null && !users.isEmpty()) {
+				Iterator iter = users.iterator();
+				int previousSeasonID = getBusiness().getPreviousSchoolSeasonID(getSchoolSeasonID());
+				while (iter.hasNext()) {
+					SchoolClassMember student = (SchoolClassMember) iter.next();
+					SchoolChoice choice = getBusiness().getSchoolChoiceBusiness().findByStudentAndSchoolAndSeason(student.getClassMemberId(), getSchoolID(), getSchoolSeasonID());
+					getBusiness().setNeedsSpecialAttention(student.getClassMemberId(), previousSeasonID, false);
+					if (choice != null)
+						getBusiness().getSchoolChoiceBusiness().setAsPreliminary(choice, iwc.getCurrentUser());
+				}
+			}
 			getBusiness().getSchoolBusiness().invalidateSchoolClass(getSchoolClassID());
 		}	
 	}
