@@ -1,9 +1,13 @@
 package com.idega.block.finance.presentation;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -208,6 +212,7 @@ public class TariffEditor extends Finance {
 		FinanceHandler handler = null;
 		Map attributeMap = null;
 		boolean ifAttributes = false;
+		int attcount = 0;
 		if (group != null) {
 			groupId = (Integer)group.getPrimaryKey();
 			if (group.getHandlerId() > 0) {
@@ -217,16 +222,20 @@ public class TariffEditor extends Finance {
 					attributeMap = handler.getAttributeMap();
 					List list = handler.listOfAttributes();
 					ifAttributes = attributeMap != null && list != null;
+					
 				}
 			}
 		}
 		Collection tariffs = null;
-		Hashtable hAK = null;
+		Map tariffMap = null;
+		Map hAK = null;
 		if(groupId!=null){
 		try {
 			
 			tariffs = getFinanceService().getTariffHome().findByTariffGroup(groupId); 
 				//FinanceFinder.getInstance().listOfTariffs(iGroupId);
+			tariffMap = sortTariffsIntoMapOfLists(tariffs);
+			attcount = tariffMap.size();
 			Collection AK = getFinanceService().getAccountKeyHome().findByCategory(getFinanceCategoryId());
 				//FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
 
@@ -240,63 +249,147 @@ public class TariffEditor extends Finance {
 		int count = 0;
 		if (tariffs != null)
 			count = tariffs.size();
-		Table T2 = new Table(1, 2);
-		T2.setCellpadding(0);
-		T2.setCellspacing(0);
-		T2.setWidth(Table.HUNDRED_PERCENT);
-		Table T = new Table(6, count + 1);
-		T.setWidth("100%");
-		T.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
-		T.setRowColor(1, getHeaderColor());
-		T.setCellpadding(2);
-		T.setCellspacing(1);
+		Table outerTable = new Table(1, 2);
+		outerTable.setCellpadding(0);
+		outerTable.setCellspacing(0);
+		outerTable.setWidth(Table.HUNDRED_PERCENT);
+		int tableRows = (count+attcount*2+1);
+		Table innerTable = new Table(5,tableRows);
+		
+		innerTable.setWidth(Table.HUNDRED_PERCENT);
+		innerTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+		innerTable.setRowColor(1, getHeaderColor());
+		innerTable.setCellpadding(2);
+		innerTable.setCellspacing(1);
 		int col = 1;
-		T.add(getHeader("Nr"), col++, 1);
+		innerTable.add(getHeader("Nr"), col++, 1);
 		if (ifAttributes) {
-			T.add(getHeader(localize("connection", "Connection")), col++, 1);
+			innerTable.add(getHeader(localize("connection", "Connection")), col++, 1);
 		}
-		T.add(getHeader(localize("name", "Name")), col++, 1);
-		T.add(getHeader(localize("amount", "Amount")), col++, 1);
+		innerTable.add(getHeader(localize("name", "Name")), col++, 1);
+		innerTable.add(getHeader(localize("amount", "Amount")), col++, 1);
 		//T.add(getHeader(localize("info","Info")),5,1);
-		T.add(getHeader(localize("account_key", "Account key")), col++, 1);
+		innerTable.add(getHeader(localize("account_key", "Account key")), col++, 1);
 
 		if (isAdmin) {
 			if (count != 0) {
+			    if(ifAttributes){
 				Tariff tariff;
+				//Iterator iter = tariffs.iterator();
+				Iterator iter = tariffMap.entrySet().iterator();
+				int row = 2;
+				int i = 0;
+				
+		
+				while (iter.hasNext()) {
+					col = 1;
+					Map.Entry entry = (Map.Entry) iter.next();
+					String tatt = (String)entry.getKey();
+					String val = "";
+					BigDecimal attTotal = new BigDecimal(0);
+					
+					List tariffsInMap = (List) entry.getValue();
+					for (Iterator iterator = tariffsInMap.iterator(); iterator.hasNext();) {
+					    col=1;
+                        tariff = (Tariff) iterator.next();
+                        
+                        innerTable.add(getText(String.valueOf(i + 1)), 1, row);
+						
+					   if (tatt != null && attributeMap.containsKey(tatt))
+					       val = (String) attributeMap.get(tatt);
+					   innerTable.add(getText(val), 2, row);
+					   attTotal = attTotal.add(new BigDecimal(tariff.getPrice()));
+						
+	
+						
+						innerTable.add(getText(tariff.getName()), 3, row);
+						innerTable.add(getAmountText((tariff.getPrice())), 4, row);
+						
+						Integer I = new Integer(tariff.getAccountKeyId());
+						if (hAK.containsKey(I))
+							innerTable.add(getText((String) hAK.get(I)), 5, row);
+						row++;
+						i++;
+					}
+					if(attTotal!=null){
+					   
+					    innerTable.mergeCells(1,row,2,row);
+					    innerTable.setColor(1,row,getBackgroundColor());
+					    
+					    innerTable.setColor(5,row,getBackgroundColor());
+					    innerTable.add(getText("="),3,row);
+					    innerTable.setColor(3,row,getHeaderColor());
+					    innerTable.setColor(4,row,getHeaderColor());
+					    innerTable.add(getAmountText(attTotal.doubleValue()),4,row++);
+					    
+					    innerTable.mergeCells(1,row,5,row);
+					    innerTable.setRowColor(row,getBackgroundColor());
+					    row++;
+					}
+				}
+				innerTable.setColumnAlignment(4,Table.HORIZONTAL_ALIGN_RIGHT);
+				innerTable.setColumnAlignment(5,Table.HORIZONTAL_ALIGN_RIGHT);
+			}
+			else{
+			    Tariff tariff;
 				Iterator iter = tariffs.iterator();
 				int row = 2;
 				int i = 0;
 				while (iter.hasNext()) {
 					col = 1;
 					tariff = (Tariff) iter.next();
-					T.add(getText(String.valueOf(i + 1)), col++, row);
+					innerTable.add(getText(String.valueOf(i + 1)), col++, row);
 					if (ifAttributes) {
 						String tatt = tariff.getTariffAttribute();
 						String val = "";
 						if (tatt != null && attributeMap.containsKey(tatt))
 							val = (String) attributeMap.get(tatt);
-						T.add(getText(val), col++, row);
+						innerTable.add(getText(val), col++, row);
 					}
 
 					//  T.add(getText(((IDOLegacyEntity)hLodgings.get(tatt)).getName()),col++,i+2);
-					T.add(getText(tariff.getName()), col++, row);
-					T.add(getAmountText((tariff.getPrice())), col++, row);
+					innerTable.add(getText(tariff.getName()), col++, row);
+					innerTable.add(getAmountText((tariff.getPrice())), col++, row);
 					//T.add(getText(tariffs[i].getInfo()),col++,i+2);
 					Integer I = new Integer(tariff.getAccountKeyId());
 					if (hAK.containsKey(I))
-						T.add(getText((String) hAK.get(I)), col++, row);
+					    innerTable.add(getText((String) hAK.get(I)), col++, row);
 					row++;
 					i++;
 				}
 			}
 			int r = ifAttributes?4:3;
-			T.setColumnAlignment(r,Table.HORIZONTAL_ALIGN_RIGHT);
+			innerTable.setColumnAlignment(r,Table.HORIZONTAL_ALIGN_RIGHT);
+			innerTable.setColumnAlignment(r+1,Table.HORIZONTAL_ALIGN_RIGHT);
+			}
+			
+			
 			
 		}
 
-		T2.add(T, 1, 1);
-		return T2;
+		outerTable.add(innerTable, 1, 1);
+		return outerTable;
 
+	}
+	
+	private Map sortTariffsIntoMapOfLists(Collection tariffs){
+	    Map map = new LinkedHashMap();
+	    String key;
+	    List list;
+	    for (Iterator iter = tariffs.iterator(); iter.hasNext();) {
+            Tariff element = (Tariff) iter.next();
+            key = element.getTariffAttribute();
+            if(map.containsKey(key)){
+                list = (List)map.get(key);
+            }
+            else{
+                list = new ArrayList();
+            }
+            list.add(element);
+            map.put(key,list);
+            
+        }
+	    return map;
 	}
 
 	private PresentationObject doUpdateIndex(IWContext iwc, TariffGroup group)
