@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
@@ -74,7 +73,7 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		memBiz = getMemberUserBusiness(iwc);
 		
 		setTitle(iwrb.getLocalizedString("clubexchangewindow.title", "Club exchange"));
-		addTitle(iwrb.getLocalizedString("clubexchangewindow.title", "Club exchange"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+		addTitle(iwrb.getLocalizedString("clubexchangewindow.title", "Club exchange"), TITLE_STYLECLASS);
 
 		String action = iwc.getParameter(ACTION);
 			

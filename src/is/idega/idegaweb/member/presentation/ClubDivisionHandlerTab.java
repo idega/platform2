@@ -140,29 +140,49 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Short name") + ":");
-		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Description") + ":");
-		_divText = new Text(iwrb.getLocalizedString(_divFieldName, "Division") + ":");
-		_contactText = new Text(iwrb.getLocalizedString(_contactFieldName, "Contact") + ":");
+		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Short name"));
+		_numberText.setBold();
+		
+		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Description"));
+		_nameText.setBold();
+		
+		_divText = new Text(iwrb.getLocalizedString(_divFieldName, "Division"));
+		_divText.setBold();
+		
+		_contactText = new Text(iwrb.getLocalizedString(_contactFieldName, "Contact"));
+		_contactText.setBold();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 5);
+		Table t = new Table(2, 2);
+		t.setWidth(Table.HUNDRED_PERCENT);
+		t.setCellpadding(5);
+		t.setCellspacing(0);
+		
 		t.add(_numberText, 1, 1);
-		t.add(_numberField, 2, 1);
-		t.add(_nameText, 1, 2);
-		t.add(_nameField, 2, 2);
-		t.add(_divText, 1, 3);
-		t.add(_divField, 2, 3);
-		t.add(_contactText, 1, 4);
-		t.add(_contactField, 2, 4);
-		Help help = getHelpButton();
-		t.add(help,1,5);
+		t.add(Text.getBreak(), 1, 1);
+		t.add(_numberField, 1, 1);
+		
+		t.add(_nameText, 2, 1);
+		t.add(Text.getBreak(), 2, 1);
+		t.add(_nameField, 2, 1);
+		
+		t.add(_divText, 1, 2);
+		t.add(Text.getBreak(), 1, 2);
+		t.add(_divField, 1, 2);
+		
+		t.add(_contactText, 2, 2);
+		t.add(Text.getBreak(), 2, 2);
+		t.add(_contactField, 2, 2);
 
 		add(t);
+	}
+
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
 	}
 
 	/* (non-Javadoc)

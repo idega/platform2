@@ -191,12 +191,18 @@ public class ClubInformationTab extends UserGroupTab {
 		_foundedField.setYearRange(1900, GregorianCalendar.getInstance().get(GregorianCalendar.YEAR));
 		//_typeField = new DropdownMenu(_typeFieldName);
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
+		_memberUMFIField.setWidth("10");
+		_memberUMFIField.setHeight("10");
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
+		_inOperationField.setWidth("10");
+		_inOperationField.setHeight("10");
 		_usingMemberSystemField = new CheckBox(_usingMemberSystemFieldName);
+		_usingMemberSystemField.setWidth("10");
+		_usingMemberSystemField.setHeight("10");
 		_statusField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATE_ACTIVE, iwrb.getLocalizedString("clubinformationtab.state_active",
 				"Active"));
 		_statusField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE, iwrb.getLocalizedString("clubinformationtab.state_inactive",
@@ -234,16 +240,36 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
-		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
-		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
-		_memberUMFIText = new Text(iwrb.getLocalizedString(_memberUMFIFieldName, "UMFI membership") + ":");
-		_makeText = new Text(iwrb.getLocalizedString(_makeFieldName, "Make") + ":");
-		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
-		_regionalUnionText = new Text(iwrb.getLocalizedString(_regionalUnionFieldName, "Regional union") + ":");
-		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
-		_inOperationText = new Text(iwrb.getLocalizedString(_inOperationFieldName, "In operation") + ":");
-		_usingMemberSystemText = new Text(iwrb.getLocalizedString(_usingMemberSystemFieldName, "In member system") + ":");
+		
+		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number"));
+		_numberText.setBold();
+		
+		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN"));
+		_ssnText.setBold();
+		
+		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded"));
+		_foundedText.setBold();
+		
+		_memberUMFIText = new Text(iwrb.getLocalizedString(_memberUMFIFieldName, "UMFI membership"));
+		_memberUMFIText.setBold();
+		
+		_makeText = new Text(iwrb.getLocalizedString(_makeFieldName, "Make"));
+		_makeText.setBold();
+		
+		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special"));
+		_connectionToSpecialText.setBold();
+		
+		_regionalUnionText = new Text(iwrb.getLocalizedString(_regionalUnionFieldName, "Regional union"));
+		_regionalUnionText.setBold();
+		
+		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status"));
+		_statusText.setBold();
+		
+		_inOperationText = new Text(iwrb.getLocalizedString(_inOperationFieldName, "In operation"));
+		_inOperationText.setBold();
+		
+		_usingMemberSystemText = new Text(iwrb.getLocalizedString(_usingMemberSystemFieldName, "In member system"));
+		_usingMemberSystemText.setBold();
 	}
 	/*
 	 * (non-Javadoc)
@@ -252,31 +278,58 @@ public class ClubInformationTab extends UserGroupTab {
 	 */
 	public void lineUpFields() {
 		empty();
-		Table t = new Table(2, 11);
+		Table t = new Table(2, 7);
+		t.setWidth(Table.HUNDRED_PERCENT);
+		t.setCellpadding(5);
+		t.setCellspacing(0);
+
 		t.add(_numberText, 1, 1);
-		t.add(_numberField, 2, 1);
-		t.add(_ssnText, 1, 2);
-		t.add(_ssnField, 2, 2);
-		t.add(_foundedText, 1, 3);
-		t.add(_foundedField, 2, 3);
-		t.add(_memberUMFIText, 1, 4);
-		t.add(_memberUMFIField, 2, 4);
-		t.add(_makeText, 1, 5);
-		t.add(_makeField, 2, 5);
-		t.add(_connectionToSpecialText, 1, 6);
-		t.add(_connectionToSpecialField, 2, 6);
-		t.add(_regionalUnionText, 1, 7);
-		t.add(_regionalUnionField, 2, 7);
-		t.add(_statusText, 1, 8);
-		t.add(_statusField, 2, 8);
-		t.add(_inOperationText, 1, 9);
-		t.add(_inOperationField, 2, 9);
-		t.add(_usingMemberSystemText, 1, 10);
-		t.add(_usingMemberSystemField, 2, 10);
-		Help help = getHelpButton();
-		t.add(help, 1, 11);
+		t.add(Text.getBreak(), 1, 1);
+		t.add(_numberField, 1, 1);
+		
+		t.add(_ssnText, 2, 1);
+		t.add(Text.getBreak(), 2, 1);
+		t.add(_ssnField, 2, 1);
+		
+		t.add(_foundedText, 1, 2);
+		t.add(Text.getBreak(), 1, 2);
+		t.add(_foundedField, 1, 2);
+		
+		t.add(_makeText, 2, 2);
+		t.add(Text.getBreak(), 2, 2);
+		t.add(_makeField, 2, 2);
+		
+		t.add(_connectionToSpecialText, 1, 3);
+		t.add(Text.getBreak(), 1, 3);
+		t.add(_connectionToSpecialField, 1, 3);
+		
+		t.add(_regionalUnionText, 2, 3);
+		t.add(Text.getBreak(), 2, 3);
+		t.add(_regionalUnionField, 2, 3);
+		
+		t.add(_statusText, 1, 4);
+		t.add(Text.getBreak(), 1, 4);
+		t.add(_statusField, 1, 4);
+		
+		t.mergeCells(1, 5, 2, 5);
+		t.add(_memberUMFIText, 1, 5);
+		t.add(_memberUMFIField, 1, 5);
+		
+		t.mergeCells(1, 6, 2, 6);
+		t.add(_inOperationText, 1, 6);
+		t.add(_inOperationField, 1, 6);
+		
+		t.mergeCells(1, 7, 2, 7);
+		t.add(_usingMemberSystemText, 1, 7);
+		t.add(_usingMemberSystemField, 1, 7);
+
 		add(t);
 	}
+
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

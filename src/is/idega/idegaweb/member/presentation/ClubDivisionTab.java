@@ -1,20 +1,23 @@
 /*
  * Copyright (C) 2003 Idega software. All Rights Reserved.
- *
- * This software is the proprietary information of Idega software.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega software. Use is
+ * subject to license terms.
+ *  
  */
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -37,13 +40,13 @@ import com.idega.util.IWTimestamp;
  */
 public class ClubDivisionTab extends UserGroupTab{
 
-    private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
+	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
-    private static final String TAB_NAME = "cdiv_tab_name";
+	private static final String TAB_NAME = "cdiv_tab_name";
 
-    private static final String DEFAULT_TAB_NAME = "Club Division";
+	private static final String DEFAULT_TAB_NAME = "Club Division";
 
-    private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
     private static final String HELP_TEXT_KEY = "club_division_tab";
 
@@ -197,22 +200,23 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
      */
     public void initializeTexts() {
-        IWContext iwc = IWContext.getInstance();
-        IWResourceBundle iwrb = getResourceBundle(iwc);
+    		IWContext iwc = IWContext.getInstance();
+    		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-        numberText = new Text(iwrb.getLocalizedString(numberFieldName,
-                "Number")
-                + ":");
-        ssnText = new Text(iwrb.getLocalizedString(ssnFieldName, "SSN") + ":");
-        foundedText = new Text(iwrb.getLocalizedString(foundedFieldName,
-                "Founded")
-                + ":");
-        connectionToSpecialText = new Text(iwrb.getLocalizedString(
-                connectionToSpecialFieldName, "Connection to special")
-                + ":");
-        boardGroupText = new Text(iwrb.getLocalizedString(
-                boardGroupFieldName, "Board")
-                + ":");
+    		numberText = new Text(iwrb.getLocalizedString(numberFieldName, "Number"));
+    		numberText.setBold();
+    		
+    		ssnText = new Text(iwrb.getLocalizedString(ssnFieldName, "SSN") + ":");
+    		ssnText.setBold();
+    		
+    		foundedText = new Text(iwrb.getLocalizedString(foundedFieldName, "Founded") + ":");
+    		foundedText.setBold();
+    		
+    		connectionToSpecialText = new Text(iwrb.getLocalizedString(connectionToSpecialFieldName, "Connection to special") + ":");
+    		connectionToSpecialText.setBold();
+    		
+    		boardGroupText = new Text(iwrb.getLocalizedString(boardGroupFieldName, "Board") + ":");
+    		boardGroupText.setBold();
     }
 
     /*
@@ -221,22 +225,37 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
      */
     public void lineUpFields() {
-        Table t = new Table(2, 6);
-        t.add(numberText, 1, 1);
-        t.add(numberField, 2, 1);
-        t.add(ssnText, 1, 2);
-        t.add(ssnField, 2, 2);
-        t.add(foundedText, 1, 3);
-        t.add(foundedField, 2, 3);
-        t.add(connectionToSpecialText, 1, 4);
-        t.add(connectionToSpecialField, 2, 4);
-        t.add(boardGroupText, 1, 5);
-        t.add(boardGroupField, 2, 5);
-        Help help = getHelpButton();
-        t.add(help, 1, 6);
-
-        add(t);
+  		Table t = new Table(2, 3);
+  		t.setCellpadding(5);
+  		t.setCellspacing(0);
+  		t.setWidth(Table.HUNDRED_PERCENT);
+  		
+  		t.add(numberText, 1, 1);
+  		t.add(Text.getBreak(), 1, 1);
+  		t.add(numberField, 1, 1);
+  		
+  		t.add(ssnText, 2, 1);
+  		t.add(Text.getBreak(), 2, 1);
+  		t.add(ssnField, 2, 1);
+  		
+  		t.add(foundedText, 1, 2);
+  		t.add(Text.getBreak(), 1, 2);
+  		t.add(foundedField, 1, 2);
+  		
+  		t.add(connectionToSpecialText, 2, 2);
+  		t.add(Text.getBreak(), 2, 2);
+  		t.add(connectionToSpecialField, 2, 2);
+  		
+  		t.add(boardGroupText, 1, 3);
+  		t.add(Text.getBreak(), 1, 3);
+  		t.add(boardGroupField, 1, 3);
+  		
+  		add(t);
     }
+
+  	public void main(IWContext iwc) {
+  		getPanel().addHelpButton(getHelpButton());		
+  	}
 
     /*
      * (non-Javadoc)
@@ -405,7 +424,6 @@ public class ClubDivisionTab extends UserGroupTab{
         help.setHelpTextKey(HELP_TEXT_KEY);
         help.setImage(helpImage);
         return help;
-
-    }
+	}
 
 }

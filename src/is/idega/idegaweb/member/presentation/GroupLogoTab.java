@@ -75,19 +75,19 @@ public class GroupLogoTab extends UserGroupTab {
 		imageField = new ImageInserter(imageFieldName + getGroupId());
 		imageField.setHasUseBox(false);
 		removeImageField = new CheckBox(removeImageFieldName);
+		removeImageField.setWidth("10");
+		removeImageField.setHeight("10");
 	}
 
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-//		imageText = getTextObject();
-		imageText = new Text();
-		imageText.setText(iwrb.getLocalizedString(imageFieldName, "Image") + ":");
+		imageText = new Text(iwrb.getLocalizedString(imageFieldName, "Image"));
+		imageText.setBold();
     
-//		removeImageText = getTextObject();
-		removeImageText = new Text();
-		removeImageText.setText(iwrb.getLocalizedString(removeImageFieldName, "do not show an image"));
+		removeImageText = new Text(iwrb.getLocalizedString(removeImageFieldName, "do not show an image"));
+		removeImageText.setBold();
 	}
 
 	public void initializeFieldValues() {
@@ -98,19 +98,23 @@ public class GroupLogoTab extends UserGroupTab {
 	public void lineUpFields() {
 		this.resize(1, 1);
 
-		Table imageTable = new Table(1, 4);
-		imageTable.setWidth("100%");
-		imageTable.setCellpadding(0);
+		Table imageTable = new Table(1, 2);
+		imageTable.setWidth(Table.HUNDRED_PERCENT);
+		imageTable.setCellpadding(5);
 		imageTable.setCellspacing(0);
 
 		imageTable.add(imageText, 1, 1);
-		imageTable.add(imageField, 1, 2);
-		imageTable.add(removeImageField, 1, 3);
-		imageTable.add(Text.getNonBrakingSpace(),1,3);
-		imageTable.add(removeImageText,1,3);
-		Help help = getHelpButton();
-		imageTable.add(help,1,4);
+		imageTable.add(Text.getBreak(), 1, 1);
+		imageTable.add(imageField, 1, 1);
+
+		imageTable.add(removeImageField, 1, 2);
+		imageTable.add(removeImageText, 1, 2);
+
 		this.add(imageTable, 1, 1);
+	}
+
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
 	}
 
 	public void updateFieldsDisplayStatus() {

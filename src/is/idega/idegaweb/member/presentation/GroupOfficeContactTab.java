@@ -149,55 +149,68 @@ public class GroupOfficeContactTab extends UserGroupTab {
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+
 		homePhoneText = new Text(iwrb.getLocalizedString(homePhoneFieldName, "Phone 1") + ":");
-		//		homePhoneText.setFontSize(fontSize);
+		homePhoneText.setBold();
+
 		workPhoneText = new Text(iwrb.getLocalizedString(workPhoneFieldName, "Phone 2") + ":");
-		//		workPhoneText.setFontSize(fontSize);
+		workPhoneText.setBold();
+
 		mobilePhoneText = new Text(iwrb.getLocalizedString(mobilePhoneFieldName, "Phone 3") + ":");
-		//		mobilePhoneText.setFontSize(fontSize);
+		mobilePhoneText.setBold();
+
 		faxPhoneText = new Text(iwrb.getLocalizedString(faxPhoneFieldName, "Phone 4") + ":");
-		//		faxPhoneText.setFontSize(fontSize);
+		faxPhoneText.setBold();
+
 		emailText = new Text(iwrb.getLocalizedString(emailFieldName, "E-mail") + ":");
-		//		emailText.setFontSize(fontSize);
+		emailText.setBold();
+
 		homepageText = new Text(iwrb.getLocalizedString(homepageFieldName, "Homepage") + ":");
-		//		homepageText.setFontSize(fontSize);
+		homepageText.setBold();
 	}
 	public void lineUpFields() {
-		resize(1, 4);
-		Table staffTable = new Table(3, 4);
-		staffTable.setWidth("100%");
-		staffTable.setCellpadding(0);
-		staffTable.setCellspacing(0);
-		staffTable.setHeight(1, rowHeight);
-		staffTable.setHeight(2, rowHeight);
-		staffTable.setHeight(3, rowHeight);
-		staffTable.setHeight(4, rowHeight);
-		staffTable.add(homePhoneText, 1, 1);
-		staffTable.add(homePhoneMenu, 3, 1);
-		staffTable.add(homePhoneField, 2, 1);
-		staffTable.add(workPhoneText, 1, 2);
-		staffTable.add(workPhoneMenu, 3, 2);
-		staffTable.add(workPhoneField, 2, 2);
-		staffTable.add(mobilePhoneText, 1, 3);
-		staffTable.add(mobilePhoneMenu, 3, 3);
-		staffTable.add(mobilePhoneField, 2, 3);
-		staffTable.add(faxPhoneText, 1, 4);
-		staffTable.add(faxPhoneMenu, 3, 4);
-		staffTable.add(faxPhoneField, 2, 4);
-		add(staffTable, 1, 1);
-		Table mailTable = new Table(2, 2);
-		mailTable.setWidth("100%");
-		mailTable.setCellpadding(0);
-		mailTable.setCellspacing(0);
-		mailTable.setHeight(1, rowHeight);
-		mailTable.add(emailText, 1, 1);
-		mailTable.add(emailField, 2, 1);
-		mailTable.add(homepageText, 1, 2);
-		mailTable.add(homepageField, 2, 2);
-		add(mailTable, 1, 3);
-		Help help = getHelpButton();
-		add(help, 1, 4);
+		resize(1, 1);
+		
+		Table table = new Table(2, 4);
+		table.setWidth("100%");
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+
+		table.add(homePhoneText, 1, 1);
+		table.add(Text.getBreak(), 1, 1);
+		table.add(homePhoneField, 1, 1);
+		table.add(homePhoneMenu, 1, 1);
+		
+		table.add(workPhoneText, 2, 1);
+		table.add(Text.getBreak(), 2, 1);
+		table.add(workPhoneField, 2, 1);
+		table.add(workPhoneMenu, 2, 1);
+		
+		table.add(mobilePhoneText, 1, 2);
+		table.add(Text.getBreak(), 1, 2);
+		table.add(mobilePhoneField, 1, 2);
+		table.add(mobilePhoneMenu, 1, 2);
+		
+		table.add(faxPhoneText, 2, 2);
+		table.add(Text.getBreak(), 2, 2);
+		table.add(faxPhoneField, 2, 2);
+		table.add(faxPhoneMenu, 2, 2);
+		
+		table.add(emailText, 1, 4);
+		table.add(Text.getBreak(), 1, 4);
+		table.add(emailField, 1, 4);
+
+		table.add(homepageText, 2, 4);
+		table.add(Text.getBreak(), 2, 4);
+		table.add(homepageField, 2, 4);
+		
+		add(table, 1, 1);
 	}
+
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
+	}
+
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
 			String homePhone = iwc.getParameter(homePhoneFieldName);

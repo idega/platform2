@@ -139,26 +139,40 @@ public class GroupBoardTab extends UserGroupTab {
 			IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_ssn1Text = new Text(iwrb.getLocalizedString(_ssn1FieldName, "Member 1") + ":");
+		_ssn1Text = new Text(iwrb.getLocalizedString(_ssn1FieldName, "Member 1"));
+		_ssn1Text.setBold();
 		_ssn2Text = new Text(iwrb.getLocalizedString(_ssn2FieldName, "Member 2") + ":");
+		_ssn2Text.setBold();
 		_ssn3Text = new Text(iwrb.getLocalizedString(_ssn3FieldName, "Member 3") + ":");
+		_ssn3Text.setBold();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 4);
+		Table t = new Table(2, 2);
+		t.setWidth(Table.HUNDRED_PERCENT);
+		t.setCellpadding(0);
+		t.setCellspacing(0);
+		
 		t.add(_ssn1Text, 1, 1);
-		t.add(_ssn1Field, 2, 1);
-		t.add(_ssn2Text, 1, 2);
-		t.add(_ssn2Field, 2, 2);
-		t.add(_ssn3Text, 1, 3);
-		t.add(_ssn3Field, 2, 3);
-		Help help = getHelpButton();
-		t.add(help,1,4);
+		t.add(Text.getBreak(), 1, 1);
+		t.add(_ssn1Field, 1, 1);
+
+		t.add(_ssn2Text, 2, 1);
+		t.add(Text.getBreak(), 2, 1);
+		t.add(_ssn2Field, 2, 1);
+		
+		t.add(_ssn3Text, 1, 2);
+		t.add(Text.getBreak(), 1, 2);
+		t.add(_ssn3Field, 1, 2);
 
 		add(t);
+	}
+
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
 	}
 
 	/* (non-Javadoc)

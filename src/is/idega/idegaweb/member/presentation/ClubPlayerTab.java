@@ -139,6 +139,8 @@ public class ClubPlayerTab extends UserGroupTab {
 		_nameField = new TextInput(_nameFieldName);
 		_cplayField = new TextInput(_cplayFieldName);
 		_competitionField = new CheckBox(_competitionFieldName);
+		_competitionField.setWidth("10");
+		_competitionField.setHeight("10");
 		_coachesField = new GroupChooser(_coachesFieldName);
 	}
 
@@ -149,11 +151,20 @@ public class ClubPlayerTab extends UserGroupTab {
 			IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_unionText = new Text(iwrb.getLocalizedString(_unionFieldName, "S�rsamband") + ":");
-		_cplayText = new Text(iwrb.getLocalizedString(_cplayFieldName, "Flokkur") + ":");
-		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Heiti flokks") + ":");
-		_competitionText = new Text(iwrb.getLocalizedString(_competitionFieldName, "Keppendamerking") + ":");
-		_coachesText = new Text(iwrb.getLocalizedString(_coachesFieldName, "�j�lfarar") + ":");
+		_unionText = new Text(iwrb.getLocalizedString(_unionFieldName, "S�rsamband"));
+		_unionText.setBold();
+		
+		_cplayText = new Text(iwrb.getLocalizedString(_cplayFieldName, "Flokkur"));
+		_cplayText.setBold();
+		
+		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Heiti flokks"));
+		_nameText.setBold();
+		
+		_competitionText = new Text(iwrb.getLocalizedString(_competitionFieldName, "Keppendamerking"));
+		_competitionText.setBold();
+		
+		_coachesText = new Text(iwrb.getLocalizedString(_coachesFieldName, "�j�lfarar"));
+		_coachesText.setBold();
 	}
 
 	/* (non-Javadoc)
@@ -161,20 +172,35 @@ public class ClubPlayerTab extends UserGroupTab {
 	 */
 	public void lineUpFields() {
 		Table t = new Table(2, 6);
+		t.setCellpadding(5);
+		t.setCellspacing(0);
+		t.setWidth(Table.HUNDRED_PERCENT);
+		
 		t.add(_unionText, 1, 1);
-		t.add(_unionField, 2, 1);
-		t.add(_cplayText, 1, 2);
-		t.add(_cplayField, 2, 2);
-		t.add(_nameText, 1, 3);
-		t.add(_nameField, 2, 3);
-		t.add(_competitionText, 1, 4);
-		t.add(_competitionField, 2, 4);
-		t.add(_coachesText, 1, 5);
-		t.add(_coachesField, 2, 5);
-		Help help = getHelpButton();
-		t.add(help,1,6);
+		t.add(Text.getBreak(), 1, 1);
+		t.add(_unionField, 1, 1);
+		
+		t.add(_cplayText, 2, 1);
+		t.add(Text.getBreak(), 2, 1);
+		t.add(_cplayField, 2, 1);
+		
+		t.add(_nameText, 1, 2);
+		t.add(Text.getBreak(), 1, 2);
+		t.add(_nameField, 1, 2);
+		
+		t.add(_coachesText, 2, 2);
+		t.add(Text.getBreak(), 2, 2);
+		t.add(_coachesField, 2, 2);
 
+		t.mergeCells(1, 3, 2, 3);
+		t.add(_competitionText, 1, 3);
+		t.add(_competitionField, 1, 3);
+		
 		add(t);
+	}
+
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
 	}
 
 	/* (non-Javadoc)

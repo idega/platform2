@@ -10,10 +10,11 @@ import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CountryDropdownMenu;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.PostalCodeDropdownMenu;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
@@ -135,23 +136,22 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		streetText = new Text(iwrb.getLocalizedString(streetFieldName,"Street"));
-//		streetText.setFontSize(fontSize);
+		streetText.setBold();
 
 		cityText = new Text(iwrb.getLocalizedString(cityFieldName,"City"));
-//		cityText.setFontSize(fontSize);
+		cityText.setBold();
 
 		provinceText = new Text(iwrb.getLocalizedString(provinceFieldName,"Province"));
-//		provinceText.setFontSize(fontSize);
+		provinceText.setBold();
 
 		postalCodeText = new Text(iwrb.getLocalizedString(postalCodeFieldName,"Postal"));
-//		postalCodeText.setFontSize(fontSize);
+		postalCodeText.setBold();
 
 		countryText = new Text(iwrb.getLocalizedString(countryFieldName,"Country"));
-//		countryText.setFontSize(fontSize);
+		countryText.setBold();
 
 		poBoxText = new Text(iwrb.getLocalizedString(poBoxFieldName,"P.O.Box"));
-//		poBoxText.setFontSize(fontSize);
-
+		poBoxText.setBold();
 	}
 
 	public void lineUpFields() {
@@ -160,56 +160,39 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		
 		resize(1, 1);
 
-		Table addressTable = new Table(2, 4);
-		addressTable.setWidth("100%");
-		addressTable.setCellpadding(0);
-		addressTable.setCellspacing(0);
-		addressTable.setHeight(1, rowHeight);
-		addressTable.setHeight(2, rowHeight);
-		addressTable.setHeight(3, rowHeight);
-		addressTable.setHeight(4, rowHeight);
-		addressTable.setWidth(1, "70");
+		Table table = new Table();
+		table.setWidth("100%");
+		table.setCellpadding(5);
+		table.setCellspacing(0);
 
-		addressTable.add(streetText, 1, 1);
-		addressTable.add(streetField, 2, 1);
-		addressTable.add(cityText, 1, 2);
-		addressTable.add(cityField, 2, 2);
-		addressTable.add(provinceText, 1, 3);
-		addressTable.add(provinceField, 2, 3);
-		addressTable.add(countryText, 1, 4);
-		addressTable.add(countryField, 2, 4);
+		table.add(streetText, 1, 1);
+		table.add(streetField, 1, 1);
+		table.add(cityText, 2, 1);
+		table.add(cityField, 2, 1);
+		table.add(provinceText, 2, 2);
+		table.add(provinceField, 2, 2);
+		table.add(countryText, 1, 3);
+		table.add(countryField, 1, 3);
 
-		add(addressTable);
+		add(table);
 		//    fpane.add(addressTable);
-
-		Table addressTable2 = new Table(2, 3);
-
-		addressTable2.setWidth("100%");
-		addressTable2.setCellpadding(0);
-		addressTable2.setCellspacing(0);
-		addressTable2.setHeight(1, rowHeight);
-		addressTable2.setHeight(2, rowHeight);
-		addressTable2.setWidth(1, "70");
-
-		addressTable2.add(postalCodeText, 1, 1);
-		addressTable2.add(postalCodeField, 2, 1);
-		addressTable2.add(Text.getNonBrakingSpace(2), 2, 1);
-		Link editPostalCodeLink = new Link(iwrb.getLocalizedImageButton("GroupOfficeAddressTab.postalcodewindow.add","Add"));
-		editPostalCodeLink.setWindowToOpen(PostalCodeEditorWindow.class);
-		addressTable2.add(editPostalCodeLink, 2, 1);
+		table.add(postalCodeText, 2, 3);
+		Table postalTable = new Table();
+		postalTable.setCellpaddingAndCellspacing(0);
+		postalTable.add(postalCodeField,1,1);
+		table.add(postalTable, 2, 3);
+		GenericButton addPostal = new GenericButton("add_postal", iwrb.getLocalizedString("GroupOfficeAddressTab.postalcodewindow.add","Add"));
+		addPostal.setWindowToOpen(PostalCodeEditorWindow.class);
+		StyledButton button = new StyledButton(addPostal);
+		postalTable.setWidth(2, 3);
+		postalTable.add(button, 3, 1);
 				
-		addressTable2.add(poBoxText, 1, 2);
-		addressTable2.add(poBoxField, 2, 2);
-		
-		Help help = getHelpButton();
-		
-		addressTable2.add(help,1,3);
-		
+		table.add(poBoxText, 1, 4);
+		table.add(poBoxField, 1, 4);
+	}
 
-		add(addressTable2);
-		//    fpane.add(addressTable2);
-		//    add(fpane);
-
+	public void main(IWContext iwc) {
+		getPanel().addHelpButton(getHelpButton());		
 	}
 
 	public boolean collect(IWContext iwc) {
