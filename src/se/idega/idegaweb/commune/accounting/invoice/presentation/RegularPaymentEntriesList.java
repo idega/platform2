@@ -1210,7 +1210,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				// TODO Auto-generated method stub
 				
 			}
-//			public Object decode(String string){return null;}
+			public Object decode(String string){return null;}
 		};
 	}
 	
