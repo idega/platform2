@@ -1000,9 +1000,9 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	}
 
 	
-	//Property respnsePage
-	public void setReturnPage(ICPage returnPage){
-		_returnPage = returnPage;
+	//Property responsePage
+	public void setResponsePage(ICPage responsePage){
+		_returnPage = responsePage;
 	}
 	
 	public ICPage getResponsePage(){
