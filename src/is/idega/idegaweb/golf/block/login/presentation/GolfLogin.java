@@ -9,6 +9,7 @@ import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
@@ -333,7 +334,13 @@ public class GolfLogin extends GolfBlock {
 				go.setPage(_logOnPage);
 				myTable.add(go, 1, row++);
 				if(modinfo.getParameter(PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE = "nooptimer")==null){ 
-					//this.getParentPage().setToRedirect(go.getURL(modinfo),3);
+					StringBuffer url = new StringBuffer();
+					url.append(modinfo.getServerURL());
+					url.append("?").append(ICBuilderConstants.IB_PAGE_PARAMETER).append("=").append(_logOnPage);
+					if(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE)!=null){
+						url.append(";").append(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE).append("=").append(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE));
+					}
+					this.getParentPage().setToRedirect(modinfo.getResponse().encodeURL(url.toString()),3);
 				}
 			}
 			
