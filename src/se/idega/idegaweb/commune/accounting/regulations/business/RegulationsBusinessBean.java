@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.61 2003/11/07 14:15:48 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.62 2003/11/12 12:29:03 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -51,6 +51,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.SchoolCategoryBMPBean;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
@@ -1557,9 +1558,37 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		//Just for testing, please remove when done with the real code
 		postingDetail.setAmount(100f);
-		postingDetail.setRuleSpecType("cacc_reg_spec_type.check"); //??? String
+		postingDetail.setRuleSpecType("cacc_reg_spec_type.check");
 		postingDetail.setTerm("Testing (JJ)");
-		postingDetail.setVat(32.0f);
+		postingDetail.setVat(6.0f);
+		postingDetail.setVatRegulationID(1);
+
+		return postingDetail;
+	}
+
+	/**
+	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the specific regulation
+	 * and School Placement
+	 * 
+	 * @param totalSum
+	 * @param schoolClassMember
+	 * @param regulation
+	 * @return
+	 */
+	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation) {
+
+		PostingDetail postingDetail = new PostingDetail();
+
+		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
+		System.out.println(totalSum + " " + schoolClassMember + " " + regulation);
+
+		//Insert code here to create postingDetail
+
+		//Just for testing, please remove when done with the real code
+		postingDetail.setAmount(200f);
+		postingDetail.setRuleSpecType("cacc_reg_spec_type.check");
+		postingDetail.setTerm("Testing2 (JJ)");
+		postingDetail.setVat(12.0f);
 		postingDetail.setVatRegulationID(1);
 
 		return postingDetail;
