@@ -31,7 +31,7 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute(getColumnNameAddressId(), "addressId", true, true, Address.class);
+    this.addAttribute(getColumnNameAddressId(), "addressId", true, true, Integer.class);
     this.addAttribute(getColumnNameTime(), "time", true, true, Timestamp.class);
     this.addAttribute(getColumnNameAddressTypeId(), "addressutýpa", true, true, Integer.class);
     this.addAttribute(getColumnNameRefillStock() , "fylla á byrgðir", true, true, Boolean.class);
