@@ -56,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/09 16:18:16 $ by $Author: thomas $
+ * Last modified: $Date: 2004/01/15 14:10:09 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.83 $
+ * @version $Revision: 1.84 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -300,6 +300,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		final Collection headers = new ArrayList ();
 		final Collection custodians = new ArrayList ();
 		
+		final com.idega.util.Timer timer = new com.idega.util.Timer ();
+		timer.start ();
 		// find custodians for user
 		try {
 			final Collection temp
@@ -313,6 +315,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			// no problem, no custodians found
 		}
 		
+		timer.stop ();
+		log ("Time to find custodian: " + (((float) timer.getTime()) / 1000.0f) + " seconds");
+		timer.start ();
+
 		// find invoice headers related to custodian or user
 		try {
 			final Collection temp
@@ -326,6 +332,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		} catch (FinderException exception) {
 			// no problem, return empty array
 		}
+		timer.stop ();
+		log ("Time to find invoices: " + (((float) timer.getTime()) / 1000.0f) + " seconds");
 		
 		return (InvoiceHeader []) headers.toArray (new InvoiceHeader [0]);
 	}
