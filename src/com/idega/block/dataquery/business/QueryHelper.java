@@ -164,7 +164,7 @@ public class QueryHelper {
 		return listOfFields!=null && !listOfFields.isEmpty();
 	}
 	public boolean hasConditions(){
-		return listOfConditions!=null && !listOfRelatedEntities.isEmpty();
+		return listOfConditions!=null && !listOfConditions.isEmpty();
 	}
 
 	/**
