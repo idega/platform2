@@ -59,16 +59,13 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 				regularPayment();
 				//VAT
 				//calcVAT();
-				batchRunLoggerDone();
 			}
 			else {
 				createNewErrorMessage("invoice.severeError", "invoice.Posts_with_status_L_or_H_already_exist");
-				batchRunLoggerDone();
 			}
 		}
 		catch (NotEmptyException e) {
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
-			batchRunLoggerDone();
 			e.printStackTrace();
 		}
 		catch (Exception e) {
@@ -76,8 +73,8 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 			// browser, just log them
 			e.printStackTrace();
 			createNewErrorMessage("invoice.severeError", "invoice.DBSetupProblem");
-			batchRunLoggerDone();
 		}
+		batchRunLoggerDone();
 	}
 
 	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {

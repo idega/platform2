@@ -42,20 +42,17 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 				//VAT
 				//calcVAT();
 				System.out.println("Done with VAT loop");
-				batchRunLoggerDone();
 			}else{
 				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
-				batchRunLoggerDone();
 			}
 		} catch (NotEmptyException e) {
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
-			batchRunLoggerDone();
 			e.printStackTrace();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
 			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
-			batchRunLoggerDone();
 		}
+		batchRunLoggerDone();
 	}
 }
