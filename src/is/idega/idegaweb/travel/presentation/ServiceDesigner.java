@@ -209,13 +209,13 @@ private void finalize(IWContext iwc) throws Exception {
 
     if (serviceId != -1) {
       Form form = df.getDesignerForm(iwc, serviceId);
-        form.addParameter(PARAMETER_PRODUCT_CATEGORY_TYPE, PRODUCT_CATEGORY_TYPE);
+      form.addParameter(PARAMETER_PRODUCT_CATEGORY_TYPE, PRODUCT_CATEGORY_TYPE);
       add(form);
       setCategoryCreation(iwc, false);
       setSessionServiceId(iwc, serviceId);
     }else {
       Form form = df.getDesignerForm(iwc);
-        form.addParameter(PARAMETER_PRODUCT_CATEGORY_TYPE, PRODUCT_CATEGORY_TYPE);
+      form.addParameter(PARAMETER_PRODUCT_CATEGORY_TYPE, PRODUCT_CATEGORY_TYPE);
       add(form);
     }
   }
