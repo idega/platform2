@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.4 2001/08/16 03:13:44 aron Exp $
+ * $Id: ApplicationForm.java,v 1.5 2001/08/17 09:31:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,9 @@
  */
 package com.idega.block.application.presentation;
 
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationFinder;
-import com.idega.jmodule.object.Editor;
+import com.idega.block.application.business.ApplicationFormHelper;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.interfaceobject.Form;
 import com.idega.jmodule.object.interfaceobject.TextInput;
@@ -22,8 +21,6 @@ import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.Table;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.idegaTimestamp;
-import java.sql.SQLException;
 import java.util.List;
 import com.idega.jmodule.object.JModuleObject;
 
@@ -32,16 +29,15 @@ import com.idega.jmodule.object.JModuleObject;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApplicationForm extends JModuleObject{
+public class ApplicationForm extends ModuleObjectContainer {
   private final int statusEnteringPage_ = 0;
   private final int statusSubject_ = 1;
   private final int statusGeneralInfo_ = 2;
 
   protected boolean isAdmin;
   private static final String IW_RESOURCE_BUNDLE = "com.idega.block.application";
-  protected IWResourceBundle iwrb;
 
-  private String styleAttribute = "font-size: 8pt";
+  protected IWResourceBundle iwrb_ = null;
 
   private Text textTemplate = new Text();
 
@@ -63,12 +59,12 @@ public class ApplicationForm extends JModuleObject{
       doSelectSubject(modinfo);
     }
     else if (status == statusSubject_) {
-      saveSubject(modinfo);
+      ApplicationFormHelper.saveSubject(modinfo);
       doGeneralInformation(modinfo);
     }
     else if (status == statusGeneralInfo_) {
-      saveApplicantInformation(modinfo);
-      if (saveDataToDB(modinfo))
+      ApplicationFormHelper.saveApplicantInformation(modinfo);
+      if (ApplicationFormHelper.saveDataToDB(modinfo))
         doDone();
       else
         doError();
@@ -80,7 +76,6 @@ public class ApplicationForm extends JModuleObject{
   }
 
   protected void doSelectSubject(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     Text textTemplate = new Text();
 
@@ -91,22 +86,22 @@ public class ApplicationForm extends JModuleObject{
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("applicationSubjectTitle","Veldu tegund umsóknar"));
+    heading.setText(iwrb_.getLocalizedString("applicationSubjectTitle","Veldu tegund umsóknar"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb.getLocalizedString("applicationSubject","Umsókn um"));
+    text1.setText(iwrb_.getLocalizedString("applicationSubject","Umsókn um"));
     text1.setBold();
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
     subject.setStyle("formstyle");
-    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
     ok.setStyle("idega");
 
     form.add(heading);
@@ -127,54 +122,53 @@ public class ApplicationForm extends JModuleObject{
   }
 
   protected void doGeneralInformation(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     Text textTemplate = new Text();
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
     Table t = new Table(2,10);
-    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
     ok.setStyle("idega");
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("generalInfo","Almennar upplýsingar um umsækjanda"));
+    heading.setText(iwrb_.getLocalizedString("generalInfo","Almennar upplýsingar um umsækjanda"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb.getLocalizedString("firstName","Fornafn"));
+    text1.setText(iwrb_.getLocalizedString("firstName","Fornafn"));
     text1.setBold();
     Text text2 = (Text)textTemplate.clone();
     text2.setStyle("bodytext");
-    text2.setText(iwrb.getLocalizedString("middleName","Millinafn"));
+    text2.setText(iwrb_.getLocalizedString("middleName","Millinafn"));
     Text text3 = (Text)textTemplate.clone();
     text3.setStyle("bodytext");
-    text3.setText(iwrb.getLocalizedString("lastName","Eftirnafn"));
+    text3.setText(iwrb_.getLocalizedString("lastName","Eftirnafn"));
     text3.setBold();
     Text text4 = (Text)textTemplate.clone();
     text4.setStyle("bodytext");
-    text4.setText(iwrb.getLocalizedString("ssn","Kennitala"));
+    text4.setText(iwrb_.getLocalizedString("ssn","Kennitala"));
     text4.setBold();
     Text text5 = (Text)textTemplate.clone();
     text5.setStyle("bodytext");
-    text5.setText(iwrb.getLocalizedString("legalResidence","Lögheimili"));
+    text5.setText(iwrb_.getLocalizedString("legalResidence","Lögheimili"));
     text5.setBold();
     Text text6 = (Text)textTemplate.clone();
     text6.setStyle("bodytext");
-    text6.setText(iwrb.getLocalizedString("residence","Dvalarstaður"));
+    text6.setText(iwrb_.getLocalizedString("residence","Dvalarstaður"));
     text6.setBold();
     Text text7 = (Text)textTemplate.clone();
     text7.setStyle("bodytext");
-    text7.setText(iwrb.getLocalizedString("residencePhone","Símanúmer á dvalarstað"));
+    text7.setText(iwrb_.getLocalizedString("residencePhone","Símanúmer á dvalarstað"));
     text7.setBold();
     Text text8 = (Text)textTemplate.clone();
     text8.setStyle("bodytext");
-    text8.setText(iwrb.getLocalizedString("po","Póstnúmer"));
+    text8.setText(iwrb_.getLocalizedString("po","Póstnúmer"));
     text8.setBold();
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
     TextInput input1 = (TextInput)textInputTemplate.clone();
     input1.setName("firstName");
@@ -244,76 +238,18 @@ public class ApplicationForm extends JModuleObject{
   }
 
   protected void doDone() {
-    add("Umsókn skráð");
+    add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð"));
   }
 
   protected void doError() {
-    add("Gagnagrunnsvilla við skráningu umsóknar");
+    add(iwrb_.getLocalizedString("applicationDBError","Gagnagrunnsvilla við skráningu umsóknar"));
   }
-
-  protected boolean saveDataToDB(ModuleInfo modinfo) {
-    Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
-    Application application = (Application)modinfo.getSessionAttribute("application");
-
-    try {
-      applicant.insert();
-
-      application.setApplicantId(applicant.getID());
-      application.insert();
-    }
-    catch(SQLException e) {
-      System.err.println(e.toString());
-      return(false);
-    }
-    finally {
-      modinfo.removeSessionAttribute("applicant");
-      modinfo.removeSessionAttribute("application");
-    }
-
-    return(true);
-  }
-
-  protected void saveSubject(ModuleInfo modinfo) {
-    String subject = (String)modinfo.getParameter("subject");
-    Application application = new Application();
-    application.setSubjectId(Integer.parseInt(subject));
-    application.setSubmitted(idegaTimestamp.getTimestampRightNow());
-    application.setStatusSubmitted();
-    application.setStatusChanged(idegaTimestamp.getTimestampRightNow());
-    modinfo.setSessionAttribute("application",application);
-  }
-
-  protected void saveApplicantInformation(ModuleInfo modinfo) {
-    String firstName = modinfo.getParameter("firstName");
-    String middleName = modinfo.getParameter("middleName");
-    String lastName = modinfo.getParameter("lastName");
-    String ssn = modinfo.getParameter("ssn");
-    String legalResidence = modinfo.getParameter("legalResidence");
-    String residence = modinfo.getParameter("residence");
-    String residencePhone = modinfo.getParameter("residencePhone");
-    String po = modinfo.getParameter("po");
-
-    Applicant applicant = new Applicant();
-    applicant.setFirstName(firstName);
-    applicant.setMiddleName(middleName);
-    applicant.setLastName(lastName);
-    applicant.setSSN(ssn);
-    applicant.setLegalResidence(legalResidence);
-    applicant.setResidence(residence);
-    applicant.setResidencePhone(residencePhone);
-    applicant.setPO(po);
-
-    modinfo.setSessionAttribute("applicant",applicant);
-  }
-
 
   public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+System.out.println("Main fall i ApplicationForm");
+    iwrb_ = getResourceBundle(modinfo);
+if (iwrb_ == null)
+  System.out.println("bundle null í ApplicationForm");
     control(modinfo);
   }
-
 }
