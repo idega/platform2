@@ -427,7 +427,7 @@ public class CitizenEditor extends UserEditor {
 	 * @see is.idega.idegaweb.member.presentation.UserEditor#isAllowPersonalIdEdit(com.idega.user.data.User)
 	 */
 	public boolean isAllowPersonalIdEdit(User user) {
-		if (user != null) {
+		if (user != null && user.getPersonalID()!=null) {
 			if (user.getPersonalID().indexOf("TF") != -1)
 				return true;
 		}
