@@ -7,6 +7,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
+import com.idega.block.text.presentation.TextReader;
 
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.data.Currency;
@@ -22,6 +23,7 @@ import com.idega.block.trade.stockroom.business.ProductPriceException;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.text.business.TextFinder;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -105,7 +107,7 @@ public class ServiceViewer extends Block {
     }
 
     if( service!=null ){
-      add(getServiceInfoTable());
+      add(getServiceInfoTable(iwc));
     }
     else{
       add(getServiceListTable());
@@ -241,13 +243,17 @@ public class ServiceViewer extends Block {
 */
 
 
-  public Table getServiceInfoTable(){
+  public Table getServiceInfoTable(IWContext iwc){
     Table content = new Table(1,3);
     try {
       Product product = new Product(service.getID());
       content.add(product.getNumber()+" - "+ProductBusiness.getProductName(product),1,1);
-      content.add(ProductBusiness.getProductDescription(product),1,2);//insert a textreader
+      content.add(new TextReader(TextFinder.getLocalizedText(product,ProductBusiness.getSelectedLocaleId(iwc)).getID()),1,2);//insert a textreader
+      //ProductBusiness.getProductDescription(product),1,2);//insert a textreader
       content.add("META DATA",1,3);
+      Link buy = LinkGenerator.getLink(iwc,service.getID());
+      buy.setAsImageButton(true);
+      content.add(buy,1,3);
     }
     catch (Exception ex) {
       ex.printStackTrace();
