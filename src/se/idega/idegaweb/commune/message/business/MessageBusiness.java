@@ -30,9 +30,11 @@ public interface MessageBusiness extends CaseBusiness
  public se.idega.idegaweb.commune.message.data.PrintedLetterMessage createPrintedPasswordLetterMessage(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User user, String subject, String body, boolean sendLetter);
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User user, String subject, String body, boolean sendLetter, boolean alwaysSendLetter);
+ public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User user, String subject, String body, String letterBody, boolean sendLetter, boolean alwaysSendLetter);
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User receiver, User sender, com.idega.user.data.Group handler, String subject, String body, boolean sendLetter);
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter,String contentCode) throws RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter,String contentCode, boolean alwaysSendLetter) throws RemoteException;
+ public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean sendLetter,String contentCode, boolean alwaysSendLetter) throws RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter);
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(int p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.59 2004/03/05 16:19:29 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.60 2004/03/26 12:02:41 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -236,6 +236,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return createUserMessage(parentCase, receiver, null, null, subject, body, sendLetter, null, alwaysSendLetter);
 	}
 	
+	public Message createUserMessage(Case parentCase, User receiver, String subject, String body, String letterBody, boolean sendLetter, boolean alwaysSendLetter) {
+		return createUserMessage(parentCase, receiver, null, null, subject, body, letterBody, sendLetter, null, alwaysSendLetter);
+	}
+	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter) {
 		return createUserMessage(parentCase, receiver, sender, null, subject, body, sendLetter);	
 	}
@@ -246,9 +250,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean pSendLetterIfNoEmail,String contentCode) {
 		return createUserMessage(parentCase, receiver,sender,handler,subject,body,pSendLetterIfNoEmail,contentCode, false);
 	}
-	
+
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter) {
+		return createUserMessage(parentCase, receiver, sender, handler, subject, body, body, pSendLetterIfNoEmail, contentCode, alwaysSendLetter);
+	}
+	
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter) {
 		try {
+			if (letterBody == null) {
+				letterBody = body;
+			}
+			
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(receiver);
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(receiver);
@@ -298,7 +310,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 				doSendLetter = true;
 			}
 			if(doSendLetter){
-				createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
+				createPrintedLetterMessage(parentCase, receiver, subject, letterBody, null, contentCode);
 			}
 
 			if (IWMainApplication.isDebugActive()) {
