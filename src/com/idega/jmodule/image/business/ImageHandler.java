@@ -135,11 +135,15 @@ private void getImageFromDatabase(int imageId) throws Exception{
   imageInfo.setHeight(Integer.toString(originalImage.getHeight()));
   imageInfo.update();
 
-inputStream.close();//closes the blobinputstream and closes misc stmt and connections
-    System.out.println("ImageHandler: Before closing bufferstream");
-  bufStream.close();
-    System.out.println("ImageHandler: Before closing memStream");
+
+
+  System.out.println("ImageHandler: Before closing memStream");
   memStream.close();
+  System.out.println("ImageHandler: Before closing bufferstream");
+  bufStream.close();
+  System.out.println("ImageHandler: Before closing inputstream");
+  inputStream.close();//closes the blobinputstream and closes misc stmt and connections
+
 
   /*
   System.out.println("ImageHandler: Before closing inputstream");
