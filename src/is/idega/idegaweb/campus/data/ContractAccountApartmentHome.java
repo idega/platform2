@@ -1,5 +1,10 @@
 package is.idega.idegaweb.campus.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public interface ContractAccountApartmentHome extends com.idega.data.IDOHome
 {
@@ -14,6 +19,7 @@ public interface ContractAccountApartmentHome extends com.idega.data.IDOHome
  public java.util.Collection findByType(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findByTypeAndStatusAndOverlapPeriod(java.lang.String p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException;
  public java.util.Collection findByTypeAndStatusAndOverlapPeriodAndNotInRound(java.lang.String p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3,java.lang.Integer p4)throws javax.ejb.FinderException;
+ public Collection findByTypeAndStatusAndOverLapPeriodMultiples(String type,String[] status,Date from,Date to)throws FinderException;
  public ContractAccountApartment findByUser(java.lang.Integer p0)throws javax.ejb.FinderException;
 
 }

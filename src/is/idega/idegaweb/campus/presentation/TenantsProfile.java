@@ -135,7 +135,7 @@ public class TenantsProfile extends CampusBlock {
         }
         catch (NumberFormatException e) {
           try {
-            userID =  iwc.getUser().getID();
+            userID =  iwc.getCurrentUserId();
           }
           catch (Exception ex) {
             userID = -1;
@@ -144,7 +144,7 @@ public class TenantsProfile extends CampusBlock {
       }
       else {
         try {
-          userID = iwc.getUser().getID();
+          userID = iwc.getCurrentUserId();
         }
         catch (Exception e) {
           userID = -1;
@@ -219,10 +219,10 @@ public class TenantsProfile extends CampusBlock {
       myTable.add(getProfile(iwc),1,1);
       myTable.add(getApartment(iwc),2,1);
       myTable.add(getAccount(iwc),2,2);
-      myTable.add(getRequests(),2,3);
+      myTable.add(getRequests(iwc),2,3);
       myTable.setCellspacing(6);
 
-      _image = myTable.getTransparentCell(iwc);
+      _image = Table.getTransparentCell(iwc);
       _image.setHeight(6);
 
       add(myTable);
@@ -230,7 +230,7 @@ public class TenantsProfile extends CampusBlock {
       else add(localize("noselecteduser","No user selected"));
     }
     else{
-      add(localize("accessdenied","Access denied"));
+      add(getNoAccessObject(iwc));
     }
   }
 
@@ -301,7 +301,7 @@ public class TenantsProfile extends CampusBlock {
 
     if ( update ) {
       myForm.add(table);
-      myForm.add(new HiddenInput(this.PARAMETER_USER_ID,Integer.toString(userID)));
+      myForm.add(new HiddenInput(PARAMETER_USER_ID,Integer.toString(userID)));
       table.add(new BackButton(getResourceBundle().getImage("back.gif")),1,row);
       table.add(new SubmitButton(getResourceBundle().getImage("save.gif"),PARAMETER_MODE,PARAMETER_SAVE),1,row);
       return myForm;
@@ -342,7 +342,7 @@ public class TenantsProfile extends CampusBlock {
     	Date moving = contract.getMovingDate();
     	if (moving != null) {
     		table.add(localize("resignation","Resigned"),1,row);
-    		table.add(new IWTimestamp(moving).getLocaleDate(iwc),2,row++);
+    		table.add(new IWTimestamp(moving).getLocaleDate(iwc.getCurrentLocale()),2,row++);
     	}
     }
 
@@ -404,7 +404,7 @@ public class TenantsProfile extends CampusBlock {
       while(iter.hasNext()){
         AccountInfo account = (AccountInfo) iter.next();
         table.add(formatText(account.getName()),1,row);
-        table.add(formatText(new IWTimestamp(account.getLastUpdated()).getISLDate(".",true)),2,row);
+        table.add(formatText(new IWTimestamp(account.getLastUpdated()).getLocaleDate(iwc.getCurrentLocale())),2,row);
 
         float balance = account.getBalance();
         boolean debet = balance >= 0 ? true : false ;
@@ -429,7 +429,7 @@ public class TenantsProfile extends CampusBlock {
     return table;
   }
 
-  private Table getRequests() {
+  private Table getRequests(IWContext iwc) {
     Table table = new Table();
       table.setCellspacing(1);
       table.setCellpadding(3);
@@ -467,7 +467,7 @@ public class TenantsProfile extends CampusBlock {
         }
         table.add(formatText(localize("REQUEST_TYPE_" + type,"Almenn vi?ger?")),1,row);
         try {
-          table.add(formatText(new IWTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+          table.add(formatText(new IWTimestamp(request.getDateSent()).getLocaleDate(iwc.getCurrentLocale())),2,row);
         }
         catch(Exception e) {
           table.add("",2,row);

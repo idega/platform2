@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.12 2004/06/16 03:44:46 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.13 2004/06/17 11:39:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.building.data.Apartment;
 import com.idega.data.IDOBoolean;
 import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -469,5 +470,32 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 	}
 	public Collection ejbFindByStatusAndChangeDate(String status, Date date)throws FinderException{
 		return idoFindPKsByQuery( super.idoQueryGetSelect().appendWhereEquals(getStatusDateColumnName(),status).appendAnd().appendLessThanOrEqualsSign().append(date));
+	}
+	private IDOQuery getQueryByStatusAndOverlapPeriod(String[] status,Date from,Date to){
+		IDOQuery query = super.idoQueryGetSelect().appendWhere();
+		query.append(getStatusColumnName());
+		query.appendInArrayWithSingleQuotes(status);
+		query.appendAnd();
+		query.appendOverlapPeriod(getValidFromColumnName(),getValidToColumnName(),from,to);
+		return query;
+	}
+	
+	public Collection ejbFindByStatusAndOverLapPeriodMultiples(String[] status,Date from,Date to)throws FinderException{
+		IDOQuery outerQuery = getQueryByStatusAndOverlapPeriod(status,from,to);
+		IDOQuery innerQuery= 	super.idoQuery().appendSelect().append(getUserIdColumnName());
+		innerQuery.appendFrom().append(this.getTableName());
+		innerQuery.appendWhere();
+		innerQuery.append(getStatusColumnName());
+		innerQuery.appendInArrayWithSingleQuotes(status);
+		innerQuery.appendAnd();
+		innerQuery.appendOverlapPeriod(getValidFromColumnName(),getValidToColumnName(),from,to);
+		innerQuery.appendGroupBy(getUserIdColumnName());
+		innerQuery.appendHaving().appendCount(getIDColumnName()).appendGreaterThanSign().append(1);
+		outerQuery.appendAnd().append(getUserIdColumnName()).appendIn(innerQuery);
+		
+		outerQuery.appendOrderBy(getUserIdColumnName()+","+getIDColumnName());
+		//System.out.println(outerQuery.toString());
+				
+		return super.idoFindPKsByQuery(outerQuery);
 	}
 }

@@ -511,7 +511,7 @@ public class CampusContracts extends CampusBlock {
 		L.addParameter(ContractFiler.prmManyIds, ids);
 		return L;
 	}
-	public Link getGarbageLink(PresentationObject MO, int contractId) {
+	public static Link getGarbageLink(PresentationObject MO, int contractId) {
 		Link L = new Link(MO);
 		L.setWindowToOpen(ContractGarbageWindow.class);
 		L.addParameter(ContractGarbageWindow.prmContractId, contractId);

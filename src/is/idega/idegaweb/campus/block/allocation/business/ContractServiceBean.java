@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.14 2004/06/16 03:44:46 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.15 2004/06/17 11:39:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,8 @@ import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
 import is.idega.idegaweb.campus.data.ApartmentContracts;
+import is.idega.idegaweb.campus.data.ContractAccountApartment;
+import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.data.SystemPropertiesBMPBean;
 
@@ -543,18 +545,46 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			case 'S' :
 				r = iwrb.getLocalizedString("signed", "Signed");
 				break;
-			case 'R' :
-				r = iwrb.getLocalizedString("rejected", "Rejected");
-				break;
-			case 'T' :
-				r = iwrb.getLocalizedString("terminated", "Terminated");
-				break;
 			case 'E' :
 				r = iwrb.getLocalizedString("ended", "Ended");
 				break;
 			case 'G' :
 				r = iwrb.getLocalizedString("garbage", "Garbage");
 				break;
+			case 'U' :
+				r = iwrb.getLocalizedString("resigned", "Resigned");
+				break;
+			case 'R' :
+				r = iwrb.getLocalizedString("rejected", "Rejected");
+				break;
+			case 'T' :
+				r = iwrb.getLocalizedString("terminated", "Terminated");
+				break;
+			
+			case 'Z' :
+				r = iwrb.getLocalizedString("storage", "Storage");
+				break;
+			case 'D' :
+				r = iwrb.getLocalizedString("denied", "Denied");
+				break;
+			case 'F' :
+				r = iwrb.getLocalizedString("finalized", "Finalized");
+				break;
+				
+			/*
+			 * 
+			 public static final String statusCreated = "C";
+  public static final String statusPrinted = "P";
+  public static final String statusSigned = "S";
+  public static final String statusRejected = "R";
+  public static final String statusTerminated = "T";
+  public static final String statusEnded = "E";
+  public static final String statusResigned = "U";
+  public static final String statusGarbage = "G";
+  public static final String statusStorage = "Z";
+  public static final String statusDenied = "D";
+  public static final String statusFinalized = "F";
+			 */
 		}
 		return r;
 	}
@@ -872,6 +902,13 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		}
 		return map;
 	}
+	
+	public String[] getRentableStatuses(){
+		String[] statuses = {ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
+				ContractBMPBean.statusTerminated};
+		return statuses;
+	}
+	
 	public Map getNewApplicantContracts() throws RemoteException, FinderException {
 		return getApplicantContractsByStatus(ContractBMPBean.statusCreated);
 	}
@@ -886,6 +923,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	}
 	public WaitingListHome getWaitingListHome() throws RemoteException {
 		return (WaitingListHome) getIDOHome(WaitingList.class);
+	}
+	public ContractAccountApartmentHome getContractAccountApartmentHome() throws RemoteException{
+		return ((ContractAccountApartmentHome) getIDOHome(ContractAccountApartment.class));	
 	}
 	public MailingListService getMailingListService() throws RemoteException {
 		return (MailingListService) getServiceInstance(MailingListService.class);

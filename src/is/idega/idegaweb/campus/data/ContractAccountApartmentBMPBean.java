@@ -60,7 +60,7 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 		return "RETURN_DATE";
 	}
 	public static String getColumnDeliverdate() {
-		return "DELIVERDATE";
+		return "DELIVER_DATE";
 	}
 	public static String getColumnStatus() {
 		return "STATUS";
@@ -105,6 +105,13 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 	}
 	public ContractAccountApartmentBMPBean(int id) throws SQLException {
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.data.IDOLegacyEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return getContractIdColumnName();
+	}
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(getContractIdColumnName(), "Contract id", true, true, java.lang.Integer.class);
@@ -125,6 +132,7 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 		addAttribute(getFloorIdColumnName(), "Floor id", true, true, java.lang.Integer.class);
 		addAttribute(getBuildingIdColumnName(), "Building id", true, true, java.lang.Integer.class);
 		addAttribute(getComplexIdColumnName(), "Complex id", true, true, java.lang.Integer.class);
+		setAsPrimaryKey(getContractIdColumnName(),true);
 	}
 	public String getEntityName() {
 		return getEntityTableName();
@@ -268,14 +276,36 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 	}
 	
 	public Collection ejbFindByTypeAndStatusAndOverlapPeriod(String type,String[] status,Date from,Date to)throws FinderException{
-			IDOQuery query = super.idoQueryGetSelect().appendWhereEqualsQuoted(getAccountTypeColumnName(),type);
-			query.appendAnd();
-			query.append(getColumnStatus());
-			query.appendInArrayWithSingleQuotes(status);
-			query.appendAnd();
-			query.appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to);
-			System.out.println(query.toString());
+			IDOQuery query = getQueryByTypeAndStatusAndOverlapPeriod(type,status,from,to);
 			return super.idoFindPKsByQuery(query);
+	}
+	
+	private IDOQuery getQueryByTypeAndStatusAndOverlapPeriod(String type,String[] status,Date from,Date to){
+		IDOQuery query = super.idoQueryGetSelect().appendWhereEqualsQuoted(getAccountTypeColumnName(),type);
+		query.appendAnd();
+		query.append(getColumnStatus());
+		query.appendInArrayWithSingleQuotes(status);
+		query.appendAnd();
+		query.appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to);
+		return query;
+	}
+	
+	public Collection ejbFindByTypeAndStatusAndOverLapPeriodMultiples(String type,String[] status,Date from,Date to)throws FinderException{
+		IDOQuery outerQuery = getQueryByTypeAndStatusAndOverlapPeriod(type,status,from,to);
+		IDOQuery innerQuery= 	super.idoQuery().appendSelect().append(getUserIdColumnName());
+		innerQuery.appendWhereEquals(getAccountTypeColumnName(),type);
+		innerQuery.appendAnd();
+		innerQuery.append(getColumnStatus());
+		innerQuery.appendInArrayWithSingleQuotes(status);
+		innerQuery.appendAnd();
+		innerQuery.appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to);
+		innerQuery.appendGroupBy(getUserIdColumnName());
+		innerQuery.appendHaving().appendCount(getContractIdColumnName()).appendGreaterThanSign().append(1);
+		outerQuery.appendAnd().appendIn(innerQuery);
+		System.out.println(outerQuery.toString());
+				
+		return super.idoFindPKsByQuery(outerQuery);
+		
 	}
 	
 	public Collection ejbFindByAssessmentRound(Integer roundID)throws FinderException{

@@ -36,8 +36,9 @@ public class CampusDaemonBundleStarter implements IWBundleStartable, ActionListe
 		IWTimestamp now = IWTimestamp.RightNow();
 		long startwait = IWTimestamp.getMilliSecondsBetween(now,new IWTimestamp(now.getYear(),now.getMonth(),now.getDay(),23,59,59));
 		startwait += (60*60*1000);
+		System.out.println("Campus Daemon will be started in "+startwait +" milliseconds");
 		timer.start(startwait);
-		System.out.println("Group Relation Daemon Bundle Starter: starting");
+		System.out.println("Campus Daemon Bundle Starter: starting");
 	}
 	
 	public void actionPerformed(ActionEvent event) {

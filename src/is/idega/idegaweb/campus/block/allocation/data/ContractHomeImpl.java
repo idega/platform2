@@ -224,4 +224,15 @@ public java.sql.Date getLastValidToForApartment(java.lang.Integer p0)throws java
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByStatusAndOverLapPeriodMultiples(java.lang.String[], java.sql.Date, java.sql.Date)
+	 */
+	public Collection findByStatusAndOverLapPeriodMultiples(String[] status,
+			Date from, Date to) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByStatusAndOverLapPeriodMultiples(status,from,to);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.block.allocation.business;
 
+import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
+
+import java.rmi.RemoteException;
+
 import com.idega.block.application.data.Applicant;
 
 
@@ -42,4 +46,6 @@ public interface ContractService extends com.idega.business.IBOService
 	 public void deleteFromWaitingList(Applicant applicant);
 	 public void endExpiredContracts()throws java.rmi.RemoteException;
 	 public void finalizeGarbageContracts(java.sql.Date lastChangeDate)throws java.rmi.RemoteException;
+	 public ContractAccountApartmentHome getContractAccountApartmentHome() throws RemoteException;
+	 public String[] getRentableStatuses();
 }

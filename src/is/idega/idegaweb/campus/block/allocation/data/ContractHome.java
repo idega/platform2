@@ -35,4 +35,5 @@ public interface ContractHome extends com.idega.data.IDOHome
  public Collection getUnsignedApplicants(String personalID)throws FinderException;
  public Collection findByStatusAndValidBeforeDate(String status, Date date)throws FinderException;
  public Collection findByStatusAndChangeDate(String status, Date date)throws FinderException;
+ public Collection findByStatusAndOverLapPeriodMultiples(String[] status,Date from,Date to)throws FinderException;
 }
