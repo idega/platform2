@@ -177,6 +177,7 @@ public class WorkReportMultiEditor extends Block {
     DropDownMenuConverter reportStatusDropDownMenuConverter = getConverterForReportStatus(resourceBundle, form);
     List params = new ArrayList();
     params.add(WorkReportWindow.ACTION);
+    params.add(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
     
 		reportStatusDropDownMenuConverter.maintainParameters(params);
 		GroupMetaDataConverter metaConverter = new GroupMetaDataConverter();
@@ -412,7 +413,8 @@ public class WorkReportMultiEditor extends Block {
 				}
 				Link link = new Link(text);
 				link.addParameter(ConverterConstants.EDIT_ENTITY_KEY,id.toString());
-				link.addParameter(WorkReportWindow.ACTION,iwc.getParameter(WorkReportWindow.ACTION));
+				link.maintainParameter(WorkReportWindow.ACTION,iwc);
+				link.maintainParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,iwc);
 				
 
 				return link;
@@ -479,7 +481,7 @@ public class WorkReportMultiEditor extends Block {
 				moreLink.setAsImageButton(true);
 				moreLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW_CLOSE_VIEW);
 				moreLink.addParameter(WorkReportOverViewCloseView.CLOSE_VIEW_WORK_REPORT_ID,report.getPrimaryKey().toString());
-				moreLink.addParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,iwc.getParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR));
+				moreLink.maintainParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,iwc);
 				return moreLink;
 			}
 		
