@@ -169,7 +169,7 @@ public void main(ModuleInfo modinfo)throws Exception{
         categoryId = Integer.parseInt(news_category_id);//overrides the preset category
         showSingleNews = false;//nope we are showing a collection!
         showAll = false;
-        System.out.println("inni í categoryshit");
+        System.out.println("inni í category");
     }else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
       System.out.println("(news_category_id==null) && (news_id =="+news_id);
       /*if( categoryId != 0 ){
@@ -273,7 +273,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           categoryString = TextSoap.findAndCut(categoryString,"OR");
           String statementstring = selectFrom+categoryString+orderBy;
           //debug eiki 24.dec
-          System.err.println("OUT OF RANGE"+statementstring);
+          System.err.println("OUT OF RANGE "+statementstring);
           news = (News[]) (new News()).findAll(statementstring);
 
           if( news.length!=0){
@@ -325,7 +325,7 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
   int image_id;
   int newsLength = news.length;
 
-
+System.out.println("limitNumberOfNews: "+ limitNumberOfNews+" numberOfDisplayedNews: "+numberOfDisplayedNews+" newsLength: "+newsLength);
   if( (!limitNumberOfNews) || (numberOfDisplayedNews>newsLength) ){
      numberOfDisplayedNews = newsLength;
   }
@@ -345,7 +345,7 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
     daysshown = news[i].getDaysShown();
 
 
-    if ( (i-numberOfExpandedNews)>0 ){
+    if ( (i-numberOfExpandedNews)>=0 ){
       includeImage = "N";
       newstext = "";
     }
@@ -612,7 +612,6 @@ private void addNext(Table table){
      break;
    case  NEWS_SITE_LAYOUT:
     //debug NEWS_SITE_LAYOUT shows only one image for now...code in insertTable
-    setNumberOfExpandedNews(3);
     //teljari með staðsetningu
       if( (currentColumnPosition==1) && (currentRowPosition==1) && (numberOfDisplayedNews>0)) {
         outerTable.add(table, 1, 1);
@@ -651,20 +650,21 @@ private Table createContainerTable(){
 
    switch (LAYOUT) {
    case SINGLE_FILE_LAYOUT:
-    System.out.println("SINGLE_FILE_LAYOUT");
     temp = new Table(1,1);
     outerTable.setAlignment("center");
      break;
    case  NEWS_SITE_LAYOUT:
-    int rows = ((numberOfDisplayedNews/2) + (numberOfDisplayedNews%2));
-     System.out.println("NEWS_SITE_LAYOUT! rows : "+rows);
+    int rows = (numberOfDisplayedNews/2) ;
+    int theRest = (numberOfDisplayedNews%2);
+    if( theRest==0) rows++;
+    else rows+=theRest;
+
     temp = new Table(2,rows);
     temp.setWidth(1,"50%");
     temp.setWidth(2,"50%");
     temp.mergeCells(1,1,2,1);
      break;
    case NEWS_PAPER_LAYOUT:
-         System.out.println("NEWS_PAPER_LAYOUT ");
     temp = new Table(3,1);
     break;
    default: temp = new Table(1,1);
