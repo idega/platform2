@@ -64,10 +64,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/19 08:12:44 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/19 08:55:34 $ by $Author: laddi $
  *
- * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.45 $
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nï¿½teberg</a>
+ * @version $Revision: 1.46 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -83,7 +83,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
-    private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
+    private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller nï¿½gon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
@@ -100,22 +100,22 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
-    private static final String EDIT_INVOICE_RECORD_DEFAULT = "Ändra fakturarad";
+    private static final String EDIT_INVOICE_RECORD_DEFAULT = "ï¿½ndra fakturarad";
     private static final String EDIT_INVOICE_RECORD_KEY = PREFIX + "edit_invoice_record";
-    private static final String EDIT_ROW_DEFAULT = "Ändra rad";
+    private static final String EDIT_ROW_DEFAULT = "ï¿½ndra rad";
     private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_DEFAULT = "T o m ";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
-    private static final String FIRST_NAME_DEFAULT = "Förnamn";
+    private static final String FIRST_NAME_DEFAULT = "Fï¿½rnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
     private static final String HEADER_KEY = PREFIX + "header";
     private static final String INVOICE_ADDRESS_DEFAULT = "Faktureringsadress";
     private static final String INVOICE_ADDRESS_KEY = PREFIX + "invoice_address";
-    private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader är nu borttagna";
+    private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader ï¿½r nu borttagna";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_KEY = PREFIX + "invoice_compilation_and_records_removed";
-    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlaget är nu skapat";
+    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlaget ï¿½r nu skapat";
     private static final String INVOICE_COMPILATION_CREATED_KEY = PREFIX + "invoice_compilation_created";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
@@ -123,15 +123,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
-    private static final String INVOICE_RECORD_CREATED_DEFAULT = "Fakturaraden är nu skapad";
+    private static final String INVOICE_RECORD_CREATED_DEFAULT = "Fakturaraden ï¿½r nu skapad";
     private static final String INVOICE_RECORD_CREATED_KEY = PREFIX + "invoice_record_created";
     private static final String INVOICE_RECORD_DEFAULT = "Fakturarad";
     private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
-    private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
+    private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden ï¿½r borttagen";
     private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "";
     private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
     private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
-    private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
+    private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokfï¿½ringsdag";
     private static final String JOURNAL_ENTRY_DATE_KEY = PREFIX + "journal_entry_date";
     private static final String LAST_NAME_DEFAULT = "Efternamn";
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
@@ -141,9 +141,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NAME_KEY = PREFIX + "name";
     private static final String NEW_DEFAULT = "Ny";
     private static final String NEW_KEY = PREFIX + "new";
-    private static final String NOTE_DEFAULT = "Anmärkning";
+    private static final String NOTE_DEFAULT = "Anmï¿½rkning";
     private static final String NOTE_KEY = PREFIX + "note";
-    private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades för denna vårdnadshavare eller barn";
+    private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades fï¿½r denna vï¿½rdnadshavare eller barn";
     private static final String NO_COMPILATION_FOUND_KEY = PREFIX + "no_compilation_found";
     private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
@@ -161,11 +161,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
-    private static final String REMARK_DEFAULT = "Anmärkning";
+    private static final String REMARK_DEFAULT = "Anmï¿½rkning";
     private static final String REMARK_KEY = PREFIX + "remark";
     private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
-    private static final String SEARCH_DEFAULT = "Sök";
-    private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
+    private static final String SEARCH_DEFAULT = "Sï¿½k";
+    private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sï¿½k efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SIGNATURE_DEFAULT = "Sigantur";
@@ -176,7 +176,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
-    private static final String TOO_MANY_RESULTS_DEFAULT = "För många sökträffar - försök att begränsa dina sökkriterier";
+    private static final String TOO_MANY_RESULTS_DEFAULT = "Fï¿½r mï¿½nga sï¿½ktrï¿½ffar - fï¿½rsï¿½k att begrï¿½nsa dina sï¿½kkriterier";
     private static final String TOO_MANY_RESULTS_KEY = PREFIX + "too_many_results";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
@@ -193,7 +193,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
     private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
-    private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
+    private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden ï¿½r nu uppdaterad";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
@@ -1088,9 +1088,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         // get some business objects
         final InvoiceBusiness invoiceBusiness = (InvoiceBusiness)
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
-        final UserBusiness userBusiness = (UserBusiness)
-                IBOLookup.getServiceInstance (context, UserBusiness.class);
-        final UserHome userHome = userBusiness.getUserHome ();
+        //final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance (context, UserBusiness.class);
+        //final UserHome userHome = userBusiness.getUserHome ();
 
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
@@ -1702,7 +1701,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                 + context.getParameter (key) + "'");
         }
         exception.printStackTrace ();
-        add ("Det inträffade ett fel. Försök igen senare.");
+        add ("Det intrï¿½ffade ett fel. Fï¿½rsï¿½k igen senare.");
     }
 
     private static String getUserName (final User user) {

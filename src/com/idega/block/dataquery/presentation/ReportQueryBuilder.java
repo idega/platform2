@@ -590,7 +590,7 @@ public class ReportQueryBuilder extends Block {
 	}
 
 	private boolean processFunctionForOrder(IWContext iwc){
-		String type = QueryXMLConstants.TYPE_DESCENDANT;
+		//String type = QueryXMLConstants.TYPE_DESCENDANT;
 		String[] fields = iwc.getParameterValues(PARAM_ORDER_FIELDS+"_left");
 		if(fields !=null ){
 			for (int i = 0; i < fields.length; i++) {
@@ -1159,7 +1159,7 @@ public class ReportQueryBuilder extends Block {
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			//System.out.println(" " + part.getName());
-			String enc = part.encode();
+			//String enc = part.encode();
 			box.getRightBox().addElement(
 			part.encode(),
 			iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
