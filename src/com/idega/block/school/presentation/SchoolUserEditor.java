@@ -61,6 +61,7 @@ import com.idega.user.data.UserHome;
  */
 public class SchoolUserEditor extends Block {
 
+
 	TextFormat _tFormat;
 	IWResourceBundle _iwrb;
 	IWBundle _iwb;
@@ -105,7 +106,9 @@ public class SchoolUserEditor extends Block {
 	private List parameterValues;
 	private Collection schoolTypeIds;
 	private int mobilePhoneType = PhoneType.MOBILE_PHONE_ID;
+	private int workPhoneType = PhoneType.WORK_PHONE_ID;
 	private boolean _highSchoolCategory = false;
+	
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -230,6 +233,9 @@ public class SchoolUserEditor extends Block {
 	private void setTextInputStyle(TextInput input) {
 		if (this.INPUT_STYLE != null) {
 			input.setMarkupAttribute("style", INPUT_STYLE);
+		}
+		else {
+			input.setMarkupAttribute("class", "commune_Interface");
 		}
 	}
 
@@ -806,6 +812,7 @@ public class SchoolUserEditor extends Block {
 					pPhone = new TextInput(smobilephone + "_" + hmId + "_" + phone.getPrimaryKey(), phone.getNumber());
 					//String adsad = phone.getNumber();
 					this.setTextInputStyle(pPhone);
+					
 					table.add(pPhone, 9, mobRow);
 					++mobRow;
 				}
@@ -929,6 +936,7 @@ public class SchoolUserEditor extends Block {
 		HiddenInput inp = new HiddenInput(sid, hmId);
 		HiddenInput utInp = new HiddenInput(PARAMETER_SCHOOL_USER_TYPE + "_" + hmId, Integer.toString(userType));
 		TextInput pName = new TextInput(sname + "_" + hmId, hm.getName());
+		//TextInput pName = (TextInput) getStyledInterface(new TextInput(sname + "_" + hmId, hm.getName()));
 		this.setTextInputStyle(pName);
 		Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login", "Login")));
 		login.setWindowToOpen(LoginEditorWindow.class);
@@ -1039,6 +1047,7 @@ public class SchoolUserEditor extends Block {
 		Text tType = getTextNormal(_iwrb.getLocalizedString("school.type", "Type"));
 
 		DropdownMenu pType = new DropdownMenu(PARAMETER_SCHOOL_USER_TYPE);
+		pType.setStyleClass("commune_Interface");
 		Collection suTypes;
 		try {
 			suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
@@ -1414,9 +1423,11 @@ public class SchoolUserEditor extends Block {
 							String sMobilePhone = iwc.getParameter(smobilephone + "_" + hId + "_" + prK);
 							if (sPhone != null && !sPhone.equals("")) {
 								phone = (Phone) prK;
+								phone.setPhoneTypeId(workPhoneType);
 								phone.setNumber(sPhone);
 								phone.store();
 								user.addPhone(phone);
+
 							}
 							else if (sMobilePhone != null && !sMobilePhone.equals("")) {
 								phone = (Phone) prK;
@@ -1442,6 +1453,7 @@ public class SchoolUserEditor extends Block {
 					if (newPhone != null && !newPhone.equals("")) {
 						Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 						phone.setNumber(newPhone);
+						phone.setPhoneTypeId(workPhoneType);
 						phone.store();
 						user.addPhone(phone);
 					}
@@ -1485,6 +1497,7 @@ public class SchoolUserEditor extends Block {
 				if (hmPhone != null && !hmPhone.equals("")) {
 					Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 					phone.setNumber(hmPhone);
+					phone.setPhoneTypeId(workPhoneType);
 					phone.store();
 					user.addPhone(phone);
 				}
@@ -1810,4 +1823,6 @@ public class SchoolUserEditor extends Block {
 	private static SchoolUserHome getSchoolUserHome() throws IDOLookupException {
 		return (SchoolUserHome) IDOLookup.getHome(SchoolUser.class);
 	}
+	
+	
 }
