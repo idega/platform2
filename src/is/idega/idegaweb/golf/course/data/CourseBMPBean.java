@@ -58,10 +58,6 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		return getStringColumnValue(COLUMN_NAME);
 	}
 	
-	public String getPrepps() {
-		return null;
-	}
-
 	public String getCourseType() {
 		return getStringColumnValue(COLUMN_TYPE);
 	}	

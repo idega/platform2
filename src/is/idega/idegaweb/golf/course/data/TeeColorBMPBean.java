@@ -112,4 +112,10 @@ public class TeeColorBMPBean extends GenericEntity implements TeeColor {
 		query.appendSelectAllFrom(this);
 		return idoFindPKsByQuery(query);
 	}
+	
+	public Object ejbFindByName(String name) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, name);
+		return idoFindOnePKByQuery(query);
+	}
 }

@@ -18,6 +18,10 @@ public class HandicapBlock extends GolfBlock {
 
 	protected final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf.handicap";
 
+	public void main(IWContext iwc) throws Exception {
+		getHandicapBusiness(iwc).getStrokesByScorecard(new Integer(1));
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
 	 */
