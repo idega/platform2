@@ -80,11 +80,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/05 21:47:58 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/06 14:35:00 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.96 $
+ * @version $Revision: 1.97 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1081,7 +1081,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	}
 	
 	public static class CheckAmountListWriter	implements MediaWritable {
-		private static PaymentRecordMaintenance outerObject;
+		public static PaymentRecordMaintenance outerObject;
 		private Integer providerId;
 		private Date startPeriod;
 		private Date endPeriod;
@@ -1220,7 +1220,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return getPeriodParameter(context.getRequest (), key);
 	}
 	
-	private static Date getPeriodParameter(final HttpServletRequest request, final String key) {
+	static Date getPeriodParameter(final HttpServletRequest request, final String key) {
 		final String rawString = request.getParameter (key);
 		final HttpSession session = request.getSession ();
 		final Date sessionPeriod = (Date) session.getAttribute (key);
@@ -1247,7 +1247,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return getProviderIdParameter(context.getRequest ());
 	}
 	
-	private static Integer getProviderIdParameter(final HttpServletRequest request) {
+	static Integer getProviderIdParameter(final HttpServletRequest request) {
 		Integer result = null;
 		final String postedString = request.getParameter (PROVIDER_KEY);
 		final HttpSession session = request.getSession ();
@@ -1685,7 +1685,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 				(getIWApplicationContext (), InvoiceBusiness.class);	
 	}
 	
-	private CheckAmountBusiness getCheckAmountBusiness () throws RemoteException {
+	CheckAmountBusiness getCheckAmountBusiness () throws RemoteException {
 		return (CheckAmountBusiness) IBOLookup.getServiceInstance
 				(getIWApplicationContext (), CheckAmountBusiness.class);
 	}
