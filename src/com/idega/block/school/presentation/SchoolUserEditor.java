@@ -94,15 +94,10 @@ public class SchoolUserEditor extends Block {
   
   private Table schoolList(IWContext iwc) throws RemoteException{
 		Collection schools = new java.util.Vector(0);
-		try{
-			if (schoolTypeIds == null) {
-				schools = getSchoolBusiness(iwc).findAllSchools();
-			}else {
-				schools = getSchoolBusiness(iwc).findAllSchoolsByType(schoolTypeIds);	
-			}
-		}
-		catch(java.rmi.RemoteException rex){
-
+		if (schoolTypeIds == null || schoolTypeIds.isEmpty()) {
+			schools = getSchoolBusiness(iwc).findAllSchools();
+		}else {
+			schools = getSchoolBusiness(iwc).findAllSchoolsByType(schoolTypeIds);	
 		}
 //  	Collection schools = getSchoolBusiness(iwc).findAllSchools();
   	Table table = new Table();
