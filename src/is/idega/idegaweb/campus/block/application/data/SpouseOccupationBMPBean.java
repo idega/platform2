@@ -1,5 +1,5 @@
 /*
- * $Id: SpouseOccupationBMPBean.java,v 1.3 2004/06/05 07:42:01 aron Exp $
+ * $Id: SpouseOccupationBMPBean.java,v 1.4 2004/06/06 11:57:13 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,8 @@
  */
 package is.idega.idegaweb.campus.block.application.data;
 
-import com.idega.data.IDOLegacyEntity;
 import java.sql.SQLException;
+
 import javax.ejb.FinderException;
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

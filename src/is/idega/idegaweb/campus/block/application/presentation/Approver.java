@@ -4,6 +4,8 @@
  */
 package is.idega.idegaweb.campus.block.application.presentation;
 
+import is.idega.idegaweb.campus.presentation.CampusBlock;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,17 +13,11 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.business.BuildingFinder;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.util.TimePeriod;
-
-import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 /**
  * Approver

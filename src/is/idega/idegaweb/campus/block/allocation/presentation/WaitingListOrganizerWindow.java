@@ -15,11 +15,6 @@ import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 

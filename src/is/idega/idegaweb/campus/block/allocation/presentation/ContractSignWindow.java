@@ -1,5 +1,4 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.business.CampusSettings;
@@ -13,7 +12,6 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
-import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
@@ -37,7 +35,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 

@@ -1,7 +1,6 @@
 package is.idega.idegaweb.campus.presentation;
 
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;

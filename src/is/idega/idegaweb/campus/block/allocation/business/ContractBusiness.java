@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.30 2004/06/05 07:44:41 aron Exp $
+ * $Id: ContractBusiness.java,v 1.31 2004/06/06 11:57:14 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,40 +9,6 @@
  */
 package is.idega.idegaweb.campus.block.allocation.business;
 
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
-import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
-import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
-
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.FinderException;
-
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.Application;
-import com.idega.block.application.data.ApplicationBMPBean;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.finance.business.AccountManager;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.accesscontrol.business.LoginCreator;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.user.data.User;
-import com.idega.core.user.data.UserHome;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimestamp;
 
 /**
  * Title:

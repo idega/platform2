@@ -1,29 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
 
-import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter;
-import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
-import is.idega.idegaweb.campus.presentation.Campus;
-
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.transaction.TransactionManager;
-
-
-import com.idega.core.contact.data.Email;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.transaction.IdegaTransactionManager;
-import com.idega.util.IWTimestamp;
-import com.idega.util.SendMail;
-import com.idega.util.text.ContentParser;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:

@@ -1,23 +1,18 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
-import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
-import com.idega.data.SimpleQuerier;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
 import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
+import is.idega.idegaweb.campus.presentation.Edit;
 
-import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
-import com.idega.data.EntityFinder;
-
+import com.idega.data.IDOLookup;
+import com.idega.data.SimpleQuerier;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -30,19 +25,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-
-import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
-import is.idega.idegaweb.campus.block.allocation.business.ContractService;
-import is.idega.idegaweb.campus.block.allocation.data.ContractText;
-import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
-import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
-import is.idega.idegaweb.campus.presentation.Edit;
-
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**

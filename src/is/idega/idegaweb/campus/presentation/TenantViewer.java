@@ -8,17 +8,10 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
-
-import java.sql.SQLException;
-import java.util.List;
-
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.login.presentation.LoginEditor;
 import com.idega.block.login.presentation.LoginEditorWindow;
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.contact.data.Email;

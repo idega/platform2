@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.34 2004/06/05 07:41:34 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.35 2004/06/06 11:57:14 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,6 @@
 
 package is.idega.idegaweb.campus.block.application.presentation;
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.block.allocation.business.ContractService;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
@@ -45,15 +44,12 @@ import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
-import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;

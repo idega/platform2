@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.25 2004/06/05 07:41:34 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.26 2004/06/06 11:57:14 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,6 @@ import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
 import is.idega.idegaweb.campus.presentation.Edit;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -24,24 +23,12 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
-import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
-
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Vector;
-
-import com.idega.block.application.business.ApplicationFinder;
-
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.presentation.ApartmentTypeViewer;
 import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;

@@ -1,53 +1,24 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.presentation.Edit;
-
+import is.idega.idegaweb.campus.presentation.CampusWindow;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
-import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentView;
-import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.GenericGroup;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
-import is.idega.idegaweb.campus.presentation.CampusWindow;
-
-
-import java.util.List;
-
-import com.idega.block.application.data.Applicant;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.Building;
-import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.Floor;
-
-
-
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DataTable;
@@ -55,21 +26,8 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-
-import com.idega.presentation.ui.Window;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
-
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
-
 import com.idega.util.IWTimestamp;
 
 /**

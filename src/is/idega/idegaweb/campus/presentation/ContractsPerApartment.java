@@ -10,22 +10,13 @@
 package is.idega.idegaweb.campus.presentation;
 
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractFiler;
 
 import java.rmi.RemoteException;
-
-
-import java.sql.SQLException;
-
 import java.text.DateFormat;
-
 import java.util.Collection;
 import java.util.Iterator;
-
-import java.util.Collection;
-
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -36,24 +27,12 @@ import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentView;
-import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.BuildingEntity;
-import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.ComplexHome;
 import com.idega.block.building.data.Floor;
-
-
-
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
-
 import com.idega.data.EntityFinder;
-import com.idega.data.IDOLegacyEntity;
-
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;

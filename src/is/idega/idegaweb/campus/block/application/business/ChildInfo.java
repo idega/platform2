@@ -5,9 +5,6 @@
 package is.idega.idegaweb.campus.block.application.business;
 
 
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * ChildrenInfo

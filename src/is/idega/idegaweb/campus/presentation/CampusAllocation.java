@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.10 2004/06/05 07:36:20 aron Exp $
+ * $Id: CampusAllocation.java,v 1.11 2004/06/06 11:57:14 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Vector;
 
 import com.idega.block.application.presentation.ApplicationSubjectMaker;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.BlockMenu;
 import com.idega.presentation.IWContext;

@@ -4,16 +4,6 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import com.idega.core.accesscontrol.business.LoggedOnInfo;
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 
 /**
  * LoggedInUsers

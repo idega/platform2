@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListFinder.java,v 1.4 2004/06/05 07:44:41 aron Exp $
+ * $Id: WaitingListFinder.java,v 1.5 2004/06/06 11:57:14 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.util.database.ConnectionBroker;
 

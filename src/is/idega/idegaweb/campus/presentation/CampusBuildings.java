@@ -1,8 +1,7 @@
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
 import com.idega.block.building.presentation.BuildingViewer;
+import com.idega.presentation.IWContext;
 
 /**
  * Title:

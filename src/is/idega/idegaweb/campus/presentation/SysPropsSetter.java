@@ -4,12 +4,7 @@ import is.idega.idegaweb.campus.business.CampusSettings;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.Collection;
 
-import javax.ejb.FinderException;
-
-import com.idega.block.category.business.CategoryBusiness;
-import com.idega.block.finance.presentation.Finance;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;

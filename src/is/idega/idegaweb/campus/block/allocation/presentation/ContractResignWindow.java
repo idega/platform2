@@ -1,7 +1,5 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import java.rmi.RemoteException;
-
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
@@ -9,11 +7,12 @@ import is.idega.idegaweb.campus.presentation.CampusProperties;
 import is.idega.idegaweb.campus.presentation.CampusWindow;
 import is.idega.idegaweb.campus.presentation.Edit;
 
+import java.rmi.RemoteException;
+
 import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
-import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
@@ -24,8 +23,6 @@ import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -37,7 +34,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 
 /**

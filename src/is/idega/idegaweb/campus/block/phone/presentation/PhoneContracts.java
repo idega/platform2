@@ -15,12 +15,7 @@ import javax.ejb.FinderException;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.ApartmentViewHome;
 import com.idega.business.IBOLookup;
-
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.data;
 
-import javax.ejb.*;
 
 public interface ContractAccountApartment extends com.idega.data.IDOLegacyEntity
 {

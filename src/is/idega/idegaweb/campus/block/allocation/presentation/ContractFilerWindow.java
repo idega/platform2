@@ -3,10 +3,6 @@ import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
 
 import java.util.StringTokenizer;
 
-import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
-
-import java.util.StringTokenizer;
-
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
