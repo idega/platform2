@@ -169,6 +169,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	}
 	
 	public Collection getLeaguesForMember() throws IDOException {
+		//TODO Eiki filter out only leagues
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
 	

@@ -61,6 +61,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		setHeight(800);
 		setWidth(600);	
 		setResizable(true);
+		setScrollbar(true);
 	}
 	
 	
