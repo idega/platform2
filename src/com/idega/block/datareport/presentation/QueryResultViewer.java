@@ -184,11 +184,7 @@ public class QueryResultViewer extends Block {
   private void showInputFieldsOrExecuteQuery(List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
   	Map identifierValueMap = query.getIdentifierValueMap();
 	  boolean calculateAccess = false;
-	  boolean containsOnlyAccessVariable = 
-	  	(	(calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.USER_ACCESS_VARIABLE))  || 
-	    (calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.GROUP_ACCESS_VARIABLE)) ||
-	  	(calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE))	) && 
-	    (identifierValueMap.size() == 1);
+	  boolean containsOnlyAccessVariable = containsOnlyAccessVariables(identifierValueMap); 
 	  if (! (containsOnlyAccessVariable || iwc.isParameterSet(EXECUTE_QUERY_KEY))) {
 	  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
 	  	showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
@@ -213,17 +209,41 @@ public class QueryResultViewer extends Block {
 	  	}
 	  }
   }  
+  
+  private boolean containsOnlyAccessVariables(Map identifierValueMap) {
+  	int numberOfVariables = identifierValueMap.size();
+  	if (numberOfVariables > 3) {
+  		return false;
+  	}
+  	else if (identifierValueMap.containsKey(DirectSQLStatement.USER_ACCESS_VARIABLE)) {
+  		numberOfVariables--;
+  	}
+  	if (numberOfVariables > 2) {
+  		return false;
+  	}
+  	else if (identifierValueMap.containsKey(DirectSQLStatement.GROUP_ACCESS_VARIABLE)) {
+  		numberOfVariables--;
+  	}
+  	if (numberOfVariables > 1) {
+  		return false;
+  	}
+  	else if (identifierValueMap.containsKey(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE)) {
+  		numberOfVariables--;
+  	}
+  	return (numberOfVariables <= 0);
+  }
+  	
 	  
-	  private void showInputFields(SQLQuery query, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
-	  	String name = query.getName();
-	  	String description = query.getQueryDescription();
-	  	PresentationObject presentationObject = getInputFields(name, description, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
-	  	Form form = new Form();
-	  	form.addParameter(QUERY_ID_KEY, Integer.toString(queryId));
-	  	form.addParameter(DESIGN_ID_KEY, Integer.toString(designId));
-	  	form.addParameter(OUTPUT_FORMAT_KEY, outputFormat);
-	  	form.add(presentationObject);
-	  	add(form);
+	private void showInputFields(SQLQuery query, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
+  	String name = query.getName();
+  	String description = query.getQueryDescription();
+  	PresentationObject presentationObject = getInputFields(name, description, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
+  	Form form = new Form();
+  	form.addParameter(QUERY_ID_KEY, Integer.toString(queryId));
+  	form.addParameter(DESIGN_ID_KEY, Integer.toString(designId));
+  	form.addParameter(OUTPUT_FORMAT_KEY, outputFormat);
+  	form.add(presentationObject);
+  	add(form);
 	}
 
   private PresentationObject getInputFields(String queryName, String queryDescription, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
