@@ -60,6 +60,7 @@ public class NewsReader extends Block implements IWBlock{
 	private int cellPadding = 0;
   private int cellSpacing = 0;
 	private int viewPageId = -1;
+	private int textSize = 2;
   private boolean backbutton = false;
   private boolean showAll = false;
   private boolean showImages = true;
@@ -71,13 +72,19 @@ public class NewsReader extends Block implements IWBlock{
   private boolean alignWithHeadline = false;
   private boolean limitNumberOfNews = false;
   private boolean enableDelete=true;
-	private boolean viewNews = false;
-  private String date = null;
-  private String newsReaderURL;
-  private String newsCollectionURL;
-  private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
+	private boolean viewNews = true;
+	private boolean newobjinst = false;
+	private String outerTableWidth = "100%";
+	private String sObjectAlign = "center";
+  private String headlineImageURL = "/nanar2.gif";
 	private String firstTableColor = null;
 	private String secondTableColor = null;
+
+  private Hashtable objectsBetween = null;
+	private Text textProxy = new Text();
+  private Text headlineProxy  = new Text();
+  private Text informationProxy  = new Text();
+
 
   private static String prmDelete = "nwr_delete";
   private static String prmEdit = "nwr_edit";
@@ -86,18 +93,6 @@ public class NewsReader extends Block implements IWBlock{
 
   public static String prmListCategory = "nwr_newscategoryid";
   public static String prmNewsCategoryId = "nwr_listcategory";
-  private boolean newobjinst = false;
-  private Hashtable objectsBetween = null;
-  private String sObjectAlign = "center";
-
-
-  private Text textProxy = new Text();
-  private Text headlineProxy  = new Text();
-  private Text informationProxy  = new Text();
-
-  private String outerTableWidth = "100%";
-
-  private int textSize = 2;
 
   private IWBundle iwb;
   private IWResourceBundle iwrb ;
@@ -431,8 +426,6 @@ public class NewsReader extends Block implements IWBlock{
 			sHeadline=sHeadline.substring(0,numberOfHeadlineLetters)+"...";
 		}
 
-
-
 		Text headLine = new Text(sHeadline);
 
     Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime);
@@ -442,11 +435,12 @@ public class NewsReader extends Block implements IWBlock{
 
 		// Check if using single_line_layout
 		if(iLayout != SINGLE_LINE_LAYOUT){
-			Text newsBody = new Text(sNewsBody);
+
 
 			if(locText!=null){
         sNewsBody =  locText.getBody();
 			}
+			Text newsBody = new Text(sNewsBody);
 
 			// shortening newstext
 			if(!showAll && sNewsBody.length() >= numberOfLetters){
@@ -495,12 +489,12 @@ public class NewsReader extends Block implements IWBlock{
 			}
 
 			if ( alignWithHeadline && headlineImageURL!=null){
-				T.add(new Image(headlineImageURL), 1, 2);
+				T.add(iwrb.getImage(headlineImageURL), 1, 2);
       }
 
 
 			if ( headlineAsLink ) {
-				Link headlineLink = new Link(headLine.getText());
+				Link headlineLink = new Link(headLine);
 				headlineLink.addParameter(prmMore,news.getID());
 				headlineLink.setBold(true);
 				if(viewPageId > 0)
@@ -523,9 +517,9 @@ public class NewsReader extends Block implements IWBlock{
 			T.setWidth(1,1,"45");
 			T.add("&nbsp;&nbsp",2,1);
 		  if ( headlineAsLink ) {
-				Link headlineLink = new Link(headLine.getText());
+				Link headlineLink = new Link(headLine);
 				headlineLink.addParameter(prmMore,news.getID());
-				headlineLink.setBold(true);
+				//headlineLink.setBold(true);
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, 3, 1);
@@ -719,9 +713,6 @@ public class NewsReader extends Block implements IWBlock{
   public void setAdmin(boolean isAdmin){
     this.isAdmin=isAdmin;
   }
-  public void setFromDate(String SQLdate){
-    this.date=SQLdate;
-  }
   public void setWidth(int width){
     setWidth(Integer.toString(width));
   }
@@ -737,27 +728,8 @@ public class NewsReader extends Block implements IWBlock{
 	  firstTableColor = firstColor;
 		secondTableColor = secondColor ;
 	}
-
-  public void setNewsReaderURL(String URL){
-    this.newsReaderURL = URL;
-  }
-  public String getNewsReaderURL(){
-    return newsReaderURL;
-  }
-  public void setNewsCollectionURL(String URL){
-    this.newsCollectionURL = URL;
-  }
-  public String getNewsCollectionURL(){
-    return newsCollectionURL;
-  }
   public void showNewsCollectionButton(boolean showNewsCollectionButton){
     this.showNewsCollectionButton = showNewsCollectionButton;
-  }
-  public void setNewsReaderURLAsSamePage(IWContext iwc){
-    this.newsReaderURL =  iwc.getRequestURI();
-  }
-  public void setNewsCollectionURLAsSamePage(IWContext iwc){
-    this.newsCollectionURL =  iwc.getRequestURI();
   }
   public void setNumberOfExpandedNews(int numberOfExpandedNews){
     this.numberOfExpandedNews = Math.abs(numberOfExpandedNews);
@@ -815,5 +787,61 @@ public class NewsReader extends Block implements IWBlock{
     }
     else
       iSpaceBetween++;
+  }
+
+	public synchronized Object clone() {
+    NewsReader obj = null;
+    try {
+      obj = (NewsReader)super.clone();
+
+			// integers :
+			obj.numberOfLetters = numberOfLetters;
+			obj.numberOfHeadlineLetters = numberOfHeadlineLetters;
+			obj.numberOfDisplayedNews = numberOfDisplayedNews;
+			obj.numberOfExpandedNews = numberOfExpandedNews;
+			obj.numberOfCollectionNews = numberOfCollectionNews;
+			obj.iSpaceBetween = iSpaceBetween;
+			obj.cellPadding = cellPadding;
+			obj.cellSpacing = cellSpacing;
+			obj.viewPageId = viewPageId;
+			obj.textSize = textSize;
+
+			// booleans:
+			obj.backbutton = backbutton;
+			obj.showAll = showAll;
+			obj.showImages = showImages;
+			obj.showOnlyDates = showOnlyDates;
+			obj.showTime = showTime;
+			obj.headlineAsLink = headlineAsLink;
+			obj.showHeadlineImage = showHeadlineImage;
+			obj.showMoreButton = showMoreButton;
+			obj.alignWithHeadline = alignWithHeadline;
+			obj.limitNumberOfNews = limitNumberOfNews;
+			obj.enableDelete=enableDelete;
+			obj.viewNews = viewNews;
+			obj.newobjinst = newobjinst;
+			// Strings :
+			obj.outerTableWidth = outerTableWidth;
+			obj.sObjectAlign = sObjectAlign;
+			obj.headlineImageURL = headlineImageURL;
+
+			// Nullable :
+			if(firstTableColor !=null)
+				obj.firstTableColor = firstTableColor;
+			if(secondTableColor != null)
+				obj.secondTableColor = secondTableColor;
+			if(objectsBetween != null)
+				obj.objectsBetween = objectsBetween;
+
+			// Text proxies :
+			obj.textProxy = textProxy;
+			obj.headlineProxy  = headlineProxy;
+			obj.informationProxy  = informationProxy;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
   }
 }
