@@ -134,7 +134,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       T.add(getAdminPart(iTextId,enableDelete,newobjinst,newWithAttribute,hasId),1,2);
     }
 
-    T.setBorder(1);
+    T.setBorder(0);
 
     add(T);
   }
