@@ -223,7 +223,7 @@ public class WorkReportOverViewCloseView extends Block {
 	//		GROUP_NUMBER,null,
 			GROUP_NAME,null,
 			HAS_NATIONAL_LEAGUE,hasNLConverter,
-			GROUP_TYPE,null,
+			GROUP_TYPE,new TextToLocalizedTextConverter(),
 	//		MEMBER_COUNT,null,
 			PLAYER_COUNT,null,
 			COMPETITOR_COUNT,null,

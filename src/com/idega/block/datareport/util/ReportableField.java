@@ -60,6 +60,11 @@ public class ReportableField implements IDOReportableField, JRField {
 		}
 	}
 	
+	public ReportableField(String name, IDOEntityField field){
+		this(field);
+		_customMadeFiledName = name;
+	}
+	
 	
 	public void setCustomMadeFieldName(String name){
 		_customMadeFiledName = name;
