@@ -1,24 +1,17 @@
 package is.idega.idegaweb.member;
 
-import is.idega.block.nationalregister.business.FamilyLogic;
 import is.idega.idegaweb.member.block.importer.business.PinLookupToGroupImportHandler;
-import is.idega.idegaweb.member.business.MemberFamilyLogicBean;
-import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierWindow;
-import is.idega.idegaweb.member.isi.block.reports.presentation.WorkReportWindow;
 import is.idega.idegaweb.member.presentation.ClubMemberExchangeWindow;
 import is.idega.idegaweb.member.presentation.UpdateClubDivisionTemplate;
 import is.idega.idegaweb.member.presentation.UserFamilyTab;
-import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.handler.UserPinLookupToGroupImportHandler;
 import com.idega.user.presentation.FamilyTab;
-import com.idega.user.presentation.UserCashierWindow;
 import com.idega.user.presentation.UserClubMemberExchangeWindow;
 import com.idega.user.presentation.UserConstants;
 import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
-import com.idega.user.presentation.UserWorkReportWindow;
 import com.idega.user.util.ICUserConstants;
 
 /**
@@ -38,15 +31,16 @@ public class IWBundleStarter implements IWBundleStartable {
 		// changing constants, setting the right help bundle in the com.idega.core.bundle
 		ICUserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
 		// services registration
-		IBOLookup.registerImplementationForBean(FamilyLogic.class, MemberFamilyLogicBean.class);
+		//IBOLookup.registerImplementationForBean(FamilyLogic.class, MemberFamilyLogicBean.class);
 		// add implementors for the com.idega.user bundle
 		ImplementorRepository repository =  ImplementorRepository.getInstance();
 		repository.addImplementor(FamilyTab.class, UserFamilyTab.class);
 		repository.addImplementor(UserPinLookupToGroupImportHandler.class,PinLookupToGroupImportHandler.class);
 		repository.addImplementor(UserUpdateClubDivisionTemplate.class, UpdateClubDivisionTemplate.class);
-		repository.addImplementor(UserCashierWindow.class, CashierWindow.class);
+//		repository.addImplementor(UserCashierWindow.class, CashierWindow.class);
 		repository.addImplementor(UserClubMemberExchangeWindow.class, ClubMemberExchangeWindow.class);
-		repository.addImplementor(UserWorkReportWindow.class, WorkReportWindow.class);
+//		repository.addImplementor(UserWorkReportWindow.class, WorkReportWindow.class);
+
 	}
 	
 	public void stop(IWBundle starterBundle) {
