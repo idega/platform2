@@ -36,11 +36,13 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
  public com.idega.user.data.Group getRootCitizenGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootProtectedCitizenGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School getProviderForUser(com.idega.user.data.User user) throws javax.ejb.FinderException, java.rmi.RemoteException;
-
+ public se.idega.idegaweb.commune.user.data.Citizen getCitizen(int userID);
+ public String getNameLastFirst(User user, boolean comma);
+ 
  public com.idega.user.data.Group getRootCommuneAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootProviderAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
-    public com.idega.user.data.Group getRootCustomerChoiceGroup () throws javax.ejb.CreateException, javax.ejb.FinderException, java.rmi.RemoteException;
+ public com.idega.user.data.Group getRootCustomerChoiceGroup () throws javax.ejb.CreateException, javax.ejb.FinderException, java.rmi.RemoteException;
  public boolean hasCitizenAccount(com.idega.user.data.User user)throws RemoteException;
  public boolean hasCitizenAccount(int userID)throws RemoteException;
  public com.idega.core.contact.data.Phone getChildHomePhone(User child) throws RemoteException;

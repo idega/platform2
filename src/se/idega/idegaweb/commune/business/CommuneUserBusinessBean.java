@@ -16,6 +16,8 @@ import javax.ejb.FinderException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.user.data.Citizen;
+import se.idega.idegaweb.commune.user.data.CitizenHome;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
@@ -1176,5 +1178,32 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				return temp;
 			return string;
 		}
+	}
+	
+	public Citizen getCitizen(int userID) {
+		Citizen citizen = null;
+		try {
+			CitizenHome home = (CitizenHome) this.getIDOHome(Citizen.class);
+			citizen = home.findByPrimaryKey(new Integer(userID));
+		}
+		catch (RemoteException re){
+			log(re);
+		}
+		catch (FinderException fe){
+			log(fe);
+		}
+		return citizen;
+	}
+	
+	public String getNameLastFirst(User user, boolean comma){
+		String lastFirstName = null;
+		if (comma == true){
+			lastFirstName = user.getLastName() + ", " + user.getFirstName();
+		} else {
+			lastFirstName = user.getLastName() + " " + user.getFirstName();
+		}
+		
+		return lastFirstName;
+		
 	}
 }
