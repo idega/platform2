@@ -34,7 +34,6 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
 import com.idega.user.data.UserStatusHome;
 import com.idega.util.IWTimestamp;
-import com.idega.util.Timer;
 import com.idega.util.text.TextSoap;
 
 /**
