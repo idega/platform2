@@ -149,6 +149,13 @@ public class ResultComparator implements Comparator {
         result = 1;
     }
 
+    if ( r1.getTotalScore() == 0 && r2.getTotalScore() > 0 )
+      result = 1;
+    if ( r1.getTotalScore() > 0 && r2.getTotalScore() == 0 )
+      result = -1;
+    if ( r1.getTotalScore() == 0 && r2.getTotalScore() == 0 )
+      result = 0;
+
     return result;
   }
 
@@ -197,6 +204,13 @@ public class ResultComparator implements Comparator {
         else
           result = 1;
       }
+
+    if ( r1.getTotalScore() == 0 && r2.getTotalScore() > 0 )
+      result = 1;
+    if ( r1.getTotalScore() > 0 && r2.getTotalScore() == 0 )
+      result = -1;
+    if ( r1.getTotalScore() == 0 && r2.getTotalScore() == 0 )
+      result = 0;
 
     return result;
   }

@@ -13,6 +13,7 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
+import com.idega.data.*;
 import com.idega.util.text.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
@@ -189,10 +190,12 @@ public class TournamentResults extends JModuleObject {
         int totalScore = 0;
         int totalDifference = 0;
         int totalBrutto = 0;
+        int roundNumber = 0;
+
+        Vector roundScore = collector.getRoundScore();
 
         if ( hole.equalsIgnoreCase("f") ) {
           int lastNine = (int) collector.getLastNine();
-          Vector roundScore = collector.getRoundScore();
           if ( roundScore != null ) {
             totalScore = ((Integer)roundScore.elementAt(roundScore.size()-1)).intValue();
             totalDifference = totalScore - collector.getFieldPar();
@@ -211,10 +214,10 @@ public class TournamentResults extends JModuleObject {
           case ResultComparator.TOTALSTROKES :
             int roundScoreColumn = 10;
             for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int roundScore = collector.getRoundScore(b);
-              Text roundScoreText = new Text(Integer.toString(roundScore));
+              int roundScore2 = collector.getRoundScore(b);
+              Text roundScoreText = new Text(Integer.toString(roundScore2));
                 roundScoreText.setFontSize(1);
-              if ( roundScore > 0 ) {
+              if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreText,roundScoreColumn,a+3);
                 roundScoreColumn++;
               }
@@ -227,8 +230,10 @@ public class TournamentResults extends JModuleObject {
               finalDifferenceText.setFontSize(1);
               finalDifferenceText.setBold();
               finalDifferenceText.setFontFace("Verdana,Arial,sans-serif");
-            myTable.add(finalScoreText,numberOfColumns-1,a+3);
-            myTable.add(finalDifferenceText,numberOfColumns,a+3);
+            if ( finalScore > 0 ) {
+              myTable.add(finalScoreText,numberOfColumns-1,a+3);
+              myTable.add(finalDifferenceText,numberOfColumns,a+3);
+            }
             myTable.add(totalRoundScore,8,a+3);
             myTable.add(diffText,9,a+3);
           break;
@@ -242,13 +247,13 @@ public class TournamentResults extends JModuleObject {
             }
 
             for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int roundScore = collector.getRoundScore(b);
-              int roundScoreBrutto = roundScore + handicap;
-              Text roundScoreText = new Text(Integer.toString(roundScore));
+              int roundScore2 = collector.getRoundScore(b);
+              int roundScoreBrutto = roundScore2 + handicap;
+              Text roundScoreText = new Text(Integer.toString(roundScore2));
                 roundScoreText.setFontSize(1);
               Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
                 roundScoreBruttoText.setFontSize(1);
-              if ( roundScore > 0 ) {
+              if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreBruttoText,roundScoreColumn2,a+3);
                 myTable.add(roundScoreText,roundScoreColumn2+1,a+3);
                 roundScoreColumn2 += 2;
@@ -262,8 +267,10 @@ public class TournamentResults extends JModuleObject {
               finalScoreText2.setFontSize(1);
               finalScoreText2.setBold();
               finalScoreText2.setFontFace("Verdana,Arial,sans-serif");
-            myTable.add(finalBruttoText,numberOfColumns-1,a+3);
-            myTable.add(finalScoreText2,numberOfColumns,a+3);
+            if ( finalScore > 0 ) {
+              myTable.add(finalBruttoText,numberOfColumns-1,a+3);
+              myTable.add(finalScoreText2,numberOfColumns,a+3);
+            }
             myTable.add(bruttoText,8,a+3);
             myTable.add(totalRoundScore,9,a+3);
           break;
@@ -271,10 +278,10 @@ public class TournamentResults extends JModuleObject {
           case ResultComparator.TOTALPOINTS :
             int roundScoreColumn3 = 9;
             for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int roundScore = collector.getRoundScore(b);
-              Text roundScoreText = new Text(Integer.toString(roundScore));
+              int roundScore2 = collector.getRoundScore(b);
+              Text roundScoreText = new Text(Integer.toString(roundScore2));
                 roundScoreText.setFontSize(1);
-              if ( roundScore > 0 ) {
+              if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreText,roundScoreColumn3,a+3);
                 roundScoreColumn3++;
               }
@@ -283,7 +290,8 @@ public class TournamentResults extends JModuleObject {
               finalScoreText3.setFontSize(1);
               finalScoreText3.setBold();
               finalScoreText3.setFontFace("Verdana,Arial,sans-serif");
-            myTable.add(finalScoreText3,numberOfColumns,a+3);
+            if ( finalScore > 0 )
+              myTable.add(finalScoreText3,numberOfColumns,a+3);
             myTable.add(totalRoundScore,8,a+3);
           break;
         }
@@ -291,7 +299,9 @@ public class TournamentResults extends JModuleObject {
         myTable.add(positionText,1,a+3);
         myTable.add(memberText,2,a+3);
         myTable.add(clubText,3,a+3);
-        myTable.add(handicapText,4,a+3);
+        if ( handicap > 0 ) {
+          myTable.add(handicapText,4,a+3);
+        }
         myTable.add(holeText,5,a+3);
         myTable.add(firstNineText,6,a+3);
         myTable.add(lastNineText,7,a+3);
