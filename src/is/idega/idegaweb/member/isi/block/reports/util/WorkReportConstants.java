@@ -26,7 +26,7 @@ public class WorkReportConstants extends IWMemberConstants{
 	public static final String WR_USER_TYPE_LEAGUE = "LEAGUE";
 	
   // name of the "group" that represents the main board
-  public static final String MAIN_BOARD = "main_board"; 
+  public static final String MAIN_BOARD_GROUP_NAME = "AÐA"; 
   // artificial id of the "group" that represents the main board
   // do not use -1 because that is used to represent a new entity that is not stored yet 
   public static final Integer MAIN_BOARD_ID = new Integer(-42);

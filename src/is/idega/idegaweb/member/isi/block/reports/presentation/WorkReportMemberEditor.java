@@ -7,6 +7,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.ejb.CreateException;
@@ -91,7 +93,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   // key: member id, value: collection of league names, to that the member belongs
   private Map memberLeaguesMap = null;
   // key: league name, int number of members that belong to that league 
-  private Map leagueCountMap = null;
+  private SortedMap leagueCountMap = null;
     
   public WorkReportMemberEditor() {
     super();
@@ -141,11 +143,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     fieldList.add(STREET_NAME);
     fieldList.add(POSTAL_CODE_ID);
     Iterator iterator = leagues.iterator();
-    leagueCountMap = new HashMap();
+    leagueCountMap = new TreeMap();
     while (iterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) iterator.next();
+      // special case: remove the league that represents the main board
       String groupName = group.getName();
-      leagueCountMap.put(groupName, new Integer(0));
+      if (! WorkReportConstants.MAIN_BOARD_GROUP_NAME.equals(groupName))  {
+        leagueCountMap.put(groupName, new Integer(0));
+      }
     }
   }
   
@@ -416,7 +421,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     browser.setEntities("dummy_string", entities);
     browser.setCellpadding(2);
     browser.setCellspacing(0);
-    browser.setBorder(1);
+    browser.setBorder(0);
     return browser;
   }
   
@@ -525,7 +530,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     else if(pathShortKey.equals(POSTAL_CODE_ID))  {
       try {
         int postalCode = Integer.parseInt(value.toString());
-        member.setPostalCodeID(postalCode);
+        if (ConverterConstants.NULL_ENTITY_ID.intValue() == postalCode) {
+          member.setPostalCode(null);
+        }
+        else {
+          member.setPostalCodeID(postalCode);
+        }
       }
       catch (NumberFormatException ex)  {
       }
