@@ -2224,7 +2224,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	private void addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID) throws NoPlacementFoundException {
+	private ChildCareContract addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID) throws NoPlacementFoundException {
 		try {
 			ChildCareContract archive = null;
 			if (contractFileID != -1)
@@ -2260,6 +2260,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				contract.setValidFrom(validFrom);
 				contract.store();
 			}
+			return archive;
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -2270,6 +2271,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	public ChildCareContract getContractFile(int contractFileID) {
@@ -3142,7 +3144,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						}
 					}
 					
-					addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID);
+					ChildCareContract archive = addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID);
+					if (archive != null) {
+						archive.setInvoiceReceiver(parent);
+						archive.store();
+					}
 				}
 			}
 				
