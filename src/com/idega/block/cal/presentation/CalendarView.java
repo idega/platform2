@@ -166,8 +166,14 @@ public class CalendarView extends Block{
 			}
 			//the inner for-loop goes through the list of entries and prints them out as a link
 			//the link opens the view for the entry
-			for(int j=0; j<listOfEntries.size(); j++) {
+			int numberOfEntries = listOfEntries.size();
+			
+			for(int j=0; j<numberOfEntries; j++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(j);
+				if(entry==null) {
+					//fucked up check
+					continue;
+				}
 				CalendarLedger ledger = null;
 				int groupIDInLedger = -1;
 				boolean isInGroup = false;
