@@ -131,6 +131,7 @@ public abstract class AbstractSearchForm extends Block{
 	protected String backgroundColor;
 	protected String width;
 	protected String formInputStyle;
+	protected Image windowHeaderImage;
 	
 	protected IWResourceBundle iwrb;
 
@@ -245,6 +246,9 @@ public abstract class AbstractSearchForm extends Block{
 		}
 		Link currLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.curreny_calculator","Currencies")));
 		currLink.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
+		if (windowHeaderImage != null) {
+			TravelCurrencyCalculatorWindow.setHeaderImage(currLink, windowHeaderImage.getDefaultImageID());
+		}
 		table.add(currLink, ++column, 1);
 		table.setAlignment(column, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		
@@ -271,7 +275,7 @@ public abstract class AbstractSearchForm extends Block{
 		return table;
 	}
 	protected Table getText(){
-		Text text = new Text("All bookings directly from suppliers");
+		Text text = getText("All bookings directly from suppliers");
 		Table table = new Table();
 		table.setWidth("100%");
 		table.setCellpaddingAndCellspacing(0);
@@ -891,6 +895,10 @@ public abstract class AbstractSearchForm extends Block{
 
 	public void setFormInputStyle(String style) {
 		this.formInputStyle = style;
+	}
+	
+	public void setWindowHeaderImage(Image image) {
+		this.windowHeaderImage = image;
 	}
 	
 	protected Product getProduct() {
