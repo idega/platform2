@@ -957,7 +957,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 			board.setReportId(workReportId);
 			board.setWorKReportGroupID(id.intValue());
-			board.setNumberOfPlayers(val.intValue());
+			if (val != null)
+				board.setNumberOfPlayers(val.intValue());
+			else
+				board.setNumberOfPlayers(0);
 			board.store();
 		}
 
