@@ -99,6 +99,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_PLACEMENT_ID = "cc_placement_id";
 	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
 	
+	public static final String PARAMETER_SHOW_PARENTAL= "cc_show_parental";
 	//private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
 	public static final String FIELD_CURRENT_DATE = "currentdate";
@@ -156,6 +157,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private int _placementID = -1;
 	private int _pageID;
 	private boolean _showVacancies= false;
+	private boolean _showParental= true;
 	
 	//private IWTimestamp earliestDate;
 
@@ -247,7 +249,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_PAGE_ID);
 		form.maintainParameter(PARAMETER_CONTRACT_ID);
 		form.maintainParameter(PARAMETER_PLACEMENT_ID);
-		form.maintainParameter(PARAMETER_SHOW_VACANCIES);
+		form.maintainParameter(PARAMETER_SHOW_VACANCIES);		
+		form.maintainParameter(PARAMETER_SHOW_PARENTAL);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -1044,24 +1047,28 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		boolean canCancel = getBusiness().canCancelContract(((Integer)application.getPrimaryKey()).intValue());
 		
 		if (canCancel) {
-			RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
-			parentalLeave.keepStatusOnAction(true);
-			RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
-			other.keepStatusOnAction(true);
-			if (!iwc.isParameterSet(PARAMETER_CANCEL_REASON))
-				other.setSelected(true);
+			if (_showParental){
+				RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
+				parentalLeave.keepStatusOnAction(true);
+				RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
+				other.keepStatusOnAction(true);
+				if (!iwc.isParameterSet(PARAMETER_CANCEL_REASON))
+					other.setSelected(true);
 			
-			table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
-			table.add(parentalLeave, 1, row);
-			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
-			table.add(new Break(), 1, row);
-			table.add(other, 1, row);
-			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+				table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
+				table.add(parentalLeave, 1, row);
+				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
+				table.add(new Break(), 1, row);
+				table.add(other, 1, row);
+				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+			}
 			
 			TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_CANCEL_MESSAGE));
 			textArea.setWidth(Table.HUNDRED_PERCENT);
 			textArea.setRows(4);
-			textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
+			if (_showParental){
+				textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
+			}
 			textArea.keepStatusOnAction(true);
 	
 			table.add(getSmallHeader(localize("child_care.cancel_reason_message", "Reason for cancel")+":"), 1, row++);
@@ -1760,6 +1767,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 		if (iwc.isParameterSet(PARAMETER_SHOW_VACANCIES))
 			_showVacancies = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_VACANCIES)).booleanValue();		
+		
+		if (iwc.isParameterSet(PARAMETER_SHOW_PARENTAL))
+			_showParental = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PARENTAL)).booleanValue();
 			//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			//earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
