@@ -16,14 +16,18 @@ public class ImageViewer extends JModuleObject{
 
 private int categoryId = -1;
 private int numberOfImages=3;
+private boolean limitNumberOfImages=false;
 private int numberOfDisplayedImages=1;
 private int iNumberInRow = 3; //iXXXX for int
 private int ifirst = 0;
+private int maxImageWidth =100;
+private boolean limitImageWidth=false;
 
 private boolean backbutton = false;
-private boolean limitNumberOfImage=false;
-private Table outerTable = new Table(1,2);
+private Table outerTable = new Table(1,3);
 private boolean isAdmin = false;
+private String outerTableWidth = "100%";
+private String outerTableHeight = "100%";
 
 
 private Text textProxy = new Text();
@@ -111,6 +115,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   if(imageId != null){
     try{
+      limitImageWidth = false;
       image[0] = new ImageEntity(Integer.parseInt(imageId));
       add(displayImage(image[0]));
      }
@@ -124,8 +129,65 @@ public void main(ModuleInfo modinfo)throws Exception{
     try{
       if ( imageCategoryId != null )
         categoryId = Integer.parseInt(imageCategoryId);
-      if( categoryId != -1 )
-        add(displayCatagory(categoryId, modinfo));
+      if( categoryId != -1 ){
+        ImageCatagory category = new ImageCatagory(categoryId);
+        ImageEntity[] imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
+
+        Text categoryName = new Text(category.getName());
+        categoryName.setBold();
+        categoryName.setFontSize(3);
+        outerTable.add(categoryName,1,1);
+        outerTable.setColor(1,1,"#CCCCCC");
+        outerTable.setColor(1,3,"#CCCCCC");
+        outerTable.setAlignment(1,1,"left");
+        outerTable.setAlignment(1,2,"center");
+        outerTable.setAlignment(1,3,"center");
+        outerTable.setWidth(outerTableWidth);
+        outerTable.setHeight(outerTableHeight);
+        outerTable.setCellpadding(0);
+        outerTable.setCellspacing(0);
+        outerTable.setBorder(1);
+
+
+
+        String sFirst = modinfo.getParameter("iv_first");//browsing from this image
+        if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
+
+        outerTable.add(displayCatagory(imageEntity),1,2);
+        if( limitNumberOfImages ) {
+          String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages+1)+" af "+imageEntity.length;
+          Text middleText = new Text(middle);
+
+          Link back = new Link("Fyrri myndir <<");
+          ifirst = ifirst-numberOfDisplayedImages;
+          if( ifirst<0 ) ifirst = 0;
+          back.addParameter("iv_first",ifirst);
+          back.addParameter("image_catagory_id",category.getID());
+
+          Link forward = new Link(">> Næstu myndir");
+          int inext = ifirst+numberOfDisplayedImages;
+          if( inext > imageEntity.length) inext = imageEntity.length-numberOfDisplayedImages;
+          forward.addParameter("iv_first",inext);
+          forward.addParameter("image_catagory_id",category.getID());
+
+          Table links = new Table(3,1);
+
+          links.setWidth("100%");
+          links.setCellpadding(0);
+          links.setCellspacing(0);
+          links.setAlignment(1,1,"left");
+          links.setAlignment(2,1,"center");
+          links.setAlignment(3,1,"right");
+
+          links.add(back,1,1);
+          links.add(middleText,2,1);
+          links.add(forward,3,1);
+          outerTable.add(links,1,3);
+
+        }
+        add(outerTable);
+
+      }
     }
     catch(NumberFormatException e) {
       add(new Text("CategoryId must be a number"));
@@ -135,7 +197,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 
 }
 
-public static Table displayImage(int imageId) throws SQLException {
+public static Table getImageInTable(int imageId) throws SQLException {
     Table table = new Table();
     com.idega.jmodule.object.Image image = new com.idega.jmodule.object.Image(imageId);
     table.add(image);
@@ -148,8 +210,18 @@ private Table displayImage( ImageEntity image ) throws SQLException
   int imageId = image.getID();
   Table imageTable = new Table(1, 2);
 
+  imageTable.setAlignment("center");
+  imageTable.setAlignment(1,1,"center");
+  imageTable.setAlignment(1,2,"center");
+  imageTable.setVerticalAlignment("top");
   imageTable.setCellpadding(0);
-  imageTable.add(new Image(imageId), 1, 1);
+
+  Image theImage = new Image(imageId);
+  if( limitImageWidth ) theImage.setWidth(maxImageWidth);
+  Link bigger = new Link(theImage);
+  bigger.addParameter("image_id",imageId);
+
+  imageTable.add(bigger, 1, 1);
 
   if ( text!=null){
     Text imageText = new Text(text);
@@ -159,12 +231,6 @@ private Table displayImage( ImageEntity image ) throws SQLException
     imageTable.add(imageText, 1, 2);
     imageTable.setColor(1,2,"#CCCCCC");
   }
-
-  imageTable.setAlignment("center");
-  imageTable.setAlignment(1,1,"center");
-  imageTable.setAlignment(1,2,"center");
-
-  imageTable.setVerticalAlignment("top");
 
   if(isAdmin) {
     Table editTable = new Table(5,1);
@@ -196,22 +262,19 @@ private Table displayImage( ImageEntity image ) throws SQLException
 return imageTable;
 }
 
-private Table displayCatagory(int categoryId, ModuleInfo modinfo)  throws SQLException {
+private Table displayCatagory( ImageEntity[] imageEntity )  throws SQLException {
   int k = 0;
-  String sFirst = modinfo.getParameter("iv_first");//browsing from this image
-  ImageCatagory category = new ImageCatagory(categoryId);
-  ImageEntity[] imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
-  com.idega.jmodule.object.Image image;
+  Image image;
 
-  if( limitNumberOfImage ) k = numberOfDisplayedImages;
+  if( limitNumberOfImages ) k = numberOfDisplayedImages;
   else k = imageEntity.length;
 
   int heigth = k/iNumberInRow;
   if( k%iNumberInRow!=0 ) heigth++;
   Table table = new Table(iNumberInRow,heigth);
+  table.setWidth("100%");
 
   try {
-    if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
     if (ifirst < 0 ) {
       ifirst = (-1)*ifirst;
     }
@@ -228,9 +291,12 @@ private Table displayCatagory(int categoryId, ModuleInfo modinfo)  throws SQLExc
   for (int i = ifirst ; (x<k) && ( i < imageEntity.length ) ; i++ ) {
     table.setVerticalAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"top");
     table.setAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"center");
+    table.setWidth((x%iNumberInRow)+1,Integer.toString((int)(100/iNumberInRow))+"%");
     table.add( displayImage(imageEntity[i]) ,(x%iNumberInRow)+1,(x/iNumberInRow)+1);
     x++;
   }
+
+
 
 
 return table;
@@ -258,7 +324,7 @@ return tempText;
 
 
 public void setNumberOfDisplayedImages(int numberOfDisplayedImages){
-  this.limitNumberOfImage = true;
+  this.limitNumberOfImages = true;
   if( numberOfDisplayedImages<0 ) numberOfDisplayedImages = (-1)*numberOfDisplayedImages;
   this.numberOfDisplayedImages = numberOfDisplayedImages;
 }
@@ -267,15 +333,31 @@ public void setNumberInRow(int NumberOfImagesInOneRow){
   this.iNumberInRow = NumberOfImagesInOneRow;
 }
 
+public void setMaxImageWidth(int maxImageWidth){
+  this.limitImageWidth=true;
+  this.maxImageWidth = maxImageWidth;
+}
+
+public void limitImageWidth( boolean limitImageWidth ){
+  this.limitImageWidth=true;
+}
+
 
 public void setTableWidth(int width){
   setTableWidth(Integer.toString(width));
 }
 
 public void setTableWidth(String width){
-  this.outerTable.setWidth(width);
+  this.outerTableWidth=width;
 }
 
+public void setTableHeight(int height){
+  setTableHeight(Integer.toString(height));
+}
+
+public void setTableHeight(String height){
+  this.outerTableHeight=height;
+}
 public void setViewImage(String imageName){
   view = new Image(imageName);
 }
