@@ -1134,6 +1134,9 @@ public static final String COOKIE_NAME = "idegaPOLL_";
         poll.setAttribute(sAttribute);
 
       }
+      else {
+      		poll.setAttribute("BLANK_VALUE");
+      }
 
 
 
