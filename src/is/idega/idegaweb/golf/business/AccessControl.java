@@ -5,7 +5,6 @@
 
 package is.idega.idegaweb.golf.business;
 
-import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
 import is.idega.idegaweb.golf.entity.Group;
 import is.idega.idegaweb.golf.entity.Member;
 import java.sql.SQLException;
