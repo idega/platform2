@@ -116,6 +116,8 @@ public class AssessmentRoundThread extends Thread {
 							entry.setAmount(tariff.getAmount());
 							entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
 							entry.setInfo(tariff.getText());
+							entry.setTariffID(((Integer)tariff.getPrimaryKey()).intValue());
+							entry.setTariffTypeID(tariff.getTariffTypeId());
 							entry.setStatusCreated();
 							entry.setTypeAssessment();
 							entry.setInsertedByUser(_round.getExecutedBy());
