@@ -1342,7 +1342,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public Collection findClassMemberInSchool(int studentID, int schoolID) {
 		try {
-			return getSchoolClassMemberHome().findByStudentAndSchool(studentID, schoolID);
+			Collection types = findAllSchoolTypesForSchool();
+			return getSchoolClassMemberHome().findByStudentAndSchoolAndTypes(studentID, schoolID, types);
 		}
 		catch (FinderException fe) {
 			return new Vector();
