@@ -567,6 +567,7 @@ public class IFSFileCreationThread extends Thread {
 			Iterator phIt = phOutsideCommune.iterator();
 			while (phIt.hasNext()) {
 				PaymentHeader pHead = (PaymentHeader) phIt.next();
+				School school = pHead.getSchool();
 				Provider prov = null;
 				try {
 					prov = provBiz.getProvider(pHead.getSchoolID());
@@ -740,7 +741,7 @@ public class IFSFileCreationThread extends Thread {
 							//empty
 							bWriter.write("-");
 							bWriter.write(";");
-							bWriter.write(pRec.getPaymentText());
+							bWriter.write(school.getName()+", "+pRec.getPaymentText());
 							bWriter.write(";");
 							bWriter.write("-");
 							bWriter.newLine();
