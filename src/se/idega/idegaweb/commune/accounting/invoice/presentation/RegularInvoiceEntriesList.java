@@ -108,7 +108,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		PAR_NEW = PAR + ACTION_NEW, 
 		PAR_DELETE = PAR + ACTION_DELETE, 
 		PAR_CANCEL = PAR + ACTION_CANCEL,
-		PAR_EDIT = PAR + ACTION_EDIT, 
+		//PAR_EDIT = PAR + ACTION_EDIT, 
 		PAR_SEARCH_PEOPLE = PAR + ACTION_SEARCH_PEOPLE, 
 		PAR_SEARCH_INVOICE = PAR + ACTION_SEARCH_INVOICE,
 		PAR_SEARCH_REGULATION = PAR + ACTION_SEARCH_REGULATION,
@@ -209,11 +209,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			iwc.getParameter(PAR_AMOUNT_PR_MONTH),
 			iwc.getParameter(PAR_VAT_PR_MONTH),
 			iwc.getParameter(PAR_REMARK),
-			iwc.getParameter(PAR_REGULATION_TYPE),
+			//iwc.getParameter(PAR_REGULATION_TYPE),
 			regTypes,
 			iwc.getParameter(PAR_OWN_POSTING),
 			iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT),
-			iwc.getParameter(PAR_VAT_TYPE),
+			//iwc.getParameter(PAR_VAT_TYPE),
 			vatTypes));
 	}
 
@@ -357,11 +357,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			String amountPrMonth,
 			String vatPrMonth,
 			String remark,
-			String regulationType,
+			//String regulationType,
 			Collection regTypeOptions,
 			String ownPosting,
 			String doubleEntryAccount,
-			String vat,			
+			//String vat,			
 			Collection vatOptions
 			) {	
 				
