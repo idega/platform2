@@ -13,6 +13,7 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.BookingDeleterWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.hotel.business.HotelBooker;
+import is.idega.idegaweb.travel.service.hotel.business.HotelBusiness;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.presentation.AbstractBookingOverview;
@@ -172,9 +173,10 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               service = getTravelStockroomBusiness(iwc).getService(prod);
 
               if (_supplier != null) {
-              		if (hotel != null) {
-		                iCount = hotel.getNumberOfUnits();
-              		}
+              	iCount = getHotelBusiness(iwc).getMaxBookings(prod, tempStamp);
+//              		if (hotel != null) {
+//		                iCount = hotel.getNumberOfUnits();
+//              		}
 //                sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
 //                if (sDay != null) {
 //                  iCount = sDay.getMax();
@@ -373,12 +375,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
         seats = sDay.getMax();
       }*/
 
-			try {
-				  Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey() );
-				  seats = hotel.getNumberOfUnits();
-			} catch (FinderException e) {
-				debug("Cannot find hotel for Product...");
-			}
+    	seats = getHotelBusiness(iwc).getMaxBookings(product, stamp);
       assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);
       iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
 //      booked = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
@@ -676,6 +673,10 @@ public class HotelBookingOverview extends AbstractBookingOverview {
   
   private HotelBooker getHotelBooker(IWApplicationContext iwac) throws RemoteException {
   	return (HotelBooker)  IBOLookup.getServiceInstance( iwac, HotelBooker.class);
+  }
+  
+  private HotelBusiness getHotelBusiness(IWApplicationContext iwac) throws RemoteException {
+  	return (HotelBusiness) IBOLookup.getServiceInstance( iwac, HotelBusiness.class);
   }
   
 }
