@@ -114,12 +114,9 @@ public class TournamentController{
                     for (int i = 0; i < unions.length; i++) {
                         unions_id = unions[i].getID();
                         union_abb = unions[i].getAbbrevation();
-                        if (union_id != 1) {
-                            tours = (Tournament[]) new Tournament().findAllByColumnOrdered("union_id",unions_id+"","START_TIME");
-                            for (int j = 0; j < tours.length; j++) {
-                                menu.addMenuElement(tours[j].getID(),union_abb+"&nbsp;&nbsp;&nbsp;"+tours[j].getName());
-                            }
-
+                        tours = (Tournament[]) new Tournament().findAllByColumnOrdered("union_id",unions_id+"","START_TIME");
+                        for (int j = 0; j < tours.length; j++) {
+                            menu.addMenuElement(tours[j].getID(),union_abb+"&nbsp;&nbsp;&nbsp;"+tours[j].getName());
                         }
                     }
                 }
