@@ -1573,6 +1573,7 @@ public class HotelBookingForm extends BookingForm {
 
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
+		System.out.println("checking booking...");
     boolean tooMany = false;
 
     int iMany = 0;
@@ -1622,7 +1623,8 @@ public class HotelBookingForm extends BookingForm {
       fromStamp = new IWTimestamp(fromDate);
       
 //      heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
-    	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(serviceId, fromStamp, null);
+//    	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(serviceId, fromStamp, null);
+				heildarbokanir = getHotelBooker(iwc).getBookingsTotalCount(serviceId, fromStamp);
       int iManyDays = Integer.parseInt(manyDays);
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
@@ -1641,7 +1643,6 @@ public class HotelBookingForm extends BookingForm {
 		int maxPerRoom = hotel.getMaxPerUnit();
 		
 		
-
 //    iMany;
 		if (maxPerRoom > 0) {
 			if (iMany > maxPerRoom) {
@@ -1653,9 +1654,9 @@ public class HotelBookingForm extends BookingForm {
 		if (!tooMany) {
 	    int iAvailable;
 	    if (totalRooms > 0) {
-		    iAvailable = totalRooms - heildarbokanir;
+//		    iAvailable = totalRooms - heildarbokanir;
 //		    System.out.println("iAvail = totalRooms - heildarbokanir ....."+iAvailable+" = "+totalRooms+" - "+heildarbokanir);
-	//	    iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, null );
+		    iAvailable = totalRooms - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, null );
 			  if (iAvailable <= 0 ) {
 		    	tooMany = true;
 		    	errorDays.add(fromStamp);
@@ -1693,8 +1694,9 @@ public class HotelBookingForm extends BookingForm {
 		
 		int max = hotel.getNumberOfUnits();
 		
+	
 		if (max > 0) {
-			int currentBookings = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
+			int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
 			return (currentBookings >= max);
 		}
 		
