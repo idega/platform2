@@ -429,6 +429,14 @@ public class Member extends com.idega.data.genericentity.Member {
       catch(SQLException ex){   if(debug) ex.printStackTrace();   }
 
       try{
+        LoginTable[] login = (LoginTable[]) LoginTable.getStaticInstance("com.idega.projects.golf.entity.LoginTable").findAllByColumn("member_id",this.getID());
+        for (int i = 0; i < login.length; i++){
+          login[i].delete();
+        }
+      }
+      catch(SQLException ex){   if(debug) ex.printStackTrace();   }
+
+      try{
         super.delete();
       }
       catch(SQLException ex){    if(debug) ex.printStackTrace();  }
