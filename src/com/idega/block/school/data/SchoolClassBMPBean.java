@@ -53,7 +53,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   }
 
   public String getName(){
-    return getSchoolClassName(NAME);
+    return getSchoolClassName();
   }
 
   public int getSchoolId(){
@@ -83,7 +83,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public void setSchoolClassName(String name){
     this.setColumn(NAME,name);
   }
-  public String getSchoolClassName(String name){
+  public String getSchoolClassName(){
     return getStringColumnValue(NAME);
   }
 

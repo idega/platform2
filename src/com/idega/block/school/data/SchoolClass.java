@@ -7,7 +7,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public boolean getLocked();
  public java.lang.String getName();
  public boolean getReady();
- public java.lang.String getSchoolClassName(java.lang.String p0);
+ public java.lang.String getSchoolClassName();
  public int getSchoolId();
  public int getSchoolSeasonId();
  public int getSchoolYearId();
