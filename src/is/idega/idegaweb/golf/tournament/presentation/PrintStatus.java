@@ -35,7 +35,6 @@ public class PrintStatus extends GolfBlock {
 
 	if (excel == null) {
 	  ResultsViewer results = new ResultsViewer(tournament_id);
-      results.addHiddenInput("tournament_id",sTournamentId);
 	  add(results);
     }else {
       String fileSeperator = System.getProperty("file.separator");
