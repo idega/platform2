@@ -658,7 +658,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 	public Collection getChildrenForUser(User user) throws RemoteException {
 		try {
-			return getMemberFamilyLogic().getChildrenFor(user);
+			return getMemberFamilyLogic().getChildrenInCustodyOf(user);
 		}
 		catch (NoChildrenFound ncf) {
 			return null;
