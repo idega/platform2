@@ -89,7 +89,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private void control( IWContext iwc ){
     image = Table.getTransparentCell(iwc);
     image.setHeight(6);
-
+    NF = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
     checkIds(iwc);
     idegaTimestamp itFromDate = getFromDate(iwc);
     idegaTimestamp itToDate = getToDate(iwc);
@@ -351,7 +351,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     T.setWidth(1,"20");
    // T.setWidth(2,"40%");
    // T.setWidth(3,"60%");
-    T.setWidth(cols,"25");
+    T.setColumnAlignment(cols,"right");
+    //T.setWidth(cols,"40");
     T.setWidth("100%");
 
     T.setHorizontalZebraColored(FinanceColors.LIGHTGREY,FinanceColors.WHITE);
@@ -494,21 +495,23 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       while(IT.hasNext()){
         entry = (AccountPhoneEntry) IT.next();
         phonedNumber = entry.getPhonedNumber();
-        if(phonedNumber.startsWith(sFor)){
-          forTime += entry.getDuration();
-          forPrice += entry.getPrice();
-          forCount++;
-        }
-        //mobile
-        else if(phonedNumber.startsWith(sMob1) || phonedNumber.startsWith(sMob2)){
-          mobTime += entry.getDuration();
-          mobPrice += entry.getPrice();
-          mobCount++;
-        }
-        else{
-          otherTime += entry.getDuration();
-          otherPrice += entry.getPrice();
-          otherCount++;
+        if(phonedNumber !=null){
+          if(phonedNumber.startsWith(sFor)){
+            forTime += entry.getDuration();
+            forPrice += entry.getPrice();
+            forCount++;
+          }
+          //mobile
+          else if(phonedNumber.startsWith(sMob1) || phonedNumber.startsWith(sMob2)){
+            mobTime += entry.getDuration();
+            mobPrice += entry.getPrice();
+            mobCount++;
+          }
+          else{
+            otherTime += entry.getDuration();
+            otherPrice += entry.getPrice();
+            otherCount++;
+          }
         }
       }
       totalCount = otherCount + mobCount + forCount;
@@ -616,6 +619,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         txTotPrice.setFontColor(sKreditColor);
 
       T.add(txTotPrice,4,row++);
+      T.getContentTable().setColumnAlignment(4,"right");
     }
 
     return T;
@@ -745,44 +749,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       eUser = iwc.getUser();
       iUserId = eUser.getID();
     }
-
-
     listAccount = FinanceFinder.getInstance().listOfFinanceAccountsByUserId(iUserId);
-      /*
-    if(iUserId <= 0){
-      if(iwc.getParameter(prmUserId)!=null){
-        iUserId = Integer.parseInt(iwc.getParameter(prmUserId));
-      }
-      else if(isLoggedOn){
-        iUserId = iwc.getUser().getID();
-      }
-    }
-    if( iwc.getParameter(prmAccountId)!=null ){
-      iAccountId = Integer.parseInt(iwc.getParameter(prmAccountId));
-    }
-    if( iUserId > 0 ){
-      try {
-        eUser = new User(iUserId);
-      }
-      catch (SQLException ex) {
-        ex.printStackTrace();
-      }
-    }
-    if(iAccountId >  0 && iUserId <= 0){
-      debug("account id and no user id");
-      FinanceAccount acc = FinanceFinder.getInstance().getAccount(iAccountId);
-      if(acc !=null)
-        iUserId = acc.getUserId();
-    }
-    if(iUserId > 0)
-      listAccount = FinanceFinder.getInstance().listOfFinanceAccountByUserId(iUserId);
-
-   /*
-    else if(isAdmin){
-      /** @todo  connect to category *//*
-      listAccount = FinanceFinder.getInstance().listOfAccountInfo();
-    }
-    */
   }
 
   private Link getPrintableLink(PresentationObject obj,idegaTimestamp from,idegaTimestamp to){
@@ -810,7 +777,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   }
 
   public void main( IWContext iwc ) {
-    debugParameters(iwc);
+
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 

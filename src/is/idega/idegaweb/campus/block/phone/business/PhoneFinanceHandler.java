@@ -26,6 +26,8 @@ import java.util.Vector;
 import java.util.Iterator;
 import java.util.Collection;
 import java.sql.SQLException;
+import javax.transaction.TransactionManager;
+import com.idega.transaction.IdegaTransactionManager;
 
 /**
  * Title:
@@ -55,18 +57,30 @@ public class PhoneFinanceHandler implements FinanceHandler{
     sql.append(" , ").append(AccountPhoneEntry.getColumnNameStatus()).append(" = '").append(AccountPhoneEntry.statusRead).append("'");
     sql.append(" where ").append(AccountPhoneEntry.getRoundIdColumnName()).append(" = ").append(iAssessmentRoundId);
     System.err.println(sql.toString());
+    TransactionManager t = IdegaTransactionManager.getInstance();
+
     try{
+      t.begin();
+
       SimpleQuerier.execute(sql.toString());
       SimpleQuerier.execute(getSQLString(iAssessmentRoundId));
+      SimpleQuerier.execute("delete from fin_phone_entry where total_price > 0 and fin_assessment_round_id = "+iAssessmentRoundId);
       SimpleQuerier.execute("delete from fin_acc_entry where fin_assessment_round_id = "+iAssessmentRoundId);
       SimpleQuerier.execute("delete from fin_assessment_round where fin_assessment_round_id = "+iAssessmentRoundId);
 
-     return true;
-    }
-    catch(Exception ex){
-     ex.printStackTrace();
-    }
-    return false;
+      t.commit();
+      return true;
+      }
+      catch(Exception e) {
+        try {
+          t.rollback();
+        }
+        catch(javax.transaction.SystemException ex) {
+          ex.printStackTrace();
+        }
+        e.printStackTrace();
+      }
+      return false;
 
     /*
     EntityBulkUpdater bulk = new EntityBulkUpdater();
@@ -184,7 +198,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
           }
 
        if(AR != null){
-        javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+        TransactionManager t = IdegaTransactionManager.getInstance();
 
         try{
           t.begin();
@@ -193,8 +207,11 @@ public class PhoneFinanceHandler implements FinanceHandler{
             Integer phAccId;
             Iterator iter = entries.iterator();
             AccountEntry AE;
+           // long maxstamp = 0;
             while(iter.hasNext()){
               ape = (AccountPhoneEntry) iter.next();
+              //if(ape.getPhonedStamp().getTime() > maxstamp)
+              //  maxstamp = ape.getPhonedStamp().getTime();
               phAccId = new Integer(ape.getAccountId());
               if(M.containsKey(phAccId)){
                 accounts = (ContractAccounts) M.get(phAccId);
@@ -232,6 +249,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 phoneEntry.setRoundId(iRoundId);
                 phoneEntry.setAccountEntryId(entry.getID());
                 phoneEntry.setStatus(phoneEntry.statusBilled);
+                //phoneEntry.setPhonedStamp(new idegaTimestamp(maxstamp).getTimestamp());
                 phoneEntry.insert();
                 entry.update();
               }

@@ -373,7 +373,7 @@ public class TariffAssessments extends Block {
         T.add(Edit.formatText(iwrb.getLocalizedString("account_name","Account name")),2,1);
         //T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
         T.add(Edit.formatText(iwrb.getLocalizedString("last_updated","Last updated")),3,1);
-        T.add(Edit.formatText(iwrb.getLocalizedString("totals","Balance")),4,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("balance","Balance")),4,1);
 
         int col = 1;
         int row = 2;

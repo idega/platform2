@@ -6,6 +6,8 @@ import com.idega.block.finance.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.SimpleQuerier;
 import com.idega.data.EntityBulkUpdater;
+import com.idega.transaction.IdegaTransactionManager;
+import javax.transaction.TransactionManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Hashtable;
@@ -31,248 +33,15 @@ public class AssessmentBusiness  {
   public static final char cType = 't';
   public static final char cApartment = 'p';
 
-  /*
+  public static void groupEntriesWithSQL(idegaTimestamp from,
+                                         idegaTimestamp to) throws Exception{
 
-  public static void rollBackAssessment(int AssessmentRoundId) throws RollBackException{
-    if(AssessmentRoundId > 0){
-      javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-
-      try{
-         t.begin();
-         AssessmentRound AR = new AssessmentRound(AssessmentRoundId);
-         List L = AccountManager.listOfAccountEntries(AR.getID());
-         Hashtable H = new Hashtable();
-         Vector V = new Vector();
-        if(L!=null){
-          Iterator I = L.iterator();
-          AccountEntry ae;
-          Account a;
-          Integer Aid;
-          float Amount;
-          while(I.hasNext()){
-            ae = (AccountEntry) I.next();
-            Amount = ae.getPrice();
-            Aid = new Integer(ae.getAccountId());
-            if( H.containsKey( Aid ) ){
-              a = (Account) H.get(Aid);
-            }
-            else{
-              a = new Account(ae.getAccountId());
-              H.put(new Integer(a.getID()),a);
-            }
-            if(!ae.getStatus().equals(ae.statusCreated))
-              throw new SQLException("Billed Entries");
-            ae.delete();
-
-            // lowering the account
-            a.addKredit( Amount);
-            V.add(a);
-            a.update();
-          }
-          /*
-          Iterator hi = V.iterator();
-          while(hi.hasNext()){
-            a = (Account) hi.next();
-            a.update();
-          }
-        }
-         AR.delete();
-       t.commit();
-      }
-      catch(Exception e) {
-        try {
-          t.rollback();
-        }
-        catch(javax.transaction.SystemException ex) {
-          ex.printStackTrace();
-        }
-        //e.printStackTrace();
-        throw new RollBackException();
-      }
-    }
-  }
-  */
-  /*
-
-   public static void rollBackAssessment(int AssessmentRoundId) throws Exception{
-    EntityBulkUpdater bulk = new EntityBulkUpdater();
-    Hashtable H = new Hashtable();
-    Vector V = new Vector();
-    if(AssessmentRoundId > 0){
-      AssessmentRound AR = new AssessmentRound();
-      try{
-        AR = new AssessmentRound(AssessmentRoundId);
-
-      List L = AccountManager.listOfAccountEntries(AR.getID());
-
-      if(L!=null){
-        Iterator I = L.iterator();
-        AccountEntry ae;
-        Account a;
-        Integer Aid;
-        float Amount;
-        while(I.hasNext()){
-          ae = (AccountEntry) I.next();
-          if(ae.getStatus().equals(ae.statusCreated)){
-            Amount = ae.getTotal();
-            Aid = new Integer(ae.getAccountId());
-            if( H.containsKey( Aid ) ){
-              a = (Account) H.get(Aid);
-            }
-            else{
-              a = new Account(ae.getAccountId());
-              H.put(new Integer(a.getID()),a);
-            }
-            bulk.add(ae,bulk.delete);
-            // lowering the account
-            a.addKredit( Amount);
-          }
-        }
-      }
-      }
-      catch(Exception ex){ ex.printStackTrace();}
-      bulk.addAll(H.values(),bulk.update);
-      bulk.add(AR,bulk.delete);
-      bulk.execute();
-    }
-  }
-
-  public static AssessmentRound assessFinance(idegaTimestamp paydate,String roundName,String accountType,int iCashierId)throws Exception{
-
-    List listOfTariffs = FinanceFinder.getInstance().listOfTariffs();
-    List listOfAccounts = FinanceFinder.getInstance().listOfAccounts();
-    int iAccountCount = 0;
-    if(listOfTariffs !=null){
-      if(listOfAccounts!=null){
-        int rlen = listOfAccounts.size();
-        int tlen = listOfTariffs.size();
-        Tariff eTariff;
-        char cAttribute;
-        Vector vEntries = new Vector();
-        int iAttributeId = -1;
-        int iRoundId  = -1;
-        AssessmentRound AR = null;
-        try {
-          AR = new AssessmentRound();
-          AR.setAsNew(roundName);
-          AR.setType(Account.typeFinancial);
-          AR.insert();
-          iRoundId = AR.getID();
-        }
-        catch (SQLException ex) {
-          ex.printStackTrace();
-          try {
-            AR.delete();
-          }
-          catch (SQLException ex2) {
-            ex2.printStackTrace();
-            AR = null;
-          }
-        }
-
-        if(AR != null){
-        javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-
-        try{
-          t.begin();
-          int totals = 0;
-           int totalAmount = 0;
-          // All tenants accounts (Outer loop)
-          for(int o = 0; o < rlen ; o++){
-            Account eAccount = (Account)listOfAccounts.get(o);
-            totalAmount = 0;
-            float Amount = 0;
-            // For each tariff (Inner loop)
-            for (int i=0; i < tlen ;i++ ) {
-              Amount = 0;
-              eTariff = (Tariff) listOfTariffs.get(i);
-              String sAttribute = eTariff.getTariffAttribute();
-              // If we have an tariff attribute
-              if(sAttribute != null){
-                iAttributeId = -1;
-                cAttribute = sAttribute.charAt(0);
-                // If All
-                Amount = insertEntry(vEntries,eTariff,eAccount.getID(),iRoundId,paydate,iCashierId);
-                totalAmount += Amount;
-
-              }
-            } // Inner loop block
-            totals += totalAmount*-1;
-            eAccount.setBalance(eAccount.getBalance()+totalAmount);
-            eAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-            eAccount.update();
-            iAccountCount++;
-          } // Outer loop block
-          AR.setTotals((float)(totals));
-          AR.setAccountCount(iAccountCount);
-          AR.update();
-          t.commit();
-          return AR;
-        } // Try block
-        catch(Exception e) {
-          try {
-            t.rollback();
-          }
-          catch(javax.transaction.SystemException ex) {
-            ex.printStackTrace();
-          }
-          e.printStackTrace();
-
-        }
-        }
-      }
-
-    }
-
-    return null;
-  }
-
-  private static float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId)
-  throws SQLException{
-    AccountEntry AE = new AccountEntry();
-    AE.setAccountId(iAccountId);
-    AE.setAccountKeyId(T.getAccountKeyId());
-    AE.setCashierId(iCashierId);
-    AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-    AE.setPrice(-T.getPrice());
-    AE.setRoundId(iRoundId);
-    AE.setName(T.getName());
-    AE.setInfo(T.getInfo());
-    AE.setStatus(AE.statusCreated);
-    AE.setCashierId(1);
-    AE.setPaymentDate(itPaydate.getTimestamp());
-    AE.insert();
-    if(V!=null)
-      V.add(AE);
-    return AE.getTotal();
-    /*
-    System.err.println("totals before"+totals);
-    totals = totals + AE.getPrice();
-    System.err.println("price"+AE.getPrice());
-    System.err.println("totals after"+totals);
-    *//*
-  }
-/*
-  private static AccountEntry insertKreditEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,int iCashierId) throws SQLException{
-    AccountEntry AE = new AccountEntry();
-    AE.setAccountId(iAccountId);
-    AE.setAccountKeyId(key.getID());
-    AE.setCashierId(iCashierId);
-    AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-    AE.setPrice(-amount);
-    AE.setRoundId(iRoundId);
-    AE.setName(key.getName());
-    AE.setInfo(key.getInfo());
-    AE.setStatus(AE.statusCreated);
-    AE.setPaymentDate(itPaydate.getTimestamp());
-    AE.insert();
-    return AE;
-  }
-*/
-  public static void groupEntriesWithSQL(idegaTimestamp from, idegaTimestamp to) throws Exception{
-
+    TransactionManager t = IdegaTransactionManager.getInstance();
     try{
-     ///////////////////////////
+
+
+      t.begin();
+      ///////////////////////////
       AccountEntry ae = (AccountEntry)AccountEntry.getStaticInstance(AccountEntry.class);
       EntryGroup EG = null;
       int gid = -1;
@@ -288,6 +57,7 @@ public class AssessmentBusiness  {
       }
 
       if(EG !=null){
+        String dateColummn = ae.getPaymentDateColumnName();
         StringBuffer sql = new StringBuffer("update ");
         sql.append(ae.getEntityTableName());
         sql.append(" set ");
@@ -298,11 +68,10 @@ public class AssessmentBusiness  {
         sql.append(ae.getEntryGroupIdColumnName());
         sql.append(" is null ");
         if(from !=null){
-          sql.append(" and last_updated >= ");
-          sql.append(from.getSQLDate());
+          sql.append(" and ").append(dateColummn).append(" >= ").append(from.getSQLDate());
         }
         if(to !=null){
-          sql.append(" and last_updated <= ");
+          sql.append(" and ").append(dateColummn).append(" <= ");
           sql.append('\'');
           sql.append(to.getSQLDate());
           sql.append(" 23:59:59'");
@@ -313,7 +82,8 @@ public class AssessmentBusiness  {
         String sMaxSql = "select max("+ae.getIDColumnName()+") from "+ae.getEntityTableName()+where;
         //System.err.println(sql.toString());
         //System.err.println(sMinSql);
-        System.err.println(sMaxSql);
+        //System.err.println(sMaxSql);
+
         SimpleQuerier.execute(sql.toString());
         String[] mi = SimpleQuerier.executeStringQuery(sMinSql);
         String[] ma = SimpleQuerier.executeStringQuery(sMaxSql);
@@ -324,12 +94,19 @@ public class AssessmentBusiness  {
           EG.setEntryIdTo(new Integer(ma[0]).intValue());
         }
         EG.update();
-      }
 
-     ///////////////////////////
+      }
+      t.commit();
+      ///////////////////////////
 
     }
     catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
 
       e.printStackTrace();
     }
@@ -337,7 +114,8 @@ public class AssessmentBusiness  {
 
   }
 
-  public static void groupEntries(idegaTimestamp from, idegaTimestamp to) throws Exception{
+  public static void groupEntries(idegaTimestamp from,
+                                  idegaTimestamp to) throws Exception{
     List L = Finder.listOfFinanceEntriesWithoutGroup(from,to);
     if(L!=null){
       int min = 0,max = 0;
@@ -352,12 +130,12 @@ public class AssessmentBusiness  {
       catch (Exception ex) {
         ex.printStackTrace();
         try {
-            EG.delete();
-          }
-          catch (SQLException ex2) {
-            ex2.printStackTrace();
-            EG = null;
-          }
+          EG.delete();
+        }
+        catch (SQLException ex2) {
+          ex2.printStackTrace();
+          EG = null;
+        }
 
       }
 
@@ -365,8 +143,8 @@ public class AssessmentBusiness  {
         javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 
         try{
-         t.begin();
-         ////////////////////////
+          t.begin();
+          ////////////////////////
           Iterator It = L.iterator();
 
           AccountEntry AE;
@@ -392,8 +170,8 @@ public class AssessmentBusiness  {
           EG.setEntryIdFrom(min);
           EG.setEntryIdTo(max);
           EG.update();
-        //////////////////////////////
-         t.commit();
+          //////////////////////////////
+          t.commit();
 
         }
         catch(Exception e) {
@@ -405,7 +183,7 @@ public class AssessmentBusiness  {
             ex.printStackTrace();
           }
           try {
-              EG.delete();
+            EG.delete();
           }
           catch (SQLException ex) {
 
@@ -437,16 +215,16 @@ public class AssessmentBusiness  {
     }
     return count;
   }
-/*
-  public static void updateAllAccounts(){
-    String sql = "update fin_account f set f.balance = (select sum(price) from fin_acc_entry  f2 where f2.fin_account_id = f.fin_account_id)";
-    try {
+  /*
+    public static void updateAllAccounts(){
+      String sql = "update fin_account f set f.balance = (select sum(price) from fin_acc_entry  f2 where f2.fin_account_id = f.fin_account_id)";
+      try {
 
-      SimpleQuerier.execute(sql);
+        SimpleQuerier.execute(sql);
+      }
+      catch (Exception ex) {
+        ex.printStackTrace();
+      }
     }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-*/
+  */
 }

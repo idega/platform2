@@ -577,10 +577,13 @@ public class FinanceFinder  {
     try {
       List F = listOfFinanceAccountByUserId(iUserId);
       List P = listOfPhoneAccountByUserId(iUserId);
-      if(F==null || F.size()==0)
+      if(F==null || F.size()==0){
         F = listOfAccountByUserId(iUserId);
-      else if(P!=null)
-        F = P;
+        if(F== null)
+          F = P;
+      }
+      else if(P!=null && F != null )
+        F.addAll(P);
       return F;
     }
     catch (Exception ex) {
