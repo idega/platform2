@@ -56,7 +56,7 @@ implements SchoolClassSchoolTypeBusiness {
 						Vector schoolTypes = (Vector)provider.getSchoolTypes();
 						int schoolTypeId=-1;
 						if(schoolTypes.size()==0){
-							SchoolYear year = schoolClass.getSchoolYear();
+							SchoolYear year = null;//schoolClass.getSchoolYear();
 							if(year!=null){
 								schoolTypeId = year.getSchoolTypeId();
 							}
@@ -65,7 +65,7 @@ implements SchoolClassSchoolTypeBusiness {
 																		"  PK="+schoolClass.getPrimaryKey());
 							}
 						} else if(schoolTypes.size()>1){
-							SchoolYear year = schoolClass.getSchoolYear();
+							SchoolYear year = null;//schoolClass.getSchoolYear();
 							if(year!=null){
 								schoolTypeId = year.getSchoolTypeId();
 							}

@@ -127,8 +127,6 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			while (iter.hasNext()) {
 				SchoolClass element = (SchoolClass) iter.next();
 				User teacher = null;
-				if ( element.getTeacherId() != -1 )
-					teacher = getUserBusiness(iwc).getUser(element.getTeacherId());
 				
 				SubmitButton edit = (SubmitButton) getStyledInterface(new SubmitButton(getEditIcon(""),PARAMETER_ACTION,String.valueOf(ACTION_EDIT)));
 				edit.setValueOnClick(getSession().getParameterSchoolClassID(), element.getPrimaryKey().toString());

@@ -158,9 +158,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 			catch (IDORelationshipException e) {
 				years = new HashSet();
 			}
-			if (group.getSchoolYearId() != -1) {
-				years.add(group.getSchoolYear());
-			}
 			
 			if (!years.isEmpty()) {
 				Iterator iterator = years.iterator();
@@ -183,9 +180,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 			}
 			catch (IDORelationshipException e) {
 				teachers = new HashSet();
-			}
-			if (group.getTeacherId() != -1) {
-				teachers.add(group.getTeacher());
 			}
 
 			if (!teachers.isEmpty()) {
@@ -299,8 +293,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 			catch (IDORelationshipException e2) {
 				groupYears = new HashSet();
 			}
-			if (_group.getSchoolYearId() != -1)
-				groupYears.add(_group.getSchoolYear());
 		}
 				
 		table.setHeight(row++, 15);

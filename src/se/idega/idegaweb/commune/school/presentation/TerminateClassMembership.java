@@ -21,10 +21,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 20:11:54 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/04 18:09:00 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -396,7 +396,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             final School school = schoolHome.findByPrimaryKey (schoolId);
 
             //find school year
-            final Integer yearId = new Integer (schoolClass.getSchoolYearId ());
+            final Integer yearId = new Integer (student.getSchoolYearId ());
             final SchoolYear schoolYear = yearHome.findByPrimaryKey (yearId);
 
             return school.getName () + ", "
