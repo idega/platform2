@@ -654,6 +654,8 @@ public class BookViewer extends CategoryBlock implements IWBlock {
   }
 
   private void getParameters(IWContext iwc) {
+    iwc.removeSessionAttribute(BookBusiness.PARAMETER_IMAGE_ID);
+
     try {
       _state = Integer.parseInt(iwc.getParameter(BookBusiness.PARAMETER_STATE));
     }
