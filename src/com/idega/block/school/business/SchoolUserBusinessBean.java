@@ -148,7 +148,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			Iterator iter = sTypes.iterator();
 			String sCat;
 			while (iter.hasNext()) {
-				sType = getSchoolTypeHome().findByPrimaryKey(iter.next());
+				sType = (SchoolType)(iter.next());
 				sCat = sType.getSchoolCategory();
 				if (sCat != null && sCat.equals("SCHOOL")){
 					SCHOOL = true;
