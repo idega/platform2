@@ -12,7 +12,6 @@ package com.idega.block.staff.presentation;
 import com.idega.builder.data.IBPage;
 import java.util.List;
 import java.util.Collections;
-import java.lang.NumberFormatException;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.Table;
@@ -32,6 +31,7 @@ import com.idega.core.user.business.UserBusiness;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneType;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 import com.idega.util.GenericUserComparator;
 import com.idega.util.text.TextStyler;
@@ -106,6 +106,10 @@ public class StaffBrowser extends Block implements IWBlock {
 	private String _titleWidth;
 
 	private boolean _showDetails = true;
+
+	private Group _group;
+
+	private boolean _showDivisionHeader = true;
 
 	public StaffBrowser() {
 		setDefaultValues();
@@ -249,19 +253,33 @@ public class StaffBrowser extends Block implements IWBlock {
 
 	private void getDivisionStaff(IWContext iwc) {
 		List groups = StaffFinder.getAllGroups(iwc);
+		boolean showDivision = true;
+		
 		Text divisionText = null;
 		if (groups != null) {
 			for (int a = 0; a < groups.size(); a++) {
-				List users = StaffFinder.getUsersInPrimaryGroup((GenericGroup) groups.get(a));
-				if (users != null && users.size() > 0) {
-					divisionText = new Text(((GenericGroup) groups.get(a)).getName());
-					divisionText.setFontStyle(_divisionStyle);
-					_myTable.add(divisionText, 1, row);
-					row++;
-					getStaffTable(iwc, users);
-					row++;
-					_myTable.setHeight(1, row, "6");
-					row++;
+				GenericGroup group = (GenericGroup) groups.get(a);
+				
+				if (_group != null) {
+					showDivision = false;
+					if (((Integer)_group.getPrimaryKey()).intValue() == ((Integer)group.getPrimaryKey()).intValue())
+						showDivision = true;
+				}
+				
+				if (showDivision) {
+					List users = StaffFinder.getUsersInPrimaryGroup(group);
+					if (users != null && users.size() > 0) {
+						if (_showDivisionHeader) {
+							divisionText = new Text(group.getName());
+							divisionText.setFontStyle(_divisionStyle);
+							_myTable.add(divisionText, 1, row);
+							row++;
+						}
+						getStaffTable(iwc, users);
+						row++;
+						_myTable.setHeight(1, row, "6");
+						row++;
+					}
 				}
 			}
 		}
@@ -890,5 +908,12 @@ public class StaffBrowser extends Block implements IWBlock {
 	public void setShowDetails(boolean showDetails) {
 		_showDetails = showDetails;
 	}
-
+	
+	public void setGroup(Group group) {
+		_group = group;
+	}
+	
+	public void setShowDivisionHeader(boolean showHeader) {
+		_showDivisionHeader = showHeader;
+	}
 }
