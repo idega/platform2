@@ -12,10 +12,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -82,6 +82,15 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         throws RemoteException, FinderException {
         final Viewpoint viewpoint = findViewpoint (viewpointId);
         viewpoint.setHandler (handler);
+		viewpoint.store();
+    }
+
+    public void registerHandler (final int viewpointId, final Group handler)
+        throws RemoteException, FinderException {
+        final Viewpoint viewpoint = findViewpoint (viewpointId);
+        final Integer id = (Integer) handler.getPrimaryKey ();
+  		viewpoint.setHandlerGroupId (id.intValue ());
+        viewpoint.unsetHandler ();
 		viewpoint.store();
     }
 

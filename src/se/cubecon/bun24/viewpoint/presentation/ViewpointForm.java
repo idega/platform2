@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -477,9 +477,9 @@ public class ViewpointForm extends CommuneBlock {
 		table.setHeight (row++, 24);
 		table.add (getLocalizedHeader
                    (FORWARDTO_KEY, FORWARDTO_DEFAULT.toUpperCase ()), 1, row++);
-        final String [][] labels = {{ LOGINNAME_KEY, LOGINNAME_DEFAULT},
-                                    { SSN_KEY, SSN_DEFAULT } /*,
-                                    { GROUPNAME_KEY, GROUPNAME_DEFAULT }*/};
+        final String [][] labels = {/*{ LOGINNAME_KEY, LOGINNAME_DEFAULT},
+                                    { SSN_KEY, SSN_DEFAULT }, */
+                                    { GROUPNAME_KEY, GROUPNAME_DEFAULT }};
         table.add (getRadioButtonTable (FORWARDTO_KEY, labels), 1, row++);
 		table.setHeight (row++, 12);
 		table.add (forwardButton, 1, row++);
@@ -549,100 +549,122 @@ public class ViewpointForm extends CommuneBlock {
 	}
 
 	private void forwardViewpoint (final IWContext context) {
-        //Group receiverGroup = null;
-        User receiverUser = null;
 		final Table table = new Table ();
 		int row = 1;
 		table.setWidth (getWidth ());
 		table.setCellspacing (0);
 		table.setCellpadding (0);
         add (table);
-        final String forwardType = context.getParameter (FORWARDTO_KEY);
+        final String forwardType = context.getParameter (FORWARDTO_KEY);       
+        Link homeLink = null;
         
-        if (null != forwardType && forwardType.equals (LOGINNAME_KEY)) {
-            // Login name entered
-            final String loginName = context.getParameter (LOGINNAME_KEY);
-            receiverUser = getUserFromLogin (context, loginName);
-            if (receiverUser == null) {
-                table.add (new Text(getLocalizedString (UNKNOWN_KEY, UNKNOWN_DEFAULT)
-                           + " "  + getLocalizedString
-                           (LOGINNAME_KEY, LOGINNAME_DEFAULT).toLowerCase ()
-                           + ": " + (loginName != null ? loginName : "")), 1,
-                           row++);
-            }
-        } else if (null != forwardType && forwardType.equals (SSN_KEY)) {
-            // SSN entered
-            final String ssn = getSsn (context, SSN_KEY);
-            if (ssn != null) {
-                try {
-                    final UserBusiness userBusiness = (UserBusiness) IBOLookup
-                            .getServiceInstance (context, UserBusiness.class);
-                    receiverUser = userBusiness.getUser (ssn);
-                } catch (Exception e) {
-                    // nothing
-                }
-            }
-            if (null == receiverUser) {
-                // unknown ssn
-                table.add (new Text(getLocalizedString (UNKNOWN_KEY, UNKNOWN_DEFAULT)
-                           + " " + getLocalizedString
-                           (SSN_KEY, SSN_DEFAULT).toLowerCase () + ": "
-                           + (ssn != null ? ssn : "")), 1, row++);
-            }
-        } else if (null != forwardType && forwardType.equals (GROUPNAME_KEY)) {
-            // Group name entered
-            try {
+        try { 
+            final int viewpointId = Integer.parseInt
+                    (context.getParameter (PARAM_VIEWPOINT_ID));
+            final ViewpointBusiness viewpointBusiness
+                    = getViewpointBusiness (context);
+            homeLink = getUserHomepageLink (context);
+            String receiverName = null;
+            if (null != forwardType && forwardType.equals (LOGINNAME_KEY)) {
+                // Login name entered
+                final String loginName = context.getParameter (LOGINNAME_KEY);
+                final User receiver = getUserByLogin (context, loginName);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else if (null != forwardType && forwardType.equals (SSN_KEY)) {
+                // SSN entered
+                final String ssn = getSsn (context, SSN_KEY);
+                final User receiver = getUserBySsn (context, ssn);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else if (null != forwardType
+                       && forwardType.equals (GROUPNAME_KEY)) {
+                // Group name entered
                 final String groupName = context.getParameter (GROUPNAME_KEY);
-                final GroupBusiness groupBusiness = (GroupBusiness) IBOLookup
-                        .getServiceInstance (context, GroupBusiness.class);
-                final GroupHome groupHome = groupBusiness.getGroupHome ();
-                final Collection groups = groupHome.findGroupsByMetaData
-                        ("IC_GROUP_NAME", groupName);
-                table.add (new Text(GROUPNAME_DEFAULT + "=" + groupName), 1, row++);
-                table.add (new Text(groups.toString ()), 1, row++);
-            } catch (Exception e) {
-                table.add (new Text("Ett fel inträffade"), 1, row++);
-                e.printStackTrace ();
-            }
-        } else {
-            table.add (new Text("Okänd typ av vidarebefordran"), 1, row++);
-        }            
-
-        try {
-            if (receiverUser != null) {
-                final int viewpointId = Integer.parseInt
-                        (context.getParameter (PARAM_VIEWPOINT_ID));
-                final ViewpointBusiness viewpointBusiness
-                        = getViewpointBusiness(context);
-                viewpointBusiness.registerHandler(viewpointId, receiverUser);
-                table.add (new Text(getLocalizedString (VIEWPOINT_KEY, VIEWPOINT_DEFAULT)
-                           + " " + viewpointId + " " + getLocalizedString
-                           (FORWARDEDTO_KEY, FORWARDEDTO_DEFAULT).toLowerCase ()
-                           + " " + receiverUser.getName ()), 1, row++);
-            }
-            table.setHeight (row++, 12);
-            table.add (getUserHomepageLink (context), 1, row++);
-        } catch (Exception e) {
-            table.add (new Text("Ett fel inträffade"), 1, row++);
+                final Group receiver = getGroupByName (context, groupName);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else {
+                table.add (new Text("Okänd typ av vidarebefordran"), 1, row++);
+            }            
+            
+            table.add (new Text(getLocalizedString
+                                (VIEWPOINT_KEY, VIEWPOINT_DEFAULT)
+                                + " " + viewpointId + " " + getLocalizedString
+                                (FORWARDEDTO_KEY,
+                                 FORWARDEDTO_DEFAULT).toLowerCase ()
+                                + " " + receiverName), 1, row++);
+        } catch (final FinderException e) {
+            table.add (new Text (e.getMessage ()), 1, row++);
+        } catch (final RemoteException e) {
             e.printStackTrace ();
+            table.add (new Text ("Ett fel inträffade."), 1, row++);
+        }
+        
+        if (null != homeLink) {
+            table.setHeight (row++, 12);
+            table.add (homeLink, 1, row++);
         }
     }
 
-    private User getUserFromLogin (final IWContext context,
-                                   final String loginName) {
+    private User getUserByLogin (final IWContext context,
+                                   final String loginName)
+        throws FinderException {
         User result = null;
-        if (loginName != null) {        
-            try {
-                final LoginTable loginTable
-                        = LoginDBHandler.getUserLoginByUserName(loginName);
-                if (loginTable != null) {
-                    final UserBusiness userBusiness = (UserBusiness)
-                            IBOLookup.getServiceInstance (context,
-                                                          UserBusiness.class);
-                    result = userBusiness.getUser (loginTable.getUserId());
-                }
-            } catch (Exception e) {
-                result = null;
+        try {
+            final LoginTable loginTable
+                    = LoginDBHandler.getUserLoginByUserName(loginName);
+            final int userId = loginTable.getUserId();
+            final UserBusiness userBusiness = (UserBusiness)
+                    IBOLookup.getServiceInstance (context, UserBusiness.class);
+            result = userBusiness.getUser (userId);
+        } catch (RemoteException dummy) {
+            // nothing, since algorithm is in finally clause
+        } finally {
+            if (null == result) {
+                throw new FinderException ("Hittade inte användarnamnet "
+                                           + loginName);
+            }
+        }
+        return result;
+    }
+
+    private User getUserBySsn (final IWContext context, final String ssn)
+        throws FinderException {
+        User result = null;
+        try {
+            final UserBusiness userBusiness = (UserBusiness)
+                    IBOLookup.getServiceInstance (context, UserBusiness.class);
+            result = userBusiness.getUser (ssn);
+        } catch (RemoteException dummy) {
+            // nothing, since algorithm is in finally clause
+        } finally {
+            if (null == result) {
+                throw new FinderException (null != ssn
+                                           ? "Hittade inte användaren " + ssn
+                                           : "Felaktigt personnummer");
+            }
+        }
+        return result;
+    }
+
+    private Group getGroupByName (final IWContext context,
+                                 final String groupName)
+        throws FinderException {
+        Group result = null;
+        try {
+            final GroupBusiness groupBusiness = (GroupBusiness)
+                    IBOLookup.getServiceInstance (context, GroupBusiness.class);
+            final GroupHome groupHome = groupBusiness.getGroupHome ();
+            result = groupHome.findByName (groupName);
+        } catch (RemoteException dummy) {
+            // nothing, since algorithm is in finally clause
+        } finally {
+            if (null == result) {
+                throw new FinderException ("Hittade inte gruppen " + groupName
+                                           + ". Tänk på att skillnaden på"
+                                           + " versaler och gemener är"
+                                           + " signifikant.");
             }
         }
         return result;

@@ -1,16 +1,17 @@
 package se.cubecon.bun24.viewpoint.data;
 
 import com.idega.block.process.data.*;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -125,6 +126,11 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public void setHandler (final User user) throws RemoteException {
         setOwner (user);
+    }
+
+    public void unsetHandler () throws RemoteException {
+        final IDOLegacyEntity entity = (CaseBMPBean) getGeneralCase ();
+        entity.removeFromColumn ("USER_ID");
     }
 
     public void setRoadResponsibleId (final int id) {
