@@ -102,9 +102,9 @@ public int getBookingsTotalCountByDateOfBooking(int p0,com.idega.util.IWTimestam
 	return theReturn;
 }
 
-public java.util.List getMultibleBookings(is.idega.idegaweb.travel.data.GeneralBooking p0)throws java.rmi.RemoteException,javax.ejb.FinderException{
+public java.util.Collection getMultibleBookings(is.idega.idegaweb.travel.data.GeneralBooking p0)throws java.rmi.RemoteException,javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.List theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetMultibleBookings(p0);
+	java.util.Collection theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetMultibleBookings(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
