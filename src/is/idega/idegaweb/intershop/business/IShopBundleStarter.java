@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopBundleStarter.java,v 1.6 2002/04/16 14:42:50 palli Exp $
+ *  $Id: IShopBundleStarter.java,v 1.7 2002/12/06 22:41:45 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -229,4 +229,11 @@ public class IShopBundleStarter implements IWBundleStartable {
       e.printStackTrace();
     }
   }
+
+	/**
+	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
+	 */
+	public void stop(IWBundle starterBundle) {
+		//does nothing...
+	}
 }
