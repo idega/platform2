@@ -118,6 +118,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String KEY_CO_POSTAL_CODE_MISSING = KEY_PREFIX + "co_postal_code_missing";	
 	private final static String KEY_CO_CITY_MISSING = KEY_PREFIX + "co_city_missing";	
 	private final static String KEY_PREFERENCES_SAVED = KEY_PREFIX + "preferenced_saved";	
+	private final static String KEY_NO_EMAIL_FOR_LETTERS = KEY_PREFIX + "no_email_to_send_letter_to";	
 
 	private final static String DEFAULT_EMAIL = "E-mail";	
 	private final static String DEFAULT_LOGIN = "Login";	
@@ -149,6 +150,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String DEFAULT_CO_POSTAL_CODE_MISSING = "Postal code c/o must be entered.";	
 	private final static String DEFAULT_CO_CITY_MISSING = "City c/o must be entered.";	
 	private final static String DEFAULT_PREFERENCES_SAVED = "Your preferences has been saved.";	
+	private final static String DEFAULT_NO_EMAIL_FOR_LETTERS = "No email entered to send letters to.";
 
 	public static final String CITIZEN_ACCOUNT_PREFERENCES_PROPERTIES = "citizen_account_preferences";
 	public static final String USER_PROPERTY_USE_CO_ADDRESS = "cap_use_co_address";
@@ -237,7 +239,14 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.add(getSmallText(addressText), 2, row);
 
 		String valueEmail = iwc.getParameter(PARAMETER_EMAIL);
-		if (valueEmail == null) {
+		/* if the entered address is invalid show the orignal from database if exists*/
+		boolean isLegalEmail = false;
+        try {
+            isLegalEmail = validateEmail(valueEmail);
+        } catch (Exception e1) {
+            isLegalEmail = false;
+        }
+        if (valueEmail == null || !isLegalEmail) {
 			Email userMail = ub.getUserMail(user);
 			if (userMail != null) {
 				valueEmail = userMail.getEmailAddress();
@@ -326,7 +335,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		TextInput tiEmail = (TextInput) getStyledInterface(new TextInput(PARAMETER_EMAIL));
 		if(valueEmail!=null){
 			tiEmail.setValue(valueEmail);
-		}		
+		}
+		tiEmail.setAsEmail(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
 		TextInput tiPhoneHome = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_HOME));
 		if(valuePhoneHome!=null){
 			tiPhoneHome.setValue(valuePhoneHome);		
@@ -390,6 +400,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				cbMessagesViaEmail.setChecked(false);
 			}
 		}
+	
 		SubmitButton sbUpdate = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
 		
 		row++;
@@ -542,6 +553,13 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			}
 
 			updateEmail = validateEmail(sEmail);
+			
+			/* IF user checks that he wants all letters sent by email
+			 * but doesn't enter a valid email address he should get a warning
+			 */
+			if(messagesViaEmail && !updateEmail)
+			    throw new Exception(localize(KEY_NO_EMAIL_FOR_LETTERS,DEFAULT_NO_EMAIL_FOR_LETTERS));
+			
 
 			// Validate c/o-address
 			if (useCOAddress) {
