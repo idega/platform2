@@ -33,6 +33,7 @@ public class LyricViewer extends Block {
   }
 
   public void main(IWContext iwc) throws Exception {
+
     //this.add("lyric - "+iwc.getParameter(AlbumCollectionBusiness._PRM_LYRIC_ID));
     String lyricId = iwc.getParameter(AlbumCollectionBusiness._PRM_LYRIC_ID);
     if(lyricId != null){
@@ -50,20 +51,21 @@ public class LyricViewer extends Block {
         this.add(Text.getBreak());
         this.add(Text.getBreak());
 
-        Link updateLyricLink = new Link("Breyta");
-        updateLyricLink.setWindowToOpen(InsertLyric.class);
-        updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
-        updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,lyric.getID());
+        if(hasEditPermission()){
+          Link updateLyricLink = new Link("Breyta");
+          updateLyricLink.setWindowToOpen(InsertLyric.class);
+          updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
+          updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,lyric.getID());
 
-        this.add(updateLyricLink);
+          this.add(updateLyricLink);
 
-        Link deleteTrackLinkTemplate = new Link("Eyða");
-        deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
-        deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
-        deleteTrackLinkTemplate.addParameter(DeleteConfirmWindow._PRM_ID,lyric.getID());
+          Link deleteTrackLinkTemplate = new Link("Eyða");
+          deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+          deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
+          deleteTrackLinkTemplate.addParameter(DeleteConfirmWindow._PRM_ID,lyric.getID());
 
-        this.add(deleteTrackLinkTemplate);
-
+          this.add(deleteTrackLinkTemplate);
+        }
 
       } else {
         this.add("Texti finnst ekki");

@@ -107,20 +107,25 @@ public class AlbumDetails extends Block {
           trackName.setText(item.getName());
           trackTable.add(trackName,2,index);
 
-          Link update = (Link)updateTrackLinkTemplate.clone();
-          update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
-          trackTable.add(update,3,index);
+          if(hasEditPermission()){
+            Link update = (Link)updateTrackLinkTemplate.clone();
+            update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
+            trackTable.add(update,3,index);
 
-          Link delete = (Link)deleteTrackLinkTemplate.clone();
-          delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
-          trackTable.add(delete,4,index);
+            Link delete = (Link)deleteTrackLinkTemplate.clone();
+            delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
+            trackTable.add(delete,4,index);
+          }
+
 
           if(item.getLyricId() < 0){
-            Link setLyric = (Link)setLyricLinkTemplate.clone();
-            setLyric.setText("setja texta");
-            setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
+            if(hasEditPermission()){
+              Link setLyric = (Link)setLyricLinkTemplate.clone();
+              setLyric.setText("setja texta");
+              setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
 
-            trackTable.add(setLyric,5,index);
+              trackTable.add(setLyric,5,index);
+            }
           } else {
             Link setLyric = (Link)lyricViewerLinkTemplate.clone();
             setLyric.setText("Texti");
@@ -152,7 +157,9 @@ public class AlbumDetails extends Block {
       addTrackLink.addParameter(_PRM_ALBUM_ID,albumId);
     }
 
-    this.add(addTrackLink);
+    if(hasEditPermission()){
+      this.add(addTrackLink);
+    }
 
     this.add(Text.getBreak());
     this.add(Text.getBreak());

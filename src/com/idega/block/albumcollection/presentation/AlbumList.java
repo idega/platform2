@@ -57,24 +57,28 @@ public class AlbumList extends Block {
         link.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_ALBUMINFO);
         contentTable.add(link,1,index);
 
-        Link update = (Link)updateAlbumLinkTemplate.clone();
-        update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
-        contentTable.add(update,2,index);
+        if(hasEditPermission()){
+          Link update = (Link)updateAlbumLinkTemplate.clone();
+          update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
+          contentTable.add(update,2,index);
 
-        Link delete = (Link)deleteAlbumLinkTemplate.clone();
-        delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
-        contentTable.add(delete,3,index);
+          Link delete = (Link)deleteAlbumLinkTemplate.clone();
+          delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
+          contentTable.add(delete,3,index);
+        }
 
         index++;
       }
       this.add(contentTable);
     }
-    Link createAlbumLink = new Link("create album");
-    //createAlbumLink.setFontColor("#EEEEEE");
-    createAlbumLink.setBold();
-    createAlbumLink.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
-    this.add(createAlbumLink);
 
+    if(hasEditPermission()){
+      Link createAlbumLink = new Link("create album");
+      //createAlbumLink.setFontColor("#EEEEEE");
+      createAlbumLink.setBold();
+      createAlbumLink.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
+      this.add(createAlbumLink);
+    }
 
   }
 }
