@@ -137,6 +137,7 @@ public abstract class BookingForm extends TravelManager{
 
   public static String parameterFromDate = "bookingFromDate";
   public static String parameterManyDays = "bookingManyDays";
+  public static String parameterToDate = "bookingToDate";
   public static String parameterOnlineBooking = "pr_onl_bking";
 
   public static final String PARAMETER_FIRST_NAME = "surname";
@@ -1530,9 +1531,9 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
+    String toDate = iwc.getParameter(this.parameterToDate);
     String manyDays = iwc.getParameter(this.parameterManyDays);
     IWTimestamp fromStamp = null;
-    IWTimestamp toStamp = null;
     //int betw = 1;
     int totalSeats = 0;
 /*
@@ -1552,7 +1553,14 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 			if (iManyDays < 1) {
 				iManyDays = 1;	
 			}
-		}catch (NumberFormatException n) {}
+		}catch (NumberFormatException n) {
+			try {
+		    IWTimestamp toStamp = new IWTimestamp(toDate);
+		    iManyDays = IWTimestamp.getDaysBetween(fromStamp, toStamp);
+			} catch (Exception e) {
+				iManyDays = 0;
+			}
+		}
 		    
 		try {
 			fromStamp = new IWTimestamp(fromDate);

@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
+import java.util.List;
+
 import is.idega.idegaweb.travel.service.tour.data.TourCategory;
 
 import com.idega.idegaweb.IWResourceBundle;
@@ -15,5 +17,12 @@ public class ExcursionSearch extends TourSearch {
 
 	protected String getServiceName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.excursion","Excursion");		
+	}
+
+	protected void setupSpecialFieldsForBookingForm(List errorFields) {
+	}
+
+	protected List getErrorFormFields() {
+		return null;
 	}
 }

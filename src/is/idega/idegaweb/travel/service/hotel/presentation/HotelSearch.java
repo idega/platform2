@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
@@ -242,6 +243,15 @@ public class HotelSearch extends AbstractSearchForm {
 	protected String getParameterTypeCountName() {
 		return PARAMETER_TYPE_COUNT;
 	}
-	
+	protected void setupSpecialFieldsForBookingForm(List errorFields) {
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm#getBookingFieldsToErrorCheck()
+	 */
+	protected List getErrorFormFields() {
+		return null;
+	}
+
 
 }
