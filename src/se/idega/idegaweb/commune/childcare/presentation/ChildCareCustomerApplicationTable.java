@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.44 2003/05/30 13:46:55 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.45 2003/06/23 11:17:28 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -809,6 +809,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	public Image getDeleteIcon(String toolTip) {
 		return super.getDeleteIcon(toolTip);
 	}
+	
+	public Image getSignIcon(String toolTip) {
+		return super.getVariousIcon(toolTip);
+	}	
+	
 
 	public Image getQuestionIcon(String toolTip) {
 		return super.getQuestionIcon(toolTip);
