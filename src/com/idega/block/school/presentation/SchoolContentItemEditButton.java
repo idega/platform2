@@ -21,7 +21,7 @@ public class SchoolContentItemEditButton extends SchoolContentItem {
 		Link link = SchoolContentEditor.getLink(_school);
 		if (super.hasEditPermission()) {
 			return link;
-		}else if (super.getSchoolContentBusiness(_iwc).hasEditPermission(_school, _iwc)) {
+		}else if (super.getSchoolBusiness(_iwc).hasEditPermission(_iwc.getCurrentUser(), _school)) {
 			return link;
 		}
 		return null;

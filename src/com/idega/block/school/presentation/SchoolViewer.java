@@ -59,7 +59,7 @@ public class SchoolViewer extends Block {
 				link = new Link( school.getName() );
 				link.addParameter( getSchoolContentBusiness( iwc ).getParameterSchoolId() , school.getPrimaryKey().toString() );
 				table.add ( link, 1, row );
-				if (getSchoolContentBusiness(iwc).hasEditPermission(school, iwc)) {
+				if (getSchoolBusiness(iwc).hasEditPermission(iwc.getCurrentUser(), school)) {
 					table.add( SchoolContentEditor.getLink(school) , 2, row);
 				}
 			}

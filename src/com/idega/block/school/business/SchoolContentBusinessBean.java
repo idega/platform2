@@ -24,36 +24,6 @@ public class SchoolContentBusinessBean extends IBOSessionBean implements SchoolC
 		return PARAMETER_SCHOOL_ID;	
 	}
 	
-	public boolean hasEditPermission(School school, IWApplicationContext iwac) throws RemoteException{
-		UserBusiness uBus = (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
-		User user = (User) getUserContext().getUser();
-		
-		if (user != null && school != null) {
-			Collection users = null;
-			try {
-				users =
-					uBus.getGroupBusiness().getUsersContained(
-						school.getHeadmasterGroupId());
-			} catch (FinderException e) {
-				e.printStackTrace(System.err);
-			}
-			
-			if (user != null) {
-				Object prKey = user.getPrimaryKey();
-				Object obj;
-				Iterator iter = users.iterator();
-				while (iter.hasNext()) {
-					if (iter.next().equals(user)) {
-						return true;
-					}
-				}
-			}
-		
-		}
-		
-		return false;
-	}	
-
 	private SchoolBusiness getSchoolBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(iwac, SchoolBusiness.class);
 	}

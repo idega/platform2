@@ -301,6 +301,36 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public boolean hasEditPermission(User user, School school) throws RemoteException {
+		UserBusiness uBus = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+
+		if (user != null && school != null) {
+			Collection users = null;
+			try {
+				users =
+					uBus.getGroupBusiness().getUsersContained(
+						school.getHeadmasterGroupId());
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+			}
+			
+			if (user != null) {
+				Object prKey = user.getPrimaryKey();
+				Object obj;
+				Iterator iter = users.iterator();
+				while (iter.hasNext()) {
+					if (iter.next().equals(user)) {
+						return true;
+					}
+				}
+			}
+		
+		}
+		
+		return false;
+		
+	}
+
 	public Collection getSchoolGroups(User user) throws RemoteException {
 /*		GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
 		try {
