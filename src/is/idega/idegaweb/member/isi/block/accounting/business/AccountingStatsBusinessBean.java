@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.accounting.business;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.datareport.util.FieldsComparator;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
@@ -25,7 +28,9 @@ import com.idega.business.IBOSessionBean;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -34,7 +39,7 @@ import com.idega.util.text.TextSoap;
  */
 public class AccountingStatsBusinessBean extends IBOSessionBean implements AccountingStatsBusiness {
 	
-	private static final String LOCALIZED_LABEL = "AccountingStatsBusiness.label";
+	private static final String LOCALIZED_LABEL = "AccountingStatsBusiness.current_date";
 	private static final String LOCALIZED_DIVISION_NAME = "AccountingStatsBusiness.division_name";
 	private static final String LOCALIZED_GROUP_NAME = "AccountingStatsBusiness.group_name";
 	private static final String LOCALIZED_NAME = "AccountingStatsBusiness.name";
@@ -42,6 +47,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_AMOUNT = "AccountingStatsBusiness.amount";
 	private static final String LOCALIZED_DATE_OF_ENTRY = "AccountingStatsBusiness.date_of_entry";
 	private static final String LOCALIZED_AMOUNT_EQUALIZED = "AccountingStatsBusiness.amount_equalized";
+	private static final String LOCALIZED_TARIFF_TYPE = "AccountingStatsBusiness.tariff_type";
 	private static final String LOCALIZED_INFO = "AccountingStatsBusiness.info";
 	
 	private static final String FIELD_NAME_DIVISION_NAME = "division_name";
@@ -51,9 +57,11 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String FIELD_NAME_AMOUNT = "amount";
 	private static final String FIELD_NAME_DATE_OF_ENTRY = "date_of_entry";
 	private static final String FIELD_NAME_AMOUNT_EQUALIZED = "amount_equalized";
+	private static final String FIELD_NAME_TARIFF_TYPE = "tariff_type";
 	private static final String FIELD_NAME_INFO = "info";
 	
 	private AccountingBusiness accountingBiz = null;
+	private GroupBusiness groupBiz = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
@@ -63,6 +71,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			accountingBiz = (AccountingBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), AccountingBusiness.class);
 		}	
 		return accountingBiz;
+	}
+	
+	private GroupBusiness getGroupBusiness() throws RemoteException {
+		if (groupBiz == null) {
+			groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
+		}	
+		return groupBiz;
 	}
 	
 	private void initializeBundlesIfNeeded() {
@@ -89,8 +104,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-		 "accountingreport", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
-		 "label", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		 "label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+		 "current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		 
 		 //PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -99,7 +114,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		 reportCollection.addField(divisionField);
 		 
-		 //fake columns (data gotten by business methods)
 		 ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
 		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		 reportCollection.addField(groupField);
@@ -109,7 +123,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 reportCollection.addField(nameField);
 		 
 		 ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal id"),currentLocale);
+		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		 reportCollection.addField(personalIDField);
 		 
 		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
@@ -124,70 +138,64 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
 		 reportCollection.addField(amountEqualizedField);
 		 
+		 ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
+		 tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		 reportCollection.addField(tariffTypeField);
+		 
 		 ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
 		 infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
 		 reportCollection.addField(infoField);
 		 
-		 //Real data stuff
-		 //Gathering data
-		 //Get all the workreports (actually more than needed)
-		 //then for each get its leagues and the count for
-		 //each age and create a row and insert into an ordered map by league
+		 //Gathering data	 
+		 //then for each division get its financeRecords and
+		 //create a row and insert into an ordered map
 		 //then iterate the map and insert into the final report collection.
-		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
-		 //List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, false);
+		 //getGroupBusiness().getpar
+		 Group club = null;
+		 try {
+		 	club = getClubForUser(this.getCurrentUser() );
+		 }
+		 catch (FinderException e) {
+		 	e.printStackTrace();
+		 }
+		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
-		 //Iterating through workreports and creating report data 
+		 //Iterating through reports and creating report data 
 		 Iterator iter = finEntries.iterator();
 		 while (iter.hasNext()) {
-			 //the club
 			 FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			 
-			 String groupIdentifier = financeEntry.getGroup().getName();
-			 String divisionIdentifier = financeEntry.getDivision().getName();
-			 
-			 
-			 try {
-			 	Group division = financeEntry.getDivision();	
-			 		//if (!leagueGroupIdList.contains(league.getGroupId()) ) {
-			 		//	continue; //don't process this one, go to next
-			 		//}
-			 		//create a new ReportData for each row
-			 		ReportableData data = new ReportableData();
-			 		//					add the data to the correct fields/columns
+			 //try {
+			 	Group division = financeEntry.getDivision();
+			 	Group group = financeEntry.getGroup();
+			 	User user = financeEntry.getUser();
+			 	
+			 	String personalID = user.getPersonalID();
+			 	if (personalID != null && personalID.length() == 10) {
+			 		personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			 	}
+		 		//create a new ReportData for each row
+		 		ReportableData data = new ReportableData();
+		 		//	add the data to the correct fields/columns
+		 		data.addData(divisionField, division.getName() );
+		 		data.addData(groupField, group.getName() );
+		 		data.addData(nameField, user.getName() );
+		 		data.addData(personalIDField, personalID );
+		 		data.addData(amountField, new Double(financeEntry.getAmount()) );
+		 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+		 		data.addData(amountEqualizedField, new Double(financeEntry.getAmountEqualized()) );
+		 		data.addData(infoField, financeEntry.getInfo() );
+		 		data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
 			 		
-			 		data.addData(divisionField, divisionIdentifier );
-			 		data.addData(groupField, groupIdentifier );
-			 		data.addData(nameField, financeEntry.getUser().getName() );
-			 		data.addData(personalIDField, financeEntry.getUser().getPersonalID().substring(0,6)+"-"+financeEntry.getUser().getPersonalID().substring(6,10) );
-			 		data.addData(amountField, new Double(financeEntry.getAmount()) );
-			 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
-			 		data.addData(amountEqualizedField, new Double(financeEntry.getAmountEqualized()) );
-			 		data.addData(infoField, financeEntry.getInfo() );
-			 		
-			 		//					get the stats
-			 		//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
-			 		
-			 		//data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		//data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		//data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		//data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		
-			 	//String leagueText = getLeagueIdentifier(league);
-			 		
-			 	//	data.addData(leagueString, leagueText);
-			 		
-			 		
-			 		List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
-			 		if (statsForDivision == null)
-			 			statsForDivision = new Vector();
-			 		statsForDivision.add(data);
-			 		financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
-			 }
-			 catch (Exception e) {
-			 	e.printStackTrace();
-			 }
+		 		List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+		 		if (statsForDivision == null)
+		 			statsForDivision = new Vector();
+		 		statsForDivision.add(data);
+		 		financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			 //}
+			 //catch (Exception e) {
+			 //	e.printStackTrace();
+			 //}
 		 } 
 		 // iterate through the ordered map and ordered lists and add to the final collection
 		 Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
@@ -204,6 +212,28 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 
 		 //finished return the collection
 		return reportCollection;
+	}
+	
+	/*
+	 * Returns a club the user is a member of.
+	 */
+	public Group getClubForUser(User user) throws FinderException, RemoteException{
+		Collection parents = getGroupBusiness().getParentGroupsRecursive(user);
+		Group group = null;
+		if(parents!=null && !parents.isEmpty()){
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				group = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB.equals(group.getGroupType())){
+					return group;
+				}
+			}
+		}
+		if(group == null){
+			//if no club is found we throw the exception
+			throw new FinderException(user.getName());
+		}
+		else return group;
 	}
 
 }
