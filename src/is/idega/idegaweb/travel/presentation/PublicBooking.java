@@ -816,11 +816,13 @@ public class PublicBooking extends Block  {
         int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
 
         ProductPrice[] pPrices = {};
+        debug("Repps 1");
         Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
         if (tFrame != null) {
           pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
 
+        debug("Repps 2");
         for (int j = 0; j < days; j++) {
 
           for (int i = 0; i < pPrices.length; i++) {
@@ -837,6 +839,7 @@ public class PublicBooking extends Block  {
           }
         }
 
+        debug("Repps 3");
         TourBookingForm tbf = new TourBookingForm(iwc,product);
         int bookingId = tbf.handleInsert(iwc);
         debug("bookingId = "+bookingId);
@@ -929,7 +932,6 @@ public class PublicBooking extends Block  {
           tm.commit();
           success = true;
         }
-
 
       }catch(com.idega.block.tpos.business.TPosException e) {
         display.addToText(" ( "+e.getMessage()+" )");
