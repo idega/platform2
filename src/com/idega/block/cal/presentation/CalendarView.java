@@ -62,7 +62,7 @@ public class CalendarView extends Block{
 	
 	private CalBusiness calBiz;
 	private int userID = -1;
-	private int groupID = -1;
+	private int groupID = -2;
 
 
 	public CalendarView() {
@@ -188,6 +188,9 @@ public class CalendarView extends Block{
 							isInGroup = true;
 						}
 					}
+				}
+				if(groupIDInLedger == getViewGroupID()) {
+					isInGroup = true;
 				}
 
 				if(isInGroup || iwc.isSuperAdmin() || getViewGroupID() == entry.getGroupID()) {
@@ -379,6 +382,9 @@ public class CalendarView extends Block{
 								}
 							}
 						}
+						if(groupIDInLedger == getViewGroupID()) {
+							isInGroup = true;
+						}
 						
 						if(isInGroup || iwc.isSuperAdmin() || getViewGroupID() == entry.getGroupID()) {
 							Timestamp fStamp = entry.getDate();
@@ -557,7 +563,9 @@ public class CalendarView extends Block{
 						}
 					}
 				}
-				
+				if(groupIDInLedger == getViewGroupID()) {
+					isInGroup = true;
+				}
 				if(isInGroup || iwc.isSuperAdmin() || getViewGroupID() == entry.getGroupID()) {
 					Timestamp startDate = entry.getDate();
 					int hours = startDate.getHours();
@@ -742,7 +750,6 @@ public class CalendarView extends Block{
 		Table table = new Table();
 		table.setCellspacing(0);
 		table.setCellpadding(0);
-		table.setWidth(800);
 		table.setHeight("100%");
 		table.mergeCells(1,1,1,5);
 		table.setAlignment(1,2,"center");
@@ -782,6 +789,7 @@ public class CalendarView extends Block{
 		//get only the groups that have the type iwme_club_trainer
 //		Collection trainers = getUserBusiness(iwc).getUserGroups(user,groupTypeTrainer,true);
 		if(iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) { /*iwc.isSuperAdmin() || trainers.size() != 0*/
+			table.setWidth(800);
 			Text ledgerText = new Text(iwrb.getLocalizedString("calendarView.ledgers", "Ledgers"));
 			ledgerText.setStyleClass(headline);
 			table.add(ledgerText,3,1);
@@ -812,7 +820,10 @@ public class CalendarView extends Block{
 			table.setHeight(3,3,"200");
 			table.add(creator,3,3);	
 						
-		}		
+		}	
+		else {
+			table.setWidth(500);
+		}
 		add(table);
 	}
 	/**
