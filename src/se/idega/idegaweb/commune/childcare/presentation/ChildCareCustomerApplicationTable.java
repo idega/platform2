@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.42 2003/05/28 20:44:05 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.43 2003/05/30 13:42:54 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -382,17 +382,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		boolean isAccepted() {
 			return _status != null && _status.equals(CCConstants.YES);
-
 		}
 
 		boolean isRejected() {
 			return _status != null && _status.equals(CCConstants.NO);
-
 		}
 
 		boolean isRejectedNewDate() {
 			return _status != null && _status.equals(CCConstants.NO_NEW_DATE);
-
 		}
 
 		boolean isDefined() {
@@ -493,11 +490,13 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallHeader(localize("child_care.placement_date", "Placement date") + ":"), 1, row);
 			layoutTbl.add(getSmallText(fromDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
 		}
+	
+	//TODO: (ROAR) Change to "getActive..." !!! getAccepted... is ONLY FOR DEBUG!!!!
+		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getAcceptedApplicationsByChild(Integer.parseInt(childId)); 
 		
-		if (hasActiveApplication) {
-			ChildCareApplication acceptedOffer = this.getChildCareBusiness(iwc).getActiveApplicationByChild(Integer.parseInt(childId));
-			ChildCareContractArchive archive = getChildCareBusiness(iwc).getValidContract(((Integer)acceptedOffer.getPrimaryKey()).intValue());
-			School school = acceptedOffer.getProvider();
+		if (activeApplication != null ) {
+			ChildCareContractArchive archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
+			School school = activeApplication.getProvider();
 
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallHeader(localize(PLACED_AT) + ":"), 1, row);
@@ -506,12 +505,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(school.getSchoolPhone()), 3, row++);
 
 			GenericButton careTimePopup = (GenericButton) getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
-			careTimePopup.setWindowToOpen(ChildCareNewCareTimeWindow.class);
-			careTimePopup.addParameterToWindow(CCConstants.APPID, acceptedOffer.getNodeID());
+			careTimePopup.setWindowToOpen(ChildCareWindow.class);
+			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
+			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
+			
+			careTimePopup.addParameterToWindow(CCConstants.APPID, activeApplication.getNodeID());
 
 			GenericButton cancelPopup = (GenericButton) getButton(new GenericButton("end_contract", localize(END_CARETIME)));
-			cancelPopup.setWindowToOpen(ChildCareEndContractWindow.class);
-			cancelPopup.addParameterToWindow(CCConstants.APPID, acceptedOffer.getNodeID());
+			cancelPopup.setWindowToOpen(ChildCareWindow.class);
+			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_END_CONTRACT));
+			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
 
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(careTimePopup, 3, row);

@@ -260,7 +260,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		if (!isCancelled) {
 			Link popup = new Link(_page.getEditIcon(_page.localize(EDIT_TOOLTIP)));
-			popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
+			popup.setWindowToOpen(ChildCareWindow.class);
+			popup.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_VIEW_PROVIDER_QUEUE));
+			popup.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 			popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
 			popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
 			popup.addParameter(CCConstants.USER_ID, "" + ownerId);
