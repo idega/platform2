@@ -348,4 +348,8 @@ public class TravelManager extends Block {
         return getBackLink(1);
     }
 
+    public static Image getDefaultImage(IWResourceBundle _iwrb) {
+      return _iwrb.getImage("images/mynd.gif");
+    }
+
 }

@@ -49,6 +49,7 @@ public class TourBookingForm extends TravelManager {
   public static String parameterUpdateBooking = "bookingUpdateBooking";
   private static String parameterBookAnyway = "bookingBookAnyway";
   private static String parameterSendInquery = "bookingSendInquery";
+  private static String parameterSupplierId = "bookingSupplierId";
 
 
   public TourBookingForm(IWContext iwc) throws Exception{
@@ -62,9 +63,12 @@ public class TourBookingForm extends TravelManager {
       Form form = new Form();
       Table table = new Table();
         form.add(table);
-        form.addParameter("year",Integer.toString(_stamp.getYear()));
-        form.addParameter("month",Integer.toString(_stamp.getMonth()));
-        form.addParameter("day",Integer.toString(_stamp.getDay()));
+        form.addParameter("year",_stamp.getYear());
+        form.addParameter("month",_stamp.getMonth());
+        form.addParameter("day",_stamp.getDay());
+        if (supplier != null) {
+          form.addParameter(this.parameterSupplierId, supplier.getID());
+        }
         table.setWidth("100%");
 
       table.setColumnAlignment(1,"right");
@@ -363,6 +367,262 @@ public class TourBookingForm extends TravelManager {
       return form;
   }
 
+  public Form getPublicBookingForm() {
+    Form form = new Form();
+    Table table = new Table();
+      table.setCellpadding(0);
+      table.setCellspacing(2);
+      form.add(table);
+
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
+
+      if (pPrices.length > 0) {
+          int row = 1;
+          int textInputSizeLg = 28;
+          int textInputSizeMd = 18;
+          int textInputSizeSm = 5;
+
+          Text surnameText = (Text) theBoldText.clone();
+              surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
+          Text lastnameText = (Text) theBoldText.clone();
+              lastnameText.setText(iwrb.getLocalizedString("travel.last_name","last name"));
+          Text addressText = (Text) theBoldText.clone();
+              addressText.setText(iwrb.getLocalizedString("travel.address","address"));
+          Text areaCodeText = (Text) theBoldText.clone();
+              areaCodeText.setText(iwrb.getLocalizedString("travel.area_code","area code"));
+          Text emailText = (Text) theBoldText.clone();
+              emailText.setText(iwrb.getLocalizedString("travel.email","e-mail"));
+          Text telNumberText = (Text) theBoldText.clone();
+              telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
+          Text cityText = (Text) theBoldText.clone();
+              cityText.setText(iwrb.getLocalizedString("travel.city_sm","city"));
+          Text countryText = (Text) theBoldText.clone();
+              countryText.setText(iwrb.getLocalizedString("travel.country_sm","country"));
+
+          DropdownMenu pickupMenu = null;
+          TextInput roomNumber = null;
+          Text tReferenceNumber = (Text) theBoldText.clone();
+            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+          TextInput tiReferenceNumber = new TextInput("reference_number");
+            tiReferenceNumber.setSize(10);
+
+          TextInput surname = new TextInput("surname");
+              surname.setSize(textInputSizeLg);
+          TextInput lastname = new TextInput("lastname");
+              lastname.setSize(textInputSizeLg);
+          TextInput address = new TextInput("address");
+              address.setSize(textInputSizeLg);
+          TextInput areaCode = new TextInput("area_code");
+              areaCode.setSize(textInputSizeSm);
+          TextInput email = new TextInput("e-mail");
+              email.setSize(textInputSizeMd);
+          TextInput telNumber = new TextInput("telephone_number");
+              telNumber.setSize(textInputSizeMd);
+
+          TextInput city = new TextInput("city");
+              city.setSize(textInputSizeLg);
+          TextInput country = new TextInput("country");
+              country.setSize(textInputSizeMd);
+
+
+          ++row;
+          table.add(surnameText,1,row);
+          table.add(surname,2,row);
+
+          table.add(lastnameText,3,row);
+          table.add(lastname,4,row);
+
+          ++row;
+          table.add(addressText,1,row);
+          table.add(address,2,row);
+
+          table.add(cityText,3,row);
+          table.add(city,4,row);
+
+          ++row;
+          table.add(areaCodeText,1,row);
+          table.add(areaCode,2,row);
+
+          table.add(countryText,3,row);
+          table.add(country,4,row);
+
+          ++row;
+          table.add(emailText,1,row);
+          table.add(email,2,row);
+
+          table.add(telNumberText,3,row);
+          table.add(telNumber,4,row);
+
+          if (_tour.getIsHotelPickup()) {
+              ++row;
+
+              Text hotelText = (Text) theBoldText.clone();
+                hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
+              HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
+              pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
+                pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
+
+              Text roomNumberText = (Text) theBoldText.clone();
+                roomNumberText.setText(iwrb.getLocalizedString("travel.room_number","room number"));
+              roomNumber = new TextInput("room_number");
+                roomNumber.setSize(textInputSizeSm);
+
+              table.add(hotelText,1,row);
+              table.add(pickupMenu,2,row);
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+              table.add(roomNumberText,3,row);
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+              table.add(roomNumber,4,row);
+          }
+
+          Text pPriceCatNameText;
+          ResultOutput pPriceText;
+          TextInput pPriceMany;
+          PriceCategory category;
+          Text txtPrice;
+          Text txtPerPerson = (Text) theBoldText.clone();
+            txtPerPerson.setText(iwrb.getLocalizedString("travel.per_person","per person"));
+
+          Text totalText = (Text) theBoldText.clone();
+            totalText.setText(iwrb.getLocalizedString("travel.total","Total"));
+          ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
+            TotalPassTextInput.setSize(5);
+          ResultOutput TotalTextInput = new ResultOutput("total","0");
+            TotalTextInput.setSize(8);
+
+          ++row;
+          table.add(Text.NON_BREAKING_SPACE,1,row);
+
+          BookingEntry[] entries = null;
+          ProductPrice pPri = null;
+          int totalCount = 0;
+          int totalSum = 0;
+          int currentSum = 0;
+          int currentCount = 0;
+          if (_booking != null) {
+            entries = TourBooker.getBookingEntries(_booking);
+          }
+
+
+          for (int i = 0; i < pPrices.length; i++) {
+              try {
+                  ++row;
+                  category = pPrices[i].getPriceCategory();
+                  int price = (int) tsb.getPrice(_service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+    //              pPrices[i].getPrice();
+                  pPriceCatNameText = (Text) theBoldText.clone();
+                    pPriceCatNameText.setText(category.getName());
+
+                  pPriceText = new ResultOutput("thePrice"+i,"0");
+                    pPriceText.setSize(8);
+
+                  pPriceMany = new TextInput("priceCategory"+i ,"0");
+                    pPriceMany.setSize(5);
+                    pPriceMany.setAsNotEmpty("T - Ekki tómt");
+                    pPriceMany.setAsIntegers("T - Bara tölur takk");
+
+                  if (_booking != null) {
+                    if (entries != null) {
+                      for (int j = 0; j < entries.length; j++) {
+                        if (entries[j].getProductPriceId() == pPrices[i].getID()) {
+                          pPri = entries[j].getProductPrice();
+                          currentCount = entries[j].getCount();
+                          currentSum = (int) (currentCount * tsb.getPrice(_productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow()));
+
+                          totalCount += currentCount;
+                          totalSum += currentSum;
+                          pPriceMany.setContent(Integer.toString(currentCount));
+                          pPriceText = new ResultOutput("thePrice"+i,Integer.toString(currentSum));
+                            pPriceText.setSize(8);
+                        }
+                      }
+                    }
+                  }
+
+
+                  pPriceText.add(pPriceMany,"*"+price);
+                  TotalPassTextInput.add(pPriceMany);
+                  TotalTextInput.add(pPriceMany,"*"+price);
+
+
+                  table.add(pPriceCatNameText, 1,row);
+                  table.add(pPriceMany,2,row);
+                  table.add(pPriceText, 2,row);
+
+
+                  txtPrice = (Text) theText.clone();
+                    txtPrice.setText(Integer.toString(price));
+                  //table.add(txtPrice,3,row);
+                  //table.add(txtPerPerson,4,row);
+
+
+              }catch (SQLException sql) {
+                sql.printStackTrace(System.err);
+              }
+          }
+
+          ++row;
+
+          table.add(totalText,1,row);
+          if (_booking != null) {
+            TotalPassTextInput.setContent(Integer.toString(totalCount));
+            TotalTextInput.setContent(Integer.toString(totalSum));
+          }
+          table.add(TotalPassTextInput,2,row);
+          table.add(TotalTextInput,2,row);
+           table.add(new HiddenInput("available",Integer.toString(available)),2,row);
+
+            TextInput ccNumber = new TextInput("ccNumber");
+              ccNumber.setMaxlength(16);
+              ccNumber.setLength(20);
+              ccNumber.setAsNotEmpty("T - vantar cc númer");
+              ccNumber.setAsIntegers("T - cc númer rangt");
+            TextInput ccMonth = new TextInput("ccMonth");
+              ccMonth.setMaxlength(2);
+              ccMonth.setLength(3);
+              ccMonth.setAsNotEmpty("T - vantar cc manuð");
+              ccMonth.setAsIntegers("T - cc manuður rangur");
+            TextInput ccYear = new TextInput("ccYear");
+              ccYear.setMaxlength(2);
+              ccYear.setLength(3);
+              ccYear.setAsNotEmpty("T - vantar cc ár");
+              ccYear.setAsIntegers("T - cc ár rangt");
+
+            Text ccText = (Text) theBoldText.clone();
+              ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+
+            Text ccMY = (Text) theBoldText.clone();
+              ccMY.setText(iwrb.getLocalizedString("travel.valid","valid"));
+
+            Text ccSlash = (Text) theBoldText.clone();
+              ccSlash.setText(" / ");
+
+            ++row;
+            table.add(ccText,1,row);
+            table.add(ccNumber,2,row);
+
+            table.add(ccMY,3,row);
+            table.add(ccMonth,4,row);
+            table.add(ccSlash,4,row);
+            table.add(ccYear,4,row);
+
+            ++row;
+            if (_booking != null) {
+              table.add(new SubmitButton(iwrb.getImage("buttons/update.gif")),4,row);
+            }else {
+              table.add(new SubmitButton(iwrb.getImage("buttons/book.gif")),4,row);
+            }
+            table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
+
+            table.setColumnAlignment(1,"right");
+            table.setColumnAlignment(2,"left");
+            table.setColumnAlignment(3,"right");
+            table.setColumnAlignment(4,"left");
+        }
+    return form;
+  }
+
+
   private int checkBooking(IWContext iwc) throws Exception {
     Form form = new Form();
       form.maintainParameter("surname");
@@ -380,6 +640,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter("month");
       form.maintainParameter("day");
       form.maintainParameter(this.parameterBookingId);
+      form.maintainParameter(this.parameterSupplierId);
 
     boolean tooMany = false;
     String sAvailable = iwc.getParameter("available");
@@ -468,6 +729,9 @@ public class TourBookingForm extends TravelManager {
       String year = iwc.getParameter("year");
       String month = iwc.getParameter("month");
       String day = iwc.getParameter("day");
+
+      String supplierId = iwc.getParameter(this.parameterSupplierId);
+
       try {
         _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
       }catch (NumberFormatException n) {}
@@ -531,7 +795,11 @@ public class TourBookingForm extends TravelManager {
             }
         }else if ((supplier == null) && (_reseller == null) ) {
             // if (Median.isCCValid(ccNumber,ccMonth, ccYear));
+          if (supplierId == null) {
             iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
+          }else { // Supplier booked with cc number :)
+            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
+          }
         }
 
         returner = iBookingId;
@@ -633,6 +901,7 @@ public class TourBookingForm extends TravelManager {
     _productId = product.getID();
     try {
       _service = TravelStockroomBusiness.getService(product);
+      _tour = new Tour(product.getID());
     }catch (Exception e) {
       e.printStackTrace();
     }

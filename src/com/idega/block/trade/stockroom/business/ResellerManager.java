@@ -64,7 +64,6 @@ public class ResellerManager {
       for (int i = 0; i < emailIds.length; i++) {
         res.addTo(Email.class, emailIds[i]);
       }
-
       return res;
     }
     else {
