@@ -99,10 +99,11 @@ public class QueryBuilder extends Block {
 	private int heightOfStepTable = 300;
 	private int step = 1;
 	private int queryFolderID = -1;
+	private String layoutFolderID;
 	private int queryID = -1;
 	// thomas: not used
 	//private int relationDepth = 4;
-	private int investigationLevel = 2;
+	private int investigationLevel = 6;
 	private int tableBorder = 0;
 	private String zebraColor1 = "#CCCC99";
 	private String zebraColor2 = "#FFFFFF";
@@ -117,7 +118,7 @@ public class QueryBuilder extends Block {
 	
 	// added by thomas
 	// the second step is skipped when expert mode is false 
-	private boolean expertMode = false;
+	private boolean expertMode = true;
 	
 	
 	public static void cleanSession(IWContext iwc)	{
@@ -171,12 +172,32 @@ public class QueryBuilder extends Block {
 							? Integer.parseInt(iwc.getParameter(PARAM_STEP))
 							: helper.getStep();
 				step = step == 0 ? 1 : step;
+				
 				//System.err.println("djokid");
 				//System.err.println("helper step is " + helper.getStep());
 				//System.err.println("this step is before process" + step);+
 				processForm(iwc);
 				//System.err.println("this step is after process" + step);
 				Table table = new Table(1, 3);
+				Form form = new Form();
+				// thomas changed: queryFolder  id is always set
+				// if (queryFolderID > 0 && step < 5)
+				if (queryFolderID > 0) {
+					form.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
+				}
+				if (queryID > 0)
+					form.addParameter(PARAM_QUERY_ID, queryID);
+				table.add(getButtons(step), 1, 3);
+				form.addParameter(PARAM_STEP, step);
+				// thomas added:
+				// this parameter serves as a flag for the outer window to continue showing the wizard
+				// the outer window checks also if PARAM_CANCEL or PARAM_QUIT exist
+				form.addParameter(SHOW_WIZARD, SHOW_WIZARD);
+				if (iwc.isParameterSet(PARAM_LAYOUT_FOLDER_ID)) {
+					layoutFolderID = iwc.getParameter(PARAM_LAYOUT_FOLDER_ID);
+					form.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
+				}
+
 				String width = getWidth();
 				table.setWidth(width != null ? width : "300");
 				table.setBorder(tableBorder);
@@ -204,24 +225,6 @@ public class QueryBuilder extends Block {
 				table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
 				table.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.setHeight(2, this.heightOfStepTable);
-				Form form = new Form();
-				// thomas changed: queryFolder  id is always set
-				// if (queryFolderID > 0 && step < 5)
-				if (queryFolderID > 0) {
-					form.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
-				}
-				if (queryID > 0)
-					form.addParameter(PARAM_QUERY_ID, queryID);
-				table.add(getButtons(step), 1, 3);
-				form.addParameter(PARAM_STEP, step);
-				// thomas added:
-				// this parameter serves as a flag for the outer window to continue showing the wizard
-				// the outer window checks also if PARAM_CANCEL or PARAM_QUIT exist
-				form.addParameter(SHOW_WIZARD, SHOW_WIZARD);
-				if (iwc.isParameterSet(PARAM_LAYOUT_FOLDER_ID)) {
-					String layoutFolderId = iwc.getParameter(PARAM_LAYOUT_FOLDER_ID);
-					form.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
-				}
 				form.add(table);
 				add(form);
 			}
@@ -672,9 +675,13 @@ public class QueryBuilder extends Block {
 		Link treeLink = new Link();
 		treeLink.addParameter(PARAM_STEP, step);
 		treeLink.addParameter(SHOW_WIZARD, SHOW_WIZARD);
+		treeLink.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
+		treeLink.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 		tree.setLinkOpenClosePrototype(treeLink);
 		tree.addOpenCloseParameter(PARAM_STEP, Integer.toString(step));
 		tree.addOpenCloseParameter(SHOW_WIZARD, SHOW_WIZARD);
+		tree.addOpenCloseParameter(PARAM_QUERY_FOLDER_ID, Integer.toString(queryFolderID));
+		tree.addOpenCloseParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 		tree.setInitOpenLevel();
 		tree.setNestLevelAtOpen(1);
 		//tree.setToMaintainParameter(PARAM_STEP,iwc);

@@ -522,7 +522,7 @@ public class ReportOverview extends Block {
 			}
 		}
 		// create the where condition
-		StringBuffer buffer = new StringBuffer("ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id in ( ");
+		StringBuffer buffer = new StringBuffer("(select related_ic_group_id from ic_group_relation where ic_group_id in ( ");
 		Iterator groupIdsIterator = groupIds.iterator();
 		String separator = "";
 		while (groupIdsIterator.hasNext()) {

@@ -3,6 +3,7 @@ package com.idega.block.dataquery.data.sql;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.idega.block.dataquery.business.QuerySQLPart;
 import com.idega.util.StringHandler;
@@ -23,10 +24,16 @@ public class DirectSQLStatement implements DynamicExpression {
 	private Map identifierValueMap = new HashMap();
   private Map identifierDescriptionMap = new HashMap(); 
   
+  private Set keys;
+  
+  private Map keyValueMap = new HashMap();
+  
   public DirectSQLStatement(QuerySQLPart sqlPart, Object identifier, QuerySQL querySQL)	{
   	sqlStatement = sqlPart.getStatement();
-  	identifierValueMap.putAll(sqlPart.getVariableValueMap());
+  	Map variableValueMap = sqlPart.getVariableValueMap();
+  	identifierValueMap.putAll(variableValueMap);
   	identifierDescriptionMap.putAll(sqlPart.getDescriptionValueMap());
+  	keys = variableValueMap.keySet();
   }
 
 	public void setSQLStatement(String sqlStatement) 	{
@@ -71,8 +78,10 @@ public class DirectSQLStatement implements DynamicExpression {
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
-			String value = (String) entry.getValue();
-			result = StringHandler.replace(result, key, value);
+			if (keys.contains(key)) {
+				String value = (String) entry.getValue();
+				result = StringHandler.replace(result, key, value);
+			}
 		}
 		return result;
 	}

@@ -131,7 +131,17 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
 			// create view
 			StringBuffer buffer = new StringBuffer("CREATE VIEW ");
 			buffer.append(viewTableName);
-			buffer.append(" AS ");
+			buffer.append(" ( ");
+			List displayNames = querySQL.getDisplayNames();
+			Iterator displayIterator = displayNames.iterator();
+			String separator = "";
+			while (displayIterator.hasNext())	{
+				String displayName = (String) displayIterator.next();
+				buffer.append(separator);
+				buffer.append(displayName);
+				separator = " , ";
+			}
+			buffer.append(" )  AS ");
 			buffer.append(sqlStatement); 
 			String createViewStatement = buffer.toString();
 			// execute statement
@@ -179,7 +189,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
         queryResult.addField(field);
       }
       int numberOfRow = 1;
-       while (resultSet.next())  {
+       while (resultSet.next() && numberOfRow <= 100)  {
         String id = Integer.toString(numberOfRow++);
         for (i=1 ; i <= numberOfColumns; i++)  {
           Object columnValue = resultSet.getObject(i);

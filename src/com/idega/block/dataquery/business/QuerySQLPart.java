@@ -25,6 +25,7 @@ public class QuerySQLPart implements QueryPart {
 	private Map keyTypeMap = new HashMap();
 	private Map keyDescriptionMap = new HashMap();
 	
+	private List  resultFieldOrder = new ArrayList();
 	private Map resultFieldType = new HashMap();
 	private Map resultDescriptionMap = new HashMap(); 
 	
@@ -118,17 +119,21 @@ public class QuerySQLPart implements QueryPart {
 	}
 		
 	public void setField(String field, String type, String description)	{
+		resultFieldOrder.add(field);
 		resultFieldType.put(field, type);
 		resultDescriptionMap.put(field,description);
+	}
+	
+	public List getFieldNames()	{
+		return resultFieldOrder;
 	}
 
 	public List getFields(String queryName)	{
 		List fields = new ArrayList();
-		Iterator iterator = resultFieldType.entrySet().iterator();
+		Iterator iterator = resultFieldOrder.iterator();
 		while (iterator.hasNext())	{
-			Map.Entry entry = (Map.Entry) iterator.next();
-			String field = (String) entry.getKey();
-			String type = (String) entry.getValue();
+			String field = (String) iterator.next();
+			String type = (String) resultFieldType.get(field);
 			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type);
 			fields.add(fieldPart);
 		}

@@ -243,6 +243,7 @@ public class QuerySQL implements DynamicExpression {
   	QuerySQLPart querySQLPart = queryHelper.getSQL();
   	if (querySQLPart != null)	{
   		String identifier = Integer.toString(++counter);
+  		setFields(queryHelper);
   		return new DirectSQLStatement(querySQLPart, identifier, this);
   	}
   	// no direct sql !
