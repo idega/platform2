@@ -13,6 +13,7 @@ public interface ChildCareContractHome extends com.idega.data.IDOHome
  public ChildCareContract findByContractFileID(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findByDateRange(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public java.util.Collection findByDateRangeWhereStatusActive(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public ChildCareContract findBySchoolClassMember(com.idega.block.school.data.SchoolClassMember p0)throws javax.ejb.FinderException;
  public ChildCareContract findFirstContractByApplication(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findFutureContractsByApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public ChildCareContract findLatestContractByApplication(int p0)throws javax.ejb.FinderException;
@@ -27,5 +28,5 @@ public interface ChildCareContractHome extends com.idega.data.IDOHome
  public int getNumberOfActiveForApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getNumberOfActiveNotWithProvider(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date p2)throws com.idega.data.IDOException;
-	ChildCareContract findBySchoolClassMember (com.idega.block.school.data.SchoolClassMember placement) throws javax.ejb.FinderException;
+
 }

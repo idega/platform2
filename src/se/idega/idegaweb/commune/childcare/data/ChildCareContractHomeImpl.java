@@ -69,6 +69,13 @@ public java.util.Collection findByDateRangeWhereStatusActive(java.sql.Date p0,ja
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public ChildCareContract findBySchoolClassMember(com.idega.block.school.data.SchoolClassMember p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareContractBMPBean)entity).ejbFindBySchoolClassMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public ChildCareContract findFirstContractByApplication(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareContractBMPBean)entity).ejbFindFirstContractByApplication(p0);
@@ -172,10 +179,5 @@ public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date
 	return theReturn;
 }
 
-	public ChildCareContract findBySchoolClassMember (com.idega.block.school.data.SchoolClassMember placement) throws javax.ejb.FinderException {
-		com.idega.data.IDOEntity entity = idoCheckOutPooledEntity();
-		Object pk = ((ChildCareContractBMPBean)entity).ejbFindBySchoolClassMember(placement);
-		idoCheckInPooledEntity(entity);
-		return findByPrimaryKey(pk);
-	}
+
 }

@@ -34,6 +34,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public static final String COLUMN_TERMINATED_DATE = "terminated_date";
 	public static final String COLUMN_CARE_TIME = "care_time";
 	public static final String COLUMN_WORK_SITUATION = "work_situation";
+	public static final String COLUMN_INVOICE_RECEIVER = "invoice_receiver";
 	
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -58,6 +59,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		addOneToOneRelationship(COLUMN_CONTRACT_ID,Contract.class);
 		addOneToOneRelationship(COLUMN_SCH_CLASS_MEMBER,SchoolClassMember.class);
 		addManyToOneRelationship(COLUMN_WORK_SITUATION,EmploymentType.class);
+		addManyToOneRelationship(COLUMN_INVOICE_RECEIVER,User.class);
 	}
 	
 	public Date getCreatedDate() {
@@ -116,6 +118,15 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return (EmploymentType) getColumnValue(COLUMN_WORK_SITUATION);
 	}
 	
+	public int getInvoiceReceiverID() {
+		return getIntColumnValue(COLUMN_INVOICE_RECEIVER);
+	}
+	
+	public User getInvoiceReceiver() {
+		return (User) getColumnValue(COLUMN_INVOICE_RECEIVER);
+	}
+	
+
 	public void setCreatedDate(Date createdDate) {
 		setColumn(COLUMN_CREATED_DATE, createdDate);
 	}
