@@ -204,14 +204,14 @@ public class UserExtraInfoEditor extends IWAdminWindow {
 		String education = iwc.getParameter(PARAM_NAME_EDUCATION);
 		String area = iwc.getParameter(PARAM_NAME_AREA);
 		String beganwork = iwc.getParameter(PARAM_NAME_BEGAN_WORK);
-		IWTimestamp stamp = null;
+		/*IWTimestamp stamp = null;
 		if (beganwork != null) {
 			try {
 				stamp = new IWTimestamp(beganwork);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		/*String imageID = iwc.getParameter(PARAM_NAME_IMAGE_ID);
 
 		String[] values =
