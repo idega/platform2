@@ -155,11 +155,12 @@ public class DailyReport extends TravelManager implements Report{
       float amount;
 
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
-      Timeframe tframe = ProductBusiness.getTimeframe(product, stamp);
+      Timeframe tframe;
       List addresses = ProductBusiness.getDepartureAddresses(product, true);
       TravelAddress address;
       int addressesSize = addresses.size();
       ProductPrice[] prices = {};
+      ProductPrice[] misc = {};
 //      TravelAddress[] addresses = {};
 //      try {
 //	addresses = ProductBusiness.getDepartureAddresses(product);
@@ -169,23 +170,12 @@ public class DailyReport extends TravelManager implements Report{
 
 
 
-      if (tframe != null) {
-	prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), false);
-      }
 
       ProductPrice price;
       Integer entryCount;
       int iEntryCount;
 
       Map map = new Hashtable();
-      for (int i = 0; i < prices.length; i++) {
-	for (int j = 0; j < addressesSize; j++) {
-          address = (TravelAddress) addresses.get(j);
-	  map.put(prices[i].getPriceCategoryIDInteger()+"_"+address.getID(),new Integer(0));
-	}
-      }
-
-
 
       Booking[] bookings;
       TravelAddress[] bookingAddresses;
@@ -199,6 +189,19 @@ public class DailyReport extends TravelManager implements Report{
 
       for (int ta = 0; ta < addressesSize; ta++) {
         address = (TravelAddress) addresses.get(ta);
+        tframe = ProductBusiness.getTimeframe(product, stamp, address.getID());
+        if (tframe != null) {
+          prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), address.getID(), false);
+          misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tframe.getID(),address.getID(), false);
+        }
+
+        for (int i = 0; i < prices.length; i++) {
+          map.put(prices[i].getPriceCategoryIDInteger()+"_"+address.getID(),new Integer(0));
+        }
+        for (int i = 0; i < misc.length; i++) {
+          map.put(misc[i].getPriceCategoryIDInteger()+"_"+address.getID(),new Integer(0));
+        }
+
         bookings = getBooker(iwc).getBookings(new int[] {product.getID()},stamp,null, bookingTypeIds, address);
         ++row;
         table.setRowColor(row,super.backgroundColor);
@@ -289,6 +292,9 @@ public class DailyReport extends TravelManager implements Report{
 
 
                 entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
+                if (entryCount == null) {
+                  entryCount = new Integer(0);
+                }
                 entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
                 map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
 
@@ -617,7 +623,9 @@ public class DailyReport extends TravelManager implements Report{
 	  if (closerLook)
 	  for (int k = 0; k < addressesSize; k++) {
             address = (TravelAddress) addresses.get(k);
+            tframe = ProductBusiness.getTimeframe(product, stamp, address.getID());
 	      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), address.getID(), false);
+	      misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tframe.getID(), address.getID(), false);
 	      addressText = (Text) smallText.clone();
 		addressText.setText(address.getName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
 		addressText.setFontColor(super.BLACK);
@@ -648,6 +656,32 @@ public class DailyReport extends TravelManager implements Report{
 		sql.printStackTrace(System.err);
 	      }
 	    }
+
+	    for (int i = 0; i < misc.length; i++) {
+	      try {
+		++tRow;
+		totalTable.setRowColor(tRow, theColor);
+		many = ((Integer) map.get(misc[i].getPriceCategoryIDInteger()+"_"+address.getID())).intValue();
+		nameText = (Text) smallText.clone();
+		  nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+misc[i].getPriceCategory().getName());
+		bookedText = (Text) smallText.clone();
+		  bookedText.setText(Integer.toString(many));
+		amountText = (Text) smallText.clone();
+		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(misc[i].getID(), product.getID(), misc[i].getPriceCategoryID(), misc[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), address.getID()))));
+
+		nameText.setFontColor(super.BLACK);
+		bookedText.setFontColor(super.BLACK);
+		amountText.setFontColor(super.BLACK);
+
+		totalTable.setAlignment(2,tRow,"left");
+		totalTable.add(nameText,2,tRow);
+		totalTable.add(bookedText,3,tRow);
+		totalTable.add(amountText,4,tRow);
+	      }catch (SQLException sql) {
+		sql.printStackTrace(System.err);
+	      }
+	    }
+
 	  }
 
 //          totalTable.setColumnAlignment(1,"left");
