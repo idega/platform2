@@ -27,6 +27,7 @@ public class Report extends GenericEntity {
     addAttribute("sqlsentence", "SQL", true, true, "java.lang.String");
     addAttribute("headers","Titles",true,true,"java.lang.String");
     addAttribute("info","ATH",true,true,"java.lang.String");
+    setMaxLength("sqlsentence",2000);
   }
   public String getEntityName() {
     return "report";
