@@ -1314,12 +1314,6 @@ public class TourBookingForm extends TravelManager {
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
 
-    if (tFrame == null) {
-      debug("tFrame == null");
-    }else {
-      debug("tFrame != null");
-    }
-
     int previousBookings = 0;
     if (sBookingId != null){
       iBookingId = Integer.parseInt(sBookingId);
@@ -1331,7 +1325,6 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
-    debug("Tranus 0");
     String sOnline = iwc.getParameter(this.parameterOnlineBooking);
     boolean onlineOnly = false;
     if (sOnline != null && sOnline.equals("true")) {
@@ -1339,11 +1332,9 @@ public class TourBookingForm extends TravelManager {
     }else if (sOnline != null && sOnline.equals("false")) {
       onlineOnly = false;
     }
-    debug("Tranus 1, onlineOnly = "+onlineOnly);
 
 
     ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
-    debug("Tranus 2");
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
@@ -1353,7 +1344,6 @@ public class TourBookingForm extends TravelManager {
       }
       iMany += current;
     }
-    debug("Tranus 3, many ="+iMany);
 
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
@@ -1372,11 +1362,9 @@ public class TourBookingForm extends TravelManager {
       debug(e.getMessage());
     }
 
-    debug("Tranus 4");
     ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
     ServiceDay sDay = sDayHome.create();
 
-    debug("Tranus 5");
     sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
     if (sDay != null) {
       totalSeats = sDay.getMax();
@@ -1386,7 +1374,6 @@ public class TourBookingForm extends TravelManager {
     }else {
       totalSeats = _tour.getTotalSeats();
     }
-    debug("Tranus 6, totalSeats "+totalSeats);
 
     iMany -= previousBookings;
 
@@ -1416,9 +1403,6 @@ public class TourBookingForm extends TravelManager {
         }
       }
     }
-
-    debug("saveBookingIfValid = "+saveBookingIfValid);
-    debug("tooMany            = "+tooMany);
 
     if (tooMany && !bookIfTooMany) {
       return this.errorTooMany;
@@ -1502,18 +1486,14 @@ public class TourBookingForm extends TravelManager {
       return 0;
     }
     */
-    debug("action = "+action);
 
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
           if (inquiry == null) {
-            debug("her 0");
             return checkBooking(iwc, true);
           }else {
-            debug("her 1");
             int checkInt = checkBooking(iwc, true, true);
-            debug("checkInt : "+checkInt);
             ///// INquiry STUFF JAMMS
             if (checkInt > 0) {
               int inqId = this.sendInquery(iwc, checkInt, true);
@@ -1522,7 +1502,6 @@ public class TourBookingForm extends TravelManager {
               if (resp == 0) {
                 return this.inquirySent;
               }else {
-                debug("RESP = "+resp);
                 throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
               }
             }else {
@@ -1614,7 +1593,6 @@ public class TourBookingForm extends TravelManager {
         onlineOnly = false;
       }
 
-      debug("SaveSan 0");
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
@@ -1625,7 +1603,6 @@ public class TourBookingForm extends TravelManager {
 
       boolean displayFormInternal = false;
 
-      debug("SaveSan 1");
       try {
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
@@ -1679,7 +1656,6 @@ public class TourBookingForm extends TravelManager {
 
         int[] bookingIds = new int[betw];
 
-      debug("SaveSan 2");
         for (int i = 0; i < betw; i++) {
           if (iBookingId == -1) {
             if (i != 0) {
@@ -1689,18 +1665,15 @@ public class TourBookingForm extends TravelManager {
                 _fromDate.addDays(1);
               }
             }
-      debug("SaveSan 3");
             lbookingId = getTourBooker(iwc).Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
           }else {
             //handle multiple...
             List tempBookings = getTourBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
               lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
-      debug("SaveSan 4");
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
-      debug("SaveSan 5");
                 gBooking = (GeneralBooking) tempBookings.get(j);
                 getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
               }
@@ -1709,7 +1682,6 @@ public class TourBookingForm extends TravelManager {
 
             }
           }
-      debug("SaveSan 5.1 : "+lbookingId);
           bookingIds[i] = lbookingId;
         }
 
@@ -1719,7 +1691,6 @@ public class TourBookingForm extends TravelManager {
          */
         for (int o = 0; o < bookingIds.length; o++) {
           try {
-      debug("SaveSan 5.3."+o);
             GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[o]));
             gBook.removeFromAllResellers();
             //gBook.removeFrom(Reseller.class);
@@ -1730,42 +1701,30 @@ public class TourBookingForm extends TravelManager {
         /**
          * adding booking to reseller if resellerUser is chosen from dropdown...
          */
-      debug("SaveSan 6");
         int resId = -7;
         try {
-      debug("SaveSan 6.1");
           if (!sUserId.equals("-1")) {
-            debug("SaveSan 6.1.1");
             User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
-            debug("SaveSan 6.1.2");
             Reseller res = null;
             if (user != null) {
-            debug("SaveSan 6.1.3");
               res = ResellerManager.getReseller(user);
             }
-            debug("SaveSan 6.1.4");
             if (res != null) {
-            debug("SaveSan 6.2.1");
               resId = res.getID();
               for (int i = 0; i < bookingIds.length; i++) {
-      debug("SaveSan 6.2.1."+i);
                 try {
                   res.addTo(GeneralBooking.class, bookingIds[i]);
                 }catch (SQLException sql) {debug(sql.getMessage());}
               }
             }
           }
-      debug("SaveSan 6.2.2");
         }catch (SQLException sql) {
           sql.printStackTrace(System.err);
         }
 
-      debug("SaveSan 7");
         if (_reseller != null) {
-      debug("SaveSan 7.0.1");
           if (_resellerId != resId) {
             for (int i = 0; i < bookingIds.length; i++) {
-      debug("SaveSan 7."+i);
               try {
                 _reseller.addTo(GeneralBooking.class, bookingIds[i]);
               }catch (SQLException sql) {debug(sql.getMessage());}
@@ -1773,7 +1732,6 @@ public class TourBookingForm extends TravelManager {
           }
         }
 
-      debug("SaveSan 9");
         returner = lbookingId;
 
         for (int k = 0; k < bookingIds.length; k++) {
@@ -1820,9 +1778,6 @@ public class TourBookingForm extends TravelManager {
             }
           }
         }
-
-
-      debug("SaveSan 7");
 
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);

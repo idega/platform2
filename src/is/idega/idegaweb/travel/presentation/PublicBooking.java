@@ -816,13 +816,11 @@ public class PublicBooking extends Block  {
         int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
 
         ProductPrice[] pPrices = {};
-        debug("Repps 1");
         Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
         if (tFrame != null) {
           pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
 
-        debug("Repps 2");
         for (int j = 0; j < days; j++) {
 
           for (int i = 0; i < pPrices.length; i++) {
@@ -931,16 +929,11 @@ public class PublicBooking extends Block  {
         }
 
       }catch(com.idega.block.tpos.business.TPosException e) {
-        debug("TPosException caught");
         display.addToText(" ( "+e.getMessage()+" )");
         //e.printStackTrace(System.err);
-          debug("setting valid = false");
         gBooking.setIsValid(false);
-          debug("store");
         gBooking.store();
-          debug("store ... done");
         try {
-          debug("commiting");
           tm.commit();
         }catch(Exception ex) {
           debug("commit failed");
@@ -955,7 +948,6 @@ public class PublicBooking extends Block  {
         gBooking = null;
         success = false;
       }catch (Exception e) {
-        debug("Exception caught");
         display.addToText(" ( "+e.getMessage()+" )");
         e.printStackTrace(System.err);
         try {
@@ -965,15 +957,7 @@ public class PublicBooking extends Block  {
         }
       }
 
-      debug("success = "+success);
-      if (gBooking == null) {
-        debug("gBooking == null");
-      }else {
-        debug("gBooking != null");
-      }
-
       if (success && gBooking != null) {
-        debug("Choise 1");
         boolean sendEmail = false;
         try {
           Product prod = ((ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(gBooking.getServiceID());
@@ -1080,12 +1064,10 @@ public class PublicBooking extends Block  {
         table.setAlignment(1,2,"right");
         table.setAlignment(1,3,"right");
       }else if (inquirySent) {
-        debug("Choise 2");
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
         table.add(Text.BREAK);
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
       }else {
-        debug("Choise 3");
         table.add(display);
         if (gBooking == null) {
           debug("gBooking == null");
