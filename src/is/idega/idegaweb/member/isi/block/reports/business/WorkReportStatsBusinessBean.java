@@ -1004,12 +1004,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			Integer totalCountOfPlayers = (Integer)row.getFieldValue(totalCountOfPlayersForLeague);
 			Integer costPerPlayer = new Integer(0);
 			
-			if(totalAgeAndGenderCount.intValue()>0){
+			if(ageAndOrGenderCompare && totalAgeAndGenderCount.intValue()>0){
 				costPerPlayer = new Integer( (totalCostForleague.intValue()*totalAgeAndGenderCount.intValue())/ (totalCountOfPlayers.intValue()*totalCountOfPlayers.intValue()));
 			}
 			else if(totalCountOfPlayers.intValue()!=0){
 				costPerPlayer = new Integer(totalCostForleague.intValue()/totalCountOfPlayers.intValue());
-				
 			}
 			
 			row.addData(costPerPlayers,costPerPlayer);
