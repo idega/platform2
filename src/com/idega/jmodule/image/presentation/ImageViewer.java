@@ -288,27 +288,28 @@ private Table displayImage( ImageEntity image ) throws SQLException
   }
 
   if(isAdmin) {
-    String adminPage="/image/imageadmin.jsp";//change to same page and object
+    //String adminPage="/image/imageadmin.jsp";//change to same page and object
     Table editTable = new Table(5,1);
-    Link imageEdit = new Link(delete,adminPage);
+    Link imageEdit = new Link(delete);
     imageEdit.addParameter("image_id",imageId);
     imageEdit.addParameter("action","delete");
-    Link imageEdit2 = new Link(cut,adminPage);
+    Link imageEdit2 = new Link(cut);
     imageEdit2.addParameter("image_id",imageId);
     imageEdit2.addParameter("action","cut");
-    Link imageEdit3 = new Link(copy,adminPage);
+    Link imageEdit3 = new Link(copy);
     imageEdit3.addParameter("image_id",imageId);
     imageEdit3.addParameter("action","copy");
-    Link imageEdit4 = new Link(view,adminPage);
+    Link imageEdit4 = new Link(view);
     imageEdit4.addParameter("image_id",imageId);
-    Link imageEdit5 = new Link(use,adminPage);
+    Link imageEdit5 = new Link(use);
     imageEdit5.addParameter("image_id",imageId);
     imageEdit5.addParameter("action","use");
 
 
     editTable.add(imageEdit,1,1);
-    editTable.add(imageEdit2,2,1);
-    editTable.add(imageEdit3,3,1);
+   // debug eiki add later
+   //editTable.add(imageEdit2,2,1);
+   // editTable.add(imageEdit3,3,1);
     editTable.add(imageEdit4,4,1);
     editTable.add(imageEdit5,5,1);
 
