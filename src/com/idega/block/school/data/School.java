@@ -16,7 +16,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public int getAssistantHeadmasterGroupId();
  public boolean getCentralizedAdministration();
  public com.idega.core.location.data.Commune getCommune();
- public Object getCommunePK();
+ public java.lang.Object getCommunePK();
  public com.idega.core.location.data.Country getCountry();
  public int getCountryId();
  public java.lang.String getExtraProviderId();
@@ -31,6 +31,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getName();
  public java.lang.String getOpenHours();
  public java.lang.String getOrganizationNumber();
+ public java.lang.String getPlacementParagraph();
  public java.lang.String getSchoolAddress();
  public com.idega.block.school.data.SchoolArea getSchoolArea();
  public int getSchoolAreaId();
@@ -54,7 +55,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setActivity(java.lang.String p0);
  public void setAssistantHeadmasterGroupId(int p0);
  public void setCentralizedAdministration(boolean p0);
- public void setCommunePK(Object p0);
+ public void setCommunePK(java.lang.Object p0);
  public void setCountryId(int p0);
  public void setExtraProviderId(java.lang.String p0);
  public void setHeadmasterGroupId(int p0);
@@ -66,6 +67,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setMapUrl(java.lang.String p0);
  public void setOpenHours(java.lang.String p0);
  public void setOrganizationNumber(java.lang.String p0);
+ public void setPlacementParagraph(java.lang.String p0);
  public void setSchoolAddress(java.lang.String p0);
  public void setSchoolAreaId(int p0);
  public void setSchoolFax(java.lang.String p0);

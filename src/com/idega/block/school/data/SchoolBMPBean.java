@@ -73,12 +73,13 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public final static String EXTRA_PROVIDER_ID = "extra_provider_id";
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
-	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";	
+	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";
+	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
 		//this.addAttribute(SCHOOLTYPE,"Schooltype",true,true,Integer.class,this.MANY_TO_ONE,SchoolType.class);
-		this.addAttribute(SCHOOLAREA, "Schoolarea", true, true, Integer.class, this.MANY_TO_ONE, SchoolArea.class);
+		this.addAttribute(SCHOOLAREA, "Schoolarea", true, true, Integer.class, MANY_TO_ONE, SchoolArea.class);
 		this.addAttribute(NAME, "Schoolname", true, true, String.class);
 		this.addAttribute(INFO, "Info", true, true, String.class, 4000);
 		this.addAttribute(ADDRESS, "Address", true, true, String.class, 100);
@@ -88,17 +89,18 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(KEYCODE, "keycode", true, true, String.class, 20);
 		this.addAttribute(LATITUDE, "latitude", true, true, String.class, 20);
 		this.addAttribute(LONGITUDE, "longitude", true, true, String.class, 20);
-		this.addAttribute(HEADMASTER, "Headmaster", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
+		this.addAttribute(HEADMASTER, "Headmaster", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		/** Gimmi 4-5 Nov 2002 */
 		this.addAttribute(FAX, "fax", true, true, String.class, 20);
 		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 500);
-		
+		/* Borgman 9 sept 2003 */
+		this.addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
 		/** Laddi 3 Sep 2003 */
 		//this.addAttribute(MANAGEMENT_TYPE_ID, "management_type", true, true, Integer.class);
 		addManyToOneRelationship(MANAGEMENT_TYPE, SchoolManagementType.class);
 		
-		this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
-		this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
+		this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, MANY_TO_ONE, User.class);
+		this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		this.addAttribute(MAP_URL, "url to map", true, true, String.class,500);
 		/** Kelly 13-14 May 2003 */
 		this.addAttribute(ACTIVITY, "The schools activity", true, true, String.class, 256);
@@ -282,6 +284,14 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public void setCentralizedAdministration(boolean b) {
 		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
 	}
+	
+	public String getPlacementParagraph() {
+		return this.getStringColumnValue(PLACEMENT_PARAGRAPH);
+	}
+
+	public void setPlacementParagraph(String placementParagraph) {
+		this.setColumn(PHONE, placementParagraph);
+	}
 
 	private Date getCurrentDate() {
 		return new Date(System.currentTimeMillis());
@@ -323,7 +333,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 
 	public Collection ejbFindAllCentralizedAdministrated() throws javax.ejb.FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.CENTRALIZED_ADMINISTRATION, "Y");
+		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(CENTRALIZED_ADMINISTRATION, "Y");
 		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		return super.idoFindPKsByQuery(sql);
 	}
