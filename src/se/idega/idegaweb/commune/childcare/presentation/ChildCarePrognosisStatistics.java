@@ -29,7 +29,7 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
      */
     public ChildCarePrognosisStatistics() {
         // cache for 30 minutes
-        setCacheable(getCacheKey(),30*60*1000);
+       // setCacheable(getCacheKey(),30*60*1000);  //remove //
     }
     
     
@@ -119,19 +119,25 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 	}*/
 	
 	private Table getProviderStatTable(IWContext iwc) throws RemoteException{
-		Table table = getTable(9);
+		Table table = getTable(10);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 2;
-		int column = 1;
+		int column = 3;
 
-		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), 3, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_3m","Priority (3M)"), 4, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_queue3months","Within (3M)"), 5, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), 6, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), 7, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_queue12months","Within (12M)"), 8, 1);
-		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), 9, 1);
+		boolean useVacancies = getBusiness().getUseVacancies();
+		if (useVacancies)
+			table.add(getLocalizedSmallHeader("child_care.total_vacancies","Vacancies"), column++, 1);
+		
+		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), column++, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_3m","Priority (3M)"), column++, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_queue3months","Within (3M)"), column++, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), column++, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), column++, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_queue12months","Within (12M)"), column++, 1);
+		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), column++, 1);
 
+		column = 1; //set column back to 1 
+		
 		Collection stats = null;
         try {
             stats = getBusiness().getProviderStats(iwc.getCurrentLocale());
@@ -158,6 +164,8 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 				//table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
 				table.add(getSmallText(String.valueOf(stat.getQueueTotal())), column++, row);
 				if (stat.hasPrognosis()) {
+					if (useVacancies)
+						table.add(getSmallText(String.valueOf(stat.getVacancies())), column++, row);
 					table.add(getSmallText(String.valueOf(stat.getThreeMonthsPrognosis())), column++, row);
 					if (stat.getThreeMonthsPriority().intValue() != -1)
 						table.add(getSmallText(String.valueOf(stat.getThreeMonthsPriority())), column++, row);
