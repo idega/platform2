@@ -71,11 +71,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/06 15:33:36 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/06 16:47:50 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.116 $
+ * @version $Revision: 1.117 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -100,6 +100,26 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		validFritidsklubbYears.add("S4");
 		validFritidsklubbYears.add("S5");
 		validFritidsklubbYears.add("S6");
+	}
+
+	private static final HashSet FritidsklubbYears = new HashSet();
+	{
+		validFritidsklubbYears.add("Fr4");
+		validFritidsklubbYears.add("Fr5");
+		validFritidsklubbYears.add("Fr6");
+	}
+
+	private static final HashSet validOppenVerksamhet = new HashSet();
+	{
+		validFritidsklubbYears.add("1");
+		validFritidsklubbYears.add("2");
+		validFritidsklubbYears.add("3");
+		validFritidsklubbYears.add("S1");
+		validFritidsklubbYears.add("S2");
+		validFritidsklubbYears.add("S3");
+		validFritidsklubbYears.add("G1");
+		validFritidsklubbYears.add("G2");
+		validFritidsklubbYears.add("G3");
 	}
 
 	public PaymentThreadSchool(Date month, IWContext iwc) {
@@ -344,11 +364,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Find the oppen verksamhet and fritidsklubb
 			try {
 				String schoolYearName = schoolClassMember.getSchoolYear().getName();
-				int len = schoolYearName.length();
-				int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
+//				int len = schoolYearName.length();
+//				int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
 //				int schoolYear = Integer.parseInt(schoolYearName);
 				
-				if (schoolYearInt <= 3) {
+				if (validOppenVerksamhet.contains(schoolYearName)) {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
@@ -366,11 +386,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						}
 					}
 				}
-			}
-			catch (NumberFormatException e) {
-				//That's OK I only want years 1-6
-			}
-			catch (IDORelationshipException e) {
+//			}
+//			catch (NumberFormatException e) {
+//				//That's OK I only want years 1-6
+			} catch (IDORelationshipException e) {
 				e.printStackTrace();
 				if (errorRelated != null) {
 					createNewErrorMessage(errorRelated, "invoice.DBRelationshipError");
@@ -510,8 +529,33 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 
-	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes, SchoolType schoolType) throws PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException, FinderException {
+	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes, SchoolType schoolType) throws PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException, FinderException, IDORelationshipException {
 		School school = schoolClassMember.getSchoolClass().getSchool();
+
+		//Try to figure out the schoolyear stuff for fritidsklubb. Not sure this is right...
+		String schoolYearName = schoolClassMember.getSchoolClass().getName();
+		int len = schoolYearName.length();
+		String schoolYearCM = schoolYearName.substring(len-1,len);
+		
+		Iterator yearIter = school.findRelatedSchoolYears().iterator();
+		//check if school has a fritidsklubb year same as the school year for the placement
+		boolean yearFound = false;
+		while(yearIter.hasNext()){
+			SchoolYear schoolYear = (SchoolYear) yearIter.next();
+			if(FritidsklubbYears.contains(schoolYear.getName())){
+				schoolYearName = schoolYear.getName();
+				len = schoolYearName.length();
+				String schoolYearS = schoolYearName.substring(len-1,len);
+				if(schoolYearCM.equalsIgnoreCase(schoolYearS)){
+					yearFound = true;
+					break;
+				}
+			}
+		}
+		if(!yearFound){
+			return;
+		}
+
 		ArrayList oppenConditions = new ArrayList();
 		oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, FRITIDSKLUBB));
 		Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(),
@@ -538,8 +582,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
 				}
 				
-				String schoolYearName = schoolClassMember.getSchoolYear().getName();
-				int len = schoolYearName.length();
+				schoolYearName = schoolClassMember.getSchoolYear().getName();
+				len = schoolYearName.length();
 				try {
 					errorRelated.append("Schoolyear" + schoolYearName);
 					int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
