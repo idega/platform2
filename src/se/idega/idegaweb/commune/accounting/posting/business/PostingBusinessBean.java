@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.11 2003/08/27 22:45:03 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.12 2003/08/28 12:53:21 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -95,7 +95,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 
 	/**
 	 * Hämta konteringsinformation
-	 * Retrieves accounting default information. Matching is done via keys to avoid localisation problems. 
+	 * Retrieves accounting default information. Matching on the main rules like 
+	 * Verksamhet, Regspectyp, Bolagstyp, kommuntill.hörighet is done via keys to avoid 
+	 * localisation problems in the selectors. 
+	 * 
 	 * The example keys I added here are just for "Check och Peng" education/childcare but could easily be 
 	 * extened to use other areas such as elderly care etc etc. And of course localized.
 	 * We store the keys in the data bean and these are retrived from the regulation framework
@@ -186,22 +189,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				String regSpecTypeID,
 				String companyTypeID,
 				String communeBelongingID,
-				String ownAccount,
-				String ownLiability,
-				String ownResource,
-				String ownActivityCode,
-				String ownDoubleEntry,
-				String ownActivity,
-				String ownProject,
-				String ownObject,
-				String doubleAccount,
-				String doubleLiability,
-				String doubleResource,
-				String doubleActivityCode,
-				String doubleDoubleEntry,
-				String doubleActivity,
-				String doubleProject,
-				String doubleObject
+				String ownPostingString,
+				String doublePostingString
 			) throws PostingParametersException, RemoteException {
 
 			PostingParametersHome home = null;
@@ -237,10 +226,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if(searchPP(
 						periodeFrom, 
 						periodeTo, 
-						ownAccount, 
-						ownResource, 
-						ownActivityCode, 
-						ownDoubleEntry,
+						ownPostingString, 
+						doublePostingString,
 						parm1,
 						parm2,
 						parm3,
@@ -276,25 +263,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setRegSpecType(parm2);
 				pp.setCompanyType(parm3);
 				pp.setCommuneBelonging(parm4);
-				
-				pp.setPostingAccount(ownAccount +  " ");
-				pp.setPostingLiability(ownLiability +  " ");
-				pp.setPostingResource(ownResource +  " ");
-				pp.setPostingActivityCode(ownActivityCode +  " ");
-				pp.setPostingDoubleEntry(ownDoubleEntry +  " ");
-				pp.setPostingActivity(ownActivity +  " ");
-				pp.setPostingProject(ownProject +  " ");
-				pp.setPostingObject(ownObject +  " ");
-	
-				pp.setDoublePostingAccount(doubleAccount +  " ");
-				pp.setDoublePostingLiability(doubleLiability +  " ");
-				pp.setDoublePostingResource(doubleResource +  " ");
-				pp.setDoublePostingActivityCode(doubleActivityCode +  " ");
-				pp.setDoublePostingDoubleEntry(doubleDoubleEntry +  " ");
-				pp.setDoublePostingActivity(doubleActivity +  " ");
-				pp.setDoublePostingProject(doubleProject +  " ");
-				pp.setDoublePostingObject(doubleObject +  " ");
-									
 				pp.store();
 			} catch (CreateException ce) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			
@@ -305,7 +273,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * Compares a Posting Parameter with stored parameters
 	 * @author Kjell
 	 */
-	private boolean searchPP(Date from, Date to, String parm1, String parm2, String parm3, String parm4,
+	private boolean searchPP(Date from, Date to, String ownPosting, String doublePosting, 
 								int code1, int code2, int code3, int code4) {
 	
 		try {
@@ -318,16 +286,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			while(iter.hasNext())  {
 				PostingParameters pp = (PostingParameters) iter.next();
 				int eq = 0;
-				if (pp.getPostingAccount().trim().compareToIgnoreCase(parm1.trim()) == 0) {
+				if (pp.getPostingString().compareTo(ownPosting.trim()) == 0) {
 					eq++;
 				}
-				if (pp.getPostingResource().trim().compareToIgnoreCase(parm2.trim()) == 0) {
-					eq++;
-				}
-				if (pp.getPostingActivityCode().trim().compareToIgnoreCase(parm3.trim()) == 0) {
-					eq++;
-				}
-				if (pp.getPostingDoubleEntry().trim().compareToIgnoreCase(parm4.trim()) == 0) {
+				if (pp.getDoublePostingString().compareTo(doublePosting.trim()) == 0) {
 					eq++;
 				}
 				if (pp.getPeriodeFrom() != null) {
@@ -352,7 +314,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) == code4) {
 					eq++;				
 				}	
-				if(eq == 10) {
+				if(eq == 8) {
 					return true;
 				}
 			}
@@ -451,6 +413,27 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	}
 
 	/**
+	 * Gets a posting fields for a specific date
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingField# 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString# 
+	 * @return PostingField
+	 * @author Kjell
+	 */
+	public Collection getAllPostingFieldsByDate(Date date) {
+		try {
+			PostingStringHome psHome = getPostingStringHome();
+			PostingFieldHome pfHome = getPostingFieldHome();
+			PostingString ps = psHome.findPostingStringByDate(date); 
+			int psID = Integer.parseInt(ps.getPrimaryKey().toString());
+			return pfHome.findAllFieldsByPostingString(psID);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Pads the string according to the rules in Posting field
 	 * @param in the string to pad
 	 * @param postingField holds the rules for padding
@@ -490,6 +473,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 		return ret;
 	}
+
+	
 
 	protected PostingParametersHome getPostingParametersHome() throws RemoteException {
 		return (PostingParametersHome) com.idega.data.IDOLookup.getHome(PostingParameters.class);
