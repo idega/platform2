@@ -319,6 +319,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
     // fax
     // email
+    workReportDivisionBoard.store();
     return workReportDivisionBoard;
   }
          
