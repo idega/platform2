@@ -14,6 +14,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -34,7 +35,8 @@ import com.idega.user.data.GroupHome;
  */
 public class FieldList extends GolfBlock {
 
-	Table _table;
+	private Table _table;
+	private ICPage _fieldOverviewPage = null;
 	
 	/**
 	 * 
@@ -66,6 +68,10 @@ public class FieldList extends GolfBlock {
 					for (Iterator iter = fields.iterator(); iter.hasNext();) {
 						Field field = (Field) iter.next();
 						Link l = getLink(field.getName()); 
+						if(_fieldOverviewPage!=null) {
+							l.setPage(_fieldOverviewPage);
+						}
+						l.addParameter(FieldOverview.PRM_FIELD_ID,field.getPrimaryKey().toString());
 						_table.add(l,1,rowIndex++);
 					}
 				} catch (FinderException e) {
@@ -92,4 +98,10 @@ public class FieldList extends GolfBlock {
 	}
 
 
+	/**
+	 * @param overviewPage The _fieldOverviewPage to set.
+	 */
+	public void setFieldOverviewPage(ICPage fieldOverviewPage) {
+		_fieldOverviewPage = fieldOverviewPage;
+	}
 }

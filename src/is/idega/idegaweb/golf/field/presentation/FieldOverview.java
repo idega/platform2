@@ -42,6 +42,7 @@ import com.idega.presentation.ui.Window;
 public class FieldOverview extends GolfBlock {
   
   private ICPage gameHandicapPage;
+  public final static String PRM_FIELD_ID = "field_id";
 
 	public void main(IWContext modinfo) throws Exception {
 		String union_id = modinfo.getParameter("union_id");

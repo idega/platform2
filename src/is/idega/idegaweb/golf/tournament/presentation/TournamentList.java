@@ -50,6 +50,8 @@ public class TournamentList extends GolfBlock {
 	static int daysToDisplay = 14;
 
 	private IWResourceBundle iwrb;
+	
+	public static final String PRM_UNION_ID = "union_id";
 
 	private IWBundle iwb;
 
