@@ -57,7 +57,7 @@ public class MessengerApplet extends Applet implements Runnable{
   private Packet packetToServlet;
   private Packet packetFromServlet;
 
-  private MessageListener listener;
+  private MessageListener listener = new MessageListener(this);;
 
 
   /**Get a parameter value*/
@@ -101,7 +101,6 @@ public class MessengerApplet extends Applet implements Runnable{
 
       if(!listenerStarted){
         System.out.println("starting listener");
-        listener = new MessageListener(this);
         listener.start();
         listenerStarted = true;
       }
@@ -183,12 +182,11 @@ public class MessengerApplet extends Applet implements Runnable{
           messageDialog.setVisible(true);
 
           if(!listenerStarted){
-            listener = new MessageListener(this);
             //listener.start();
             listenerStarted = true;
           }
 
-          listener.addMessageDialog(messageDialog);
+          //listener.addMessageDialog(messageDialog);
 
 
         }
