@@ -279,9 +279,13 @@ public class PhoneFileHandler {
     //Map M = PhoneFinder.mapOfAccountsByPhoneNumber();
     Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
     Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
+
     // If we can assess something
     if( M != null && M2 !=null){
       try{
+		    long phonetime = -1;
+		    long from = -1;
+		    long to = -1;
 
         FileReader fin = new FileReader(PhoneFile);
         LineNumberReader lin = new LineNumberReader(fin);
@@ -334,6 +338,7 @@ public class PhoneFileHandler {
                 ape.setPrice(entryFactor*price);
                 ape.setSubNumber(snumber);
                 ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
+		            phonetime = ape.getPhonedStamp().getTime();
                 cont = true;
               }
               catch(Exception ex){
@@ -376,7 +381,10 @@ public class PhoneFileHandler {
                     listsize = accountList.size();
                     for (int i = 0; i < listsize; i++) {
                       ap = (AccountPhone) accountList.get(i);
-                      if(ape.getPhonedStamp().getTime() <= ap.getValidTo().getTime()){
+                      from = ap.getValidFrom().getTime();
+                      to = ap.getValidTo().getTime();
+//                      if( phonetime >= from && phonetime <= to){
+                      if(phonetime <= to) {
                         //System.err.println("ape "+ape.getSubNumber()+" account "+ap.getAccountId().intValue());
                         ape.setAccountId(ap.getAccountId());
                         ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusRead);

@@ -172,7 +172,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
       AccountPhoneEntry ape;
       ContractAccounts accounts;
       if(entries != null){
-        System.err.println("Entries not null ");
+        System.err.println("Entries not null size = "+entries.size());
         AssessmentRound AR = null;
 
         int iRoundId = -1;
@@ -228,6 +228,9 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusBilled);
                 ape.setRoundId(iRoundId);
                 ape.update();
+              }
+              else{
+              	System.err.println("Map doesn't contain this accountid "+phAccId);
               }
             }
 
