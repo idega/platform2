@@ -141,7 +141,7 @@ public class Booking extends TravelManager {
         }else {
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",sProductId);
         }
-        if (sProductId != null && !sProductId.equals("-1")) {
+        if (sProductId != null && !sProductId.equals("-1") && Integer.parseInt(sProductId) > 0 ) {
           productId = Integer.parseInt(sProductId);
           product = getProductBusiness(iwc).getProduct(productId);
           service = tsb.getService(product);
