@@ -155,6 +155,7 @@ public class GolfWindow extends Window {
     this.setLeftMargin(0);
     this.setTopMargin(0);
     this.setBackgroundColor("#7faf46");
+    this.setScrollbar(true);
 
     initialized = false;
     constructTable();
@@ -167,6 +168,7 @@ public class GolfWindow extends Window {
     this.setLeftMargin(0);
     this.setTopMargin(0);
     this.setBackgroundColor("#7faf46");
+    this.setScrollbar(true);
 
     initialized = false;
     constructTable();
