@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.7 2003/04/25 12:31:46 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.8 2003/04/28 16:44:19 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -37,9 +37,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Queue for child care";
 	
-	//TODO Change this to another name
 	protected final static String CONTRACT_ID = "contract_id";
-//	protected final static String CHILD_NAME = "child_name";
 	protected final static String CHILD_ID = "child_id";
 	protected final static String PROVIDER_NAME = "provider_name";
 	protected final static String PROVIDER_ID = "provider_id";
@@ -83,7 +81,6 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(CONTRACT_ID,"",true,true,java.lang.Integer.class);
-//		addAttribute(CHILD_NAME,"",true,true,java.lang.String.class,1000);
 		addAttribute(CHILD_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,User.class);
 		addAttribute(PROVIDER_NAME,"",true,true,java.lang.String.class,1000);
 		addAttribute(PROVIDER_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,School.class);
@@ -96,13 +93,8 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		addAttribute(IMPORT_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(QUEUE_TYPE,"",true,true,java.lang.Integer.class);
 		addAttribute(EXPORTED,"",true,true,java.lang.Boolean.class);
-		//TODO cleanup code not needed
-/*		
-		addManyToOneRelationship(PROVIDER_ID,School.class);
+
 		addManyToOneRelationship(CHILD_ID,User.class);
-		addManyToOneRelationship(CONTRACT_ID,Contract.class);
-		addManyToOneRelationship(CONTRACT_FILE_ID,ICFile.class);
-*/
 	}
 	
 	public int getContractId() {
@@ -116,11 +108,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	public int getChildId() {
 		return getIntColumnValue(CHILD_ID);	
 	}
-/*	
-	public String getChildName() {
-		return getStringColumnValue(CHILD_NAME);	
-	}
-*/
+
 	public String getProviderName() {
 		return getStringColumnValue(PROVIDER_NAME);			
 	}
@@ -173,11 +161,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	public void setContractId(int id) {
 		setColumn(CONTRACT_ID,id);	
 	}
-/*
-	public void setChildName(String name) {
-		setColumn(CHILD_NAME,name);	
-	}
-*/
+
 	public void setChildId(int id) {
 		setColumn(CHILD_ID,id);	
 	}
