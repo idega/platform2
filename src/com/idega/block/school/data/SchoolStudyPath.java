@@ -7,6 +7,7 @@ public interface SchoolStudyPath extends com.idega.data.IDOEntity
  public void addSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDOAddRelationshipException;
  public java.lang.String getCode();
  public java.lang.String getDescription();
+ public java.lang.String getLocalizedKey();
  public com.idega.block.school.data.SchoolType getSchoolCategory();
  public java.lang.Object getSchoolCategoryPK();
  public com.idega.block.school.data.SchoolType getSchoolType();
@@ -17,6 +18,8 @@ public interface SchoolStudyPath extends com.idega.data.IDOEntity
  public void removeSchool(com.idega.block.school.data.School p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setCode(java.lang.String p0);
  public void setDescription(java.lang.String p0);
+ public void setIsValid(boolean p0);
+ public void setLocalizedKey(java.lang.String p0);
  public void setSchoolCategory(java.lang.Object p0);
  public void setSchoolTypeId(java.lang.Object p0);
 }

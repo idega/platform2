@@ -23,6 +23,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	private static String COLUMN_SCHOOL_TYPE   = "SCH_SCHOOL_TYPE_ID";
 	private static String COLUMN_SCHOOL_CATEGORY   = "SCH_SCHOOL_CATEGORY_ID";
 	private static String COLUMN_IS_VALID      = "IS_VALID";
+	private static String COLUMN_LOCALIZED_KEY = "LOCALIZED_KEY";
 	
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -34,6 +35,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		addAttribute(COLUMN_CODE, "course name", true, true, String.class);
 		addAttribute(COLUMN_DESCRIPTION, "description, ", true, true, String.class);
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
+		addAttribute(COLUMN_LOCALIZED_KEY, "localized key", String.class);
 		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE, SchoolType.class);
 		this.addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY, SchoolCategory.class);
@@ -58,6 +60,14 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	
 	public void setDescription(String description) {
 		setColumn(COLUMN_DESCRIPTION, description);
+	}
+
+	public String getLocalizedKey() {
+		return getStringColumnValue(COLUMN_LOCALIZED_KEY);
+	}
+	
+	public void setLocalizedKey(String localizedKey) {
+		setColumn(COLUMN_LOCALIZED_KEY, localizedKey);
 	}
 
 	public SchoolType getSchoolType() {
@@ -87,9 +97,13 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
     public boolean isValid () {
         return getBooleanColumnValue (COLUMN_IS_VALID);
     }
+    
+  public void setIsValid(boolean isValid) {
+  		setColumn(COLUMN_IS_VALID, isValid);
+  }
 
 	public void remove() {
-		setColumn(COLUMN_IS_VALID, false);
+		setIsValid(false);
 		this.store();
 	}
 	
