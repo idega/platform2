@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/10 20:22:32 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/10 20:40:13 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -510,11 +510,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		
 		// count values for summary
 		for (int i = 0; i < records.length; i++) {
-			placementCount += records [i].getPlacements ();
-			totalAmountVatExcluded += roundAmount (records [i].getTotalAmount ());
-			totalAmountVat += roundAmount (records [i].getTotalAmountVAT ());
+			final PaymentRecord paymentRecord = records [i];
+			placementCount += paymentRecord.getPlacements ();
+			totalAmountVatExcluded += roundAmount (paymentRecord.getTotalAmount () - paymentRecord.getTotalAmountVAT ());
+			totalAmountVat += roundAmount (paymentRecord.getTotalAmountVAT ());
 			final Collection invoiceRecords
-					= home.findByPaymentRecord (records [i]);
+					= home.findByPaymentRecord (paymentRecord);
 			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
 				final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
 				try {
@@ -979,7 +980,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			final User user = placement.getStudent ();
 			placements.add (placementId);
 			individuals.add (user.getPrimaryKey ());
-			totalAmountVatExcluded += roundAmount (invoiceRecord.getAmount()-invoiceRecord.getAmountVAT());
+			totalAmountVatExcluded += roundAmount (invoiceRecord.getAmount() - invoiceRecord.getAmountVAT());
 		}
 		
 		// render
@@ -1059,11 +1060,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		
 		// count values for summary
 		for (int i = 0; i < records.length; i++) {
-			placementCount += records [i].getPlacements ();
-			totalAmountVatExcluded += roundAmount (records [i].getTotalAmount ());
-			totalAmountVat += roundAmount (records [i].getTotalAmountVAT ());
+			final PaymentRecord paymentRecord = records [i];
+			placementCount += paymentRecord.getPlacements ();
+			totalAmountVatExcluded += roundAmount	(paymentRecord.getTotalAmount () - paymentRecord.getTotalAmountVAT ());
+			totalAmountVat += roundAmount (paymentRecord.getTotalAmountVAT ());
 			final Collection invoiceRecords
-					= home.findByPaymentRecord (records [i]);
+					= home.findByPaymentRecord (paymentRecord);
 			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
 				final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
 				try {
