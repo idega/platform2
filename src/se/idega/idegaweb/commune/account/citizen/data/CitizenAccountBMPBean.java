@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.3 2002/07/22 15:45:54 palli Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.4 2002/10/31 13:01:54 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,13 +34,24 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 	protected final static String PHONE_HOME = "phone_home";
 	protected final static String PHONE_WORK = "phone_work";
 	protected final static String PID = "pid";
+    protected final static String CUSTODIAN = "custodian";
+    protected final static String CIVIL_STATUS = "civilStatus";
+    protected final static String STREET = "street";
+    protected final static String ZIP_CODE = "zipCode";
+    protected final static String CITY = "city";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(EMAIL, "E-mail", true, true, java.lang.String.class, 40);
-		addAttribute(PHONE_HOME, "Home phone", true, true, java.lang.String.class, 20);
-		addAttribute(PHONE_WORK, "Work phone", true, true, java.lang.String.class, 20);
-		addAttribute(PID, "PID", true, true, java.lang.String.class, 40);
+		addAttribute(EMAIL, "E-mail", true, true, String.class, 40);
+		addAttribute(PHONE_HOME, "Home phone", true, true, String.class, 20);
+		addAttribute(PHONE_WORK, "Work phone", true, true, String.class, 20);
+		addAttribute(PID, "PID", true, true, String.class, 40);
+        addAttribute (CUSTODIAN, "custodian", true, true, String.class, 40);
+        addAttribute (CIVIL_STATUS, "civilStatus", true, true, String.class,
+                      40);
+        addAttribute (STREET, "street", true, true, String.class, 40);
+        addAttribute (ZIP_CODE, "zipCode", true, true, String.class, 40);
+        addAttribute (CITY, "city", true, true, String.class, 40);
 	}
 
 	public String getEntityName() {
@@ -71,6 +82,27 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 		setColumn(PID, pid);
 	}
 
+    public void setCustodian (final String custodian) throws RemoteException {
+        setColumn (CUSTODIAN, custodian);
+    }
+    
+    public void setCivilStatus (final String civilStatus)
+        throws RemoteException {
+        setColumn (CIVIL_STATUS, civilStatus);
+    }
+    
+    public void setStreet (String street) throws RemoteException {
+        setColumn (STREET, street);
+    }
+    
+    public void setZipCode (final String zipCode) throws RemoteException {
+        setColumn (ZIP_CODE, zipCode);
+    }
+    
+    public void setCity (final String city) throws RemoteException {
+        setColumn (CITY, city);
+    }
+    
 	public String getEmail() {
 		return getStringColumnValue(EMAIL);
 	}

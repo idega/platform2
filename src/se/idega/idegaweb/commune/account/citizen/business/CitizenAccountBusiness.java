@@ -1,15 +1,27 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
+import com.idega.business.IBOService;
+import com.idega.user.data.User;
+import java.rmi.RemoteException;
 import javax.ejb.*;
-
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
+import java.util.List;
 
-public interface CitizenAccountBusiness extends com.idega.business.IBOService,AccountBusiness
-{
- public void acceptApplication(int p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.account.citizen.data.CitizenAccount getAccount(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getListOfUnapprovedApplications() throws java.rmi.RemoteException;
- public com.idega.user.data.User getUser(java.lang.String p0) throws java.rmi.RemoteException;
- public boolean insertApplication(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4) throws java.rmi.RemoteException;
- public void rejectApplication(int p0,com.idega.user.data.User p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
+public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
+    void acceptApplication (int p0, User p1)
+        throws RemoteException, CreateException, FinderException;
+    CitizenAccount getAccount (int p0)
+        throws RemoteException,FinderException, RemoteException;
+    List getListOfUnapprovedApplications () throws RemoteException;
+    User getUser (String p0) throws RemoteException;
+    boolean insertApplication
+        (User user, String pid, String email, String phoneHome,
+         String phoneWork) throws RemoteException;
+    boolean insertApplication
+        (String pid, String email, String phoneHome, String phoneWork,
+         String custodian, String civilStatus, String street, String zipCode,
+         String city) throws RemoteException;
+    void rejectApplication (int p0, User p1, String p2 )
+        throws RemoteException,CreateException,FinderException, RemoteException;
 }

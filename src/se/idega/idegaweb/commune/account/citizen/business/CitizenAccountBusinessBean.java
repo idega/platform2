@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.11 2002/09/30 12:10:41 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.12 2002/10/31 13:01:54 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,28 +10,16 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
 import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.process.data.Case;
-import com.idega.block.process.data.CaseHome;
+import com.idega.block.process.data.*;
 import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
-import com.idega.user.data.UserHome;
-import com.idega.user.data.User;
-
-import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean;
-import se.idega.idegaweb.commune.account.business.AccountBusiness;
-import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
-import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
-import se.idega.idegaweb.commune.account.citizen.data.CitizenAccountHome;
-import se.idega.idegaweb.commune.account.data.AccountApplication;
-
+import com.idega.user.data.*;
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
+import java.util.*;
+import javax.ejb.*;
+import se.idega.idegaweb.commune.account.business.*;
+import se.idega.idegaweb.commune.account.citizen.data.*;
+import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -68,6 +56,37 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 		return true;
 	}
+
+    public boolean insertApplication
+        (final String pid, final String email, final String phoneHome,
+         final String phoneWork, final String custodian,
+         final String civilStatus, final String street, final String zipCode,
+         final String city) throws RemoteException {
+		try {
+            final CitizenAccountHome citizenAccountHome = (CitizenAccountHome)
+                    IDOLookup.getHome(CitizenAccount.class);
+			final CitizenAccount application = citizenAccountHome.create ();
+			application.setPID (pid != null ? pid : "");
+			application.setPhoneHome (phoneHome != null ? phoneHome : "");
+            application.setEmail (email != null ? email : "");
+            application.setPhoneWork (phoneWork != null ? phoneWork : "");
+            application.setCustodian (custodian != null ? custodian : "");
+            application.setCivilStatus (civilStatus != null ? civilStatus : "");
+            application.setStreet (street != null ? street : "");
+            application.setZipCode (zipCode != null ? zipCode : "");
+            application.setCity (city != null ? city : "");
+			application.setCaseStatus (getCaseStatusOpen());
+			application.store ();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+    }
+
+
 
 	public User getUser(String pid) {
 		User user = null;

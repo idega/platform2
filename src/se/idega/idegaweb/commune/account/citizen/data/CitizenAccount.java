@@ -1,19 +1,28 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
+import com.idega.block.process.data.Case;
+import com.idega.data.IDOEntity;
+import java.rmi.RemoteException;
 import javax.ejb.*;
+import se.idega.idegaweb.commune.account.data.AccountApplication;
 
-public interface CitizenAccount extends com.idega.data.IDOEntity,com.idega.block.process.data.Case,se.idega.idegaweb.commune.account.data.AccountApplication
-{
- public java.lang.String getApplicantName()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getCaseCodeDescription() throws java.rmi.RemoteException;
- public java.lang.String getCaseCodeKey() throws java.rmi.RemoteException;
- public java.lang.String getEmail() throws java.rmi.RemoteException;
- public java.lang.String getPID() throws java.rmi.RemoteException;
- public java.lang.String getPhoneHome() throws java.rmi.RemoteException;
- public java.lang.String getPhoneWork() throws java.rmi.RemoteException;
- public void setApplicantName(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void setEmail(java.lang.String p0) throws java.rmi.RemoteException;
- public void setPID(java.lang.String p0) throws java.rmi.RemoteException;
- public void setPhoneHome(java.lang.String p0) throws java.rmi.RemoteException;
- public void setPhoneWork(java.lang.String p0) throws java.rmi.RemoteException;
+public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
+    String getApplicantName ()throws RemoteException;
+    String getCaseCodeDescription () throws RemoteException;
+    String getCaseCodeKey () throws RemoteException;
+    String getEmail () throws RemoteException;
+    String getPID () throws RemoteException;
+    String getPhoneHome () throws RemoteException;
+    String getPhoneWork () throws RemoteException;
+
+    void setApplicantName (String name)throws RemoteException;
+    void setEmail (String email) throws RemoteException;
+    void setPID (String pid) throws RemoteException;
+    void setPhoneHome (String phoneHome) throws RemoteException;
+    void setPhoneWork (String phoneWork) throws RemoteException;
+    void setCustodian (String custodian) throws RemoteException;
+    void setCivilStatus (String civilStatus) throws RemoteException;
+    void setStreet (String street) throws RemoteException;
+    void setZipCode (String zipCode) throws RemoteException;
+    void setCity (String city) throws RemoteException;
 }

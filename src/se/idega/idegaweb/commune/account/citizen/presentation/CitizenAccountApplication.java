@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.5 2002/10/15 11:38:05 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.6 2002/10/31 13:01:54 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,13 +15,14 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
+import java.util.Iterator;
+import java.util.Vector;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import java.util.Vector;
-import java.util.Iterator;
 
 /**
  * This is the presentation class for the CitizenAccount application
@@ -32,20 +33,29 @@ import java.util.Iterator;
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
-	private final static int ACTION_SUBMIT_FORM = 1;
+	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
+	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM = 2;
 
 	private final static String PARAM_PID = "caa_pid";
 	private final static String PARAM_EMAIL = "caa_email";
 	private final static String PARAM_PHONE_HOME = "caa_phone_home";
 	private final static String PARAM_PHONE_WORK = "caa_phone_work";
-	private final static String PARAM_FORM_SUBMIT = "caa_submit";
+    private final static String PARAM_CUSTODIAN = "caa_custodian";
+    private final static String PARAM_CIVIL_STATUS = "caa_civil_status";
+    private final static String PARAM_STREET = "caa_street";
+    private final static String PARAM_ZIP_CODE = "caa_zip_code";
+    private final static String PARAM_CITY = "caa_city";
+	private final static String PARAM_SIMPLE_FORM_SUBMIT = "caa_simpleSubmit";
+	private final static String PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT
+        = "caa_unknownCitizenSubmit";
 
 	private final static String ERROR_PID = "caa_pid_error";
 	private final static String ERROR_PHONE_HOME = "caa_error_phone_home";
 	private final static String ERROR_NO_INSERT = "caa_no_insert";
 	private final static String ERROR_NOT_EMAIL = "caa_err_email";
 
-	private final static String TEXT_APPLICATION_SUBMITTED = "caa_app_submitted";
+	private final static String TEXT_APPLICATION_SUBMITTED
+        = "caa_app_submitted";
 
 	private boolean _isPIDError = false;
 	private boolean _isPhoneHomeError = false;
@@ -63,11 +73,14 @@ public class CitizenAccountApplication extends CommuneBlock {
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
-				case ACTION_VIEW_FORM :
-					viewForm(iwc);
+				case ACTION_VIEW_FORM:
+					viewSimpleApplicationForm(iwc);
 					break;
-				case ACTION_SUBMIT_FORM :
-					submitForm(iwc);
+				case ACTION_SUBMIT_SIMPLE_FORM:
+					submitSimpleForm(iwc);
+					break;
+				case ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM:
+					submitUnknownCitizenForm(iwc);
 					break;
 			}
 		}
@@ -76,7 +89,90 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}    
 	}
 
-	private void viewForm(IWContext iwc) {
+    private void addSimpleInputs (final IWContext iwc, final Table inputTable) {
+        addSingleInput (iwc, PARAM_PID, "Personnummer", inputTable, 40,
+                        _isPIDError, 1, 1);
+        addSingleInput (iwc, PARAM_EMAIL, "E-post", inputTable, 40,
+                        _isEmailError, 2, 1);
+        addSingleInput (iwc, PARAM_PHONE_HOME, "Telefon (hem)", inputTable, 20,
+                        _isPhoneHomeError, 1, 3);
+        addSingleInput (iwc, PARAM_PHONE_WORK, "Telefon (jobb/mobil)",
+                        inputTable, 20, false, 2, 3);
+    }
+
+    private void addSingleInput
+        (final IWContext iwc, final String paramId, final String defaultText,
+         final Table inputTable, final int maxLength, final boolean isError,
+         final int col, final int row) {
+
+        final TextInput textInput = new TextInput (paramId);
+		textInput.setMaxlength (maxLength);
+		textInput.setStyleClass (getSmallTextFontStyle ());
+		final String param = iwc.getParameter (paramId);
+		if (param != null) {
+			textInput.setContent (param);
+        }
+        final String subject = localize (paramId, defaultText);
+        final Text text = isError ? getSmallErrorText (subject)
+                : getSmallText (subject);
+        inputTable.add (text, col, row);
+        inputTable.add (textInput, col, row + 1);
+    }
+
+    private void addSubmitButton (final IWContext iwc, final String submitId,
+                                  final String defaultText,
+                                  final Table inputTable, final int row) {
+		inputTable.setAlignment(2, row, "right");
+        final String text = localize(submitId, defaultText);
+		final SubmitButton submitButton = new SubmitButton
+                (getBundle(iwc).getImageButton (text), submitId);
+		submitButton.setStyleClass(getLinkFontStyle());
+		inputTable.add(submitButton, 2, row);
+    }
+
+	private void viewUnknownCitizenApplicationForm(IWContext iwc) {
+		Form accountForm = new Form();
+
+		Table inputTable = new Table(2, 12);
+		inputTable.setCellspacing(2);
+		inputTable.setCellpadding(4);
+		inputTable.setColor(getBackgroundColor());
+
+        addSimpleInputs (iwc, inputTable);
+
+        addSingleInput (iwc, PARAM_CUSTODIAN, "Vårdnashavare", inputTable, 40,
+                        false, 1, 5);
+        addSingleInput (iwc, PARAM_CIVIL_STATUS, "Civilstånd", inputTable, 40,
+                        false, 2, 5);
+        addSingleInput (iwc, PARAM_STREET, "Gatuadress", inputTable, 40, false,
+                        1, 7);
+        addSingleInput (iwc, PARAM_ZIP_CODE, "Postnummer", inputTable, 40,
+                        false, 1, 9);
+        addSingleInput (iwc, PARAM_CITY, "Postadress", inputTable, 40, false, 2,
+                        9);
+        addSubmitButton (iwc, PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT,
+                         "Submit application", inputTable, 12);
+
+		if (_isError) {
+			if (_errorMsg != null) {
+				Table errorTable = new Table(1, 1);
+				errorTable.setCellspacing(2);
+				errorTable.setCellpadding(4);
+				Iterator it = _errorMsg.iterator();
+				while (it.hasNext()) {
+					String errorMsg = (String) it.next();
+					errorTable.add(getErrorText(errorMsg), 1, 1);
+					errorTable.add(Text.getBreak(), 1, 1);
+				}
+				accountForm.add(errorTable);
+			}
+		}
+		accountForm.add(inputTable);
+
+		add(accountForm);
+    }
+
+	private void viewSimpleApplicationForm(IWContext iwc) {
 		Form accountForm = new Form();
 
 		Table inputTable = new Table(2, 6);
@@ -85,63 +181,13 @@ public class CitizenAccountApplication extends CommuneBlock {
 		inputTable.setAlignment(2, 6, "right");
 		inputTable.setColor(getBackgroundColor());
 
-		String pid = localize(PARAM_PID, "PID");
-		String email = localize(PARAM_EMAIL, "E-Mail");
-		String phone_home = localize(PARAM_PHONE_HOME, "Home phone");
-		String phone_work = localize(PARAM_PHONE_WORK, "Work/mobile phone");
+        addSimpleInputs (iwc, inputTable);
 
-		TextInput inputPid = new TextInput(PARAM_PID);
-		inputPid.setMaxlength(40);
-		TextInput inputEmail = new TextInput(PARAM_EMAIL);
-		inputEmail.setAsEmail(localize(ERROR_NOT_EMAIL, "Not a valid email"));
-		inputEmail.setMaxlength(40);
-		TextInput inputPhoneHome = new TextInput(PARAM_PHONE_HOME);
-		inputPhoneHome.setMaxlength(20);
-		TextInput inputPhoneWork = new TextInput(PARAM_PHONE_WORK);
-		inputPhoneWork.setMaxlength(20);
-
-		inputPid.setStyleClass(getSmallTextFontStyle());
-		inputEmail.setStyleClass(getSmallTextFontStyle());
-		inputPhoneHome.setStyleClass(getSmallTextFontStyle());
-		inputPhoneWork.setStyleClass(getSmallTextFontStyle());
-
-		String pidString = iwc.getParameter(PARAM_PID);
-		String emailString = iwc.getParameter(PARAM_EMAIL);
-		String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
-		String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
-
-		if (pidString != null)
-			inputPid.setContent(pidString);
-
-		if (emailString != null)
-			inputEmail.setContent(emailString);
-
-		if (phoneHomeString != null)
-			inputPhoneHome.setContent(phoneHomeString);
-
-		if (phoneWorkString != null)
-			inputPhoneWork.setContent(phoneWorkString);
-
-		if (!_isPIDError)
-			inputTable.add(getSmallText(pid), 1, 1);
-		else
-			inputTable.add(getSmallErrorText(pid), 1, 1);
-		if (!_isEmailError)
-			inputTable.add(getSmallText(email), 2, 1);
-		else
-			inputTable.add(getSmallErrorText(email), 2, 1);
-		if (!_isPhoneHomeError)
-			inputTable.add(getSmallText(phone_home), 1, 3);
-		else
-			inputTable.add(getSmallErrorText(phone_home), 1, 3);
-		inputTable.add(getSmallText(phone_work), 2, 3);
-
-		inputTable.add(inputPid, 1, 2);
-		inputTable.add(inputEmail, 2, 2);
-		inputTable.add(inputPhoneHome, 1, 4);
-		inputTable.add(inputPhoneWork, 2, 4);
-
-		SubmitButton submitButton = new SubmitButton(getBundle(iwc).getImageButton(localize(PARAM_FORM_SUBMIT, "Submit application")), PARAM_FORM_SUBMIT);
+		SubmitButton submitButton
+                = new SubmitButton(getBundle(iwc).getImageButton
+                                   (localize(PARAM_SIMPLE_FORM_SUBMIT,
+                                             "Submit application")),
+                                   PARAM_SIMPLE_FORM_SUBMIT);
 		submitButton.setStyleClass(getLinkFontStyle());
 
 		inputTable.add(submitButton, 2, 6);
@@ -164,7 +210,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		add(accountForm);
 	}
 
-	private void submitForm(IWContext iwc) {
+	private void submitSimpleForm (final IWContext iwc) {
 		String pidString = iwc.getParameter(PARAM_PID);
 		String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
 		String emailString = iwc.getParameter(PARAM_EMAIL);
@@ -190,34 +236,115 @@ public class CitizenAccountApplication extends CommuneBlock {
 			addErrorString(localize(ERROR_PHONE_HOME, "Home phone invalid"));
 		}
 
-		if (_isError == true) {
-			viewForm(iwc);
+		if (_isError) {
+			viewSimpleApplicationForm(iwc);
 			return;
 		}
 
-		boolean insert = false;
+		boolean isInserted = false;
 		try {
-			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-			insert = business.insertApplication(business.getUser(pidString), pidString, emailString, phoneHomeString, phoneWorkString);
+			final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
+            final User user = business.getUser(pidString);
+            if (user == null) {
+                viewUnknownCitizenApplicationForm (iwc);
+                return;
+            }
+			isInserted = business.insertApplication
+                    (user, pidString, emailString, phoneHomeString,
+                     phoneWorkString);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			insert = false;
+			isInserted = false;
 		}
 
-		if (!insert) {
+		if (!isInserted) {
 			_isError = true;
-			addErrorString(localize(ERROR_NO_INSERT, "Unable to insert application"));
-			viewForm(iwc);
+			addErrorString(localize(ERROR_NO_INSERT,
+                                    "Unable to insert application"));
+			viewSimpleApplicationForm(iwc);
 			return;
 		}
 
 		if (getResponsePage() != null)
 			iwc.forwardToIBPage(getParentPage(), getResponsePage());
 		else
-			add(new Text(localize(TEXT_APPLICATION_SUBMITTED, "Application submitted")));
+			add(new Text(localize(TEXT_APPLICATION_SUBMITTED,
+                                  "Application submitted")));
 	}
 
+    private void submitUnknownCitizenForm (final IWContext iwc) {
+		final String pid = iwc.getParameter(PARAM_PID);
+		final String phoneHome = iwc.getParameter(PARAM_PHONE_HOME);
+		final String email = iwc.getParameter(PARAM_EMAIL);
+		final String phoneWork = iwc.getParameter(PARAM_PHONE_WORK);
+        final String custodian = iwc.getParameter (PARAM_CUSTODIAN);
+        final String civilStatus = iwc.getParameter (PARAM_CIVIL_STATUS);
+        final String street = iwc.getParameter (PARAM_STREET);
+        final String zipCode = iwc.getParameter (PARAM_ZIP_CODE);
+        final String city = iwc.getParameter (PARAM_CITY);
+
+		_errorMsg = null;
+
+		if (pid == null || pid.equals("")) {
+			_isPIDError = true;
+			_isError = true;
+			addErrorString(localize(ERROR_PID, "PID invalid"));
+		}
+
+		if (email == null || email.equals("")) {
+			_isEmailError = true;
+			_isError = true;
+			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
+		}
+
+		if (phoneHome == null || phoneHome.equals("")) {
+			_isPhoneHomeError = true;
+			_isError = true;
+			addErrorString(localize(ERROR_PHONE_HOME, "Home phone invalid"));
+		}
+
+		if (_isError) {
+			viewSimpleApplicationForm(iwc);
+			return;
+		}
+
+		boolean isInserted = false;
+		try {
+			final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
+            final User user = business.getUser (pid);
+            if (user != null) {
+                viewSimpleApplicationForm (iwc);
+                return;
+            }
+			isInserted = business.insertApplication
+                    (pid, email, phoneHome, phoneWork, custodian,
+                     civilStatus, street, zipCode, city);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			isInserted = false;
+		}
+
+		if (!isInserted) {
+			_isError = true;
+			addErrorString(localize(ERROR_NO_INSERT,
+                                    "Unable to insert application"));
+			viewUnknownCitizenApplicationForm (iwc);
+			return;
+		}
+        
+		if (getResponsePage() != null)
+			iwc.forwardToIBPage(getParentPage(), getResponsePage());
+		else
+			add(new Text(localize(TEXT_APPLICATION_SUBMITTED,
+                                  "Application submitted")));
+    }
+    
 	private void addErrorString(String errorString) {
 		if (_errorMsg == null)
 			_errorMsg = new Vector();
@@ -228,9 +355,11 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private int parseAction(IWContext iwc) {
 		int action = ACTION_VIEW_FORM;
 
-		if (iwc.isParameterSet(PARAM_FORM_SUBMIT)) {
-			action = ACTION_SUBMIT_FORM;
-		}
+		if (iwc.isParameterSet(PARAM_SIMPLE_FORM_SUBMIT)) {
+			action = ACTION_SUBMIT_SIMPLE_FORM;
+		} else if (iwc.isParameterSet (PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT)) {
+            action = ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM;
+        }
 
 		return action;
 	}
