@@ -52,7 +52,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_PHONE = "AccountingStatsBusiness.phone";
 	private static final String LOCALIZED_AMOUNT = "AccountingStatsBusiness.amount";
 	private static final String LOCALIZED_DATE_OF_ENTRY = "AccountingStatsBusiness.date_of_entry";
-	private static final String LOCALIZED_AMOUNT_EQUALIZED = "AccountingStatsBusiness.amount_equalized";
+	private static final String LOCALIZED_ITEM_PRICE = "AccountingStatsBusiness.item_price";
 	private static final String LOCALIZED_TARIFF_TYPE = "AccountingStatsBusiness.tariff_type";
 	private static final String LOCALIZED_INFO = "AccountingStatsBusiness.info";
 	private static final String LOCALIZED_PAYMENT_TYPE = "AccountingStatsBusiness.payment_type";
@@ -66,7 +66,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String FIELD_NAME_PHONE = "phone";
 	private static final String FIELD_NAME_AMOUNT = "amount";
 	private static final String FIELD_NAME_DATE_OF_ENTRY = "date_of_entry";
-	private static final String FIELD_NAME_AMOUNT_EQUALIZED = "amount_equalized";
+	private static final String FIELD_NAME_ITEM_PRICE = "item_price";
 	private static final String FIELD_NAME_TARIFF_TYPE = "tariff_type";
 	private static final String FIELD_NAME_INFO = "info";
 	private static final String FIELD_NAME_PAYMENT_TYPE = "payment_type";
@@ -161,9 +161,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		 reportCollection.addField(entryDateField);
 		 
-		 ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
-		 amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
-		 reportCollection.addField(amountEqualizedField);
+		 ReportableField itemPriceField = new ReportableField(FIELD_NAME_ITEM_PRICE, Double.class);
+		 itemPriceField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ITEM_PRICE, "Item price"), currentLocale);
+		 reportCollection.addField(itemPriceField);
 		 
 		 ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
 		 tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
@@ -223,7 +223,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 		data.addData(personalIDField, personalID );
 		 		data.addData(amountField, new Double(financeEntry.getAmount()) );
 		 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
-		 		data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+		 		data.addData(itemPriceField, financeEntry.getItemPrice());
 		 		data.addData(infoField, financeEntry.getInfo() );
 		 		data.addData(tariffTypeField, tariffTypeString );		
 			 		
@@ -454,9 +454,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
 		
-		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
-		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
-		reportCollection.addField(amountEqualizedField);
+		ReportableField itemPriceField = new ReportableField(FIELD_NAME_ITEM_PRICE, Double.class);
+		itemPriceField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ITEM_PRICE, "Item price"), currentLocale);
+		reportCollection.addField(itemPriceField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
 		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
@@ -519,7 +519,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
-			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(itemPriceField, financeEntry.getItemPrice());
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );		
 			
@@ -873,6 +873,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	 */
 	public ReportableCollection getPaymentListByDivisionsGroupsAndDateIntervalFiltering(
 			Date entryDateFilter,
+			Date dateToFilter,
 			Collection divisionsFilter,
 			Collection groupsFilter,
 			String personalIDFilter)
@@ -941,8 +942,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
 		
-		String type = FinanceEntryBMPBean.TYPE_PAYMENT;
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, type, entryDateFilter, divisionsFilter, groupsFilter, personalIDFilter);
+		String[] types = {FinanceEntryBMPBean.TYPE_PAYMENT};
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, entryDateFilter, dateToFilter, divisionsFilter, groupsFilter, personalIDFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data
