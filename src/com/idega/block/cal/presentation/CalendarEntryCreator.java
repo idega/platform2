@@ -28,6 +28,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SelectOption;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -142,8 +143,8 @@ public class CalendarEntryCreator extends Form{
 	private TimeInput timeToField;
 	private GroupChooser attendeesField;
 	private TextArea descriptionField;
-	private SubmitButton save;
-	private ResetButton reset;
+	private StyledButton save;
+	private StyledButton reset;
 //	private Link save;
 	private Link deleteLink;
 	private HiddenInput hiddenEntryID;
@@ -334,10 +335,10 @@ public class CalendarEntryCreator extends Form{
 
 		descriptionField = new TextArea(descriptionFieldParameterName);
 		
-		save = new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue);
-		save.setAsImageButton(true);
-		reset = new ResetButton(iwrb.getLocalizedString("reset", "Reset"));
-		reset.setAsImageButton(true);
+		save = new StyledButton(new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue));
+//		save.setAsImageButton(true);
+		reset = new StyledButton(new ResetButton(iwrb.getLocalizedString("reset", "Reset")));
+//		reset.setAsImageButton(true);
 		
 		hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));
 		hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,view);
