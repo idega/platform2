@@ -259,9 +259,10 @@ public class ReportWriter implements MediaWritable {
 
         }
 
-        return returner;
 
       }
+		
+    return returner;
 
   }
 

@@ -83,8 +83,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
         statement.close();
       } 
       ConnectionBroker.freeConnection(connection);
-      return queryResult;
     }
+		return queryResult;
   }
   
   private void setDisplayName(QueryResultField field, int index, List displayNames)  {
