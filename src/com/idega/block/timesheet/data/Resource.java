@@ -5,7 +5,7 @@ package com.idega.block.timesheet.data;
 //import java.util.*;
 import java.sql.*;
 import com.idega.data.*;
-import com.idega.jmodule.projectmanager.data.*;
+import com.idega.block.projectmanager.data.*;
 
 public class Resource extends GenericEntity{
 

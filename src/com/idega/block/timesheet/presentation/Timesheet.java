@@ -17,8 +17,8 @@ import javax.servlet.http.*;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.util.*;
-import com.idega.jmodule.days.data.*;
-import com.idega.jmodule.calendar.data.CalendarEntry;
+//import com.idega.jmodule.days.data.*;
+import com.idega.block.calendar.data.CalendarEntry;
 import com.idega.util.idegaCalendar;
 
 import com.idega.util.text.*;
@@ -389,7 +389,7 @@ public class Timesheet extends Block{
 
     if (isAdmin) {
       Link prodMan = new Link("Verkefnastjórinn");
-        prodMan.setWindowToOpen(com.idega.block.projectmanager.presentation.ProjectAdminWindow.class);
+        //prodMan.setWindowToOpen(com.idega.block.projectmanager.presentation.ProjectAdminWindow.class);
       add(prodMan);
       add("<br>");
     }
@@ -2011,13 +2011,15 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
             Timestamp stamp;
             idegaTimestamp i_stamp;
 
+            /*
             Days[] days = (Days[])(new Days()).findAllOrdered("days_id");
-
+            */
             double[] hoursPerDay = new double[8];
+            /*
             for (int i = 0; i < days.length; i++) {
                 hoursPerDay[days[i].getID()] = days[i].getWorkHours();
             }
-
+*/
             double totalHours = 0;
             double totalOvertime = 0;
             double totalDay = 0;
@@ -2416,17 +2418,18 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
           }
 
             TimesheetProject project;
-            Days[] days = (Days[])(new Days()).findAllOrdered("days_id");
+            //Days[] days = (Days[])(new Days()).findAllOrdered("days_id");
             double totalHours = 0;
             double totalOvertime = 0;
             double totalDay = 0;
 
 
             double[] hoursPerDay = new double[8];
+            /*
             for (int i = 0; i < days.length; i++) {
                 hoursPerDay[days[i].getID()] = days[i].getWorkHours();
             }
-
+            */
 		Table headerTable = this.getHeaderTable();
                         Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                             nafnPaMoned.setFontSize(3);

@@ -1288,13 +1288,12 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
   public void main(IWContext iwc)  {
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
+
+    isAdmin = iwc.hasEditPermission(this);
     this.getParentPage().setName("b_editor");
     this.getParentPage().setTitle(iwrb.getLocalizedString("buildingEditor","Building Editor"));
     this.getParentPage().setAllMargins(0);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+
     /** @todo: fixa Admin*/
     control(iwc);
   }

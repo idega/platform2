@@ -1,6 +1,6 @@
 package com.idega.block.timesheet.data;
 
-import com.idega.jmodule.projectmanager.data.Project;
+import com.idega.block.projectmanager.data.Project;
 import com.idega.core.user.data.User;
 import java.sql.SQLException;
 /**

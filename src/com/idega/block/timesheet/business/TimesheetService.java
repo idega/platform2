@@ -6,7 +6,7 @@ import com.idega.presentation.*;
 import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import com.idega.jmodule.projectmanager.data.Project;
+import com.idega.block.projectmanager.data.Project;
 
 public class TimesheetService {
 

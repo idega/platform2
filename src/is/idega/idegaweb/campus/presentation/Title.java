@@ -107,10 +107,9 @@ public class Title extends Block{
   public void main(IWContext iwc)  {
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+
+    isAdmin = iwc.hasEditPermission(this);
+
     /** @todo: fixa Admin*/
     control(iwc);
   }

@@ -25,6 +25,7 @@ public class PageChooserWindow extends AbstractChooserWindow {
   }
 
   public void displaySelection(IWContext iwc){
+/*
     try{
       TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),iwc);
       add(viewer);
@@ -40,7 +41,7 @@ public class PageChooserWindow extends AbstractChooserWindow {
     catch(Exception e){
       e.printStackTrace();
     }
-
+*/
     /*Link link = new Link("tester");
     link.setURL("#");
     link.setOnClick(SELECT_FUNCTION_NAME+"('tester','tester')");

@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public abstract class ReportPresentation extends com.idega.presentation.PresentationObjectContainer {
+public abstract class ReportPresentation extends com.idega.presentation.Block {
 
   protected final static int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6=6;
   protected boolean isAdmin = false;

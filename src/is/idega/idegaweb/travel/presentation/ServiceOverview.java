@@ -7,7 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
-import com.idega.jmodule.calendar.presentation.SmallCalendar;
+import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;

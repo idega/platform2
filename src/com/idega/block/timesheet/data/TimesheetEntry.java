@@ -6,9 +6,9 @@ package com.idega.block.timesheet.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.user.data.User;
-import com.idega.jmodule.timesheet.data.*;
+import com.idega.block.timesheet.data.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.jmodule.projectmanager.data.Project;
+import com.idega.block.projectmanager.data.Project;
 
 public class TimesheetEntry extends GenericEntity{
 

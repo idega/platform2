@@ -6,7 +6,7 @@ package com.idega.block.forum.business;
  */
 
 import com.idega.block.forum.business.*;
-import com.idega.jmodule.mailclient.business.*;
+import com.idega.util.SendMail;
 import com.idega.block.forum.data.*;
 import com.idega.presentation.*;
 import com.idega.util.*;
@@ -128,7 +128,8 @@ public class ForumDBWriter {
           System.out.println(URL);
           System.out.println(eSubject);
           System.out.println(eText);
-          MailSender.send( URL, emails[j],null,null, "mail.idega.is", eSubject , eText);
+          SendMail.send(URL, emails[j],null,null, "mail.idega.is", eSubject , eText);
+          //MailSender.send( URL, emails[j],null,null, "mail.idega.is", eSubject , eText);
         }
         catch (Exception ex) {
 
@@ -162,8 +163,6 @@ public class ForumDBWriter {
     return service.saveForum(ForumName, ForumDescription, AttibuteName, AttributeValue );
   }
 
-
-
   public void deleteForum(int forum_id) throws SQLException{
     ForumAttributes attribute = new ForumAttributes();
       attribute.deleteMultiple("forum_id",Integer.toString(forum_id));
@@ -179,8 +178,6 @@ public class ForumDBWriter {
     theForum.setValid(false);
   }
 
-
-
   public void saveToForumPostlist(IWContext iwc){
 
   }
@@ -188,8 +185,5 @@ public class ForumDBWriter {
   public void saveToThreadPostlist(IWContext iwc){
 
   }
-
-
-
 
 } // class ForumDBWriter

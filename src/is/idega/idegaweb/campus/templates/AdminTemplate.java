@@ -1,5 +1,5 @@
 /*
- * $Id: AdminTemplate.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: AdminTemplate.java,v 1.2 2001/12/19 17:43:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.presentation.ui.*;
-import com.idega.jmodule.*;
+import com.idega.presentation.jsp.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.data.*;

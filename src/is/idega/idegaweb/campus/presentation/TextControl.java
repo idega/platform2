@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.3 2001/11/09 12:17:01 aron Exp $
+ * $Id: TextControl.java,v 1.4 2001/12/19 17:43:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ package is.idega.idegaweb.campus.presentation;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.IWContext;
-import com.idega.jmodule.login.business.AccessControl;
+//import com.idega.jmodule.login.business.AccessControl;
 import com.idega.data.genericentity.Member;
 import com.idega.data.genericentity.Group;
 import com.idega.block.text.presentation.TextReader;
@@ -166,12 +166,9 @@ public class TextControl extends Block {
   }
 
   public void main(IWContext iwc)  {
-    try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
-    }
-    catch (SQLException sql) {
-      isAdmin = false;
-    }
+
+      isAdmin = iwc.hasEditPermission(this);
+
     /** @todo fixa Admin*/
     control(iwc);
   }

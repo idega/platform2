@@ -28,7 +28,7 @@ public class TextFormatter {
       String tableRow = tableVector.elementAt(a).toString();
 
       if ( a == 0 ) {
-        tableRow = TextSoap.findAndReplace(tableRow,"|","</font></td><td valign=\"top\"><font size=\""+(tableTextSize+1)+"\">");
+        tableRow = TextSoap.findAndReplace(tableRow,"|","</font></td><td valign=\"top\"><font size=\""+(tableTextSize)+"\">");
       }
       else {
         tableRow = TextSoap.findAndReplace(tableRow,"|","</font></td><td valign=\"top\"><font size=\""+tableTextSize+"\">");
@@ -36,7 +36,7 @@ public class TextFormatter {
 
       if ( a == 0 || a == tableVector.size()-1) {
         if ( a == 0 ) {
-          tableRow = "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\""+tableWidth+"\"><tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\""+(tableTextSize+1)+"\">"+tableRow+"</font></td></tr>";
+          tableRow = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\""+tableWidth+"\"><tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\""+(tableTextSize)+"\">"+tableRow+"</font></td></tr>";
         }
 
         if ( a == tableVector.size()-1 ) {

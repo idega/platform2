@@ -32,7 +32,7 @@ import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import java.util.List;
 import java.util.Iterator;
-import com.idega.jmodule.server.mail.SendMail;
+import com.idega.util.SendMail;
 /**
  * Title:
  * Description:
