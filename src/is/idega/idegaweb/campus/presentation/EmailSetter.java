@@ -2,18 +2,6 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.core.localisation.presentation.LocalePresentationUtil;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
-import com.idega.util.LocaleUtil;
 
 /**
  * Title:   idegaclasses
@@ -24,11 +12,9 @@ import com.idega.util.LocaleUtil;
  * @version 1.0
  */
 
-public class EmailSetter extends Block{
+public class EmailSetter extends CampusBlock{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.emails";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+ /*
   private String propParameter = is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName();
   private String localesParameter="iw_locales";
   private boolean isAdmin = false;
@@ -41,17 +27,11 @@ public class EmailSetter extends Block{
     return "Emails";
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+ 
 
   protected void control(IWContext iwc){
-    iwb = getBundle(iwc);
-    if(iwc.getParameter(localesParameter)!=null){
-      iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(iwc.getParameter(localesParameter)));
-    }
-    else
-      iwrb = getResourceBundle(iwc);
+   
+  
 
     if(isAdmin){
       if(iwc.getParameter("save")!=null){
@@ -132,5 +112,5 @@ public class EmailSetter extends Block{
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
-
+*/
 }

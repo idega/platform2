@@ -1,10 +1,7 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 import java.util.StringTokenizer;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.lowagie.text.Font;
@@ -13,7 +10,7 @@ import com.lowagie.text.Font;
   *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
-public class ContractFiler extends Block {
+public class ContractFiler extends CampusBlock {
 	public static String prmOneId = "contract_id", prmTest = "test", prmManyIds = "many_ids";
 	public static String prmSeperator = "_", prmFileName = "fname";
 	public ContractFiler() {
@@ -21,8 +18,7 @@ public class ContractFiler extends Block {
 	public void main(IWContext iwc) {
 		//IWContext iwc = getIWContext();
 		//IWMainApplication iwma = iwc.getApplication()
-		String identifier = "is.idega.idegaweb.campus.block.contract";
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(identifier).getResourceBundle(iwc);
+	
 		String fileSeperator = System.getProperty("file.separator");
 		String filepath = iwc.getIWMainApplication().getRealPath(fileSeperator + "allocation/files" + fileSeperator);
 		String prefFilename = iwc.getParameter("fname");
