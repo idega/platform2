@@ -2325,9 +2325,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t var dropDay = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_day").append("');");
 		buffer.append("\n\t var dropMonth = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_month").append("');");
 		buffer.append("\n\t var dropYear = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_year").append("');");
-		buffer.append("\n\t var dateDay = ").append("parseInt(dropDay.options[dropDay.selectedIndex].value);");
-		buffer.append("\n\t var dateMonth = ").append("parseInt(dropMonth.options[dropMonth.selectedIndex].value);");
-		buffer.append("\n\t var dateYear = ").append("parseInt(dropYear.options[dropYear.selectedIndex].value);");
+		buffer.append("\n\t var dateDay = ").append("parseInt(dropDay.options[dropDay.selectedIndex].value, 10);");
+		buffer.append("\n\t var dateMonth = ").append("parseInt(dropMonth.options[dropMonth.selectedIndex].value, 10);");
+		buffer.append("\n\t var dateYear = ").append("parseInt(dropYear.options[dropYear.selectedIndex].value, 10);");
 
 		buffer.append("\n\n\t if (dateYear < 2000) {\n\t\t return true;\n\t }");
 
