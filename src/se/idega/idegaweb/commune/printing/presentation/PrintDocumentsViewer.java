@@ -1282,7 +1282,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	
 	private boolean hideMessage(IWContext iwc, Message message){
 		// dont hide current user cases
-		if(iwc.getCurrentUser().getPrimaryKey().equals(message.getOwner().getPrimaryKey()))
+		if(message.getOwner() != null && iwc.getCurrentUser().getPrimaryKey().equals(message.getOwner().getPrimaryKey()))
 			return false;
 		if(hiddenNonUserCaseCodes!=null){
 			// dont hide if there is no parent case
