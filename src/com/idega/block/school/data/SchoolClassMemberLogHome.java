@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogHome.java,v 1.2 2005/01/10 14:05:36 laddi Exp $
+ * $Id: SchoolClassMemberLogHome.java,v 1.3 2005/01/19 09:39:51 anders Exp $
  * Created on 10.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package com.idega.block.school.data;
 
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -17,10 +18,10 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/19 09:39:51 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface SchoolClassMemberLogHome extends IDOHome {
 
@@ -48,4 +49,8 @@ public interface SchoolClassMemberLogHome extends IDOHome {
 	 */
 	public SchoolClassMemberLog findLatestLogByUser(SchoolClassMember member) throws FinderException;
 
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindByPlacementAndDate
+	 */
+	public SchoolClassMemberLog findByPlacementAndDate(SchoolClassMember member, Date date) throws FinderException;
 }
