@@ -37,21 +37,21 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
     addAttribute(getColumnNameEntryTypeName(),"CalEntryTypeName",true,true,String.class);
 		addAttribute(getColumnNameEntryDate(),"CalEntryDate",true,true,Timestamp.class);
 		addAttribute(getColumnNameEntryEndDate(),"CalEntryEndDate",true,true,Timestamp.class);
-//    addAttribute(getColumnNameUserID(), "User", true, true, Integer.class);
     addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
 		addAttribute(getColumnNameLedgerID(),"CalLedgerID",true,true,Integer.class);
     addAttribute(getColumnNameRepeat(), "CalEntryRepeat", true, true, String.class);
     addAttribute(getColumnNameDescription(), "CalEntryDescription",true,true,String.class);
     addAttribute(getColumnNameLocation(), "CalEntryLocation", true,true,String.class);
+    addAttribute(getColumnNameUserID(), "CalEntryUserID", true, true, Integer.class);
+    addAttribute(getColumnNameEntryGroupID(), "CalEntryGroup", true, true, Integer.class);
+    addManyToManyRelationShip(CalendarEntryGroup.class);
     addManyToManyRelationShip(LocalizedText.class);
     addManyToManyRelationShip(User.class);
-//    addManyToManyRelationShip(Group.class);
     setNullable(getColumnNameEntryTypeID(),false);
-//    setNullable(getColumnNameEntryDate(),false);
 	}
 
 	public static String getEntityTableName() { return "CAL_ENTRY"; }
-	public static String getColumnNameCalendarID() { return "CAL_ENTRY_ID"; }
+	public static String getColumnNameEntryID() { return "CAL_ENTRY_ID"; }
 	public static String getColumnNameEntryTypeID() { return com.idega.block.cal.data.CalendarEntryTypeBMPBean.getColumnNameCalendarTypeID(); }
 	public static String getColumnNameEntryTypeName() {return com.idega.block.cal.data.CalendarEntryTypeBMPBean.getColumnNameName();}
 	public static String getColumnNameEntryDate() { return "CAL_ENTRY_DATE"; }
@@ -63,16 +63,17 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
 	public static String getColumnNameDescription() { return "CAL_ENTRY_DESCRIPTION"; }
 	public static String getColumnNameLocation() { return "CAL_ENTRY_LOCATION"; }
 	public static String getColumnNameRepeat() { return "CAL_ENTRY_REPEAT"; }
-//	public static String getColumnCategoryId(){return "IC_CATEGORY_ID";}
+	public static String getColumnNameEntryGroupID() { return com.idega.block.cal.data.CalendarEntryGroupBMPBean.getColumnNameEntryGroupID(); }
+	
   public String getIDColumnName(){
-		return getColumnNameCalendarID();
+		return getColumnNameEntryID();
 	}
   
 	public String getEntityName(){
 		return getEntityTableName();
 	}
-	public int getCalendarID() {
-		return getIntColumnValue(getColumnNameCalendarID());
+	public int getEntryID() {
+		return getIntColumnValue(getColumnNameEntryID());
 	}
 
 	//GET
@@ -120,7 +121,7 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   public String getLocation() {
   	return getStringColumnValue(getColumnNameLocation());
   }
-  
+    
   public Collection getUsers() {
   	try {
   		return idoGetRelatedEntities(User.class);
@@ -130,10 +131,10 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   		return Collections.EMPTY_LIST;
   	}
   }
-//  public int getCategoryID(){
-//  	return getIntColumnValue(getColumnCategoryId());
-//  }
-
+  
+  public int getEntryGroupID() {
+  	return getIntColumnValue(getColumnNameEntryGroupID());
+  }
 
   //SET
   public void setEntryTypeID(int entryTypeID) {
@@ -171,9 +172,15 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   public void setDescription(String description) {
   	setColumn(getColumnNameDescription(), description);
   }
+  
   public void setLocation(String location) {
   	setColumn(getColumnNameLocation(), location);
   }
+  
+  public void setEntryGroupID(int entryGroupID) {
+  	setColumn(getColumnNameEntryGroupID(), entryGroupID);
+  }
+  
 //add a user to the middle table
   public void addUser(User user) {
   	try {
@@ -207,7 +214,6 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   	//yyyy-mm-dd hh:mm:ss.fffffffff
   	IDOQuery query = idoQueryGetSelect();
   	query.appendWhereEqualsTimestamp("CAL_ENTRY_DATE",stamp);
-//  	System.out.println(query.toString());
   	return super.idoFindPKsByQuery(query);
   }
   public Collection ejbFindEntryBetweenTimestamps(Timestamp fromStamp, Timestamp toStamp) throws FinderException{
@@ -219,6 +225,11 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   public Collection ejbFindEntryByLedgerID(int ledgerID) throws FinderException {
   	IDOQuery query = idoQueryGetSelect();
   	query.appendWhereEquals("CAL_LEDGER_ID",ledgerID);
+  	return super.idoFindPKsByQuery(query);
+  }
+  public Collection ejbFindEntryByEntryGroupID(int entryGroupID) throws FinderException {
+  	IDOQuery query = idoQueryGetSelect();
+  	query.appendWhereEquals("CAL_ENTRY_GROUP_ID",entryGroupID);
   	return super.idoFindPKsByQuery(query);
   }
 
