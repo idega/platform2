@@ -1,3 +1,12 @@
+/*
+ * $Id: GolfMainJSPModule.java,v 1.7 2001/05/03 16:29:25 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Strengur hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.projects.golf.templates;
 
 import javax.servlet.*;
@@ -20,11 +29,10 @@ import java.sql.*;
 import com.idega.projects.golf.entity.*;
 import java.io.*;
 
-
-public class GolfMainJSPModule extends MainSideJSPModule{
-
-
-
+/**
+ * @author
+ */
+public class GolfMainJSPModule extends MainSideJSPModule {
   protected Login login;
   protected Table centerTable;
   protected String align;
@@ -33,283 +41,239 @@ public class GolfMainJSPModule extends MainSideJSPModule{
   protected final int LEFTWIDTH = 163;
   protected final int RIGHTWIDTH = 148;
 
-
   public void initializePage() {
     super.initializePage();
-
 
     setLinkColor("black");
     setVlinkColor("black");
     setHoverColor("#8ab490");
 
     setMarginWidth(0);
-    setMarginHeight (0);
+    setMarginHeight(0);
     setLeftMargin(0);
     setTopMargin(0);
 
-    try{
+    try {
      User();
     }
-    catch (SQLException E) {
-     // out.print("SQLException: " + E.getMessage());
-     // out.print("SQLState:     " + E.getSQLState());
-     // out.print("VendorError:  " + E.getErrorCode());
+    catch(SQLException E) {
     }
-	catch (IOException E) {
-     // out.print("SQLException: " + E.getMessage());
-     // out.print("SQLState:     " + E.getSQLState());
-     // out.print("VendorError:  " + E.getErrorCode());
+  	catch (IOException E) {
     }
   }
 
-
-
-      protected void User() throws SQLException,IOException{
-          getPage().setTextDecoration("none");
-          setTopMargin(5);
-          add( "top", golfHeader());
-          add("top", Top());
-          add("bottom", golfFooter());
-          add(Left(), Center(), Right());
+  protected void User() throws SQLException, IOException {
+    getPage().setTextDecoration("none");
+    setTopMargin(5);
+    add("top", golfHeader());
+    add("top", Top());
+    add("bottom", golfFooter());
+    add(Left(), Center(), Right());
 	  setWidth(1, "" + LEFTWIDTH);
 	  setContentWidth( "100%");
 	  setWidth(3, "" + RIGHTWIDTH);
+  }
 
-      }
+  protected Table Top() throws SQLException,IOException{
+    Table topTable = new Table(3,1);
+    topTable.setCellpadding(0);
+    topTable.setCellspacing(0);
+    topTable.setHeight("90");
+    topTable.add(getLogin(),1,1);
+    topTable.add(getHBanner(),2,1);
+    topTable.add(new Image("/pics/templates/toyotalogo.gif"),3,1);
 
+    topTable.setAlignment(2,1,"center");
+    topTable.setAlignment(3,1,"center");
+    topTable.setVerticalAlignment(1,1, "top");
+    topTable.setVerticalAlignment(2,1, "middle");
+    topTable.setVerticalAlignment(3,1, "middle");
 
+    topTable.setWidth(1, "" + LEFTWIDTH);
+    topTable.setWidth("100%");
+    topTable.setWidth(3, "" + RIGHTWIDTH);
 
-      protected Table Top() throws SQLException,IOException{
-          Table topTable = new Table(3,1);
-          topTable.setCellpadding(0);
-          topTable.setCellspacing(0);
-//          topTable.setBorder(1);
-          topTable.setHeight("90");
-          topTable.add(getLogin(),1,1);
+    return topTable;
+  }
 
-
-
-         topTable.add(getHBanner(),2,1);
-
-//		 topTable.add(new Link(new Image("/pics/banners/golfkort.gif"),"http://www.isbank.is"),2,1);
-          topTable.add(new Image("/pics/templates/toyotalogo.gif"),3,1);
-
-          topTable.setAlignment(2,1,"center");
-          topTable.setAlignment(3,1,"center");
-          topTable.setVerticalAlignment(1,1, "top");
-          topTable.setVerticalAlignment(2,1, "middle");
-          topTable.setVerticalAlignment(3,1, "middle");
-
-          topTable.setWidth(1, "" + LEFTWIDTH);
-          topTable.setWidth("100%");
-          topTable.setWidth(3, "" + RIGHTWIDTH);
-
-          return topTable;
-      }
-
-
-
-	protected Table AnnouncementsModule() throws SQLException,IOException{
+	protected Table AnnouncementsModule() throws SQLException, IOException {
 	  Table ModuleTable = new Table(1,3);
-       	  ModuleTable.setColor(1,2, "#99CC99");
-      	  ModuleTable.setCellpadding(1);
-      	  ModuleTable.setCellspacing(0);
-     	  ModuleTable.setWidth(148);
-     	  ModuleTable.setBackgroundImage(1,1, new Image("/pics/news/tilkynningar_banner.gif"));
+    ModuleTable.setColor(1,2,"#99CC99");
+    ModuleTable.setCellpadding(1);
+    ModuleTable.setCellspacing(0);
+    ModuleTable.setWidth(148);
+    ModuleTable.setBackgroundImage(1,1, new Image("/pics/news/tilkynningar_banner.gif"));
 
 		Connection conn = getConnection();
 /*	  Announcement announcement = new Announcement(1,conn);
 	  announcement.setLinkCellWidth("146");
-      announcement.setLinkCellHeight("22");
+    announcement.setLinkCellHeight("22");
 
 	  Table announcementTable = announcement.getAnnouncementTable();
-
 	  ModuleTable.add(announcementTable, 1,2);
 */
 	  freeConnection(conn);
-          return ModuleTable;
+    return ModuleTable;
 	}
 
+  protected Table Left() throws SQLException, IOException {
+    Table leftTable = new Table(1,12);
+    //leftTable.setBorder(1);
+    leftTable.setVerticalAlignment("top");
+    leftTable.setVerticalAlignment(1,1,"top");
+    leftTable.setVerticalAlignment(1,2,"top");
+    leftTable.setVerticalAlignment(1,3,"top");
+    leftTable.setVerticalAlignment(1,4,"top");
+    leftTable.setVerticalAlignment(1,5,"top");
+    leftTable.setVerticalAlignment(1,6,"top");
+    leftTable.setVerticalAlignment(1,7,"top");
+    leftTable.setVerticalAlignment(1,8,"top");
+    leftTable.setVerticalAlignment(1,9,"top");
+    leftTable.setVerticalAlignment(1,10,"top");
+    leftTable.setVerticalAlignment(1,11,"top");
+    leftTable.setHeight("100%");
+    leftTable.setColumnAlignment(1, "left");
+    leftTable.setWidth("" + LEFTWIDTH);
+    leftTable.setCellpadding(0);
+    leftTable.setCellspacing(0);
+    leftTable.add( Sponsors(), 1,1);
+    leftTable.add(clubNews(),1,3);
+    leftTable.add(new TournamentBox(),1,5);
+    leftTable.add(getChat(),1,7);
+    leftTable.add(getLinks(),1,9);
+    leftTable.add(idega(),1,11);
+    //leftTable.add( getPollVoter() ,1,6);
 
-        protected Table Left() throws SQLException,IOException{
-          Table leftTable = new Table(1,12);
-//          leftTable.setBorder(1);
-          leftTable.setVerticalAlignment("top");
-          leftTable.setVerticalAlignment(1,1,"top");
-          leftTable.setVerticalAlignment(1,2,"top");
-          leftTable.setVerticalAlignment(1,3,"top");
-          leftTable.setVerticalAlignment(1,4,"top");
-          leftTable.setVerticalAlignment(1,5,"top");
-          leftTable.setVerticalAlignment(1,6,"top");
-          leftTable.setVerticalAlignment(1,7,"top");
-          leftTable.setVerticalAlignment(1,8,"top");
-          leftTable.setVerticalAlignment(1,9,"top");
-          leftTable.setVerticalAlignment(1,10,"top");
-          leftTable.setVerticalAlignment(1,11,"top");
-          leftTable.setHeight("100%");
+    return leftTable;
+  }
 
+  protected HeaderTable getChat() throws SQLException {
+    HeaderTable table = new HeaderTable();
+    table.setBorderColor("#8ab490");
+    table.setHeadlineSize(1);
+    table.setHeadlineColor("#FFFFFF");
+    table.setRightHeader(false);
+    table.setHeadlineAlign("left");
+    table.setWidth(148);
+    table.setHeaderText("Spjallið");
 
+    ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
 
-          leftTable.setColumnAlignment(1, "left");
+    int links = 4;
+    Table myTable = new Table();
+    myTable.setWidth("100%");
+    myTable.setCellpadding(2);
+    myTable.setCellspacing(2);
 
-          leftTable.setWidth("" + LEFTWIDTH);
+    if ( forum.length < links ) {
+      links = forum.length;
+    }
 
-          leftTable.setCellpadding(0);
-          leftTable.setCellspacing(0);
-          leftTable.add( Sponsors(), 1,1);
-          leftTable.add(clubNews(),1,3);
-          leftTable.add(new TournamentBox(),1,5);
-          leftTable.add(getChat(),1,7);
-          leftTable.add(getLinks(),1,9);
-          leftTable.add(idega(),1,11);
-         // leftTable.add( getPollVoter() ,1,6);
+    for (int a = 0; a < links; a++) {
+      idegaTimestamp stampur = new idegaTimestamp(forum[a].getThreadDate());
+      String minutes = stampur.getMinute()+"";
+      if ( stampur.getMinute() < 10 ) {
+        minutes = "0" + stampur.getMinute();
+      }
 
+      Text userText = new Text(forum[a].getUserName()+" - ");
+      userText.setFontSize(1);
+      userText.setFontColor("#666666");
 
+      Text chatDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
+      chatDate.setFontSize(1);
+      chatDate.setFontColor("#666666");
 
-          return leftTable;
+      Link chatLink = new Link(forum[a].getThreadSubject(),"/forum/index.jsp");
+      chatLink.setFontSize(1);
+      chatLink.addParameter("forum_thread_id",forum[a].getID()+"");
+      chatLink.addParameter("forum_id",forum[a].getForumID()+"");
+      chatLink.addParameter("state","3");
+      chatLink.addParameter("FTopen",forum[a].getID()+"");
+
+      myTable.add(userText,1,a+1);
+      myTable.add(chatDate,1,a+1);
+      myTable.addBreak(1,a+1);
+      myTable.add(chatLink,1,a+1);
+    }
+    table.add(myTable);
+
+    return table;
+  }
+
+  protected HeaderTable getGolfLinks() {
+    HeaderTable table = new HeaderTable();
+    table.setBorderColor("#8ab490");
+    table.setHeadlineSize(1);
+    table.setHeadlineColor("#FFFFFF");
+    table.setHeadlineLeft();
+    table.setWidth(148);
+    table.setHeaderText("Áhugaverðir tenglar");
+
+    Table myTable = new Table(1,2);
+    myTable.setAlignment(1,1,"center");
+    myTable.setAlignment(1,2,"center");
+    myTable.setCellpadding(2);
+    myTable.setCellspacing(2);
+    myTable.setHeight("95");
+    myTable.setWidth("100%");
+
+    Link europeantour = new Link(new Image("/pics/europeantour.gif","European Tour",69,47),"http://www.europeantour.com");
+    europeantour.setTarget("_new");
+    Link pgatour = new Link(new Image("/pics/pgatour.gif","PGA Tour",59,80),"http://www.pgatour.com");
+    pgatour.setTarget("_new");
+
+    myTable.add(europeantour,1,1);
+    myTable.add(pgatour,1,2);
+
+    table.add(myTable);
+    return table;
+  }
+
+  protected HeaderTable clubNews() throws SQLException {
+    News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id>3 order by news_date desc");
+
+    HeaderTable headerTable = new HeaderTable();
+    headerTable.setWidth(148);
+    headerTable.setBorderColor("#8ab490");
+    headerTable.setHeaderText("Klúbbafréttir");
+    headerTable.setHeadlineSize(1);
+    headerTable.setRightHeader(false);
+    headerTable.setHeadlineAlign("left");
+
+    Table myTable = new Table(1,5);
+    myTable.setWidth("100%");
+    myTable.setCellpadding(2);
+    myTable.setCellspacing(2);
+    myTable.setBorder(0);
+
+    for (int a = 0; a < 5; a++) {
+      if (news.length > a) {
+        News[] clubNews = (News[]) (new News()).findAllByColumnOrdered("news_category_id",""+news[a].getNewsCategoryId(),"news_date desc");
+        Text unionText = new Text();
+        unionText.setFontSize(1);
+        unionText.setFontColor("#666666");
+
+        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (new NewsCategoryAttributes()).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
+
+        int union_id = 0;
+
+        if (newsAttribute.length > 0) {
+          union_id = newsAttribute[0].getAttributeId();
+          Union union = new Union(union_id);
+          unionText.addToText(union.getAbbrevation()+" - ");
         }
 
-      protected HeaderTable getChat() throws SQLException {
+        idegaTimestamp stampur = new idegaTimestamp(clubNews[0].getDate());
 
-          HeaderTable table = new HeaderTable();
-            table.setBorderColor("#8ab490");
-            table.setHeadlineSize(1);
-            table.setHeadlineColor("#FFFFFF");
-            table.setRightHeader(false);
-            table.setHeadlineAlign("left");
-            table.setWidth(148);
-            table.setHeaderText("Spjallið");
+        String minutes = stampur.getMinute()+"";
+        if (stampur.getMinute() < 10) {
+          minutes = "0" + stampur.getMinute();
+        }
 
-          ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
-
-          int links = 4;
-          Table myTable = new Table();
-            myTable.setWidth("100%");
-            myTable.setCellpadding(2);
-            myTable.setCellspacing(2);
-
-          if ( forum.length < links ) {
-            links = forum.length;
-          }
-
-          for ( int a = 0; a < links; a++ ) {
-
-            idegaTimestamp stampur = new idegaTimestamp(forum[a].getThreadDate());
-
-            String minutes = stampur.getMinute()+"";
-            if ( stampur.getMinute() < 10 ) {
-              minutes = "0"+stampur.getMinute();
-            }
-
-            Text userText = new Text(forum[a].getUserName()+" - ");
-              userText.setFontSize(1);
-              userText.setFontColor("#666666");
-
-            Text chatDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
-              chatDate.setFontSize(1);
-              chatDate.setFontColor("#666666");
-
-            Link chatLink = new Link(forum[a].getThreadSubject(),"/forum/index.jsp");
-              chatLink.setFontSize(1);
-              chatLink.addParameter("forum_thread_id",forum[a].getID()+"");
-              chatLink.addParameter("forum_id",forum[a].getForumID()+"");
-              chatLink.addParameter("state","3");
-              chatLink.addParameter("FTopen",forum[a].getID()+"");
-
-            myTable.add(userText,1,a+1);
-            myTable.add(chatDate,1,a+1);
-            myTable.addBreak(1,a+1);
-            myTable.add(chatLink,1,a+1);
-
-          }
-
-          table.add(myTable);
-
-          return table;
-      }
-
-
-      protected HeaderTable getGolfLinks() {
-
-           HeaderTable table = new HeaderTable();
-            table.setBorderColor("#8ab490");
-            table.setHeadlineSize(1);
-            table.setHeadlineColor("#FFFFFF");
-            table.setHeadlineLeft();
-            table.setWidth(148);
-            table.setHeaderText("Áhugaverðir tenglar");
-
-          Table myTable = new Table(1,2);
-            myTable.setAlignment(1,1,"center");
-            myTable.setAlignment(1,2,"center");
-            myTable.setCellpadding(2);
-            myTable.setCellspacing(2);
-            myTable.setHeight("95");
-            myTable.setWidth("100%");
-
-          Link europeantour = new Link(new Image("/pics/europeantour.gif","European Tour",69,47),"http://www.europeantour.com");
-            europeantour.setTarget("_new");
-          Link pgatour = new Link(new Image("/pics/pgatour.gif","PGA Tour",59,80),"http://www.pgatour.com");
-            pgatour.setTarget("_new");
-
-          myTable.add(europeantour,1,1);
-          myTable.add(pgatour,1,2);
-
-          table.add(myTable);
-          return table;
-
-      }
-
-
-
-      protected HeaderTable clubNews() throws SQLException {
-
-        News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id>3 order by news_date desc");
-
-        HeaderTable headerTable = new HeaderTable();
-          headerTable.setWidth(148);
-          headerTable.setBorderColor("#8ab490");
-          headerTable.setHeaderText("Klúbbafréttir");
-          headerTable.setHeadlineSize(1);
-          headerTable.setRightHeader(false);
-          headerTable.setHeadlineAlign("left");
-
-        Table myTable = new Table(1,5);
-          myTable.setWidth("100%");
-          myTable.setCellpadding(2);
-          myTable.setCellspacing(2);
-          myTable.setBorder(0);
-
-        for ( int a = 0; a < 5; a++ ) {
-
-          if ( news.length > a ) {
-
-            News[] clubNews = (News[]) (new News()).findAllByColumnOrdered("news_category_id",""+news[a].getNewsCategoryId(),"news_date desc");
-
-            Text unionText = new Text();
-              unionText.setFontSize(1);
-              unionText.setFontColor("#666666");
-
-            NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (new NewsCategoryAttributes()).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
-
-            int union_id = 0;
-
-            if ( newsAttribute.length > 0 ) {
-              union_id = newsAttribute[0].getAttributeId();
-              Union union = new Union(union_id);
-              unionText.addToText(union.getAbbrevation()+" - ");
-            }
-
-            idegaTimestamp stampur = new idegaTimestamp(clubNews[0].getDate());
-
-            String minutes = stampur.getMinute()+"";
-            if ( stampur.getMinute() < 10 ) {
-              minutes = "0"+stampur.getMinute();
-            }
-
-            Text newsDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
-              newsDate.setFontSize(1);
-              newsDate.setFontColor("#666666");
+        Text newsDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
+        newsDate.setFontSize(1);
+        newsDate.setFontColor("#666666");
 
             Link newsLink = new Link(clubNews[0].getHeadline(),"/clubs/index2.jsp");
               newsLink.addParameter("union_id",""+union_id);
@@ -724,23 +688,17 @@ public class GolfMainJSPModule extends MainSideJSPModule{
          return table;
       }
 
+  // ###########  Public - Föll
+
+  public void setVerticalAlignment(String alignment) {
+    centerTable.setVerticalAlignment(alignment);
+    centerTable.setVerticalAlignment(1,1,alignment);
+  }
 
 
-
-
-
-        // ###########  Public - Föll
-
-        public void setVerticalAlignment( String alignment ){
-          centerTable.setVerticalAlignment( alignment );
-          centerTable.setVerticalAlignment( 1, 1, alignment);
-
-        }
-
-
-	public void add(ModuleObject objectToAdd){
+	public void add(ModuleObject objectToAdd) {
 		//centerTable.add(objectToAdd,1,2);
-		try{
+		try {
 			Center().add(objectToAdd,1,1);
 		}
 		catch(SQLException ex){
@@ -755,64 +713,57 @@ public class GolfMainJSPModule extends MainSideJSPModule{
 		return (Member)getModuleInfo().getSession().getAttribute("member_login");
 	}
 
-
-
-        public boolean isAdmin() {
-
-          try{
-            return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
-          }catch (SQLException E) {
-            /*
-            out.print("SQLException: " + E.getMessage());
-            out.print("SQLState:     " + E.getSQLState());
-            out.print("VendorError:  " + E.getErrorCode());*/
-          }catch (Exception E) {
-		E.printStackTrace();
-	  }finally {
+  public boolean isAdmin() {
+    try {
+      return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+    }
+    catch(SQLException E) {
+    }
+    catch (Exception E) {
+		  E.printStackTrace();
 	  }
-          return false;
-        }
+    finally {
+	  }
+
+    return false;
+  }
+
+  public boolean isDeveloper() {
+    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+  }
+
+  public boolean isClubAdmin() {
+    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+  }
+
+  public boolean isClubWorker() {
+    boolean ret;
+
+    try {
+      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+    }
+    catch(java.sql.SQLException e) {
+      e.printStackTrace();
+      ret = false;
+    }
+
+    return(ret);
+  }
+
+  public boolean isUser() {
+    return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+  }
 
 
+  public void removeUnionIdSessionAttribute(ModuleInfo modinfo){
+    modinfo.removeSessionAttribute("golf_union_id");
+  }
 
-        public boolean isDeveloper() {
-          return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
-       }
+  public String getUnionID(ModuleInfo modinfo){
+    return (String)modinfo.getSessionAttribute("golf_union_id");
+  }
 
-        public boolean isClubAdmin() {
-          return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
-        }
-
-        public boolean isClubWorker() {
-          boolean ret;
-
-          try {
-            ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
-          }
-          catch(java.sql.SQLException e) {
-            e.printStackTrace();
-            ret = false;
-          }
-
-          return(ret);
-        }
-
-        public boolean isUser() {
-          return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
-        }
-
-
-        public void removeUnionIdSessionAttribute(ModuleInfo modinfo){
-          modinfo.removeSessionAttribute("golf_union_id");
-        }
-
-        public String getUnionID(ModuleInfo modinfo){
-          return (String)modinfo.getSessionAttribute("golf_union_id");
-        }
-
-        public void setUnionID(ModuleInfo modinfo, String union_id){
-          modinfo.setSessionAttribute("golf_union_id", union_id);
-        }
-
-
-}  // class GolfMainJSPModule
+  public void setUnionID(ModuleInfo modinfo, String union_id){
+    modinfo.setSessionAttribute("golf_union_id", union_id);
+  }
+}
