@@ -119,6 +119,7 @@ public class SchoolAreaSelector extends Block {
 					table.add(getText(sArea.getName(), true), col, row);	
 					if ( _expandSchools && _schoolTypeId != -1) {
 						Collection schools	= sb.findAllSchoolsByAreaAndType(_schoolAreaId, _schoolTypeId);
+						schools = sb.getHomeCommuneSchools(schools);
 						if (schools != null) {
 							String indent = "";
 							for (int i = 0; i < _spaceBeforeExpanded; i++) {
