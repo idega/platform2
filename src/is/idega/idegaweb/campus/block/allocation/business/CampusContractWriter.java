@@ -295,7 +295,13 @@ public class CampusContractWriter{
       Floor eFloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(eApartment.getFloorId());
       Building eBuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(eFloor.getBuildingId());
       Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(eBuilding.getComplexId());
-      ApartmentTypeRent rent = ((ApartmentTypeRentHome) IDOLookup.getHome(ApartmentTypeRent.class)).findByTypeAndValidity(eApartmentType.getID(),eContract.getValidFrom());
+      ApartmentTypeRent rent = null;
+      try {
+      	rent = ((ApartmentTypeRentHome) IDOLookup.getHome(ApartmentTypeRent.class)).findByTypeAndValidity(eApartmentType.getID(),eContract.getValidFrom());
+      }
+      catch(Exception e) {
+      	rent = null;
+      }
       Hashtable H = new Hashtable(TAGS.length);
       DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwrb.getLocale());
       NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb.getLocale());
