@@ -55,8 +55,6 @@ public class CommuneForum extends Forum {
 		table.add(moderatorText, 4, 1);
 		table.add(filesText, 5, 1);
 
-		Table topicTable = null;
-
 		Vector list = new Vector();
 		list.addAll(this.getCategories());
 
@@ -92,7 +90,7 @@ public class CommuneForum extends Forum {
 					if (lastUpdatedText != null)
 						table.add(lastUpdatedText, 3, row);
 
-					table.add("Jón Jónsson",4,row);
+					table.add(new Text("Jón Jónsson"),4,row);
 
 					Link file = new Link(Integer.toString(row));
 					file.setWindowToOpen(CommuneForumTopicFiles.class);

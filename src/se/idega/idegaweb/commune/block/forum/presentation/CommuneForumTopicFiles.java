@@ -10,6 +10,7 @@ package se.idega.idegaweb.commune.block.forum.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Window;
 
 /**
@@ -27,9 +28,9 @@ public class CommuneForumTopicFiles extends Window {
 	public void main(IWContext iwc) {
 		add("Here is a list of files:\n");
 		Table t = new Table();
-		t.add("File 1...",1,1);
-		t.add("File 2...",1,2);
-		t.add("File 3...",1,3);
-		t.add("File 4...",1,4);
+		t.add(new Text("File 1..."),1,1);
+		t.add(new Text("File 2..."),1,2);
+		t.add(new Text("File 3..."),1,3);
+		t.add(new Text("File 4..."),1,4);
 	}
 }
