@@ -119,7 +119,7 @@ public class UserHistoryTab extends UserTab {
 		User viewedUser = getUser();
 		User viewingUser = iwc.getCurrentUser();
 		boolean isAdmin = iwc.isSuperAdmin();
-		boolean isSameUser = viewedUser.getPrimaryKey().equals(viewingUser);
+		boolean isSameUser = viewedUser.getPrimaryKey().equals(viewingUser.getPrimaryKey());
 		boolean checkNeeded = !(isAdmin || isSameUser);
 		System.out.println("User " + viewingUser.getName() + " is viewing user " + viewedUser.getName() + ", checkNeede=" + checkNeeded);
 		
