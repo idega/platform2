@@ -1251,7 +1251,12 @@ public class CampusApprover extends Block{
         drp.addMenuElement(AS.getID(),AS.getName());
       }
       Edit.setStyle(drp);
-      drp.setSelectedElement(selected);
+      if(selected.equals("-1")){
+        this.iSubjectId =((ApplicationSubject) L.get(0)).getID();
+        drp.setSelectedElement(String.valueOf(iSubjectId));
+      }
+      else
+        drp.setSelectedElement(selected);
     }
     return drp;
   }
