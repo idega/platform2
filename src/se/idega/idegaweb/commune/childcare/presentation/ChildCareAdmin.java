@@ -52,30 +52,38 @@ public class ChildCareAdmin extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		if (getSession().hasPrognosis()) {
+	    if (isCommuneAdministrator(iwc) || getSession().hasPrognosis()) {
 			parseAction(iwc);
-			
-			Table table = new Table(1,7);
-			table.setWidth(getWidth());
-			table.setHeight(2, 12);
-			//table.setHeight(4, 3);
-			//table.setHeight(6, 6);
-			table.setHeight(4, 6);
-			table.setCellpadding(0);
-			table.setCellspacing(0);
-			add(table);
-			
-			table.add(getSortTable(), 1, 1);
-			//table.add(getNavigator(iwc), 1, 3);
-			//table.add(getApplicationTable(iwc), 1, 5);
-			//table.add(getLegendTable(true), 1, 7);
-			table.add(getApplicationTable(iwc), 1, 3);
-			table.add(getLegendTable(true), 1, 5);
+			addTable(iwc);
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
 		}
 	}
+	
+	/**
+     * @param iwc
+     * @throws RemoteException
+     */
+    private void addTable(IWContext iwc) throws RemoteException {
+        Table table = new Table(1,7);
+        table.setWidth(getWidth());
+        table.setHeight(2, 12);
+        //table.setHeight(4, 3);
+        //table.setHeight(6, 6);
+        table.setHeight(4, 6);
+        table.setCellpadding(0);
+        table.setCellspacing(0);
+        add(table);
+        
+        table.add(getSortTable(), 1, 1);
+        //table.add(getNavigator(iwc), 1, 3);
+        //table.add(getApplicationTable(iwc), 1, 5);
+        //table.add(getLegendTable(true), 1, 7);
+        table.add(getApplicationTable(iwc), 1, 3);
+        table.add(getLegendTable(true), 1, 5);
+    }
+
 	
 	private void parseAction(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(PARAMETER_CLEAN_QUEUE)) {
