@@ -1,7 +1,7 @@
 package com.idega.block.staff.presentation;
 
 /**
- * Title:
+ * Title: Old version of StaffBrowser using the old legacy system.
  * Description:
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
  * Company:      idega
