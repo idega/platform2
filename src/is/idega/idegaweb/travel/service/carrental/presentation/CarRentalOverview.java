@@ -1,4 +1,4 @@
-package is.idega.idegaweb.travel.service.tour.presentation;
+package is.idega.idegaweb.travel.service.carrental.presentation;
 import java.rmi.*;
 import java.sql.*;
 import java.util.*;
@@ -26,9 +26,9 @@ import is.idega.idegaweb.travel.service.presentation.*;
  * @version 1.0
  */
 
-public class TourOverview extends AbstractServiceOverview {
+public class CarRentalOverview extends AbstractServiceOverview {
 
-  public TourOverview(IWContext iwc) throws RemoteException{
+  public CarRentalOverview(IWContext iwc) throws RemoteException{
     super.main(iwc);
   }
 

@@ -1,4 +1,4 @@
-package is.idega.idegaweb.travel.service.tour.presentation;
+package is.idega.idegaweb.travel.service.fishing.presentation;
 
 import is.idega.idegaweb.travel.presentation.Voucher;
 import is.idega.idegaweb.travel.interfaces.Booking;
@@ -15,9 +15,9 @@ import java.rmi.RemoteException;
  * @version 1.0
  */
 
-public class TourVoucher extends Voucher{
+public class FishingVoucher extends Voucher{
 
-  public TourVoucher(Booking booking) throws Exception{
+  public FishingVoucher(Booking booking) throws Exception{
     super(booking);
   }
 

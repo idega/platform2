@@ -1,8 +1,8 @@
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
-import is.idega.idegaweb.travel.service.presentation.BookingForm;
-import com.idega.presentation.IWContext;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.presentation.*;
+import is.idega.idegaweb.travel.service.presentation.*;
 
 /**
  * <p>Title: idega</p>

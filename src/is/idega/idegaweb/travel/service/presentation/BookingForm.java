@@ -1,23 +1,25 @@
 package is.idega.idegaweb.travel.service.presentation;
 
-import is.idega.idegaweb.travel.presentation.TravelManager;
+import java.rmi.*;
+import java.sql.*;
+import java.util.*;
+
+import javax.ejb.*;
+
+import com.idega.block.calendar.business.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.core.user.data.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
+import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.business.*;
-import com.idega.util.*;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.data.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.core.user.data.User;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import javax.ejb.*;
-import java.util.*;
+import is.idega.idegaweb.travel.presentation.*;
 /**
  * <p>Title: idega</p>
  * <p>Description: software</p>
@@ -613,14 +615,7 @@ public abstract class BookingForm extends TravelManager{
       }catch (SQLException sql) {
         throw new FinderException(sql.getMessage());
       }
-/*
-      if (isDay) {
-        if (_tour.getTotalSeats() > 0)
-        if (_tour.getTotalSeats() <= Booker.getNumberOfBookings(_tour.getID(), stamp) ) {
-          isDay = false;
-        }
-      }
-*/
+
       List addresses;
       try {
         addresses = _product.getDepartureAddresses(false);
@@ -1381,8 +1376,6 @@ public abstract class BookingForm extends TravelManager{
     if (totalSeats > 0) {
       if (betw == 1) {
         iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
-        //getNumberOfBookings(int serviceId, IWTimestamp stamp)
-//        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
         if (iMany > iAvailable) {
           tooMany = true;
           errorDays.add(fromStamp);
@@ -1392,7 +1385,6 @@ public abstract class BookingForm extends TravelManager{
           if (r != 0)
           fromStamp.addDays(1);
           iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
-//          iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, fromStamp);
           if (iMany > iAvailable) {
               tooMany = true;
               errorDays.add(fromStamp);

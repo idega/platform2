@@ -307,8 +307,12 @@ public class BookingOverview extends TravelManager {
           }else {
               headerText.setText(iwrb.getLocalizedString("travel.overview","Overview"));
           }
+
+      IWCalendar calFrom = new IWCalendar(fromStamp);
+      IWCalendar calTo = new IWCalendar(toStamp);
+
       Text timeText = (Text) theBoldText.clone();
-          timeText.setText(fromStamp.getLocaleDate(iwc)+" - "+toStamp.getLocaleDate(iwc));
+          timeText.setText(calFrom.getLocaleDate()+" - "+calTo.getLocaleDate());
 
       table.setAlignment(1,1,"left");
       table.add(headerText,1,1);
@@ -322,6 +326,7 @@ public class BookingOverview extends TravelManager {
       Table table = new Table();
       table.setWidth("95%");
       table.setAlignment(Table.HORIZONTAL_ALIGN_CENTER);
+      table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
 
       if (_productId != -1) {
 
@@ -332,8 +337,6 @@ public class BookingOverview extends TravelManager {
           try {
             if (productId == Integer.parseInt(this.parameterViewAll)) {
               products = pHome.getProductsOrderedByProductCategory(supplier.getID(), this.fromStamp, this.toStamp );
-//              products = pHome.getProductsOrderedByProductCategory(supplier.getID());
-//              products = getProductBusiness(iwc).getProducts(supplier.getID());
             }
             else {
               products = new Vector();
@@ -342,7 +345,6 @@ public class BookingOverview extends TravelManager {
           }catch (FinderException sql) {
             sql.printStackTrace(System.err);
             products  = new Vector();
-//            products = getProductBusiness(iwc).getProducts(supplier.getID());
           }
 
           is.idega.idegaweb.travel.service.presentation.BookingOverview bo = null;
@@ -370,14 +372,12 @@ public class BookingOverview extends TravelManager {
                 newCat = pCat.getID();
                 if ( newCat != oldCat ) {
                   if (oldCat != -1) {
-                    System.err.println("Adding table 1");
                     table.add(getHeaderText(getProductCategoryFactory(iwc).getProductCategoryTypeDefaultName(oldCatName)));
                     table.addBreak();
                     table.add(bo.getBookingOverviewTable(iwc, tempProducts));
                     table.addBreak();
                     table.addBreak();
                     tempProducts = new Vector();
-                    System.err.println("Creating tempProdutcs");
 //                    getTable = true;
                   }
                   bo = super.getServiceHandler(iwc).getBookingOverview(iwc, prod);
@@ -388,11 +388,9 @@ public class BookingOverview extends TravelManager {
                 if (!iter.hasNext()){
                   getTable = true;
                 }
-                System.err.println("Adding product to tempProducts");
                 tempProducts.add(prod);
               }
               if (getTable) {
-                System.err.println("Adding table 2");
                 table.add(getHeaderText(getProductCategoryFactory(iwc).getProductCategoryTypeDefaultName(catName)));
                 table.add(bo.getBookingOverviewTable(iwc, tempProducts));
                 tempProducts = new Vector();
@@ -402,13 +400,11 @@ public class BookingOverview extends TravelManager {
             bo = super.getServiceHandler(iwc).getBookingOverview(iwc, product);
             table = bo.getBookingOverviewTable(iwc, products);
           }
-          //////////////////////
-//          table = getBookingOverviewTable(iwc, productId);
 
 
       }
       else {
-        table.add(iwrb.getLocalizedString("travel.please_select_a_product","Please select a product"));
+        table.add(super.getHeaderText(iwrb.getLocalizedString("travel.please_select_a_product","Please select a product")));
       }
       return table;
 
@@ -502,7 +498,8 @@ public class BookingOverview extends TravelManager {
       upALine = false;
       ++row;
       dateTextBold = (Text) theSmallBoldText.clone();
-      dateTextBold.setText(tempStamp.getLocaleDate(iwc));
+      cal = new IWCalendar(tempStamp);
+      dateTextBold.setText(cal.getLocaleDate());
       dateTextBold.setFontColor(super.BLACK);
       table.add(dateTextBold,1,row);
       table.setRowColor(row, super.GRAY);
@@ -660,6 +657,9 @@ public class BookingOverview extends TravelManager {
     return table;
   }
 
+  /**
+   * @todo Move to Service-specified BookingOverviews
+   */
 
   public Table getViewService(IWContext iwc) throws Exception {
     String view_id = iwc.getParameter(this.closerLookIdParameter);
@@ -674,24 +674,6 @@ public class BookingOverview extends TravelManager {
         table.setColor(super.WHITE);
 
         int row = 1;
-/*
-          Text dateText = (Text) theText.clone();
-              dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
-          Text nameText = (Text) theText.clone();
-              nameText.setText(iwrb.getLocalizedString("travel.trip_name_sm","name of trip"));
-          Text countText = (Text) theText.clone();
-              countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
-          Text assignedText = (Text) theText.clone();
-              assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
-          Text inqText = (Text) theText.clone();
-              inqText.setText(iwrb.getLocalizedString("travel.inqueries_small_sm","inq."));
-          Text bookedText = (Text) theText.clone();
-              bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
-          Text availableText = (Text) theText.clone();
-              availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
-          Text hotelPickupText = (Text) theText.clone();
-              hotelPickupText.setText(iwrb.getLocalizedString("travel.booked_by","Booked by"));
-*/
 
           Text dateTextBold = (Text) theSmallBoldText.clone();
           Text nameTextBold = (Text) theSmallBoldText.clone();
@@ -712,17 +694,7 @@ public class BookingOverview extends TravelManager {
           table.add(getHeaderText(iwrb.getLocalizedString("travel.booked_by","Booked by")), 8, row);
           table.add(getHeaderText(Text.NON_BREAKING_SPACE), 9, row);
 
-/*
-          table.add(dateText,1,row);
-          table.add(nameText,2,row);
-          table.add(countText,3,row);
-          table.add(assignedText,4,row);
-          table.add(inqText,5,row);
-          table.add(bookedText,6,row);
-          table.add(availableText,7,row);
-          table.add(hotelPickupText,8,row);
-          table.add(Text.NON_BREAKING_SPACE, 9,row);
-*/
+
           table.setRowColor(row, super.backgroundColor);
 
           IWTimestamp currentStamp = new IWTimestamp(view_date);
@@ -757,7 +729,8 @@ public class BookingOverview extends TravelManager {
             available = seats - booked - iInqueries;
           }
 
-          dateTextBold.setText(currentStamp.getLocaleDate(iwc));
+          IWCalendar cal =new IWCalendar(currentStamp);
+          dateTextBold.setText(cal.getLocaleDate());
           nameTextBold.setText(service.getName(super.getLocaleId()));
           countTextBold.setText(Integer.toString(seats));
           availableTextBold.setText(Integer.toString(available));
@@ -1031,7 +1004,6 @@ public class BookingOverview extends TravelManager {
     table.setWidth(9,"140");
 
     return table;
-
   }
 
   public void deleteBooking(IWContext iwc) throws RemoteException, FinderException{

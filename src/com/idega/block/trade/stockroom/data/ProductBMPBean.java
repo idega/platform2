@@ -704,7 +704,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
       timeframeSQL.append(" ORDER BY "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName());
     }
 
-    System.out.println(timeframeSQL.toString());
+//    System.out.println(timeframeSQL.toString());
     coll = this.idoFindPKsBySQL(timeframeSQL.toString());
 //    products = EntityFinder.getInstance().findAll(Product.class,timeframeSQL.toString());
     return coll;

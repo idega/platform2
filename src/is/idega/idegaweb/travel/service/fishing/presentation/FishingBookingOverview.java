@@ -1,4 +1,4 @@
-package is.idega.idegaweb.travel.service.tour.presentation;
+package is.idega.idegaweb.travel.service.fishing.presentation;
 
 import java.rmi.*;
 import java.sql.*;
@@ -15,8 +15,6 @@ import com.idega.util.*;
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.presentation.*;
-import is.idega.idegaweb.travel.service.tour.business.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
 
 /**
  * <p>Title: idegaWeb TravelBooking</p>
@@ -27,22 +25,12 @@ import is.idega.idegaweb.travel.service.tour.data.*;
  * @version 1.0
  */
 
-public class TourBookingOverview extends AbstractBookingOverview {
+public class FishingBookingOverview extends AbstractBookingOverview {
 
   private String CELL_WIDTH = "50";
-  private Tour _tour;
-  private TourHome _tHome;
 
-  public TourBookingOverview() {
-  }
-
-  public TourBookingOverview(IWContext iwc) throws RemoteException{
+  public FishingBookingOverview(IWContext iwc) throws RemoteException{
     super.main(iwc);
-    this.init(iwc);
-  }
-
-  private void init(IWContext iwc) throws RemoteException{
-    _tHome = (TourHome) IDOLookup.getHome(Tour.class);
   }
 
   public Table getBookingOverviewTable(IWContext iwc, Collection products) throws CreateException, RemoteException, FinderException {
@@ -146,17 +134,11 @@ public class TourBookingOverview extends AbstractBookingOverview {
               iAvailable=0;
               iAssigned=0;
               service = getTravelStockroomBusiness(iwc).getService(prod);
-              _tour = getTourBusiness(iwc).getTour(prod);
 
               if (_supplier != null) {
                 sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
                 if (sDay != null) {
                   iCount = sDay.getMax();
-                  if (iCount < 1) {
-                    iCount = _tour.getTotalSeats();
-                  }
-                }else {
-                  iCount = _tour.getTotalSeats();
                 }
 
 //                iCount = _tour.getTotalSeats();
@@ -249,8 +231,6 @@ public class TourBookingOverview extends AbstractBookingOverview {
             sql.printStackTrace(System.err);
           }catch (ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
-          }catch (TourNotFoundException tnfe) {
-                          tnfe.printStackTrace(System.err);
           }catch (TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
           }
@@ -281,12 +261,5 @@ public class TourBookingOverview extends AbstractBookingOverview {
 
       return table;
   }
-
-
-  protected TourBusiness getTourBusiness(IWContext iwc) throws RemoteException{
-    return (TourBusiness) IBOLookup.getServiceInstance(iwc, TourBusiness.class);
-
-  }
-
 
 }

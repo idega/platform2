@@ -1,18 +1,16 @@
 package is.idega.idegaweb.travel.service.business;
 
-import com.idega.business.IBOLookup;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
+import java.rmi.*;
 import java.util.*;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import javax.ejb.FinderException;
 
-import com.idega.business.IBOServiceBean;
-import com.idega.data.*;
+import javax.ejb.*;
+
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.travel.service.tour.data.*;
+import com.idega.business.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.ui.*;
 
 /**
  * <p>Title: </p>
@@ -25,10 +23,11 @@ import is.idega.idegaweb.travel.service.tour.data.*;
 
 public class ProductCategoryFactoryBean extends IBOServiceBean implements ProductCategoryFactory {
 
-  public static final String CATEGORY_TYPE_PRODUCT = ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT;
+  public static final String CATEGORY_TYPE_PRODUCT = "sr_prod_cat_iwT_product";
   public static final String CATEGORY_TYPE_TOUR = "sr_prod_cat_tour";
   public static final String CATEGORY_TYPE_HOTEL = "sr_prod_cat_hotel";
   public static final String CATEGORY_TYPE_FISHING = "sr_prod_cat_fishing";
+  public static final String CATEGORY_TYPE_CAR_RENTAL = "sr_prod_cat_car_rental";
   public static final String CATEGORY_TYPE_DEFAULT = CATEGORY_TYPE_TOUR;
 
   public ProductCategoryFactoryBean() {
@@ -45,7 +44,6 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
         if (ids.size() == 0) {
           pCat = pHome.getProductCategory(this.CATEGORY_TYPE_DEFAULT);
           product.addCategory(pCat);
-//            product.addTo(pCat);
         }
 
       }
@@ -73,8 +71,9 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
     List list = new Vector();
       list.add(pHome.getProductCategory(this.CATEGORY_TYPE_TOUR).getPrimaryKey());
       list.add(pHome.getProductCategory(this.CATEGORY_TYPE_HOTEL).getPrimaryKey());
-//      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_FISHING).getPrimaryKey());
+      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_FISHING).getPrimaryKey());
 //      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_PRODUCT).getPrimaryKey());
+      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_CAR_RENTAL).getPrimaryKey());
     return list;
   }
 
@@ -92,9 +91,11 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
         return "Fishing";
       }else if (type.equals(this.CATEGORY_TYPE_PRODUCT)) {
         return "Products";
+      }else if (type.equals(this.CATEGORY_TYPE_CAR_RENTAL)) {
+        return "Car rental";
       }
     }
-    return "Temp Category";
+    return "Temp Category !";
   }
 
   public DropdownMenu getProductCategoryDropdown(IWResourceBundle iwrb, Supplier supplier, String name) throws IDORelationshipException, RemoteException {

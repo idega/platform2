@@ -1,4 +1,4 @@
-package is.idega.idegaweb.travel.service.hotel.presentation;
+package is.idega.idegaweb.travel.service.carrental.presentation;
 
 import java.rmi.*;
 
@@ -16,7 +16,7 @@ import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.presentation.*;
-import is.idega.idegaweb.travel.service.hotel.business.*;
+import is.idega.idegaweb.travel.service.carrental.business.*;
 import is.idega.idegaweb.travel.service.presentation.*;
 
 /**
@@ -28,7 +28,7 @@ import is.idega.idegaweb.travel.service.presentation.*;
  * @version 1.0
  */
 
-public class HotelDesigner extends TravelManager implements DesignerForm {
+public class CarRentalDesigner extends TravelManager implements DesignerForm {
 
   private IWResourceBundle _iwrb;
   private Supplier _supplier;
@@ -64,7 +64,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private String PARAMETER_USE_IMAGE_ID    = "hd_par_use_img_id";
 
 
-  public HotelDesigner(IWContext iwc) throws Exception {
+  public CarRentalDesigner(IWContext iwc) throws Exception {
     init(iwc);
   }
 
@@ -205,19 +205,19 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
     int returner = -1;
 
-    HotelBusiness hb = (HotelBusiness) IBOLookup.getServiceInstance(iwc, HotelBusiness.class);
+    CarRentalBusiness hb = (CarRentalBusiness) IBOLookup.getServiceInstance(iwc, CarRentalBusiness.class);
 
     try {
       if ( serviceId == -1 ) {
         hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
-        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp,true, iDiscountType);
+        returner = hb.createCar(_supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp,true, iDiscountType);
       } else {
         String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
         if ( timeframeId == null ) {
           timeframeId = "-1";
         }
         hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp, true, iDiscountType);
+        returner = hb.updateCar(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp, true, iDiscountType);
         if ( useImageId == null ) {
           ProductEditorBusiness.getInstance().dropImage( _product, true );
         }
