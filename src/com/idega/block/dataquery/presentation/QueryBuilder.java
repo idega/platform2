@@ -20,7 +20,7 @@ import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
-import com.idega.block.dataquery.data.Query;
+//import com.idega.block.dataquery.data.Query;
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
 import com.idega.core.IWTreeNode;

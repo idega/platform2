@@ -6,7 +6,7 @@ package com.idega.block.dataquery.business;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import com.idega.block.dataquery.data.Query;
+//import com.idega.block.dataquery.data.Query;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.data.ICFile;
