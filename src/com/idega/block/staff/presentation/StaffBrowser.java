@@ -75,6 +75,7 @@ private boolean _showMetaData;
 private boolean _showWorkPhone;
 private boolean _showListWorkPhone;
 private boolean _showMobilePhone;
+private boolean _showEmail;
 
 private String _imageWidth;
 private String _imageHeight;
@@ -348,6 +349,22 @@ private Table _myTable;
       if ( _showMobilePhone ) {
         textTable.add(mobilePhone,column,tableRow);
         textTable.add(mobilePhoneText,column+1,tableRow);
+        tableRow++;
+      }
+
+      Text mailPhone = new Text(_iwrb.getLocalizedString("email","E-mail")+":");
+        mailPhone.setFontStyle(_headlineStyle);
+      Text mailPhoneText = new Text("");
+        if ( holder.getEmail() != null )
+          mobilePhoneText.setText(holder.getMobilePhone());
+        mobilePhoneText.setFontStyle(_textStyle);
+      Link mailLink = new Link(mailPhoneText);
+        if ( holder.getEmail() != null )
+          mailLink.setURL("mailto:"+holder.getEmail());
+
+      if ( _showEmail ) {
+        textTable.add(mobilePhone,column,tableRow);
+        textTable.add(mailLink,column+1,tableRow);
         tableRow++;
       }
 
@@ -645,6 +662,7 @@ private Table _myTable;
     _showWorkPhone = true;
     _showListWorkPhone = false;
     _showMobilePhone = true;
+    _showEmail = true;
   }
 
   public void setShowAlphabet(boolean showAlphabet) {
@@ -697,6 +715,10 @@ private Table _myTable;
 
   public void setShowExtraInfo(boolean showExtraInfo) {
     _showMetaData = showExtraInfo;
+  }
+
+  public void setShowEmail(boolean showEmail) {
+    _showEmail = showEmail;
   }
 
   public void setImageWidth(String width) {
