@@ -655,7 +655,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int row = 1;
 		
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
-		boolean canCancel = !getBusiness().hasFutureContracts(((Integer)application.getPrimaryKey()).intValue());
+		boolean canCancel = getBusiness().canCancelContract(((Integer)application.getPrimaryKey()).intValue());
 		
 		if (canCancel) {
 			RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));

@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
+import java.rmi.RemoteException;
+
 import com.idega.block.process.business.CaseBusiness;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness
@@ -138,4 +140,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection getCaseLogNewContracts(java.sql.Timestamp fromDate, java.sql.Timestamp toDate) throws java.rmi.RemoteException;
  public java.util.Collection getCaseLogAlteredContracts(java.sql.Timestamp fromDate, java.sql.Timestamp toDate) throws java.rmi.RemoteException;
  public java.util.Collection getCaseLogTerminatedContracts(java.sql.Timestamp fromDate, java.sql.Timestamp toDate) throws java.rmi.RemoteException;
+ public boolean canCancelContract(int applicationID) throws RemoteException;
+ public int getNumberOfContractsForApplication(int applicationID) throws RemoteException;
 }

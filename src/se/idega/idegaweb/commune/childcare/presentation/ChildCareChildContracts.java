@@ -106,9 +106,14 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			contract = (ChildCareContractArchive) iter.next();
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
-			validFrom = new IWTimestamp(contract.getValidFromDate());
+			if (contract.getValidFromDate() != null)
+				validFrom = new IWTimestamp(contract.getValidFromDate());
+			else
+				validFrom = null;
 			if (contract.getTerminatedDate() != null)
 				terminated = new IWTimestamp(contract.getTerminatedDate());
+			else
+				terminated = null;
 			careTime = String.valueOf(contract.getCareTime());
 			if (contract.getCareTime() == -1)
 				careTime = "-";
@@ -134,8 +139,11 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	
 			table.add(getText(provider.getSchoolName(), isActive), column++, row);
 			table.add(getText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
-			table.add(getText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
-			if (contract.getTerminatedDate() != null)
+			if (validFrom != null)
+				table.add(getText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
+			else
+				table.add(getText("-", isActive), column++, row);
+			if (terminated != null)
 				table.add(getText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
 			else
 				table.add(getText("-", isActive), column++, row);

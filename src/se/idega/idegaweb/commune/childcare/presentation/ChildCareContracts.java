@@ -83,7 +83,10 @@ public class ChildCareContracts extends ChildCareBlock {
 		
 					if (contract != null) {
 						created = new IWTimestamp(contract.getCreatedDate());
-						validFrom = new IWTimestamp(contract.getValidFromDate());
+						if (application.getFromDate() != null)
+							validFrom = new IWTimestamp(contract.getValidFromDate());
+						else
+							validFrom = null;
 						if (application.getRejectionDate() != null) {
 							IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
 							isCancelled = cancelledDate.isEarlierThan(dateNow);
@@ -91,10 +94,16 @@ public class ChildCareContracts extends ChildCareBlock {
 						else
 							isCancelled = false;
 							
-						if (dateNow.isEarlierThan(validFrom))
-							isNotYetActive = true;
-						else
+						if (validFrom != null) {
+							if (dateNow.isEarlierThan(validFrom))
+								isNotYetActive = true;
+							else
+								isNotYetActive = false;
+						}
+						else {
 							isNotYetActive = false;
+							isCancelled = true;
+						}
 						
 						viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
 						viewContract.setFile(contract.getContractFileID());
@@ -139,7 +148,10 @@ public class ChildCareContracts extends ChildCareBlock {
 							table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
 						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 						table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-						table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+						if (validFrom != null)
+							table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+						else
+							table.add(getSmallText("-"), column++, row);
 						if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
 							table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
 						else

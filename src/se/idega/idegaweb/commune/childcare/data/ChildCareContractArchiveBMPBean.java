@@ -265,6 +265,12 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		return idoGetNumberOfRecords(sql);
 	}
 
+	public int ejbHomeGetContractsCountByApplication(int applicationID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
+		return idoGetNumberOfRecords(sql);
+	}
+
 	public Integer ejbFindByContractFileID(int contractFileID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_FILE_ID, contractFileID);

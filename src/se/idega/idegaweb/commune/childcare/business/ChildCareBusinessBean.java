@@ -954,6 +954,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	private void deleteFromProvider(int childID, int providerID) throws RemoteException {
+		try {
+			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID);
+			classMember.remove();
+		}
+		catch (RemoveException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public boolean acceptApplication(ChildCareApplication application, IWTimestamp validUntil, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
@@ -1986,8 +1999,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				IWTimestamp terminate = new IWTimestamp(terminatedDate);
 				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
 				if (validFrom.isLaterThan(terminate)) {
+					ChildCareApplication application = archive.getApplication();
+					application.setFromDate(null);
+					application.store();
+					
+					deleteFromProvider(application.getChildId(), application.getProviderId());
+					
 					Contract contract = archive.getContract();
 					if (contract != null) {
+						contract.setValidTo(terminatedDate);
 						contract.setStatus("T");
 						contract.store();
 					}
@@ -1998,6 +2018,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					Contract contract = archive.getContract();
 					if (contract != null) {
 						contract.setValidTo(terminatedDate);
+						contract.setStatus("T");
 						contract.store();
 					}
 					archive.store();
@@ -2430,6 +2451,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean hasActivePlacement(int childID) throws RemoteException {
 		return getActivePlacement(childID) != null;
+	}
+	
+	public boolean canCancelContract(int applicationID) throws RemoteException {
+		int numberOfContracts = getNumberOfContractsForApplication(applicationID);
+		if (numberOfContracts > 1) {
+			if (hasFutureContracts(applicationID))
+				return false;
+		}
+		return true;
+	}
+	
+	public int getNumberOfContractsForApplication(int applicationID) throws RemoteException {
+		try {
+			return getChildCareContractArchiveHome().getContractsCountByApplication(applicationID);
+		}
+		catch (IDOException e) {
+			return -1;
+		}
 	}
 	
 	public boolean hasFutureContracts(int applicationID) throws RemoteException {
