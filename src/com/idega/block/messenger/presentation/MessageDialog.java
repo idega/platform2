@@ -133,7 +133,11 @@ public class MessageDialog extends Dialog implements ActionListener{
 
   private void storeMessageString(){
     if( messageVector == null ) messageVector = new Vector();
-    Message msg = new Message(lastMessageString,message.getRecipient(),message.getSender());
+    Message msg = new Message();
+    msg.setMessage(lastMessageString);
+    msg.setRecipient(message.getSender());
+    System.out.println("MessageDialog :  message.getSender() : "+message.getSender());
+
     if( (message!=null) && (message.getId()!=0) ){
       msg.setId(message.getId());
     }

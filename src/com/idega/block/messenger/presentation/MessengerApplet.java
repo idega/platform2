@@ -174,14 +174,20 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
   }
 
-  public void getMessagesFromDialog(MessageDialog dialog){//gets called on and iw-send event action
+  private void getMessagesFromDialog(MessageDialog dialog){//gets called on and iw-send event action
     if( packetToServlet == null ){
       packetToServlet = new Packet();
     }
     packetToServlet.setSender(sessionId);
 
     Vector msg = dialog.getMessages();
-    /**@todo make this work for many dialogs..don't clear don't have to check if null*/
+    int length = msg.size();
+    for (int i = 0; i < length; i++) {
+      ((Message)msg.elementAt(i)).setSender(sessionId);
+    }
+
+
+    /**@todo make this work for many dialogs..*/
     packetToServlet.addMessages(msg);
     dialog.clearMessageVector();
     cycle();
@@ -458,7 +464,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     runThread = true;
 
     if ( t == null ){
-      t = new Thread(this,"MessengerApplet");
+      t = new Thread(this,"MessengerApplet thread");
       t.setPriority(t.NORM_PRIORITY);
       t.start();
     }
