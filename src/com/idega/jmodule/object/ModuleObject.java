@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.4 2001/05/10 10:45:28 palli Exp $
+ * $Id: ModuleObject.java,v 1.5 2001/05/14 14:27:27 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -559,6 +559,9 @@ public class ModuleObject extends Object implements Cloneable {
 
   public void _setModuleInfo(ModuleInfo modinfo){
     setModuleInfo(modinfo);
+  }
+
+  public void setProperty(String key, String values[]){
   }
 
   //temp ends

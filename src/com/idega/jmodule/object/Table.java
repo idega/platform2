@@ -124,7 +124,7 @@ public void add(ModuleObject modObject,int xpos,int ypos){
                         //super.add(theObjects);
                       }
 
-		theObjects[xpos-1][ypos-1].addObject(modObject);
+		theObjects[xpos-1][ypos-1].add(modObject);
 		modObject.setParentObject(this);
 
           }
@@ -148,7 +148,7 @@ public void add(String text,int xpos,int ypos){
 }
 
 public void addText(String theText,int xpos,int ypos){
-	addObject(new Text(theText),xpos,ypos);
+	add(new Text(theText),xpos,ypos);
 }
 
 
@@ -967,6 +967,23 @@ public boolean isEmpty(){
 	else{
 		return true;
 	}
+}
+
+public void setProperty(String key, String values[]) {
+  if (key.equalsIgnoreCase("border"))
+    setBorder(Integer.parseInt(values[0]));
+  else if (key.equalsIgnoreCase("width")) {
+    setWidth(Integer.parseInt(values[0]));
+  }
+  else if (key.equalsIgnoreCase("height")) {
+    setHeight(Integer.parseInt(values[0]));
+  }
+  else if (key.equalsIgnoreCase("columns")) {
+    setColumns(Integer.parseInt(values[0]));
+  }
+  else if (key.equalsIgnoreCase("rows")) {
+    setRows(Integer.parseInt(values[0]));
+  }
 }
 
 

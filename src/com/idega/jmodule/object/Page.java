@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.5 2001/05/10 10:43:38 palli Exp $
+ * $Id: Page.java,v 1.6 2001/05/14 14:27:27 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -282,6 +282,12 @@ public class Page extends ModuleObjectContainer {
 
       println("</card>");
       println("</wml>");
+    }
+  }
+
+  public void setProperty(String key, String values[]) {
+    if (key.equalsIgnoreCase("title")) {
+      setTitle(values[0]);
     }
   }
 }

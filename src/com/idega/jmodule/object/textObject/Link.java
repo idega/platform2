@@ -558,7 +558,14 @@ public void print(ModuleInfo modinfo)throws IOException{
   }
 
 
-
+  public void setProperty(String key, String values[]) {
+    if (key.equalsIgnoreCase("text")) {
+      setText(values[0]);
+    }
+    else if (key.equalsIgnoreCase("url")) {
+      setURL(values[0]);
+    }
+  }
 
 
 
