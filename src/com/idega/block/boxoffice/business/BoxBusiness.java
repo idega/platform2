@@ -1,16 +1,17 @@
 package com.idega.block.boxoffice.business;
 
-import com.idega.data.EntityFinder;
-import com.idega.block.boxoffice.data.*;
 import java.sql.SQLException;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICObjectInstance;
 import java.util.List;
-import com.idega.util.IWTimestamp;
+
+import com.idega.block.boxoffice.data.BoxCategory;
+import com.idega.block.boxoffice.data.BoxEntity;
+import com.idega.block.boxoffice.data.BoxLink;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.core.data.ICObjectInstance;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

@@ -8,11 +8,9 @@ package com.idega.block.banner.data;
 
 
 
+import java.sql.SQLException;
+
 import com.idega.core.data.ICObjectInstance;
-
-import java.sql.*;
-
-import com.idega.data.*;
 
 
 

@@ -6,11 +6,9 @@ package com.idega.block.boxoffice.data;
 
 
 
+import java.sql.SQLException;
+
 import com.idega.core.data.ICObjectInstance;
-
-import java.sql.*;
-
-import com.idega.data.*;
 
 
 

@@ -1,6 +1,5 @@
 package com.idega.block.application.data;
 
-import javax.ejb.*;
 
 public interface Applicant extends com.idega.data.IDOLegacyEntity, com.idega.data.TreeableEntity
 {

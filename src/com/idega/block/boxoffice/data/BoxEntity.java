@@ -1,6 +1,5 @@
 package com.idega.block.boxoffice.data;
 
-import javax.ejb.*;
 
 public interface BoxEntity extends com.idega.data.IDOLegacyEntity
 {

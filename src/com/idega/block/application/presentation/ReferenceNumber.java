@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.16 2002/04/06 18:52:26 tryggvil Exp $
+ * $Id: ReferenceNumber.java,v 1.17 2003/04/03 07:05:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,19 +10,18 @@
 package com.idega.block.application.presentation;
 
 import com.idega.block.application.business.ReferenceNumberHandler;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.HelpButton;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.text.Text;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

@@ -1,28 +1,30 @@
 package com.idega.block.albumcollection.presentation;
 
+import java.util.Iterator;
+import java.util.List;
+
+import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
+import com.idega.block.albumcollection.data.Album;
+import com.idega.block.albumcollection.data.AlbumType;
+import com.idega.block.albumcollection.data.Author;
+import com.idega.block.albumcollection.data.Performer;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.presentation.Table;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.text.Link;
 import com.idega.util.IWTimestamp;
-import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
-import com.idega.block.albumcollection.data.*;
-import com.idega.util.IWTimestamp;
-import com.idega.block.media.presentation.ImageInserter;
-
-import java.util.List;
-import java.util.Iterator;
 
 /**
  * Title:        AlbumCollection

@@ -1,6 +1,5 @@
 package com.idega.block.application.data;
 
-import javax.ejb.*;
 
 public interface ApplicationSubject extends com.idega.data.IDOLegacyEntity
 {

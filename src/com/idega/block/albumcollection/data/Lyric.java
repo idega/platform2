@@ -1,6 +1,5 @@
 package com.idega.block.albumcollection.data;
 
-import javax.ejb.*;
 
 public interface Lyric extends com.idega.data.IDOLegacyEntity
 {

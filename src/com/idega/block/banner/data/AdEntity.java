@@ -1,6 +1,5 @@
 package com.idega.block.banner.data;
 
-import javax.ejb.*;
 
 public interface AdEntity extends com.idega.data.IDOLegacyEntity
 {

@@ -1,20 +1,17 @@
 package com.idega.block.albumcollection.presentation;
 
-import com.idega.presentation.Block;
+import java.util.Iterator;
+import java.util.List;
+
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.Lyric;
-import com.idega.presentation.text.Link;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.block.albumcollection.data.Author;
-import com.idega.data.EntityFinder;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-
-
-import java.util.List;
-import java.util.Iterator;
 
 /**
  * Title:        idegaWeb

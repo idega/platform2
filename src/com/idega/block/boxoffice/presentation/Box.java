@@ -1,24 +1,25 @@
 package com.idega.block.boxoffice.presentation;
 
-import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
-import com.idega.util.text.TextStyler;
-import com.idega.util.text.StyleConstants;
 import com.idega.block.IWBlock;
+import com.idega.block.boxoffice.business.BoxBusiness;
+import com.idega.block.boxoffice.business.BoxFinder;
+import com.idega.block.boxoffice.data.BoxCategory;
+import com.idega.block.boxoffice.data.BoxEntity;
+import com.idega.block.boxoffice.data.BoxLink;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
 import com.idega.presentation.Image;
+import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.HeaderTable;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.block.boxoffice.data.*;
-import com.idega.block.boxoffice.business.*;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.StyleConstants;
+import com.idega.util.text.TextSoap;
+import com.idega.util.text.TextStyler;
 
 public class Box extends Block implements IWBlock {
 

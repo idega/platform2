@@ -1,12 +1,14 @@
 package com.idega.block.book.data;
 
-import javax.ejb.RemoveException;
-import com.idega.data.*;
-import com.idega.block.book.business.BookBusiness;
-import com.idega.core.data.ICFile;
-import javax.ejb.FinderException;
 import java.util.Collection;
-import java.sql.Timestamp;
+
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
+import com.idega.core.data.ICFile;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDORemoveException;
+import com.idega.data.SimpleQuerier;
 
 /**
  * Title:        Publisher bean

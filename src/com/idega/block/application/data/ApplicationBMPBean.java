@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBMPBean.java,v 1.3 2002/08/12 12:59:35 palli Exp $
+ * $Id: ApplicationBMPBean.java,v 1.4 2003/04/03 07:05:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,9 @@
  */
 package com.idega.block.application.data;
 
-import com.idega.data.IDOLegacyEntity;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.lang.IllegalStateException;
+
 import com.idega.util.IWTimestamp;
 
 /**

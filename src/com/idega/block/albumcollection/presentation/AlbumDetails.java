@@ -1,29 +1,27 @@
 package com.idega.block.albumcollection.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.ui.BackButton;
+import java.util.Iterator;
+import java.util.List;
+
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.Album;
-import com.idega.block.albumcollection.data.Track;
-import com.idega.block.albumcollection.data.Author;
-import com.idega.block.albumcollection.data.Performer;
-import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.AlbumType;
+import com.idega.block.albumcollection.data.Author;
+import com.idega.block.albumcollection.data.Lyric;
+import com.idega.block.albumcollection.data.Performer;
+import com.idega.block.albumcollection.data.Track;
 import com.idega.data.EntityFinder;
-import com.idega.util.text.TextSoap;
-import com.idega.util.IWTimestamp;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-
-
-import java.util.List;
-import java.util.Iterator;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:        idegaWeb

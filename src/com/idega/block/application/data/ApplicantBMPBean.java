@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantBMPBean.java,v 1.2 2002/05/03 00:05:50 palli Exp $
+ * $Id: ApplicantBMPBean.java,v 1.3 2003/04/03 07:05:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package com.idega.block.application.data;
 
-import com.idega.data.TreeableEntity;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 

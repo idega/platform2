@@ -1,6 +1,6 @@
 /*
 
- * $Id: ApplicationSubjectInfoBMPBean.java,v 1.1 2002/04/06 19:07:28 tryggvil Exp $
+ * $Id: ApplicationSubjectInfoBMPBean.java,v 1.2 2003/04/03 07:05:44 laddi Exp $
 
  *
 
@@ -22,13 +22,8 @@ package com.idega.block.application.data;
 
 
 
-import com.idega.data.IDOLegacyEntity;
-
-import java.sql.Timestamp;
-
-import java.lang.IllegalStateException;
-
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 
 

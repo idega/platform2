@@ -1,13 +1,14 @@
 package com.idega.block.banner.business;
 
-import com.idega.data.EntityFinder;
-import com.idega.block.banner.data.*;
-import com.idega.core.data.ICFile;
 import java.sql.SQLException;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.business.ICObjectBusiness;
 import java.util.List;
+
+import com.idega.block.banner.data.AdEntity;
+import com.idega.block.banner.data.BannerEntity;
+import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.data.ICFile;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.data.EntityFinder;
 
 /**
  * Title:

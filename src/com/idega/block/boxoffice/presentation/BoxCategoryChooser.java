@@ -4,47 +4,31 @@ package com.idega.block.boxoffice.presentation;
 
 
 
-import java.sql.*;
-
-import java.util.*;
-
-import java.io.*;
-
-import com.idega.util.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.core.localisation.presentation.ICLocalePresentation;
-
-import com.idega.core.localisation.business.ICLocaleBusiness;
-
-import com.idega.core.data.ICLocale;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import com.idega.block.IWBlock;
-
-import com.idega.block.boxoffice.data.*;
-
-import com.idega.block.boxoffice.business.*;
-
-import com.idega.core.accesscontrol.business.AccessControl;
-
+import com.idega.block.boxoffice.business.BoxBusiness;
+import com.idega.block.boxoffice.business.BoxFinder;
+import com.idega.block.boxoffice.data.BoxCategory;
+import com.idega.block.boxoffice.data.BoxEntity;
 import com.idega.block.login.business.LoginBusiness;
-
 import com.idega.block.text.business.TextFinder;
-
 import com.idega.block.text.data.LocalizedText;
-
-import com.idega.idegaweb.presentation.IWAdminWindow;
-
-import com.idega.idegaweb.IWResourceBundle;
-
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
 
 
 

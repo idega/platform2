@@ -2,37 +2,21 @@ package com.idega.block.banner.presentation;
 
 
 
-import javax.servlet.http.Cookie;
-
 import com.idega.block.IWBlock;
-
-import com.idega.presentation.Block;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.Table;
-
-import com.idega.presentation.Image;
-
-import com.idega.presentation.text.Link;
-
-import com.idega.presentation.text.Text;
-
-import com.idega.presentation.ui.HeaderTable;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.core.accesscontrol.business.AccessControl;
-
-import com.idega.core.localisation.business.ICLocaleBusiness;
-
+import com.idega.block.banner.business.BannerBusiness;
+import com.idega.block.banner.business.BannerFinder;
+import com.idega.block.banner.business.BannerListener;
+import com.idega.block.banner.data.AdEntity;
+import com.idega.block.banner.data.BannerEntity;
 import com.idega.core.data.ICObjectInstance;
-
-import com.idega.block.banner.data.*;
-
-import com.idega.block.banner.business.*;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 
 
 

@@ -1,6 +1,5 @@
 package com.idega.block.book.data;
 
-import javax.ejb.*;
 
 public interface Book extends com.idega.data.IDOEntity
 {

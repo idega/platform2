@@ -1,14 +1,13 @@
 package com.idega.block.book.business;
 
-import com.idega.core.data.ICCategory;
-import com.idega.block.book.data.*;
 import java.rmi.RemoteException;
-import java.util.*;
 import java.util.Comparator;
 
-import com.idega.presentation.IWContext;
+import com.idega.block.book.data.Author;
+import com.idega.block.book.data.Book;
+import com.idega.block.book.data.Publisher;
+import com.idega.core.data.ICCategory;
 import com.idega.util.IsCollator;
-import com.idega.util.IWTimestamp;
 
 /**
  * Title:

@@ -1,19 +1,16 @@
 package com.idega.block.banner.business;
 
-import com.idega.data.EntityFinder;
-import javax.servlet.http.Cookie;
-import com.idega.presentation.IWContext;
-import com.idega.block.banner.data.*;
 import java.sql.SQLException;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICFile;
 import java.util.List;
-import java.util.Iterator;
-import com.idega.util.IWTimestamp;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.presentation.ui.DropdownMenu;
+
+import com.idega.block.banner.data.AdEntity;
+import com.idega.block.banner.data.BannerEntity;
+import com.idega.core.data.ICFile;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

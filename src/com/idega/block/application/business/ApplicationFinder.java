@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.20 2002/08/12 12:59:31 palli Exp $
+ * $Id: ApplicationFinder.java,v 1.21 2003/04/03 07:05:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,17 @@
  */
 package com.idega.block.application.business;
 
-import com.idega.data.IDOFinderException;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.ApplicationSubjectInfo;
-import com.idega.block.application.business.ApplicationHolder;
-import java.sql.SQLException;
-import java.util.List;
 import com.idega.data.EntityFinder;
-import java.util.Hashtable;
-import java.util.Vector;
-import com.idega.util.IWTimestamp;
+import com.idega.data.IDOFinderException;
 
 /**
  *

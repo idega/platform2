@@ -1,19 +1,25 @@
 package com.idega.block.book.presentation;
 
-import com.idega.data.IDOException;
-import com.idega.presentation.text.Text;
-import javax.ejb.FinderException;
-import com.idega.presentation.ui.*;
-import com.idega.block.media.presentation.ImageInserter;
 import java.rmi.RemoteException;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.book.business.BookBusiness;
 import com.idega.block.book.data.Book;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.media.presentation.ImageInserter;
+import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.book.business.BookBusiness;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 public class BookEditor extends IWAdminWindow{
 

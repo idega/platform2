@@ -6,16 +6,10 @@ package com.idega.block.boxoffice.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.*;
-
-import com.idega.block.boxoffice.data.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import com.idega.block.text.data.LocalizedText;
-
-import com.idega.core.user.data.User;
-
 import com.idega.core.data.ICFile;
 
 

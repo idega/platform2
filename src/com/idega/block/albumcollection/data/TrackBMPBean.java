@@ -1,6 +1,5 @@
 package com.idega.block.albumcollection.data;
 
-import com.idega.data.*;
 import java.sql.SQLException;
 
 

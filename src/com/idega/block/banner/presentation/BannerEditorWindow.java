@@ -1,24 +1,31 @@
 package com.idega.block.banner.presentation;
 
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.core.data.ICFile;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.media.presentation.ImageInserter;
+import java.io.IOException;
+import java.sql.SQLException;
+
 import com.idega.block.IWBlock;
-import com.idega.block.banner.data.*;
-import com.idega.block.banner.business.*;
-import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.banner.business.BannerBusiness;
+import com.idega.block.banner.business.BannerFinder;
+import com.idega.block.banner.data.AdEntity;
+import com.idega.block.banner.data.BannerEntity;
 import com.idega.block.login.business.LoginBusiness;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.block.media.presentation.ImageInserter;
+import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 
 public class BannerEditorWindow extends IWAdminWindow{
 

@@ -6,13 +6,10 @@ package com.idega.block.banner.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import com.idega.core.data.ICFile;
-
-import com.idega.core.user.data.User;
 
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantHome.java,v 1.2 2002/04/06 18:52:26 tryggvil Exp $
+ * $Id: ApplicantHome.java,v 1.3 2003/04/03 07:05:44 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,11 @@
  */
 package com.idega.block.application.business;
 
+import java.util.List;
+
 import com.idega.block.application.data.Applicant;
-//import com.idega.block.application.data.ApplicantBean;
-import com.idega.block.application.data.Application;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
