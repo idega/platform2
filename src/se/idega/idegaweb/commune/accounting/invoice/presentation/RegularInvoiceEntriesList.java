@@ -830,7 +830,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	 */
 	private Table addNoEmptyField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
-		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: " + key));
+		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + key);
 		return addWidget(table, key, input, col, row);
 	}
 	
