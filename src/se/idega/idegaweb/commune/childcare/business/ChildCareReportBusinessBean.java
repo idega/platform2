@@ -101,6 +101,10 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 		placementDate.setLocalizedName(getLocalizedString(FIELD_PLACEMENT_DATE, "Placement date"), currentLocale);
 		reportCollection.addField(placementDate);
 
+		ReportableField removedDate = new ReportableField(FIELD_REMOVED_DATE, String.class);
+		removedDate.setLocalizedName(getLocalizedString(FIELD_REMOVED_DATE, "Removed date"), currentLocale);
+		reportCollection.addField(removedDate);
+
 		try {
 			Collection children = getChildCareBusiness().findSentInAndRejectedApplicationsByArea(areaID, numberOfMonths.intValue(), numberOfWeeks.intValue(), firstHandOnly.booleanValue(), getChildCareBusiness().getChildCareCaseCode());
 			if (children != null) {
@@ -174,12 +178,14 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 									provider = rejectedApplication.getProvider();
 									queue = new IWTimestamp(rejectedApplication.getQueueDate());
 									placement = new IWTimestamp(rejectedApplication.getFromDate());
+									IWTimestamp rejectedDate = new IWTimestamp(rejectedApplication.getRejectionDate());
 	
 									data = new ReportableData();
 									data.addData(providers, provider.getSchoolName());
 									data.addData(status, getChildCareBusiness().getStatusString(rejectedApplication.getApplicationStatus()));
 									data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
 									data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+									data.addData(removedDate, rejectedDate.getLocaleDate(currentLocale, IWTimestamp.SHORT));
 									reportCollection.add(data);
 								}
 							}
@@ -188,6 +194,135 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 							//Nothing found...
 						}
 					}
+				}
+			}
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+
+		return reportCollection;
+	}
+	
+	public ReportableCollection getRemovedReport(String fromDateOfBirth, String toDateOfBirth, Integer providerID, String fromDate, String toDate) {
+		initializeBundlesIfNeeded();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		List childrenList = new ArrayList();
+		
+		ReportableCollection reportCollection = new ReportableCollection();
+
+		ReportableField personalID = new ReportableField(FIELD_PERSONAL_ID, String.class);
+		personalID.setLocalizedName(getLocalizedString(FIELD_PERSONAL_ID, "Personal ID"), currentLocale);
+		reportCollection.addField(personalID);
+
+		ReportableField name = new ReportableField(FIELD_NAME, String.class);
+		name.setLocalizedName(getLocalizedString(FIELD_NAME, "Name"), currentLocale);
+		reportCollection.addField(name);
+
+		ReportableField address = new ReportableField(FIELD_ADDRESS, String.class);
+		address.setLocalizedName(getLocalizedString(FIELD_ADDRESS, "Address"), currentLocale);
+		reportCollection.addField(address);
+
+		ReportableField zipCode = new ReportableField(FIELD_ZIP_CODE, String.class);
+		zipCode.setLocalizedName(getLocalizedString(FIELD_ZIP_CODE, "Zip code"), currentLocale);
+		reportCollection.addField(zipCode);
+
+		ReportableField area = new ReportableField(FIELD_AREA, String.class);
+		area.setLocalizedName(getLocalizedString(FIELD_AREA, "Area"), currentLocale);
+		reportCollection.addField(area);
+
+		ReportableField email = new ReportableField(FIELD_EMAIL, String.class);
+		email.setLocalizedName(getLocalizedString(FIELD_EMAIL, "E-mail"), currentLocale);
+		reportCollection.addField(email);
+
+		ReportableField phone = new ReportableField(FIELD_PHONE, String.class);
+		phone.setLocalizedName(getLocalizedString(FIELD_PHONE, "Phone"), currentLocale);
+		reportCollection.addField(phone);
+
+		ReportableField providers = new ReportableField(FIELD_PROVIDER, String.class);
+		providers.setLocalizedName(getLocalizedString(FIELD_PROVIDER, "Provider"), currentLocale);
+		reportCollection.addField(providers);
+
+		ReportableField status = new ReportableField(FIELD_STATUS, String.class);
+		status.setLocalizedName(getLocalizedString(FIELD_STATUS, "Status"), currentLocale);
+		reportCollection.addField(status);
+
+		ReportableField queueDate = new ReportableField(FIELD_QUEUE_DATE, String.class);
+		queueDate.setLocalizedName(getLocalizedString(FIELD_QUEUE_DATE, "Queue Date"), currentLocale);
+		reportCollection.addField(queueDate);
+
+		ReportableField placementDate = new ReportableField(FIELD_PLACEMENT_DATE, String.class);
+		placementDate.setLocalizedName(getLocalizedString(FIELD_PLACEMENT_DATE, "Placement date"), currentLocale);
+		reportCollection.addField(placementDate);
+
+		ReportableField removedDate = new ReportableField(FIELD_REMOVED_DATE, String.class);
+		removedDate.setLocalizedName(getLocalizedString(FIELD_REMOVED_DATE, "Removed date"), currentLocale);
+		reportCollection.addField(removedDate);
+
+		try {
+			Collection children = getChildCareBusiness().getRejectedApplicationsByProvider(providerID, fromDateOfBirth, toDateOfBirth, fromDate, toDate);
+			if (children != null) {
+				Iterator iter = children.iterator();
+				while (iter.hasNext()) {
+					ChildCareApplication application = (ChildCareApplication) iter.next();
+					if (getChildCareBusiness().wasRejectedByParent(application)) {
+						continue;
+					}
+					School provider = application.getProvider();
+					IWTimestamp queue = new IWTimestamp(application.getQueueDate());
+					IWTimestamp placement = new IWTimestamp(application.getFromDate());
+					IWTimestamp removed = new IWTimestamp(application.getRejectionDate());
+
+					ReportableData data = new ReportableData();
+					if (!childrenList.contains(new Integer(application.getChildId()))) {
+						User user = application.getChild();
+						Address homeAddress = getUserBusiness().getUsersMainAddress(user);
+						Phone homePhone = getUserBusiness().getChildHomePhone(user);
+						User parent = getUserBusiness().getCustodianForChild(user);
+						Email mail = null;
+						if (parent != null) {
+							mail = getUserBusiness().getEmail(parent);
+						}
+
+						data.addData(personalID, PersonalIDFormatter.format(user.getPersonalID(), currentLocale));
+						data.addData(name, user.getNameLastFirst(true));
+
+						if (homeAddress != null) {
+							data.addData(address, homeAddress.getStreetAddress());
+							PostalCode code = homeAddress.getPostalCode();
+							
+							if (code != null) {
+								data.addData(zipCode, code.getPostalCode());
+								data.addData(area, code.getName());
+							}
+						}
+						if (mail != null) {
+								data.addData(email, mail.getEmailAddress());
+						}
+						if (homePhone != null) {
+								data.addData(phone, homePhone.getNumber());
+						}
+						childrenList.add(new Integer(application.getChildId()));
+					}
+					else {
+						data.addData(personalID, "");
+						data.addData(name, "");
+						data.addData(address, "");
+						data.addData(zipCode, "");
+						data.addData(area, "");
+						data.addData(email, "");
+						data.addData(phone, "");
+					}
+					
+					data.addData(providers, provider.getSchoolName());
+					data.addData(status, getChildCareBusiness().getStatusString(application.getApplicationStatus()));
+					data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+					data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+					data.addData(removedDate, removed.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+					reportCollection.add(data);
 				}
 			}
 		}
