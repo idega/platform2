@@ -41,6 +41,10 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 
     for (int i = 0; i < productCategories.size(); i++) {
       try {
+	if ( productCatalog._spaceBetween > 0 ) {
+      table.add(spaceBetween,1,row++);
+	}
+
 	pCat = (ICCategory) productCategories.get(i);
 
 	if ( productCatalog._iconImage != null ) {
@@ -58,10 +62,6 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 
 	table.setRowVerticalAlignment(row++,Table.VERTICAL_ALIGN_TOP);
 	column = 1;
-
-	if ( productCatalog._spaceBetween > 0 ) {
-      table.add(spaceBetween,1,row++);
-	}
 
       }
       catch (Exception e) {

@@ -66,6 +66,10 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 
 	for (int j = 0; j < catProducts.size(); j++) {
 	  try {
+	    if ( productCatalog._spaceBetween > 0 ) {
+	      productTable.add(spaceBetween,1,pRow++);
+	    }
+
 	    product = (Product) catProducts.get(j);
 
 	    if ( productCatalog._iconImage != null ) {
@@ -80,10 +84,6 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 	      productTable.add(productCatalog.getProductEditorLink(product), pColumn++, pRow);
 	    }
 	    productTable.setRowVerticalAlignment(pRow++,Table.VERTICAL_ALIGN_TOP);
-
-	    if ( productCatalog._spaceBetween > 0 ) {
-	      productTable.add(spaceBetween,1,pRow++);
-	    }
 
 	    pColumn = 1;
 	  }
