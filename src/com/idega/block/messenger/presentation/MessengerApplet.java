@@ -336,13 +336,16 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   private void syncUserList(Vector userlist){
-    this.removeAll();
+   this.removeAll();
    int length = userlist.size();
 
    for (int k = 0; k < length; k++) {
-     Property user = (Property)userlist.elementAt(k);
-     addToUserList( user.getKey() , (String)user.getValue() );//new user
+    Property user = (Property)userlist.elementAt(k);
+    String id = user.getKey();
+    if( !id.equalsIgnoreCase(sessionId) ){
+         addToUserList( id , (String)user.getValue() );//new user
     }
+   }
 
     System.out.println("MessengerApplet: userListVersion : "+userListVersion);
   }
@@ -365,9 +368,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.add(faceLabel);
       item.add(new Label(name));
 
+      add(item);
       refresh();
-
-      add(item,null);
   }
 
   private void refresh(){
