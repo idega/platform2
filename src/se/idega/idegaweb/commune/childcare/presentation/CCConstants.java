@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 /**
  * enclosing_type
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: CCConstants.java,v 1.3 2003/04/07 13:45:14 roar Exp $
+ * @version $Id: CCConstants.java,v 1.4 2003/04/25 16:37:03 roar Exp $
  * @since 14.2.2003 
  */
 interface CCConstants {
@@ -46,7 +46,7 @@ interface CCConstants {
 	final static int ACTION_SUBMIT_CONFIRM = 3;
 	final static int ACTION_SUBMIT_2 = 4;	
 	final static int ACTION_CANCEL_2 = 5;	
-	final static int ACTION_SUBMIT_3 = 6;	
+//	final static int ACTION_SUBMIT_3 = 6;	
 	final static int ACTION_CANCEL_3 = 7;		
 	final static int ACTION_REQUEST_INFO = 8;
 
