@@ -100,6 +100,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
       System.out.println("chooserParameterName!=null");
       System.out.println("chooserParameterName="+chooserParameterName);
       System.out.println("iwc.getParameter(chooserParameterName)="+iwc.getParameter(chooserParameterName));
+      if(iwc.isParameterSet(chooserParameterName))
       prmUsedTextId=chooserParameterName;
     }
     else{
@@ -138,24 +139,17 @@ public class TextEditorWindow extends AbstractChooserWindow{
     String sAttribute = null;
     String sLocTextId = iwc.getParameter(prmLocalizedTextId);
     sAttribute = iwc.getParameter(prmAttribute);
+    sTextId = iwc.getParameter(prmUsedTextId);
 
-    // Text Id Request :
-    if(iwc.getParameter(prmUsedTextId) != null){
-      sTextId = iwc.getParameter(prmUsedTextId);
-    }
-    // Attribute Request :
-    else if(iwc.getParameter(prmAttribute)!=null){
-
-    }
     // Delete Request :
-    else if(iwc.getParameter(prmDelete)!=null){
+    if(iwc.getParameter(prmDelete)!=null){
       sTextId = iwc.getParameter(prmDelete);
       //add(""+iObjInsId);
       confirmDelete(sTextId,iObjInsId);
       doView = false;
     }
     // Object Instance Request :
-    else if(iwc.getParameter(prmObjInstId)!= null){
+    if(iwc.getParameter(prmObjInstId)!= null){
       iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
     }
 
@@ -163,7 +157,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
     // Form processing
     processForm(iwc,sTextId,sLocTextId, sAttribute);
-
       if(doView)
         doViewText(sTextId,sAttribute,chosenLocale,iLocaleId);
       }
@@ -374,7 +367,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     String sImageId = iwc.getParameter(prmImageId);
     String sLocaleId = iwc.getParameter(prmLocale);
     String sUseImage = iwc.getParameter(prmUseImage);
-
     if(sHeadline != null || sBody != null){
       int iTxTextId = sTxTextId!=null?Integer.parseInt(sTxTextId): -1;
       int iLocalizedTextId = sLocalizedTextId != null ? Integer.parseInt(sLocalizedTextId): -1;
