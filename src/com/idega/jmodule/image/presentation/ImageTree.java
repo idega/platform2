@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ImageTree extends JModuleObject{
 
-private int width=200;
+private String width="100%";
 
 public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
 
@@ -80,23 +80,24 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
     return returnTable;
 }
 
-public int getWidth(){
+public String getWidth(){
   return this.width;
 }
 
-public void setWidth(int width){
+public void setWidth(String width){
   this.width =  width;
 }
 public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
 HttpServletRequest request = modinfo.getRequest();
   Table table = new Table();
-    table.setBorder(0 );
+    table.setBorder(0);
     table.setWidth(getWidth());
     table.setCellpadding(2);
     table.setCellspacing(0);
     table.setAlignment("left");
 
-  com.idega.jmodule.object.Image more = new com.idega.jmodule.object.Image("/pics/more.gif");
+  Text more = new Text("+");
+    more.setFontColor("#FFFFFF");
   String URI = request.getRequestURI();
   String image_id = request.getParameter("image_id");
   String open_cat = request.getParameter("open_catagory_id");
@@ -106,9 +107,9 @@ HttpServletRequest request = modinfo.getRequest();
 
   Link openLink;
   Link idLink;
-  Table smallTable;
-  String color_1 = "#f29b00";
-  String color_2 = "#f0c0ff";
+  String color_0 = "/pics/jmodules/image/myndamodule/menubar/yfirfl1.gif";
+  String color_1 = "/pics/jmodules/image/myndamodule/menubar/undirfl1.gif";
+  String color_2 = "/pics/jmodules/image/myndamodule/menubar/undirfl2.gif";
   int depth = 10;
 
   Text text;
@@ -135,11 +136,16 @@ HttpServletRequest request = modinfo.getRequest();
         table.mergeCells(1,row,depth,row);
 
         text = new Text(catagory.getImageCatagoryName());
+          text.setFontColor("#FFFFFF");
 
         openLink = new Link(more,URI);
-        idLink = new Link(text,URI);
-        idLink.setFontColor("#000000");
+        openLink.setFontColor("#FFFFFF");
+        openLink.setAttribute("style","text-decoration:none");
 
+        idLink = new Link(text,URI);
+        idLink.setFontColor("#FFFFFF");
+        idLink.setBold();
+        idLink.setAttribute("style","text-decoration:none");
 
         if (!open_cat.equals(Integer.toString(id))) {
           openLink.addParameter("open_catagory_id",""+id);
@@ -149,9 +155,11 @@ HttpServletRequest request = modinfo.getRequest();
         }
         table.add(openLink,pos,row);
 
-          idLink.addParameter("catagory_id",""+id);
+          idLink.addParameter("image_catagory_id",""+id);
+        table.setHeight(row,"25");
+        table.addText(" ",pos,row);
         table.add(idLink,pos,row);
-//        table.setColor(pos,row,color_2);
+        table.setBackgroundImage(pos,row,new Image(color_0));
       }
 
       if (open_cat.equals(Integer.toString(pre_cat_id)))
@@ -162,19 +170,33 @@ HttpServletRequest request = modinfo.getRequest();
         String extrainfo = "";
         if ( ( image.getWidth()!=null)&& ( image.getHeight()!=null) ) extrainfo = " ("+image.getWidth()+"*"+image.getHeight()+")";
 
-        text = new Text(image.getName()+extrainfo);
+        text = new Text("&nbsp;"+image.getName()+extrainfo);
           text.setFontSize(1);
 
 //        openLink = new Link(more,URI);
         idLink = new Link(text,URI);
-        idLink.setFontColor("#f29b00");
+        idLink.setFontColor("#FFFFFF");
+        idLink.setAttribute("style","text-decoration:none");
         if (pre_cat_id != -1 ) {
 //          openLink.addParameter("open_catagory_id",""+pre_cat_id);
           idLink.addParameter("open_catagory_id",""+pre_cat_id);
         }
 //        openLink.addParameter("open_image_id",""+id);
         table.mergeCells(pos,row,depth,row);
-//        table.setColor(pos,row,color_1);
+        table.setHeight(row,"21");
+
+        if ( pos == 2 ) {
+          table.setBackgroundImage(pos,row,new Image(color_1));
+          table.setBackgroundImage(1,row,new Image(color_1));
+          table.addText("",1,row);
+        }
+        else {
+          table.setBackgroundImage(pos,row,new Image(color_2));
+          for ( int a = 1; a < pos; a++ ) {
+            table.setBackgroundImage(a,row,new Image(color_2));
+            table.addText("",a,row);
+          }
+        }
 
   //      table.add(openLink,pos,row);
 
@@ -267,8 +289,14 @@ private void removeApplications(ModuleInfo modinfo) throws SQLException{
     }
 
 
-public void deleteModule(ModuleInfo modinfo) throws Throwable{
-    removeApplications(modinfo);
+public void deleteModule(ModuleInfo modinfo) {
+
+    try {
+      removeApplications(modinfo);
+    }
+    catch (Exception E) {
+      E.printStackTrace();
+    }
 
 }
 
