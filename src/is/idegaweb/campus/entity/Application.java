@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.1 2001/06/15 01:31:22 palli Exp $
+ * $Id: Application.java,v 1.2 2001/06/15 10:28:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,9 @@ import java.sql.SQLException;
 public class Application extends GenericEntity {
   private static String name_ = "cam_application";
   private static String applicationId_ = "app_application_id";
+  /**
+   * @todo Bæta við fleiri fieldum hérna þegar ég bý til innsláttarform fyrir þetta
+   */
 
   public Application() {
     super();
