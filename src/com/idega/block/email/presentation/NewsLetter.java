@@ -63,6 +63,7 @@ public class NewsLetter extends CategoryBlock {
   private String _spaceBetween = "2";
   private int archivePage = -1;
   private String archiveTarget = Link.TARGET_TOP_WINDOW;
+	private boolean _showCancelImage;
 
   /**  Constructor for the NewsLetter object */
   public NewsLetter() {
@@ -212,13 +213,15 @@ public class NewsLetter extends CategoryBlock {
 				T.add(email, 1, 1);
 				T.setHeight(1, 2, _spaceBetween);
 				T.add(send, 1, 3);
-				T.add(cancel, 1, 3);
+				if (_showCancelImage)
+					T.add(cancel, 1, 3);
 			}
 			else {
 				T.add(email, 1, 1);
 				T.setWidth(2, 1, _spaceBetween);
 				T.add(send, 3, 1);
-				T.add(cancel, 3, 1);
+				if (_showCancelImage)
+					T.add(cancel, 3, 1);
 			}
 			
 			return T;
@@ -415,4 +418,12 @@ public class NewsLetter extends CategoryBlock {
   public void setArchiveTarget(String target){
   	this.archiveTarget = target;
   }
+	/**
+	 * Sets the _showCancelImage.
+	 * @param showUnsubscribe The _showCancelImage to set
+	 */
+	public void setShowUnsubscribeButton(boolean showUnsubscribe) {
+		this._showCancelImage = showUnsubscribe;
+	}
+
 }
