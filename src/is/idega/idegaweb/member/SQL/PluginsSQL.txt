@@ -27,4 +27,6 @@ insert into ic_group_type_ic_user_plugin values(1,'iwme_club')
 
 insert into ic_group_type_ic_user_plugin values(4,'iwme_club_player')
 
+insert into ic_group_type_ic_user_plugin values(1,'iwme_regional_union')
+insert into ic_group_type_ic_user_plugin values(2,'iwme_regional_union')
 

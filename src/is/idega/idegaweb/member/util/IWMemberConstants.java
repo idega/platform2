@@ -11,7 +11,8 @@ public final class IWMemberConstants {
 	
 	public static final String GROUP_RELATION_TYPE_PARENT = "GROUP_PARENT";
 	
-	public static final String META_DATA_LEAGUE_CONNECTION = "CLUBINFO_CONN";
+	public static final String META_DATA_CLUB_LEAGUE_CONNECTION = "CLUBINFO_CONN";
+	public static final String META_DATA_DIVISION_LEAGUE_CONNECTION ="CLUBDIV_CONN";
 	
 	public static final String GROUP_TYPE_FEDERATION = "iwme_federation";
 	public static final String GROUP_TYPE_FEDERATION_STAFF = "iwme_federation_staff";

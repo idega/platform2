@@ -46,8 +46,8 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			Collection childrenOfToDivisonGroup = groupBiz.getChildGroups(toDivisionGroup);
 			Collection parentsOfToDivisionGroup = groupBiz.getParentGroupsRecursive(toDivisionGroup);
 
-			Group fromLeagueGroup = groupBiz.getGroupByGroupID(Integer.parseInt(fromDivisionGroup.getMetaData(IWMemberConstants.META_DATA_LEAGUE_CONNECTION)));
-			Group toLeagueGroup = groupBiz.getGroupByGroupID(Integer.parseInt(toDivisionGroup.getMetaData(IWMemberConstants.META_DATA_LEAGUE_CONNECTION)));
+			Group fromLeagueGroup = groupBiz.getGroupByGroupID(Integer.parseInt(fromDivisionGroup.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION)));
+			Group toLeagueGroup = groupBiz.getGroupByGroupID(Integer.parseInt(toDivisionGroup.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION)));
 			Group fromRegionalUnionGroup = null;
 			Group toRegionalUnionGroup = null; 
 			
@@ -240,7 +240,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		Collection groups = null;
 		
 		try {
-			groups  = getGroupHome().findGroupsByMetaData(IWMemberConstants.META_DATA_LEAGUE_CONNECTION,league.getPrimaryKey().toString());
+			groups  = getGroupHome().findGroupsByMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION,league.getPrimaryKey().toString());
 		}
 		catch (EJBException e) {
 			e.printStackTrace();
