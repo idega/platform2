@@ -46,7 +46,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.18 2004/01/07 11:24:07 jonas Exp $
+ * @version $Id: EventList.java,v 1.19 2004/01/07 13:24:32 jonas Exp $
  * @since 17.3.2003 
  */
 
@@ -288,9 +288,12 @@ public class EventList extends CommuneBlock {
 			
 			int fileID = createPrintableMessage(msg);
 			if(fileID!=-1) {
+				System.out.println("adding link for pdf");
 				Link viewLink = new Link(localize("printdoc.view", "View"));
 				viewLink.setFile(fileID);
 				message.add(viewLink, 1, row++);
+			} else {
+				System.out.println("Could not create pdf, no link added");
 			}
 
 			layout.add(message, 1, layoutRow++);
@@ -321,9 +324,12 @@ public class EventList extends CommuneBlock {
 			String userName = _iwc.getCurrentUser().getName();
 			String fileName = "schoolLetter-" + userName + "-" + msg.getPrimaryKey();
 			ICFile file = getICFileHome().findByFileName(fileName);
+			System.out.println("pdf filename is " + fileName);
 			if(file==null) {
+				System.out.println("creating new pdf");
 				return docBiz.writePDF(msg, _iwc.getCurrentUser(), fileName, _iwc.getLocale(), false);
 			} else {
+				System.out.println("Using existing pdf");
 				return Integer.parseInt(file.getPrimaryKey().toString());
 			}
 		} catch (Exception e) {
