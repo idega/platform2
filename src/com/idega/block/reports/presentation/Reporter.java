@@ -236,8 +236,8 @@ public class Reporter extends ReportPresentation{
       T.setColumnAlignment(1,"right");
       T.setWidth(3,"100%");
       T.add(lEdit,1,2);
-      T.add(formatText(iwrb.getLocalizedText("name","Name")),2,2);
-      T.add(formatText(iwrb.getLocalizedText("info","Info")),3,2);
+      T.add(formatText(iwrb.getLocalizedString("name","Name")),2,2);
+      T.add(formatText(iwrb.getLocalizedString("info","Info")),3,2);
       String prm = prefix+"chk";
       if(bEdit){
         T.setWidth(4,"40");
