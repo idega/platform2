@@ -8,28 +8,30 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 /**
- * A presentation object for dynamic reports to genders. Both,male or female. both is default.
+ * A presentation object for dynamic reports. Select an age (1-123).
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
+public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 
-	private static final String MALE = "m"; //same as in workreportmember
-	private static final String FEMALE = "f"; //same as in workreportmember
-	private static final String BOTH = "b";
+	private static final int youngest = 1;
 
+	private static final int oldest = 123;
+	
 	private WorkReportBusiness workBiz = null;
 
-	public GenderDropDownMenu() {
+	public AgeDropDownMenu() {
 		super();
 	}
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		this.addMenuElement(MALE, iwrb.getLocalizedString("GenderDropdownmenu.male", "Male"));
-		this.addMenuElement(FEMALE, iwrb.getLocalizedString("GenderDropdownmenu.female", "Female"));
-		this.addMenuElement(BOTH, iwrb.getLocalizedString("GenderDropdownmenu.both", "Both"));
-		this.setSelectedElement(BOTH);
+		addMenuElement(" "," ");
+		for (int i = youngest; i <= oldest; i++) {
+			addMenuElement(i, Integer.toString(i));
+		}
+		
+		setSelectedElement(" ");
 	}
 	/*
 	 * (non-Javadoc)
@@ -52,12 +54,12 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 	 */
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
 		if (values != null && values.length > 0) {
-			String gender = values[0];
-			if (BOTH.equals(gender)) {
+			String age = values[0];
+			if (" ".equals(age)) {
 				return null;
 			}
 			else
-				return gender;
+				return new Integer(age);
 		}
 		else
 			return null;
@@ -71,22 +73,10 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 	public String getDisplayNameOfValue(Object value, IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		if (value != null) {
-			
-			String displayName = "";
-			if (BOTH.equals(value)) {
-				displayName = iwrb.getLocalizedString("GenderDropdownmenu.both", "Both");
-			}
-			else if (MALE.equals(value)) {
-					displayName = iwrb.getLocalizedString("GenderDropdownmenu.male", "Male");
-			}
-			else {
-				displayName = iwrb.getLocalizedString("GenderDropdownmenu.female", "Female");
-			}
-
-			return displayName;
+			return value.toString();
 		}
 		else
-			return iwrb.getLocalizedString("GenderDropdownmenu.both", "Both");
+			return iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages");
 	}
 
 }
