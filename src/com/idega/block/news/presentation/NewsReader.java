@@ -481,7 +481,7 @@ public class NewsReader extends Block implements IWBlock{
 				}
 			}
 			//else
-				//System.err.println(" no news files");
+			//System.err.println(" no news files");
 
 			T.add(newsBody,1,3);
 
