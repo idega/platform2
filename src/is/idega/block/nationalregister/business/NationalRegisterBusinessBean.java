@@ -21,8 +21,12 @@ import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.sun.rsasign.u;
 
 public class NationalRegisterBusinessBean extends IBOServiceBean implements NationalRegisterBusiness {
+	
+	private static int icelandCountryPK = 1;
+	
 	public NationalRegister getEntryBySSN(String ssn) {
 		try {
 			Collection c = getNationalRegisterHome().findAllBySSN(ssn);
@@ -64,8 +68,23 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		String fate,
 		String parish,
 		String po,
-		String address) {
-			
+		String address,
+		// Gimmi, because of E36
+		String addressCode,
+		String dateOfModification,
+		String placementCode,
+		String dateOfCreation,
+		String lastDomesticAddress,
+		String agentSsn,
+		String sNew,
+		String addressName,
+		String dateOfDeletion,
+		String newSsnOrName,
+		String dateOfBirth	) {
+
+		
+		
+		
 			
 		try {
 			UserBusiness userBiz = (UserBusiness) getServiceInstance(UserBusiness.class);	
@@ -92,7 +111,18 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			reg.setSSN(ssn);
 			reg.setStreet(street);
 			reg.setSymbol(symbol);
-
+			reg.setAddressCode(addressCode);
+			reg.setDateOfModification(dateOfModification);
+			reg.setPlacementCode(placementCode);
+			reg.setDateOfCreation(dateOfCreation);
+			reg.setLastDomesticAddress(lastDomesticAddress);
+			reg.setAgentSSN(agentSsn);
+			reg.setIsNew(sNew);
+			reg.setAddressName(addressName);
+			reg.setDateOfDeletion(dateOfDeletion);
+			reg.setNewSsnOrName(newSsnOrName);
+			reg.setDateOfBirth(dateOfBirth);
+			
 			reg.store();
 			
 			IWTimestamp t = new IWTimestamp();
@@ -128,14 +158,26 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 
 			User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,gender,t);
 			user.setDisplayName(name);
-			user.store();
 
-			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
+			if (newSsnOrName != null && "".equalsIgnoreCase(newSsnOrName)) {
+				try {
+					Long.parseLong(newSsnOrName);
+					user.setPersonalID(newSsnOrName);
+					log("Changing user's personalID to "+newSsnOrName);
+					System.out.println("");
+				} catch (NumberFormatException n) {
+					user.setFullName(newSsnOrName);
+					log("Changing user's name to "+newSsnOrName);
+				}
+			}
+			
+			user.store();
+			
 			
 			PostalCode poCode = null;
 			if (po != null && !po.trim().equals("")) {
 				try {				
-			  	poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,((Integer)country.getPrimaryKey()).intValue());
+			  	poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,getIcelandicCountryPK());
 				}
 				catch(FinderException e) {
 					poCode = null;
@@ -163,6 +205,14 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		}
 
 		return true;
+	}
+	
+	private int getIcelandicCountryPK() throws RemoteException, FinderException {
+		if (icelandCountryPK < 1) {
+			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
+			icelandCountryPK = ((Integer) country.getPrimaryKey()).intValue();
+		}
+		return icelandCountryPK;
 	}
 
 	protected NationalRegisterHome getNationalRegisterHome() {

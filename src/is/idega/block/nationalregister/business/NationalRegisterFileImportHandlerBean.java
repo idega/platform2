@@ -46,36 +46,37 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private MultivaluedHashMap _familyRelations;
 	private MultivaluedHashMap _spouseRelations;
 
-	private static int COLUMN_SYMBOL = 0;
-	private static int COLUMN_OLD_ID = 1;
-	private static int COLUMN_SSN = 2;
-	private static int COLUMN_FAMILY_ID = 3;
-	private static int COLUMN_NAME = 4;
-	private static int COLUMN_COMMUNE = 5;
-	private static int COLUMN_STREET = 6;
-	private static int COLUMN_BUILDING = 7;
-	private static int COLUMN_FLOOR = 8;
-	private static int COLUMN_SEX = 9;
-	private static int COLUMN_MARITIAL_STATUS = 10;
-	private static int COLUMN_EMPTY = 11;
-	private static int COLUMN_NO_MAIL = 12;
-	private static int COLUMN_NATIONALITY = 13;
-	private static int COLUMN_PLACE_OF_BIRTH = 14;
-	private static int COLUMN_SPOUSE_SSN = 15;
-	private static int COLUMN_STATUS = 16;
-	private static int COLUMN_PARISH = 17;
-	private static int COLUMN_PO = 18;
-	private static int COLUMN_ADDRESS = 19;
-
-	
-	
-	public static void main(String[] args) throws RemoteException {
-		NationalRegisterFileImportHandlerBean bean = new NationalRegisterFileImportHandlerBean();
-		ImportFile file = new GenericImportFile(new File("/User/gimmi/Desktop/thjodskra.txt"));
-		bean.setImportFile(file);
-		boolean tmp = bean.handleRecords();
-		System.out.println("Worked = "+tmp);
-	}
+	public final static int COLUMN_SYMBOL = 0;
+	public final static int COLUMN_OLD_ID = 1;
+	public final static int COLUMN_SSN = 2;
+	public final static int COLUMN_FAMILY_ID = 3;
+	public final static int COLUMN_NAME = 4;
+	public final static int COLUMN_COMMUNE = 5;
+	public final static int COLUMN_STREET = 6;
+	public final static int COLUMN_BUILDING = 7;
+	public final static int COLUMN_FLOOR = 8;
+	public final static int COLUMN_SEX = 9;
+	public final static int COLUMN_MARITIAL_STATUS = 10;
+	public final static int COLUMN_EMPTY = 11;
+	public final static int COLUMN_NO_MAIL = 12;
+	public final static int COLUMN_NATIONALITY = 13;
+	public final static int COLUMN_PLACE_OF_BIRTH = 14;
+	public final static int COLUMN_SPOUSE_SSN = 15;
+	public final static int COLUMN_STATUS = 16;
+	public final static int COLUMN_PARISH = 17;
+	public final static int COLUMN_PO = 18;
+	public final static int COLUMN_ADDRESS = 19;
+	public final static int COLUMN_ADDRESS_CODE = 20;
+	public final static int COLUMN_DATE_OF_MODIFICATION = 21;
+	public final static int COLUMN_PLACEMENT_CODE = 22;
+	public final static int COLUMN_DATE_OF_CREATION = 23;
+	public final static int COLUMN_LAST_DOMESTIC_ADDRESS = 24;
+	public final static int COLUMN_AGENT_SSN = 25;
+	public final static int COLUMN_NEW = 26;
+	public final static int COLUMN_ADDRESS_NAME = 27;
+	public final static int COLUMN_DATE_OF_DELETION = 28;
+	public final static int COLUMN_NEW_SSN_OR_NAME = 29;
+	public final static int COLUMN_DATE_OF_BIRTH = 30;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -201,29 +202,26 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			String spouseSSN;
 			User oldestPerson = null;
 			while (iter.hasNext()) {
-				try {
-					user = (User) iter.next();
-					if (user.getDateOfBirth() != null) {
-						age = new Age(user.getDateOfBirth());
-						if (age.getYears() > oldestAge) {
-							oldestAge = age.getYears();
-							oldestPerson = user;
-						}
+				user = (User) iter.next();
+				if (user.getDateOfBirth() != null) {
+					age = new Age(user.getDateOfBirth());
+					if (age.getYears() > oldestAge) {
+						oldestAge = age.getYears();
+						oldestPerson = user;
 					}
-					natReg = natRegBus.getEntryBySSN(user.getPersonalID());
-					spouseSSN = natReg.getSpouseSSN();
-					if (spouseSSN != null && !"".equals(spouseSSN)) {
-						parents.add(user);
+				}
+				natReg = natRegBus.getEntryBySSN(user.getPersonalID());
+				spouseSSN = natReg.getSpouseSSN();
+				if (spouseSSN != null && !"".equals(spouseSSN)) {
+					parents.add(user);
+					/*try {
 						parents.add(uHome.findByPersonalID(spouseSSN));
-						oldestAge = 0;
-						oldestPerson = null;
-						break;
-					}
-				} catch (FinderException e) {
-					e.printStackTrace();
+					} catch (FinderException e) {
+						e.printStackTrace();
+					}*/
 				}
 			}
-			if (oldestPerson != null) {
+			if (parents.isEmpty() && oldestPerson != null) {
 				parents.add(oldestPerson);
 			}
 			
@@ -303,7 +301,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		String po = getProperty(COLUMN_PO);
 		String address = getProperty(COLUMN_ADDRESS);
 
-//		System.out.println("ssn = " + ssn);
+		String addressCode = getProperty(COLUMN_ADDRESS_CODE);
+		String dateOfModification = getProperty(COLUMN_DATE_OF_MODIFICATION);
+		String placementCode = getProperty(COLUMN_PLACEMENT_CODE);
+		String dateOfCreation = getProperty(COLUMN_DATE_OF_CREATION);
+		String lastDomesticAddress = getProperty(COLUMN_LAST_DOMESTIC_ADDRESS);
+		String agentSsn = getProperty(COLUMN_AGENT_SSN);
+		String sNew = getProperty(COLUMN_NEW);
+		String addressName = getProperty(COLUMN_ADDRESS_NAME);
+		String dateOfDeletion = getProperty(COLUMN_DATE_OF_DELETION);
+		String newSsnOrName = getProperty(COLUMN_NEW_SSN_OR_NAME);
+		String dateOfBirth = getProperty(COLUMN_DATE_OF_BIRTH);
+		
+		//		System.out.println("ssn = " + ssn);
 
 		if (ssn == null || ssn.equals(""))
 			return false;
@@ -313,7 +323,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		
 		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
 		                          floor,sex,maritialStatus,empty,prohibitMarking,
-		                          nationality,placeOfBirth,spouseSSN,fate,parish,po,address);
+		                          nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+															addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+															agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
 		if (success) {
 			_familyRelations.put(familyId, ssn);
 		}

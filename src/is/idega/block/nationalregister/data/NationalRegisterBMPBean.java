@@ -37,7 +37,18 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 	protected static final String PARISH = "parish";
 	protected static final String PO = "po";
 	protected static final String ADDRESS = "address";
-
+	
+	protected static final String ADDRESS_CODE = "address_dode";
+	protected static final String DATE_OF_MODIFICATION = "date_of_modification";
+	protected static final String PLACEMENT_CODE = "placement_code";
+	protected static final String DATE_OF_CREATION = "date_of_creation";
+	protected static final String LAST_DOMESTIC_ADDRESS = "last_domestic_address";
+	protected static final String AGENT_SSN = "agent_ssn";
+	protected static final String IS_NEW = "is_new";
+	protected static final String ADDRESS_NAME = "address_name";
+	protected static final String DATE_OF_DELETION = "date_of_deletion";
+	protected static final String NEW_SSN_OR_NAME = "new_ssn";
+	protected static final String DATE_OF_BIRTH = "date_of_birth";
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
@@ -71,6 +82,18 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 		addAttribute(PARISH, "Sokn", true, true, java.lang.String.class, 3);
 		addAttribute(PO, "Postnumer", true, true, java.lang.String.class, 3);
 		addAttribute(ADDRESS, "Heimili", true, true, java.lang.String.class, 21);
+		
+		addAttribute(ADDRESS_CODE, "Logheimiliskodi", true, true, java.lang.String.class, 12);
+		addAttribute(DATE_OF_MODIFICATION, "Dagsetning breytinga", true, true, String.class, 6);
+		addAttribute(PLACEMENT_CODE, "Adseturskodi", true, true, String.class, 12);
+		addAttribute(DATE_OF_CREATION, "Dagsetning nàskr‡ningar", true, true, String.class, 6);
+		addAttribute(LAST_DOMESTIC_ADDRESS, "Sidasta logheimili a landinu", true, true, String.class, 12);
+		addAttribute(AGENT_SSN, "Kennitala umbodsmann", true, true, String.class, 10);
+		addAttribute(IS_NEW, "Nyr a skra", true, true, String.class, 1);
+		addAttribute(ADDRESS_NAME, "Heimilisfang i nefnifalli", true, true, String.class, 21);
+		addAttribute(DATE_OF_DELETION, "Dagsetning brottfellinguar", true, true, String.class, 6);
+		addAttribute(NEW_SSN_OR_NAME, "Kennitala/Nafn ef breyting", true, true, String.class, 18);
+		addAttribute(DATE_OF_BIRTH, "Faedingardagur", true, true, String.class, 6);
 	}
 
 	public void setSymbol(String symbol) {
@@ -223,6 +246,94 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 
 	public String getAddress() {
 		return getStringColumnValue(ADDRESS);
+	}
+
+	public void setAddressCode(String code) {
+		setColumn(ADDRESS_CODE, code);
+	}
+	
+	public String getAddressCode() {
+		return getStringColumnValue(ADDRESS_CODE);
+	}
+	
+	public void setDateOfModification(String date) {
+		setColumn(DATE_OF_MODIFICATION, date);
+	}
+	
+	public String getDateOfModification() {
+		return getStringColumnValue(DATE_OF_MODIFICATION);
+	}
+	
+	public void setPlacementCode(String code) {
+		setColumn(PLACEMENT_CODE, code);
+	}
+	
+	public String getPlacementCode() {
+		return getStringColumnValue(PLACEMENT_CODE);
+	}
+	
+	public void setDateOfCreation(String date) {
+		setColumn(DATE_OF_CREATION, date);
+	}
+	
+	public String getDateOfCreation() {
+		return getStringColumnValue(DATE_OF_CREATION);
+	}
+	
+	public void setLastDomesticAddress(String address) {
+		setColumn(LAST_DOMESTIC_ADDRESS, address);
+	}
+	
+	public String getLastDomesticAddress() {
+		return getStringColumnValue(LAST_DOMESTIC_ADDRESS);
+	}
+	
+	public void setAgentSSN(String ssn) {
+		setColumn(AGENT_SSN, ssn);
+	}
+	
+	public String getAgentSSN() {
+		return getStringColumnValue(AGENT_SSN);
+	}
+	
+	public void setIsNew(String isNew) {
+		setColumn(IS_NEW, isNew);
+	}
+	
+	public String getIsNew() {
+		return getStringColumnValue(IS_NEW);
+	}
+	
+	public void setAddressName(String addressName) {
+		setColumn(ADDRESS_NAME, addressName);
+	}
+	
+	public String getAddressName() {
+		return getStringColumnValue(ADDRESS_NAME);
+	}
+
+	public void setDateOfDeletion(String date) {
+		setColumn(DATE_OF_DELETION, date);
+	}
+	
+	public String getDateOfDeletion() {
+		return getStringColumnValue(DATE_OF_DELETION);
+	}
+	
+	public void setNewSsnOrName(String ssnOrName) {
+		setColumn(NEW_SSN_OR_NAME, ssnOrName);
+	}
+	
+	public String getNewSsnOrName() {
+		return getStringColumnValue(NEW_SSN_OR_NAME);
+	}
+	
+	public void setDateOfBirth(String date) {
+		setColumn(DATE_OF_BIRTH, date);
+	}
+	
+	public String getDateOfBirth() {
+		return getStringColumnValue(DATE_OF_BIRTH);
 	}
 
 	public Collection ejbFindAll() throws FinderException, RemoteException {
