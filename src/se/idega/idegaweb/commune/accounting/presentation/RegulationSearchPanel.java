@@ -50,7 +50,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private static final String KEY_SEARCH = "search";		
 	
 	private static String PAR_PROVIDER = KEY_PROVIDER; 
-	private static final String PAR_PLACING = KEY_PLACING;	
+	public static final String PAR_PLACING = KEY_PLACING;	
 	public static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";
 
@@ -233,7 +233,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private Table getResultList(IWContext iwc, Collection results){
 		Table table = new Table(); 
 		table.setCellspacing(10);
-		int row = 1, col = 1;
+		int row = 1, col = 0;
 		
 		if (results.size() == 0){
 			table.add(getErrorText(localize("regulation_search_panel.no_regulations_found", "No regulations found")));
@@ -352,8 +352,11 @@ public class RegulationSearchPanel extends AccountingBlock {
 		
 		Collection providers = new ArrayList();		
 		try{
-			SchoolHome home = (SchoolHome) IDOLookup.getHome(School.class);				
-			providers = home.findAllByCategory(getCurrentSchoolCategory(iwc));
+			SchoolHome home = (SchoolHome) IDOLookup.getHome(School.class);	
+			SchoolCategory category = getCurrentSchoolCategory(iwc);
+			if (category != null){			
+				providers = home.findAllByCategory(category);
+			}
 		}catch(RemoteException ex){
 			ex.printStackTrace();
 		}catch(FinderException ex){ 
