@@ -39,12 +39,13 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	
 	private int sort = -1;
 	private boolean showNotYetActive = false;
+	private boolean _requiresPrognosis = true;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		if (getSession().hasPrognosis()) {
+		if (canSeePlacings()) {
 			parse(iwc);
 			
 			Table table = new Table(1,5);
@@ -84,6 +85,22 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		}
 	}
 
+	protected boolean canSeePlacings() {
+		boolean hasPrognosis = false;
+		if (_requiresPrognosis) {
+			try {
+				hasPrognosis = getSession().hasPrognosis();
+			}
+			catch (RemoteException e) {
+				hasPrognosis = false;
+			}
+		}
+		else
+			hasPrognosis = true;
+		
+		return hasPrognosis;
+	}
+	
 	protected Table getChildrenTable(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -319,5 +336,11 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 					break;
 			}
 		}
+	}
+	/**
+	 * @param requiresPrognosis The requiresPrognosis to set.
+	 */
+	public void setRequiresPrognosis(boolean requiresPrognosis) {
+		this._requiresPrognosis = requiresPrognosis;
 	}
 }

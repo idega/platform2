@@ -3,6 +3,7 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -24,12 +25,13 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareContracts extends ChildCareBlock {
 
 	private boolean allowAlter = true;
+	private boolean _requiresPrognosis;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		if (getSession().hasPrognosis() || isCommuneAdministrator(iwc)) {
+		if (canSeeContracts(iwc)) {
 			Table table = new Table();
 			table.setWidth(getWidth());
 			table.setCellpadding(getCellpadding());
@@ -200,11 +202,31 @@ public class ChildCareContracts extends ChildCareBlock {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
 		}
 	}
+	
+	protected boolean canSeeContracts(IWContext iwc) {
+		boolean hasPrognosis = false;
+		if (_requiresPrognosis) {
+			try {
+				hasPrognosis = getSession().hasPrognosis();
+			}
+			catch (RemoteException e) {
+				hasPrognosis = false;
+			}
+		}
+		else
+			hasPrognosis = true;
+		return hasPrognosis || isCommuneAdministrator(iwc);
+	}
+	
 	/**
 	 * @param b
 	 */
 	public void setAllowAlter(boolean b) {
 		allowAlter = b;
+	}
+	
+	public void setRequiresPrognosis(boolean requiresPrognosis) {
+		_requiresPrognosis = requiresPrognosis;
 	}
 
 }

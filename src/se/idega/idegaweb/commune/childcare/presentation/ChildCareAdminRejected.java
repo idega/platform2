@@ -24,18 +24,35 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareAdminRejected extends ChildCareBlock {
 
 	private static final String PARAMETER_APPLICATION_ID = "ccr_application_id";
+	private boolean _requiresPrognosis = true;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		if (getSession().hasPrognosis()) {
+		if (canSeeRejected()) {
 			performAction(iwc);
 			add(getApplicationTable(iwc));
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
 		}
+	}
+	
+	protected boolean canSeeRejected() {
+		boolean hasPrognosis = false;
+		if (_requiresPrognosis) {
+			try {
+				hasPrognosis = getSession().hasPrognosis();
+			}
+			catch (RemoteException e) {
+				hasPrognosis = false;
+			}
+		}
+		else
+			hasPrognosis = true;
+		
+		return hasPrognosis;
 	}
 	
 	private Form getApplicationTable(IWContext iwc) throws RemoteException {
@@ -114,5 +131,12 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			int applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
 			getBusiness().reactivateApplication(applicationID, iwc.getCurrentUser());
 		}
+	}
+	
+	/**
+	 * @param requiresPrognosis The requiresPrognosis to set.
+	 */
+	public void setRequiresPrognosis(boolean requiresPrognosis) {
+		this._requiresPrognosis = requiresPrognosis;
 	}
 }
