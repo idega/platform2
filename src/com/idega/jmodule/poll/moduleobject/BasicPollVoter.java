@@ -11,6 +11,9 @@ import javax.servlet.http.*;
 import com.idega.jmodule.poll.data.*;
 import java.sql.SQLException;
 import java.util.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 
 public class BasicPollVoter extends JModuleObject{
         private String attributeName = "idega_id";
@@ -22,6 +25,7 @@ public class BasicPollVoter extends JModuleObject{
 
         private Image separatorImage = null;
         private Image otherPollsImage = null;
+        private String otherPollsImageUrl = null;
 
         private int number_of_shown_polls = 7;
 
@@ -48,6 +52,12 @@ private String adminButtonURL = null;
 private int headerSize = 21;
 private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 private String styleAttribute = "";
+
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
+
+
 
 private String header_color = "#FFFFFF";
 private String header_text_color = "000000";
@@ -99,6 +109,10 @@ private String color_2 = null;
 		this.isAdmin=isAdmin;
 	}
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
 
         public void setConnectionAttributes(String attributeName, int attributeId) {
             this.attributeName = attributeName;
@@ -118,6 +132,9 @@ private String color_2 = null;
                 this.otherPollsImage = otherPollsImage;
         }
 
+        public void setOtherPollsImage(String otherPollsImageUrl) {
+          this.otherPollsImageUrl = otherPollsImageUrl;
+        }
 
         public void showVotes(boolean show) {
                 this.showVotes = show;
@@ -250,6 +267,8 @@ private String color_2 = null;
 	}
 
 	public void main(ModuleInfo modinfo)throws Exception{
+          iwrb = getResourceBundle(modinfo);
+          iwb = getBundle(modinfo);
 
           this.isAdmin=isAdministrator(modinfo);
 
@@ -639,9 +658,14 @@ private String color_2 = null;
 
                                 if (showPollCollection) {
                                     Text otherText = null;
+
                                       if (this.otherPollsImage == null) {
+                                       if(this.otherPollsImageUrl == null){
                                           otherText = new Text("Fyrri kannanir");
                                               otherText.setFontSize(1);
+                                       }else{
+                                         otherPollsImage = iwrb.getImage(otherPollsImageUrl);
+                                       }
                                       }
 
                                       Window collectionWindow = new Window("Fyrri kannanir",280,windowHeightForCollection,this.resultPageUrl);
@@ -694,7 +718,7 @@ private String color_2 = null;
                                     table.add(theLink,2,3);
                                     */
 
-                                    table.add(new SubmitButton(new Image(submitButtonURL,""),"Kjósa"),2,3);
+                                    table.add(new SubmitButton(iwrb.getImage(submitButtonURL),"Kjósa"),2,3);
 				}
 				else {
 					table.add(new SubmitButton(submitButtonText),2,3);
@@ -713,7 +737,7 @@ private String color_2 = null;
 		if (isAdmin) {
 			Form adForm = new Form(new Window("Poll_Admin",600,400,pollAdminUrl));
 				if ( adminButtonURL != null ) {
-                                  adForm.add(new SubmitButton(new Image(adminButtonURL,"Pollstjóri")));
+                                  adForm.add(new SubmitButton(iwrb.getImage(adminButtonURL)));
 				}
                                 else {
                                   adForm.add(new SubmitButton("ja","Pollstjóri"));

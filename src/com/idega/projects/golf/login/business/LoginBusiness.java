@@ -32,6 +32,7 @@ public class LoginBusiness implements IWEventListener{
   public static String UserAttributeParameter="member_login";
   public static String UserAccessAttributeParameter="member_access";
   public static String LoginStateParameter="login_state";
+  public static String newLoginStateParameter="new_login_state";
 
   public LoginBusiness() {
   }
@@ -65,38 +66,50 @@ public class LoginBusiness implements IWEventListener{
             internalSetState(modinfo,"loggedoff");
           }
         }
-      }
-      else{
+      } else {
         String controlParameter = modinfo.getParameter(LoginBusiness.LoginStateParameter);
 
         if (controlParameter != null) {
           if(controlParameter.equals("login")){
-
-            boolean canLogin = false;
-            if ((modinfo.getParameter("login") != null) && (modinfo.getParameter("password") != null)) {
-              canLogin = verifyPassword(modinfo, modinfo.getParameter("login"),modinfo.getParameter("password"));
-              if (canLogin) {
-                isLoggedOn(modinfo);
-                internalSetState(modinfo,"loggedon");
+            if (modinfo.getParameter(newLoginStateParameter)!= null || modinfo.getParameter(newLoginStateParameter+ ".x")!= null ){
+              String temp = modinfo.getRequest().getParameter("login");
+              System.err.println("newLogin = " + temp);
+              if(temp != null){
+                if(temp.length() == 10){
+                  registerLogin(modinfo,modinfo.getRequest().getParameter("login"));
+                  internalSetState(modinfo,"loggedoff");
+                }else {
+                  internalSetState(modinfo,"newlogin");
+                }
+              }else{
+                internalSetState(modinfo,"newlogin");
               }
-              else {
-                internalSetState(modinfo,"loginfailed");
+            }else{
+              boolean canLogin = false;
+              if ((modinfo.getParameter("login") != null) && (modinfo.getParameter("password") != null)) {
+                canLogin = verifyPassword(modinfo, modinfo.getParameter("login"),modinfo.getParameter("password"));
+                if (canLogin) {
+                  isLoggedOn(modinfo);
+                  internalSetState(modinfo,"loggedon");
+                } else {
+                  internalSetState(modinfo,"loginfailed");
+                }
               }
             }
-          }
-          else if(controlParameter.equals("tryagain")){
+          }else if(controlParameter.equals("tryagain")){
             internalSetState(modinfo,"loggedoff");
           }
         }
       }
-
     }
     catch(Exception ex){
         ex.printStackTrace(System.err);
         //throw (IdegaWebException)ex.fillInStackTrace();
     }
 
-  }
+  } private void registerLogin(ModuleInfo modinfo, String kennitala) throws IOException {
+            modinfo.getResponse().sendRedirect("/createlogin.jsp?kt="+kennitala);
+    }
 
   public boolean isAdmin(ModuleInfo modinfo)throws SQLException{
     return com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);

@@ -839,7 +839,7 @@ public static String controlParameter;
 
 
 			nidri.add(new SubmitButton(new com.idega.jmodule.object.Image(loginImageUrl),"tengja"),1,1);
-			nidri.add(new SubmitButton(new com.idega.jmodule.object.Image(newUserImageUrl),"nyskraning"),3,1);
+			nidri.add(new SubmitButton(new com.idega.jmodule.object.Image(newUserImageUrl),LoginBusiness.newLoginStateParameter),3,1);
                         nidri.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
 
 
@@ -863,15 +863,22 @@ public static String controlParameter;
                 else if(state.equals("loggedoff")){
                   startState();
                 }
-                else if(state.equals("loginfailed")){
+                else if(state.equals("newlogin")){
                   String temp = modinfo.getRequest().getParameter("login");
-                  if (temp != null && temp.length() != 10 ) {
-                    loginFailed("toBig");
+                  if(temp != null){
+                    if(temp.length() == 10){
+                      registerLogin(modinfo,modinfo.getRequest().getParameter("login"));
+                    }else if (temp.length() == 11) {
+                      loginFailed("toBig");
+                    }else if( temp.equals("") || temp.equals(" ") ){
+                      loginFailed("empty");
+                    }
                   }else{
-                    loginFailed("empty");
+                    loginFailed("");
                   }
-                }
-                else{
+                }else if(state.equals("loginfailed")){
+                  loginFailed("");
+                }else{
                   startState();
                 }
 
@@ -1137,6 +1144,7 @@ private void isLoggedOn(ModuleInfo modinfo){
 
 
 	}
+
 	private void loginFailed(String what) {
         String color = "";
         String loginWidth = "148";
@@ -1275,9 +1283,6 @@ private void isLoggedOn(ModuleInfo modinfo){
         }
 
 
-	private void nyskraning(ModuleInfo modinfo, String kennitala) throws IOException {
-		modinfo.getResponse().sendRedirect("/test/nyskraning.jsp?kt="+kennitala);
 
-	}
 
 }

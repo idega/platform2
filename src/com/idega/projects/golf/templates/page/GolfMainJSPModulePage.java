@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.7 2001/05/24 03:11:31 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.8 2001/05/24 03:52:50 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -373,7 +373,7 @@ public class GolfMainJSPModulePage extends MainPage {
         poll.setHeadlineLeft();
         poll.setAdminButtonURL("/pollmanager.gif");
         poll.setSubmitButtonURL("/vote.gif");
-        poll.setOtherPollsImage(iwrb.getImage("buttons/formerresults.gif"));
+        poll.setOtherPollsImage("/vote_history.gif");
 
         HeaderTable pollTable = new HeaderTable();
             pollTable.setBorderColor("#8ab490");
