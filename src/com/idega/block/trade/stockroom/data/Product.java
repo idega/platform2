@@ -51,4 +51,6 @@ public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDa
  public void setProductTeaser(int p0,java.lang.String p1) throws java.rmi.RemoteException;
  public void setSupplierId(int p0) throws java.rmi.RemoteException;
  public void setSupplierId(java.lang.Integer p0) throws java.rmi.RemoteException;
+ public void setRefundable(boolean refundable);
+ public boolean getRefundable();
 }

@@ -48,6 +48,8 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
   public final static int DISCOUNT_TYPE_ID_PERCENT = 1;
 
   private final int FILTER_NOT_CONNECTED_TO_CATEGORY = 0;
+  private static final String COLUMN_REFUNDABLE = "refundable";
+  
   /**
    *  Constructor for the Product object
    */
@@ -77,6 +79,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     this.addAttribute( getColumnNameNumber(), "númer", true, true, String.class );
     this.addAttribute( getColumnNameCreationDate(), "creation date", true, true, Timestamp.class );
     this.addAttribute( getColumnNameModificationDate(), "edit date", true, true, Timestamp.class );
+    addAttribute( COLUMN_REFUNDABLE, "refundable", true, true, Boolean.class);
 
     this.addManyToManyRelationShip( ProductCategory.class, "SR_PRODUCT_PRODUCT_CATEGORY" );
     this.setNullable( getColumnNameFileId(), true );
@@ -111,6 +114,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     this.setDiscountTypeId( DISCOUNT_TYPE_ID_PERCENT );
     this.setCreationDate( IWTimestamp.getTimestampRightNow() );
     this.setModificationDate( IWTimestamp.getTimestampRightNow() );
+    this.setRefundable(true);
   }
 
   /**
@@ -832,4 +836,13 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 		this.removeFrom(MetaData.class);
 		super.delete();
 	}
+	
+	public void setRefundable(boolean refundable) {
+		setColumn(COLUMN_REFUNDABLE, refundable);
+	}
+	
+	public boolean getRefundable() {
+		return getBooleanColumnValue(COLUMN_REFUNDABLE, true);
+	}
+	
 }
