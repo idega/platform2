@@ -64,7 +64,7 @@ public class GroupInfo extends Block {
 		table.add(name, 3, row++);
 		
 		if(_showHomePage) {
-			String homePageURL = group.getHomePageURL();
+			String homePageURL = emptyIfNull(group.getHomePageURL());
 			if(_showEmptyFields || (homePageURL!=null && homePageURL.length()>0)) {
 				String homePageLabel = _iwrb.getLocalizedString("homepage", "Homepage: ");
 				Link link = new Link();
@@ -74,21 +74,21 @@ public class GroupInfo extends Block {
 			}
 		}
 		if(_showDescription) {
-			String description = group.getDescription();
+			String description = emptyIfNull(group.getDescription());
 			if(_showEmptyFields || (description!=null && description.length()>0)) {
 				String descriptionLabel = _iwrb.getLocalizedString("description", "Description: ");
 				addTextToTable(table, row++, descriptionLabel, description);
 			}
 		}
 		if(_showExtraInfo) {
-			String extraInfo = group.getExtraInfo();
+			String extraInfo = emptyIfNull(group.getExtraInfo());
 			if(_showEmptyFields || (extraInfo!=null && extraInfo.length()>0)) {
 				String extraInfoLabel = _iwrb.getLocalizedString("extra_info", "Info: ");
 				addTextToTable(table, row++, extraInfoLabel, extraInfo);
 			}
 		}
 		if(_showShortName) {
-			String shortName = group.getShortName();
+			String shortName = emptyIfNull(group.getShortName());
 			if(_showEmptyFields || (shortName!=null && shortName.length()>0)) {
 				String shortNameLabel = _iwrb.getLocalizedString("shor_name", "Short name: ");
 				addTextToTable(table, row++, shortNameLabel, shortName);
@@ -102,7 +102,7 @@ public class GroupInfo extends Block {
 				while(phoneIter.hasNext()) {
 					Phone phoneObj = (Phone) phoneIter.next();
 					if(phoneObj.getPhoneTypeId() == PhoneType.WORK_PHONE_ID) {
-						phone = phoneObj.getNumber();
+						phone = emptyIfNull(phoneObj.getNumber());
 						break;
 					}
 				}
@@ -128,7 +128,7 @@ public class GroupInfo extends Block {
 			try {
 				Collection addresses = group.getAddresses(null);
 				if(addresses!=null && addresses.size()>0) {
-					address = ((Address) addresses.iterator().next()).getName();
+					address = emptyIfNull(((Address) addresses.iterator().next()).getName());
 				}
 			} catch(Exception e) {
 				System.out.println("Could not get an address for group");
@@ -173,6 +173,10 @@ public class GroupInfo extends Block {
 		table.add(po, 3, row);
 	}
 	
+	private String emptyIfNull(String str) {
+		return str==null?"":str;
+	}
+	
 	/**
 	 * Gets a table containing user's emails
 	 * @param user The user
@@ -203,31 +207,31 @@ public class GroupInfo extends Block {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	
-	private void setShowHomePage(boolean value) {
+	public void setShowHomePage(boolean value) {
 		_showHomePage = value;
 	}
 	
-	private void setShowDescription(boolean value) {
+	public void setShowDescription(boolean value) {
 		_showDescription = value;
 	}
 	
-	private void setShowExtraInfo(boolean value) {
+	public void setShowExtraInfo(boolean value) {
 		_showExtraInfo = value;
 	}
 	
-	private void setShowShortName(boolean value) {
+	public void setShowShortName(boolean value) {
 		_showShortName = value;
 	}
 	
-	private void setShowPhone(boolean value) {
+	public void setShowPhone(boolean value) {
 		_showPhone = value;
 	}
 	
-	private void setShowEmails(boolean value) {
+	public void setShowEmails(boolean value) {
 		_showEmails = value;
 	}
 	
-	private void setShowAddress(boolean value) {
+	public void setShowAddress(boolean value) {
 		_showAddress = value;
 	}
 	
