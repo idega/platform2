@@ -21,6 +21,10 @@ import com.idega.util.text.TextSoap;
 public class Handicap {
 
 	private double grunn;
+	
+	public static Handicap getInstance() {
+		return new Handicap(-1);
+	}
 
 	public Handicap(double grunn) {
 		this.grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
@@ -108,7 +112,7 @@ public class Handicap {
 		return leik;
 	}
 
-	public static float getHandicapForScorecard(int tournament_id, int tee_color_id, float max_handicap) throws IOException, SQLException {
+	public float getHandicapForScorecard(int tournament_id, int tee_color_id, float max_handicap) throws IOException, SQLException {
 		try {
 			Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(tournament_id);
 			Field field = tournament.getField();
@@ -132,7 +136,7 @@ public class Handicap {
 		}
 	}
 
-	public static int calculatePoints(Scorecard sc, Vector strokes, int playHandicap) {
+	public int calculatePoints(Scorecard sc, Vector strokes, int playHandicap) {
 		int leik = playHandicap;
 		int leikpunktar = leik + 36;
 		int punktar = leikpunktar / 18;
@@ -193,7 +197,7 @@ public class Handicap {
 		return heildarpunktar;
 	}
 
-	public static int calculatePointsWithoutUpdate(Stroke[] strokes, int playHandicap) {
+	public int calculatePointsWithoutUpdate(Stroke[] strokes, int playHandicap) {
 		int leik = playHandicap;
 		int leikpunktar = leik + 36;
 		int punktar = leikpunktar / 18;
@@ -249,7 +253,7 @@ public class Handicap {
 
 	}
 
-	public static int getTotalPoints(int scorecard_id, float grunnHandicap) {
+	public int getTotalPoints(int scorecard_id, float grunnHandicap) {
 		int totalPoints = 0;
 		try {
 			Scorecard scorecard = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(scorecard_id);
@@ -268,7 +272,7 @@ public class Handicap {
 		return totalPoints;
 	}
 
-	public static int getTotalPoints(int scorecard_id, int leikHandicap) {
+	public int getTotalPoints(int scorecard_id, int leikHandicap) {
 		int totalPoints = 0;
 		try {
 			Stroke[] stroke = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
