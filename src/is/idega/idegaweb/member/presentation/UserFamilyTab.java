@@ -5,11 +5,9 @@ import is.idega.block.family.business.NoChildrenFound;
 import is.idega.block.family.business.NoCustodianFound;
 import is.idega.block.family.business.NoSiblingFound;
 import is.idega.block.family.business.NoSpouseFound;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -20,7 +18,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
-import com.idega.user.plugin.FamilyTab;
 import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.user.presentation.UserTab;
 
@@ -32,7 +29,7 @@ import com.idega.user.presentation.UserTab;
  * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Gu�mundur �g�st S�mundsson</a>
  * @version 1.0
  */
-public class UserFamilyTab extends UserTab implements FamilyTab {
+public class UserFamilyTab extends UserTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
 	private static final String TAB_NAME = "usr_fam_tab_name";

@@ -9,14 +9,11 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -32,13 +29,12 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.plugin.UserCashierWindow;
 import com.idega.user.presentation.GroupPropertyWindow;
 
 /**
  * @author palli
  */
-public class CashierWindow extends StyledIWAdminWindow implements UserCashierWindow {
+public class CashierWindow extends StyledIWAdminWindow  {
 
     public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 

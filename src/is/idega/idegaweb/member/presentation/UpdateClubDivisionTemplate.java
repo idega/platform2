@@ -8,13 +8,10 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import java.rmi.RemoteException;
-
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
+import java.rmi.RemoteException;
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -27,7 +24,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
-import com.idega.user.plugin.UserUpdateClubDivisionTemplate;
 import com.idega.user.presentation.GroupPropertyWindow;
 
 /**
@@ -36,7 +32,7 @@ import com.idega.user.presentation.GroupPropertyWindow;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class UpdateClubDivisionTemplate extends IWAdminWindow implements UserUpdateClubDivisionTemplate{
+public class UpdateClubDivisionTemplate extends IWAdminWindow {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
 

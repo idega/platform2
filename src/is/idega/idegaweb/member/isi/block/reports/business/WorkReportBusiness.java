@@ -1,7 +1,9 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
+import com.idega.user.business.UserGroupPlugInBusiness;
 
-public interface WorkReportBusiness extends com.idega.business.IBOService,is.idega.idegaweb.member.business.MemberUserBusiness
+
+public interface WorkReportBusiness extends com.idega.business.IBOService,is.idega.idegaweb.member.business.MemberUserBusiness, UserGroupPlugInBusiness
 {
  public boolean addWorkReportGroupToEntity(int p0,java.lang.String p1,int p2,com.idega.data.IDOEntity p3) throws java.rmi.RemoteException;
  public boolean addWorkReportGroupToEntity(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p1,com.idega.data.IDOEntity p2) throws java.rmi.RemoteException;

@@ -1,7 +1,9 @@
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
+import com.idega.user.business.UserGroupPlugInBusiness;
 
-public interface AccountingBusiness extends com.idega.business.IBOService
+
+public interface AccountingBusiness extends com.idega.business.IBOService, UserGroupPlugInBusiness
 {
  public boolean deleteAssessmentRound(java.lang.String[] p0) throws java.rmi.RemoteException;
  public boolean deleteContract(java.lang.String[] p0) throws java.rmi.RemoteException;
