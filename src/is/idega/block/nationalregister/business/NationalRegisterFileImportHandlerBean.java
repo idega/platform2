@@ -247,7 +247,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					}
 				}
 				natReg = natRegBus.getEntryBySSN(user.getPersonalID());
-				spouseSSN = natReg.getSpouseSSN();
+				spouseSSN = natReg.getSpouseSSN().trim();
 				if (spouseSSN != null && !"".equals(spouseSSN)) {
 					parents.add(user);
 					try {
