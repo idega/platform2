@@ -108,7 +108,7 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 		t.add(labelUser, 1, row);
 		t.add(Text.getNonBrakingSpace(), 1, row);
 		if (getUser() != null) {
-			t.add(getUser().getName(), 1, row);
+			t.add(getUser().getName(), 1, row++);
 			
 			Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
 			labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -207,6 +207,7 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 			t.add(iwrb.getLocalizedString(ERROR_NO_SELECTED_USER, "No user selected. Please select a user in the Select user tab.."), 1, row);
 		}
 		
+		f.add(inputTable);
 		f.add(t);
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
