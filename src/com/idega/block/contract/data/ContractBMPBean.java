@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.19 2003/07/02 10:49:12 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.20 2003/07/02 14:17:50 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,8 +22,6 @@ import java.util.Set;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
-import org.jdom.Text;
 
 import com.idega.core.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
