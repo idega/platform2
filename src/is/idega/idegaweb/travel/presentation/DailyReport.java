@@ -66,7 +66,11 @@ public class DailyReport extends TravelManager {
       if (action == null) {action = "";}
 
       if (action.equals(this.parameterUpdate)) {
-          update(modinfo);
+        update(modinfo);
+      }else if (action.equals(this.parameterYes)) {
+        this.closerLook = true;
+      }else if (action.equals(this.parameterNo)) {
+        this.closerLook = false;
       }
       displayForm(modinfo);
 
@@ -100,10 +104,12 @@ public class DailyReport extends TravelManager {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
-      String sCloserLook = modinfo.getParameter(this.parameterToggleCloser);
-      if (sCloserLook != null) {
-        if (sCloserLook.equals(this.parameterYes)) {
+      String toggler = modinfo.getParameter(this.parameterToggleCloser);
+      if (toggler != null) {
+        if (toggler.equals(this.parameterYes)) {
           this.closerLook = true;
+        }else if (toggler.equals(this.parameterNo) ) {
+          this.closerLook = false;
         }
       }
 
@@ -255,6 +261,11 @@ public class DailyReport extends TravelManager {
       Table theTable = new Table();
           theTable.setBorder(0);
           theTable.setWidth("95%");
+          if (closerLook) {
+            theTable.add(new HiddenInput(this.parameterToggleCloser , this.parameterYes));
+          }else {
+            theTable.add(new HiddenInput(this.parameterToggleCloser , this.parameterNo));
+          }
 
       Table table = new Table();
         table.setWidth("100%");
@@ -288,7 +299,7 @@ public class DailyReport extends TravelManager {
       Text additionHText = (Text) theSmallBoldText.clone();
           additionHText.setText(iwrb.getLocalizedString("travel.addition","Addition"));
 
-      Text totalHText = (Text) theSmallBoldText.clone();
+      Text totalHText = (Text) theBoldText.clone();
           totalHText.setText(iwrb.getLocalizedString("travel.total","Total"));
 
       TextInput textBoxToClone = new TextInput("attendance");
@@ -530,18 +541,27 @@ public class DailyReport extends TravelManager {
           int tRow = 1;
           int many;
 
+
           if (closerLook)
           for (int i = 0; i < prices.length; i++) {
+            try {
               ++tRow;
+              many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger())).intValue();
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+prices[i].getPriceCategory().getName());
               bookedText = (Text) smallText.clone();
-                bookedText.setText(((Integer) map.get(prices[i].getPriceCategoryIDInteger())).toString());
+                bookedText.setText(Integer.toString(many));
+              amountText = (Text) smallText.clone();
+                amountText.setText(Integer.toString(many * ((int) tsb.getPrice(service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()))));
 
               totalTable.setAlignment(2,tRow,"left");
               totalTable.add(nameText,2,tRow);
               totalTable.add(bookedText,3,tRow);
+              totalTable.add(amountText,4,tRow);
 //              totalTable.add(prices[i].getPriceCategory().getName() +" , "+ );
+            }catch (SQLException sql) {
+              sql.printStackTrace(System.err);
+            }
           }
           totalTable.setColumnAlignment(1,"left");
           totalTable.setColumnAlignment(3,"center");
@@ -566,9 +586,9 @@ public class DailyReport extends TravelManager {
 
       SubmitButton open = null;
       if (this.closerLook) {
-        open = new SubmitButton("T close extra info",this.parameterToggleCloser, this.parameterNo);
+        open = new SubmitButton("T close extra info",this.sAction, this.parameterNo);
       }else {
-        open = new SubmitButton("T extra info",this.parameterToggleCloser, this.parameterYes);
+        open = new SubmitButton("T extra info",this.sAction, this.parameterYes);
       }
 
       theTable.setAlignment(1,6,"right");
