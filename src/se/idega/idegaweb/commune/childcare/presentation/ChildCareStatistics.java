@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
+
 import com.idega.block.school.business.SchoolAreaComparator;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
@@ -19,6 +21,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author laddi
@@ -52,7 +55,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 	}
 	
 	private Table getAreaTable(IWContext iwc) throws RemoteException {
-		Table table = getTable();
+		Table table = getTable(3);
 		int row = 2;
 		int column = 1;
 		
@@ -65,6 +68,11 @@ public class ChildCareStatistics extends ChildCareBlock {
 				SchoolArea element = (SchoolArea) iter.next();
 				int areaID = ((Integer)element.getPrimaryKey()).intValue();
 				
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+
 				table.add(getSmallText(element.getSchoolAreaName()), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueByArea(areaID))), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByArea(areaID))), column++, row++);
@@ -77,35 +85,62 @@ public class ChildCareStatistics extends ChildCareBlock {
 	}
 	
 	private Table getProviderTable(IWContext iwc) throws RemoteException {
-		Table table = getTable();
+		Table table = getTable(6);
+		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 2;
 		int column = 1;
-		
+
+		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), 4, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), 5, 1);
+		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), 6, 1);
+
 		List providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare()));
 		if (providers != null && !providers.isEmpty()) {
+			School school;
+			ChildCarePrognosis prognosis;
+			int providerID = -1;
 			//Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
 			Iterator iter = providers.iterator();
 			while (iter.hasNext()) {
 				column = 1;
-				School element = (School) iter.next();
-				int providerID = ((Integer)element.getPrimaryKey()).intValue();
+				school = (School) iter.next();
+				providerID = ((Integer)school.getPrimaryKey()).intValue();
+				prognosis = getBusiness().getPrognosis(providerID);
 				
-				table.add(getSmallText(element.getSchoolName()), column++, row);
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+
+				table.add(getSmallText(school.getSchoolName()), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
-				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), column++, row++);
+				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), column++, row);
+				if (prognosis != null) {
+					table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column++, row);
+					table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column++, row);
+					table.add(getSmallText(new IWTimestamp(prognosis.getUpdatedDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
+				}
+				else {
+					table.add(getSmallText("-"), column++, row);
+					table.add(getSmallText("-"), column++, row);
+					table.add(getSmallText("-"), column++, row++);
+				}
 			}
 		}
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		return table;
 	}
 	
-	private Table getTable() {
+	private Table getTable(int columns) {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(3);
+		table.setColumns(columns);
 		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
