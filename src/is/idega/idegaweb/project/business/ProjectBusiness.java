@@ -227,6 +227,30 @@ public class ProjectBusiness {
   }
 
 
+  public void updateIPCategory(int catId, String name, String description) throws SQLException {
+    IPCategory ipc = new IPCategory(catId);
+
+    if(name != null){
+      ipc.setName(name);
+    }
+
+    if(description != null){
+      ipc.setDescription(description);
+    }
+
+    ipc.update();
+  }
+
+
+  public void deleteIPCategory(int catId) throws SQLException {
+    IPCategory cat = new IPCategory(catId);
+    cat.removeFrom(IPProject.class);
+    cat.delete();
+  }
+
+
+
+
   public int createIPProject(String name, String projectNumber, String description, Integer parentId, int[] categoryIds) throws SQLException {
     IPProject pr = new IPProject();
 

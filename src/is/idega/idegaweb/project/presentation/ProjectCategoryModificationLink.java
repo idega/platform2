@@ -116,7 +116,7 @@ public class ProjectCategoryModificationLink extends Block {
       if(iwc.getParameter("commit") != null){
 
         //Save
-
+        ProjectBusiness business = ProjectBusiness.getInstance();
         String[] names = iwc.getParameterValues(_PRM_NAME);
         String[] ids = iwc.getParameterValues(_PRM_ID);
         String[] del = iwc.getParameterValues(_PRM_DELETE);
@@ -124,11 +124,13 @@ public class ProjectCategoryModificationLink extends Block {
           System.out.println(" id\tname");
           for (int i = 0; i < names.length; i++) {
             System.out.println(" "+ids[i]+"\t"+names[i]);
+            business.updateIPCategory(Integer.parseInt(ids[i]),names[i],null);
           }
           if(del != null){
             for (int i = 0; i < del.length; i++) {
               System.out.print(del[i]);
               System.out.print(", ");
+              business.deleteIPCategory(Integer.parseInt(del[i]));
             }
 
           }
