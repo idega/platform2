@@ -83,10 +83,10 @@ public class HouseHoldViewer extends AccountingBlock {
 	
 	public HouseHoldViewer() {
 		ImplementorRepository repository = ImplementorRepository.getInstance();
-		ChildContractHistoryWindow childContractWindow = (ChildContractHistoryWindow) repository.newInstanceOrNull(ChildContractHistoryWindow.class, this.getClass());
-		if (childContractWindow != null) {
-			childContractHistoryWindowClass = childContractWindow.getClass();
-			childContractHistoryChildParameterName = childContractWindow.getParameterChildID();
+		ChildContracts childContracts = (ChildContracts) repository.newInstanceOrNull(ChildContracts.class, this.getClass());
+		if (childContracts != null) {
+			childContractHistoryWindowClass = childContracts.getWindowClass();
+			childContractHistoryChildParameterName = childContracts.getParameterChildID();
 		}
 	}
 	
