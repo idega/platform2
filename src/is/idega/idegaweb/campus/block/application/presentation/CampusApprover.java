@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.53 2004/06/11 16:56:12 aron Exp $
+ * $Id: CampusApprover.java,v 1.54 2004/06/16 01:16:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder
 import is.idega.idegaweb.campus.block.application.business.SpouseInfo;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
 import is.idega.idegaweb.campus.data.ApplicationSubjectInfo;
 import is.idega.idegaweb.campus.data.ApplicationSubjectInfoHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
@@ -41,7 +42,9 @@ import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.Status;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.ApartmentTypeHome;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -66,6 +69,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class CampusApprover extends CampusBlock {
+	private static final String APP_SUBJECT_ID = "app_subject_id";
 	private static final String PRM_PRIORITY = "priority_drop";
 	private static final String PRM_STATUS = "status_drop";
 	private static final String ACT_NEW_APPLICATION = "new_app";
@@ -75,7 +79,7 @@ public class CampusApprover extends CampusBlock {
 	private static final String PRM_CAM_APPLICATION_ID = "application_id";
 	private static final String ACT_TRASH_APPLICATION = "cam_app_trash";
 	
-	private int iSubjectId = -1,iGlobalSize = 50;
+	private int iSubjectId = -1,iGlobalSize = 50,applicationIndex = 0;
 	private String sGlobalStatus = "S", sGlobalOrder = null;
 	private ListIterator iterator = null;
 	private LinkedList linkedlist = null;
@@ -85,6 +89,7 @@ public class CampusApprover extends CampusBlock {
 	private boolean infoCheck = true;
 	boolean bEdit = false;
 	private Integer applicationID =new Integer(-1);
+	private static final String PRM_INDEX = "app_idx";
 	
 
 	/*
@@ -176,9 +181,9 @@ public class CampusApprover extends CampusBlock {
 		if (iwc.getSessionAttribute("iterator") != null) {
 			//iterator = (ListIterator) iwc.getSessionAttribute("iterator");
 		}
-		if (iwc.getParameter("app_subject_id") != null) {
+		if (iwc.getParameter(APP_SUBJECT_ID) != null) {
 			infoCheck = false;
-			this.iSubjectId = Integer.parseInt(iwc.getParameter("app_subject_id"));
+			this.iSubjectId = Integer.parseInt(iwc.getParameter(APP_SUBJECT_ID));
 			iwc.setSessionAttribute("subject_id", new Integer(iSubjectId));
 		}
 		else if (iwc.getSessionAttribute("subject_id") != null) {
@@ -211,6 +216,8 @@ public class CampusApprover extends CampusBlock {
 		}
 		if (iwc.isParameterSet("subj_info") && iwc.getParameter("subj_info").equals("true"))
 			infoCheck = true;
+		if(iwc.isParameterSet(PRM_INDEX))
+			this.applicationIndex = Integer.parseInt(iwc.getParameter(PRM_INDEX));
 		
 	}
 
@@ -263,7 +270,7 @@ public class CampusApprover extends CampusBlock {
 		
 	public PresentationObject makeApplicantTable(IWContext iwc) {
 
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		
 		T.setTitlesHorizontal(true);
@@ -288,7 +295,9 @@ public class CampusApprover extends CampusBlock {
 			//Collection L = ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId, sGlobalStatus, sGlobalOrder);
 			if("-1".equals(sGlobalOrder))
 				sGlobalOrder = null;
-			Collection L = getApplicationService(iwc).getCampusApplicationHome().findBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus,sGlobalOrder);
+			CampusApplicationHome cappHome = getApplicationService(iwc).getCampusApplicationHome();
+			int count = cappHome.getCountBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus);
+			Collection L = cappHome.findBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus,sGlobalOrder,this.iGlobalSize,-1);
 
 			if (L != null) {
 				Iterator iterator = L.iterator();
@@ -299,7 +308,7 @@ public class CampusApprover extends CampusBlock {
 					len = iGlobalSize;
 				}
 				T.addTitle(localize("applicants", "Applicants")+" "+localize("showing","showing")
-				+" "+len+" "+localize("of","of")+" "+L.size());
+				+" "+len+" "+localize("of","of")+" "+count);
 
 				boolean showcan = false;
 				if (sGlobalStatus.equals(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED)) {
@@ -339,7 +348,7 @@ public class CampusApprover extends CampusBlock {
 					T.add(getText(A.getResidencePhone() != null ? A.getResidencePhone() : ""), col++, row);
 					T.add(getText(A.getMobilePhone() != null ? A.getMobilePhone() : ""), col++, row);
 					T.add((getPDFLink(printImage, ( (Integer) A.getPrimaryKey() ).intValue())), col++, row);
-					T.add(getCampusApplicationLink(viewImage, ((Integer)campusApplication.getPrimaryKey())), col++, row);
+					T.add(getCampusApplicationLink(viewImage, ((Integer)campusApplication.getPrimaryKey()),i), col++, row);
 					T.add(getTrashLink(trashImage, ((Integer)campusApplication.getPrimaryKey())), col, row);
 					if (lastcol < col)
 						lastcol = col;
@@ -352,13 +361,14 @@ public class CampusApprover extends CampusBlock {
 				T.add(getHeader(localize("no_applications", "No applications in database")));
 			}
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (EJBException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FinderException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IDORelationshipException e) {
+			e.printStackTrace();
+		} catch (IDOException e) {
 			e.printStackTrace();
 		}
 		return T;
@@ -366,7 +376,7 @@ public class CampusApprover extends CampusBlock {
 
 	public PresentationObject makeSubjectStatisticsTable(IWContext iwc) {
 
-		DataTable DT = new DataTable();
+		DataTable DT = getDataTable();
 		DT.addTitle(localize("subject_info", "Subject Info"));
 		DT.setTitlesHorizontal(true);
 		int row = 1, col = 1;
@@ -394,7 +404,7 @@ public class CampusApprover extends CampusBlock {
 
 					info = (ApplicationSubjectInfo) iter.next();
 					Link subjLink = new Link(getText(info.getSubjectName()));
-					subjLink.addParameter("app_subject_id", info.getSubjectId());
+					subjLink.addParameter(APP_SUBJECT_ID, info.getSubjectId());
 					subjLink.addParameter("global_status", info.getStatus());
 					DT.add(subjLink, col++, row);
 					DT.add(getText(String.valueOf(info.getNumber())), col++, row);
@@ -477,11 +487,11 @@ public class CampusApprover extends CampusBlock {
 	
 				int border = 0;
 
-				Table OuterFrame = new Table(3, 1);
+				Table OuterFrame = new Table(3, 2);
 				OuterFrame.setCellpadding(2);
 				OuterFrame.setCellspacing(0);
 				OuterFrame.setBorder(border);
-				OuterFrame.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_TOP);
+				OuterFrame.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_TOP);
 				//OuterFrame.setWidth(1,"550");
 
 				Table Left = new Table(1, 3);
@@ -508,9 +518,11 @@ public class CampusApprover extends CampusBlock {
 					1,
 					3);
 
-				OuterFrame.add(Left, 1, 1);
-				OuterFrame.add(Middle, 2, 1);
-				OuterFrame.add(Right, 3, 1);
+				OuterFrame.add(Left, 1, 2);
+				OuterFrame.add(Middle, 2, 2);
+				OuterFrame.add(Right, 3, 2);
+				OuterFrame.mergeCells(1,1,3,1);
+				OuterFrame.add(getPreviousAndNextApplicationsLinks(iwc,eCampusApplication),1,1);
 
 				theForm.add(OuterFrame);
 					}
@@ -522,6 +534,77 @@ public class CampusApprover extends CampusBlock {
 			e.printStackTrace();
 		}
 		return theForm;
+	}
+	
+	public PresentationObject getPreviousAndNextApplicationsLinks(IWContext iwc,CampusApplication application){
+		Table T = new Table(4,1);
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setWidth(1,Table.HUNDRED_PERCENT);
+		try {
+			Collection L = getApplicationService(iwc).getCampusApplicationHome().findBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus,sGlobalOrder,3,this.applicationIndex-1);
+			int idx = 1;
+			boolean next = false,prevAdded = false;
+			boolean prev = false,nextAdded = false;;
+			boolean currentEntered = false;
+			for (Iterator iter = L.iterator(); iter.hasNext();) {
+				CampusApplication app = (CampusApplication) iter.next();
+				Integer ID = (Integer)app.getPrimaryKey();
+				if(!(this.applicationID.intValue() == ID.intValue())){
+					
+					switch (idx) {
+					case 1:
+						prev = true;
+						next = false;
+						break;
+					case 2: 
+						if(currentEntered){
+							prev = false;
+							next = true;
+						}
+						else{
+							prev = true;
+							next = false;
+						}
+							
+						break;
+					case 3:
+						prev = false;
+						next = true;
+						break;
+					}
+					
+					if(prev && !prevAdded){
+						Link prevLink = getCampusApplicationLink(getHeader(localize("previous_application","Previous")),ID,this.applicationIndex-1);
+						T.add(prevLink,2,1);
+						prevAdded = true;
+					}
+					else if(next && !nextAdded){
+						Link nextLink = getCampusApplicationLink(getHeader(localize("next_application","Next")),ID,this.applicationIndex+1);
+						T.add(nextLink,4,1);
+						nextAdded = true;
+					}
+					
+					
+				}
+				else{
+					currentEntered = true;
+				}
+				
+				
+				
+				idx++;
+			}
+			Link listLink = new Link(getHeader(localize("view_list","List")));
+			listLink.addParameter(APP_SUBJECT_ID,this.iSubjectId);
+			T.add(listLink,3,1);
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	
+		return T;
 	}
 
 	public PresentationObject makeApplicationForm( IWContext iwc) {
@@ -586,11 +669,11 @@ public class CampusApprover extends CampusBlock {
 
 			int border = 0;
 
-			Table OuterFrame = new Table(3, 1);
+			Table OuterFrame = new Table(3, 2);
 			OuterFrame.setCellpadding(2);
 			OuterFrame.setCellspacing(0);
 			OuterFrame.setBorder(border);
-			OuterFrame.setRowVerticalAlignment(1, "top");
+			OuterFrame.setRowVerticalAlignment(2, "top");
 			//OuterFrame.setWidth(1,"550");
 
 			Table Left = new Table(1, 3);
@@ -612,9 +695,11 @@ public class CampusApprover extends CampusBlock {
 			String pStatus = eCampusApplication != null ? eCampusApplication.getPriorityLevel() : "";
 			Right.add(getButtons(eApplication, status, pStatus, bEdit), 1, 3);
 
-			OuterFrame.add(Left, 1, 1);
-			OuterFrame.add(Middle, 2, 1);
-			OuterFrame.add(Right, 3, 1);
+			OuterFrame.add(Left, 1, 2);
+			OuterFrame.add(Middle, 2, 2);
+			OuterFrame.add(Right, 3, 2);
+			OuterFrame.mergeCells(1,1,3,1);
+			OuterFrame.add(getPreviousAndNextApplicationsLinks(iwc,eCampusApplication),1,1);
 
 			theForm.add(OuterFrame);
 		}
@@ -627,7 +712,8 @@ public class CampusApprover extends CampusBlock {
 	public PresentationObject getViewApplicant(
 		Applicant eApplicant,
 		CampusApplication eCampusApplication) {
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
+		T.setUseBottom(false);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("applicant", "Applicant"));
 		int col = 1;
@@ -686,8 +772,9 @@ public class CampusApprover extends CampusBlock {
 		Applicant eApplicant,
 		CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("applicant", "Applicant"));
 
 		int col = 1;
@@ -821,8 +908,8 @@ public class CampusApprover extends CampusBlock {
 		Applicant spouse,
 		CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("spouse", "Spouse"));
 		int col = 1;
 		int row = 1;
@@ -860,8 +947,9 @@ public class CampusApprover extends CampusBlock {
 		Applicant spouse,
 		CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("spouse", "Spouse"));
 		int col = 1;
 		int row = 1;
@@ -954,8 +1042,9 @@ public class CampusApprover extends CampusBlock {
 	public PresentationObject getViewChildren(
 		Vector children,
 		CampusApplication eCampusApplication) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("children", "Children"));
 		T.setUseTitles(false);
 		int col = 1;
@@ -975,8 +1064,9 @@ public class CampusApprover extends CampusBlock {
 	public PresentationObject getFieldsChildren(
 		Vector children,
 		CampusApplication eCampusApplication) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("children", "Children"));
 		T.setUseTitles(false);
 		int col = 1;
@@ -1030,8 +1120,9 @@ public class CampusApprover extends CampusBlock {
 		CampusApplication eCampusApplication,
 		Collection lApplied,
 		IWContext iwc) throws RemoteException,FinderException{
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("applied", "Applied"));
 		int col = 1;
 		int row = 1;
@@ -1051,8 +1142,9 @@ public class CampusApprover extends CampusBlock {
 	public PresentationObject getViewApartmentExtra(
 		CampusApplication eCampusApplication,
 		IWContext iwc) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("requests", "Requests"));
 		int col = 1;
 		int row = 1;
@@ -1075,8 +1167,8 @@ public class CampusApprover extends CampusBlock {
 		CampusApplication eCampusApplication,
 		IWContext iwc,
 		boolean editable) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("otherinfo", "Other info"));
 		int col = 1;
 		int row = 1;
@@ -1125,8 +1217,9 @@ public class CampusApprover extends CampusBlock {
 		CampusApplication eCampusApplication,
 		Collection lApplied,
 		IWContext iwc) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("applied", "Applied"));
 		int col = 1;
 		int row = 1;
@@ -1183,8 +1276,8 @@ public class CampusApprover extends CampusBlock {
 	public PresentationObject getFieldsApartmentExtra(
 		CampusApplication eCampusApplication,
 		IWContext iwc) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("requests", "Requests"));
 		int col = 1;
 		int row = 1;
@@ -1230,8 +1323,9 @@ public class CampusApprover extends CampusBlock {
 	
 
 	public PresentationObject getViewApplication(Application eApplication) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setUseBottom(false);
 		T.addTitle(localize("application", "Application"));
 
 		int row = 1;
@@ -1251,8 +1345,8 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	private PresentationObject getRemoteControl() {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("extra", "Extra"));
 		int col = 1;
 		int row = 1;
@@ -1280,8 +1374,8 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	private PresentationObject getSubjectControl( Application app) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("subject", "Subject"));
 		int col = 1;
 		int row = 1;
@@ -1294,7 +1388,7 @@ public class CampusApprover extends CampusBlock {
 		if (app != null) {
 			drp.setSelectedElement(String.valueOf(app.getSubjectId()));
 		}
-		drp.setName("app_subject_id");
+		drp.setName(APP_SUBJECT_ID);
 		T.add(drp, col, row);
 
 		return T;
@@ -1305,31 +1399,34 @@ public class CampusApprover extends CampusBlock {
 		String sStatus,
 		String sPriority,
 		boolean bEdit) {
-		DataTable T = new DataTable();
-		T.setWidth("100%");
+		DataTable T = getDataTable();
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("control", "Control"));
 		int row = 1;
 		int col = 1;
 		if (eApplication != null) {
 			DropdownMenu status = statusDrop(PRM_STATUS, sStatus);
 			//status.setToSubmit();
-			Edit.setStyle(status);
+			status = (DropdownMenu) getStyledInterface(status);
 			T.add(status, col, row);
 
 			DropdownMenu priority = priorityDrop(PRM_PRIORITY, sPriority);
-			Edit.setStyle(priority);
+			priority = (DropdownMenu) getStyledInterface(priority);
 			T.add(priority, col, row);
 		}
 		row++;
 		if (bEdit) {
-			SubmitButton view = new SubmitButton(getResourceBundle().getLocalizedImageButton("view", "View"), ACT_VIEWER, "View");
+			SubmitButton view = new SubmitButton(localize("view", "View"), ACT_VIEWER, "View");
+			view = (SubmitButton) getStyledInterface(view);
 			T.add(view, col, row);
 		}
 		else {
-			SubmitButton edit = new SubmitButton(getResourceBundle().getLocalizedImageButton("edit", "Edit"), ACT_EDITOR, "Edit");
+			SubmitButton edit = new SubmitButton(localize("edit", "Edit"), ACT_EDITOR, "Edit");
+			edit = (SubmitButton) getStyledInterface(edit);
 			T.add(edit, col, row);
 		}
-		SubmitButton save = new SubmitButton(getResourceBundle().getLocalizedImageButton(ACT_SAVE, "Save"), ACT_SAVE, "Save");
+		SubmitButton save = new SubmitButton(localize(ACT_SAVE, "Save"), ACT_SAVE, "Save");
+		save = (SubmitButton) getStyledInterface(save);
 		T.add(save, col, row);
 		return T;
 	}
@@ -1381,27 +1478,37 @@ public class CampusApprover extends CampusBlock {
 		DropdownMenu status = statusDrop("global_status", sGlobalStatus);
 		DropdownMenu order = orderDrop("global_order", sGlobalOrder);
 		DropdownMenu sizeMenu = sizeDrop("global_size",iGlobalSize);
-		SubmitButton New = new SubmitButton(getResourceBundle().getLocalizedImageButton("new", "New"), ACT_NEW_APPLICATION, "true");
-		SubmitButton Info = new SubmitButton(getResourceBundle().getLocalizedImageButton("info", "Info"), "subj_info", "true");
+		SubmitButton New = new SubmitButton(localize("btn_new", "New"), ACT_NEW_APPLICATION, "true");
+		New = (SubmitButton) getStyledInterface(New);
+		SubmitButton Info = new SubmitButton(localize("btn_info", "Info"), "subj_info", "true");
+		Info = (SubmitButton)getStyledInterface(Info);
+		SubmitButton fetch = new SubmitButton(localize("btn_fetch", "Fetch"));
+		fetch = (SubmitButton)getStyledInterface(fetch);
+		
 		//SubmitButton New = new SubmitButton("new","New");
 		//    SubmitButton New2 = new SubmitButton("new2","New transfer");
+		/*
 		drp.setToSubmit();
 		status.setToSubmit();
 		order.setToSubmit();
 		sizeMenu.setToSubmit();
-		Edit.setStyle(status);
-		Edit.setStyle(order);
-		Edit.setStyle(New);
-		Edit.setStyle(sizeMenu);
-		DataTable T = new DataTable();
+		*/
+		drp = (DropdownMenu) getStyledInterface(drp);
+		status = (DropdownMenu) getStyledInterface(status);
+		order = (DropdownMenu) getStyledInterface(order);
+		sizeMenu = (DropdownMenu) getStyledInterface(sizeMenu);
+		
+		DataTable T = getDataTable();
 		T.addTitle(localize("filter", "Filter"));
 		T.setTitlesHorizontal(true);
+		T.setUseBottom(false);
 		int col = 1;
 		int row = 1;
 		T.add(getHeader(localize("subject", "Subject")), col++, row);
 		T.add(getHeader(localize("status", "Status")), col++, row);
 		T.add(getHeader(localize("order", "Order")), col++, row);
 		T.add(getHeader(localize("viewsize", "View size")), col++, row);
+		
 		row++;
 		col = 1;
 		T.add(drp, col++, row);
@@ -1409,6 +1516,7 @@ public class CampusApprover extends CampusBlock {
 		T.add(status, col++, row);
 		T.add(order, col++, row);
 		T.add(sizeMenu, col++, row);
+		T.add(fetch,col++,row);
 		T.add(Info, col++, row);
 		if (iSubjectId > 0) {
 			T.add(New, col++, row);
@@ -1421,7 +1529,7 @@ public class CampusApprover extends CampusBlock {
 
 	private DropdownMenu subjectDrop(String selected) {
 		Collection L = listOfSubjects;
-		DropdownMenu drp = new DropdownMenu("app_subject_id");
+		DropdownMenu drp = new DropdownMenu(APP_SUBJECT_ID);
 		drp.addMenuElement(-1, localize("subject", "Subject"));
 		drp.addMenuElement(-99, localize("all_subject", "All"));
 		boolean setsel = true;
@@ -1530,10 +1638,10 @@ public class CampusApprover extends CampusBlock {
 		return drp;
 	}
 
-	public Link getCampusApplicationLink(PresentationObject MO, Integer applicationID) {
+	public Link getCampusApplicationLink(PresentationObject MO, Integer applicationID,int index) {
 		Link L = new Link(MO);
-		L.setFontSize(1);
 		L.addParameter(ACT_VIEW, applicationID.toString());
+		L.addParameter(PRM_INDEX ,index);
 		return L;
 	}
 
