@@ -11,6 +11,7 @@ import javax.ejb.FinderException;
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.Group;
@@ -22,7 +23,7 @@ import com.idega.user.data.GroupType;
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportGroup{
+public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportGroup {
 	protected final static String ENTITY_NAME = "ISI_WR_GROUP";
 	protected final static String COLUMN_NAME_GROUP_YEAR = "YEAR";
 	protected final static String COLUMN_NAME_GROUP_NAME = "NAME";
@@ -168,15 +169,15 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		return getStringColumnValue(COLUMN_NAME_EMAIL);
 	}
 	
-	public void addMember(WorkReportMember member) throws IDOAddRelationshipException{
-		this.idoAddTo(member);
+	public void addEntity(IDOEntity entity) throws IDOAddRelationshipException{
+		this.idoAddTo(entity);
 	}
 	
-  public void removeMember(WorkReportMember member) throws IDORemoveRelationshipException {
-    this.idoRemoveFrom(member);
+  public void removeEntity(IDOEntity entity) throws IDORemoveRelationshipException {
+    this.idoRemoveFrom(entity);
   }
   
-	public Integer ejbFindWorkReportGroupByGroupIdAndYear(int groupId, int year) throws FinderException{
+  public Integer ejbFindWorkReportGroupByGroupIdAndYear(int groupId, int year) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
 		sql.appendSelectAllFrom(this.getEntityName())

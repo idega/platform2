@@ -8,6 +8,8 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoardHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
@@ -40,6 +42,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
@@ -57,7 +60,7 @@ import com.idega.util.text.TextSoap;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  * @version 1.0
  */
-public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness {
+public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness  {
 
 
 
@@ -71,6 +74,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportHome workReportHome;
 	private WorkReportMemberHome workReportMemberHome;
 	private WorkReportBoardMemberHome workReportBoardMemberHome;
+  private WorkReportDivisionBoardHome workReportDivisionBoardHome;
 	
 	private static final short COLUMN_MEMBER_NAME = 0;
 	private static final short COLUMN_MEMBER_SSN = 1;
@@ -151,6 +155,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return workReportMemberHome;
 	}
+  
 	
 	public WorkReportBoardMemberHome getWorkReportBoardMemberHome(){
 		if(workReportBoardMemberHome==null){
@@ -163,6 +168,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return workReportBoardMemberHome;
 	}
+
+  public WorkReportDivisionBoardHome getWorkReportDivisionBoardHome() {
+    if(workReportDivisionBoardHome==null){
+      try{
+        workReportDivisionBoardHome = (WorkReportDivisionBoardHome) IDOLookup.getHome(WorkReportDivisionBoard.class);
+      }
+      catch(RemoteException rme){
+        throw new RuntimeException(rme.getMessage());
+      }
+    }
+    return workReportDivisionBoardHome;
+  }
+      
 	
 	
 	public WorkReportGroupHome getWorkReportGroupHome(){
@@ -391,7 +409,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
 										if(league!=null){
 											try {
-												league.addMember(member);
+												league.addEntity(member);
 											}
 											catch (IDOAddRelationshipException e5) {
 												e5.printStackTrace();
@@ -619,7 +637,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
 										if(league!=null){
 											try {
-												league.addMember(member);
+												league.addEntity(member);
 											}
 											catch (IDOAddRelationshipException e5) {
 												e5.printStackTrace();
@@ -899,7 +917,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	/**
 	 * Gets all the WorkReportBoardMembers for the supplied WorkReport id
 	 * @param workReportId
-	 * @return a collection of WorkReportMember or an empty list
+	 * @return a collection of WorkReportBoardMember or an empty list
 	 */
 	public Collection getAllWorkReportBoardMembersForWorkReportId(int workReportId){
 		try {
@@ -911,10 +929,25 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
   
   /**
-   * Changes the WorkReportGroup of the specified member, that is the member is removed from the specified current group 
+   * Gets all WorkReportDivisionBoard for the specified WorkReport id
+   * @param workReportId
+   * @return a collection of WorkReportDivisionBoard
+   */ 
+  public Collection getAllWorkReportDivisionBoardForWorkReportId(int workReportId){
+    try {
+      return getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
+    }
+    catch (FinderException e) {
+      return ListUtil.getEmptyList();
+    }
+  }
+  
+  
+  /**
+   * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
    * and added to the specified new group.
-   * If the name of the current group is null the member will only be added to the specified new group.
-   * If the name of the new group is null the member will only be removed from the specified current group.
+   * If the name of the current group is null the entity will only be added to the specified new group.
+   * If the name of the new group is null the entity will only be removed from the specified current group.
    * But if one of the groups could not be found nothing happens and false is returned.
    * If both specified names are null, nothing happens and true is returned.
    * If the complete operation was successful true is returned else false.
@@ -922,11 +955,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * @param yearOldGroup
    * @param nameNewGroup
    * @param yearNewGroup
-   * @param member
+   * @param entity
    * @return true if successful else false.
    */
   
-  public boolean changeWorkReportGroupOfMember(String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, WorkReportMember member)  {
+  public boolean changeWorkReportGroupOfEntity(String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity)  {
     WorkReportGroup oldGroup = null;
     WorkReportGroup newGroup = null;
     // try to find work groups
@@ -951,31 +984,31 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         return false;
       }
     }
-    return changeWorkReportGroupOfMember(oldGroup, newGroup, member);
+    return changeWorkReportGroupOfEntity(oldGroup, newGroup, entity);
   }
         
   /**
-   * Changes the WorkReportGroup of the specified member, that is the member is removed from the specified current group 
+   * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
    * and added to the specified new group.
-   * If the specified current group is null the member will only be added to the specified new group.
-   * If the specified new group is null the member will only be removed from the specified current group.
+   * If the specified current group is null the entity will only be added to the specified new group.
+   * If the specified new group is null the entity will only be removed from the specified current group.
    * If both specified groups are null nothing happens and true is returned.
    * If the complete operation was successful true is returned else false.
    * @param oldGroup
    * @param newGroup
-   * @param member
+   * @param entity
    * @return true if successful else false.
    */
-  public boolean changeWorkReportGroupOfMember(WorkReportGroup oldGroup, WorkReportGroup newGroup, WorkReportMember member)  {
+  public boolean changeWorkReportGroupOfEntity(WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity)  {
     TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       manager.begin();
       if (oldGroup != null) {
-        oldGroup.removeMember(member);
+        oldGroup.removeEntity(entity);
         oldGroup.store();
       }
       if (newGroup != null) {
-        newGroup.addMember(member);
+        newGroup.addEntity(entity);
         newGroup.store();
       }
       manager.commit();
@@ -994,5 +1027,4 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
   }
 	
-
 }//end of class

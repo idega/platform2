@@ -21,7 +21,7 @@ import com.idega.user.data.Group;
  * @version 1.0
  * Created on Jul 23, 2003
  */
-public class WorkReportDivisionBoardBMPBean extends GenericEntity {
+public class WorkReportDivisionBoardBMPBean extends GenericEntity implements WorkReportDivisionBoard {
 
   protected final static String ENTITY_NAME = "ISI_WR_DIV_BOARD";
   
@@ -65,6 +65,14 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity {
   public String getEntityName() {
     return ENTITY_NAME;
   }
+  
+  public String getHomePage() {
+    return getStringColumnValue(COLUMN_NAME_HOME_PAGE);
+  }
+  
+  public void setHomePage(String homePage)  {
+    setColumn(COLUMN_NAME_HOME_PAGE, homePage);
+  }
 
   public String getPersonalId() {
     return getStringColumnValue(COLUMN_NAME_PERSONAL_ID);
@@ -90,7 +98,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity {
     setColumn(COLUMN_NAME_GROUP_ID, groupId);
   }
   
-  public Collection getLeaguesForMember() throws IDOException {
+  public Collection getLeagues() throws IDOException {
     //could be optimized by only getting league workreportgroups
     return idoGetRelatedEntities(WorkReportGroup.class);
   }
@@ -150,7 +158,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity {
     return getStringColumnValue(COLUMN_NAME_EMAIL);
   }
   
-  public Collection ejbFindAllWorkReportBoardMembersByWorkReportId(int reportId) throws FinderException{
+  public Collection ejbFindAllWorkReportDivisionBoardByWorkReportId(int reportId) throws FinderException{
     return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId);
   }
   

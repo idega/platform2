@@ -7,7 +7,8 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public java.lang.String getFax();
  public java.lang.String getFirstPhone();
  public int getGroupId();
- public java.util.Collection getLeaguesForMember()throws com.idega.data.IDOException;
+ public java.lang.String getHomePage();
+ public java.util.Collection getLeagues()throws com.idega.data.IDOException;
  public java.lang.String getPersonalId();
  public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();
@@ -19,6 +20,7 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public void setFax(java.lang.String p0);
  public void setFirstPhone(java.lang.String p0);
  public void setGroupId(int p0);
+ public void setHomePage(java.lang.String p0);
  public void setPersonalId(java.lang.String p0);
  public void setPostalCode(com.idega.core.data.PostalCode p0);
  public void setPostalCodeID(int p0);
