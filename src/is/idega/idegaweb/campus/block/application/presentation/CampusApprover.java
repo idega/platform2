@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.48 2003/07/25 17:59:41 aron Exp $
+ * $Id: CampusApprover.java,v 1.49 2003/08/08 14:12:30 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -188,7 +188,7 @@ public class CampusApprover extends Block {
 			}
 			else if (infoCheck) {
 				add(subjectForm());
-				add(makeSubjectStatisticsTable());
+				add(makeSubjectStatisticsTable(iwc));
 			}
 			else {
 				add(subjectForm());
@@ -545,7 +545,7 @@ public class CampusApprover extends Block {
 		return T;
 	}
 
-	public PresentationObject makeSubjectStatisticsTable() {
+	public PresentationObject makeSubjectStatisticsTable(IWContext iwc) {
 
 		DataTable DT = new DataTable();
 		DT.addTitle(iwrb.getLocalizedString("subject_info", "Subject Info"));
@@ -564,7 +564,7 @@ public class CampusApprover extends Block {
 		row++;
 		try {
 			List infos = com.idega.data.EntityFinder.getInstance().findAll(ApplicationSubjectInfo.class);
-			DateFormat df = DateFormat.getDateTimeInstance();
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 			if (infos != null) {
 				java.util.Iterator iter = infos.iterator();
 				ApplicationSubjectInfo info;
