@@ -189,26 +189,49 @@ public class Importer extends StyledIWAdminWindow {
 		form.setMultiPart();
 		//SimpleFileChooser chooser = new SimpleFileChooser(form, IMPORT_FILE_IDS);
 
+		Table mainTable = new Table();
+		mainTable.setWidth(200);
+		mainTable.setHeight(100);
+		mainTable.setCellpadding(0);
+		mainTable.setCellspacing(0);
+
 		Table table = new Table(2,3);
-		table.setStyleClass("main");
+		table.setStyleClass(MAIN_STYLECLASS);
 		table.setCellpaddingAndCellspacing(0);
-		table.setWidth(200);
-		table.setHeight(100);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(60);
 		
 		FileInput chooser = new FileInput();
 		Help help = getHelp(HELP_TEXT_KEY);
 		SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("confirm","Confirm"));
 		confirm.setAsImageButton(true);
+		CloseButton close = new CloseButton(iwrb.getLocalizedString("close", "Close"));
+		close.setAsImageButton(true);
 		
 		table.add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"+":"),1,1);
 		table.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES),1,2);
 		table.add(new HiddenInput(PARAMETER_IMPORT_HANDLER, importHandler),1,2);
 		table.add(new HiddenInput(PARAMETER_IMPORT_FILE, importFile),1,2);
 		table.add(chooser,1,2);
-		table.add(help,1,3);
-		table.add(confirm,2,3);
 		
-		form.add(table);
+		Table bottomTable = new Table();
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(5);
+		bottomTable.setWidth(Table.HUNDRED_PERCENT);
+		bottomTable.setHeight(39);
+		bottomTable.setStyleClass(MAIN_STYLECLASS);
+		bottomTable.add(help,1,1);
+		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.add(confirm,2,1);
+		bottomTable.add(Text.getNonBrakingSpace(),2,1);
+		bottomTable.add(close,2,1);
+		
+		mainTable.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		mainTable.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		mainTable.add(table,1,1);
+		mainTable.add(bottomTable,1,3);
+		
+		form.add(mainTable);
 		add(form,iwc);
 	}
 	/**
