@@ -26,7 +26,7 @@ import com.sun.rsasign.u;
 
 public class NationalRegisterBusinessBean extends IBOServiceBean implements NationalRegisterBusiness {
 	
-	private static int icelandCountryPK = 1;
+	private static int icelandCountryPK = -1;
 	private static Gender maleGender = null;
 	private static Gender femaleGender = null;
 	private static HashMap postalCodes = null;
