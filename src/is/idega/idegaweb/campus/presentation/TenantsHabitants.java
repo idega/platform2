@@ -181,10 +181,12 @@ public class TenantsHabitants extends Block implements Campus{
 
     if(!_isAdmin && !_isPublic){
       contract = ContractFinder.findApplicant(_userID);
+      if(contract !=null){
       applicant = ContractFinder.getApplicant(contract);
       apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
       floor = BuildingCacher.getFloor(apartment.getFloorId());
       building = BuildingCacher.getBuilding(floor.getBuildingId());
+      }
     }
 
     Map collectionMap = (Map) iwc.getApplicationAttribute(APPLICATION_VARIABLE);
