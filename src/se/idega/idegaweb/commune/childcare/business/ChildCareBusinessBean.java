@@ -853,6 +853,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return true;
 		return false;
 	}
+	
+	public boolean isAfterSchoolApplication(int applicationID) {
+		try {
+			return isAfterSchoolApplication(getChildCareApplication(applicationID));
+		}
+		catch (FinderException fe) {
+			return false;
+		}
+	}
 
 	public boolean rejectApplication(ChildCareApplication application, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();

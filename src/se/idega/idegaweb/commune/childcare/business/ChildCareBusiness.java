@@ -141,6 +141,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,java.sql.Date[] p5,boolean[] p6) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,int p5,java.lang.String p6,java.lang.String p7,boolean p8) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String p2,int p3,int p4,java.lang.String p5,java.lang.String p6,boolean p7) throws java.rmi.RemoteException;
+ public boolean isAfterSchoolApplication(int p0) throws java.rmi.RemoteException;
  public boolean isAfterSchoolApplication(com.idega.block.process.data.Case p0) throws java.rmi.RemoteException;
  public void moveToGroup(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void parentsAgree(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;

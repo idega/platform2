@@ -384,7 +384,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 
-		String message = MessageFormat.format(localize("child_care.offer_message", "We can offer {0} a placing in our childcare from {4}.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		String message = null;
+		if (getBusiness().isAfterSchoolApplication(_applicationID)) {
+			message = MessageFormat.format(localize("after_school_care.offer_message", "We can offer {0} a placing in {5} from {4}.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		}
+		else {
+			message = MessageFormat.format(localize("child_care.offer_message", "We can offer {0} a placing in {5} from {4}.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		}
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
 		textArea.setRows(7);
