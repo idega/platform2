@@ -153,6 +153,7 @@ public class MessageBox extends CommuneBlock {
 					addMessageToTable(iwc, messageTable, msg, row, dateFormat, messageNumber++);
 
 					if (useStyleNames) {
+						messageTable.setAlignment(getMessageNumberColumn(), row, Table.HORIZONTAL_ALIGN_CENTER);
 						messageTable.setCellpaddingLeft(getMessageNumberColumn(), row, firstColumnPadding);
 						if (row % 2 == 0) {
 							messageTable.setRowStyleClass(row++, getStyleName(STYLENAME_LIGHT_ROW));
@@ -173,7 +174,6 @@ public class MessageBox extends CommuneBlock {
 			}
 
 			messageTable.setColumnAlignment(getDeleteColumn(), Table.HORIZONTAL_ALIGN_CENTER);
-			messageTable.setColumnAlignment(getMessageNumberColumn(), Table.HORIZONTAL_ALIGN_CENTER);
 			messageTable.setHeight(row++,5);
 			
 			if (showSettings) {
