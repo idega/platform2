@@ -1848,7 +1848,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Iterator iter = areas.iterator();
 				while (iter.hasNext()) {
 					SortedMap providerMap = new TreeMap(new SchoolComparator(locale));
-					//providerMap.put("-1", emptyString);
+					providerMap.put("-1", emptyString);
 					
 					SchoolArea area = (SchoolArea) iter.next();
 					Collection providers = getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes);
@@ -2010,6 +2010,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean hasActivePlacement(int childID) throws RemoteException {
 		return getActivePlacement(childID) != null;
+	}
+	
+	public boolean hasUnansweredOffers(int childID) throws RemoteException {
+		try {
+			int numberOfOffers = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, getCaseStatusGranted().getStatus());
+			if (numberOfOffers > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
 	}
 	
 	public ChildCareApplication getActivePlacement(int childID) throws RemoteException {

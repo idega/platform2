@@ -110,5 +110,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void convertOldQueue();
  public boolean hasActivePlacement(int childID) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getActivePlacement(int childID) throws java.rmi.RemoteException;
-  
+ public boolean hasUnansweredOffers(int childID) throws java.rmi.RemoteException;
 }
