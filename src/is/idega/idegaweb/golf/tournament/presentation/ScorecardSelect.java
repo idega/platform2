@@ -177,10 +177,8 @@ public class ScorecardSelect extends TournamentBlock {
 		orderTable.addText(" ");
 		orderTable.add(orderButton, 1, 1);
 
-		GolfWindow myWindow = new GolfWindow(iwrb.getLocalizedString("tournament.groupregistration", "Group registration"), 900, 600);
-		myWindow.setGolfClassToInstanciate(GroupScorecard.class);
-		myWindow.setResizable(true);
-		Form myForm = new Form(myWindow);
+		Form myForm = new Form();
+		myForm.setClassToInstanciateAndSendTo(GroupScorecardWindow.class);
 		myForm.add(new HiddenInput("tournament_id", tournament_id));
 		myForm.add(new HiddenInput("tournament_round_id", tournament_round_id));
 
