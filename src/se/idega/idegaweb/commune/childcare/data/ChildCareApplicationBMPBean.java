@@ -709,4 +709,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		|| getApplicationStatus() == 'V'); //ChildCareBusinessBean.STATUS_REJECTED (make public...?)
 	}	
 	
+	public boolean isActive(){
+		Contract contract = getContract();
+		java.util.Date today = new java.util.Date();
+		
+		return 
+		    contract != null &&
+			contract.getValidFrom().compareTo(today) <= 0 &&
+			contract.getValidTo().compareTo(today) >= 0 &&
+			contract.isSigned();
+	}
+	
 }
