@@ -8,11 +8,13 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
 
 /**
@@ -156,6 +158,18 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
+	
+	public Collection ejbFindAllWorkReportBoardMembersByWorkReportId(int reportId) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.appendEqualsQuoted(COLUMN_NAME_BOARD_MEMBER,"Y")
+		.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
+			
+		return idoFindPKsByQuery(sql);
+	}
+	
 	public Integer ejbFindWorkReportMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
@@ -169,7 +183,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	}
 	
 	public Collection getLeaguesForMember() throws IDOException {
-		//TODO Eiki filter out only leagues
+		//could be optimized by only getting league workreportgroups
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
 	
@@ -247,4 +261,18 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	
 	
 	
+	
+	/* (non-Javadoc)
+	 * @see javax.ejb.EJBLocalObject#remove()
+	 */
+	public void remove() throws RemoveException {
+		try {
+			idoRemoveFrom(WorkReportGroup.class);
+		}
+		catch (IDORemoveRelationshipException e) {
+			e.printStackTrace();
+		}
+		super.remove();
+	}
+
 }
