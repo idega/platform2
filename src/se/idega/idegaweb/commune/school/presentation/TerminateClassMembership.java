@@ -4,6 +4,8 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.*;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.*;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
@@ -16,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.ejb.FinderException;
 import javax.servlet.http.HttpSession;
+import se.idega.idegaweb.commune.accounting.resource.data.ResourceClassMember;
+import se.idega.idegaweb.commune.accounting.resource.data.ResourceClassMemberHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
@@ -25,10 +29,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/12/04 12:21:12 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/02 14:31:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -95,7 +99,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         = MAX_FOUND_USER_COLS * MAX_FOUND_USER_ROWS;
 
 	/**
-	 * Main is the event handler of InvoiceByCompensationForm.
+	 * Main is the event handler of Terminate Class Membership Form.
 	 *
 	 * @param context session data like user info etc.
 	 */
@@ -180,9 +184,11 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             // terminate membership
             final String notes = context.getParameter (NOTES_KEY);
             member.setNotes (notes);
-            member.setRemovedDate (new  Timestamp (date.getTime ()));
+						final Timestamp terminationDate = new  Timestamp (date.getTime ());
+            member.setRemovedDate (terminationDate);
             member.store ();
-            
+						terminateResources (member, terminationDate);
+
             // put confirmation output
             final String subject = localize
                     (MEMBERSHIPOF_KEY, MEMBERSHIPOF_DEFAULT) + childName
@@ -218,6 +224,33 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         return table;
     }
 
+	private void terminateResources
+		(final SchoolClassMember placement, Timestamp terminationDate)
+		throws IDOLookupException {
+		try {
+			final Collection resources = getResourceClassMemberHome ()
+					.findAllByClassMemberId ((Integer) placement.getPrimaryKey ());
+			for (Iterator i = resources.iterator (); i.hasNext ();) {
+				final ResourceClassMember resource = (ResourceClassMember) i.next ();
+				final Timestamp resourceEndDate = null == resource.getEndDate ()
+						? null : new Timestamp (resource.getEndDate ().getTime ());
+				if (null == resourceEndDate
+						|| terminationDate.before (resourceEndDate)) {
+					resource.setEndDate (new java.sql.Date (terminationDate.getTime ()));
+					resource.store ();
+				}
+			}
+		} catch (FinderException e) {
+			// no problem, no resources attached to this placement
+		}
+	}
+
+	private static ResourceClassMemberHome getResourceClassMemberHome ()
+		throws IDOLookupException {
+		return (ResourceClassMemberHome)
+				IDOLookup.getHome (ResourceClassMember.class);
+	}
+	
     /**
      * Shows a form where the user can enter ssn, first name and/or last name
      * and then after first search, click on one of possibly more than one name
