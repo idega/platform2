@@ -10,6 +10,7 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
 
+import com.idega.block.websearch.data.IndexReaderCache;
 import com.idega.block.websearch.data.WebSearchIndex;
 
 
@@ -62,7 +63,8 @@ public final class WebSearcher {
             Hits hits;
             WebSearchHitIterator searchHits = null;
             
-            searcher = new IndexSearcher(indexPath);
+						IndexReaderCache reader = new IndexReaderCache();//can't this be static?
+            searcher = new IndexSearcher(reader.getReader(indexPath));
             Analyzer analyzer = new StopAnalyzer();
             
             if (phraseSearch) {

@@ -162,7 +162,7 @@ public class WebSearcher extends Block {
 		if (canEdit) {
 			Link crawl = new Link(iwrb.getLocalizedString("index.this.site", "Index this site"));
 			crawl.addParameter(CRAWL_PARAM, "true");
-			crawl.addParameter(CRAWL_REPORT_PARAM, INDEX_MINOR_REPORT);
+			crawl.addParameter(CRAWL_REPORT_PARAM, INDEX_NORMAL_REPORT);
 			table.add(crawl, 3, 1);
 		}
 
@@ -188,16 +188,20 @@ public class WebSearcher extends Block {
 					searcher.setFromDays(publishedFromDays);
 				}
 				hits = searcher.search(queryString);
+				
 				setHitsToSession(iwc,HITS_ITERATOR_SESSION_PARAM + queryString, hits);
-
+			
+  			
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 				add(iwrb.getLocalizedString("you.have.to.index.first", "You need to run the indexer first!"));
 			}
+			
+			
 		}
-
-		if (hits != null) {
+		
+		if(hits!=null) {
 			addBreak();
 			add(getResultSetInfo(hits));
 			addBreak();
@@ -260,6 +264,7 @@ public class WebSearcher extends Block {
 			}
 
 			add(results);
+			
 		}
 
 	}
