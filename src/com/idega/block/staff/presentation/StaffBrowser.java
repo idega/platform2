@@ -29,6 +29,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.user.app.UserApplication;
 import com.idega.user.data.Group;
 import com.idega.util.GenericGroupComparator;
 import com.idega.util.GenericUserComparator;
@@ -103,6 +104,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private boolean _showDetails = true;
 
 	private Group _group;
+	private int _sortNamesBy = GenericUserComparator.FIRSTLASTMIDDLE;
 
 	private boolean _showDivisionHeader = true;
 
@@ -186,7 +188,7 @@ public class StaffBrowser extends Block implements Builderaware {
 
 		if (users != null) {
 			if (_sortAlphabetically)
-				Collections.sort(users, new GenericUserComparator(iwc.getCurrentLocale(),GenericUserComparator.NAME));
+				Collections.sort(users, new GenericUserComparator(iwc.getCurrentLocale(), _sortNamesBy));
 			
 			Iterator iter = users.iterator();
 			while (iter.hasNext()) {
@@ -645,7 +647,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private Link getAdminButtons() {
 		Image adminImage = _iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
-		adminLink.setWindowToOpen(com.idega.core.user.presentation.UserModule.class);
+		adminLink.setWindowToOpen(UserApplication.class);
 
 		return adminLink;
 	}
@@ -960,5 +962,11 @@ public class StaffBrowser extends Block implements Builderaware {
 	 */
 	public void setShowNavigationLinks(boolean navigationLinks) {
 		_showNavigationLinks = navigationLinks;
+	}
+	/**
+	 * @param sortNamesBy The sortNamesBy to set.
+	 */
+	public void setSortNamesBy(int sortNamesBy) {
+		this._sortNamesBy = sortNamesBy;
 	}
 }
