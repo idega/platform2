@@ -4,15 +4,21 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.SortedSet;
 
+import org.apache.xpath.operations.Div;
+
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.presentation.DateBackground;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.TextFormat;
 	
 class ChildCarePlaceOfferTable1 extends Table{	
 	
@@ -62,6 +68,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 		System.out.println("Applications: " + applications);
 		Iterator i = applications.iterator();
 		int row = 2;
+		boolean disable = false;
 		while (i.hasNext()) {
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
 			app.getChoiceNumber();
@@ -80,9 +87,14 @@ class ChildCarePlaceOfferTable1 extends Table{
 	
 			addToTable(row, id, app.getChoiceNumber() + ": " + name 
 				//+ " (nodeId:" + app.getNodeID() + ")"
-				, offerText, prognosis, offer);
+				, offerText, prognosis, offer, disable);
 	
+			if (offer){
+				disable = true;
+			}
+			
 			row++;
+			
 		}
 	}
 	
@@ -94,48 +106,74 @@ class ChildCarePlaceOfferTable1 extends Table{
 	 * @param status
 	 * @param prognosis
 	 */
-	private void addToTable(int row, String id, String name, String status, String prognosis, boolean offer) {
+	private void addToTable(int row, String id, String name, String status, String prognosis, boolean offer, boolean disable) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
+		String textColor = disable ? "gray":"black";
 
-		add(name, 1, row);
-		add(status, 2, row);
-		add(prognosis, 3, row);
-		SubmitButton reqBtn = new SubmitButton(_page.localize(REQUEST_INFO), CCConstants.APPID, id);
+		if (name != null){
+			Text t = _page.getSmallText(name);
+			t.setStyleAttribute("color:" + textColor);
+			add(t, 1, row);
+		}
+		if (status != null){
+			Text t = _page.getSmallText(status);
+			t.setStyleAttribute("color:" + textColor);
+			add(t, 2, row);
+		}
+		if (prognosis != null){
+			Text t = _page.getSmallText(prognosis);
+			t.setStyleAttribute("color:" + textColor);
+			add(t, 3, row);
+		}
+		//add(prognosis, 3, row);
+		//SubmitButton reqBtn = new SubmitButton(_page.localize(REQUEST_INFO), CCConstants.APPID, id);
+		Link reqBtn = new Link(_page.localize(REQUEST_INFO));
+		reqBtn.addParameter(CCConstants.ACTION, CCConstants.ACTION_REQUEST_INFO);
+		reqBtn.addParameter(CCConstants.APPID, id);
+		
 		reqBtn.setName(REQUEST_INFO[0]);
 		reqBtn.setAsImageButton(true);
-		add(reqBtn, 4, row);
 			
 		RadioButton rb1 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.YES);
 		RadioButton rb2 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO_NEW_DATE);
 		RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
-		rb1.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
+	/*	rb1.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
 		rb2.setOnChange(CCConstants.NEW_DATE + index + ".disabled=false;");
 		rb3.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
+	*/	
+		DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
+		date.setStyleAttribute("style", _page.getSmallTextFontStyle());
 		
-		TextInput ti = new TextInput(CCConstants.NEW_DATE + index);
-		ti.setLength(8);
+
+		
+		//TextInput ti = new TextInput(CCConstants.NEW_DATE + index);
+		//ti.setLength(8);
 		
 //The trigger is called when the radio button is turned on
 
 		
 //		ti.setWidth("10");
 
+        if (!disable){
+			add(reqBtn, 4, row);
+        }
+
 			
-		if (!offer){
-			rb1.setDisabled(true);
-			rb2.setDisabled(true);
-			rb3.setDisabled(true);
-			ti.setDisabled(true);
-		} else {
-			rb1.setAttribute("checked");
-			ti.setDisabled(true);			
+		if (offer){
+			
+			add(rb1, 5, row);
+			add(rb2, 6, row);
+			add(date, 6, row);
+			add(rb3, 7, row);
 		}
-			
-		add(rb1, 5, row);
-		add(rb2, 6, row);
-		add(ti, 6, row);
-		add(rb3, 7, row);
+
+
+		if (row % 2 == 0)
+			setRowColor(row++, _page.getZebraColor1());
+		else
+			setRowColor(row++, _page.getZebraColor2());
+					
 	}
 	
 	/**
@@ -146,10 +184,12 @@ class ChildCarePlaceOfferTable1 extends Table{
 //		Table table = new Table(7, rows + 1); //Heading
 //		setBorder(1);
 //		setBorderColor("GREEN");
+
+		setRowColor(1, _page.getHeaderColor());
+
 		
-		setCellspacing(2);
-		setCellpadding(4);
-		setHorizontalZebraColored("WHITE", _page.getBackgroundColor());
+		setCellspacing(_page.getCellspacing());
+		setCellpadding(_page.getCellpadding());
 	
 		//Heading
 		add(HEADER_YOUR_CHOICE, 1, 1);
