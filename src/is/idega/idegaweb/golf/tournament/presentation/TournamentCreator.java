@@ -304,7 +304,7 @@ public class TournamentCreator extends TournamentBlock {
 	                if (this.bIsUpdate) {
 	                    tournamentName.setContent(tournament.getName());
 	                    unions.setSelectedElement(tournament.getUnionId()+"");
-	                    fields.setSelectedElement(tournament.getField()+"");
+	                    fields.setSelectedElement(tournament.getFieldId()+"");
 	                    tournamentTypeDrop.setSelectedElement(tournament.getTournamentTypeId()+"");
 	                    openTournament.setSelected(tournament.getIfOpenTournament());
 	                    onlineRegistration.setSelected(tournament.getIfRegistrationOnline());
