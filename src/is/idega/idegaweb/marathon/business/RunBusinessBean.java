@@ -323,7 +323,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 			if (distanceType != null) {
 				try {
-					int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(distanceType), getMaxParticipantNumber(distanceType)) + 1;
+					int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(distanceType), getMaxParticipantNumber(distanceType));
+					if (participantNumber == 0) {
+						participantNumber = getMinParticipantNumber(distanceType);
+					}
+					else {
+						participantNumber++;
+					}
 					r.setParticipantNumber(participantNumber);
 				}
 				catch (IDOException ie) {
