@@ -102,7 +102,7 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 		int row = 1;
 		ICCategory category = CategoryFinder.getInstance().getCategory(_topicID);
 		
-		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_DESCRIPTION));
+		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME));
 		textInput.setLength(30);
 		textInput.setAsNotEmpty(localize("forum.must_fill_in_name", "Name must be set."));
 		textInput.setContent(category.getName());
@@ -156,7 +156,7 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 			getParentPage().close();
 		}
 		else
-			action = ACTION_EDIT;
+			createTable();
 	}
 	
 	public void parse(IWContext iwc) {
