@@ -1,213 +1,530 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-<jasperReport name="GeneratedReport" columnCount="1" pageWidth="720" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="680" columnSpacing="0" leftMargin="20" rightMargin="20" topMargin="10" bottomMargin="30">
-  <parameter name="ReportTitle" class="java.lang.String" />
-  <parameter name="label_workReportYear" class="java.lang.String" />
-  <parameter name="workReportYear" class="java.lang.String" />
-  <parameter name="label_regUnions" class="java.lang.String" />
-  <parameter name="regUnions" class="java.lang.String" />
-  <parameter name="workreportreport" class="java.lang.String" />
-  <parameter name="label" class="java.lang.String" />
-  <parameter name="regional_union_name" class="java.lang.String" />
-  <parameter name="bothGendersUnderAge" class="java.lang.String" />
-  <parameter name="bothGendersEqualOverAge" class="java.lang.String" />
-  <field name="regional_union_name" class="java.lang.String" />
-  <field name="bothGendersUnderAge" class="java.lang.Integer" />
-  <field name="bothGendersEqualOverAge" class="java.lang.Integer" />
-  <variable name="alls" class="java.lang.Integer" resetType="Column" calculation="Nothing">
-    <variableExpression>new Integer($F{bothGendersUnderAge}.intValue()+$F{bothGendersEqualOverAge}.intValue() )</variableExpression>
-    <initialValueExpression></initialValueExpression>
-  </variable>
-  <variable name="underAllSum" class="java.lang.Integer" resetType="None" calculation="Sum">
-    <variableExpression>$F{bothGendersUnderAge}</variableExpression>
-    <initialValueExpression></initialValueExpression>
-  </variable>
-  <variable name="overAllSum" class="java.lang.Integer" resetType="None" calculation="Sum">
-    <variableExpression>$F{bothGendersEqualOverAge}</variableExpression>
-    <initialValueExpression></initialValueExpression>
-  </variable>
-  <variable name="AllsSum" class="java.lang.Integer" resetType="None" calculation="Nothing">
-    <variableExpression>new Integer($V{underAllSum}.intValue() + $V{overAllSum}.intValue())</variableExpression>
-    <initialValueExpression></initialValueExpression>
-  </variable>
-  <group name="regionalgroup">
-    <groupExpression></groupExpression>
-    <groupHeader>
-      <band height="1" />
-    </groupHeader>
-    <groupFooter>
-      <band height="25">
-        <textField>
-          <reportElement positionType="Float" mode="Transparent" x="256" y="0" width="37" height="15" />
-          <textElement textAlignment="Center">
-            <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-          </textElement>
-          <textFieldExpression class="java.lang.Integer">$V{AllsSum}</textFieldExpression>
-        </textField>
-        <textField>
-          <reportElement positionType="Float" mode="Transparent" x="150" y="0" width="53" height="15" />
-          <textElement>
-            <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-          </textElement>
-          <textFieldExpression class="java.lang.Integer">$V{underAllSum}</textFieldExpression>
-        </textField>
-        <textField>
-          <reportElement positionType="Float" mode="Transparent" x="203" y="0" width="53" height="15" />
-          <textElement>
-            <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-          </textElement>
-          <textFieldExpression class="java.lang.Integer">$V{overAllSum}</textFieldExpression>
-        </textField>
-        <staticText>
-          <reportElement positionType="Float" mode="Transparent" x="68" y="0" width="80" height="15" />
-          <textElement>
-            <font fontName="Helvetica" size="10" isBold="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-          </textElement>
-          <text>Samtals</text>
-        </staticText>
-      </band>
-    </groupFooter>
-  </group>
-  <title>
-    <band height="19">
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement mode="Opaque" x="0" y="0" width="500" height="19" backcolor="#9eb400" />
-        <textElement textAlignment="Center">
-          <font fontName="Helvetica" size="16" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{ReportTitle}</textFieldExpression>
-      </textField>
-    </band>
-  </title>
-  <pageHeader>
-    <band height="36">
-      <textField isStretchWithOverflow="true">
-        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="93" height="16" />
-        <textElement>
-          <font fontName="Helvetica" size="10" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{label_workReportYear}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true">
-        <reportElement positionType="Float" mode="Transparent" x="93" y="0" width="25" height="16" />
-        <textElement>
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{workReportYear}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true">
-        <reportElement positionType="Float" mode="Transparent" x="128" y="0" width="88" height="16" />
-        <textElement>
-          <font fontName="Helvetica" size="10" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{label_regUnions}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true">
-        <reportElement positionType="Float" mode="Transparent" x="216" y="0" width="20" height="16" />
-        <textElement>
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{regUnions}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true">
-        <reportElement positionType="Float" mode="Transparent" x="246" y="0" width="67" height="16" />
-        <textElement>
-          <font fontName="Helvetica" size="10" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{workreportreport}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true">
-        <reportElement positionType="Float" mode="Transparent" x="313" y="0" width="125" height="16" />
-        <textElement>
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{label}</textFieldExpression>
-      </textField>
-    </band>
-  </pageHeader>
-  <columnHeader>
-    <band height="20">
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="149" height="14" />
-        <textElement>
-          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{regional_union_name}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="150" y="0" width="53" height="15" />
-        <textElement>
-          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{bothGendersUnderAge}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="203" y="0" width="53" height="15" />
-        <textElement>
-          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$P{bothGendersEqualOverAge}</textFieldExpression>
-      </textField>
-      <staticText>
-        <reportElement positionType="Float" mode="Transparent" x="256" y="0" width="36" height="15" />
-        <textElement textAlignment="Center">
-          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <text>Alls</text>
-      </staticText>
-    </band>
-  </columnHeader>
-  <detail>
-    <band height="15">
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="149" height="15" />
-        <textElement>
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.String">$F{regional_union_name}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="150" y="0" width="53" height="15" />
-        <textElement>
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.Integer">$F{bothGendersUnderAge}</textFieldExpression>
-      </textField>
-      <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="203" y="0" width="53" height="15" />
-        <textElement>
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.Integer">$F{bothGendersEqualOverAge}</textFieldExpression>
-      </textField>
-      <textField isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="256" y="0" width="37" height="15" />
-        <textElement textAlignment="Center">
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
-        </textElement>
-        <textFieldExpression class="java.lang.Integer">$V{alls}</textFieldExpression>
-      </textField>
-    </band>
-  </detail>
-  <columnFooter>
-    <band height="0" />
-  </columnFooter>
-  <pageFooter>
-    <band height="15">
-      <staticText>
-        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="40" height="15" />
-        <textElement />
-        <text>bls.</text>
-      </staticText>
-      <textField>
-        <reportElement positionType="Float" mode="Transparent" x="40" y="0" width="80" height="15" />
-        <textElement />
-        <textFieldExpression class="java.lang.Integer">$V{PAGE_NUMBER}</textFieldExpression>
-      </textField>
-    </band>
-  </pageFooter>
-  <summary>
-    <band height="0" />
-  </summary>
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="B1221Generated"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="538"
+		 columnSpacing="0"
+		 leftMargin="20"
+		 rightMargin="20"
+		 topMargin="10"
+		 bottomMargin="30"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<parameter name="ReportTitle" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="label_workReportYear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="workReportYear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="label_regUnions" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="regUnions" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="workreportreport" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="label" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="regional_union_name" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="bothGendersUnderAge" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="bothGendersEqualOverAge" isForPrompting="true" class="java.lang.String"/>
+	<field name="regional_union_name" class="java.lang.String"/>
+	<field name="bothGendersUnderAge" class="java.lang.Integer"/>
+	<field name="bothGendersEqualOverAge" class="java.lang.Integer"/>
+	<field name="bothGendersAllAge" class="java.lang.Integer"/>
+	<variable name="alls" class="java.lang.Integer" resetType="Column" calculation="Nothing">
+		<variableExpression><![CDATA[new Integer($F{bothGendersUnderAge}.intValue()+$F{bothGendersEqualOverAge}.intValue() )]]></variableExpression>	</variable>
+	<variable name="underAllSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalgroup" calculation="Sum">
+		<variableExpression>$F{bothGendersUnderAge}</variableExpression>	</variable>
+	<variable name="overAllSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalgroup" calculation="Sum">
+		<variableExpression>$F{bothGendersEqualOverAge}</variableExpression>	</variable>
+	<variable name="AllsSum" class="java.lang.Integer" resetType="None" calculation="Nothing">
+		<variableExpression><![CDATA[new Integer($V{underAllSum}.intValue() + $V{overAllSum}.intValue())]]></variableExpression>	</variable>
+		<group  name="regionalgroup" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
+			<groupExpression></groupExpression>
+			<groupHeader>
+			<band height="1">
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="18">
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="304"
+						y="2"
+						width="55"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$V{AllsSum}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="173"
+						y="2"
+						width="60"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$V{underAllSum}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="239"
+						y="2"
+						width="60"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$V{overAllSum}</textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="91"
+						y="2"
+						width="80"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text>Samtals</text>
+				</staticText>
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0">
+			</band>
+		</background>
+		<title>
+			<band height="1">
+			</band>
+		</title>
+		<pageHeader>
+			<band height="38">
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="464"
+						y="19"
+						width="89"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{label}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="402"
+						y="19"
+						width="61"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{workreportreport}</textFieldExpression>
+				</textField>
+				<rectangle>
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="0"
+						width="554"
+						height="18"
+						forecolor="#9BB400"
+						backcolor="#9BB400"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle>
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="0"
+						width="554"
+						height="18"
+						forecolor="#9BB400"
+						backcolor="#9BB400"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="0"
+						y="19"
+						width="88"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{label_regUnions}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="90"
+						y="19"
+						width="309"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{regUnions}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="120"
+						y="0"
+						width="434"
+						height="16"
+						forecolor="#000000"
+						backcolor="#9BB400"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="12" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{ReportTitle}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="19"
+						y="0"
+						width="101"
+						height="16"
+						forecolor="#000000"
+						backcolor="#9BB400"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{workReportYear}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="19"
+						height="16"
+						forecolor="#000000"
+						backcolor="#9BB400"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{label_workReportYear}</textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="16">
+				<rectangle>
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="0"
+						width="554"
+						height="14"
+						forecolor="#000000"
+						backcolor="#999999"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="0"
+						y="0"
+						width="149"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{regional_union_name}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="173"
+						y="0"
+						width="60"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{bothGendersUnderAge}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="239"
+						y="0"
+						width="60"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$P{bothGendersEqualOverAge}</textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="304"
+						y="0"
+						width="55"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text>Alls</text>
+				</staticText>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="17">
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="0"
+						y="0"
+						width="170"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String">$F{regional_union_name}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="173"
+						y="0"
+						width="60"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$F{bothGendersUnderAge}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="239"
+						y="0"
+						width="60"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$F{bothGendersEqualOverAge}</textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="304"
+						y="0"
+						width="55"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$F{bothGendersAllAge}</textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0">
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="17">
+				<rectangle>
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="0"
+						width="554"
+						height="15"
+						forecolor="#000000"
+						backcolor="#999999"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="533"
+						y="1"
+						width="20"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer">$V{PAGE_NUMBER}</textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="512"
+						y="1"
+						width="21"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[bls.]]></text>
+				</staticText>
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0">
+			</band>
+		</summary>
 </jasperReport>
-
