@@ -5,7 +5,10 @@ import java.util.*;
 import com.idega.data.GenericEntity;
 import com.idega.core.data.*;
 import com.idega.data.*;
+import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.employment.data.EmployeeGroup;
+import com.idega.core.accesscontrol.data.PermissionGroup;
+
 /**
  * Title:        IW Trade
  * Description:
@@ -17,6 +20,8 @@ import com.idega.block.employment.data.EmployeeGroup;
 
 
 public class Supplier extends GenericEntity{
+
+  private String newName;
 
   public Supplier(){
           super();
@@ -63,8 +68,8 @@ public class Supplier extends GenericEntity{
     return getStringColumnValue(getColumnNameName());
   }
 
-  public void setName(String name){
-    setColumn(getColumnNameName(),name);
+  public void setName(String name) {
+    newName = name;
   }
 
   public String getDescription(){
@@ -156,6 +161,21 @@ public class Supplier extends GenericEntity{
   public static Supplier[] getValidSuppliers() throws SQLException {
     return (Supplier[]) Supplier.getStaticInstance(Supplier.class).findAllByColumnOrdered(Supplier.getColumnNameIsValid(),"Y",Supplier.getColumnNameName());
   }
+
+  public void update() throws SQLException {
+    if (newName != null) {
+      PermissionGroup pGroup = SupplierManager.getPermissionGroup(this);
+        pGroup.setName(newName+SupplierManager.permissionGroupNameExtention);
+        pGroup.update();
+      SupplierStaffGroup sGroup = SupplierManager.getSupplierStaffGroup(this);
+        sGroup.setName(newName);
+        sGroup.update();
+      setColumn(getColumnNameName(),newName);
+      newName = null;
+    }
+    super.update();
+  }
+
   /*
   public Address getAddress() {
       return (Address) getColumnValue("IC_ADDRESS_ID"); where address_type is st_supplier_address
