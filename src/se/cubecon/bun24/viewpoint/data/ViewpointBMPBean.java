@@ -11,7 +11,6 @@ import javax.ejb.FinderException;
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
-    private static final String CASE_CODE_KEY = "SYMESYN";
     private static final String ENTITY_NAME = "vp_viewpoint";
     private static final String CASE_CODE_DESCRIPTION = "User viewpoint";
 	private static final String [] CASE_STATUS_DESCRIPTIONS = { "Answered" };
@@ -29,7 +28,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 	}
 
 	public String getCaseCodeKey() {
-		return CASE_CODE_KEY;
+		return Viewpoint.CASE_CODE_KEY;
 	}
 
     public String getCaseCodeDescription () {

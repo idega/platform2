@@ -11,6 +11,7 @@ import java.util.Collection;
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  */
 public interface Viewpoint extends IDOEntity, Case {
+    String CASE_CODE_KEY = "SYMESYN";
     String STATUSKEY_ANSWERED = "ASWD";
 
     Group getHandlerGroup ();
