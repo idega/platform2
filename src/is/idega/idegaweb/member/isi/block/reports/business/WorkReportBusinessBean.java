@@ -20,12 +20,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -36,10 +39,11 @@ import com.idega.block.media.business.MediaBusiness;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.ListUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.text.TextSoap;
 
@@ -191,7 +195,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		try {
 			User user = null;
 			try {
-				user = getUserHome().findByPersonalID(personalID);
+				user = getUser(personalID);
 			}
 			catch (FinderException e) {
 				return false;
@@ -229,89 +233,112 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 	}
 	
-	public File getFileObjectForFileId(int fileId, IWMainApplication iwma){
-		Cache file = MediaBusiness.getCachedFileInfo(fileId, iwma);
+	private File getFileObjectForFileId(int fileId){
+		Cache file = MediaBusiness.getCachedFileInfo(fileId, this.getIWApplicationContext().getApplication());
 		
 		return new File(file.getRealPathToFile());
 	}
 	
+	private HSSFWorkbook getExcelWorkBookFromFileId(int fileId){
+		HSSFWorkbook excel = null;
+		File file = getFileObjectForFileId(fileId);
+		
+		try {
+			excel = new HSSFWorkbook(new FileInputStream(file));
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return excel;
+	}
+	
 	public boolean importMemberPart(int workReportFileId, int workReportId){
-		//TODO: Eiki clear members first
+		
 			System.out.println("Starting member importing from excel file...");
 			
+			deleteWorkReportClubMembersForReport(workReportId);
+		
+			WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
+			int year = report.getYearOfReport().intValue();
+			createOrUpdateLeagueWorkReportGroupsForYear(year);
+		
 			report.setMemberFileId(workReportFileId);
 			report.store();
+			
 
-			File file = getFileObjectForFileId(workReportFileId,getIWApplicationContext().getApplication());
+		
+			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+			
+			HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
+			int firstRow = 4;
+			int lastRow = members.getLastRowNum();
+			
+			System.out.println("First row is at: "+firstRow);
+			System.out.println("Last row is at: "+lastRow);
+			
+			//get the top row to get a list of leagues to use.
+			HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
+			Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
 			
 			
-			HSSFWorkbook excel;
-			try {
-				excel = new HSSFWorkbook(new FileInputStream(file));
-
-				HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
-				int firstRow = 4;
-				int lastRow = members.getLastRowNum();
+			//iterate through the rows that contain the actual data and create the records in the database
+			for (int i = (firstRow+1); i <= lastRow; i++) {
+				HSSFRow row = (HSSFRow) members.getRow(i);
 				
-				System.out.println("First row is at: "+firstRow);
-				System.out.println("Last row is at: "+lastRow);
-				
-				//get the top row to get a list of leagues to use.
-				HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
-				Map leaguesMap = getLeaguesMapFromRow(headerRow);
-				
-				
-				//iterate through the rows that contain the actual data and create the records in the database
-				for (int i = (firstRow+1); i <= lastRow; i++) {
-					HSSFRow row = (HSSFRow) members.getRow(i);
+				if(row!=null){
+					int firstCell = row.getFirstCellNum();
+					int lastCell = row.getLastCellNum();
 					
-					if(row!=null){
-						int firstCell = row.getFirstCellNum();
-						int lastCell = row.getLastCellNum();
-						
-						String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
-						String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
-						ssn = (ssn.length()<10)? "0"+ssn : ssn;
-						String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
-						String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
-						String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+					String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
+					String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
+					ssn = (ssn.length()<10)? "0"+ssn : ssn;
+					String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
+					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
+					String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+					
+					try {
+						User user = this.getUser(ssn);
+
 						
 						try {
-							User user = this.getUser(ssn); 
-							WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+							membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+						}
+						catch (FinderException e4) {
+						//this should happen, we don't want them created twice	
+						
+							WorkReportClubMember member = membHome.create();
+							member.setReportId(workReportId);
+							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
+							member.setName(name);
+							member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
+							member.setPersonalId(ssn);
+							member.setStreetName(streetName);
+							//member.setAge();
+							//member.setDateOfBirth();
 							
 							try {
-								membHome.findClubMemberByUserIdAndWorkReportIdOrderedByMemberName(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+								PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+								member.setPostalCode(postal);
 							}
-							catch (FinderException e4) {
-							//this should happen, we don't want them created twice	
+							catch (FinderException e3) {
+								//e3.printStackTrace();
+							} catch (RemoteException e) {
+								e.printStackTrace();
+							}
 							
-								WorkReportClubMember member = membHome.create();
-								member.setReportId(workReportId);
-								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
-								member.setName(name);
-								member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
-								member.setPersonalId(ssn);
-								member.setStreetName(streetName);
-								//member.setAge();
-								//member.setDateOfBirth();
+							member.store();
+							
+							//find which leagues the member belongs to
+							//and create the many to many connections
+							for (int j = 5; j <  lastCell ; j++) {
+								HSSFCell leagueCell = row.getCell((short)j);
 								
-								try {
-									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
-									member.setPostalCode(postal);
-								}
-								catch (FinderException e3) {
-									//e3.printStackTrace();
-								}
-								
-								member.store();
-								
-								//find which leagues the member belongs to
-								//and create the many to many connections
-								for (int j = 5; j <  lastCell ; j++) {
-									HSSFCell leagueCell = row.getCell((short)j);
-									
+								if(leagueCell !=null){
 									WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
 									if(league!=null){
 										try {
@@ -321,34 +348,290 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 											e5.printStackTrace();
 										}
 									}
-									
+								}
+								
+							}
+						}
+					}
+					catch (EJBException e1) {
+						e1.printStackTrace();
+					}
+					catch (CreateException e2) {
+						//failed to create move on.
+						e2.printStackTrace();
+						System.err.println("Failed to create user for ssn : "+ssn);
+					} 
+					catch (FinderException e) {
+						System.err.println("User not found for ssn : "+ssn);
+					}
+				}
+			}
+					
+			return true;
+	}
+	
+	public boolean importBoardPart(int workReportFileId, int workReportId){
+		
+				System.out.println("Starting member importing from excel file...");
+			
+				deleteWorkReportClubMembersForReport(workReportId);
+		
+				WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+				WorkReport report = getWorkReportById(workReportId);
+				int year = report.getYearOfReport().intValue();
+				createOrUpdateLeagueWorkReportGroupsForYear(year);
+				
+				report.setMemberFileId(workReportFileId);
+				report.store();
+			
+
+		
+				HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+			
+				HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
+				int firstRow = 4;
+				int lastRow = members.getLastRowNum();
+			
+				System.out.println("First row is at: "+firstRow);
+				System.out.println("Last row is at: "+lastRow);
+			
+				//get the top row to get a list of leagues to use.
+				HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
+				Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
+			
+			
+				//iterate through the rows that contain the actual data and create the records in the database
+				for (int i = (firstRow+1); i <= lastRow; i++) {
+					HSSFRow row = (HSSFRow) members.getRow(i);
+				
+					if(row!=null){
+						int firstCell = row.getFirstCellNum();
+						int lastCell = row.getLastCellNum();
+					
+						String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
+						String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
+						ssn = (ssn.length()<10)? "0"+ssn : ssn;
+						String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
+						String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
+						String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+					
+						try {
+							User user = this.getUser(ssn);
+
+						
+							try {
+								membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+							}
+							catch (FinderException e4) {
+							//this should happen, we don't want them created twice	
+						
+								WorkReportClubMember member = membHome.create();
+								member.setReportId(workReportId);
+								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
+								member.setName(name);
+								member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
+								member.setPersonalId(ssn);
+								member.setStreetName(streetName);
+								//member.setAge();
+								//member.setDateOfBirth();
+							
+								try {
+									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+									member.setPostalCode(postal);
+								}
+								catch (FinderException e3) {
+									//e3.printStackTrace();
+								} catch (RemoteException e) {
+									e.printStackTrace();
+								}
+							
+								member.store();
+							
+								//find which leagues the member belongs to
+								//and create the many to many connections
+								for (int j = 5; j <  lastCell ; j++) {
+									HSSFCell leagueCell = row.getCell((short)j);
+								
+									if(leagueCell !=null){
+										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
+										if(league!=null){
+											try {
+												league.addMember(member);
+											}
+											catch (IDOAddRelationshipException e5) {
+												e5.printStackTrace();
+											}
+										}
+									}
+								
 								}
 							}
 						}
 						catch (EJBException e1) {
-							//user not found, move on
-							System.err.println("User not found for ssn : "+ssn);
 							e1.printStackTrace();
 						}
 						catch (CreateException e2) {
 							//failed to create move on.
 							e2.printStackTrace();
-						}
-						catch (FinderException ex){
-							ex.printStackTrace();
+							System.err.println("Failed to create user for ssn : "+ssn);
+						} 
+						catch (FinderException e) {
+							System.err.println("User not found for ssn : "+ssn);
 						}
 					}
+				}
 					
+				return true;
+		}
+		
+		
+	
+	public boolean importAccountPart(int workReportFileId, int workReportId){
+		
+				System.out.println("Starting member importing from excel file...");
+			
+				deleteWorkReportClubMembersForReport(workReportId);
+				
+				WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+				WorkReport report = getWorkReportById(workReportId);
+				int year = report.getYearOfReport().intValue();
+				createOrUpdateLeagueWorkReportGroupsForYear(year);
+		
+				report.setMemberFileId(workReportFileId);
+				report.store();
+			
+
+		
+				HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+			
+				HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
+				int firstRow = 4;
+				int lastRow = members.getLastRowNum();
+			
+				System.out.println("First row is at: "+firstRow);
+				System.out.println("Last row is at: "+lastRow);
+			
+				//get the top row to get a list of leagues to use.
+				HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
+				Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
+			
+			
+				//iterate through the rows that contain the actual data and create the records in the database
+				for (int i = (firstRow+1); i <= lastRow; i++) {
+					HSSFRow row = (HSSFRow) members.getRow(i);
+				
+					if(row!=null){
+						int firstCell = row.getFirstCellNum();
+						int lastCell = row.getLastCellNum();
+					
+						String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
+						String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
+						ssn = (ssn.length()<10)? "0"+ssn : ssn;
+						String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
+						String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
+						String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+					
+						try {
+
+							User user = this.getUser(ssn); 
+							
+							try {
+								membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+							}
+							catch (FinderException e4) {
+							//this should happen, we don't want them created twice	
+						
+								WorkReportClubMember member = membHome.create();
+								member.setReportId(workReportId);
+								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
+								member.setName(name);
+								member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
+								member.setPersonalId(ssn);
+								member.setStreetName(streetName);
+								//member.setAge();
+								//member.setDateOfBirth();
+							
+								try {
+									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+									member.setPostalCode(postal);
+								}
+								catch (FinderException e3) {
+									//e3.printStackTrace();
+								} catch (RemoteException e) {
+									e.printStackTrace();
+								}
+							
+								member.store();
+							
+								//find which leagues the member belongs to
+								//and create the many to many connections
+								for (int j = 5; j <  lastCell ; j++) {
+									HSSFCell leagueCell = row.getCell((short)j);
+								
+									if(leagueCell !=null){
+										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
+										if(league!=null){
+											try {
+												league.addMember(member);
+											}
+											catch (IDOAddRelationshipException e5) {
+												e5.printStackTrace();
+											}
+										}
+									}
+								
+								}
+							}
+						}
+						catch (EJBException e1) {
+							e1.printStackTrace();
+						}
+						catch (CreateException e2) {
+							//failed to create move on.
+							e2.printStackTrace();
+							System.err.println("Failed to create user for ssn : "+ssn);
+						} 
+						catch (FinderException e) {
+							System.err.println("User not found for ssn : "+ssn);
+						}
+					}
+				}
+					
+				return true;
+		}
+
+	/**
+	 * @param year of report
+	 */
+	private void createOrUpdateLeagueWorkReportGroupsForYear(int year) {
+		createOrUpdateWorkReportGroupsForYearAndGroupType(year,IWMemberConstants.GROUP_TYPE_LEAGUE);
+	}
+
+	/**
+	 * @param report
+	 */
+	private void deleteWorkReportClubMembersForReport(int reportId) {
+		try {
+			Collection members = getWorkReportClubMemberHome().findAllClubMembersByWorkReportIdOrderedByMemberName(reportId);
+			Iterator iter = members.iterator();
+			
+			while (iter.hasNext()) {
+				WorkReportClubMember memb = (WorkReportClubMember) iter.next();
+				try {
+					memb.remove();
+				}
+				catch (EJBException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoveException e1) {
+					e1.printStackTrace();
 				}
 			}
-			catch (FileNotFoundException e) {
-				e.printStackTrace();
-				return false;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
-			return true;
+			
+		}
+		catch (FinderException e) {
+			//do nothing because its empty
+		}
 	}
 
 	/**
@@ -367,7 +650,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		else{
 			cell = Double.toString(myCell.getNumericCellValue());
 		}
-		System.out.println(cell);
+		
 		
 		cell = TextSoap.findAndCut(cell,"-");
 		cell = TextSoap.findAndCut(cell,".");
@@ -380,23 +663,134 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		return cell;
 	}
+	
+	/**
+	 * Returns a collection of WorkReportGroup or an empty List
+	 * @param year , the year of the report
+	 * @param type , the group type
+	 * @return A collection of WorkReportGroup or an empty List
+	 */
+	public Collection getAllWorkReportGroupsForYearAndType(int year, String type){
+		try {
+			return getWorkReportGroupHome().findAllWorkReportGroupsByGroupTypeAndYear(type,year);
+		}
+		catch (FinderException e) {
+			//no group available return empty list
+			return ListUtil.getEmptyList();
+		}
+		
+	}
 
 	/**
 	 * @param headerRow, the first row of the members-part worksheet
 	 */
-	private Map getLeaguesMapFromRow(HSSFRow headerRow) {
+	private Map getLeaguesMapFromRow(HSSFRow headerRow, int year) {
 		Map leagues = new HashMap();
 		int lastCell = headerRow.getLastCellNum();
 		WorkReportGroupHome home = getWorkReportGroupHome();
-	/* fylla group tšfluna fyrst og seakja svo ur henni
+	
+	
 		for (int j = 5; j <  lastCell ; j++) {
-			String leagueName = headerRow.getCell((short)j).getStringCellValue();
+			HSSFCell cell = headerRow.getCell((short)j);
+			if(cell!=null){
+				String leagueName = cell.getStringCellValue();
+				//stupid framework returns "null" as a string
+				if(leagueName!=null && !"".equals(leagueName)){
+					String shortName = null;
+				  String name = null;
+					int index = leagueName.indexOf('-');
+					shortName = (index!=-1)? leagueName.substring(0,index) : leagueName;
+					name = (index!=-1)? leagueName.substring(index,leagueName.length()) : leagueName;
+					
+					
+					WorkReportGroup group = null;
+					
+					try {
+						group = getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(shortName,year);
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+						System.err.println("WorkReportGroup not found by short name : "+shortName+" trying group name");
+						
+						
+						try {
+							group = getWorkReportGroupHome().findWorkReportGroupByNameAndYear(name,year);
+						}
+						catch (FinderException e1) {
+							// TODO EIKI-ISI throw invalidreportexception
+							e1.printStackTrace();
+							System.err.println("WorkReportGroup not found by name either: "+name);
+						}
+						
+					}
+					
+					if( group!=null ){
+						leagues.put(leagueName,group);
+					}
+				}
+				
+				
+			}
 			
 			
 		}
-		*/
+		
 		return leagues;
 	}
+	
+	private Collection createOrUpdateWorkReportGroupsForYearAndGroupType(int year, String groupType){
+		GroupBusiness groupBiz;
+		try {
+			groupBiz = getGroupBusiness();
+			WorkReportGroupHome grHome = getWorkReportGroupHome();
+		
+			Collection groups = groupBiz.getGroupHome().findGroupsByType(groupType);
+			Iterator groupIter = groups.iterator();
+			while (groupIter.hasNext()) {
+				Group group = (Group) groupIter.next();
+				int groupId = ((Integer)group.getPrimaryKey()).intValue();
+				WorkReportGroup wGroup = null;
+				try{
+					
+					wGroup = grHome.findWorkReportGroupByGroupIdAndYear(groupId,year);
+				}
+				catch (FinderException e1) {
+					try {
+						wGroup = grHome.create();
+					}
+					catch (CreateException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				wGroup.setGroupId(groupId);
+				wGroup.setName(group.getName());
+				wGroup.setShortName(group.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+				wGroup.setGroupType(group.getGroupType());
+				wGroup.setYearOfReport(year);
+				
+				wGroup.store();
+								
+			}
+			
+			
+			
+		}
+		catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			// do nothing return empty list
+			 return ListUtil.getEmptyList();
+		}
+		
+			
+		
+		
+		
+		return null;
+	}
+	
 	
 
 }//end of class
