@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.3 2004/05/10 07:16:39 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.4 2004/05/27 09:15:25 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -216,7 +216,7 @@ public class TPosClient implements CreditCardClient{
    * @exception TPosException  Description of the Exception
    */
   public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws TPosException {
-  	return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "1"));
+  	return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "1", null));
   }
 /*
   public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String referenceNumber, String merchantId) throws TPosException {
@@ -235,9 +235,9 @@ public class TPosClient implements CreditCardClient{
    * @return                   Description of the Return Value
    * @exception TPosException  Description of the Exception
    */
-  public String doRefund(String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String captureProperties) throws TPosException {
+  public String doRefund(String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, Object parentDataPK, String captureProperties) throws TPosException {
   		System.out.println("Warning : TPosClient is NOT using CVC number");
-  		return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3");
+  		return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3", parentDataPK);
   }
   /**
    * Gets the bundleIdentifier attribute of the TPosClient object
@@ -260,7 +260,7 @@ public class TPosClient implements CreditCardClient{
    * @return                   Description of the Return Value
    * @exception TPosException  Description of the Exception
    */
-  private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType) throws TPosException {
+  private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType, Object parentDataPK) throws TPosException {
     _client.setProperty(TPOS3Client.PN_USERID, _userId);
     _client.setProperty(TPOS3Client.PN_PASSWORD, _passwd);
     _client.setProperty(TPOS3Client.PN_MERCHANTID, _merchantId);
@@ -319,8 +319,16 @@ public class TPosClient implements CreditCardClient{
 	    entry.setVoidedTransactionNr(_client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER));
 	//    entry.setXMLAttachment(_client.getProperty(TPOS3Client.));
 	    entry.setCardNumber(CreditCardBusinessBean.encodeCreditCardNumber(cardnumber));
+	    if (parentDataPK != null) {
+	    		try {
+	    			entry.setParentID(((Integer) parentDataPK).intValue());
+	    		} catch (Exception e) {
+	    			System.out.println("TPosClient : could not set parentID : "+parentDataPK);
+	    		}
+	    }
 	
 	    inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
+	    
     } catch (Exception e) {
     		e.printStackTrace();
     }
