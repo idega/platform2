@@ -225,6 +225,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           header.setFontColor(textColor);
           header.setFontSize(3);
           outerTable.add(header,1,1);
+          limitNumberOfImages=false;
           imageEntity=entities;
         }
 
