@@ -42,6 +42,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 
   public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int roomTypeId) throws Exception{
     int productId = -1;
+    boolean isUpdate = (serviceId > -1);
 
     if (serviceId == -1) {
       productId = createService(supplierId, fileId, name, number, description, isValid, new int[]{}, null, null, discountTypeId);
@@ -72,8 +73,9 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       hotel.store();
     }
 
-
-    setActiveDaysAll(productId);
+    if (!isUpdate) {
+    	setActiveDaysAll(productId);
+    }
 
     try {
       ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
