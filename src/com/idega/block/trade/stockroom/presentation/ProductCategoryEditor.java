@@ -82,8 +82,9 @@ public class ProductCategoryEditor extends IWAdminWindow {
 
   private void viewCategory(IWContext iwc) {
     try {
-      List products = EntityFinder.getInstance().findRelated(_productCategory, Product.class);
+      List products = ProductBusiness.getProducts(_productCategory);//EntityFinder.getInstance().findRelated(_productCategory, Product.class);
       List allProducts = ProductBusiness.getProducts();
+      allProducts.removeAll(products);
 
       SelectionDoubleBox sdb = new SelectionDoubleBox(this._parameterProductOut, this._parameterProductIn);
         sdb.getLeftBox().addMenuElements(allProducts);
@@ -117,8 +118,11 @@ public class ProductCategoryEditor extends IWAdminWindow {
       List products = EntityFinder.getInstance().findRelated(_productCategory, Product.class);
       _productCategory.removeFrom((Product[]) products.toArray(new Product[]{}));
 
-      for (int i = 0; i < in.length; i++) {
-        _productCategory.addTo(Product.class, Integer.parseInt(in[i]));
+
+      if (in != null) {
+        for (int i = 0; i < in.length; i++) {
+          _productCategory.addTo(Product.class, Integer.parseInt(in[i]));
+        }
       }
 
       tm.commit();

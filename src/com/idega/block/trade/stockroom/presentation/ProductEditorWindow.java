@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.sql.SQLException;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.Product;
@@ -24,6 +25,8 @@ public class ProductEditorWindow extends IWAdminWindow {
 
   private static final String ACTION = "prod_edit_action";
   private static final String PAR_SAVE = "prod_edit_save";
+  private static final String PAR_DELETE = "prod_edit_del";
+  private static final String PAR_CLOSE = "prod_edit_close";
   private static final String PAR_NUMBER = "prod_edit_number";
   private static final String PAR_NAME = "prod_edit_name";
   private static final String PAR_DESCRIPTION = "prod_edit_description";
@@ -51,6 +54,12 @@ public class ProductEditorWindow extends IWAdminWindow {
       displayForm(iwc);
     }else if (action.equals(this.PAR_SAVE)) {
       saveProduct(iwc);
+    }else if (action.equals(this.PAR_DELETE)) {
+      if (deleteProduct(iwc)) {
+        closeWindow();
+      }
+    }else if (action.equals(this.PAR_CLOSE)) {
+      closeWindow();
     }
 
   }
@@ -116,7 +125,11 @@ public class ProductEditorWindow extends IWAdminWindow {
     super.addRight(iwrb.getLocalizedString("image","Image"), imageInserter, false);
 
     SubmitButton saveBtn = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), this.ACTION, this.PAR_SAVE);
+    SubmitButton deleteBtn = new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"), this.ACTION, this.PAR_DELETE);
+    SubmitButton closeBtn = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"), this.ACTION, this.PAR_CLOSE);
 
+    super.addSubmitButton(closeBtn);
+    super.addSubmitButton(deleteBtn);
     super.addSubmitButton(saveBtn);
   }
 
@@ -133,6 +146,21 @@ public class ProductEditorWindow extends IWAdminWindow {
       add(" EDIT : ");
     }
     add(name);
+  }
+
+  private boolean deleteProduct(IWContext iwc) {
+    try {
+      ProductBusiness.deleteProduct(_product);
+      return true;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return false;
+    }
+  }
+
+  private void closeWindow() {
+    this.setParentToReload();
+    this.close();
   }
 
   private Text getText(String content) {

@@ -58,6 +58,11 @@ public class ProductBusiness {
     }
   }
 
+  public static void deleteProduct(Product product) throws SQLException {
+    products.remove(Integer.toString(product.getID()));
+    product.delete();
+  }
+
   public static Product updateProduct(Product product) throws SQLException {
     products.remove(Integer.toString(product.getID()));
     product.update();
@@ -250,7 +255,7 @@ public class ProductBusiness {
   }
 
   public static List getProducts(ProductCategory productCategory) {
-    return new Vector();
+    return getProducts(-1, productCategory.getID(), null,null);
   }
 
   public static List getProducts(idegaTimestamp stamp) {
@@ -271,8 +276,6 @@ public class ProductBusiness {
   public static List getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
     return getProducts(supplierId, -1, from, to);
   }
-
-
 
   public static List getProducts(int supplierId, int productCategoryId ,idegaTimestamp from, idegaTimestamp to) {
     Object obj = IWContext.getInstance().getApplicationAttribute(productsApplication+supplierId+productCategoryId+from+to);
