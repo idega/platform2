@@ -44,6 +44,12 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		addAttribute(COLUMN_FOREIGN_COURSE_NAME, "Foreign course name", true, true, "java.lang.String");
 		setMaxLength(COLUMN_FOREIGN_ROUND, 1);
 		setMaxLength(COLUMN_FOREIGN_COURSE_NAME, 255);
+		
+		addIndex("IDX_SCORECARD_1", COLUMN_MEMBER);
+		addIndex("IDX_SCORECARD_2", new String[] {COLUMN_MEMBER, COLUMN_SCORECARD_DATE});
+		addIndex("IDX_SCORECARD_3", new String[] {COLUMN_MEMBER, COLUMN_TOURNAMENT_ROUND, COLUMN_SCORECARD_DATE});
+		addIndex("IDX_SCORECARD_4", new String[] {COLUMN_TOURNAMENT_ROUND});
+		addIndex("IDX_SCORECARD_5", new String[] {COLUMN_MEMBER, COLUMN_TOURNAMENT_ROUND});
 	}
 
 	public String getEntityName() {
