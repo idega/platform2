@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.2 2001/06/21 16:20:46 palli Exp $
+ * $Id: Applicant.java,v 1.3 2001/06/25 18:06:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,15 +18,15 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class Applicant extends GenericEntity {
-  public static final String name_ = "app_applicant";
-  public static final String firstName_ = "first_name";
-  public static final String middleName_ = "middle_name";
-  public static final String lastName_ = "lastName";
-  public static final String ssn_ = "ssn";
-  public static final String legalResidence_ = "legal_residence";
-  public static final String residence_ = "residence";
-  public static final String residencePhone_ = "residence_phone";
-  public static final String po_ = "po";
+  private static final String name_ = "app_applicant";
+  private static final String firstName_ = "first_name";
+  private static final String middleName_ = "middle_name";
+  private static final String lastName_ = "lastName";
+  private static final String ssn_ = "ssn";
+  private static final String legalResidence_ = "legal_residence";
+  private static final String residence_ = "residence";
+  private static final String residencePhone_ = "residence_phone";
+  private static final String po_ = "po";
 
   public Applicant() {
     super();
@@ -35,6 +35,7 @@ public class Applicant extends GenericEntity {
   public Applicant(int id) throws SQLException {
     super(id);
   }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(firstName_,"First name",true,true,"java.lang.String");
@@ -54,8 +55,41 @@ public class Applicant extends GenericEntity {
     setMaxLength(residencePhone_,40);
     setMaxLength(po_,255);
   }
+
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getFirstNameColumnName() {
+    return(firstName_);
+  }
+
+  public String getMiddleNameColumnName() {
+    return(middleName_);
+  }
+
+  public String getLastNameColumnName() {
+    return(lastName_);
+  }
+
+  public String getSSNColumnName() {
+    return(ssn_);
+  }
+
+  public String getLegalResidenceColumnName() {
+    return(legalResidence_);
+  }
+
+  public String getResidenceColumnName() {
+    return(residence_);
+  }
+
+  public String getResidencePhoneColumnName() {
+    return(residencePhone_);
+  }
+
+  public String getPOColumnName() {
+    return(po_);
   }
 
   public void setFirstName(String name) {

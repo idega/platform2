@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.3 2001/06/21 16:21:18 palli Exp $
+ * $Id: Application.java,v 1.4 2001/06/25 18:05:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,33 +21,33 @@ import java.sql.Date;
  * @version 1.0
  */
 public class Application extends GenericEntity {
-  public static final String name_ = "cam_application";
-  public static final String applicationId_ = "app_application_id";
-  public static final String currentResidenceId_ = "cam_curr_res_id";
-  public static final String spouseOccupationId_ = "cam_spouse_occ_id";
-  public static final String studyBeginMonth_ = "study_begin_mo";
-  public static final String studyBeginYear_ = "study_begin_yr";
-  public static final String studyEndMonth_ = "study_end_mo";
-  public static final String studyEndYear_ = "study_end_yr";
-  public static final String faculty_ = "faculty";
-  public static final String studyTrack_ = "study_track";
-  public static final String spouseName_ = "spouse_name";
-  public static final String spouseSSN_ = "spouse_ssn";
-  public static final String spouseSchool_ = "spouse_school";
-  public static final String spouseStudyTrack_ = "spouse_study_track";
-  public static final String spouseStudyBeginMonth_ = "spouse_study_begin_mo";
-  public static final String spouseStudyBeginYear_ = "spouse_study_begin_yr";
-  public static final String spouseStudyEndMonth_ = "spouse_study_end_mo";
-  public static final String spouseStudyEndYear_ = "spouse_study_end_yr";
-  public static final String children_ = "children";
-  public static final String income_ = "income";
-  public static final String spouseIncome_ = "spouse_income";
-  public static final String housingFrom_ = "housing_from";
-  public static final String onWaitinglist_ = "on_waitinglist";
-  public static final String wantFurniture_ = "want_furniture";
-  public static final String contactPhone_ = "contact_phone";
-  public static final String otherInfo_ = "other_info";
-  public static final String email_ = "email";
+  private static final String name_ = "cam_application";
+  private static final String applicationId_ = "app_application_id";
+  private static final String currentResidenceId_ = "cam_curr_res_id";
+  private static final String spouseOccupationId_ = "cam_spouse_occ_id";
+  private static final String studyBeginMonth_ = "study_begin_mo";
+  private static final String studyBeginYear_ = "study_begin_yr";
+  private static final String studyEndMonth_ = "study_end_mo";
+  private static final String studyEndYear_ = "study_end_yr";
+  private static final String faculty_ = "faculty";
+  private static final String studyTrack_ = "study_track";
+  private static final String spouseName_ = "spouse_name";
+  private static final String spouseSSN_ = "spouse_ssn";
+  private static final String spouseSchool_ = "spouse_school";
+  private static final String spouseStudyTrack_ = "spouse_study_track";
+  private static final String spouseStudyBeginMonth_ = "spouse_study_begin_mo";
+  private static final String spouseStudyBeginYear_ = "spouse_study_begin_yr";
+  private static final String spouseStudyEndMonth_ = "spouse_study_end_mo";
+  private static final String spouseStudyEndYear_ = "spouse_study_end_yr";
+  private static final String children_ = "children";
+  private static final String income_ = "income";
+  private static final String spouseIncome_ = "spouse_income";
+  private static final String housingFrom_ = "housing_from";
+  private static final String onWaitinglist_ = "on_waitinglist";
+  private static final String wantFurniture_ = "want_furniture";
+  private static final String contactPhone_ = "contact_phone";
+  private static final String otherInfo_ = "other_info";
+  private static final String email_ = "email";
 
   public Application() {
     super();
@@ -103,6 +103,110 @@ public class Application extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getApplicationIdColumnName() {
+    return(applicationId_);
+  }
+
+  public String getCurrentResidenceIdColumnName() {
+    return(currentResidenceId_);
+  }
+
+  public String getSpouseOccupationIdColumnName() {
+    return(spouseOccupationId_);
+  }
+
+  public String getStudyBeginMonthColumnName() {
+    return(studyBeginMonth_);
+  }
+
+  public String getStudyBeginYearColumnName() {
+    return(studyBeginYear_);
+  }
+
+  public String getStudyEndMonthColumnName() {
+    return(studyEndMonth_);
+  }
+
+  public String getStudyEndYearColumnName() {
+    return(studyEndYear_);
+  }
+
+  public String getFacultyColumnName() {
+    return(faculty_);
+  }
+
+  public String getStudyTrackColumnName() {
+    return(studyTrack_);
+  }
+
+  public String getSpouseNameColumnName() {
+    return(spouseName_);
+  }
+
+  public String getSpouseSSNColumnName() {
+    return(spouseSSN_);
+  }
+
+  public String getSpouseSchoolColumnName() {
+    return(spouseSchool_);
+  }
+
+  public String getSpouseStudyTrackColumnName() {
+    return(spouseStudyTrack_);
+  }
+
+  public String getSpouseStudyBeginMonthColumnName() {
+    return(spouseStudyBeginMonth_);
+  }
+
+  public String getSpouseStudyBeginYearColumnName() {
+    return(spouseStudyBeginYear_);
+  }
+
+  public String getSpouseStudyEndMonthColumnName() {
+    return(spouseStudyEndMonth_);
+  }
+
+  public String getSpouseStudyEndYearColumnName() {
+    return(spouseStudyEndYear_);
+  }
+
+  public String getChildrenColumnName() {
+    return(children_);
+  }
+
+  public String getIncomeColumnName() {
+    return(income_);
+  }
+
+  public String getSpouseIncomeColumnName() {
+    return(spouseIncome_);
+  }
+
+  public String getHousingFromColumnName() {
+    return(housingFrom_);
+  }
+
+  public String getOnWaitinglistColumnName() {
+    return(onWaitinglist_);
+  }
+
+  public String getWantFurnitureColumnName() {
+    return(wantFurniture_);
+  }
+
+  public String getContactPhoneColumnName() {
+    return(contactPhone_);
+  }
+
+  public String getOtherInfoColumnName() {
+    return(otherInfo_);
+  }
+
+  public String getEmailColumnName() {
+    return(email_);
   }
 
   public void setAppApplicationId(int id) {

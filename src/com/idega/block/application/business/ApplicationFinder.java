@@ -1,34 +1,32 @@
+/*
+ * $Id: ApplicationFinder.java,v 1.3 2001/06/25 18:06:08 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.block.application.business;
 
-import com.idega.block.application.data.*;
+import com.idega.block.application.data.ApplicationSubject;
 import java.sql.SQLException;
-import com.idega.util.idegaCalendar;
-import com.idega.util.idegaTimestamp;
 import java.util.List;
-import java.util.Hashtable;
-import java.sql.*;
 import com.idega.data.EntityFinder;
-import com.idega.data.GenericEntity;
-import com.idega.util.database.ConnectionBroker;
-import java.lang.StringBuffer;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega multimedia
- * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
+ *
+ * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-
 public class ApplicationFinder {
-
   public static List listOfSubject(){
-    try{
-      return EntityFinder.findAll(new ApplicationSubject());
+    try {
+      return(EntityFinder.findAll(new ApplicationSubject()));
     }
-    catch(SQLException e){return null;}
+    catch(SQLException e){
+      return(null);
+    }
   }
 
-
-}// class end
+}

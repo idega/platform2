@@ -1,5 +1,5 @@
 /*
- * $Id: Applied.java,v 1.2 2001/06/21 16:21:18 palli Exp $
+ * $Id: Applied.java,v 1.3 2001/06/25 18:05:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,11 +18,11 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class Applied extends GenericEntity {
-  public static final String name_ = "cam_applied";
-  public static final String complexId_ = "bu_complex_id";
-  public static final String apartmentTypeId_ = "bu_aprt_type_id";
-  public static final String applicationId_ = "cam_application_id";
-  public static final String order_ = "ordered";
+  private static final String name_ = "cam_applied";
+  private static final String complexId_ = "bu_complex_id";
+  private static final String apartmentTypeId_ = "bu_aprt_type_id";
+  private static final String applicationId_ = "cam_application_id";
+  private static final String order_ = "ordered";
 
   public Applied() {
     super();
@@ -42,6 +42,22 @@ public class Applied extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getComplexIdColumnName() {
+    return(complexId_);
+  }
+
+  public String getApartmentTypeIdColumnName() {
+    return(apartmentTypeId_);
+  }
+
+  public String getApplicationIdColumnName() {
+    return(applicationId_);
+  }
+
+  public String getOrderColumnName() {
+    return(order_);
   }
 
   public void setComplexId(int id) {

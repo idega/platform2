@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubject.java,v 1.2 2001/06/22 11:33:08 palli Exp $
+ * $Id: ApplicationSubject.java,v 1.3 2001/06/25 18:06:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,11 +19,11 @@ import java.sql.Date;
  * @version 1.0
  */
 public class ApplicationSubject extends GenericEntity {
-  public static final String name_ = "app_subject";
-  public static final String description_ = "description";
-  public static final String created_ = "created";
-  public static final String expires_ = "expires";
-  public static final String status_ = "status";
+  private static final String name_ = "app_subject";
+  private static final String description_ = "description";
+  private static final String created_ = "created";
+  private static final String expires_ = "expires";
+  private static final String status_ = "status";
 
   public ApplicationSubject() {
     super();
@@ -38,13 +38,29 @@ public class ApplicationSubject extends GenericEntity {
     addAttribute(description_,"Description",true,true,"java.lang.String");
     addAttribute(created_,"Created",true,true,"java.sql.Date");
     addAttribute(expires_,"Expires",true,true,"java.sql.Date");
-    addAttribute(status_,"Status",true,true,"java.lang.String");
+    addAttribute(status_,"Status?",true,true,"java.lang.String");
     setMaxLength(description_,255);
     setMaxLength(status_,1);
   }
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getDescriptionColumnName() {
+    return(description_);
+  }
+
+  public String getCreatedColumnName() {
+    return(created_);
+  }
+
+  public String getExpiresColumnName() {
+    return(expires_);
+  }
+
+  public String getStatusColumnName() {
+    return(status_);
   }
 
   public void setDescription(String description) {
