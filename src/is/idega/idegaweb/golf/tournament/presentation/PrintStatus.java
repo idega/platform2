@@ -8,6 +8,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.ResultComparator;
 import is.idega.idegaweb.golf.tournament.business.ResultDataHandler;
 import is.idega.idegaweb.golf.tournament.business.ResultsCollector;
+import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,6 +18,9 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -31,8 +35,10 @@ public class PrintStatus extends GolfBlock {
 	String excel = modinfo.getParameter("xls");
 	
     String sTournamentId = modinfo.getParameter("tournament_id");
-    int tournament_id = Integer.parseInt(sTournamentId);
-
+    int tournament_id = getTournamentSession(modinfo).getTournamentID();
+    if(tournament_id==-1) {
+    		Integer.parseInt(sTournamentId);
+    }
 	if (excel == null) {
 	  ResultsViewer results = new ResultsViewer(tournament_id);
 	  add(results);
@@ -425,5 +431,14 @@ public class PrintStatus extends GolfBlock {
 
     return tournamentType;
   }
+  
+	private TournamentSession getTournamentSession(IWContext iwc) {
+		try {
+			return (TournamentSession) IBOLookup.getSessionInstance(iwc, TournamentSession.class);	
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
 
 }
