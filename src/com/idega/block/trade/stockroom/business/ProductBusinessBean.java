@@ -59,6 +59,8 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   public static int defaultLocaleId = 1;
 
   private static String productsApplication = "productsApplication_";
+  
+  public static final String COMMAND_CLEAR_CACHE = "clearProductsCache";
   public HashMap products = new HashMap();
 
   public ProductBusinessBean() {
@@ -251,6 +253,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   public void clearProductCache(int supplierId) {
     getIWApplicationContext().removeApplicationAttribute(productsApplication+supplierId);
     getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
+    this.triggerActionEvent(COMMAND_CLEAR_CACHE);
   }
 
   public List getProducts(IWContext iwc, int supplierId) throws RemoteException{
