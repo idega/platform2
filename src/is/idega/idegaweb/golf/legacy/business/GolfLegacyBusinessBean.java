@@ -36,7 +36,6 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
-import com.idega.core.file.data.ICMimeTypeBMPBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
