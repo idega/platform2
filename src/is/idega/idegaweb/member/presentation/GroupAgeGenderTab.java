@@ -12,6 +12,7 @@ import javax.ejb.FinderException;
 import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -53,9 +54,9 @@ public class GroupAgeGenderTab extends UserGroupTab {
   private Text keyDateForAgeText;
   
   // error text
-  private String lowerAgeTooSmallError = "Lower age limit is too small";
-  private String upperAgeTooLargeError = "Upper age limit is too large";
-  private String lowerAgeGreaterThanUpperAgeError = "Lower age is greater than upper age";
+  private String lowerAgeTooSmallError;
+  private String upperAgeTooLargeError;
+  private String lowerAgeGreaterThanUpperAgeError;
   
   // special error variables
   private boolean lowerAgeTooSmall = false;
@@ -192,13 +193,19 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
 	 */
 	public void initializeTexts() {
-    IWContext iwc = getEventIWContext();
-    femaleText = new Text("female members");
-    maleText = new Text("male members");
-    lowerAgeLimitText = new Text("Lower age limit:");
-    upperAgeLimitText = new Text("Upper age limit:");
-    ageLimitIsStringentConditionText = new Text("Age limits are stringent conditions");
-    keyDateForAgeText = new Text("Key date for age:");
+    IWContext iwc = IWContext.getInstance();
+    IWResourceBundle bundle = getResourceBundle(iwc);
+    femaleText = new Text(bundle.getLocalizedString("female_members","female members"));
+    maleText = new Text(bundle.getLocalizedString("male_members","male members"));
+    lowerAgeLimitText = new Text(bundle.getLocalizedString("lower_age_limit","Lower age limit")+":");
+    upperAgeLimitText = new Text(bundle.getLocalizedString("upper_age_limit","Upper age limit")+":");
+    ageLimitIsStringentConditionText = 
+      new Text(bundle.getLocalizedString("age_limits_are_stringent_conditions","Age limits are stringent conditions"));
+    keyDateForAgeText = new Text(bundle.getLocalizedString("key_date_for_age","Key date for age")+":");
+    lowerAgeTooSmallError = bundle.getLocalizedString("Lower_age_limit_is_too_mall","Lower age limit is too small");
+    upperAgeTooLargeError = bundle.getLocalizedString("Upper_age_limit_is_too_large","Upper age limit is too large");
+    lowerAgeGreaterThanUpperAgeError = 
+      bundle.getLocalizedString("Lower_age_is_greater_than_upper_age","Lower age is greater than upper age");
 	}
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
@@ -279,7 +286,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
         // set error text if necessary
         fieldValues.put(lowerAgeTooSmallFieldName, ((lowerAgeTooSmall) ? lowerAgeTooSmallError : ""));
         fieldValues.put(upperAgeTooLargeFieldName, ((upperAgeTooLarge) ? upperAgeTooLargeError : ""));
-        fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName, ((lowerAgeGreaterThanUpperAge) ? lowerAgeGreaterThanUpperAgeError : ""));
+        fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName, ((lowerAgeGreaterThanUpperAge) ? lowerAgeGreaterThanUpperAgeError :""));
       }
       catch (RemoteException ex)  {
         System.err.println("[GroupAgeGenderTab] Problem to get the AgeGenderPluginBusiness bean: "+ ex.getMessage());
