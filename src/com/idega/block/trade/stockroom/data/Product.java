@@ -192,6 +192,11 @@ public interface Product extends IDOLegacyEntity, MetaDataCapable {
 	public String getProductName(int localeId);
 
 	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductName
+	 */
+	public String getProductName(int localeId, int localeIDIfNull, String returnIfNull);
+
+	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setProductName
 	 */
 	public void setProductName(int localeId, String name);
