@@ -568,10 +568,16 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (ssn == null || ssn.equals(""))
 			return false;
 
-
 		//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 		UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
+
+		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+		    floor,sex,maritialStatus,empty,prohibitMarking,
+		    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+				addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+				agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, citizenGroup);
+
 
 		if(FATE_DECEASED.equalsIgnoreCase(fate)){
 			User user;
@@ -639,13 +645,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		catch (FinderException e) {
 			//FinderExxception is ignored, since not all users have a family
 		}
-		
-		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
-		    floor,sex,maritialStatus,empty,prohibitMarking,
-		    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
-				addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-				agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, citizenGroup);
-	
+			
 		return success;
 	}
 
