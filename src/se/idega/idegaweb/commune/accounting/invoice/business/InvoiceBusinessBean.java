@@ -1,9 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFile;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFileHome;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,17 +12,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
@@ -53,7 +47,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -82,11 +75,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/08/27 16:12:54 $ by $Author: joakim $
+ * Last modified: $Date: 2004/09/29 18:35:23 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.128 $
+ * @version $Revision: 1.129 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -1224,20 +1217,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return icfile;
 	}
 	
-	private WorkReportExportFileHome workReportExportFileHome;
-	
-	public WorkReportExportFileHome getWorkReportExportFileHome() {
-		if (workReportExportFileHome == null) {
-			try {
-				workReportExportFileHome = (WorkReportExportFileHome) IDOLookup.getHome(WorkReportExportFile.class);
-			}
-			catch (RemoteException rme) {
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return workReportExportFileHome;
-	}
-
 	private Date now () {
 		return new Date (System.currentTimeMillis ());
 	}
