@@ -60,6 +60,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   // do not use -1 (-1 means null or new entity)
   // dummy keys for primary entries
+  private static final String LEAGUE_NAME = "FIN_league_name";
   private static final String INCOME_SUM_KEY = "FIN_income_sum";
   private static final String EXPONSES_SUM_KEY = "FIN_exponses_sum";
   private static final String INCOME_EXPONSES_SUM_KEY = "FIN_income_exponses_sum";
@@ -424,6 +425,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     // define path short keys and map corresponding converters
     int i = 1;
+    browser.setMandatoryColumn(i++, LEAGUE_NAME);
+    browser.setEntityToPresentationConverter(LEAGUE_NAME, textEditorConverter);
     Iterator fieldListIterator = fieldList.iterator();
     while (fieldListIterator.hasNext()) {
       String fieldName = fieldListIterator.next().toString();
