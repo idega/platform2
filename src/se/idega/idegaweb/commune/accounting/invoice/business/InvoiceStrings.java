@@ -10,8 +10,6 @@ public interface InvoiceStrings {
 	String ADJUSTMENT_SIGNATURE_KEY = PREFIX + "adjustment_signature";
 	String AMOUNT_DEFAULT = "Belopp";
 	String AMOUNT_KEY = PREFIX + "amount";
-	String PAYMENT_AMOUNT_DEFAULT = "Utb. belopp";
-	String PAYMENT_AMOUNT_KEY = PREFIX + "payment_amount";
 	String BANKGIRO_DEFAULT = "Bankgiro";
 	String BANKGIRO_KEY = PREFIX + "bankgiro";
 	String CANCEL_DEFAULT = "Avbryt";
@@ -67,6 +65,8 @@ public interface InvoiceStrings {
 	String NUMBER_OF_PLACEMENTS_KEY = PREFIX + "number_of_placements";
 	String OWN_POSTING_DEFAULT = "Egen kontering";
 	String OWN_POSTING_KEY = PREFIX + "own_posting";
+	String PAYMENT_AMOUNT_DEFAULT = "Utb. belopp";
+	String PAYMENT_AMOUNT_KEY = PREFIX + "payment_amount";
 	String PAYMENT_HEADER_DEFAULT = "Utbetalning";
 	String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
 	String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
@@ -80,14 +80,16 @@ public interface InvoiceStrings {
 	String PLACEMENT_KEY = PREFIX + "placement";
 	String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
 	String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
+	String PLACEMENT_REMOVED_DEFAULT = "Placering borttagen";
+	String PLACEMENT_REMOVED_KEY = "placement_removed";
 	String POSTGIRO_DEFAULT = "Postgiro";
 	String POSTGIRO_KEY = PREFIX + "postgiro";
 	String PRICE_PER_MONTH_DEFAULT = "Pris/mån";
 	String PRICE_PER_MONTH_KEY = PREFIX + "price_per_month";
-	String PRINT_DEFAULT = "Skriv ut";
-	String PRINT_KEY = PREFIX + "print";
 	String PRINT_DATE_DEFAULT = "Utskriftsdatum";
 	String PRINT_DATE_KEY = PREFIX + "print_date";
+	String PRINT_DEFAULT = "Skriv ut";
+	String PRINT_KEY = PREFIX + "print";
 	String PROVIDER_CONFIRM_DEFAULT = "Anordnarattest";
 	String PROVIDER_CONFIRM_KEY = PREFIX + "provider_confirm";
 	String PROVIDER_DEFAULT = "Anordnare";
