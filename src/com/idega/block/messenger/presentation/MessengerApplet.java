@@ -174,6 +174,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
     messageDialog.addActionListener(this);
     if( alertSound!=null ) messageDialog.setAudioClip(alertSound);
+    else System.out.println("alert is null");
 
     if( newId ) dialogs.put(Integer.toString(messageDialog.hashCode()),messageDialog);
     else dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
