@@ -155,7 +155,9 @@ public class WorkReportWindow extends IWAdminWindow {
 				WorkReportOverViewCloseView closeView = new WorkReportOverViewCloseView();
 				closeView.setYear(year);
 				table.add(closeView,2,1);	//not a selector
-				menuTable.add(new WorkReportOverViewStats(),1,15);
+				WorkReportOverViewStats stats = new WorkReportOverViewStats();
+				stats.setYear(year);
+				menuTable.add(stats,1,15);
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
