@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.77 2002/03/08 14:20:34 aron Exp $
+ * $Id: NewsReader.java,v 1.78 2002/03/12 11:18:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import com.idega.block.presentation.CategoryBlock;
 
 public class NewsReader extends CategoryBlock implements IWBlock {
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
-  private boolean isAdmin = false;
+  private boolean hasEdit = false,hasAdd = false,hasInfo = false;;
   private int iCategoryId = -1;
   private String attributeName = null;
   private int attributeId = -1;
@@ -122,6 +122,9 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   public static String prmListCategory = "nwr_newscategoryid";
   public static String prmNewsCategoryId = "nwr_listcategory";
 
+  private static String AddPermisson = "add";
+  private static String InfoPermission = "info";
+
   private IWBundle iwb;
   private IWResourceBundle iwrb ;
 
@@ -144,6 +147,11 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     this();
     this.iCategoryId=iCategoryId;
     this.showAll = false;
+  }
+
+  public void registerPermissionKeys(){
+    registerPermissionKey(AddPermisson);
+    registerPermissionKey(InfoPermission);
   }
 
   public boolean getMultible(){
@@ -220,7 +228,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     T.setCellpadding(0);
     T.setCellpadding(0);
     T.setWidth( "100%");
-    if(isAdmin){
+    if(hasEdit || hasAdd || hasInfo){
       T.add(getAdminPart(iCategoryId,false,newobjinst,info,iwc),1,1);
     }
     if(iCategoryId >0){
@@ -254,18 +262,29 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
     IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     if(iCategoryId > 0){
-      Link ne = new Link(core.getImage("/shared/create.gif"));
-      ne.setWindowToOpen(NewsEditorWindow.class);
-      ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
-      T.add(ne,1,1);
+      if(hasEdit || hasAdd || hasInfo){
+        Link ne = new Link(core.getImage("/shared/create.gif"));
+        ne.setWindowToOpen(NewsEditorWindow.class);
+        ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
+        T.add(ne,1,1);
+      }
       //T.add(T.getTransparentCell(iwc),1,1);
-      Link list = new Link(iwb.getImage("/shared/info.gif"));
-      checkFromPage(list);
-      if(!info)
-        list.addParameter(prmListCategory+getInstanceIDString(iwc),"true");
-      else
-        list.addParameter(prmListCategory+getInstanceIDString(iwc),"false");
-      T.add(list,1,1);
+      if(hasEdit || hasInfo){
+        Link list = new Link(iwb.getImage("/shared/info.gif"));
+        checkFromPage(list);
+        if(!info)
+          list.addParameter(prmListCategory+getInstanceIDString(iwc),"true");
+        else
+          list.addParameter(prmListCategory+getInstanceIDString(iwc),"false");
+        T.add(list,1,1);
+      }
+
+      if(hasEdit){
+        Link change = getCategoryLink();
+        change.setImage(core.getImage("/shared/edit.gif"));
+        T.add(change,1,1);
+      }
+
       //T.add(T.getTransparentCell(iwc),1,1);
       /* category link
       Link change = new Link(core.getImage("/shared/edit.gif"));
@@ -273,12 +292,10 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       change.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
       */
-      Link change = getCategoryLink();
-      change.setImage(core.getImage("/shared/edit.gif"));
-      T.add(change,1,1);
 
 
-      if ( enableDelete ) {
+
+      if ( hasEdit && enableDelete ) {
         T.add(T.getTransparentCell(iwc),1,1);
         Link delete = new Link(core.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(NewsEditorWindow.class);
@@ -286,7 +303,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
         T.add(delete,3,1);
       }
     }
-    if(newObjInst){
+    if(hasEdit && newObjInst){
       Link newLink = new Link(core.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(NewsEditorWindow.class);
       if(newObjInst)
@@ -418,7 +435,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       T.add(getMoreLink(tMore,news.getID(),iwc), 1, row);
     }
     row++;
-    if(isAdmin){
+    if(hasEdit || hasAdd || hasInfo){
       T.add(getNewsAdminPart(news,iwc),1,row);
     }
     return T;
@@ -698,7 +715,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       }
 
       //////////// ADMIN PART /////////////////////
-      if(isAdmin){
+      if(hasEdit || hasAdd || hasInfo){
         T.add(getNewsAdminPart(news,iwc),1,row);
       }
       row++;
@@ -742,7 +759,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
         else {
           T.add(headLine, headlineCol, 1);
       }
-      if(isAdmin){
+      if(hasEdit || hasAdd || hasInfo){
         T.add(getNewsAdminPart(news,iwc),4,1);
       }
     }
@@ -793,14 +810,9 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   }
 
   public void main(IWContext iwc)throws Exception{
-    try {
-      //isAdmin = AccessControl.isAdmin(iwc);
-      /** @todo  */
-      isAdmin = iwc.hasEditPermission(this);
-    }
-    catch (Exception ex) {
-      isAdmin = false;
-    }
+    hasEdit = iwc.hasEditPermission(this);
+    hasAdd = iwc.hasPermission(AddPermisson,this);
+    hasInfo = iwc.hasPermission(InfoPermission,this);
 
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
@@ -940,7 +952,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   }
 
   public void setAdmin(boolean isAdmin){
-    this.isAdmin=isAdmin;
+    this.hasEdit=isAdmin;
   }
   public void setWidth(int width){
     setWidth(Integer.toString(width));
