@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.9 2005/02/15 14:15:55 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.10 2005/02/15 16:03:26 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -19,10 +19,8 @@ import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.export.data.ChildCareExportTime;
 import se.idega.idegaweb.commune.childcare.export.data.ChildCareExportTimeHome;
 
@@ -47,10 +45,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/15 14:15:55 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/15 16:03:26 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -206,12 +204,6 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 			Iterator contracts = getChildCareContractHome().findChangedBetween(from, to).iterator();
 			while (contracts.hasNext()) {
 				ChildCareContract contract = (ChildCareContract) contracts.next();
-				ChildCareApplication application = contract.getApplication();
-				char applicationStatus = application.getApplicationStatus();
-				if (!(applicationStatus == getChildCareBusiness().getStatusReady() ||
-						applicationStatus == getChildCareBusiness().getStatusCancelled())) {
-					continue;
-				}				
 				User user = contract.getChild();
 				SchoolClassMember placement = contract.getSchoolClassMember();
 				if (placement == null) {
@@ -651,13 +643,6 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	 */
 	public String getTaxekatExportFileNamePrefix() {
 		return FILE_NAME_PREFIX_TAXEKAT;
-	}
-	
-	/*
-	 * Returns a ChildCareBusiness instance.
-	 */
-	private ChildCareBusiness getChildCareBusiness() throws RemoteException {
-		return (ChildCareBusiness) this.getServiceInstance(ChildCareBusiness.class);
 	}
 	
 	/*
