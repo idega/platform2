@@ -181,9 +181,10 @@ public class RegisterNewMember extends GolfBlock {
 		myTable.add((TextInput) getStyledInterface(new TextInput("login")), 2, 1);
 		myTable.add((PasswordInput) getStyledInterface(new PasswordInput("password")), 2, 2);
 		myTable.add(new HiddenInput("kt", kt), 1, 3);
+		myTable.add(new HiddenInput("action", "afram"), 1, 3);
 
-		myTable.add(new SubmitButton("action", "afram"), 2, 3);
-		myTable.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_RIGHT);
+		myTable.add(getButton(new SubmitButton(localize("next", "Next"))), 1, 3);
+		myTable.mergeCells(1, 3, 2, 3);
 
 		myForm.add(myTable);
 		add(myForm);
@@ -520,6 +521,7 @@ public class RegisterNewMember extends GolfBlock {
 		myTable.setBorder(0);
 		myTable.setCellpadding(3);
 		myTable.setCellspacing(0);
+		myTable.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 
 		myTable.add(new HiddenInput("member_id", Integer.toString(member.getID())), 1, row);
@@ -696,7 +698,7 @@ public class RegisterNewMember extends GolfBlock {
 		else if (mInfo != null) {
 			myTable.add(getHeader(localize("handicap", "Handicap")), 3, row);
 			myTable.add(getText(Float.toString(mInfo.getFirstHandicap())), 4, row);
-			myTable.add(new HiddenInput("handicap", Float.toString(mInfo.getFirstHandicap())), 4, row);
+			myTable.add(new HiddenInput("handicap", Float.toString(mInfo.getFirstHandicap())), 4, row++);
 		}
 		//////////////////////////////////////////////////////////////// Handicap endar
 
@@ -724,6 +726,7 @@ public class RegisterNewMember extends GolfBlock {
 			e.printStackTrace();
 		}
 
+		row++;
 		if (lTable != null) {
 			TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login", lTable.getUserLogin()));
 			PasswordInput password = (PasswordInput) getStyledSmallInterface(new PasswordInput("password", lTable.getUserPassword()));
@@ -731,7 +734,6 @@ public class RegisterNewMember extends GolfBlock {
 			myTable.add(login, 4, row++);
 			myTable.add(getHeader(localize("password", "Password")), 3, row);
 			myTable.add(password, 4, row++);
-			++row;
 		}
 		else {
 			TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login"));
