@@ -348,38 +348,22 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	      Iterator iter = gr.iterator();
 	      while (iter.hasNext()) {
 	        GenericGroup item = (GenericGroup)iter.next();
-	        System.out.println("StockroomBusiness : itemPK = "+ item.getPrimaryKey());
-	    			System.out.println("StockroomBusiness : itemType = "+ item.getGroupType());
-	    			System.out.println("StockroomBusiness : itemTypeValue = "+ item.getGroupTypeValue());
 	        if(item.getGroupType().equals(SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE)){
-	        		System.out.println("StockroomBusiness : itemType == "+SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE);
 	        		try {
-		        		System.out.println("StockroomBusiness : in try");
 	        			Collection coll = sHome.findAllByGroupID(item.getID());
-		        		System.out.println("StockroomBusiness : int try 2");
 	        			if (coll != null && !coll.isEmpty()) {
-	  	          		System.out.println("StockroomBusiness : coll != null && !coll.isEmpty()");
 	        				return ((Supplier) coll.iterator().next()).getID();
-	        			} else {
-	  	          		System.out.println("StockroomBusiness : coll i ruglinu");
-	        			}
+	        			} 
 	        		} catch (FinderException fe) {
 	        			fe.printStackTrace();
 	        		}
 	        		
 	          IDOLegacyEntity[] supp = ((Supplier) SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(SupplierBMPBean.getColumnNameGroupID(),item.getID());
 	          if(supp != null && supp.length > 0){
-	          	System.out.println("StockroomBusiness : suppID (in here) == "+supp[0].getID());
 	            return supp[0].getID();
-	          } else {
-	          		System.out.println("StockroomBusiness : supp = "+supp);
 	          }
-	        } else {
-	        		System.out.println("StockroomBusiness : itemType != "+SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE);
 	        }
 	      }
-	    } else {
-	    		System.out.println("StockroomBusiness : gr = null");
 	    }
 	    throw new RuntimeException("Does not belong to any supplier");
   	} catch (IDOLookupException e) {
@@ -392,21 +376,15 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     String supplierLoginAttributeString = "sr_supplier_id";
 
     Object obj = LoginBusinessBean.getLoginAttribute(supplierLoginAttributeString,iwc);
-    System.out.println("StockroomBusiness checking for supplier");
     if(obj != null){
-      System.out.println("StockroomBusiness : obj = "+obj.toString());
       return ((Integer)obj).intValue();
     }else{
-      System.out.println("StockroomBusiness : obj = NULL");
       User us = LoginBusinessBean.getUser(iwc);
       if(us != null){
-      		System.out.println("StockroomBusiness : user = "+us.toString());
         int suppId = getUserSupplierId(us);
-    			System.out.println("StockroomBusiness : suppID = "+suppId);
         LoginBusinessBean.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), iwc);
         return suppId;
       } else{
-        System.out.println("StockroomBusiness : us = NULL");
         throw new NotLoggedOnException();
       }
     }
