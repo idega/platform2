@@ -236,7 +236,6 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 			}
 	    iwc.setSessionAttribute(hasAppliedForPsw, Boolean.TRUE.toString());
 		}
-		viewForm(iwc);
   }
 
 	/**
