@@ -1,7 +1,10 @@
 package com.idega.block.calendar.presentation;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.idega.block.calendar.business.CalendarBusiness;
@@ -53,6 +56,10 @@ public class SmallCalendar extends Block {
 	private Hashtable dayFontColors = null;
 
 	private boolean useTarget = false;
+	private String onClickMessageFormat = null;
+	private int displayFormat = DateFormat.MEDIUM;
+	
+	public static final String PRM_SETTINGS = "settings";
 
 	public Table T;
 
@@ -85,6 +92,9 @@ public class SmallCalendar extends Block {
 			}
 			else
 				stamp = IWTimestamp.RightNow();
+		}
+		if(iwc.isParameterSet(PRM_SETTINGS)){
+			setInitializingString(iwc.getParameter(PRM_SETTINGS));
 		}
 		make(iwc);
 	}
@@ -202,6 +212,8 @@ public class SmallCalendar extends Block {
 
 		Link theLink;
 		String dayColor = null;
+		DateFormat df = DateFormat.getDateInstance(displayFormat,iwc.getCurrentLocale());
+		
 
 		while (n <= daycount) {
 			t = new Text(String.valueOf(n));
@@ -244,6 +256,15 @@ public class SmallCalendar extends Block {
 				theLink.setFontSize(1);
 				for (int i = 0; i < parameterName.size(); i++) {
 					theLink.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+				}
+				if(onClickMessageFormat!=null){
+					String[] s = new String[2];
+					IWTimestamp timeStamp = new IWTimestamp(n,stamp.getMonth(),stamp.getYear());
+					s[0]="'"+timeStamp.getTimestamp().toString()+"'";
+					//s[1]="'"+timeStamp.getTimestamp().toString()+"'";
+					s[1] = "'"+df.format(timeStamp.getDate())+"'";
+					String onClickString = java.text.MessageFormat.format(onClickMessageFormat,s);
+					theLink.setOnClick(onClickString);
 				}
 				T.add(theLink, xpos, ypos);
 			}
@@ -558,24 +579,66 @@ public class SmallCalendar extends Block {
 		return (Link) _link.clone();
 	}
 
+	/**
+	 * Set the proxy Link object to be used
+	 * @param link
+	 */
 	public void setLink(Link link) {
 		_link = link;
 	}
 
+	/**
+	 * Set the page to direct to
+	 * @param page
+	 */
 	public void setPage(ICPage page) {
 		_page = page;
 	}
 
+	/**
+	 * Set the current timestamp
+	 * @param stamp
+	 */
 	public void setTimestamp(IWTimestamp stamp) {
 		this.stamp = stamp;
 	}
 
+	/**
+	 * Adds a parameter to be maintained in calendar
+	 * @param name
+	 * @param value
+	 */
 	public void addParameterToLink(String name, int value) {
 		addParameterToLink(name, Integer.toString(value));
 	}
+	/**
+	 * Adds a parameter to be maintained in calendar
+	 * @param name
+	 * @param value
+	 */
 	public void addParameterToLink(String name, String value) {
 		parameterName.add(name);
 		parameterValue.add(value);
+	}
+	
+	/**
+	 * Set the message format to be parsed with MessageFormat
+	 * with the {0} parameter for the chosen dates long value
+	 * and the {1} parameter for the chosed date's locale display format
+	 * @param format
+	 */
+	public void setOnClickMessageFormat(String format){
+		this.onClickMessageFormat = format;
+	}
+	
+	/**
+	 * Sets the display format of the date when calendar user to choose
+	 * date, default set to DateFormat.MEDIUM, can be DateFormat.SHORT
+	 * and DateFormat.LONG instead
+	 * @param format
+	 */
+	public void setOnClickDisplayFormat(int format){
+		this.displayFormat = format;
 	}
 
 	public synchronized Object clone() {
@@ -622,5 +685,50 @@ public class SmallCalendar extends Block {
 			ex.printStackTrace(System.err);
 		}
 		return obj;
+	}
+	
+	public void setInitializingString(String initializingString){
+		StringTokenizer tok = new StringTokenizer(initializingString,",");
+		if(tok.countTokens()==8){
+			String t = tok.nextToken();
+			if(t.equals("1"))
+				showNameOfDays(true);
+			t = tok.nextToken();
+			if(t!=null)
+				setTextColor(t);
+			t = tok.nextToken();
+			if(t!=null)
+				setHeaderTextColor(t);
+			t = tok.nextToken();
+			if(t!=null)
+				setHeaderColor(t);
+			t = tok.nextToken();
+			if(t!=null)
+				setBodyColor(t);
+			t = tok.nextToken();
+			if(t!=null)
+				setInActiveCellColor(t);
+			t = tok.nextToken();
+			if(t!=null)
+				setBackgroundColor(t);
+			t = tok.nextToken();
+			if(t!=null)
+				setTodayFontColor(t);
+		
+		}
+	}
+	
+	public static String getInitializingString(boolean showNameOfDays,String textColor,String headerTextColor,String headerColor,String bodyColor,String inactiveCellColor,String backgroundColor,String todayColor){
+		StringBuffer buf = new StringBuffer();
+		String sep = ",";
+		buf.append(showNameOfDays?"1":"0").append(sep);
+		buf.append(textColor).append(sep);
+		buf.append(headerTextColor).append(sep);
+		buf.append(headerColor).append(sep);
+		buf.append(bodyColor).append(sep);
+		buf.append(inactiveCellColor).append(sep);
+		buf.append(backgroundColor).append(sep);
+		buf.append(todayColor);
+		return buf.toString();
 	}
 }
