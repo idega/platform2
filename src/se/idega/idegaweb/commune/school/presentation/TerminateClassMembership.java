@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 08:55:40 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/09 09:48:12 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -90,6 +90,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	 * @param context session data like user info etc.
 	 */
 	public void init (final IWContext context) {
+
         try {
             if (context.isParameterSet (ACTION_TERMINATE_KEY)) {
                 add (createMainTable (getTerminateMembershipTable (context)));
@@ -239,10 +240,13 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             final SchoolCommuneBusiness communeBusiness
                     = (SchoolCommuneBusiness) IBOLookup.getServiceInstance
                     (context, SchoolCommuneBusiness.class);
+            final int schoolId = getSchoolID ();
             for (Iterator i = usersFound.iterator (); i.hasNext ();) {
                 final User user = (User) i.next ();
-                final SchoolClassMember student
-                        = communeBusiness.getCurrentSchoolClassMembership
+                final SchoolClassMember student = schoolId >= 0
+                        ? communeBusiness.getCurrentSchoolClassMembership
+                        (user, schoolId)
+                        : communeBusiness.getCurrentSchoolClassMembership
                         (user);
                 if (null != student && null == student.getRemovedDate ()) {
                     if (MAX_FOUND_USERS <= students.size ()) {
