@@ -17,10 +17,19 @@ public class NewsCategory extends GenericEntity{
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(), "Name", true, true, "java.lang.String");
-    addAttribute(getDescriptionColumnName(), "Description", true, true, "java.lang.String");
-    addAttribute(getNewsDateColumnName(), "News date", true, true, "java.sql.Date");
-    addAttribute(getValidColumnName(), "Valid", true, true, "java.lang.String",1);
+    addAttribute(getNameColumnName(), "Name", true, true, String.class);
+    addAttribute(getDescriptionColumnName(), "Description", true, true, String.class);
+    addAttribute(getNewsDateColumnName(), "News date", true, true, java.sql.Date.class);
+    addAttribute(getValidColumnName(), "Valid", true, true, String.class,1);
+  }
+
+  public void insertStartData()throws Exception{
+    NewsCategory cat = new NewsCategory();
+    cat.setName("Default");
+    cat.setValid("Y");
+    cat.setDescription("Default Category for idegaWeb");
+    cat.insert();
+
   }
 
   public static String getNewsCategoryTableName(){return "NW_NEWS_CAT";}
@@ -38,6 +47,11 @@ public class NewsCategory extends GenericEntity{
   public String getNewsCategoryName(){
     return getStringColumnValue(getNameColumnName());
   }
+
+  public void setName(String name){
+    setNewsCategoryName(name);
+  }
+
   public void setNewsCategoryName(String news_category_name){
     setColumn(getNameColumnName(), news_category_name);
   }
