@@ -682,5 +682,11 @@ ntext)
 	 */
 	public void handleKeepStatus(IWContext iwc) {
 	}
-}
 
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#isContainer()
+	 */
+	public boolean isContainer() {
+		return false;
+	}
+}

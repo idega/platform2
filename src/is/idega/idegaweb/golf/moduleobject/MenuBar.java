@@ -535,5 +535,11 @@ public class MenuBar extends InterfaceObject {
 	 */
 	public void handleKeepStatus(IWContext iwc) {
 	}
-} // Class MenuBar
 
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#isContainer()
+	 */
+	public boolean isContainer() {
+		return false;
+	}
+} // Class MenuBar
