@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.11 2005/02/16 07:55:28 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.12 2005/02/16 09:35:03 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/16 07:55:28 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/16 09:35:03 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -229,11 +229,33 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				SchoolType schoolType = group.getSchoolType(); 
 
 				if (isContractInInterval(contract, from, to)) {
+					Date validFromDate = contract.getValidFromDate();
 					Date terminatedDate = contract.getTerminatedDate();
-					if (terminatedDate == null && log != null) {
-						terminatedDate = log.getEndDate();
+					if (isContractStartInInterval(contract, from, to)) {
+						if (terminatedDate == null && log != null) {
+							terminatedDate = log.getEndDate();
+						} else if (terminatedDate != null && log != null) {
+							if (log.getEndDate() != null) {
+								if (terminatedDate.compareTo(log.getEndDate()) > 0) {
+									terminatedDate = log.getEndDate();
+								}
+							}
+						}
+					} else {
+						// Only contract terminated date in interval, use log for terminated date
+						try {
+							log = home.findByPlacementAndDate(placement, terminatedDate);
+						} catch (FinderException e) {
+							log = null;
+						}
+						if (log != null) {
+							placementFromDate = log.getStartDate();
+							if (placementFromDate.compareTo(validFromDate) > 0) {
+								validFromDate = log.getStartDate();
+							}
+						}
 					}
-					s += getTaxekatLine(user, school, group, schoolType, placementFromDate, contract.getCareTime(), contract.getValidFromDate(), terminatedDate);
+					s += getTaxekatLine(user, school, group, schoolType, placementFromDate, contract.getCareTime(), validFromDate, terminatedDate);
 					s += "\r\n";						
 				} else {
 					log = null;
@@ -280,6 +302,19 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 			if (cTo.compareTo(from) >= 0 && cTo.compareTo(to) <= 0) {
 				return true;
 			}
+		}
+		
+		return false;
+	}
+
+	/*
+	 * Returns true if the specified contract has start date within specified date interval.
+	 */
+	private boolean isContractStartInInterval(ChildCareContract c, Date from, Date to) {
+		Date cFrom = c.getValidFromDate();
+		
+		if (cFrom.compareTo(from) >= 0 && cFrom.compareTo(to) <= 0) {
+			return true;
 		}
 		
 		return false;
