@@ -16,10 +16,9 @@ import java.util.Vector;
 public class MessageListener implements Runnable{
   private MessengerApplet client;
   private Thread t;
-  private long threadSleep = 500;//0.5 sec
-  private boolean runThread = true;
+  private long threadSleep = 1000;//1 sec
+  private boolean runThread = false;
   private Vector dialogs = null;
-  private int length = 0;
 
   public MessageListener(MessengerApplet applet) {
     this.client = applet;
@@ -30,16 +29,16 @@ public class MessageListener implements Runnable{
     setIntervalForMsgChecking(interval);
   }
 
-  public synchronized void addMessageDialog(MessageDialog msg){
+  public void addMessageDialog(MessageDialog msg){
     if( dialogs == null ) dialogs = new Vector();
     dialogs.addElement(msg);
-    length++;
   }
 
   public void run(){
     while(runThread){
       try {
         if( dialogs != null ){
+          int length = dialogs.size();
           for (int i = 0; i < length; i++) {
             client.getMessagesFromDialog((MessageDialog)dialogs.elementAt(i));
           }
@@ -55,6 +54,7 @@ public class MessageListener implements Runnable{
   public void start(){
     if( t == null ){
       t = new Thread();
+      runThread = true;
       t.start();
       run();
     }
@@ -62,7 +62,6 @@ public class MessageListener implements Runnable{
 
   public void stop(){
     if ( t != null ){
-      t=null;
       runThread = false;
     }
   }
