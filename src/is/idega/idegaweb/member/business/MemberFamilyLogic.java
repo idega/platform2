@@ -11,6 +11,7 @@ public interface MemberFamilyLogic extends com.idega.business.IBOService
  public java.lang.String getChildRelationType() throws java.rmi.RemoteException;
  public java.util.Collection getChildrenFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoChildrenFound,java.rmi.RemoteException;
  public java.util.Collection getCustodiansFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoCustodianFound,java.rmi.RemoteException;
+ public java.util.Collection getCustodiansFor(com.idega.user.data.User child,boolean returnParentsIfNotFound)throws is.idega.idegaweb.member.business.NoCustodianFound,java.rmi.RemoteException;
  public java.util.Collection getParentsFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoParentFound,java.rmi.RemoteException;
  public java.lang.String getParentRelationType() throws java.rmi.RemoteException;
  public java.lang.String getCustodianRelationType() throws java.rmi.RemoteException;

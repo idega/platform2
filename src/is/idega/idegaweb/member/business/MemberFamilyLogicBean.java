@@ -171,25 +171,34 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
    * empty Collection if no custodians or parents are found.
    * @throws NoCustodianFound if no custodians are found
    */
-  public Collection getCustodiansFor(User user)throws NoCustodianFound,RemoteException{
+  public Collection getCustodiansFor(User user,boolean returnParentsIfNotFound)throws NoCustodianFound,RemoteException{
     String userName = null;
     try{
       userName = user.getName();
       Collection coll = user.getReverseRelatedBy(this.RELATION_TYPE_GROUP_CUSTODIAN);
       if(coll==null || coll.isEmpty()){
-      	try{
-      		coll = this.getParentsFor(user);//todo remove this when database is fixed
-      		return coll;
+      	if(returnParentsIfNotFound){
+      		try{
+      			coll = this.getParentsFor(user);//todo remove this when database is fixed
+      			return coll;
+      		}
+      		catch(NoParentFound ex){
+				throw new NoCustodianFound(userName);
+      		}
       	}
-      	catch(NoParentFound ex){
-					throw new NoCustodianFound(userName);
-      	}				
+      	else{
+			throw new NoCustodianFound(userName);				
+      	}
       }
       return convertGroupCollectionToUserCollection(coll);
     }
     catch(FinderException e){
       throw new NoCustodianFound(userName);
     }
+  }
+  
+  public Collection getCustodiansFor(User user)throws NoCustodianFound,RemoteException{
+  	return getCustodiansFor(user,true);
   }
   
 	/**
