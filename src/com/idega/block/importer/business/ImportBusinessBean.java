@@ -66,7 +66,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
       
       try{
       	
-      is.idega.idegaweb.member.business.KRImportFileHandlerBean handler = new is.idega.idegaweb.member.business.KRImportFileHandlerBean();
+     /* is.idega.idegaweb.member.business.KRImportFileHandlerBean handler = new is.idega.idegaweb.member.business.KRImportFileHandlerBean();
       handler.setImportFile(file);
       handler.setRootGroup(group);
       
@@ -74,7 +74,8 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
       //((NackaImportFileHandler)handler).setOnlyImportRelations(true);
       //((NackaImportFileHandler)handler).setStartRecord(52000);
       //((NackaImportFileHandler)handler).setImportRelations(false);
-      status = handler.handleRecords();
+      
+      //status = handler.handleRecords();
 
 
       }
