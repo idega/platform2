@@ -221,16 +221,16 @@ public class RegulationSearchPanel extends AccountingBlock {
 							
 			while(i.hasNext()){
 				Regulation reg = (Regulation) i.next();
-				Link link = new Link(reg.getName() + " ("+formatDate(reg.getPeriodFrom(), 4) + "-" + formatDate(reg.getPeriodTo(), 4)+")");
+				Link link = new Link(reg.getName() /* + " ("+formatDate(reg.getPeriodFrom(), 4) + "-" + formatDate(reg.getPeriodTo(), 4)+")"*/ );
 				link.addParameter(new Parameter(PAR_ENTRY_PK, reg.getPrimaryKey().toString()));
 				maintainParameters(iwc, link);
 				setParameters(link);
 				
-	//THIS doean't work for opera...				
+	//THIS doean't work for opera... but it should be neccessary to submit the form anyway...				
 	//			link.setOnClick("getElementById('"+ pkId +"').value='"+ reg.getPrimaryKey() +"'");			
 	//			link.setToFormSubmit(form);
 						
-				if (col > 3){
+				if (col >= 3){
 					col = 1;
 					row++;
 				} else{
