@@ -261,7 +261,14 @@ public class CurrencyBusiness {
 							update = true;
 						}else {
 							update = false;
+							currency = home.create();
 						}
+
+						if (currency.getID() < 1 ) {
+							update = false;
+							currency = home.create();	
+						}
+
 					} catch (Exception e) {
 						currency = home.create();
 						update = false;
@@ -274,7 +281,7 @@ public class CurrencyBusiness {
 						bulk.add(currency, bulk.update);
 					}
 					else {
-						System.out.println("[CurrencyBusiness] Creating new currency : " + currency.getCurrencyName());
+						System.out.println("[CurrencyBusiness] Creating new currency, name : " + currency.getCurrencyName() + ", abbr : "+currency.getCurrencyAbbreviation());
 						bulk.add(currency, bulk.insert);
 					}
 
