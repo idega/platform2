@@ -443,7 +443,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
     public GolfField getFieldInfo( int field, String date) throws SQLException,IOException{
             StartingtimeFieldConfig FieldConfig = business.getFieldConfig( field , date );
-            GolfField field_info = new GolfField ( new idegaTimestamp(FieldConfig.getOpenTime()).toSQLTimeString(), new idegaTimestamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShown() );
+            GolfField field_info = new GolfField ( new idegaTimestamp(FieldConfig.getOpenTime()).toSQLTimeString(), new idegaTimestamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShown(), FieldConfig.publicRegistration());
             return field_info;
     }
 

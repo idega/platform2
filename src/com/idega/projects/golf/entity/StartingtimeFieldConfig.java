@@ -31,6 +31,7 @@ public class StartingtimeFieldConfig extends GolfEntity {
     addAttribute("days_kept","Hve lengi geymt",false,false,"java.lang.Integer");
     addAttribute("tournament_id","Mót",false,false,"java.lang.Integer");
     addAttribute("end_date","Hætti að gilda",true,true,"java.sql.Timestamp");
+    addAttribute(getPublicRegistrationColumnName(),"skráning á neti",false,false,"java.lang.Boolean");
   }
 
   public String getEntityName(){
@@ -41,6 +42,13 @@ public class StartingtimeFieldConfig extends GolfEntity {
   public void setDefultValues(){
     setDaysShown( new Integer(0) );
   }
+
+
+
+  public static String getPublicRegistrationColumnName(){
+    return "public_registration";
+  }
+
 
 
   // ### get- & set-Föll ###
@@ -124,6 +132,18 @@ public class StartingtimeFieldConfig extends GolfEntity {
   public void setDaysKept( Integer days_kept){
     setColumn("days_kept",days_kept);
   }
+
+
+
+  public boolean publicRegistration(){
+    return getBooleanColumnValue(getPublicRegistrationColumnName());
+  }
+
+  public void setPublicRegistration(boolean value){
+    setColumn(getPublicRegistrationColumnName(),value);
+  }
+
+
 
 
 }   // class  StartingtimeFieldConfig
