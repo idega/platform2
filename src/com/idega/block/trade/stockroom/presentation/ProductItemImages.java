@@ -30,6 +30,7 @@ public class ProductItemImages extends ProductItem {
   private String _alignment;
   private boolean _zoom = false;
   private String _tableWidth;
+  private int _numberOfImages;
 
   /**
    *  Constructor for the ProductItemThumbnail object
@@ -92,7 +93,6 @@ public class ProductItemImages extends ProductItem {
 	  image.setAttributes(getAttributeMap(att));
 
 	if ( _width > 0 ) {
-	  System.out.println("Setting image width: "+_width);
 	  image.setWidth( _width );
 	}
 	if ( _height > 0 ) {
@@ -118,11 +118,19 @@ public class ProductItemImages extends ProductItem {
 	    table.setWidth(column++,row,String.valueOf(_cellspacing));
 	  }
 	  ++column;
+	  if ( column > _numberOfImages ) {
+	    column = 1;
+	    row++;
+	  }
 	}else {
 	  if ( _cellspacing > 0 ) {
 	    table.setHeight(column,row++,String.valueOf(_cellspacing));
 	  }
 	  ++row;
+	  if ( row > _numberOfImages ) {
+	    row = 1;
+	    column++;
+	  }
 	}
       }
     }catch (SQLException sql) {
@@ -190,6 +198,10 @@ public class ProductItemImages extends ProductItem {
 
   public void setImagesToZoom(boolean zoom) {
     _zoom = zoom;
+  }
+
+  public void setNumberOfImagesInLine(int numberOfImages) {
+    _numberOfImages = numberOfImages;
   }
 
 }
