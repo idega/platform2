@@ -117,11 +117,11 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		}
 	}
 	
-	private boolean isCreateView(IWContext iwc){
+	protected boolean isCreateView(IWContext iwc){
 		return iwc.isParameterSet(PRM_CREATE);
 	}
 	
-	private boolean isListView(IWContext iwc){
+	protected boolean isListView(IWContext iwc){
 		return !isCreateView(iwc);
 	}
 	

@@ -20,10 +20,10 @@ import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
 
 import com.idega.business.IBOLookup;
@@ -48,7 +48,7 @@ import com.idega.util.Age;
  * @version 1.0
  */
 
-public class HouseHoldViewer extends CommuneBlock {
+public class HouseHoldViewer extends AccountingBlock {
 
 	private User firstUser = null;
 	private User secondUser = null;
@@ -424,7 +424,7 @@ public class HouseHoldViewer extends CommuneBlock {
 
 	private Address getUserAddress(IWContext iwc, User user) {
 		try {
-			return getUserService(iwc).getUserAddress1(((Integer) firstUser.getPrimaryKey()).intValue());
+			return getUserService(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue());
 		}
 		catch (EJBException e) {
 			e.printStackTrace();
