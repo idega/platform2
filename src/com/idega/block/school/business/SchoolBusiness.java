@@ -1,6 +1,10 @@
 package com.idega.block.school.business;
 
+import java.rmi.RemoteException;
 import javax.ejb.*;
+
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 public interface SchoolBusiness extends com.idega.business.IBOService
 {
@@ -30,8 +34,12 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection getHeadmasters(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClassHome getSchoolClassHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolsByType(int p0) throws java.rmi.RemoteException;
+ public java.util.Collection findAllSchoolsByType(java.util.Collection types) throws java.rmi.RemoteException;
  public com.idega.user.data.Group getNewSchoolGroup(java.lang.String p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClassMember createSchoolClassMember(com.idega.block.school.data.SchoolClass p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Map getSchoolRelatedSchoolTypes(com.idega.block.school.data.School p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolYearsInSchool(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException;
+ public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException;
+ public void addSchoolAdministrator( User user) throws RemoteException, FinderException, CreateException;
 }

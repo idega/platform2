@@ -410,7 +410,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	protected UserBusiness getUserBusiness() throws RemoteException {
 		return (UserBusiness) this.getServiceInstance(UserBusiness.class);
 	}
-
+	
 	public SchoolClass createSchoolClass(String schoolClassName, School school, SchoolYear year, SchoolSeason season) throws RemoteException {
 		try {
 			SchoolClassHome sClassHome = (SchoolClassHome) this.getIDOHome(SchoolClass.class);
@@ -461,7 +461,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 	
 	public void addHeadmaster(School school, User user) throws RemoteException {
-		getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);	
+		getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);
+	}
+	
+	public Collection findAllSchoolsByType(Collection types) {
+		try {
+			SchoolHome shome = getSchoolHome();
+			return shome.findAllBySchoolType(types);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return new java.util.Vector();
+		}
 	}
 
 	public Collection findAllSchoolsByType(int type) {
@@ -494,5 +505,82 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}	
 		return null;
 	}
+
+
+	/**
+	 * @deprecated SHOULD NOT BE HERE
+	 */
+	private IWBundle getCommuneBundle()
+	{
+		return this.getIWApplicationContext().getApplication().getBundle("se.idega.idegaweb.commune");
+	}
+
+	/**
+	* Returns or creates (if not available) the default usergroup all school administors have as their primary group.
+	* @throws CreateException if it failed to create the group.
+	* @throws FinderException if it failed to locate the group.
+	*/
+	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException
+	{
+		Group rootGroup = null;
+		//create the default group
+		String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "school_administrators_group_id";
+		IWBundle bundle = getCommuneBundle();
+		String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
+		if (groupId != null)
+		{
+			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+		} else
+		{
+			System.err.println("trying to store Commune Root school administrators group");
+			/**@todo this seems a wrong way to do things**/
+			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+			GroupType type = typeHome.create();
+			rootGroup =
+				getUserBusiness().getGroupBusiness().createGroup(
+					"School Administrators",
+					"The Commune Root School Administrators Group.",
+					type.getGeneralGroupTypeString());
+			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
+		}
+		return rootGroup;
+	}
+
+	/**
+	* Returns or creates (if not available) the default usergroup all provider(childcare) administors have as their primary group.
+	* @throws CreateException if it failed to create the group.
+	* @throws FinderException if it failed to locate the group.
+	*/
+	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException
+	{
+		Group rootGroup = null;
+		//create the default group
+		String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "provider_administrators_group_id";
+		IWBundle bundle = getCommuneBundle();
+		String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
+		if (groupId != null)
+		{
+			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+		} else
+		{
+			System.err.println("trying to store Commune Root school administrators group");
+			/**@todo this seems a wrong way to do things**/
+			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+			GroupType type = typeHome.create();
+			rootGroup =
+				getUserBusiness().getGroupBusiness().createGroup(
+					"Provider Administrators",
+					"The Commune Root Provider Administrators Group.",
+					type.getGeneralGroupTypeString());
+			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
+		}
+		return rootGroup;
+	}
+
+
+	public void addSchoolAdministrator( User user) throws RemoteException, FinderException, CreateException {
+		getUserBusiness().getGroupBusiness().addUser(((Integer)getRootSchoolAdministratorGroup().getPrimaryKey()).intValue(), user);
+	}
+
 	
 }
