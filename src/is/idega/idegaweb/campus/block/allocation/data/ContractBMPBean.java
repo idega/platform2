@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.1 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: ContractBMPBean.java,v 1.2 2002/05/30 14:12:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -71,7 +71,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(userId_,"User id",true,true,java.lang.Integer.class,"one-to-many",com.idega.core.ICUser.class);
+    addAttribute(userId_,"User id",true,true,java.lang.Integer.class,"one-to-many",com.idega.core.user.data.User.class);
     addAttribute(apartmentId_,"Apartment id",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.Apartment.class);
     addAttribute(applicantId_,"Applicant id",true,true,java.lang.Integer.class,"one-to-one",com.idega.block.application.data.Applicant.class);
     addAttribute(validFrom_,"Valid from",true,true,java.sql.Date.class);
