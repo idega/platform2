@@ -320,13 +320,21 @@ public class BookingOverview extends TravelManager {
           Collection products = null;
           ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
           try {
-            if (productId == Integer.parseInt(this.parameterViewAll)) {
-              products = pHome.getProductsOrderedByProductCategory(supplier.getID(), this.fromStamp, this.toStamp );
-            }
-            else {
-              products = new Vector();
-              products.add(pHome.findByPrimaryKey(new Integer(productId)));
-            }
+						if (productId == Integer.parseInt(this.parameterViewAll)) {
+	          	if (supplier != null) {
+		              products = pHome.getProductsOrderedByProductCategory(supplier.getID(), this.fromStamp, this.toStamp );
+	          	}else if (reseller != null) {
+		          		Product[] prodArr = getContractBusiness(iwc).getProductsForReseller(iwc, reseller.getID());
+		          		products = new Vector();
+		          		for ( int i = 0; i < prodArr.length; i++) {
+		          			products.add(new Integer(prodArr[i].getID()));	
+		          		}
+	          	}
+						}else {
+							products = new Vector();
+							products.add(pHome.findByPrimaryKey(new Integer(productId)));
+						}
+
           }catch (FinderException sql) {
             sql.printStackTrace(System.err);
             products  = new Vector();
