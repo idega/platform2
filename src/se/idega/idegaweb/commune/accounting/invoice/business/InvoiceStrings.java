@@ -84,6 +84,8 @@ public interface InvoiceStrings {
 	String POSTGIRO_KEY = PREFIX + "postgiro";
 	String PRICE_PER_MONTH_DEFAULT = "Pris/mån";
 	String PRICE_PER_MONTH_KEY = PREFIX + "price_per_month";
+	String PRINT_DEFAULT = "Skriv ut";
+	String PRINT_KEY = PREFIX + "print";
 	String PRINT_DATE_DEFAULT = "Utskriftsdatum";
 	String PRINT_DATE_KEY = PREFIX + "print_date";
 	String PROVIDER_CONFIRM_DEFAULT = "Anordnarattest";

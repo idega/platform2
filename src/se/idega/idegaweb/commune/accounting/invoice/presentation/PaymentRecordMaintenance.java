@@ -67,11 +67,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/20 12:29:27 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/21 13:06:40 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.82 $
+ * @version $Revision: 1.83 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -468,9 +468,8 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 				table.setAlignment (columnCount, 2,
 														Table.HORIZONTAL_ALIGN_RIGHT);
 				table.add (getSubmitButton
-									 (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
-										CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
-									 columnCount, 2);
+									 (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",	PRINT_KEY,
+										PRINT_DEFAULT), columnCount, 2);
 				table.add (getPaymentRecordListTable (context, records), 1, row++);
 				table.mergeCells (1, row, columnCount, row);
 				table.add (getPaymentSummaryTable (records), 1, row++);
