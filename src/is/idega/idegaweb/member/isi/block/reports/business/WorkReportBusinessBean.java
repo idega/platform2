@@ -335,7 +335,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 										}
 										catch (IDOAddRelationshipException e5) {
 											e5.printStackTrace();
-											throw new WorkReportImportException("workreportimportexception.database_error");
+											throw new WorkReportImportException("workreportimportexception.database_error_could_not_add_member_to_group");
 										}
 									}
 								}
