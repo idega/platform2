@@ -72,6 +72,9 @@ public class BatchRunQueue {
 //						queue.remove(batchRunObject);
 						runningThread = null;
 						return "batchlist.Terminating_a_running_batch._It_will_take_a_few_seconds_before_it_is_terminated";
+					}else{
+						queue.remove(batchRunObject);
+						return "batchlist.Removed_batch_from_queue.";
 					}
 				}else{
 					System.out.println("Removing queue object "+s);
@@ -97,6 +100,8 @@ public class BatchRunQueue {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}else{
+			log.info("No more batches to run.");
 		}
 	}
 
