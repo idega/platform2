@@ -2520,7 +2520,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t var oldD = '").append(oldD.getDateString("yyyyMMdd")).append("';");
 
 		buffer.append("\n\t var hasChanged = false;");
-		buffer.append("\n\t hasChanged |= careTime != oldCareTime;");
+		buffer.append("\n\t hasChanged |= careTimeCode != oldCareTime;");
 		buffer.append("\n\t hasChanged |= schoolType != oldSchoolType;");
 		buffer.append("\n\t hasChanged |= d != oldD;");
 		if (!isAllowChangeGroupFromToday()) {
