@@ -26,6 +26,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -73,7 +74,7 @@ public class ScorecardSelect extends TournamentBlock {
 		//super.add(dialog);
 
 		DropdownMenu menu = null;
-		SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/continue.gif", "", 76, 19));
+		GenericButton submit = getButton(new SubmitButton(localize("tournament.continue", "Continue")));
 
 		Form myForm = new Form();
 		myForm.setMethod("post");
@@ -108,7 +109,7 @@ public class ScorecardSelect extends TournamentBlock {
 
 		DropdownMenu menu = new DropdownMenu("tournament_round_id");
 		HiddenInput tournament = new HiddenInput("tournament", tournament_id);
-		SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/continue.gif", "", 76, 19));
+		GenericButton submit = getButton(new SubmitButton(localize("tournament.continue", "Continue")));
 
 		Form myForm = new Form();
 		myForm.add(tournament);
@@ -525,10 +526,10 @@ public class ScorecardSelect extends TournamentBlock {
 
 		myTable.addText("<hr size=\"1\" noshade align=\"left\" width=\"150\">" + iwrb.getLocalizedString("tournament.number_of_contestants", "Number of contestants") + ": " + numberOfGolfers, 1, rows + 1);
 
-		myTable.add(new SubmitButton(iwrb.getImage("buttons/register.gif", "", 76, 19)), 6, rows + 2);
+		myTable.add(getButton(new SubmitButton(localize("tournament.register", "Register"))), 6, rows + 2);
 		Link backLink = new Link(TournamentController.getBackLink(modinfo));
 		myTable.add(backLink, 1, rows + 2);
-
+ 
 		myForm.addBreak();
 		myForm.add(myTable);
 

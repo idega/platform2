@@ -12,6 +12,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -59,7 +60,7 @@ public class TournamentDelete extends GolfBlock {
 	                  table.add(iwrb.getLocalizedString("tournament.if_the_tournament_is_del_all_will_del","NB! If the tournament is deleted all members will be unregistered from it"));
 	                  Form form = new Form();
 	                  table.add(form);
-	                  SubmitButton button = new SubmitButton(iwrb.getImage("buttons/yes.gif"),iwrb.getLocalizedString("yes","Yes") );
+	                  GenericButton button = getButton(new SubmitButton(iwrb.getLocalizedString("yes","Yes") ,iwrb.getLocalizedString("yes","Yes")));
 	                  form.add(button);
 	                  form.add(new Parameter("tournament_id",tournament_id));
 	                  form.add(new Parameter("OK","OK"));

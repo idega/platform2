@@ -27,6 +27,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
@@ -72,7 +73,7 @@ public class CloseTournament extends TournamentBlock {
 	public void getTournaments(IWContext modinfo) {
 
 		DropdownMenu menu = null;
-		SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/continue.gif", "", 76, 19));
+		GenericButton submit = getButton(new SubmitButton(localize("tournament.continue","Continue")));
 
 		IWTimestamp stamp = IWTimestamp.RightNow();
 		String selectedYear = modinfo.getParameter("tr_year");
@@ -165,7 +166,7 @@ public class CloseTournament extends TournamentBlock {
 		int rows = myTable.getRows();
 		myTable.mergeCells(1, rows + 1, 2, rows + 1);
 		myTable.setAlignment(1, rows + 1, "right");
-		myTable.add(new SubmitButton(iwrb.getImage("buttons/continue.gif", "", 76, 19)), 1, rows + 1);
+		myTable.add(getButton(new SubmitButton(localize("tournament.continue","Continue"))), 1, rows + 1);
 
 		myForm.add(myTable);
 		add(myForm);
@@ -272,7 +273,7 @@ public class CloseTournament extends TournamentBlock {
 
 		myTable.add(handicapText, 1, 1);
 		myTable.addText(iwrb.getLocalizedString("tournament.update_warning", "Handicap update could take several moments."), 1, 2);
-		myTable.add(new SubmitButton(iwrb.getImage("buttons/continue.gif", "", 76, 19), "calculate"), 1, 3);
+		myTable.add(getButton(new SubmitButton(localize("tournament.continue","Continue"), "calculate")), 1, 3);
 
 		myForm.add(myTable);
 		add(myForm);
@@ -326,7 +327,7 @@ public class CloseTournament extends TournamentBlock {
 		ResultsViewer results = new ResultsViewer(Integer.parseInt(tournament_id));
 
 		myTable.setAlignment(1, 3, "right");
-		myTable.add(new CloseButton(iwrb.getImage("buttons/close.gif", "", 76, 19)), 1, 3);
+		myTable.add(getButton(new CloseButton()), 1, 3);
 		myTable.add(results, 1, 2);
 
 		add(myTable);

@@ -62,7 +62,7 @@ public class Dismiss extends GolfBlock {
 
 				myTable.addText(iwrb.getLocalizedString("tournament.reason","Reason")+":",1,1);
 				myTable.add(dismissal,1,2);
-				myTable.add(new SubmitButton(iwrb.getImage("buttons/confirm.gif","",76,19)),1,3);
+				myTable.add(getButton(new SubmitButton(localize("tournament.confirm","Confirm"))),1,3);
 
 			myForm.add(myTable);
 

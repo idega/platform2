@@ -381,7 +381,7 @@ public void prepareFix(IWContext modinfo,IWResourceBundle iwrb, IWBundle iwb) th
 
             table.add(iwrb.getLocalizedString("tournament.tee_time1","Tee time"));
             table.add(new TimeInput("time"));
-            table.add(new SubmitButton(iwrb.getImage("/buttons/continue.gif")),1,2);
+            table.add(getButton(new SubmitButton(localize("tournament.continue","Continue"))),1,2);
             table.setAlignment(1,1,"left");
             table.setAlignment(1,2,"right");
 

@@ -20,6 +20,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -77,7 +78,7 @@ public class MemberSearch extends GolfBlock {
 
 		table2.add(numberInput, 1, 2);
 		table2.add(hidden, 1, 3);
-		SubmitButton leitaButton = new SubmitButton(iwrb.getImage("buttons/search.gif"));
+		GenericButton leitaButton = getButton(new SubmitButton(localize("tournament.search","Search")));
 		table2.add(leitaButton, 2, 3);
 
 		if (AccessControl.isClubAdmin(modinfo)) {
@@ -114,7 +115,7 @@ public class MemberSearch extends GolfBlock {
 			table2.add(iwrb.getLocalizedString("tournament.search_in_club", "Search in club only") + " ", 1, 3);
 			table2.add(checkBox, 1, 3);
 		}
-		SubmitButton leitaButton = new SubmitButton(iwrb.getImage("buttons/search.gif"));
+		GenericButton leitaButton = getButton(new SubmitButton(localize("tournament.search","Search")));
 		table2.add(leitaButton, 2, 3);
 
 		form.add(table2);

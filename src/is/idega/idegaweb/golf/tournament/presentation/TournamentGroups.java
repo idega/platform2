@@ -30,6 +30,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -56,10 +57,10 @@ public class TournamentGroups extends GolfBlock {
 		String action = modinfo.getParameter(ACTION_PARAMETER);
 		if (action == null) {
 			Form form = new Form();
-			SubmitButton sbCreate = new SubmitButton(getResourceBundle().getImage("buttons/new_tournament_group.gif"), ACTION_PARAMETER, PARAMETER_CREATE_GROUP);
-			SubmitButton sbView = new SubmitButton(getResourceBundle().getImage("buttons/view_tournament_group.gif"), ACTION_PARAMETER, PARAMETER_VIEW_GROUP);
-			SubmitButton sbDelete = new SubmitButton(getResourceBundle().getImage("buttons/view_tournament_group.gif"), ACTION_PARAMETER, PARAMETER_DELETE_GROUP);
-			SubmitButton close = new SubmitButton(getResourceBundle().getImage("buttons/close.gif"), ACTION_PARAMETER, PARAMETER_CLOSE);
+			GenericButton sbCreate = getButton(new SubmitButton(localize("new_tournament_group","New Tournament Group"), ACTION_PARAMETER, PARAMETER_CREATE_GROUP));
+			GenericButton sbView = getButton(new SubmitButton(localize("view_tournament_group","View Tournament Group"), ACTION_PARAMETER, PARAMETER_VIEW_GROUP));
+			GenericButton sbDelete = getButton(new SubmitButton(localize("delete_tournament_group","Delete Tournament Group"), ACTION_PARAMETER, PARAMETER_DELETE_GROUP));
+			GenericButton close = getButton(new SubmitButton(localize("close","Close"), ACTION_PARAMETER, PARAMETER_CLOSE));
 
 			form.add(sbCreate);
 			form.add(Text.BREAK);
@@ -398,7 +399,7 @@ public class TournamentGroups extends GolfBlock {
 			}
 			else if (isAdmin()) {
 				if (tGroup.getUnionID() == 3) {
-					table.add(new SubmitButton(iwrb.getImage("buttons/update.gif"), "view_action", "update"), 2, row);
+					table.add(getButton(new SubmitButton(localize("trounaemnt.update","Update"), "view_action", "update")), 2, row);
 					//table.add(new HiddenInput("view_action","update"),2,row);
 				}
 			}
@@ -515,7 +516,7 @@ public class TournamentGroups extends GolfBlock {
 			form.add(drop);
 		}
 
-		form.add(new SubmitButton(iwrb.getImage("buttons/delete.gif"), getModuleControlParameter(), "confirm"));
+		form.add(getButton(new SubmitButton(localize("trounament.delete","Delete"), getModuleControlParameter(), "confirm")));
 		//form.add(new HiddenInput(getModuleControlParameter(),"confirm"));
 
 	}

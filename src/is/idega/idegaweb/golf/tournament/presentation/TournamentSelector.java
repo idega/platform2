@@ -16,6 +16,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 
 /**
@@ -105,7 +106,7 @@ public class TournamentSelector extends TournamentBlock {
 				year.setSelectedElement(Integer.toString(iYear));
 				year.setToSubmit();
 			
-			    SubmitButton aframButton = new SubmitButton(getResourceBundle().getImage("buttons/continue.gif"));
+			    GenericButton aframButton = getButton(new SubmitButton(localize("tournament.continue","Close")));
 				table.add(year, 1, 3);
 			    table.add(aframButton,2,3);
 			    

@@ -41,6 +41,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -180,7 +181,7 @@ public void noAction(IWContext modinfo,IWResourceBundle iwrb) {
 
 
             table2.add(menu,1,2);
-            SubmitButton aframButton = new SubmitButton(iwrb.getImage("buttons/continue.gif"),"flipp","selectmember");
+            GenericButton aframButton = getButton(new SubmitButton(localize("tournament.continue","Continue"),"flipp","selectmember"));
 
             HiddenInput hidden = new HiddenInput("action","selectmember");
             //SubmitButton button = new SubmitButton("Velja","action","selectmember");
@@ -321,7 +322,7 @@ public void tournamentMemberList(IWContext modinfo, IWResourceBundle iwrb) throw
             */
         }
         ++row;
-        SubmitButton save = new SubmitButton(iwrb.getImage("buttons/save.gif"), "sub_action","update");
+        GenericButton save = getButton(new SubmitButton(localize("tournament.save","Save"), "sub_action","update"));
         table.mergeCells(1, row, 11, row);
         table.setAlignment(1, row, "right");
         table.add(save, 1, row);
@@ -334,7 +335,7 @@ public void tournamentMemberList(IWContext modinfo, IWResourceBundle iwrb) throw
     }
 
     add("<br><br>");
-    Link back = new Link(iwrb.getImage("buttons/back.gif"));
+    Link back = getLocalizedLink("tournament.back","Back");
         back.addParameter("action","selectmember");
     add(back);
 
@@ -718,7 +719,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 rejects.add(member.getName(),1,rejectsRow);
 
                                 if ( errors[0] == 1) {
-                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"));
+                                        memberCorrect = getLocalizedLink("tournament.check_member","Check Member");
                                         memberCorrect.setWindowToOpen(MemberCorrectWindow.class); 
                                         memberCorrect.addParameter("member_id",member.getID());
                                     rejects.add(memberCorrect,2,rejectsRow);
@@ -726,7 +727,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 }
 
                                 if ( errors[1] == 1) {
-                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"));
+                                        unionCorrect = getLocalizedLink("trounament.check_club_membership","Check Club Membership");
                                         unionCorrect.setWindowToOpen(UnionCorrectWindow.class);
                                         unionCorrect.addParameter("member_id",member.getID());
                                     rejects.add(unionCorrect,2,rejectsRow);
@@ -737,7 +738,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 }
 
                                 if ( errors[3] == 1) {
-                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"));
+                                        Link tournamentFix = getLocalizedLink("tournament.check_tournament","Check Tournament");
                                           tournamentFix.setWindowToOpen(TournamentCreatorWindow.class);
                                           tournamentFix.addParameter("tournament",tournament.getID());
                                           tournamentFix.addParameter("tournament_control_mode","edit");
@@ -832,7 +833,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 rejects.add(member.getName(),1,rejectsRow);
 
                                 if ( errors[0] == 1) {
-                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"));
+                                        memberCorrect = getLocalizedLink("tournament.check_member","Check Member");
                                         memberCorrect.setWindowToOpen(MemberCorrectWindow.class); 
                                         memberCorrect.addParameter("member_id",member.getID());
                                     rejects.add(memberCorrect,2,rejectsRow);
@@ -840,7 +841,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 }
 
                                 if ( errors[1] == 1) {
-                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"));
+                                        unionCorrect = getLocalizedLink("tournament.check_club_membership","Check Club Membership");
                                         unionCorrect.setWindowToOpen(UnionCorrectWindow.class);
                                         unionCorrect.addParameter("member_id",member.getID());
                                     rejects.add(unionCorrect,2,rejectsRow);
@@ -851,7 +852,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 }
 
                                 if ( errors[3] == 1) {
-                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"));
+                                        Link tournamentFix = getLocalizedLink("tournament.check_tournament","Check Tournament");
                                           tournamentFix.setWindowToOpen(TournamentCreatorWindow.class);
                                           tournamentFix.addParameter("tournament",tournament.getID());
                                           tournamentFix.addParameter("tournament_control_mode","edit");
@@ -1010,7 +1011,7 @@ public void searchByName(IWContext modinfo,IWResourceBundle iwrb) throws SQLExce
         table2.add(iwrb.getLocalizedString("tournament.search_in_club","Search in club only")+" ",1,3);
         table2.add(checkBox,1,3);
     }
-    SubmitButton leitaButton = new SubmitButton(iwrb.getImage("buttons/search.gif"));
+    GenericButton leitaButton = getButton(new SubmitButton(localize("tournament.search","Search")));
     table2.add(leitaButton,2,3);
 
 
@@ -1050,7 +1051,7 @@ public void searchBySocialSecurityNumber(IWContext modinfo,IWResourceBundle iwrb
 
     table2.add(numberInput,1,2);
     table2.add(hidden,1,3);
-    SubmitButton leitaButton = new SubmitButton(iwrb.getImage("buttons/search.gif"));
+    GenericButton leitaButton = getButton(new SubmitButton(iwrb.getImage("tournament.search","Search")));
     table2.add(leitaButton,2,3);
 
     if (AccessControl.isClubAdmin(modinfo)) {
@@ -1213,7 +1214,7 @@ public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, List gu
 
 
     if (ahead) {
-        SubmitButton skraButton = new SubmitButton(iwrb.getImage("buttons/continue.gif"));
+        GenericButton skraButton = getButton(new SubmitButton(localize("tournament.continue","Continue")));
         bottom.add(skraButton,2,1);
         bottom.add(new HiddenInput("action","registermarkedmembers"));
     }
@@ -1574,7 +1575,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
                         other.add(member.getName(),1,otherRow);
 
                         if ( errors[0] == 1) {
-                                memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"));
+                                memberCorrect = getLocalizedLink("tournament.check_member","Check Member");
                                 memberCorrect.setWindowToOpen(MemberCorrectWindow.class);
                                 memberCorrect.addParameter("member_id",member.getID());
                             other.add(memberCorrect,2,otherRow);
@@ -1582,7 +1583,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
                         }
 
                         if ( errors[1] == 1) {
-                                unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"));
+                                unionCorrect = getLocalizedLink("tournament.check_club_membership","Check Club Membership");
                                 	unionCorrect.setWindowToOpen(UnionCorrectWindow.class);
                                 unionCorrect.addParameter("member_id",member.getID());
                             other.add(unionCorrect,2,otherRow);
@@ -1593,7 +1594,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
                         }
 
                         if ( errors[3] == 1) {
-                                Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"));
+                                Link tournamentFix = getLocalizedLink("tournament.check_tournament","Check Tournament");
                                   tournamentFix.setWindowToOpen(TournamentCreatorWindow.class);
                                   tournamentFix.addParameter("tournament",tournament.getID());
                                   tournamentFix.addParameter("tournament_control_mode","edit");
@@ -1731,7 +1732,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
         }
 
         if ((numberOK > 0) || (otherGOK>0)) {
-            bottom.add(new SubmitButton(iwrb.getImage("buttons/continue.gif")),2,1);
+            bottom.add(getButton(new SubmitButton(localize("tournament.continue","Continue"))),2,1);
             bottom.add(new HiddenInput("action","confirmRegisterMarkedMembers"),2,1);
         }
         bottom.add(TournamentController.getBackLink(modinfo),1,1);

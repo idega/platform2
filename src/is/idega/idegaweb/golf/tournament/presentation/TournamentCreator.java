@@ -41,6 +41,7 @@ import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.Parameter;
@@ -818,7 +819,7 @@ public class TournamentCreator extends TournamentBlock {
 
 				Table buttonTable = new Table();
 					buttonTable.setWidth("85%");
-	            SubmitButton submitButton = new SubmitButton(iwrb.getImage("buttons/save.gif"));
+	            GenericButton submitButton = getButton(new SubmitButton(localize("tournament.save","Save")));
 	            HiddenInput hiddenInput = new HiddenInput("tournament_admin_createtournament_action","tournament_admin_save_tournament");
 	            buttonTable.add(TournamentController.getBackLink(modinfo),1,1);
 	            buttonTable.add(submitButton,3,1);

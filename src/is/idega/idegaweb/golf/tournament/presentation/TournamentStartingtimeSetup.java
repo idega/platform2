@@ -214,7 +214,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				add(iwrb.getLocalizedString("tournament.tee_times_are_chosen_in_tee_times_registration", "Tee times  in this tournament are arrangerd in Register player"));
 				add("<br><br>");
 
-				Link theEdit1 = new Link(iwrb.getImage("buttons/edit_tee_times.gif"));
+				Link theEdit1 = getLocalizedLink("tournament.edit_tee_times","Edit Tee Times");
 				theEdit1.setWindowToOpen(ModifyStartingtimeWindow.class);
 				theEdit1.addParameter("tournament_id", tournament.getID());
 				theEdit1.addParameter("action", "getSearch");
@@ -287,7 +287,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		//   table.setAlignment(1,row,"center");
 		table.add(iwrb.getLocalizedString("tournament.to_edit_tee_times", "To edit tee times push the button below"), 1, 4);
 
-		Link theEdit = new Link(iwrb.getImage("buttons/edit_tee_times.gif"));
+		Link theEdit = getLocalizedLink("tournament.edit_tee_times","Edit Tee Times");
 		theEdit.setWindowToOpen(ModifyStartingtimeWindow.class);
 		theEdit.addParameter("tournament_id", tournament.getID());
 		theEdit.addParameter("action", "getSearch");

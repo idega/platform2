@@ -21,6 +21,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -43,7 +44,7 @@ public class Printing extends TournamentBlock {
 	  public void getTournaments(IWContext modinfo) {
 
 	    DropdownMenu menu = null;
-	    SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/continue.gif","",76,19));
+	    GenericButton submit = getButton(new SubmitButton(localize("tournament.continue","Continue")));
 
 	    Form myForm = new Form();
 	      myForm.setMethod("post");

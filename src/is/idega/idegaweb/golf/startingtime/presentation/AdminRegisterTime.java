@@ -33,6 +33,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -584,7 +585,8 @@ public class AdminRegisterTime extends GolfWindow {
 			Window popUp = new MemberSearchWindow("Leit a› me›limi");
 			popUp.setWidth(600);
 			popUp.setHeight(500);
-			Link theSearch = new Link(_iwrb.getImage("buttons/search_for_member.gif"), popUp);
+			Link theSearch = getLocalizedLink("search_form_member","Search For Member");
+			theSearch.setWindowToOpen(MemberSearchWindow.class);
 			theSearch.addParameter("action", "getSearch");
 			dateTable.add(theSearch, 2, 1);
 		}
@@ -602,7 +604,7 @@ public class AdminRegisterTime extends GolfWindow {
 		//    SubmitButton save = new SubmitButton(new
 		// Image("/pics/formtakks/vista.gif","Vista"), saveParameterString,
 		// "do");
-		SubmitButton save = new SubmitButton(this._iwrb.getImage("buttons/save.gif", "Vista"), saveParameterString, "do");
+		GenericButton save = getButton(new SubmitButton(localize("save","Save"), saveParameterString, "do"));
 		Table submSave = new Table();
 		submSave.add(save);
 		submSave.setAlignment("center");

@@ -235,8 +235,9 @@ public class RegisterTime extends GolfWindow {
               //setPlayers(modinfo);
 
               myTable.mergeCells(4, i+2, 6, i+2);
-              myTable.add(insertButton(this._iwrb.getImage("buttons/book.gif"),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
-              myTable.add(new SubmitButton(this._iwrb.getImage("buttons/cancel.gif"),closeParameterString, "true"), 4, i+2);
+              myTable.add(getButton(new SubmitButton(localize("teetime.book","Book"))), 4, i+2);
+              myForm.setMethod("post");
+              myTable.add(getButton(new SubmitButton(localize("teetime.cancel","Cancel"),closeParameterString, "true")), 4, i+2);
               myTable.setAlignment(4, i+2, "right");
               frameTable.empty();
               frameTable.add(myTable);

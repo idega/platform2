@@ -128,7 +128,7 @@ public class TournamentInfo extends GolfBlock {
 				Form form4 = new Form();
 				form4.setWindowToOpen(TournamentDeleteWindow.class);
 				form4.add(new Parameter("tournament_id", tournament.getID() + ""));
-				form4.add(new SubmitButton(getResourceBundle().getImage("buttons/delete_tournament.gif")));
+				form4.add(getButton(new SubmitButton(localize("tournament.delete_tournament","Delete Tournament"))));
 				table.add(form4, 1, row);
 			}
 		}

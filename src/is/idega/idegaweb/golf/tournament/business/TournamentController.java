@@ -634,8 +634,7 @@ public class TournamentController {
 		IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
 		IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
 
-		com.idega.presentation.Image aheadImage = iwrb.getImage("buttons/continue.gif");
-		SubmitButton aheadButton = new SubmitButton(aheadImage, name, value);
+		SubmitButton aheadButton = new SubmitButton(iwrb.getLocalizedString("trounament.continue","continue"), name, value);
 
 		return aheadButton;
 	}

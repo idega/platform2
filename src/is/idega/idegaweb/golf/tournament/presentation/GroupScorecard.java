@@ -33,6 +33,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -204,7 +205,7 @@ public class GroupScorecard extends GolfBlock {
 			myTable.setColumnAlignment(holeNumber + 2, "center");
 			int rows = myTable.getRows();
 
-			SubmitButton button = new SubmitButton(iwrb.getImage("buttons/calculate.gif", "", 76, 19));
+			GenericButton button = getButton(new SubmitButton(localize("tournament.calculate","Calculate")));
 			button.setOnClick("this.form.submit();this.disabled = true;");
 			myTable.add(button, holeNumber + 2, rows + 1);
 
