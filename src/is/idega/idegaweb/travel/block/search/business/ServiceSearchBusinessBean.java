@@ -68,12 +68,15 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	private String PARAMETER_POSTAL_CODE_REYKJAVIK_AREA = "post_reya";
 	private String PARAMETER_POSTAL_CODE_WEST_ICELAND = "post_wice";
 	private String PARAMETER_POSTAL_CODE_WEST_FJORDS = "post_fjo";
-	private String PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND = "post_nwice";
-	private String PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND = "post_neice";
+	//private String PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND = "post_nwice";
+	//private String PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND = "post_neice";
+	private String PARAMETER_POSTAL_CODE_NORTH_ICELAND = "post_nice";
 	private String PARAMETER_POSTAL_CODE_EAST_ICELAND = "post_eice";
 	private String PARAMETER_POSTAL_CODE_SOUTH_ICELAND = "post_sice";
 	private String PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS = "post_wmi";
 	private String PARAMETER_POSTAL_CODE_SPACER = "post_space";
+	
+	private static DropdownMenu staticPostalCode = null;
 	
 	private String SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION = "Search Engine administator group";
 	private String permissionGroupNameExtention = " - admins";
@@ -83,6 +86,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	}
 
 	public DropdownMenu getPostalCodeDropdown(IWResourceBundle iwrb) throws RemoteException, FinderException {
+		if (staticPostalCode != null) {
+			return (DropdownMenu) staticPostalCode.clone();
+		}
+		
 		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
 		Collection coll = pch.findAllOrdererByCode();
 
@@ -96,18 +103,23 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA, iwrb.getLocalizedString("travel.search.reykjavik_area", "Reykjav’k area"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_ICELAND, iwrb.getLocalizedString("travel.search.west_iceland", "West Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_FJORDS, iwrb.getLocalizedString("travel.search.westfjords", "Westfjords"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND, iwrb.getLocalizedString("travel.search.north_west_iceland", "North-west Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND, iwrb.getLocalizedString("travel.search.north_east_iceland", "North-east Iceland"));
+			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_ICELAND, iwrb.getLocalizedString("travel.search.north_iceland", "North Iceland"));
+//			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND, iwrb.getLocalizedString("travel.search.north_west_iceland", "North-west Iceland"));
+//			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND, iwrb.getLocalizedString("travel.search.north_east_iceland", "North-east Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_EAST_ICELAND, iwrb.getLocalizedString("travel.search.east_iceland", "East Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_SOUTH_ICELAND, iwrb.getLocalizedString("travel.search.south_iceland", "South Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS, iwrb.getLocalizedString("travel.search.westman_islands", "Westman islands"));
+			menu.addMenuElement("999", iwrb.getLocalizedString("travel.search.the_interiour", "The Interiour"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_SPACER, "------------------------------");
 				
 			while (iter.hasNext()) {
 				pc = (PostalCode) iter.next();
-				menu.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode() + "  "+pc.getName());
+				if (!"999".equals(pc.getPostalCode())) {
+					menu.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode() + "  "+pc.getName());
+				}
 			}
 		}
+		staticPostalCode = menu;
 		return menu;
 	}
 	
@@ -123,7 +135,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			String to;
 			if ( sPostalCode.equals(PARAMETER_POSTAL_CODE_ICELAND) || sPostalCode.equals(PARAMETER_POSTAL_CODE_SPACER) ) {
 				from = "100";
-				to = "999";
+				to = "998";
 			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK)) {
 				from = "100";
 				to = "199";
@@ -136,12 +148,15 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_FJORDS)) {
 				from = "400";
 				to = "499";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND)) {
+			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_ICELAND)) {
 				from = "500";
-				to = "599";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND)) {
-				from = "600";
 				to = "699";
+//			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND)) {
+//				from = "500";
+//				to = "599";
+//			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND)) {
+//				from = "600";
+//				to = "699";
 			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_EAST_ICELAND)) {
 				from = "700";
 				to = "799";
@@ -150,6 +165,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				to = "899";
 			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS)) {
 				from = "900";
+				to = "998";
+			} else if (sPostalCode.equals("999")) {
+				from = "999";
 				to = "999";
 			} else {
 				from = sPostalCode;
@@ -189,6 +207,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		String ccNum = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_NUMBER);
 		String ccMon = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_MONTH);
 		String ccYear = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_YEAR);
+		String ccCVC = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_CVC);
 		
 		if (firstName == null || firstName.equals("")) {
 			list.add(AbstractSearchForm.PARAMETER_FIRST_NAME);
@@ -220,6 +239,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		if (ccYear == null || ccYear.equals("")) {
 			list.add(AbstractSearchForm.PARAMETER_CC_YEAR);
 		}
+		if (ccCVC == null || ccCVC.equals("")) {
+			list.add(AbstractSearchForm.PARAMETER_CC_CVC);
+		}
 		String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		
 		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
@@ -239,10 +261,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return list;
 	}
 
-	public Collection sortProducts(Collection productsToSort, PriceCategory priceCat, IWTimestamp bookingDate) {
+	public Collection sortProducts(Collection productsToSort, PriceCategory priceCat, IWTimestamp bookingDate, int sortMethod) {
 		try {
 			//if (productComparator == null) {
-			ProductComparator	productComparator = new ProductComparator(ProductComparator.PRICE);
+			ProductComparator	productComparator = new ProductComparator(sortMethod);
 				productComparator.setPriceCategoryValues(priceCat, -1, bookingDate);
 			//}
 			/** Gera betra */

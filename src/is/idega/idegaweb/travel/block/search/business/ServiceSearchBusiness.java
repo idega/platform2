@@ -21,6 +21,6 @@ public interface ServiceSearchBusiness extends com.idega.business.IBOService
  public is.idega.idegaweb.travel.business.TravelSessionManager getTravelSessionManager(com.idega.idegaweb.IWUserContext p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine getUserSearchEngine(com.idega.core.user.data.User p0)throws java.lang.RuntimeException,java.sql.SQLException, java.rmi.RemoteException;
  public boolean isUserInPermissionGroup(is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine p0,com.idega.core.user.data.User p1) throws java.rmi.RemoteException;
- public java.util.Collection sortProducts(java.util.Collection p0,com.idega.block.trade.stockroom.data.PriceCategory p1,com.idega.util.IWTimestamp p2) throws java.rmi.RemoteException;
+ public java.util.Collection sortProducts(java.util.Collection p0,com.idega.block.trade.stockroom.data.PriceCategory p1,com.idega.util.IWTimestamp p2, int searchMethod) throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine storeEngine(java.lang.Object p0,java.lang.String p1,java.lang.String p2) throws java.rmi.RemoteException;
 }
