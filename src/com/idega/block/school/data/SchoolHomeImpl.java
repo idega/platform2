@@ -34,6 +34,13 @@ public java.util.Collection findAllByAreaAndTypes(int p0,java.util.Collection p1
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllByCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllByCategory(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllBySchoolArea(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolArea(p0);
@@ -55,14 +62,14 @@ public java.util.Collection findAllBySchoolName(java.lang.String p0)throws javax
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllBySchoolType(java.util.Collection p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolType(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySchoolType(java.util.Collection p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolType(p0);
 	this.idoCheckInPooledEntity(entity);
@@ -79,6 +86,13 @@ public java.util.Collection findAllCentralizedAdministrated()throws javax.ejb.Fi
 public java.util.Collection findAllCentralizedAdministratedByType(java.util.Collection p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllCentralizedAdministratedByType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllPrivate()throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllPrivate();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
