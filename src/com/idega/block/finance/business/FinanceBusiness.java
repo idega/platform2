@@ -25,17 +25,11 @@ import com.idega.util.IWTimestamp;
 /**
 
  * Title:
-
  * Description:
-
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
-
  * Company:      idega
-
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
-
  * @version 1.1
-
  */
 
 
@@ -506,6 +500,21 @@ public  class FinanceBusiness {
 
     return false;
 
+  }
+  
+  public static boolean updateTariffPrice(int id, float Price, Timestamp indexStamp){
+  		try {
+			Tariff tariff = ((TariffHome)com.idega.data.IDOLookup.getHome(Tariff.class)).findByPrimaryKey(new Integer(id));
+			tariff.setPrice(Price);
+			if(indexStamp!=null)
+				tariff.setIndexUpdated(indexStamp);
+			tariff.store();
+			return true;
+			
+		} catch (Exception e) {
+			//e.printStackTrace();
+			return false;
+		}
   }
 
 
