@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.56 2004/01/12 08:46:28 laddi Exp $
+ * $Id: PostingBusinessBean.java,v 1.57 2004/01/12 11:40:45 sigtryggur Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -59,6 +59,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	private final static String KEY_ERROR_POST_PARAM_DATE_MISSING = "posting_parm_edit.post_date_empty";
 	private final static String KEY_ERROR_POST_PARAM_DATE_NULL = "posting_parm_edit.post_date_null";
 	private final static String KEY_ERROR_POST_PARAM_SCHOOL_YEARS = "posting_parm_edit.post_school_years";
+	
+	private final static int SECONDS_IN_A_DAY = 86400000;
 	
 	private Collection fieldsList;
 	private Date createdFieldsListDate;
@@ -134,7 +136,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		int fieldLength=0;							//Length of next field. Fetched from the definition 
 
 		try {
-			if (getCreatedFieldsListDate() == null || getCreatedFieldsListDate().getTime() != IWTimestamp.getTimestampRightNow().getTime())
+			if (getCreatedFieldsListDate() == null || getCreatedFieldsListDate().getTime()/SECONDS_IN_A_DAY != IWTimestamp.getTimestampRightNow().getTime()/SECONDS_IN_A_DAY)
 				createFieldsList();
 			Iterator iter = getFieldsList().iterator();
 			while (iter.hasNext()) {
@@ -163,7 +165,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		PostingFieldHome kfHome = getPostingFieldHome();
 		createdFieldsListDate = new Date(IWTimestamp.getTimestampRightNow().getTime());
 		PostingString posting = ksHome.findPostingStringByDate(createdFieldsListDate);
-		fieldsList = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));		
+		fieldsList = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));
 	}
 
 	/**
