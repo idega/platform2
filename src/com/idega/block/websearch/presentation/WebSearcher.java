@@ -237,7 +237,12 @@ public class WebSearcher extends Block {
 				//hitTable.add(new Text("Description: "+hit.getDescription()),1,row++);
 				Link title = (Link) titleLinkProto.clone();
 				title.setURL(hit.getURL());
-				title.setText(hit.getTitle());
+				
+				String sTitle = hit.getTitle();
+				if(sTitle==null) sTitle = iwrb.getLocalizedString("websearch.untitled","Untitled");
+				else if( sTitle.equals("null") ) sTitle = iwrb.getLocalizedString("websearch.untitled","Untitled");
+				
+				title.setText(sTitle);
 				
 				hitTable.add(title,1,row++);
 				String contents = hit.getContents(queryString);//could be heavy....
