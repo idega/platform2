@@ -241,7 +241,7 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 									main_headmaster = getSchoolUserBusiness(_iwc).getUserMainHeadmaster(user);
 								
 									if (show && !main_headmaster) {
-										if (userType[2] == "1"){
+										if (userType[2] != null && userType[2].equals("1")){
 											row = insertUser(table, row, user, _iwrb.getLocalizedString("school.assistant_headmaster_abbrev","Ass. headmaster"));										
 										}
 										else {
