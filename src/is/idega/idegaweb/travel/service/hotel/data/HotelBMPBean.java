@@ -191,8 +191,8 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 				sql.append(", ").append(supplierTableName).append(" su");
 			}	
 			if (roomType) {
-				sql.append(", ").append(roomTypeHotelMiddleTableName).append(" rth");
-				//.append(", ").append(roomTypeTableName).append(" rt");
+				//sql.append(", ").append(roomTypeHotelMiddleTableName).append(" rth");
+				//sql.append(", ").append(roomTypeTableName).append(" rt");
 			}
 			if (hotelType) {
 				sql.append(", ").append(hotelTypeHotelMiddleTableName).append(" hth");
@@ -237,8 +237,9 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			}
 			
 			if (roomType) {
+				sql.append(" AND h.").append(getColumnNameRoomTypeId()).append("= ").append(roomTypeId[0]);
+/**
 				sql.append(" AND h.").append(getIDColumnName()).append("= rth.").append(getIDColumnName());
-				//sql.append(" AND rth.").append(getIDColumnName()).append("= rt.").append(roomTypeTableIDColumnName);
 				sql.append(" AND  rth.").append(roomTypeTableIDColumnName).append(" in (");
 				for (int i = 0; i < roomTypeId.length; i++) {
 					if (i != 0) {
@@ -247,7 +248,7 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 					sql.append(roomTypeId[i]);
 				}			
 				sql.append(") ");
-				
+*/				
 			}
 
 			if (hotelType) {
