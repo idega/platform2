@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/11 13:41:26 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/12 10:26:46 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.104 $
+ * @version $Revision: 1.105 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -695,6 +695,15 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 							 doublePaymentPosting, regSpecTypeName);
 					record.setPaymentRecord (paymentRecord);
 					record.store ();
+					// inte till kommun landsting, stat
+					/*
+					final SchoolClassMember placement = record.getSchoolClassMember ();
+					createVatPaymentRecord
+							(paymentRecord, null, //final PostingDetail postingDetail
+							 school, placement.getSchoolType (),
+							 placement.getSchoolYear (), new CalendarMonth (period),
+							 ConstantStatus.PRELIMINARY, createdBySignature);
+*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -788,7 +797,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}			
 	}
 
-
 	private PaymentRecord createPaymentRecord
 		(final School school,
 		 final SchoolCategory schoolCategory,
@@ -833,6 +841,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentRecord.setRuleSpecType (regSpecTypeName);
 		paymentRecord.setPlacements (1);
 		paymentRecord.store ();
+
 		return paymentRecord;
 	}	
 
@@ -896,13 +905,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	public PaymentRecord createVatPaymentRecord
 		(final PaymentRecord paymentRecord, final PostingDetail postingDetail,
 		 final School school, final SchoolType schoolType,
-		 final SchoolYear schoolYear, final PlacementTimes placementTimes,
-		 final char status, final String createdBySignature)
+		 final SchoolYear schoolYear, final CalendarMonth month, final char status,
+		 final String createdBySignature)
 	throws RemoteException, CreateException {
 
 		// get payment header
 		final SchoolCategory schoolCategory = schoolType.getCategory ();
-		final Date startDate = placementTimes.getFirstCheckDay ().getDate ();
+		final Date startDate = month.getFirstDateOfMonth ();
 		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader
 				(school, schoolCategory, startDate, status);
 
@@ -932,7 +941,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 
 		// count increase value for amount
 		final float newTotalVatAmount = AccountingUtil.roundAmount
-				(postingDetail.getVATAmount () * placementTimes.getMonths ());				
+				(postingDetail.getVATAmount ());				
 		final String paymentText = vatRuleRegulation.getName ();
 
 		// find or create vat payment record

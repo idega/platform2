@@ -329,10 +329,23 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 	public Collection ejbFindByPaymentRecord (PaymentRecord paymentRecord)
         throws FinderException {
-		final IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom (this)
-                .appendWhereEquals (COLUMN_PAYMENT_RECORD_ID,
-                                    paymentRecord.getPrimaryKey ());
+		final String R_ = "r."; // sql alias for invoice record
+		final String U_ = "u."; // sql alias for user
+		final String M_ = "m."; // sql alias for schoolclassmember
+		final String [] tableNames =
+				{ getTableName (), UserBMPBean.TABLE_NAME,
+					SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER };
+		final String [] tableAliases = { "r", "u", "m" };
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelect().append (R_).appendStar ();
+		sql.appendFrom (tableNames, tableAliases);
+		sql.appendWhereEquals (R_ + COLUMN_PAYMENT_RECORD_ID, paymentRecord);
+		sql.appendAndEquals (R_ + COLUMN_SCHOOL_CLASS_MEMBER_ID,
+												 M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID);
+		sql.appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER,
+												 U_ + User.FIELD_USER_ID);
+		sql.appendOrderBy (new String []
+			{ U_ + User.FIELD_LAST_NAME, U_ + User.FIELD_FIRST_NAME });
 		return idoFindPKsByQuery (sql);
 	}
 
