@@ -649,7 +649,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale, String periodText)
 		throws FinderException, IOException, StudyPathException, RemoteException {
-		Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByMonth(null);
+		Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("P",schoolCategory);
 
 		if (iHeaders != null && !iHeaders.isEmpty()) {
 			NumberFormat format = NumberFormat.getInstance(currentLocale);
