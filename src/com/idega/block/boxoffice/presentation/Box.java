@@ -400,11 +400,7 @@ public Box(String attribute){
   }
 
   public boolean deleteBlock(int ICObjectInstanceId) {
-    BoxEntity box = BoxFinder.getObjectInstanceFromID(ICObjectInstanceId);
-    if ( box != null ) {
-      return BoxBusiness.deleteBox(box);
-    }
-    return false;
+      return BoxBusiness.deleteBox(ICObjectInstanceId);
   }
 
   public String getBundleIdentifier(){
