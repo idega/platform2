@@ -75,6 +75,8 @@ insert into ic_group_type_tree values ('iwme_club_committee','iwme_club')
 insert into ic_group_type_tree values ('general','iwme_club')
 insert into ic_group_type_tree values ('iwme_temporary','iwme_club')
 
+insert into ic_group_type_tree values ('iwme_club_main_committee','iwme_club_committee')
+
 insert into ic_group_type_tree values ('iwme_club_division_trainer','iwme_club_division')
 insert into ic_group_type_tree values ('iwme_club_division_staff','iwme_club_division')
 insert into ic_group_type_tree values ('iwme_club_division_committee','iwme_club_division')
