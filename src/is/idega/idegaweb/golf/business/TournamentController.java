@@ -362,7 +362,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 //                             Tournament[] tours = (Tournament[]) ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy().findAllByColumnOrdered("union_id",union_id+"","START_TIME");
 
-                             Tournament[] tours = (Tournament[]) ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy().findAll("select * from tournament where union_id = "+union_id+" and START_TIME > '2001-12-31' order by START_TIME");
+                             Tournament[] tours = (Tournament[]) ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy().findAll("select * from tournament where union_id = "+union_id+" and START_TIME > '2002-12-31' order by START_TIME");
 
                             for (int j = 0; j < tours.length; j++) {
 
@@ -394,7 +394,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
                             //tours = (Tournament[]) ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy().findAllByColumnOrdered("union_id",unions_id+"","START_TIME");
 
-                            tours = (Tournament[]) ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy().findAll("select * from tournament where union_id = "+unions_id+" and START_TIME > '2001-12-31' order by START_TIME");
+                            tours = (Tournament[]) ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy().findAll("select * from tournament where union_id = "+unions_id+" and START_TIME > '2002-12-31' order by START_TIME");
 
                             for (int j = 0; j < tours.length; j++) {
 
