@@ -28,8 +28,8 @@ public abstract class CategoryBlock extends Block{
   private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
-  private boolean invalidateBlockCache = true;
-  private boolean orderManually = false;
+  protected boolean invalidateBlockCache = true;
+  protected boolean orderManually = false;
 
   /**
    *  Returns the first Category bound to this instance

@@ -41,12 +41,12 @@ import com.idega.presentation.ui.TextInput;
  */
 public class CategoryWindow extends IWAdminWindow {
 	private int iCategoryId = -1;
-	private int iObjectInstanceId = -1;
-	private ICObjectInstance objectInstance;
-	private String sType = "no_type";
+	protected int iObjectInstanceId = -1;
+	protected ICObjectInstance objectInstance;
+	protected String sType = "no_type";
 	protected String sCacheKey = null;
-	private boolean multi = false;
-	private boolean allowOrdering = false;
+	protected boolean multi = false;
+	protected boolean allowOrdering = false;
 	public static final String prmCategoryId = "iccat_categoryid";
 	public static final String prmObjInstId = "iccat_obinstid";
 	public final static String prmCategoryType = "iccat_type";
@@ -55,19 +55,19 @@ public class CategoryWindow extends IWAdminWindow {
 	public static final String prmCacheClearKey = "iccat_cache_clear";
 	public static final String prmParentID = "iccat_parent";
 	public final static String prmLocale = "iccat_localedrp";
-	private static final String actDelete = "iccat_del";
-	private static final String actSave = "iccat_save";
-	private static final String actClose = "iccat_close";
-	private static final String actForm = "iccat_form";
-	private Image tree_image_M,tree_image_L,tree_image_T;
+	protected static final String actDelete = "iccat_del";
+	protected static final String actSave = "iccat_save";
+	protected static final String actClose = "iccat_close";
+	protected static final String actForm = "iccat_form";
+	protected Image tree_image_M,tree_image_L,tree_image_T;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb, core;
 	private int iObjInsId = -1;
 	private int iUserId = -1;
-	private boolean formAdded = false;
-	private int row = 1;
-	private CategoryService catServ = null;
-	int iLocaleId = -1;
+	protected boolean formAdded = false;
+	protected int row = 1;
+	protected CategoryService catServ = null;
+	protected int iLocaleId = -1;
 	int iSaveLocaleId = -1;
 	
 	public CategoryWindow() {
@@ -144,7 +144,7 @@ public class CategoryWindow extends IWAdminWindow {
 			add(formatText(iwrb.getLocalizedString("access_denied", "Access denied")));
 		}
 	}
-	private void processCategoryForm(IWContext iwc)throws RemoteException{
+	protected void processCategoryForm(IWContext iwc)throws RemoteException{
 		// saving :
 		if (iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave + ".x")) {
 			String sName = iwc.getParameter("name");
@@ -197,7 +197,7 @@ public class CategoryWindow extends IWAdminWindow {
 			}
 		}
 	}
-	private void getCategoryFields(IWContext iwc, int iCategoryId) throws RemoteException{
+	protected void getCategoryFields(IWContext iwc, int iCategoryId) throws RemoteException{
 		int parent = iwc.isParameterSet(prmParentID)?Integer.parseInt(iwc.getParameter(prmParentID)):-1;
 		
 		Link newLink = new Link(core.getImage("/shared/create.gif"));
@@ -299,7 +299,7 @@ public class CategoryWindow extends IWAdminWindow {
 		
 	}
 	
-	private void fillTable(Iterator iter,Table T,int chosenId,Collection coll,TextInput name,TextInput info,TextInput order,int level)throws RemoteException{
+	protected void fillTable(Iterator iter,Table T,int chosenId,Collection coll,TextInput name,TextInput info,TextInput order,int level)throws RemoteException{
 		if (iter != null) {
 			
 			ICCategory cat;
@@ -400,7 +400,7 @@ public class CategoryWindow extends IWAdminWindow {
 	}
 	
 	
-	private void addParametersToLink(Link L){
+	protected void addParametersToLink(Link L){
 		if (this.sCacheKey != null) 
 			L.addParameter(this.prmCacheClearKey, this.sCacheKey);
 		if (allowOrdering)
