@@ -8,7 +8,9 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
+import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
+import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -63,14 +65,11 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	 * @param iwc
 	 */
 	private void handleSave(IWContext iwc) {
-//		User user = iwc.getCurrentUser();
-//		add("Save pressed for user: "+user.getName());
 		try {
-			InvoiceBusiness invoiceBusiness = (InvoiceBusiness) IDOLookup.create(InvoiceBusiness.class);
-			invoiceBusiness.startPostingBatch(new Date(System.currentTimeMillis()));
+			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+			invoiceBusiness.startPostingBatch(new Date(System.currentTimeMillis()), iwc);
 		} catch (Exception e) {
-			// TODO (JJ) Display userfriendly error message
-			e.printStackTrace();
+			add(new ExceptionWrapper(e));
 		}
 	}
 
