@@ -1,5 +1,5 @@
 /*
- * $Id: CashierWindowPlugin.java,v 1.1 2004/09/01 16:53:04 thomas Exp $
+ * $Id: CashierWindowPlugin.java,v 1.2 2004/11/27 18:31:36 eiki Exp $
  * Created on Sep 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,7 +11,9 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation.plugin;
 
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierWindow;
 import java.util.Map;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -20,10 +22,10 @@ import com.idega.user.app.ToolbarElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/01 16:53:04 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/11/27 18:31:36 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CashierWindowPlugin implements ToolbarElement {
 	
@@ -74,7 +76,19 @@ public class CashierWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#isValid(com.idega.presentation.IWContext)
 	 */
 	public boolean isValid(IWContext iwc) {
-		return iwc.getApplicationSettings().getProperty("temp_show_is_related_stuff") != null;
+		//only cashiers and admin can use this plugin
+		AccessController security = iwc.getAccessController();
+		IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		boolean isiPropertyExists = settings.getProperty("temp_show_is_related_stuff") != null;
+		boolean isValid = false;
+		if(isiPropertyExists && iwc.isSuperAdmin()){
+			isValid = true;
+		}
+		else{
+			isValid = (isiPropertyExists) && (security.hasRole(CashierWindow.ROLE_KEY_CASHIER, iwc) || security.hasRole(CashierWindow.ROLE_KEY_CASHIER_ADMIN, iwc));
+		}
+		
+		return isValid;
 	}
 
 	/* (non-Javadoc)

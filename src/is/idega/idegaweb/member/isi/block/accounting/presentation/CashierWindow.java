@@ -42,7 +42,11 @@ import com.idega.user.presentation.GroupPropertyWindow;
  */
 public class CashierWindow extends StyledIWAdminWindow {
 
-    public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
+    
+
+public static final String ROLE_KEY_CASHIER_ADMIN = "CashierAdmin";
+public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 
     public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
 
@@ -585,7 +589,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         ArrayList userCashierGroups = new ArrayList();
         ArrayList userGroupsInClub = new ArrayList();
         Collection allCashierGroups = iwc.getAccessController()
-                .getAllGroupsForRoleKey("Gjaldkeri", iwc);
+                .getAllGroupsForRoleKey(ROLE_KEY_CASHIER, iwc);
 
         try {
             Collection allUserGroups = getUserBusiness(iwc)
@@ -621,7 +625,7 @@ public class CashierWindow extends StyledIWAdminWindow {
     private boolean isCashierAdministrator(IWContext iwc) {
         User user = iwc.getCurrentUser();
         Collection allCashierAdminGroups = iwc.getAccessController()
-                .getAllGroupsForRoleKey("CashierAdmin", iwc);
+                .getAllGroupsForRoleKey(ROLE_KEY_CASHIER_ADMIN, iwc);
 
         try {
             Collection allUserGroups = getUserBusiness(iwc)

@@ -1,6 +1,8 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierWindow;
 import java.util.Map;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
@@ -56,8 +58,19 @@ public class WorkReportWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#isValid(com.idega.presentation.IWContext)
 	 */
 	public boolean isValid(IWContext iwc) {
+		//only cashiers and admin can use this plugin
+		AccessController security = iwc.getAccessController();
 		IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		return settings.getProperty("temp_show_is_related_stuff") != null;
+		boolean isiPropertyExists = settings.getProperty("temp_show_is_related_stuff") != null;
+		boolean isValid = false;
+		if(isiPropertyExists && iwc.isSuperAdmin()){
+			isValid = true;
+		}
+		else{
+			isValid = (isiPropertyExists) && (security.hasRole(CashierWindow.ROLE_KEY_CASHIER, iwc) || security.hasRole(CashierWindow.ROLE_KEY_CASHIER_ADMIN, iwc));
+		}
+		
+		return isValid;
 	}
 
 	/* (non-Javadoc)
