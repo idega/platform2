@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExport.java,v 1.1 2005/01/12 13:11:54 anders Exp $
+ * $Id: ChildCareExport.java,v 1.2 2005/02/09 18:19:36 malin Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -28,10 +28,10 @@ import com.idega.presentation.ui.SubmitButton;
  * This idegaWeb block exports child care placements to text files
  * for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/01/12 13:11:54 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/09 18:19:36 $ by $Author: malin $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildCareExport extends CommuneBlock {
 
@@ -97,10 +97,10 @@ public class ChildCareExport extends CommuneBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		
-		SubmitButton elementarySchoolButton = new SubmitButton(PARAMETER_PLACEMENT_EXPORT, 
-				localize(KEY_EXPORT_PLACEMENTS, "Export Placements"));
-		SubmitButton highSchoolButton = new SubmitButton(PARAMETER_TAXEKAT_EXPORT, 
-				localize(KEY_EXPORT_TAXEKATS, "Export Taxekats"));
+		SubmitButton elementarySchoolButton = (SubmitButton) getStyledInterface(new SubmitButton(PARAMETER_PLACEMENT_EXPORT, 
+				localize(KEY_EXPORT_PLACEMENTS, "Export Placements")));
+		SubmitButton highSchoolButton = (SubmitButton) getStyledInterface(new SubmitButton(PARAMETER_TAXEKAT_EXPORT, 
+				localize(KEY_EXPORT_TAXEKATS, "Export Taxekats")));
 		
 		table.add(elementarySchoolButton, 1, 1);
 		table.add(highSchoolButton, 2, 1);
