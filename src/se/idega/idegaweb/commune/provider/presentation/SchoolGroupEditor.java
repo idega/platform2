@@ -153,10 +153,15 @@ public class SchoolGroupEditor extends ProviderBlock {
 		boolean canDelete = true;
 		
 		table.add(getLocalizedSmallHeader("group_name","Name"), column++, row);
-		table.add(getLocalizedSmallHeader("group_type","Type"), column++, row);
+		if (!showStudyPaths) {
+			table.add(getLocalizedSmallHeader("group_type","Type"), column++, row);
+		}
 		table.add(getLocalizedSmallHeader("school_season","Season"), column++, row);
 		table.add(getLocalizedSmallHeader("school_years","Years"), column++, row);
 		table.add(getLocalizedSmallHeader("teachers","Teachers"), column++, row);
+		if (showStudyPaths) {
+			table.add(getLocalizedSmallHeader("study_paths","Study paths"), column++, row);
+		}
 		if (useStyleNames) {
 			table.setRowStyleClass(row, getHeaderRow2Class());
 			table.setCellpaddingLeft(1, row++, 12);
@@ -164,11 +169,20 @@ public class SchoolGroupEditor extends ProviderBlock {
 		else {
 			table.setRowColor(row++, getHeaderColor());
 		}
+		Collection studyPaths = null;
 		
 		Iterator iter = getSchoolGroups().iterator();
 		while (iter.hasNext()) {
 			column = 1;
 			SchoolClass group = (SchoolClass) iter.next();
+			if (showStudyPaths) {
+				try {
+					studyPaths = group.findRelatedStudyPaths();
+				}
+				catch (IDORelationshipException ile) {
+					studyPaths = new ArrayList();
+				}
+			}
 			try {
 				if (getSchoolBusiness().getNumberOfStudentsInClass(((Integer)group.getPrimaryKey()).intValue()) > 0) {
 					canDelete = false;
@@ -199,7 +213,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 			}
 
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);
-			if (group.getSchoolTypeId() != -1)
+			if (!showStudyPaths && group.getSchoolTypeId() != -1)
 				table.add(getSmallText(group.getSchoolType().getSchoolTypeName()), column++, row);
 			else
 				table.add(getSmallText("-"), column++, row);
@@ -253,6 +267,23 @@ public class SchoolGroupEditor extends ProviderBlock {
 			}
 			else {
 				table.add(getSmallText("-"), column++, row);
+			}
+			
+			if (showStudyPaths) {
+				if (!studyPaths.isEmpty()) {
+					Iterator iterator = studyPaths.iterator();
+					StringBuffer buffer = new StringBuffer();
+					while (iterator.hasNext()) {
+						SchoolStudyPath studyPath = (SchoolStudyPath) iterator.next();
+						buffer.append(localize(studyPath.getCode(), studyPath.getDescription()));
+						if (iterator.hasNext())
+							buffer.append(",").append(Text.NON_BREAKING_SPACE);
+					}
+					table.add(getSmallText(buffer.toString()), column++, row);
+				}
+				else {
+					table.add(getSmallText("-"), column++, row);
+				}
 			}
 			
 			Link editLink = new Link(this.getEditIcon(localize("edit_group", "Edit group")));
