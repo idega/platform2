@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.64 2004/10/14 07:34:54 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.65 2004/10/20 15:51:41 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
+import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
@@ -803,6 +804,18 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 		info.setICObject(ico);
 		info.store();
 		return info;
+	}
+	
+	public void setMessageFile(PrintMessage msg, boolean flagPrinted,User performer, ICFile file){
+	    msg.setMessageData(file);
+		
+		if (flagPrinted) {
+			flagMessageAsPrinted(performer, msg);
+		}
+		else {
+			msg.store();
+		}
+		
 	}
 
 }

@@ -1,6 +1,6 @@
 /*
- * $Id: MessageBusiness.java,v 1.33 2004/10/12 08:32:54 aron Exp $
- * Created on 7.10.2004
+ * $Id: MessageBusiness.java,v 1.34 2004/10/20 15:51:40 aron Exp $
+ * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
+import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 
@@ -35,10 +36,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/12 08:32:54 $ by $Author: aron $
+ *  Last modified: $Date: 2004/10/20 15:51:40 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public interface MessageBusiness extends IBOService, CaseBusiness {
     /**
@@ -478,5 +479,11 @@ public interface MessageBusiness extends IBOService, CaseBusiness {
     public MessageHandlerInfo createMessageHandlerInfo(
             MessagePdfHandler handler, ICObject ico) throws CreateException,
             RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.message.business.MessageBusinessBean#setMessageFile
+     */
+    public void setMessageFile(PrintMessage msg, boolean flagPrinted,
+            User performer, ICFile file) throws java.rmi.RemoteException;
 
 }
