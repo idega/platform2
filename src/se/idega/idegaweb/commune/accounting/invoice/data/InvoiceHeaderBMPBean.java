@@ -7,9 +7,7 @@ import com.idega.user.data.*;
  * @author Joakim
  *
  */
-public class InvoiceHeaderBMPBean extends GenericEntity implements 
-//InvoiceHeader, 
-IDOLegacyEntity {
+public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader, IDOLegacyEntity {
 	private static final String ENTITY_NAME = "cacc_invoice_header";
 
 	private static final String COLUMN_MAIN_ACTIVITY = "main_activity";
