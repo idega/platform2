@@ -13,13 +13,6 @@ public class ChildCareQueueHomeImpl extends com.idega.data.IDOFactory implements
  }
 
 
-public ChildCareQueue findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ChildCareQueueBMPBean)entity).ejbFindApplicationByChildAndChoiceNumber(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
 public java.util.Collection findQueueByChild(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareQueueBMPBean)entity).ejbFindQueueByChild(p0);
@@ -28,6 +21,13 @@ public java.util.Collection findQueueByChild(int p0)throws javax.ejb.FinderExcep
 }
 
 public ChildCareQueue findQueueByChildAndChoiceNumber(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareQueueBMPBean)entity).ejbFindQueueByChildAndChoiceNumber(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public ChildCareQueue findQueueByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareQueueBMPBean)entity).ejbFindQueueByChildAndChoiceNumber(p0,p1);
 	this.idoCheckInPooledEntity(entity);

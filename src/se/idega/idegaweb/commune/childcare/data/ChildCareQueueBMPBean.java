@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.4 2003/04/23 12:03:10 joakim Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.5 2003/04/23 13:15:58 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -221,8 +221,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		setColumn(EXPORTED,exp);	
 	}
 	
-	//TODO update these to sokmething usefull
-	public Integer ejbFindApplicationByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
+	public Integer ejbFindQueueByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
 		return ejbFindQueueByChildAndChoiceNumber(((Integer)child.getPrimaryKey()).intValue(), choiceNumber);
 	}
 
