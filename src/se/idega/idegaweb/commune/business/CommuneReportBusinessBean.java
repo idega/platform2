@@ -811,7 +811,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 */
 	private boolean livesNotInCommune(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
 		// TODO Auto-generated method stub
-		Group rootSpecialCitizenGroup = _communeUserService.getRootSpecialCitizenGroup();
+		Group rootSpecialCitizenGroup = _communeUserService.getRootOtherCommuneCitizensGroup();
 		
 		Timestamp timestampFDOCIP = new Timestamp(firstDateOfContitionInPeriode.getTime());
 		final long millisecondsInOneDay = 8640000;
