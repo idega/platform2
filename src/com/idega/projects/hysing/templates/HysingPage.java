@@ -28,6 +28,7 @@ public class HysingPage extends TemplatePage{
   protected Table contentTable3;
   protected Table contentTable4;
   protected String headerImageURL;
+  protected String footerImageURL;
   protected String middleImageURL;
   protected String middleEndImageURL;
   protected String mailImageURL;
@@ -57,6 +58,9 @@ public class HysingPage extends TemplatePage{
   public void main(ModuleInfo modinfo)throws Exception{
       if(headerImageURL==null){
         headerImageURL="/pics/headers/forsida/forsida_topp.jpg";
+      }
+      if(footerImageURL==null){
+        footerImageURL="/pics/footers/BlarFooter.gif";
       }
       if(middleImageURL==null){
         middleImageURL="/pics/headers/forsida/2forsida1a.gif";
@@ -116,6 +120,10 @@ public class HysingPage extends TemplatePage{
 
   public void setHeaderImageURL(String URL){
       headerImageURL=URL;
+  }
+
+  public void setFooterImageURL(String URL){
+     footerImageURL=URL;
   }
 
   public String getMiddleImageURL(){
@@ -408,7 +416,7 @@ public class HysingPage extends TemplatePage{
 
 			myTable2.setBackgroundImage(new Image("/pics/BoxBackground/grunntiler2.gif"));
 			myTable2.setBackgroundImage(1,1,new Image("/pics/BoxBackground/grunntiler1.gif"));
-			myTable2.setBackgroundImage(1,5,new Image("/pics/footers/BlarFooter.gif"));
+			myTable2.setBackgroundImage(1,5,new Image(footerImageURL));
 			if ( !merged ) {
                           myTable2.setBackgroundImage(3,2,new Image("/pics/BoxBackground/divider.gif"));
                           myTable2.setBackgroundImage(5,2,new Image("/pics/BoxBackground/divider.gif"));

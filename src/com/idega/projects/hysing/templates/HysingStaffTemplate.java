@@ -6,6 +6,7 @@ public class HysingStaffTemplate extends HysingTemplate{
   public void initializePage(){
         HysingSubPage page = new HysingSubPage();
         page.setHeaderImageURL("/pics/headers/starfsmenn/starfsmenn_Topp.jpg");
+        page.setFooterImageURL("/pics/footers/BrunnFooter.gif");
         page.setMiddleImageURL("/pics/headers/starfsmenn/2starfsmenn1a.gif");
         page.setMailImageURL("/pics/mail/rauttMail_icon.gif");
         page.setHelpImageURL("/pics/nyicon/FyrirspurnRautt.gif");

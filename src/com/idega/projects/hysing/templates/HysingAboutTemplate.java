@@ -8,6 +8,7 @@ public class HysingAboutTemplate extends HysingTemplate{
         HysingSubPage page = new HysingSubPage();
         page.setHeaderImageURL("/pics/headers/umfyrirtaekid/umFyrirtaekid_Topp.jpg");
         page.setMiddleImageURL("/pics/headers/umfyrirtaekid/2umfyrirtaekid1a.gif");
+        page.setFooterImageURL("/pics/footers/BrunnFooter.gif");
         page.setMailImageURL("/pics/mail/rauttMail_icon.gif");
         page.setHelpImageURL("/pics/nyicon/FyrirspurnRautt.gif");
         page.setServiceImageURL("/pics/nyicon/TjonustaRautt.gif");
