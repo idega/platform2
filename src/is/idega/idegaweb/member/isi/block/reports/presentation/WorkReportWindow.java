@@ -266,10 +266,13 @@ public class WorkReportWindow extends IWAdminWindow {
 		Text uploadReport = formatText(iwrb.getLocalizedString("workreportwindow.excel_imports", "Excel imports"), true);
 
 		//B.7
-		LinkContainer importMemberList = new LinkContainer();
-		importMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members", "Import member list")));
-		importMemberList.addParameter(ACTION, ACTION_IMPORT_MEMBERS);
-		uploadList.add(importMemberList);
+		if (!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type)) {
+			LinkContainer importMemberList = new LinkContainer();
+			importMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members", "Import member list")));
+			importMemberList.addParameter(ACTION, ACTION_IMPORT_MEMBERS);
+			uploadList.add(importMemberList);
+		}
+		
 		//B.8
 		LinkContainer importAccount = new LinkContainer();
 		importAccount.add(formatText(iwrb.getLocalizedString("workreportwindow.import_account", "Import account info")));
