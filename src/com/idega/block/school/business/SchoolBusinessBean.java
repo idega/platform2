@@ -933,6 +933,33 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	/**
+	 * Returns or creates (if not available) the default usergroup all high school
+	 * administors have as their primary group.
+	 * 
+	 * @throws CreateException
+	 *           if it failed to create the group.
+	 * @throws FinderException
+	 *           if it failed to locate the group.
+	 */
+	public Group getRootHighSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
+		Group rootGroup = null;
+		//create the default group
+		String ROOT_HIGH_SCHOOL_ADMINISTRATORS_GROUP = "high_school_administrators_group_id";
+		IWBundle bundle = getCommuneBundle();
+		String groupId = bundle.getProperty(ROOT_HIGH_SCHOOL_ADMINISTRATORS_GROUP);
+		if (groupId != null) {
+			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("trying to store Commune Root high school administrators group");
+
+			rootGroup = getUserBusiness().getGroupBusiness().createGroup("High School Administrators", "The Commune Root High School Administrators Group.");
+			bundle.setProperty(ROOT_HIGH_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
+		}
+		return rootGroup;
+	}
+
+	/**
 	 * Returns or creates (if not available) the default usergroup all school
 	 * administors have as their primary group.
 	 * 

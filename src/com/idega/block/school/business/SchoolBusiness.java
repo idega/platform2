@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolBusiness.java,v 1.91 2005/01/10 15:06:05 anders Exp $
+ * $Id: SchoolBusiness.java,v 1.92 2005/01/13 10:14:32 anders Exp $
  * Created on 10.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/10 15:06:05 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/13 10:14:32 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.91 $
+ * @version $Revision: 1.92 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -363,6 +363,11 @@ public interface SchoolBusiness extends IBOService {
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getRootSchoolAdministratorGroup
 	 */
 	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#getRootHighSchoolAdministratorGroup
+	 */
+	public Group getRootHighSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getRootMusicSchoolAdministratorGroup
