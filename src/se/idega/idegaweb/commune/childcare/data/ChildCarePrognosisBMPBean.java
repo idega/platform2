@@ -24,6 +24,7 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	private final static String ONE_YEAR_PROGNOSIS = "ONE_YEAR_PROGNOSIS";
 	private final static String THREE_MONTHS_PRIORITY = "THREE_MONTHS_PRIORITY";
 	private final static String ONE_YEAR_PRIORITY = "ONE_YEAR_PRIORITY";
+	private final static String PROVIDER_CAPACITY = "PROVIDER_CAPACITY";
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -42,6 +43,7 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 		addAttribute(ONE_YEAR_PROGNOSIS,"",true,true,java.lang.Integer.class);
 		addAttribute(THREE_MONTHS_PRIORITY,"",true,true,java.lang.Integer.class);
 		addAttribute(ONE_YEAR_PRIORITY,"",true,true,java.lang.Integer.class);
+		addAttribute(PROVIDER_CAPACITY,"",true,true,java.lang.Integer.class);
 		addOneToOneRelationship(PROVIDER_ID,School.class);
 	}
 
@@ -88,6 +90,14 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	}
 
 	/**
+	 * @return int
+	 */
+	public int getProviderCapacity() {
+		return getIntColumnValue(PROVIDER_CAPACITY);
+	}
+	
+	
+	/**
 	 * Sets the oneYearPrognosis.
 	 * @param oneYearPrognosis The oneYearPrognosis to set
 	 */
@@ -112,6 +122,15 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	}
 
 	/**
+	 * Sets the providerCapacity.
+	 * @param providerCapacity The providerCapacity to set
+	 * malin
+	 */
+	public void setProviderCapacity(int providerCapacity) {
+		setColumn(PROVIDER_CAPACITY,providerCapacity);
+	}
+	
+	/**
 	 * Sets the threeMonthsPrognosis.
 	 * @param threeMonthsPrognosis The threeMonthsPrognosis to set
 	 */
@@ -135,6 +154,7 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 		setColumn(UPDATED_DATE,updatedDate);
 	}
 	
+		
 	public Integer ejbFindPrognosis(int providerID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);

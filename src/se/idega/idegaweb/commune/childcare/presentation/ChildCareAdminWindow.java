@@ -76,6 +76,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_ONE_YEAR_PROGNOSIS = "cc_one_year";
 	public static final String PARAMETER_THREE_MONTHS_PRIORITY = "cc_three_months_priority";
 	public static final String PARAMETER_ONE_YEAR_PRIORITY = "cc_one_year_priority";
+	public static final String PARAMETER_PROVIDER_CAPACITY = "cc_provider_capacity";
 	public static final String PARAMETER_OFFER_VALID_UNTIL = "cc_offer_valid_until";
 	public static final String PARAMETER_CANCEL_REASON = "cc_cancel_reason";
 	public static final String PARAMETER_CANCEL_MESSAGE = "cc_cancel_message";
@@ -959,7 +960,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(oneYear, 2, row);
 		table.add(getSmallText(localize("child_care.thereof_priority", "there of priority")+":"), 3, row);
 		table.add(oneYearPriority, 4, row++);
+		
+		
+		////////////////// added provider capacity 040402 Malin
+		table.mergeCells(1, row, 4, row);
+		table.add(getSmallHeader(localize("child_care.capacity_information","Enter the provider capacity.")), 1, row++);
+		
+		table.mergeCells(2, row, 4, row);
+		TextInput providerCapacity = (TextInput) getStyledInterface(new TextInput(PARAMETER_PROVIDER_CAPACITY));
+		providerCapacity.setLength(3);
+		providerCapacity.setAsNotEmpty(localize("child_care.capacity_required","You must fill in the provider capacity."));
+		providerCapacity.setAsIntegers(localize("child_care.capacity_only_integers_allowed","Not a valid number."));
+		if (prognosis != null && prognosis.getOneYearPriority() != -1)
+			providerCapacity.setContent(String.valueOf(prognosis.getProviderCapacity()));
 
+		table.add(getSmallText(localize("child_care.provider_capacity", "Provider capacity")+":"), 1, row);
+		table.add(providerCapacity, 2, row);
+		table.add("", 3, row++);
+		
+			
 		SubmitButton updatePrognosis = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_prognosis", "Set prognosis"), PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_PROGNOSIS)));
 		form.setToDisableOnSubmit(updatePrognosis, true);
 		table.add(updatePrognosis, 1, row);
@@ -1565,7 +1584,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int oneYear = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PROGNOSIS));
 		int threeMonthsPriority = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PRIORITY));
 		int oneYearPriority = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PRIORITY));
-		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear, threeMonthsPriority, oneYearPriority);
+		int providerCapacity = Integer.parseInt(iwc.getParameter(PARAMETER_PROVIDER_CAPACITY));
+		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear, threeMonthsPriority, oneYearPriority, providerCapacity);
+		
 		getSession().setHasPrognosis(true);
 		getSession().setHasOutdatedPrognosis(false);
 
