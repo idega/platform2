@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/10 20:40:13 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/10 20:58:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.62 $
+ * @version $Revision: 1.63 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -148,8 +148,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
 	private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
 	private static final String PIECE_AMOUNT_DEFAULT = "Styckepris";
-	private static final String PIECE_AMOUNT_SHORT_KEY = PREFIX + "piece_amount_short";
-	private static final String PIECE_AMOUNT_SHORT_DEFAULT = "á";
+	private static final String PIECE_AMOUNT_2_KEY = PREFIX + "piece_amount_2";
+	private static final String PIECE_AMOUNT_2_DEFAULT = "Á-pris";
 	private static final String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
 	private static final String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
 	private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
@@ -338,7 +338,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
 				 { PLACEMENT_KEY, PLACEMENT_DEFAULT },
 				 { NUMBER_OF_KEY, NUMBER_OF_DEFAULT },
-				 { PIECE_AMOUNT_SHORT_KEY, PIECE_AMOUNT_SHORT_DEFAULT },
+				 { PIECE_AMOUNT_2_KEY, PIECE_AMOUNT_2_DEFAULT },
 				 { AMOUNT_KEY, AMOUNT_DEFAULT },
 				 { NOTE_KEY, NOTE_DEFAULT }};
 		final PdfPTable table = new PdfPTable
@@ -493,7 +493,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private PdfPTable getRecordsSummaryPdfTable
 		(final IWContext context, PaymentRecord [] records) throws RemoteException,
 																															 FinderException {
-		final PdfPTable summaryTable = new PdfPTable (3);
+		final PdfPTable summaryTable
+				= new PdfPTable (new float [] { 7.0f, 3.6f, 3.0f });
 		summaryTable.getDefaultCell ().setBorder (0);
 
 		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
@@ -557,6 +558,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 							 + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (summaryTable, getFormattedAmount (totalAmountVat));
+		addPhrase (summaryTable, "");
 		return summaryTable;
 	}
 	
