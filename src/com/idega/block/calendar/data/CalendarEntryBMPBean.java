@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.text.data.LocalizedText;
 
-public class CalendarEntryBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.calendar.data.CalendarEntry {
+public class CalendarEntryBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.calendar.data.CalendarEntry {
 
 	public CalendarEntryBMPBean(){
 		super();

@@ -6,7 +6,7 @@
  */
 package com.idega.block.dataquery.data;
 
-import com.idega.data.CategoryEntityBMPBean;
+import com.idega.block.category.data.CategoryEntityBMPBean;
 
 /**
  * @author aron

@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.business.CategoryService;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.image.presentation.ImageAttributeSetter;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
@@ -17,8 +19,6 @@ import com.idega.block.trade.stockroom.business.StockroomBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.business.CategoryService;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.data.IDORelationshipException;

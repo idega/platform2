@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.email.business.EmailAccount;
 import com.idega.block.email.business.EmailLetter;
 import com.idega.block.email.business.EmailTopic;
@@ -14,8 +16,6 @@ import com.idega.block.email.data.MailAccount;
 import com.idega.block.email.data.MailAccountHome;
 import com.idega.block.email.data.MailLetter;
 import com.idega.block.email.data.MailLetterHome;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.contact.data.EmailDataView;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;

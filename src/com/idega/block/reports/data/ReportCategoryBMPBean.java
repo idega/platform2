@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ReportCategoryBMPBean extends com.idega.core.category.data.ICCategoryBMPBean implements com.idega.block.reports.data.ReportCategory {
+public class ReportCategoryBMPBean extends com.idega.block.category.data.ICCategoryBMPBean implements com.idega.block.reports.data.ReportCategory {
 
   public ReportCategoryBMPBean(){
     super();

@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.134 2004/06/29 12:51:49 thomas Exp $
+ * $Id: NewsReader.java,v 1.135 2004/06/29 16:29:31 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,8 @@ import java.util.Vector;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.block.presentation.ImageWindow;
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.news.business.NewsBusiness;
 import com.idega.block.news.business.NewsFinder;
@@ -31,8 +33,6 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;

@@ -6,11 +6,11 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;

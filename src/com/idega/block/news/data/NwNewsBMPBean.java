@@ -7,8 +7,8 @@ package com.idega.block.news.data;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.text.data.Content;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDORelationshipException;
 

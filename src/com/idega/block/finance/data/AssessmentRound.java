@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface AssessmentRound extends com.idega.data.CategoryEntity
+public interface AssessmentRound extends com.idega.block.category.data.CategoryEntity
 {
  public int getAccountCount();
  public java.sql.Date getDueDate();

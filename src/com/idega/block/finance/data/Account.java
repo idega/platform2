@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface Account extends com.idega.data.CategoryEntity,com.idega.block.finance.data.FinanceAccount
+public interface Account extends com.idega.block.category.data.CategoryEntity,com.idega.block.finance.data.FinanceAccount
 {
  public void addAmount(java.lang.Float p0);
  public void addAmount(float p0);

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.idega.data.IDORemoveRelationshipException;
 
-public interface ProductCategory extends com.idega.core.category.data.ICCategory
+public interface ProductCategory extends com.idega.block.category.data.ICCategory
 {
  public void setDefaultValues();
  public void setCategoryType(String type);

@@ -10,9 +10,9 @@ import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.forum.data.ForumData;
 import com.idega.block.forum.data.ForumDataHome;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.data.ICTreeNode;
 import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;

@@ -39,7 +39,7 @@ public class ForumDataHomeImpl extends com.idega.data.IDOFactory implements Foru
 
  }
 
-public java.util.Collection findAllThreads(com.idega.core.category.data.ICCategory p0,int p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllThreads(com.idega.block.category.data.ICCategory p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ForumDataBMPBean)entity).ejbFindAllThreads(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -53,21 +53,21 @@ public java.util.Collection findThreadsInCategories(java.util.Collection p0,int 
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findNewestThread(com.idega.core.category.data.ICCategory p0)throws javax.ejb.FinderException{
+public java.util.Collection findNewestThread(com.idega.block.category.data.ICCategory p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ForumDataBMPBean)entity).ejbFindNewestThread(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllThreads(com.idega.core.category.data.ICCategory p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllThreads(com.idega.block.category.data.ICCategory p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ForumDataBMPBean)entity).ejbFindAllThreads(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public int getNumberOfThreads(com.idega.core.category.data.ICCategory p0)throws javax.ejb.EJBException{
+public int getNumberOfThreads(com.idega.block.category.data.ICCategory p0)throws javax.ejb.EJBException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ForumDataBMPBean)entity).ejbHomeGetNumberOfThreads(p0);
 	this.idoCheckInPooledEntity(entity);

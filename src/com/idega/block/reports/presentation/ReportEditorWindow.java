@@ -2,9 +2,9 @@ package com.idega.block.reports.presentation;
 
 import java.util.List;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.reports.business.ReportBusiness;
 import com.idega.block.reports.business.ReportFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;

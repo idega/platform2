@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.data.CategoryEntityBMPBean;
+import com.idega.block.category.data.CategoryEntityBMPBean;
 
 /**
  * Title:

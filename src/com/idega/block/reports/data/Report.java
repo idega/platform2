@@ -1,7 +1,7 @@
 package com.idega.block.reports.data;
 
 
-public interface Report extends com.idega.data.CategoryEntity
+public interface Report extends com.idega.block.category.data.CategoryEntity
 {
  public java.lang.String getColInfo();
  public java.util.List getColumnInfos();

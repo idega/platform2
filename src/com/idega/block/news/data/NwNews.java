@@ -9,7 +9,7 @@ public interface NwNews extends com.idega.data.IDOLegacyEntity
  public int getContentId();
  public Content getContent();
  public int getNewsCategoryId();
- public com.idega.core.category.data.ICCategory getNewsCategory();
+ public com.idega.block.category.data.ICCategory getNewsCategory();
  public java.util.Collection getRelatedFiles()throws com.idega.data.IDORelationshipException;
  public java.lang.String getSource();
  public void initializeAttributes();

@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.mailinglist.data;
 
+import com.idega.block.category.data.CategoryEntity;
 import com.idega.core.contact.data.Email;
-import com.idega.data.CategoryEntity;
 
 
 public interface MailingList extends CategoryEntity

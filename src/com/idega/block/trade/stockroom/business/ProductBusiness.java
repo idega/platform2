@@ -43,7 +43,7 @@ public interface ProductBusiness extends com.idega.business.IBOService
  public java.util.List getProducts(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.List getProducts()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.List getProducts(com.idega.block.trade.stockroom.data.ProductCategory p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(com.idega.core.category.data.ICCategory p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.List getProducts(com.idega.block.category.data.ICCategory p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.List getProducts(com.idega.presentation.IWContext p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.List getProducts(com.idega.util.IWTimestamp p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.List getProducts(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;

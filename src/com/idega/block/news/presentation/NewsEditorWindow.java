@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.news.business.NewsBusiness;
 import com.idega.block.news.business.NewsFinder;
@@ -21,8 +23,6 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;

@@ -11,10 +11,10 @@ import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.business.CategoryService;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.business.CategoryService;
-import com.idega.core.category.data.ICCategory;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMetaDataConstants;

@@ -19,9 +19,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.news.data.NewsCategory;
 import com.idega.block.news.data.NwNews;
-import com.idega.core.category.data.ICCategory;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWBundle;
@@ -76,7 +76,7 @@ public class NewsBundleStarter implements IWBundleStartable{
       oinst = SimpleQuerier.executeStringQuery(sql2+id,Conn);
       if(oinst !=null && oinst.length > 0)
         objectinstance_id = Integer.parseInt(oinst[0]);
-      ICCategory cat = ((com.idega.core.category.data.ICCategoryHome)com.idega.data.IDOLookup.getHome(ICCategory.class)).create();
+      ICCategory cat = ((com.idega.block.category.data.ICCategoryHome)com.idega.data.IDOLookup.getHome(ICCategory.class)).create();
       cat.setName(name);
       cat.setDescription(info);
       cat.setType(type);

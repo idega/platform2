@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ReportInfoBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.reports.data.ReportInfo {
+public class ReportInfoBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.reports.data.ReportInfo {
 
   public static String getEntityTableName() {return "rep_report_info";}
   public static String getColumnName(){return "name";}

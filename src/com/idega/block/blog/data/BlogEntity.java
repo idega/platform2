@@ -3,7 +3,7 @@ package com.idega.block.blog.data;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.core.category.data.ICInformationFolder;
+import com.idega.block.category.data.ICInformationFolder;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOLookupException;
 

@@ -9,6 +9,7 @@ package com.idega.block.survey.business;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.InformationFolder;
 import com.idega.block.survey.data.SurveyAnswer;
 import com.idega.block.survey.data.SurveyAnswerHome;
 import com.idega.block.survey.data.SurveyEntity;
@@ -22,7 +23,6 @@ import com.idega.block.survey.data.SurveyReplyHome;
 import com.idega.block.survey.data.SurveyStatus;
 import com.idega.block.survey.data.SurveyStatusHome;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;

@@ -11,9 +11,9 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.blog.data.BlogEntity;
+import com.idega.block.category.data.InformationCategory;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
-import com.idega.core.category.data.InformationCategory;
 import com.idega.data.IDOLookupException;
 
 /**

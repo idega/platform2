@@ -4,12 +4,12 @@ import java.sql.SQLException;
 import com.idega.presentation.Image;
 import javax.ejb.*;
 
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.presentation.ui.DropdownMenu;
 import java.util.*;
 import com.idega.data.*;
 import java.rmi.RemoteException;
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.dictionary.data.*;
 
 public class DictionaryBusiness {

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.reports.business.ReportBusiness;
 import com.idega.block.reports.business.ReportEntityHandler;
@@ -11,7 +12,6 @@ import com.idega.block.reports.business.ReportFinder;
 import com.idega.block.reports.business.ReportWriter;
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
-import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;

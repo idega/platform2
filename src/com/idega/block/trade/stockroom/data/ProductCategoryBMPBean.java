@@ -19,7 +19,7 @@ import com.idega.data.IDORemoveRelationshipException;
  * @version 1.0
  */
 
-public class ProductCategoryBMPBean extends com.idega.core.category.data.ICCategoryBMPBean implements com.idega.block.trade.stockroom.data.ProductCategory {
+public class ProductCategoryBMPBean extends com.idega.block.category.data.ICCategoryBMPBean implements com.idega.block.trade.stockroom.data.ProductCategory {
 
   public static final String CATEGORY_TYPE_PRODUCT = "sr_prod_cat_product";
 
@@ -46,7 +46,7 @@ public class ProductCategoryBMPBean extends com.idega.core.category.data.ICCateg
   }
 
   public String getCategoryType() {
-    return getStringColumnValue(com.idega.core.category.data.ICCategoryBMPBean.getColumnType());
+    return getStringColumnValue(com.idega.block.category.data.ICCategoryBMPBean.getColumnType());
   }
 
   public void removeProducts(List products) throws IDORemoveRelationshipException{
@@ -62,7 +62,7 @@ public class ProductCategoryBMPBean extends com.idega.core.category.data.ICCateg
   }
 
   public ProductCategory ejbHomeGetProductCategory(String type) throws FinderException, RemoteException {
-    Collection coll = this.idoFindAllIDsByColumnBySQL(com.idega.core.category.data.ICCategoryBMPBean.getColumnType(), type);
+    Collection coll = this.idoFindAllIDsByColumnBySQL(com.idega.block.category.data.ICCategoryBMPBean.getColumnType(), type);
     ProductCategoryHome pcHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
     if (coll.size() == 1) {
 

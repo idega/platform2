@@ -16,11 +16,11 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.block.forum.business.CommuneForumBusiness;
 
+import com.idega.block.category.data.ICCategory;
+import com.idega.block.category.data.ICCategoryHome;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.data.ICCategory;
-import com.idega.core.category.data.ICCategoryHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;

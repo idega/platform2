@@ -3,8 +3,6 @@ package com.idega.block.book.business;
 import javax.ejb.*;
 import com.idega.util.IWTimestamp;
 import com.idega.presentation.ui.SelectionBox;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.presentation.ui.DropdownMenu;
 import java.util.*;
 import com.idega.data.*;
@@ -12,6 +10,8 @@ import java.sql.SQLException;
 import java.rmi.RemoteException;
 import com.idega.presentation.Image;
 import com.idega.block.book.data.*;
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 
 public class BookBusiness {
 

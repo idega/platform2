@@ -1,7 +1,7 @@
 package com.idega.block.dictionary.business;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.dictionary.data.Word;
-import com.idega.core.category.data.ICCategory;
 
 import java.rmi.RemoteException;
 import java.text.Collator;

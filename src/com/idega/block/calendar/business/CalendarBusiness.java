@@ -17,11 +17,11 @@ import javax.transaction.TransactionManager;
 
 import com.idega.block.calendar.data.CalendarEntry;
 import com.idega.block.calendar.data.CalendarEntryType;
+import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;

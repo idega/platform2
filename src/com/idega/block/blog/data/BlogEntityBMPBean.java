@@ -5,9 +5,9 @@ import java.util.Collection;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICInformationCategory;
+import com.idega.block.category.data.ICInformationFolder;
 import com.idega.block.text.data.Content;
-import com.idega.core.category.data.ICInformationCategory;
-import com.idega.core.category.data.ICInformationFolder;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOLookupException;

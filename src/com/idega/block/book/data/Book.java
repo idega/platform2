@@ -7,7 +7,7 @@ public interface Book extends com.idega.data.IDOEntity
  public int getImage() throws java.rmi.RemoteException;
  public java.lang.String getIDColumnName() throws java.rmi.RemoteException;
  public void setPublisherID(int p0) throws java.rmi.RemoteException;
- public void addToCategory(com.idega.core.category.data.ICCategory p0)throws com.idega.data.IDOException, java.rmi.RemoteException;
+ public void addToCategory(com.idega.block.category.data.ICCategory p0)throws com.idega.data.IDOException, java.rmi.RemoteException;
  public void setDateAdded(java.sql.Timestamp p0) throws java.rmi.RemoteException;
  public void setName(java.lang.String p0) throws java.rmi.RemoteException;
  public void removeFromCategory()throws com.idega.data.IDOException, java.rmi.RemoteException;

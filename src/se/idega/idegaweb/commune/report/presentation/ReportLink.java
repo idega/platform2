@@ -1,8 +1,8 @@
 package se.idega.idegaweb.commune.report.presentation;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.reports.business.*;
 import com.idega.block.reports.data.*;
-import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2004/01/26 11:44:54 $ by $Author: staffan $
+ * Last modified: $Date: 2004/06/29 16:30:07 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {

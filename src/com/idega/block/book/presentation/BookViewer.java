@@ -5,8 +5,6 @@ import java.text.NumberFormat;
 import com.idega.presentation.text.*;
 import com.idega.block.book.business.BookComparator;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -18,6 +16,8 @@ import com.idega.presentation.*;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.book.data.*;
 import com.idega.block.book.business.BookBusiness;
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

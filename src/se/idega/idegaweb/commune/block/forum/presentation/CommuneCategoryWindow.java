@@ -11,17 +11,14 @@ package se.idega.idegaweb.commune.block.forum.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.block.forum.business.CommuneForumBusiness;
-
 import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
+import com.idega.block.category.data.ICCategoryHome;
+import com.idega.block.category.data.ICCategoryTranslation;
 import com.idega.block.category.presentation.CategoryWindow;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.data.ICCategory;
-import com.idega.core.category.data.ICCategoryHome;
-import com.idega.core.category.data.ICCategoryTranslation;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;

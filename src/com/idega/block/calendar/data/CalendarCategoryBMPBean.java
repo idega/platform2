@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CalendarCategoryBMPBean extends com.idega.core.category.data.ICCategoryBMPBean implements com.idega.block.calendar.data.CalendarCategory {
+public class CalendarCategoryBMPBean extends com.idega.block.category.data.ICCategoryBMPBean implements com.idega.block.calendar.data.CalendarCategory {
 
   public CalendarCategoryBMPBean(){
     super();

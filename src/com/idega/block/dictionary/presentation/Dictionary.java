@@ -9,12 +9,12 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.dictionary.business.DictionaryBusiness;
 import com.idega.block.dictionary.business.DictionaryComparator;
 import com.idega.block.dictionary.data.Word;
 import com.idega.block.text.business.TextFormatter;
-import com.idega.core.category.data.ICCategory;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

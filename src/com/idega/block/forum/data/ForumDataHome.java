@@ -8,10 +8,10 @@ public interface ForumDataHome extends com.idega.data.IDOHome
  public ForumData findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public ForumData findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public ForumData findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
- public java.util.Collection findAllThreads(com.idega.core.category.data.ICCategory p0,int p1)throws javax.ejb.FinderException;
+ public java.util.Collection findAllThreads(com.idega.block.category.data.ICCategory p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findThreadsInCategories(java.util.Collection p0,int p1)throws javax.ejb.FinderException;
- public java.util.Collection findNewestThread(com.idega.core.category.data.ICCategory p0)throws javax.ejb.FinderException;
- public java.util.Collection findAllThreads(com.idega.core.category.data.ICCategory p0)throws javax.ejb.FinderException;
- public int getNumberOfThreads(com.idega.core.category.data.ICCategory p0)throws javax.ejb.EJBException;
+ public java.util.Collection findNewestThread(com.idega.block.category.data.ICCategory p0)throws javax.ejb.FinderException;
+ public java.util.Collection findAllThreads(com.idega.block.category.data.ICCategory p0)throws javax.ejb.FinderException;
+ public int getNumberOfThreads(com.idega.block.category.data.ICCategory p0)throws javax.ejb.EJBException;
 
 }

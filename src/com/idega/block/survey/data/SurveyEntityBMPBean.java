@@ -9,8 +9,8 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.category.data.ICInformationCategory;
-import com.idega.core.category.data.ICInformationFolder;
+import com.idega.block.category.data.ICInformationCategory;
+import com.idega.block.category.data.ICInformationFolder;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOQuery;

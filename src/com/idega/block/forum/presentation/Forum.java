@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.business.ForumTree;
 import com.idega.block.forum.data.ForumData;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.category.business.CategoryBusiness;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.contact.data.Email;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.business.UserBusiness;

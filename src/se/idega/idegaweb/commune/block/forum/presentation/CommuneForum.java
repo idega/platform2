@@ -16,13 +16,13 @@ import java.util.Vector;
 
 import se.idega.idegaweb.commune.block.forum.business.CommuneForumBusiness;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryWindow;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.data.ForumData;
 import com.idega.block.forum.presentation.Forum;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.file.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;

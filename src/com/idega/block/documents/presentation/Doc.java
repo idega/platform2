@@ -2,20 +2,20 @@ package com.idega.block.documents.presentation;
 
 import java.rmi.RemoteException;
 
+import com.idega.block.category.business.FolderBlockBusiness;
+import com.idega.block.category.data.InformationCategory;
+import com.idega.block.category.data.InformationFolder;
+import com.idega.block.category.presentation.FolderBlock;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.data.DocLink;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.core.category.data.InformationCategory;
-import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.block.business.FolderBlockBusiness;
 import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.idegaweb.block.presentation.FolderBlock;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;

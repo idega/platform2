@@ -8,7 +8,7 @@ import java.util.Iterator;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.core.category.data.ICCategory;
+import com.idega.block.category.data.ICCategory;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserBMPBean;
 import com.idega.data.TreeableEntityBMPBean;

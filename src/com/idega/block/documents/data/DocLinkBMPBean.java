@@ -5,9 +5,9 @@ package com.idega.block.documents.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import com.idega.block.category.data.ICInformationCategory;
+import com.idega.block.category.data.ICInformationFolder;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.category.data.ICInformationCategory;
-import com.idega.core.category.data.ICInformationFolder;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;

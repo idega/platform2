@@ -7,8 +7,8 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.blog.data.BlogEntity;
+import com.idega.block.category.business.FolderBlockBusiness;
 import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.block.business.FolderBlockBusiness;
 
 
 public interface BlogBusiness extends com.idega.business.IBOService, FolderBlockBusiness

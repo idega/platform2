@@ -17,7 +17,7 @@ import com.idega.block.category.data.ICCategoryHome;
 import com.idega.block.category.data.ICCategoryTranslation;
 import com.idega.block.category.data.ICCategoryTranslationHome;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.category.data.*;
+
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;

@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.CategoryEntityBMPBean;
 import com.idega.block.text.data.TxText;
-import com.idega.data.CategoryEntityBMPBean;
 
 /**
  * 

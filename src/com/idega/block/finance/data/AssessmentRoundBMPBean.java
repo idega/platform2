@@ -22,7 +22,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.1
  */
 
-public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.AssessmentRound {
+public class AssessmentRoundBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.finance.data.AssessmentRound {
 
   public AssessmentRoundBMPBean(){
     super();

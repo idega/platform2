@@ -2,7 +2,7 @@ package com.idega.block.questions.data;
 
 import java.rmi.RemoteException;
 
-import com.idega.data.CategoryEntity;
+import com.idega.block.category.data.CategoryEntity;
 
 public interface Question extends com.idega.data.IDOEntity,CategoryEntity
 {

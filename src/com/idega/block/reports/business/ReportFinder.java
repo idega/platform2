@@ -6,13 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportCategory;
 import com.idega.block.reports.data.ReportColumnInfo;
 import com.idega.block.reports.data.ReportInfo;
 import com.idega.block.reports.data.ReportItem;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;

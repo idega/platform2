@@ -1,21 +1,29 @@
 package com.idega.block.trade.stockroom.business;
-import javax.ejb.FinderException;
-import com.idega.data.*;
-import com.idega.business.IBOServiceBean;
 import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import com.idega.presentation.Image;
-import com.idega.block.trade.business.CurrencyHolder;
-import java.util.*;
-import com.idega.block.trade.business.CurrencyBusiness;
-import com.idega.presentation.ui.DropdownMenu;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import javax.ejb.FinderException;
 import com.idega.block.category.business.CategoryFinder;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.util.IWTimestamp;
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.block.trade.business.CurrencyHolder;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
-import com.idega.block.trade.stockroom.data.*;
-import java.sql.SQLException;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
+import com.idega.presentation.Image;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb TravelBooking

@@ -14,7 +14,7 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 
-public class PaymentTypeBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.PaymentType {
+public class PaymentTypeBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.finance.data.PaymentType {
 
   public PaymentTypeBMPBean() {
     super();

@@ -9,7 +9,7 @@ import javax.ejb.RemoveException;
 import com.idega.block.category.data.Category;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.data.ICCategoryHome;
-import com.idega.core.category.data.*;
+
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;

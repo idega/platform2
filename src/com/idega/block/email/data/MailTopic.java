@@ -1,7 +1,7 @@
 package com.idega.block.email.data;
 
+import com.idega.block.category.data.CategoryEntity;
 import com.idega.block.email.business.EmailTopic;
-import com.idega.data.CategoryEntity;
 import com.idega.data.IDOEntity;
 
 public interface MailTopic extends IDOEntity,EmailTopic,CategoryEntity

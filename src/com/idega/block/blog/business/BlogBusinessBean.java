@@ -13,10 +13,10 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.blog.data.BlogEntity;
+import com.idega.block.category.business.FolderBlockBusinessBean;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
 import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.block.business.FolderBlockBusinessBean;
 
 /**
  * Title:		Blog

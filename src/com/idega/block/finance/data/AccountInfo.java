@@ -1,6 +1,6 @@
 package com.idega.block.finance.data;
 
-import com.idega.data.CategoryEntity;
+import com.idega.block.category.data.CategoryEntity;
 
 
 public interface AccountInfo extends CategoryEntity,FinanceAccount

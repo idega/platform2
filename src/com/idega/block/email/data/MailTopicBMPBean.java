@@ -4,9 +4,9 @@ import java.sql.Timestamp;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.CategoryEntity;
+import com.idega.block.category.data.CategoryEntityBMPBean;
 import com.idega.block.email.business.EmailTopic;
-import com.idega.data.CategoryEntity;
-import com.idega.data.CategoryEntityBMPBean;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:

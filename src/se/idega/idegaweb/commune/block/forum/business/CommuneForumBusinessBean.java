@@ -6,10 +6,10 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
+import com.idega.block.category.data.ICCategoryHome;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
-import com.idega.core.category.data.ICCategoryHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.email.data.MailAccount;
 import com.idega.block.email.data.MailGroup;
 import com.idega.block.email.data.MailLetter;
@@ -11,7 +12,6 @@ import com.idega.block.email.data.MailList;
 import com.idega.block.email.data.MailTopic;
 import com.idega.block.email.data.MailTopicBMPBean;
 import com.idega.block.email.data.MailTopicHome;
-import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.EmailBMPBean;
 import com.idega.data.EntityFinder;

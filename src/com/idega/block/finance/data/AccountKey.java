@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface AccountKey extends com.idega.data.CategoryEntity,com.idega.block.finance.business.Key
+public interface AccountKey extends com.idega.block.category.data.CategoryEntity,com.idega.block.finance.business.Key
 {
  public java.lang.String getInfo();
  public java.lang.String getName();

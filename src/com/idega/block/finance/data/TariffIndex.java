@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface TariffIndex extends com.idega.data.CategoryEntity
+public interface TariffIndex extends com.idega.block.category.data.CategoryEntity
 {
  public java.sql.Timestamp getDate();
  public float getIndex();

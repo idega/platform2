@@ -8,8 +8,8 @@ package se.idega.idegaweb.commune.block.forum.presentation;
 
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.data.ICCategory;
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;

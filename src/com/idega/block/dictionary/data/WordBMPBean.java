@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.category.data.ICCategory;
+import com.idega.block.category.data.ICCategory;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 

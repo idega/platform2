@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
  * @version 1.0
  */
 
-public class ReportBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.reports.data.Report {
+public class ReportBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.reports.data.Report {
 
   public static final String NORMAL = "NORMAL";
   public static final String STICKERS = "STICKERS";

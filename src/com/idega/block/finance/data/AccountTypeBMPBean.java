@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class AccountTypeBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.AccountType {
+public class AccountTypeBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.finance.data.AccountType {
 
   public AccountTypeBMPBean() {
     super();

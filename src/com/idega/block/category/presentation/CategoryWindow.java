@@ -5,12 +5,12 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.business.CategoryService;
+import com.idega.block.category.data.Category;
+import com.idega.block.category.data.ICCategory;
+import com.idega.block.category.data.ICCategoryTranslation;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.business.CategoryFinder;
-import com.idega.core.category.business.CategoryService;
-import com.idega.core.category.data.Category;
-import com.idega.core.category.data.ICCategory;
-import com.idega.core.category.data.ICCategoryTranslation;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;

@@ -6,14 +6,14 @@ import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICInformationCategory;
+import com.idega.block.category.data.ICInformationFolder;
+import com.idega.block.category.data.InformationCategory;
+import com.idega.block.category.data.InformationFolder;
 import com.idega.block.documents.data.DocLink;
 import com.idega.block.documents.data.DocLinkBMPBean;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.category.data.ICInformationCategory;
-import com.idega.core.category.data.ICInformationFolder;
-import com.idega.core.category.data.InformationCategory;
-import com.idega.core.category.data.InformationFolder;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
@@ -568,7 +568,7 @@ public class DocBusiness extends IBOServiceBean {
 		 */
 	public static ICInformationFolder getFolder(int folderID) {
 		try {
-			return ((com.idega.core.category.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
+			return ((com.idega.block.category.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
 		} catch (SQLException ex) {
 			return null;
 		}
@@ -582,7 +582,7 @@ public class DocBusiness extends IBOServiceBean {
 	 */
 	public static ICInformationCategory getCategory(int infoCatID) {
 		try {
-			return ((com.idega.core.category.data.ICInformationCategoryHome)com.idega.data.IDOLookup.getHome(ICInformationCategory.class)).findByPrimaryKey(new Integer(infoCatID));
+			return ((com.idega.block.category.data.ICInformationCategoryHome)com.idega.data.IDOLookup.getHome(ICInformationCategory.class)).findByPrimaryKey(new Integer(infoCatID));
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 			return null;
@@ -616,7 +616,7 @@ public class DocBusiness extends IBOServiceBean {
 	 */
 	public static int getObjectInstanceIdFromID(int folderID) {
 		try {
-			ICInformationFolder box = ((com.idega.core.category.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
+			ICInformationFolder box = ((com.idega.block.category.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
 			List L = EntityFinder.findRelated(box, ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
 			if (L != null) {
 				return ((ICObjectInstance)L.get(0)).getID();
@@ -638,7 +638,7 @@ public class DocBusiness extends IBOServiceBean {
 	public static ICInformationFolder getObjectInstanceFromID(int ICObjectInstanceID) {
 		try {
 			ICObjectInstance ICObjInst = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ICObjectInstanceID);
-			List L = EntityFinder.findRelated(ICObjInst, com.idega.core.category.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class));
+			List L = EntityFinder.findRelated(ICObjInst, com.idega.block.category.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class));
 			if (L != null) {
 				return (ICInformationFolder)L.get(0);
 			} else {

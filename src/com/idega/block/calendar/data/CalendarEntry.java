@@ -1,7 +1,7 @@
 package com.idega.block.calendar.data;
 
 
-public interface CalendarEntry extends com.idega.data.CategoryEntity
+public interface CalendarEntry extends com.idega.block.category.data.CategoryEntity
 {
  public void delete()throws java.sql.SQLException;
  public java.sql.Timestamp getDate();

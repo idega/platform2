@@ -23,7 +23,7 @@ import com.idega.data.IDORemoveRelationshipException;
  */
 
 public class MailingListBMPBean
-	extends com.idega.data.CategoryEntityBMPBean
+	extends com.idega.block.category.data.CategoryEntityBMPBean
 	implements is.idega.idegaweb.campus.block.mailinglist.data.MailingList {
 
 	private final static String TABLE_NAME = "cam_mail_list";

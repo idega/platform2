@@ -1,7 +1,7 @@
 package com.idega.block.reports.data;
 
 
-public interface ReportItem extends com.idega.data.CategoryEntity
+public interface ReportItem extends com.idega.block.category.data.CategoryEntity
 {
  public java.lang.String getConditionData();
  public java.lang.String getConditionOperator();

@@ -1,6 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 import java.util.List;
-import com.idega.core.category.data.ICCategory;
+import com.idega.block.category.data.ICCategory;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;

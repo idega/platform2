@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.data.CategoryEntityBMPBean;
+import com.idega.block.category.data.CategoryEntityBMPBean;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.util.text.Name;

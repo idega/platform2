@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * @version    1.0
  */
 
-public class MailGroupBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.email.data.MailGroup,com.idega.block.email.business.EmailGroup {
+public class MailGroupBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.email.data.MailGroup,com.idega.block.email.business.EmailGroup {
 
   /**
    * @todo    Description of the Field

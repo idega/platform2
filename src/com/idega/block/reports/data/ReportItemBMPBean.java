@@ -14,7 +14,7 @@ import java.util.Vector;
  * @version 1.0
  */
 
-public class ReportItemBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.reports.data.ReportItem {
+public class ReportItemBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.reports.data.ReportItem {
 
   public ReportItemBMPBean() {
   }

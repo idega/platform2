@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
@@ -23,7 +24,6 @@ import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.presentation.ProductCatalog;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.location.data.Address;

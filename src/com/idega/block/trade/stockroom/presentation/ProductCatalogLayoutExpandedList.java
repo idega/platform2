@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.core.category.data.ICCategory;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;

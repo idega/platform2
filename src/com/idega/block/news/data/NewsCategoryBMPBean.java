@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 
 
-public class NewsCategoryBMPBean extends com.idega.core.category.data.ICCategoryBMPBean implements com.idega.block.news.data.NewsCategory {
+public class NewsCategoryBMPBean extends com.idega.block.category.data.ICCategoryBMPBean implements com.idega.block.news.data.NewsCategory {
 
 
 

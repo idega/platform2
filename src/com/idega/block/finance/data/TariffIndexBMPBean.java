@@ -14,7 +14,7 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 
-public class TariffIndexBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.TariffIndex {
+public class TariffIndexBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.finance.data.TariffIndex {
 
   public static final String A ="A",B="B",C="C",D="D",E="E";
   public static final String indexType =  "ABCDEFGHIJK";

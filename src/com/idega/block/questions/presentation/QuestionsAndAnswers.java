@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.questions.business.QuestionsService;
 import com.idega.block.questions.data.Question;
@@ -17,7 +18,6 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.presentation.TextChooser;
 import com.idega.business.IBOLookup;
-import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 

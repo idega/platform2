@@ -14,7 +14,7 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 
-public class TariffGroupBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.TariffGroup {
+public class TariffGroupBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.finance.data.TariffGroup {
 
   public TariffGroupBMPBean() {
     super();

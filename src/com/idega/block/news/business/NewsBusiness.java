@@ -7,11 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.news.data.NewsCategory;
 import com.idega.block.news.data.NwNews;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.component.data.ICObjectInstance;
 
 public class NewsBusiness {

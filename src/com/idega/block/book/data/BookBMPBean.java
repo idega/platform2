@@ -4,7 +4,7 @@ import com.idega.data.*;
 import javax.ejb.RemoveException;
 import java.rmi.RemoteException;
 
-import com.idega.core.category.data.ICCategory;
+import com.idega.block.category.data.ICCategory;
 import com.idega.core.file.data.ICFile;
 
 import javax.ejb.FinderException;
