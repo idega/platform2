@@ -174,7 +174,8 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
 
           HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
-          hppHome.create().removeFromService(service);
+          service.removeAllHotelPickupPlaces();
+//          hppHome.create().removeFromService(service);
           //service.removeFrom(HotelPickupPlace.class);
 
           if(hotelPickupPlaceIds.length > 0){

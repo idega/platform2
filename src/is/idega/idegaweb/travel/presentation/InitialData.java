@@ -155,8 +155,8 @@ public class InitialData extends TravelManager {
               form = getSupplierCreation(supplier.getID());
             }else if (selected.equals(this.parameterViewHotelPickup)) {
               try {
-                HotelPickupPlaceDesigner.handleInsert(iwc,supplier);
                 HotelPickupPlaceDesigner hppd = new HotelPickupPlaceDesigner(iwc);
+                //hppd.handleInsert(iwc,supplier);
                 form = hppd.getHotelPickupPlaceForm(iwc, supplier.getID());
               }catch (Exception e) {
                 e.printStackTrace(System.err);

@@ -131,7 +131,9 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
     this.idoAddTo(supplier);
   }
   public void removeFromSupplier(Supplier supplier) throws IDORemoveRelationshipException{
-    this.idoRemoveFrom(supplier);
+    System.err.println("Trying to remove ID "+this.getID()+" from "+supplier.getName());
+    System.err.println("Trying to remove PK "+this.getPrimaryKey()+" from "+supplier.getName());
+    super.idoRemoveFrom(supplier);
   }
 
   public void addToService(Service service) throws IDOAddRelationshipException {
@@ -145,6 +147,7 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
   public void ejbHomeRemoveFromAllServices() throws IDORemoveRelationshipException{
     this.idoRemoveFrom(HotelPickupPlace.class);
   }
+
 
 
 }

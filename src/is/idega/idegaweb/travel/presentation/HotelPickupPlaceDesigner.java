@@ -28,10 +28,10 @@ import java.sql.SQLException;
 
 public class HotelPickupPlaceDesigner extends TravelManager {
 
-  private static String parameterHotelPickupPlaceId = "parameterHotelPickupPlaceId";
-  private static String parameterSaveHotelPickupPlaceInfo = "parameterSaveHotelPickupPlaceInfo";
+  private String parameterHotelPickupPlaceId = "parameterHotelPickupPlaceId";
+  private String parameterSaveHotelPickupPlaceInfo = "parameterSaveHotelPickupPlaceInfo";
 
-  private static String sAction = "actionForHPPD";
+  private String sAction = "actionForHPPD";
 
   private Supplier supplier = null;
   private IWResourceBundle iwrb = null;
@@ -42,10 +42,10 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     supplier = super.getSupplier();
     iwrb = super.getResourceBundle();
 
-    //handleInsert(iwc, supplier);
+    handleInsert(iwc, supplier);
   }
 
-  public static void handleInsert(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
+  private void handleInsert(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
     String action = iwc.getParameter(sAction);
     if (action != null) {
       if (action.equals(parameterSaveHotelPickupPlaceInfo)) {
@@ -54,7 +54,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     }
   }
 
-  private static boolean saveHotelPickupPlaces(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
+  private boolean saveHotelPickupPlaces(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
     String[] hppIds = iwc.getParameterValues("parameterHotelPickupPlaceId");
     String[] hppNames = iwc.getParameterValues("hotel_pickup_place_name");
 
@@ -86,7 +86,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
           del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
           add = iwc.getParameter("hotel_pickup_place_add_to_all_"+hppIds[i]);
 
-          HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(hppIds[i]);
+          HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(new Integer(hppIds[i]));
           Address address = hpp.getAddress();
 
           if (del == null) {
@@ -101,14 +101,14 @@ public class HotelPickupPlaceDesigner extends TravelManager {
                 product = (Product) products.get(j) ;
                 try {
                   hpp.addToService(getService(product));
-//                  hpp.addTo(Service.class, product.getID());
-                  //System.err.println("Adding address \""+hppNames[i]+"\" to service \""+ProductBusiness.getProductName(product)+"\"");
                 }catch (IDOAddRelationshipException are) {
                   //System.err.println("address \""+hppNames[i]+"\" ALREADY added to service \""+ProductBusiness.getProductName(product)+"\"");
                 }
               }
             }
           }else {
+            System.err.println("hpp_id = "+hpp.getPrimaryKey().toString());
+            System.err.println("hppids[i] = "+hppIds[i]);
             hpp.removeFromSupplier(supplier);
 //            hpp.removeFrom(supplier);
           }
@@ -235,7 +235,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     return form;
   }
 
-  private static Service getService(Product product) throws RemoteException, FinderException{
+  private Service getService(Product product) throws RemoteException, FinderException{
     ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
     return sHome.findByPrimaryKey(product.getPrimaryKey());
   }
