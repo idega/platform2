@@ -152,9 +152,9 @@ public class PIDChecker {
 	 */
 	public Date getDateFromPersonalID(String personalID) {
   	if ( isValid(personalID) ) {
-      int year = Integer.parseInt(personalID.substring(0, 4));
-      int month = Integer.parseInt(personalID.substring(4, 6));
-      int day = Integer.parseInt(personalID.substring(6, 8));
+      int year = Integer.parseInt(personalID.substring(0, 2));
+      int month = Integer.parseInt(personalID.substring(2, 4));
+      int day = Integer.parseInt(personalID.substring(4, 6));
 				
 			IWTimestamp stamp = new IWTimestamp(day,month,year);
 			return stamp.getDate();
