@@ -58,14 +58,14 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
 	public boolean handleRecords() throws RemoteException {
-		UserTransaction transaction = getSessionContext().getUserTransaction();
+//		UserTransaction transaction = getSessionContext().getUserTransaction();
 
 		Timer clock = new Timer();
 		clock.start();
 
 		try {
 			//if the transaction failes all the users and their relations are removed
-			transaction.begin();
+//			transaction.begin();
 
 			//iterate through the records and process them
 			String item;
@@ -89,19 +89,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			clock.stop();
 			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s");
 
-			transaction.commit();
+//			transaction.commit();
 
 			return true;
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 
-			try {
-				transaction.rollback();
-			}
-			catch (SystemException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				transaction.rollback();
+//			}
+//			catch (SystemException e) {
+//				e.printStackTrace();
+//			}
 
 			return false;
 		}
