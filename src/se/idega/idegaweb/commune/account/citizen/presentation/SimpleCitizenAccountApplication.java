@@ -36,7 +36,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.text.SocialSecurityNumber;
@@ -49,12 +48,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/05/19 09:11:12 $ by $Author: laddi $
+ * Last modified: $Date: 2004/05/19 12:46:52 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -105,8 +104,6 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY = "scaa_field_can_not_be_empty";
 	private final static String ERROR_NO_INSERT_DEFAULT = "Application could not be stored";
 	private final static String ERROR_NO_INSERT_KEY = "scaa_unable_to_insert";
-
-	private boolean sendUserToHomePage = true;
 
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -185,12 +182,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			}
 			else {
 				// known user applied and was submitted
-				if (sendUserToHomePage) {
-					Group primaryGroup = user.getPrimaryGroup();
-					if (user.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), user.getHomePage());
-					if (primaryGroup != null && primaryGroup.getHomePageID() != -1) iwc.forwardToIBPage(this.getParentPage(), primaryGroup.getHomePage());
-				}
-				else if (getResponsePage() != null) {
+				if (getResponsePage() != null) {
 					iwc.forwardToIBPage(getParentPage(), getResponsePage());
 				}
 				else {
@@ -212,13 +204,6 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			add(Text.getBreak());
 			viewSimpleApplicationForm(iwc);
 		}
-	}
-
-	/**
-	 * Set if the form should send the user to his home page after login.
-	 */
-	public void setToSendUserToHomePage(boolean doSendToHomePage) {
-		sendUserToHomePage = doSendToHomePage;
 	}
 
 	private Table createTable() {
