@@ -10,6 +10,7 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
+import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -17,6 +18,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 
 /**
  * @author laddi
@@ -26,6 +28,9 @@ public class ChildCareChildren extends ChildCareBlock {
 	private final static String ERROR_NO_CHECKS = "cca_no_checks";
 	private final static String ERROR_NO_RESPONSE_PAGE = "cca_no_response_page";
 	private final static String SELECT_CHILD = "cca_select_child";
+
+	private int fromAge = -1;
+	private int toAge = 100;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -54,6 +59,18 @@ public class ChildCareChildren extends ChildCareBlock {
 				Iterator it = children.iterator();
 				while (it.hasNext()) {
 					User child = (User) it.next();
+					Age age = null;
+					if (child.getDateOfBirth() != null)
+						age = new Age(child.getDateOfBirth());
+					else if (child.getPersonalID() != null)
+						age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
+					
+					if (age != null) {
+						if(age.getYears() > toAge || age.getYears() < fromAge){
+							continue;
+						}
+					}
+					
 					GrantedCheck check = null;
 					try {
 						check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
@@ -86,6 +103,15 @@ public class ChildCareChildren extends ChildCareBlock {
 		}
 	}
 
+	/**
+	 * Sets if the component is to set children age range.
+	 * <br>This defaults to the range -1 to 1000
+	 **/
+	public void setAgeRange(int from,int to){
+		this.fromAge = from;
+		this.toAge = to;
+	}
+	
 	private CheckBusiness getCheckBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (CheckBusiness) IBOLookup.getServiceInstance(iwac, CheckBusiness.class);
 	}
