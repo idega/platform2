@@ -90,7 +90,7 @@ public class SendIFSFiles extends AccountingBlock {
 		catch (RemoteException e) {
 		}
 
-		form.setLocalizedTitle(KEY_HEADER, "Delete files");
+		form.setLocalizedTitle(KEY_HEADER, "Send files");
 		form.setSearchPanel(getTopPanel());
 		form.setButtonPanel(getButtonPanel());
 		add(form);

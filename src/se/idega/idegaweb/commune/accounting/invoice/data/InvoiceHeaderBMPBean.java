@@ -1,11 +1,12 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
-import java.util.Collection;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
@@ -13,7 +14,6 @@ import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean;
 
 /**
  * The databean for the invoice header. The invoice header holds all the 

@@ -12,6 +12,10 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
+import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
+import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
+import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecordHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
 
@@ -75,6 +79,72 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		Collection col = new Vector();
 		try {
 			col = ((JournalLogHome) IDOLookup.getHome(JournalLog.class)).findAllBySchoolCategory(category);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return col;
+	}
+
+	/**
+	 * Returns the <code>IFSCheckHeader</code> data bean from the database for the given category.
+	 * 
+	 * @param category A school category primary key (String)
+	 * 
+	 * @return A IFSCheckHeader bean
+	 */
+	public IFSCheckHeader getIFSCheckHeaderBySchoolCategory(String category) {
+		IFSCheckHeader header = null;
+		try {
+			header = ((IFSCheckHeaderHome) IDOLookup.getHome(IFSCheckHeader.class)).findBySchoolCategory(category);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return header;
+	}
+
+	/**
+	 * Returns the <code>IFSCheckHeader/code> data bean from the database for the given category.
+	 * 
+	 * @param category A school category bean
+	 * 
+	 * @return A IFSCheckHeader bean
+	 */
+	public IFSCheckHeader getIFSCheckHeaderBySchoolCategory(SchoolCategory category) {
+		IFSCheckHeader header = null;
+		try {
+			header = ((IFSCheckHeaderHome) IDOLookup.getHome(IFSCheckHeader.class)).findBySchoolCategory(category);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return header;
+	}
+
+	/**
+	 * Returns a collection of <code>IFSCheckRecord</code> data beans from the database for the given header.
+	 * 
+	 * @param headerId The primary key id for the header the records belong to.
+	 * 
+	 * @return A Collection of IFSCheckRecord beans
+	 */
+	public Collection getIFSCheckRecordByHeaderId(int headerId) {
+		Collection col = new Vector();
+		try {
+			col = ((IFSCheckRecordHome) IDOLookup.getHome(IFSCheckRecord.class)).findAllByHeaderId(headerId);
 		}
 		catch (IDOLookupException e) {
 			e.printStackTrace();

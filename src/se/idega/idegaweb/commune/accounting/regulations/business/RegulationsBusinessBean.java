@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.59 2003/11/06 23:18:09 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.60 2003/11/07 05:08:13 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1429,7 +1429,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					else {
 						postingDetail = new PostingDetail();
 						postingDetail.setAmount(res.getAmount().floatValue());
-						postingDetail.setRuleSpecType(res.getRegSpecType().getLocalizationKey()); //??? String
+						postingDetail.setRuleSpecType(res.getRegSpecType().getLocalizationKey());
 						postingDetail.setTerm(res.getName());
 						//						postingDetail.setVat(res.getv);
 						//						postingDetail.setVatRegulationID(1);
