@@ -134,7 +134,13 @@ class ChildCarePlaceOfferTable1 extends Table {
 		//Cannot use DateInput.setAsNotEmpty because we doesn't want this requirement 
 		//unless the user has selected the actual radio button.		
 
-		Script script = getParentPage().getAssociatedScript();
+		Script script = null;
+		if (getParentPage() != null)
+			script = getParentPage().getAssociatedScript();
+		else {
+			script = new Script();
+			_page.add(script);
+		}
 		script.setFunction("validateDates", "function validateDates() { if(" + validateDateScript + ") { alert('" + _page.localize(SUBMIT_UNVALID_DATE) + "'); return false; } else {return true;}}");
 		script.setFunction("alertTerminateContract", "function alertTerminateContract() { " + (!hasActivePlacement ? "return true; }" : "if(" + alertTerminateContractScript + ") { alert('" + _page.localize(ALERT_TERMINATE_CONTRACT) + "'); return true; } else {return true;}}"));
 
