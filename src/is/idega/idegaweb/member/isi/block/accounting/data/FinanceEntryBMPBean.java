@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDOUtil;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -292,8 +293,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	/**
 	 * @param dateFrom
 	 * @param dateTo
-	 * @param Divisions
-	 * @param Groups
+	 * @param divisions
+	 * @param groups
 	 * @return
 	 * @throws FinderException
 	 */
@@ -303,13 +304,17 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 			Collection divisions,
 			Collection groups)
 	throws FinderException {
-		
+		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
 		String[] ordering = { COLUMN_DIVISION_ID, COLUMN_GROUP_ID , COLUMN_DATE_OF_ENTRY };
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().append(COLUMN_TYPE).appendIn("'A','M'");
-		sql.appendBetweenDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
+		sql.appendAnd().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
+		if  (divisions != null && divisions.size()>0)
+			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
+		if  (groups != null && groups.size()>0)
+			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
 		sql.appendOrderBy(ordering);
 		return idoFindIDsBySQL(sql.toString());
 	}

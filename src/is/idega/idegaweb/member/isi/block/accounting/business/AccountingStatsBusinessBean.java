@@ -62,11 +62,11 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	/*
 	 * Report A29.1 of the ISI Specs
 	 */
-	public ReportableCollection getPaymentStatusByLeaguesGroupsAndDateIntervalFiltering(
+	public ReportableCollection getPaymentStatusByDivisionsGroupsAndDateIntervalFiltering(
 			Date dateFromFilter,
 			Date dateToFilter,
-			Collection leaguesFilter,
-			Collection regionalUnionsFilter)
+			Collection divisionsFilter,
+			Collection groupsFilter)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -125,7 +125,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //then for each get its leagues and the count for
 		 //each age and create a row and insert into an ordered map by league
 		 //then iterate the map and insert into the final report collection.
-		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(dateFromFilter, dateToFilter, regionalUnionsFilter, regionalUnionsFilter);
+		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		 //List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, false);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
