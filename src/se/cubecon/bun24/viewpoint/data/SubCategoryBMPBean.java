@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.user.data.*;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/13 12:45:30 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -61,7 +61,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
             { "Förslag", "Politiker", "Namndsekreterare" },
             { "Kundvalet", "Politiker", "Kundvalsgruppen" },
             { "Övrigt", "Politiker", "Namndsekreterare" },
-            { "BUN24", "Myndigheten", "Kundvalsgruppen" },
+            { "Nacka24", "Myndigheten", "Kundvalsgruppen" },
             { "Barnomsorgscheck", "Myndigheten", "Finansgruppen" },
             { "Handikapp", "Myndigheten", "Myndighetsgruppen" },
             { "Likvärdighetsgaranti", "Myndigheten", "Myndighetsgruppen" },
