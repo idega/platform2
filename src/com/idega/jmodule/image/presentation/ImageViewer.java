@@ -195,9 +195,9 @@ public void main(ModuleInfo modinfo)throws Exception{
 
             Link back = new Link(leftText);
             back.setFontColor(textColor);
-            ifirst = ifirst-numberOfDisplayedImages;
-            if( ifirst<0 ) ifirst = 0;
-            back.addParameter("iv_first",ifirst);
+            int iback = ifirst-numberOfDisplayedImages;
+            if( iback<0 ) iback = 0;
+            back.addParameter("iv_first",iback);
             back.addParameter("image_catagory_id",category.getID());
 
             Text rightText = new Text(">> Næstu myndir");
