@@ -348,7 +348,7 @@ public abstract class Voucher extends TravelManager {
 //        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
         table.add(getText(df.format(getBooker(iwc).getBookingPrice(iwc, _bookings))),1,2);
         table.add(getText(" "),1,2);
-        Currency currency = getBooker(iwc).getCurrency(_booking);
+        com.idega.block.trade.data.Currency currency = getBooker(iwc).getCurrency(_booking);
         if (currency != null)
         table.add(getText(currency.getCurrencyAbbreviation()),1,2);
         table.add(Text.BREAK,1,2);
