@@ -1,29 +1,5 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
-import java.rmi.RemoteException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
-
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
@@ -33,20 +9,36 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountReco
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
-import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
-import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.ConverterConstants;
 import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converter.editable.EditOkayButtonConverter;
-import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.block.entity.presentation.converter.editable.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
-import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -55,7 +47,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.transaction.IdegaTransactionManager;
-import com.idega.util.IWColor;
 import com.idega.util.datastructures.HashMatrix;
 
 /**
@@ -82,7 +73,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
 //  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
-  private static final String CHECK_BOX = "checkBox";
   private static final String OKAY_BUTTON = "okayButton";
   
   private static final String INCOME = "income";
@@ -159,18 +149,18 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       //sets this step as bold, if another class calls it this will be overwritten 
       setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-      initializeAccountKeyData(workReportBusiness, iwc);
-      initializeLeagueData(workReportBusiness, iwc);
-      String action = parseAction(iwc);
+      initializeAccountKeyData(workReportBusiness);
+      initializeLeagueData(workReportBusiness);
+      parseAction(iwc);
       Form form = new Form();
-      PresentationObject pres = getContent(iwc, resourceBundle, form, action);
+      PresentationObject pres = getContent(iwc, resourceBundle, form);
       form.maintainParameters(this.getParametersToMaintain());
       form.add(pres);
       add(form);
     }
   }
   
-  protected void addBreakLine() {};
+  protected void addBreakLine() {}
   
   private String parseAction(IWContext iwc) {
     String action = "";
@@ -229,7 +219,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return action;
   }
   
-  private void initializeLeagueData(WorkReportBusiness workReportBusiness, IWContext iwc) {
+  private void initializeLeagueData(WorkReportBusiness workReportBusiness) {
     // collect all work report account records
     WorkReportClubAccountRecordHome workReportClubAccountRecordHome = null;
     Collection workReportClubAccountRecords = null;
@@ -266,7 +256,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (leagueIterator.hasNext()) {
       Map parentKeySum = new HashMap();
       Integer groupId = (Integer)  leagueIterator.next();
-      Map accountKeyRecordMap = (Map) leagueKeyMatrix.get(groupId);
+      Map accountKeyRecordMap = leagueKeyMatrix.get(groupId);
       Iterator entryIterator = accountKeyRecordMap.entrySet().iterator();
       while (entryIterator.hasNext())  {
         Map.Entry entry = (Map.Entry) entryIterator.next();
@@ -275,13 +265,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         String parentKeyNumber = accountKey.getParentKeyNumber();
         // look up the parent account key
         if (parentKeyNumber != null) {
-          Float parentFloat = (Float) parentKeySum.get(parentKeyNumber);
-          if (parentFloat == null)  {
-            parentFloat = new Float(0);
+          BigDecimal parentValue = (BigDecimal) parentKeySum.get(parentKeyNumber);
+          if (parentValue == null)  {
+            parentValue = new BigDecimal("0");
           }
           WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
-          float result = parentFloat.floatValue() + record.getAmount();
-          parentKeySum.put(parentKeyNumber, new Float(result));
+          BigDecimal amount = new BigDecimal(Double.toString(record.getAmount()));
+          BigDecimal result = parentValue.add(amount);
+          parentKeySum.put(parentKeyNumber, result);
         }
       }   
       // store the new value of the parent records
@@ -289,7 +280,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       while (parentSumIterator.hasNext()) {
         Map.Entry entry = (Map.Entry) parentSumIterator.next();
         String parentKeyNumber = (String) entry.getKey();
-        Float result = (Float) entry.getValue();
+        BigDecimal result = (BigDecimal) entry.getValue();
         WorkReportAccountKey parent = (WorkReportAccountKey) accountKeyNumberAccountKeyMap.get(parentKeyNumber);
         Integer primaryKeyOfParent = (Integer) parent.getPrimaryKey();
         createOrUpdateRecord(workReportBusiness, groupId, primaryKeyOfParent, result);
@@ -297,7 +288,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
   }
   
-  private void initializeAccountKeyData(WorkReportBusiness workReportBusiness, IWContext iwc)  {
+  private void initializeAccountKeyData(WorkReportBusiness workReportBusiness)  {
     
     // income, exponses, asset and debt keys 
     WorkReportAccountKeyHome accountKeyHome;
@@ -390,7 +381,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
   }    
   
-  private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
+  private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form) {
     int workReportId = getWorkReportId();
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     WorkReport workReport = null;
@@ -521,7 +512,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 	}
   
   private void addKeys(List accountKeys, String accountArea)  {
-    List minus = new ArrayList();
     List plus = new ArrayList();
     Iterator iterator = accountKeys.iterator();
     while (iterator.hasNext())  {
@@ -614,13 +604,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private void setValuesOfWorkReportClubAccountRecord(EntityPathValueContainer valueContainer, Integer groupId, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
-    Float amount;
+    BigDecimal amount;
     try {
-      amount = new Float(value.toString());
+      amount = new BigDecimal(value.toString());
     }
     catch (NumberFormatException ex) {
       String message =
-        "[WorkReportAccountEditor]: Can't convert value to float value.";
+        "[WorkReportAccountEditor]: Can't convert value to a number.";
       System.err.println(message + " Message is: " + ex.getMessage());
       ex.printStackTrace(System.err);
       // give up
@@ -639,9 +629,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // nothing to do
       return;
     }
-    Float oldValue;
+    BigDecimal oldValue;
     try {
-      oldValue = new Float(previousValue.toString());
+      oldValue = new BigDecimal(previousValue.toString());
     }
     catch (NumberFormatException ex)  {
       String message =
@@ -667,8 +657,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       Integer parentAccountKeyId = (Integer) parentAccountKey.getPrimaryKey();
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, parentAccountKeyId);
       // calculate new parent value
-      float parentAmount = (record == null) ? 0 : record.getAmount();
-      parentAmount = parentAmount + (amount.floatValue()) - (oldValue.floatValue());
+      BigDecimal parentAmount = (record == null) ? new BigDecimal("0") : new BigDecimal(Double.toString(record.getAmount()));
+      parentAmount = parentAmount.add(amount.subtract(oldValue));
       // store parent and child in one transaction to avoid inconsistency
       TransactionManager tm = IdegaTransactionManager.getInstance();
       try {
@@ -676,7 +666,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         // child 
         createOrUpdateRecord(workReportBusiness, groupId, accountKeyId, amount);
         // parent
-        createOrUpdateRecord(workReportBusiness, groupId, parentAccountKeyId, new Float(parentAmount));
+        createOrUpdateRecord(workReportBusiness, groupId, parentAccountKeyId, parentAmount);
         tm.commit();
       }
       catch (Exception ex)  {
@@ -701,7 +691,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   } 
 
     
-  private void createOrUpdateRecord(WorkReportBusiness workReportBusiness, Integer groupId, Integer accountKeyId, Float amount)  {
+  private void createOrUpdateRecord(WorkReportBusiness workReportBusiness, Integer groupId, Integer accountKeyId, BigDecimal amount)  {
     WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKeyId);
     if (record == null)   {
       // okay, first create a record
@@ -733,7 +723,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         return;
       }
     }
-    record.setAmount(amount.floatValue());
+    record.setAmount(amount.doubleValue());
     // do not forget to store
     record.store();
   }
@@ -766,20 +756,20 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       Integer workReportGroupId = (Integer) iterator.next();
       Map keyRecordMap = leagueKeyMatrix.get(workReportGroupId);
       Iterator keyRecordIterator = keyRecordMap.entrySet().iterator();
-      float result = 0;
+      BigDecimal result = new BigDecimal("0");
       while (keyRecordIterator.hasNext()) {
         Map.Entry entry = (Map.Entry) keyRecordIterator.next();
         Integer accountKey = (Integer) entry.getKey();
+        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
+        BigDecimal amount = new BigDecimal(Double.toString(record.getAmount())); 
         if (assetIds.contains(accountKey))  {
-          WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
-          result += record.getAmount();
+          result = result.add(amount);
         }
         else if (debtIds.contains(accountKey))  {
-          WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
-          result -= record.getAmount();
+          result = result.subtract(amount);
         }
       }
-      if (result != 0)  {
+      if (result.signum() != 0)  {
         workReportGroupIdsOutOfBalance.add(workReportGroupId);
       }
     }
@@ -817,6 +807,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       this.groupName = groupName;
     }
     
+    // returns either instance of String or instance of BigDecimal 
     public Object getEntry(String accountKeyName) {
       WorkReportAccountKey accountKey = ( WorkReportAccountKey) accountKeyNameAccountKeyMap.get(accountKeyName);
       if (accountKey == null) {
@@ -826,10 +817,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, id);
       // sometimes the record does not exist yet
       if (record == null) {
-        return new Float(0);
+        return new BigDecimal("0");
       }
-      float amount = record.getAmount();
-      return new Float(amount);
+      double amount = record.getAmount();
+      return new BigDecimal(Double.toString(amount));
     }
     
     public int getGroupId() {
@@ -849,47 +840,48 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         return groupName;
       }
       else if (accountKeyName.equals(WorkReportConstants.INCOME_SUM_KEY)) {
-        float result = calculateAccountArea(INCOME);
-        return new Float(result);
+        BigDecimal result = calculateAccountArea(INCOME);
+        return result;
       }
       else if (accountKeyName.equals(WorkReportConstants.EXPENSES_SUM_KEY)) {
-        float result = calculateAccountArea(EXPENSES);
-        return new Float(result);
+        BigDecimal result = calculateAccountArea(EXPENSES);
+        return result;
 
       }
       else if (accountKeyName.equals(WorkReportConstants.INCOME_EXPENSES_SUM_KEY))  {
-        float income = calculateAccountArea(INCOME);
-        float exponses = calculateAccountArea(EXPENSES);
-        float result = income - exponses;
-        return new Float(result);
+        BigDecimal income = calculateAccountArea(INCOME);
+        BigDecimal expenses = calculateAccountArea(EXPENSES);
+        BigDecimal result = income.subtract(expenses);
+        return result;
       }
       else if (accountKeyName.equals(WorkReportConstants.ASSET_SUM_KEY))  {
-        float result = calculateAccountArea(ASSET);
-        return new Float(result);
+        BigDecimal result = calculateAccountArea(ASSET);
+        return result;
       }
       else if (accountKeyName.equals(WorkReportConstants.DEBT_SUM_KEY)) {
-        float result = calculateAccountArea(DEBT);
-        return new Float(result);
+        BigDecimal result = calculateAccountArea(DEBT);
+        return result;
       }
       else {
         return "unknown";
       }
     }
     
-    private float calculateAccountArea(String accountArea)  {
+    private BigDecimal calculateAccountArea(String accountArea)  {
       List plusIds = (List) specialFieldAccountKeyIdsPlus.get(accountArea);
-      float plus = addRecords(plusIds);
+      BigDecimal plus = addRecords(plusIds);
       return plus;
     }
     
-    private float addRecords(List accountKeyIds)  {
-      float sum = 0;
+    private BigDecimal addRecords(List accountKeyIds)  {
+      BigDecimal sum = new BigDecimal("0");
       Iterator iterator = accountKeyIds.iterator();
       while (iterator.hasNext())  {
         Integer primaryKey = (Integer) iterator.next();
         WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
         if (record != null) {
-          sum += record.getAmount();
+        	BigDecimal amount = new BigDecimal(Double.toString(record.getAmount()));
+          sum = sum.add(amount);
         }
       }
       return sum;
@@ -908,7 +900,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       super(form);
       String message = 
         resourceBundle.getLocalizedString("wr_account_editor_message_entry_is_not_a_number", "The input is not a valid number.");
-      setAsFloat(message);
+      setAsDouble(message);
     }
     
     protected Object getValueForInput(
@@ -917,8 +909,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityBrowser browser,
         IWContext iwc)  {
       String name = path.getShortKey();
-      Float floatValue = (Float) ((EntityRepresentation) entity).getColumnValue(name);
-      return Integer.toString(floatValue.intValue());
+      BigDecimal value = (BigDecimal) ((EntityRepresentation) entity).getColumnValue(name);
+      return value.toString();
    }
     
     protected Object getValueForLink (
@@ -927,9 +919,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityBrowser browser,
         IWContext iwc)  {
       String name = path.getShortKey();
-      Float floatValue =  (Float) ((EntityRepresentation) entity).getColumnValue(name);
+      BigDecimal value =  (BigDecimal) ((EntityRepresentation) entity).getColumnValue(name);
       NumberFormat numberFormat = getCurrencyNumberFormat(iwc);
-      String resultString = numberFormat.format(floatValue.doubleValue());
+      String resultString = numberFormat.format(value);
       return resultString;      
     } 
     
@@ -956,9 +948,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         resultString = value.toString();
       }
       else {
-        Float floatValue = (Float) value;
+        BigDecimal numberValue = (BigDecimal) value;
         NumberFormat numberFormat = getCurrencyNumberFormat(iwc);
-        resultString = numberFormat.format(floatValue.doubleValue());
+        resultString = numberFormat.format(numberValue);
       }
       Text text =  new Text(resultString);
       text.setBold();
