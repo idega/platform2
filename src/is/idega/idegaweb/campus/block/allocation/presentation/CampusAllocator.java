@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.64 2004/06/24 21:32:38 aron Exp $
+ * $Id: CampusAllocator.java,v 1.65 2004/06/24 21:35:06 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1269,7 +1269,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						}*/
 						if(application!=null){
 							String subjectColor = getSubjectColor(new Integer(application.getSubjectId()));
-							System.out.println(application.getSubjectId()+ " subjectcolor = "+subjectColor);
+							//System.out.println(application.getSubjectId()+ " subjectcolor = "+subjectColor);
 							if(subjectColor!=null)
 								TextFontColor = subjectColor;
 						}
