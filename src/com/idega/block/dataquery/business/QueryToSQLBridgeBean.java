@@ -58,23 +58,31 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
   	try {
   		queryResult = executeSQL(sqlQuery, numberOfRowsLimit, connection, postStatements, executedSQLStatements);
   	}
-  	catch (SQLException ex) {
+  	catch (SQLException sqlEx) {
 			logError("[QueryToSQLBridge] Statements could not be executed");
-			log(ex);
+			log(sqlEx);
   	}
-  	// drop created views 
-  	// delete the view in reverse direction because of dependencies
-  	for (int i = postStatements.size() - 1; i > -1 ; i--) {
-  		String postStatement = (String) postStatements.get(i);
+  	finally {
+	  	// drop created views 
+	  	// delete the view in reverse direction because of dependencies
   		try {
-  			executePostStatement(postStatement,connection, executedSQLStatements);
+		  	for (int i = postStatements.size() - 1; i > -1 ; i--) {
+		  		String postStatement = (String) postStatements.get(i);
+		  		try {
+		  			executePostStatement(postStatement,connection, executedSQLStatements);
+		  		}
+		  		catch (SQLException ex){
+		  			logError("[QueryToSQLBridge] post sql statements could not be executed. ");
+		  			log(ex);
+		  			// go further to the next post statement
+		  		}
+		  	}
   		}
-  		catch (SQLException ex){
-  			logError("[QueryToSQLBridge] post sql statements could not be executed. ");
-  			log(ex);
+  		// do not catch any exceptions but try to close the connection if an exception has been thrown
+  		finally {
+  			ConnectionBroker.freeConnection(connection);
   		}
   	}
-  	ConnectionBroker.freeConnection(connection);
   	return queryResult;  			
   }
   
@@ -156,9 +164,16 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
         throw ex;
     }
     finally {
-      if (statement != null)  {
-        statement.close();
-      } 
+    	// do not hide an existing exception
+    	try {
+    		if (statement != null)  {
+    			statement.close();
+    		}
+    	}
+    	catch (SQLException statementCloseEx) {
+    		logError("[QueryToSQLBridge] statement could not be closed");
+    		log(statementCloseEx);
+    	}
     }
     return postStatement;
 	}
@@ -205,78 +220,36 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
         }
       }
     }   
-    catch (SQLException ex) {
-      System.err.println("[QueryToSQLBridge] sql statement could not be executed. Message was: " + 
-        ex.getMessage());
-        throw ex;
+    catch (SQLException sqlEx) {
+      	logError("[QueryToSQLBridge] sql statement could not be executed. Message was: " + 
+        sqlEx.getMessage());
+        throw sqlEx;
     }
     finally {
-      if (resultSet != null) {
-        resultSet.close();
-      }
-      if (statement != null)  {
+    	// do not hide an existing exception
+    	try { 
+	      if (resultSet != null) {
+	        resultSet.close();
+	      }
+    	}
+	    catch (SQLException resultCloseEx) {
+	     	logError("[QueryToSQLBridge] result set could not be closed");
+	     	log(resultCloseEx);
+	    }
+	    // do not hide an existing exception
+	    try {
+	     if (statement != null)  {
         statement.close();
-      } 
+	     }
+	    }
+ 	    catch (SQLException statementCloseEx) {
+	     	logError("[QueryToSQLBridge] statement could not be closed");
+	     	log(statementCloseEx);
+	    }
     }
     return queryResult;
   }		
-  
-  
-//  /** @param displayNames - list of strings, allowed to be null */
-//  public QueryResult executeStatement(String sqlQuery, List displayNames) throws SQLException {
-//    Connection connection = ConnectionBroker.getConnection();
-//    Statement statement = null;
-//    ResultSet resultSet = null;
-//    ResultSetMetaData metadata;
-//    QueryResult queryResult = new QueryResult();
-//    try {
-//      // get default connection
-//      statement = connection.createStatement();
-//      resultSet = statement.executeQuery(sqlQuery);
-//      metadata = resultSet.getMetaData();
-//      
-//      int numberOfColumns = metadata.getColumnCount();
-//      int i;
-//      for (i=1; i <= numberOfColumns; i++) {
-//        // String columnClass = metadata.getColumnClassName(i);
-//        String columnName = metadata.getColumnName(i);
-//        // store into QueryResultField
-//        QueryResultField field = new QueryResultField(Integer.toString(i));
-//        // field.setValue(QueryResultField.TYPE, columnClass);
-//        field.setValue(QueryResultField.COLUMN, columnName);
-//        // set display name
-//        setDisplayName(field, i, displayNames);
-//        queryResult.addField(field);
-//      }
-//      int numberOfRow = 1;
-//       while (resultSet.next())  {
-//        String id = Integer.toString(numberOfRow++);
-//        for (i=1 ; i <= numberOfColumns; i++)  {
-//          Object columnValue = resultSet.getObject(i);
-//          // store into QueryResultCell
-//          String fieldId = Integer.toString(i);  
-//          QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
-//		  // !!!!!!!!! do NOT use the following statement because the columnName is NOT necessarily unique if you use more than one table : 
-//          //QueryResultCell cell = new QueryResultCell(id, metadata.getColumnName(i), columnValue);
-//          queryResult.addCell(cell);
-//        }
-//      }
-//    }   
-//    catch (SQLException ex) {
-//      System.err.println("[QueryToSQLBridge] sql statement could not be executed. Message was: " + 
-//        ex.getMessage());
-//    }
-//    finally {
-//      if (resultSet != null) {
-//        resultSet.close();
-//      }
-//      if (statement != null)  {
-//        statement.close();
-//      } 
-//      ConnectionBroker.freeConnection(connection);
-//    }
-//		return queryResult;
-//  }
+
   
   private void setDisplayName(QueryResultField field, int index, List displayNames)  {
     if (displayNames == null || index > displayNames.size())  {
