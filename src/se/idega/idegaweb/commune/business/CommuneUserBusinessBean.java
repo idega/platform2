@@ -692,6 +692,20 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			return null;
 		}
 	}
+	
+	public boolean haveSameAddress(User user, User compareUser) throws RemoteException {
+		if (((Integer)user.getPrimaryKey()).intValue() == ((Integer)compareUser.getPrimaryKey()).intValue())
+			return true;
+		
+		Address userAddress = getUsersMainAddress(user);
+		Address otherUserAddress = getUsersMainAddress(compareUser);
+		if (userAddress != null && otherUserAddress != null) {
+			if(userAddress.getStreetAddress().equalsIgnoreCase(otherUserAddress.getStreetAddress() ))
+				return true;
+		}
+		
+		return false;
+	}
 
 	private IWTimestamp getBirthDateFromPin(String pin){
 		int dd = Integer.parseInt(pin.substring(6,8));
