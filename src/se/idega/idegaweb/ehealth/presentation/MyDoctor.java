@@ -129,14 +129,12 @@ public class MyDoctor extends EHealthBlock {
 			String doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";
 			
 			table.add(doctorInfo,3,1);
-			//Link message = new Link(getResourceBundle().getLocalizedImageButton(prmMessage, "Send message"));
-			GenericButton message = getButton(new GenericButton("message", localize(prmMessage, "Send message")));
+			GenericButton message = getButton(new GenericButton("send_message", localize(prmSendMessage, "Send message")));
 			message.setPageToOpen(121);			
-			//message.setAsImageButton(false);			
+					
 			table.add(message, 3, 2);
 			table.setHeight(3,2,"25");
 			
-			//Link visitbooking = new Link(getResourceBundle().getLocalizedImageButton(prmVisitBooking, "Book an appointment"));
 			GenericButton visitbooking = getButton(new GenericButton("visit", localize(prmVisitBooking, "Book an appointment")));
 			visitbooking.setPageToOpen(132);
 			
