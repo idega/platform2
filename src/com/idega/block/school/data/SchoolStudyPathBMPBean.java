@@ -81,7 +81,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	}
 	
 	public void setSchoolCategory(Object schoolCategory) {
-		setColumn(COLUMN_SCHOOL_TYPE, schoolCategory);
+		setColumn(COLUMN_SCHOOL_CATEGORY, schoolCategory);
 	}
 
     public boolean isValid () {

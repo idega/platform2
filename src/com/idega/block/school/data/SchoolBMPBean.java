@@ -113,7 +113,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.addAttribute(ACTIVITY, "The schools activity", true, true, String.class, 256);
 		this.addAttribute(OPEN_HOURS, "The school open hours", true, true, String.class, 256);
 		this.addManyToManyRelationShip(SchoolType.class);
-		this.addManyToManyRelationShip(SchoolYear.class);
+		this.addManyToManyRelationShip(SchoolYear.class, "sch_school_sch_school_year");
 		// Grimur 16.10.2002
 		this.addManyToManyRelationShip(LocalizedText.class,M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL); // in for backwards compatability
 		this.addManyToManyRelationShip(ICFile.class);
