@@ -652,28 +652,22 @@ public class UserEditor extends Block {
 			coStreetAddressInput.setContent(coAddress.getStreetAddress());
 			addressTable.add(getOldParameter(prm_coaddress_street, coAddress.getStreetAddress()));
 
-			try {
-				PostalCode postalCode = coAddress.getPostalCode();
-				if(postalCode!=null){
-					coPostalCodeInput.setContent(postalCode.getPostalCode());
-					coPostalNameInput.setContent(postalCode.getName());
-					addressTable.add(new Parameter(prm_coaddress_postal_id,postalCode.getPrimaryKey().toString()));
-					addressTable.add(getOldParameter(prm_coaddress_postal_code, postalCode.getPostalCode()));
-					addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
-					try {
-						Country country = postalCode.getCountry();
-						if(country!=null){
+			PostalCode postalCode = coAddress.getPostalCode();
+			if(postalCode!=null){
+				coPostalCodeInput.setContent(postalCode.getPostalCode());
+				coPostalNameInput.setContent(postalCode.getName());
+				addressTable.add(new Parameter(prm_coaddress_postal_id,postalCode.getPrimaryKey().toString()));
+				addressTable.add(getOldParameter(prm_coaddress_postal_code, postalCode.getPostalCode()));
+				addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
+			  try {
+				  Country country = postalCode.getCountry();
+					if(country!=null){
 							coCountryInput.setSelectedCountry(country);
 							addressTable.add(getOldParameter(prm_coaddress_country_id, country.getPrimaryKey().toString()));
 						}
-					}
-					catch (Exception e3) {
-						
-					}
 				}
-			}
-			catch (SQLException e2) {
-				
+				  catch (Exception e3) {
+				}
 			}
 		}
 		

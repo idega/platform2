@@ -287,9 +287,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String valueCOPostalCode = iwc.getParameter(PARAMETER_CO_POSTAL_CODE);
 		if (valueCOPostalCode == null) {
 			PostalCode pc = null;
-			try {
-				pc = coAddress.getPostalCode();
-			} catch (java.sql.SQLException e) {}
+			pc = coAddress.getPostalCode();
 			if (pc != null) {
 				valueCOPostalCode = pc.getPostalCode();
 				if (valueCOPostalCode == null) {

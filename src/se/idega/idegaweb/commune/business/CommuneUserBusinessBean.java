@@ -4,7 +4,6 @@ import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -858,19 +857,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				PostalCode userPostal = null;
 				PostalCode otherUserPostal = null;
 
-				try {
-					userPostal = userAddress.getPostalCode();
-				}
-				catch (SQLException e) {
-					userPostal = null;					
-				}
-				
-				try {
-					otherUserPostal = otherUserAddress.getPostalCode();
-				}
-				catch (SQLException e) {
-					otherUserPostal = null;					
-				}
+				userPostal = userAddress.getPostalCode();
+				otherUserPostal = otherUserAddress.getPostalCode();
 
 				if (userPostal != null && otherUserPostal != null) {
 					if (userPostal.getPostalCode().equalsIgnoreCase(otherUserPostal.getPostalCode())) {

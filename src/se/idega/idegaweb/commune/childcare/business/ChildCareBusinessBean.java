@@ -13,7 +13,6 @@ import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -1797,14 +1796,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String addressString = "-";
 		if (address != null) {
 			addressString = address.getStreetAddress();
-			try {
-				PostalCode code = address.getPostalCode();
-				if (code != null) {
-					addressString += ", " + code.getPostalAddress();
-				}
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
+			PostalCode code = address.getPostalCode();
+			if (code != null) {
+				addressString += ", " + code.getPostalAddress();
 			}
 		}
 			
