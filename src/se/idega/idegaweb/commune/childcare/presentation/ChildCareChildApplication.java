@@ -275,12 +275,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t var three = 0;");
 		buffer.append("\n\t var four = 0;");
 		buffer.append("\n\t var five = 0;");
+		buffer.append("\n\t var length = 0;");
 
-		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) one = dropOne.options[dropOne.selectedIndex].value;");
-		buffer.append("\n\t if (dropTwo.selectedIndex > 0) two = dropTwo.options[dropTwo.selectedIndex].value;");
-		buffer.append("\n\t if (dropThree.selectedIndex > 0) three = dropThree.options[dropThree.selectedIndex].value;");
-		buffer.append("\n\t if (dropFour.selectedIndex > 0) four = dropFour.options[dropFour.selectedIndex].value;");
-		buffer.append("\n\t if (dropFive.selectedIndex > 0) five = dropFive.options[dropFive.selectedIndex].value;");
+		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) {\n\t\t one = dropOne.options[dropOne.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropThree.selectedIndex > 0) {\n\t\t three = dropThree.options[dropThree.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropFour.selectedIndex > 0) {\n\t\t four = dropFour.options[dropFour.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
 
 		buffer.append("\n\t if(one > 0){");
 		buffer.append("\n\t if(one == two || one == three || one == four || one == five){");
@@ -309,6 +310,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
+		message = localize("child_care.less_than_five_chosen", "You have chosen less than five choices.  An offer can not be guaranteed within three months.");
+		buffer.append("\n\t if(length < 5)\n\t\t return confirm('").append(message).append("');");
 		buffer.append("\n\t return true;");
 		buffer.append("\n}\n");
 		return buffer.toString();
