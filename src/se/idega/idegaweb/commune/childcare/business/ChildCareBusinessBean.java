@@ -326,7 +326,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					now = new IWTimestamp(dateOfBirth);
 				}*/
 			    // Bug fixed, 90 days is not the magic number !! ( aron ) 
-			    IWTimestamp dateOfBirth = new IWTimestamp(3,11,2003);
+			    IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
 			    now = new IWTimestamp();
 			    dateOfBirth.addMonths(3);
 				int days = IWTimestamp.getDaysBetween(dateOfBirth, now);
