@@ -91,14 +91,14 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		
 		try {
-			if (useBreak) {
-				++row;
-				table.setHeight(row, spaceBetween);
-				++row;
-			}
-			table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
 			int headmasterId = _school.getHeadmasterUserId();
 			if (headmasterId > 0 ) {
+				if (useBreak) {
+					++row;
+					table.setHeight(row, spaceBetween);
+					++row;
+				}
+				table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
 				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 				User user = uHome.findByPrimaryKey(new Integer(headmasterId));
 				row = insertUser(table, row, user);
@@ -109,14 +109,14 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		
 		try {
-			if (useBreak) {
-				++row;
-				table.setHeight(row, spaceBetween);
-				++row;
-			}
-			table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
 			int assistantHeadmasterId = _school.getAssistantHeadmasterUserId();
 			if (assistantHeadmasterId > 0 ) {
+				if (useBreak) {
+					++row;
+					table.setHeight(row, spaceBetween);
+					++row;
+				}
+				table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
 				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 				User user = uHome.findByPrimaryKey(new Integer(assistantHeadmasterId));
 				row = insertUser(table, row, user);
