@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/03 09:59:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 10:27:38 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -258,7 +258,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
     
 	private void generateCheckAmountListPdf (final IWContext context)
-        throws RemoteException, FinderException, DocumentException {
+        throws RemoteException, DocumentException {
         final Document document = new Document
                 (PageSize.A4, mmToPoints (20), mmToPoints (20),
                  mmToPoints (20), mmToPoints (20));
@@ -271,14 +271,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                  | PdfWriter.CenterWindow);
         final PaymentRecord [] records = (PaymentRecord [])
                 context.getSessionAttribute (PAYMENT_RECORDS_KEY);
-        final Integer providerId
-                = (Integer) context.getSessionAttribute (PROVIDER_KEY);
-        final String schoolCategoryId
-                = (String) context.getSessionAttribute (MAIN_ACTIVITY_KEY);
-        final Date startPeriod
-                = (Date) context.getSessionAttribute (START_PERIOD_KEY);
-        final Date endPeriod
-                = (Date) context.getSessionAttribute (END_PERIOD_KEY);
         final String title = localize
                 (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT);
         document.addTitle (title);
@@ -290,17 +282,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         outerTable.setWidthPercentage (100f);
         outerTable.getDefaultCell ().setBorder (0);
         addPhrase (outerTable, title + "\n\n");
-        final PdfPTable headerTable
-                = new PdfPTable (new float [] { 2.0f, 3.0f });
-        headerTable.getDefaultCell ().setBorder (0);
-        addPhrase (headerTable,
-                   localize (MAIN_ACTIVITY_KEY, MAIN_ACTIVITY_DEFAULT) + ": ");
-        addPhrase (headerTable, getSchoolCategoryName (context,
-                                                       schoolCategoryId));
-        addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
-                   + ": ");
-        addPhrase (headerTable, getSchoolBusiness (context).getSchool
-                   (providerId).getName ());
+		final PdfPTable headerTable = getRecordsHeaderPdfTable(context);
         outerTable.addCell (headerTable);
         addPhrase (outerTable, "\n");
         final String [][] columnNames =
@@ -324,22 +306,49 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
                                                         : lightBlue);
             final PaymentRecord record = records [i];
-            final Date period = record.getPeriod ();
-            final String periodText = null != period
-                    ? getFormattedPeriod (period) : "";
-            addPhrase (table, record.getStatus () + "");
-            addPhrase (table, periodText);
-            addPhrase (table, record.getPaymentText ());
-            table.getDefaultCell ().setHorizontalAlignment
-                    (Element.ALIGN_RIGHT);
-            addPhrase (table, record.getPlacements () + "");
-            addPhrase (table, ((long) record.getTotalAmount ()) + "");
-            table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
-            addPhrase (table, record.getNotes ());
+            addRecordOnAPdfRow (table, record);
         }
         outerTable.addCell (table);
         addPhrase (outerTable, "\n");
-        final PdfPTable summaryTable = new PdfPTable (3);
+        final PdfPTable summaryTable = getRecordsSummaryPdfTable(context);
+        outerTable.addCell (summaryTable);
+        document.add (outerTable);        
+        
+        // close and store document
+        document.close ();
+        
+        final int docId = getInvoiceBusiness (context).generatePdf
+                (localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
+                 buffer);
+        final Link viewLink
+                = new Link("Öppna checkbeloppslista i Acrobat Reader");
+        viewLink.setFile (docId);
+        viewLink.setTarget ("letter_window_" + docId);
+        add (createMainTable (CHECK_AMOUNT_LIST_KEY,
+                              CHECK_AMOUNT_LIST_DEFAULT, viewLink));
+    }
+    
+    private PdfPTable getRecordsHeaderPdfTable (final IWContext context) throws RemoteException {
+		final Integer providerId
+				= (Integer) context.getSessionAttribute (PROVIDER_KEY);
+		final String schoolCategoryId
+				= (String) context.getSessionAttribute (MAIN_ACTIVITY_KEY);
+        final PdfPTable headerTable
+                = new PdfPTable (new float [] { 2.0f, 3.0f });
+        headerTable.getDefaultCell ().setBorder (0);
+        addPhrase (headerTable,
+                   localize (MAIN_ACTIVITY_KEY, MAIN_ACTIVITY_DEFAULT) + ": ");
+        addPhrase (headerTable, getSchoolCategoryName (context,
+                                                       schoolCategoryId));
+        addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
+                   + ": ");
+        addPhrase (headerTable, getSchoolBusiness (context).getSchool
+                   (providerId).getName ());
+		return headerTable;
+	}
+
+	private PdfPTable getRecordsSummaryPdfTable (final IWContext context) {
+		final PdfPTable summaryTable = new PdfPTable (3);
         summaryTable.getDefaultCell ().setBorder (0);
         final Integer totalAmountPlacements = (Integer)
                 context.getSessionAttribute (TOTAL_AMOUNT_PLACEMENTS_KEY);
@@ -375,24 +384,25 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                    + ": ");
         summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
         addPhrase (summaryTable, totalAmountVat + "");
-        outerTable.addCell (summaryTable);
-        document.add (outerTable);        
-        
-        // close and store document
-        document.close ();
-        
-        final int docId = getInvoiceBusiness (context).generatePdf
-                (localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
-                 buffer);
-        final Link viewLink
-                = new Link("Öppna checkbeloppslista i Acrobat Reader");
-        viewLink.setFile (docId);
-        viewLink.setTarget ("letter_window_" + docId);
-        add (createMainTable (CHECK_AMOUNT_LIST_KEY,
-                              CHECK_AMOUNT_LIST_DEFAULT, viewLink));
-    }
-    
-    private void saveRecord (final IWContext context)
+		return summaryTable;
+	}
+
+	private void addRecordOnAPdfRow (final PdfPTable table, final PaymentRecord record) {
+		final Date period = record.getPeriod ();
+		final String periodText = null != period
+		        ? getFormattedPeriod (period) : "";
+		addPhrase (table, record.getStatus () + "");
+		addPhrase (table, periodText);
+		addPhrase (table, record.getPaymentText ());
+		table.getDefaultCell ().setHorizontalAlignment
+		        (Element.ALIGN_RIGHT);
+		addPhrase (table, record.getPlacements () + "");
+		addPhrase (table, ((long) record.getTotalAmount ()) + "");
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+		addPhrase (table, record.getNotes ());
+	}
+
+	private void saveRecord (final IWContext context)
         throws RemoteException, FinderException {
         // get updated values
         final User currentUser = context.getCurrentUser ();
@@ -1203,7 +1213,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	 */
     private Table createMainTable
         (final String headerKey, final String headerDefault,
-         final PresentationObject content) throws RemoteException {
+         final PresentationObject content) {
         return createMainTable (localize (headerKey, headerDefault), content);
     }
     
@@ -1602,8 +1612,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private Integer getSchoolId (final IWContext context)
         throws RemoteException {
         try {
-            final SchoolCommuneSession session
-                    = getSchoolCommuneSession (context);
             final int schoolId
                     = getSchoolCommuneSession (context).getSchoolID ();
             return 0 < schoolId ? new Integer (schoolId) : null;

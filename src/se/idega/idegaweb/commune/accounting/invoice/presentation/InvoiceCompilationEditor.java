@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/03 07:35:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 10:27:38 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.78 $
+ * @version $Revision: 1.79 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -458,7 +458,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void saveRecord (final IWContext context)
-        throws RemoteException, CreateException, FinderException {
+        throws RemoteException, FinderException {
         // get updated values
         final User currentUser = context.getCurrentUser ();
         final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
@@ -744,8 +744,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 *
 	 * @param context session data like user info etc.
 	 */
-    private void showCompilationList (final IWContext context)
-        throws RemoteException, FinderException {
+    private void showCompilationList (final IWContext context) throws RemoteException {
         final UserSearcher searcher = createSearcher ();
         final Table table = createTable (6);
         setColumnWidthsEqual (table);
@@ -864,8 +863,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     INVOICE_COMPILATION_DEFAULT);
     }
 
-    private void deleteCompilation (final IWContext context)
-        throws RemoteException {
+    private void deleteCompilation (final IWContext context) {
         try {
             final InvoiceBusiness business = getInvoiceBusiness (context);
             final InvoiceHeader header = getInvoiceHeader (context);
@@ -884,8 +882,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
     
-    private void deleteRecord (final IWContext context)
-        throws RemoteException {
+    private void deleteRecord (final IWContext context) {
         try {
             final InvoiceBusiness business = getInvoiceBusiness (context);
             final InvoiceRecord record = getInvoiceRecord (context);
@@ -1446,7 +1443,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     
     private Table getInvoiceCompilationListTable
         (final IWContext context, final InvoiceHeader [] headers)
-        throws RemoteException, FinderException {
+        throws RemoteException {
 
         // set up header row
         final String [][] columnNames =
@@ -1723,8 +1720,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void createForm
         (final IWContext context, final Table table, final String key,
-         final String defaultHeader)
-        throws RemoteException {
+         final String defaultHeader) {
         createForm (context, table, localize (key, defaultHeader));
     }
 
@@ -1775,7 +1771,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 */
     private Table createMainTable
                 (final String headerKey, final String headerDefault,
-                 final PresentationObject content) throws RemoteException {
+                 final PresentationObject content) {
         return createMainTable (localize (headerKey, headerDefault), content);
     }
 
