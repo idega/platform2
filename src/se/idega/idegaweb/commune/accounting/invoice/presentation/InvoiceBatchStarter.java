@@ -114,7 +114,12 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				month = new IWTimestamp(iwc.getParameter(PARAM_MONTH)).getDate();
 			}
 			if(iwc.getParameter(PARAM_READ_DATE)!=null){
-				readDate = new IWTimestamp(iwc.getParameter(PARAM_READ_DATE)).getDate();
+				try{
+					readDate = new IWTimestamp(iwc.getParameter(PARAM_READ_DATE)).getDate();
+				}catch(IllegalArgumentException e){
+					add(getLocalizedText("invbr.Please_provide_a_valid_date","Please provide a proper date."));
+					return;
+				}
 			}
 			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
 			add(getLocalizedLabel("invbr.batchrun_started","Batchrun started."));
