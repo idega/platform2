@@ -32,11 +32,13 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -69,17 +71,19 @@ public class SchoolContentEditor extends IWAdminWindow{
   private String PARAMETER_SCHOOL_FAX = "scr_fx";
 	private String PARAMETER_SCHOOL_WEBPAGE = "scr_swp";
 	private String PARAMETER_SCHOOL_MANAGEMENT_TYPE = "scr_smtid";
+	private String PARAMETER_SCHOOL_MAP_URL = "scr_mprl";
 	  
   private String PARAMETER_ACTION = "scr_act";
   private String ACTION_UPDATE = "scr_act_ud";
 
   private IWResourceBundle _iwrb;
   private School _school;
+	private SchoolUserEditor sue;
 
 	public SchoolContentEditor() {
     setUnMerged();
-    setWidth(600);
-    setHeight(650);
+    setWidth(700);
+    setHeight(700);
     setResizable(true);
     setScrollbar(true);
 		setTitle( "School Editor" );	
@@ -119,7 +123,17 @@ public class SchoolContentEditor extends IWAdminWindow{
 			} catch (FinderException e) {}
 		}
 		
-		
+		sue = new SchoolUserEditor(iwc);
+
+		Text testText = new Text("test");
+		this.formatText(testText, false);
+		sue.setTextStyleNormal( testText );
+
+		Text testText2 = new Text("test");
+		this.formatText(testText2, true);
+		sue.setTextStyleTitle( testText2 );
+
+		sue.setInputStyle(this.STYLE);
 	}
 
 
@@ -134,10 +148,11 @@ public class SchoolContentEditor extends IWAdminWindow{
 		TextInput streetName = new TextInput(PARAMETER_SCHOOL_ADDRESS_STREET);
 		TextInput areaCode = new TextInput(PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
 		TextInput zipArea = new TextInput(PARAMETER_SCHOOL_ZIP_AREA);
+		TextInput mapUrl = new TextInput(PARAMETER_SCHOOL_MAP_URL);
 		schoolName.setSize(40);
-		streetName.setSize(40);
+//		streetName.setSize(40);
 		areaCode.setSize(7);
-		zipArea.setSize(20);
+//		zipArea.setSize(20);
 		
 		DropdownMenu manType = new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE);
 		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID), "Private"));
@@ -187,6 +202,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 			}
 			if ( _school.getSchoolManagermentType() != -1) {
 				manType.setSelectedElement(_school.getSchoolManagermentType());
+			}
+			if ( _school.getMapUrl() != null ) {
+				mapUrl.setContent(_school.getMapUrl());	
 			}
 			
 		} catch (IDORelationshipException e) {
@@ -248,16 +266,23 @@ public class SchoolContentEditor extends IWAdminWindow{
 		addressTable.setWidth(2, 3, "4");
 		
 		
-		this.addLeft(addressTable, false);
+//		this.addLeft(addressTable, false);
 		
 		setStyle(information);
 		this.addLeft(_iwrb.getLocalizedString("school.information","Information"), information, true);
 
+		this.addLeft(sue.getSchoolUsersTable(iwc, this._school, false), false);
 
 
 		this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
+		this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
+		this.addRight(_iwrb.getLocalizedString("school.area_code", "Area Code"), areaCode, true);
+		this.addRight(_iwrb.getLocalizedString("school.zip_area","Zip Area"), zipArea, true);
+		this.addRight(_iwrb.getLocalizedString("school.phone","Phone"), phone, true);
+		this.addRight(_iwrb.getLocalizedString("school.fax","Fax"), fax, true);
 		this.addRight(_iwrb.getLocalizedString("school.management_type","Management type"), manType, true);
 		this.addRight(_iwrb.getLocalizedString("school.web_page","Web Page"), webPage, true);
+		this.addRight(_iwrb.getLocalizedString("school.map_url","Map Url"), mapUrl, true);
 
 //		this.addRight("Doc", doc, true);
 //		this.addRight("Box", box, true);
@@ -282,6 +307,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			String fax = iwc.getParameter( PARAMETER_SCHOOL_FAX );
 			String manType = iwc.getParameter( PARAMETER_SCHOOL_MANAGEMENT_TYPE);
 			String webPage = iwc.getParameter( PARAMETER_SCHOOL_WEBPAGE );
+			String mapUrl = iwc.getParameter( PARAMETER_SCHOOL_MAP_URL );
 			
 			try {
 				if (useImage == null) {
@@ -334,8 +360,13 @@ public class SchoolContentEditor extends IWAdminWindow{
 						e.printStackTrace(System.err);
 					}
 				}
+				if (!mapUrl.equals("")) {
+					_school.setMapUrl(mapUrl);	
+				}
 				
 				_school.store();
+				
+				sue.updateUsers(iwc, _school);
 	
 				return true;
 			} catch (IDORelationshipException e) {
@@ -358,8 +389,21 @@ public class SchoolContentEditor extends IWAdminWindow{
 		return  (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 	}
 	
-	public static Link getLink(School school) throws RemoteException {
-		Link link = new Link("Content Editor");
+	public static Form getFormWithButton(School school, String text, String styleClass) throws RemoteException {
+		Form form = new Form();
+		SubmitButton button = new SubmitButton(text);
+		form.setWindowToOpen( SchoolContentEditor.class );
+		form.addParameter(PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString());
+		System.out.println("styleClass : "+styleClass);
+		if (styleClass != null) {
+			button.setStyleClass(styleClass);	
+		}
+		form.add(button);
+		return form;
+	}
+	
+	public static Link getLink(School school, PresentationObject po) throws RemoteException {
+		Link link = new Link(po);
 		link.setWindowToOpen( SchoolContentEditor.class);
 		link.addParameter(PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString() );
 		return link;
