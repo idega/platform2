@@ -211,6 +211,7 @@ public class UserEditor extends Block {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		//iwc.getApplication().getLog().info("Who is your daddy ?");
+		if(iwc.isLoggedOn()){
 		try {
 			process(iwc);
 		}
@@ -228,6 +229,9 @@ public class UserEditor extends Block {
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();
+		}}
+		else{
+			add(iwrb.getLocalizedString("no_user_logged_on","No user logged on"));
 		}
 	}
 	/* (non-Javadoc)
@@ -578,6 +582,7 @@ public class UserEditor extends Block {
 		if(editorPageID!=null)
 			URL.addParameter(UserRelationConnector.PARAM_RELOAD_PAGE_ID,editorPageID.toString());
 		URL.addParameter(UserRelationConnector.PARAM_RELOAD_USER_PRM_NAME,PRM_USER_ID);
+		URL.addParameter(UserRelationConnector.PARAM_ACTION,UserRelationConnector.PARAM_ATTACH);
 		button.setOnClick(
 			"javascript:" + Window.getCallingScriptString(connectorWindowClass, URL.toString(), true, iwc) + ";return false;");
 		button.setStyleClass(buttonStyleName);
@@ -607,6 +612,7 @@ public class UserEditor extends Block {
 			registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
 		if (reverseType != null)
 			registerLink.addParameter(UserRelationConnector.PARAM_REVERSE_TYPE, reverseType);
+		registerLink.addParameter(UserRelationConnector.PARAM_ACTION, UserRelationConnector.PARAM_DETACH);
 		//registerLink.addParameter(GroupRelationConnector.PARAM_ACTION,GroupRelationConnector.ACTION_DETACH);
 		return registerLink;
 	}

@@ -30,6 +30,7 @@ import com.idega.user.data.UserHome;
  */
 
 public class FamilyRelationConnector extends UserRelationConnector {
+	 
 
 	private static final String FAMILY_RELATION_CUSTODIAN_AND_PARENT = "fam_rel_cust_par";
 
@@ -79,7 +80,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		}
 	}
 
-	private MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException{
+	protected MemberFamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException{
 		
 		return	(MemberFamilyLogic) IBOLookup.getServiceInstance(iwac, MemberFamilyLogic.class);
 		
