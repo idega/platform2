@@ -29,6 +29,8 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareAdminApplication extends ChildCareBlock {
 
+	private boolean showParentsAgree = false;
+
 	private static final String PARAMETER_COMMENTS = "cc_comments";
 	
 	private User child;
@@ -289,9 +291,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 			}
 			else if (status == getBusiness().getStatusAccepted()) {
-				GenericButton parentsAgree = getButton("parents_agree", localize("child_care.parents_agree","Parents agree"), -1);
-				parentsAgree.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_PARENTS_AGREE);
-				table.add(parentsAgree, 3, 1);
+				int column = 3;
+				if (showParentsAgree) {
+					GenericButton parentsAgree = getButton("parents_agree", localize("child_care.parents_agree","Parents agree"), -1);
+					parentsAgree.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_PARENTS_AGREE);
+					table.add(parentsAgree, column++, 1);
+					column++;
+				}
 				
 				IWTimestamp dateNow = new IWTimestamp();
 				IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
@@ -302,7 +308,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CHANGE_OFFER);
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(offer, 5, 1);
+					table.add(offer, column++, 1);
+					column++;
 					
 					GenericButton removeFromQueue = (GenericButton) getStyledInterface(new GenericButton("remove_from_queue", localize("child_care.remove_from_queue","Remove from queue")));
 					removeFromQueue.setWindowToOpen(ChildCareWindow.class);
@@ -310,7 +317,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_RETRACT_OFFER);
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(removeFromQueue, 7, 1);
+					table.add(removeFromQueue, column, 1);
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
@@ -411,4 +418,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		_canEdit = new Boolean(b);
 	}
 
+	/**
+	 * @param b
+	 */
+	public void setShowParentsAgree(boolean b) {
+		showParentsAgree = b;
+	}
 }
