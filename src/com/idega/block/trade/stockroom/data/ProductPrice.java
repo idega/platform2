@@ -85,7 +85,7 @@ public class ProductPrice extends GenericEntity{
         int parentId = pCat.getParentId();
         ProductPrice[] parent = (ProductPrice[]) (new ProductPrice()).findAllByColumn(getColumnNamePriceCategoryId(), parentId);
         if (parent.length > 0) {
-          returner = parent[0].getPrice() * (getFloatColumnValue(getColumnNamePrice()) / 100);
+          returner = parent[0].getPrice() * ((100 - getFloatColumnValue(getColumnNamePrice())) / 100);
         }else {
           System.err.println("Cannot find Parent");
         }
