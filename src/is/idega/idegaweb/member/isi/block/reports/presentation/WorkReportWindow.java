@@ -124,7 +124,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"));
 			}
 			else if (action.equals(ACTION_IMPORT_MEMBERS)) {
-				selector = new WorkReportMemberImporter();
+				selector = new WorkReportMemberImporterConfirm();
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"));
 			}
 			else if (action.equals(ACTION_IMPORT_ACCOUNT)) {

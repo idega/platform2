@@ -39,9 +39,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -777,10 +779,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		return true;
 	}
 
-	public boolean importMemberPart(int workReportFileId, int workReportId, String mainBoardName) throws WorkReportImportException, RemoteException {
+	public WorkReportImportReport importMemberPart(int workReportFileId, int workReportId, String mainBoardName) throws WorkReportImportException, RemoteException {
 		int memberCount = 0;
 		int playerCount = 0;
-		HashMap divPlayerCount = new HashMap();
+		Map divPlayerCount = new HashMap();
+		Collection notRead = new Vector();
 		System.out.println("Starting member importing from excel file for workreportid: " + workReportId);
 
 		//Check to see if the work report is read only
@@ -828,6 +831,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_SSN);
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
+				ssn = TextSoap.findAndCut(ssn, "-");
+				
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_POSTAL_CODE);
 
@@ -927,6 +932,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 				catch (FinderException e) {
 					System.err.println("User not found for ssn : " + ssn + " skipping...");
+					notRead.add(ssn);
 				}
 			}
 		}
@@ -964,7 +970,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			board.store();
 		}
 
-		return true;
+		WorkReportImportReport ret = new WorkReportImportReport();
+		ret.numberOfMembers = memberCount;
+		ret.numberOfPlayers = playerCount;
+		ret.leaguesMap = leaguesMap;
+		ret.playerCountPrLeague = divPlayerCount;
+		ret.notRead = notRead;
+	
+		return ret;
 	}
 
 	public WorkReportImportClubAccountRecordHome getWorkReportImportClubAccountRecordHome() {
