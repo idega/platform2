@@ -130,8 +130,8 @@ public class PhoneFileHandler {
 	}
 
 	public void process3(File PhoneFile) throws java.rmi.RemoteException {
-		Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
-		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
+		//Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
+		//Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
 		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));
 		// If we can assess something
 		if (M != null && M2 != null) {
@@ -167,6 +167,7 @@ public class PhoneFileHandler {
 					Account eAccount;
 					AccountPhone ap;
 					List accountList;
+					AccountPhoneEntryHome apeHome = (AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class);
 					boolean foundAccount = false;
 					int listsize;
 					boolean cont = false;
@@ -176,7 +177,7 @@ public class PhoneFileHandler {
 						cont = false;
 						st = new StringTokenizer(line, ";");
 						if (st.countTokens() == 8) {
-							ape = ((AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class)).create();
+							ape = apeHome.create();
 							try {
 								anumber = st.nextToken().trim();
 								snumber = st.nextToken().trim();
@@ -216,9 +217,10 @@ public class PhoneFileHandler {
 									phoneNumbers.put(number, new Integer(1));
 									numberCount++;
 								}
-
-								if (M.containsKey(number)) {
-									accountList = (List) M.get(number);
+								Collection accountList = apeHome.findByPhoneNumber(number);
+								//if (M.containsKey(number)) {
+								if(!accounts.isEmpty())
+									//accountList = (List) M.get(number);
 									if (accountList != null) {
 										listsize = accountList.size();
 										for (int i = 0; i < listsize; i++) {
