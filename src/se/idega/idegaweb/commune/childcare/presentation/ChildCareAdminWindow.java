@@ -12,16 +12,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
-import se.idega.idegaweb.commune.accounting.business.BatchDeadlineService;
+import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
-import se.idega.idegaweb.commune.childcare.business.PlacementHelper;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
+
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
@@ -31,7 +33,6 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -566,10 +567,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		PlacementHelper helper = getPlacementHelper();
 		IWTimestamp stamp = new IWTimestamp();
 		
-//		 adding  batch deadline checks (aron) 12.11.2004
-		BatchDeadlineService deadlineService = ((BatchDeadlineService)IBOLookup.getServiceInstance(iwc,BatchDeadlineService.class));
+
 		TimePeriod deadlinePeriod = null;
-		deadlinePeriod = deadlineService.getValidPeriod();
+		deadlinePeriod = helper.getValidPeriod();
 
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
@@ -577,7 +577,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
 		    // deadline has passed
 		   
-		    if(deadlineService.hasDeadlinePassed()){
+		    if(helper.hasDeadlinePassed()){
 		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
 		    }
@@ -657,7 +657,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateHeader = localize("child_care.change_date", "Change date");
 		}
 		table.add(getSmallHeader(dateHeader), 1, row++);
-		if(deadlineService.hasDeadlinePassed())
+		if(helper.hasDeadlinePassed())
 		    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);
 		table.add(dateInput, 1, row++);
 		
@@ -833,10 +833,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//getBusiness().getContractFile(application.getContractFileId());
 		PlacementHelper helper = getPlacementHelper();
 		
-		BatchDeadlineService deadlineService = ((BatchDeadlineService)IBOLookup.getServiceInstance(iwc,BatchDeadlineService.class));
 		TimePeriod deadlinePeriod = null;
-		deadlinePeriod = deadlineService.getValidPeriod();
-
+		deadlinePeriod = helper.getValidPeriod();
+		
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 		textInput.setLength(helper.getMaximumCareTimeHours().toString().length());
 		textInput.setMaxlength(helper.getMaximumCareTimeHours().toString().length());
@@ -860,7 +859,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
 		    // deadline has passed
 		   
-		    if(deadlineService.hasDeadlinePassed()){
+		    if(helper.hasDeadlinePassed()){
 		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
 		    }
@@ -1000,7 +999,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(employmentTypes, 1, row++);
 		
-		if(deadlineService.hasDeadlinePassed())
+		if(helper.hasDeadlinePassed())
 		    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
@@ -1055,9 +1054,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			IWTimestamp stamp = new IWTimestamp();
 			stamp.addMonths(2);
 			
-			BatchDeadlineService deadlineService = ((BatchDeadlineService)IBOLookup.getServiceInstance(iwc,BatchDeadlineService.class));
+			PlacementHelper helper = getPlacementHelper();
 			TimePeriod deadlinePeriod = null;
-			deadlinePeriod = deadlineService.getValidPeriod();
+			deadlinePeriod = helper.getValidPeriod();
 			
 			DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 			dateInput.setDate(stamp.getDate());
@@ -1067,7 +1066,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
 			    // deadline has passed
 			   
-			    if(deadlineService.hasDeadlinePassed()){
+			    if(helper.hasDeadlinePassed()){
 			        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 			        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
 			    }
@@ -1087,7 +1086,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 			table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date")+":"), 1, row++);
 			table.add(dateInput, 1, row++);
-			if(deadlineService.hasDeadlinePassed())
+			if(helper.hasDeadlinePassed())
 			    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);
 	
 			SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
