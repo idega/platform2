@@ -113,7 +113,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 						
 					if (netOrder == 1 && row != 2) {
 						applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-						applicationTable.setStyle(1, row, "padding: 0px;");
+						applicationTable.setStyle(1, row, "padding", "0px");
 						applicationTable.setColor(1, row++, "#000000");
 					}
 					

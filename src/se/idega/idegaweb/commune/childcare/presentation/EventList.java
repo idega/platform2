@@ -66,7 +66,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.7 2003/03/26 12:15:01 roar Exp $
+ * @version $Id: EventList.java,v 1.8 2003/03/30 11:37:05 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -769,7 +769,7 @@ private void addMessagesList(IWContext iwc)throws Exception{
 /*RS	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);  RS*/
 //	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
 	uT.add(getSearchForm(iwc), 1, urow++);
-	uT.setStyle(1, urow-1, "padding-bottom:15");
+	uT.setStyle(1, urow-1, "padding-bottom", "15px");
 	
 	uT.add(unPrintedLetterDocs,1,urow++);
 	uT.add(getPrintButton(),1,urow++);
