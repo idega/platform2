@@ -403,12 +403,6 @@ public class Tournament extends GolfEntity{
 
                         if(rounds!=null){
                           for(int i=0;i<rounds.length;i++){
-                              scorecards = (Scorecard[]) this.findAllByColumn("TOURNAMENT_ROUND_ID",rounds[i].getID());
-                              if (scorecards != null) {
-                                  for (int j = 0; j < scorecards.length; j++) {
-                                      scorecards[j].delete();
-                                  }
-                              }
                               rounds[i].delete();
                           }
                         }
