@@ -72,6 +72,7 @@ import com.idega.xml.XMLException;
 
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
+import dori.jasper.engine.JRExporterParameter;
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.design.JasperDesign;
 /**
@@ -97,6 +98,9 @@ public class ReportGenerator extends Block {
 	private Integer _queryPK = null;
 	private Integer _methodInvacationPK = null;
 	private Integer _layoutICFilePK = null;
+	private String _layoutFileName = null;
+	private IWBundle _layoutIWBundle = null;
+	
 	private MethodInvocationDocument _methodInvokeDoc = null;
 	private Vector _dynamicFields = new Vector();
 	private Collection _allFields = null;
@@ -189,8 +193,8 @@ public class ReportGenerator extends Block {
 		//Fetch or generate the layout
 
 		//fetch, only available for method invocation, TODO make available for other types
-		if (_layoutICFilePK != null && isMethodInvocation) {
-			getLayoutFromICFileAndAddParameters(iwc);
+		if ( ((_layoutFileName!=null) || (_layoutICFilePK != null)) && isMethodInvocation) {
+			getLayoutAndAddParameters(iwc);
 		}
 		else { //generate
 			generateLayoutAndAddParameters(iwc, isMethodInvocation);
@@ -300,10 +304,20 @@ public class ReportGenerator extends Block {
 		_design = designTemplate.getJasperDesign(iwc);
 	}
 
-	private void getLayoutFromICFileAndAddParameters(IWContext iwc) throws RemoteException {
+	private void getLayoutAndAddParameters(IWContext iwc) throws RemoteException {
 		JasperReportBusiness reportBusiness = getReportBusiness();
-		int designId = _layoutICFilePK.intValue();
-		_design = reportBusiness.getDesign(designId);
+		if(_layoutICFilePK!=null){
+			int designId = _layoutICFilePK.intValue();
+			_design = reportBusiness.getDesign(designId);	
+		}
+		else if(_layoutFileName!=null){
+			if(_layoutIWBundle!=null){
+				_design = reportBusiness.getDesignFromBundle(_layoutIWBundle,_layoutFileName);
+			}
+			else{
+				_design = reportBusiness.getDesignFromBundle(getBundle(iwc),_layoutFileName);
+			}
+		}
 		//add parameters and fields
 		
 		
@@ -461,7 +475,7 @@ public class ReportGenerator extends Block {
 	private void generateReport(IWContext iwc) throws RemoteException, JRException {
 		if (_dataSource != null && _design != null) {
 			JasperReportBusiness business = getReportBusiness();
-
+				
 			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME, _reportName);
 			JasperPrint print = business.getReport(_dataSource, _parameterMap, _design);
 
@@ -507,6 +521,15 @@ public class ReportGenerator extends Block {
 	public void setLayoutICFile(ICFile file) {
 		if (file != null)
 			_layoutICFilePK = (Integer) file.getPrimaryKey();
+	}
+	
+	public void setLayoutBundleAndFileName(IWBundle bundle, String fileName){
+		_layoutFileName = fileName;
+		_layoutIWBundle = bundle;
+	}
+	
+	public void setLayoutFileNameAndUseDefaultBundle(String fileName){
+		setLayoutBundleAndFileName(null,fileName);
 	}
 	
 	public void setLayoutICFileID(Integer layoutICFilePK) {
