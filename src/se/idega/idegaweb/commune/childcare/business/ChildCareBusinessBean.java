@@ -301,7 +301,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					}
 	
 					IWTimestamp fromDate = new IWTimestamp(dates[i]);
-					if (canChangeApplication(appl, providerID, fromDate)) {
+					IWTimestamp queueDate = null;
+					if (queueDates != null && queueDates[i] != null) {
+						queueDate = new IWTimestamp(queueDates[i]);
+					}
+					
+					if (canChangeApplication(appl, providerID, fromDate, queueDate)) {
 						if (appl.getProviderId() != providerID && appl.getProviderId() != -1) {
 							removeFromQueue(appl, user);
 							appl = getChildCareApplicationHome().create();
@@ -316,11 +321,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							appl.setMessage("");
 						appl.setPresentation("");
 						appl.setChildId(childId);
-						if (queueDates != null) {
-							if (queueDates[i] != null)
-								appl.setQueueDate(queueDates[i]);
-							else
-								appl.setQueueDate(now.getDate());
+						if (queueDate != null) {
+							appl.setQueueDate(queueDate.getDate());
 						}
 						else
 							appl.setQueueDate(now.getDate());
@@ -419,16 +421,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 	
-	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate) {
+	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate, IWTimestamp newQueueDate) {
 		int oldProviderID = application.getProviderId();
 		IWTimestamp oldFromDate = new IWTimestamp();
+		IWTimestamp oldQueueDate = new IWTimestamp();
 		if (application.getFromDate() != null)
 			oldFromDate = new IWTimestamp(application.getFromDate());
+		if (application.getQueueDate() != null)
+			oldQueueDate = new IWTimestamp(application.getQueueDate());
 		
 		if (oldProviderID != newProviderID)
 			return true;
 		else {
 			if (!oldFromDate.equals(newFromDate))
+				return true;
+			if (!oldQueueDate.equals(newQueueDate))
 				return true;
 			return false;
 		}
