@@ -805,6 +805,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
+						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
 						return false;
@@ -848,6 +849,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
+						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
 						return false;
@@ -891,6 +893,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
+						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
 						return false;
