@@ -44,7 +44,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 	private static String PRM_CREATE = "brtic_create";
 	//private static String PRM_CANCEL = "brtic_cancel";
 	private static String PRM_SAVE = "brtic_save";
-	private static String PRM_DELETE = "brtic_delete";
+	//private static String PRM_DELETE = "brtic_delete";
 	private static String localizePrefix = "brutto_income.";
 	private User user = null;
 	private Integer userID = null;
@@ -156,13 +156,15 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		else {
 			SubmitButton btnNew = new SubmitButton(localize("new", "New"), PRM_CREATE, "true");
 			bPanel.addButton(btnNew);
-			SubmitButton btnDelete = new SubmitButton(PRM_DELETE, localize("delete", "Delete"));
+			/*SubmitButton btnDelete = new SubmitButton(PRM_DELETE, localize("delete", "Delete"));
 			String deleteWarning =
 				localize("warning.selected_items_willl_be_deleted", "Selected items will be deleted");
 			btnDelete.setOnClick("return confirm('" + deleteWarning + "');");
 			bPanel.addButton(btnDelete);
+			*/
 			if (showCancelCloseButton) {
 				CloseButton btnClose = new CloseButton(localize("close", "Close"));
+				btnClose.setOnClick("window.opener.location.reload()");
 				bPanel.addButton(btnClose);
 			}
 		}
@@ -174,9 +176,9 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.add(getHeader(localize("personal_id", "Personal ID")), 1, 1);
-		table.setColor(1, 1, getHeaderColor());
+		//table.setColor(1, 1, getHeaderColor());
 		table.add(getHeader(localize("name", "Name")), 1, 2);
-		table.setColor(1, 2, getHeaderColor());
+		//table.setColor(1, 2, getHeaderColor());
 		if (user != null) {
 			table.add(getText(user.getPersonalID()), 2, 1);
 			table.add(getText(user.getNameLastFirst()), 2, 2);
