@@ -156,7 +156,7 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 
 		
 		// Added the activity here  (Kelly)
-		if (activity != null && !email.equals(" ")) {
+		if (activity != null && (email != null) && !email.equals(" ")) {
 			table.add(getHeader(_iwrb.getLocalizedString("school.activity", "Activity")+":"), 1, row);
 			++row;
 			table.add(getText(activity), 1, row);
