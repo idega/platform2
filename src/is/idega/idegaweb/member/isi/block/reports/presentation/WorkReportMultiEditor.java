@@ -474,7 +474,7 @@ public class WorkReportMultiEditor extends Block {
 				Link moreLink = new Link(iwrb.getLocalizedString("workreportmultieditor.more_button","more"));
 				moreLink.setAsImageButton(true);
 				moreLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW_CLOSE_VIEW);
-				moreLink.addParameter("wr_id",report.getPrimaryKey().toString());
+				moreLink.addParameter(WorkReportOverViewCloseView.CLOSE_VIEW_WORK_REPORT_ID,report.getPrimaryKey().toString());
 				
 				return moreLink;
 			}

@@ -55,6 +55,8 @@ public class WorkReportOverViewCloseView extends Block {
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
+  
+  public static final String CLOSE_VIEW_WORK_REPORT_ID = "close_view_work_report_id";
 
 
 	private static final String REPORT_YEAR = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"YEAR_OF_REPORT";
@@ -68,7 +70,7 @@ public class WorkReportOverViewCloseView extends Block {
 
 	private static final String MEMBER_COUNT = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"TOTAL_MEMBERS";
 	private static final String PLAYER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_PLAYERS";
-	private static final String COMPETITOR_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_COMPETITIORS";
+	private static final String COMPETITOR_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_COMPETITORS";
 	
 	
 	private static final String LEAGUE_NR = WorkReportGroup.class.getName()+".ISI_WR_GROUP_ID"+"|"+"GROUP_NUMBER";
@@ -166,7 +168,8 @@ public class WorkReportOverViewCloseView extends Block {
   
   private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form) throws RemoteException {
   	  
-    Collection divisions =  getWorkReportBusiness(iwc).getAllWorkReportDivisionBoardForWorkReportId(Integer.parseInt(iwc.getParameter("wr_id")));
+  	String workReportId = iwc.getParameter(CLOSE_VIEW_WORK_REPORT_ID);
+    Collection divisions =  getWorkReportBusiness(iwc).getAllWorkReportDivisionBoardForWorkReportId(Integer.parseInt(workReportId));
    
     EntityBrowser browser = getEntityBrowser(divisions, resourceBundle, form);
     
@@ -183,6 +186,7 @@ public class WorkReportOverViewCloseView extends Block {
  
     List params = new ArrayList();
     params.add(WorkReportWindow.ACTION);
+    params.add(CLOSE_VIEW_WORK_REPORT_ID);
     
     // define path short keys and map corresponding converters
     //year of report
