@@ -17,6 +17,19 @@ public class TextFormatter {
   public TextFormatter() {
   }
 
+  public static String formatMSWordStringToIdegaWebString(String text){
+    String returnString = text;
+    //lists
+   /**@todo implement when we have regular expressions
+    *  returnString = TextSoap.findAndReplace(text,"1.	","*");
+    */
+    returnString = TextSoap.findAndReplace(text,"-	","*");
+    returnString = TextSoap.findAndReplace(text,"·	","*");
+    returnString = TextSoap.findAndReplace(text,"	"," ");//space in word tables
+
+    return returnString;
+  }
+
   public static String formatText(String textBody,int tableTextSize,String tableWidth) {
     //Búa til töflu
     if (textBody==null || textBody.equals("")) textBody = "";
