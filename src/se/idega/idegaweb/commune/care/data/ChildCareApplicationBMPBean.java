@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.4 2004/10/20 15:13:36 thomas Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.5 2004/10/25 15:59:18 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -944,6 +944,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public int ejbHomeGetNumberOfPlacedApplications(int childID, int providerID, String[] caseStatus) throws IDOException {
+	    //SelectQuery query = idoSelectQueryGetAllCasesByStatusArray(caseStatus);
 		Table table = new Table(this,"c");
 		Table caseTable = new Table(Case.class,"p");
 		SelectQuery query = new SelectQuery(table);
@@ -952,7 +953,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.NOTEQUALS,providerID));
 		query.addCriteria(new MatchCriteria(table,CHILD_ID,MatchCriteria.EQUALS,childID));
-		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus));
 		return idoGetNumberOfRecords(query);
 	}
 	
@@ -993,7 +994,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.setAsCountQuery(true);
 		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS, providerID));
-		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus));
 		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
 		return idoGetNumberOfRecords(query);
 	}
@@ -1018,7 +1019,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
 		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
 		query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
-		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus));
 		query.setAsCountQuery(true);
 		return idoGetNumberOfRecords(query);
 	}
