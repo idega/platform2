@@ -19,12 +19,16 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
+import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.category.data.InformationFolder;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.business.FolderBlockBusiness;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.block.presentation.FolderBlock;
 import com.idega.idegaweb.block.presentation.ImageWindow;
@@ -48,7 +52,7 @@ import com.idega.util.text.TextSoap;
  * @version 1.5b
  */
 
-public class Blog extends FolderBlock implements Builderaware {
+public class Blog extends FolderBlock implements Builderaware,DPTInheritable {
 	private final static String IW_BUNDLE_IDENTIFIER = BlogBundle.IW_BUNDLE_IDENTIFIER;
 	public final static String CACHE_KEY = BlogBundle.CACHE_KEY;
 	private boolean hasEdit = false, hasAdd = false, hasInfo = false;
@@ -1283,5 +1287,18 @@ public class Blog extends FolderBlock implements Builderaware {
 			return false;
 		}
 	}
+	
+	public boolean copyICObjectInstance(String pageKey,int newInstanceID, DPTCopySession copySession) {
+		try {
+			return ((FolderBlockBusiness)IBOLookup.getServiceInstance(getIWApplicationContext(),FolderBlockBusiness.class)).copyCategoryAttachments(this.getBlockInstanceID(), newInstanceID);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+			return false;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	
 }

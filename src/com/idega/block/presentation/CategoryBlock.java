@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
+import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.category.business.CategoryBusiness;
@@ -24,7 +25,7 @@ import com.idega.presentation.text.Link;
  * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 2.0
  */
-public abstract class CategoryBlock extends Block {
+public abstract class CategoryBlock extends Block implements DPTInheritable {
 	private ICCategory icCategory;
 	private int icCategoryId = -1;
 	private int[] icCategoryIds = new int[0];
@@ -181,7 +182,7 @@ public abstract class CategoryBlock extends Block {
 		return (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
 	}
 	
-	public boolean copyBlock(String pageKey,int newInstanceID,DPTCopySession copySession) {
+	public boolean copyICObjectInstance(String pageKey,int newInstanceID,DPTCopySession copySession) {
 		CategoryFinder finder = CategoryFinder.getInstance();
 		List categories = finder.listOfCategoryForObjectInstanceId(getICObjectInstanceID());
 		if(categories != null) {

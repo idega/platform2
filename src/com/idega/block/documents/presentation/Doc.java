@@ -1,12 +1,19 @@
 package com.idega.block.documents.presentation;
 
+import java.rmi.RemoteException;
+
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.data.DocLink;
+import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
+import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.category.data.InformationCategory;
 import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.business.FolderBlockBusiness;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.block.presentation.FolderBlock;
 import com.idega.presentation.IWContext;
@@ -22,11 +29,11 @@ import com.idega.util.text.TextStyler;
 /**
  *  Description of the Class
  *
- *@author     <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ *@author     <a href="gummi@idega.is">Gudmundur Agust Saemundsson</a>
  *@created    15. mars 2002
  *@version    1.0
  */
-public class Doc extends FolderBlock implements Builderaware {
+public class Doc extends FolderBlock implements Builderaware,DPTInheritable {
 
 	private int _folderID = -1;
 	private int _catID = -1;
@@ -952,4 +959,17 @@ public class Doc extends FolderBlock implements Builderaware {
 	public String getCategoryType() {
 		return "doc_documents";
 	}
+	
+	public boolean copyICObjectInstance(String pageKey,int newInstanceID, DPTCopySession copySession) {
+		try {
+			return ((FolderBlockBusiness)IBOLookup.getServiceInstance(getIWApplicationContext(),FolderBlockBusiness.class)).copyCategoryAttachments(this.getBlockInstanceID(), newInstanceID);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+			return false;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 }
