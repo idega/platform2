@@ -2694,6 +2694,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public Collection getLatestContractsForChild(int childID,int maxNumberOfContracts){
+	    try {
+            return getChildCareContractArchiveHome().findByChild(childID,maxNumberOfContracts,-1);
+        } catch (FinderException e) {
+          return new Vector();
+        }
+	}
+	
 	
 
 	private int terminateContract(int contractFileID, Date terminatedDate, boolean removePlacing) {
