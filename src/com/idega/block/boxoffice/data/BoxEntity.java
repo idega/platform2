@@ -44,7 +44,7 @@ public class BoxEntity extends GenericEntity{
 	}
 
   public void delete() throws SQLException {
-    BoxLink[] link = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumn(getColumnNameBoxID(),getID());
+    BoxLink[] link = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumn(getColumnNameBoxID(),Integer.toString(getID()),"=");
     if ( link != null ) {
       for ( int a = 0; a < link.length; a++ ) {
         link[a].delete();
