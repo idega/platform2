@@ -154,7 +154,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private int _placementID = -1;
 	private int _pageID;
 	
-	private IWTimestamp earliestDate;
+	//private IWTimestamp earliestDate;
 
 	private CloseButton close;
 	private Form form;
@@ -314,7 +314,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_CHANGE_DATE :
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")+ personalIdUserName));
-				contentTable.add(getChangeDateForm(iwc, false));
+				contentTable.add(getChangeDateForm(false));
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")+ personalIdUserName));
@@ -354,7 +354,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_ALTER_VALID_FROM_DATE :
 				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date") + personalIdUserName));
-				contentTable.add(getChangeDateForm(iwc, true));
+				contentTable.add(getChangeDateForm(true));
 				break;
 			case METHOD_VIEW_PROVIDER_QUEUE :
 				headerTable.add(getHeader(localize("child_care.view_provider_queue", "Provider queue")));			
@@ -552,7 +552,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getChangeDateForm(IWContext iwc, boolean isAlteration) throws RemoteException {
+	private Table getChangeDateForm(boolean isAlteration) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -1613,8 +1613,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 			
-		if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
-			earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
+		//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
+			//earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
 		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "false");
 		restrictDates = false;

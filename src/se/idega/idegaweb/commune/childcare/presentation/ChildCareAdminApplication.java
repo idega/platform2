@@ -50,7 +50,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	public static ICPage ccOverviewPage;
 	public static ICPage ascOverviewPage;
 	private Boolean _canEdit;
-	private boolean _useSubmitConfirm;
+	//private boolean _useSubmitConfirm;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -635,6 +635,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	 * @param useSubmitConfirm The useSubmitConfirm to set.
 	 */
 	public void setToUseSubmitConfirm(boolean useSubmitConfirm) {
-		this._useSubmitConfirm = useSubmitConfirm;
+		if (useSubmitConfirm) {
+			log("setToUseSubmitConfirm called in ChildCareAdminApplication...");
+		}
 	}
 }

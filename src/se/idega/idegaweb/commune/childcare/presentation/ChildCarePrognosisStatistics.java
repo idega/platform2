@@ -5,19 +5,12 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.business.ProviderStat;
-import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.business.SchoolComparator;
-import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -57,7 +50,7 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		add(close);
 	}
 
-	private Table getProviderTable(IWContext iwc) throws RemoteException {
+	/*private Table getProviderTable(IWContext iwc) throws RemoteException {
 		Table table = getTable(7);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 2;
@@ -123,9 +116,9 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		table.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		return table;
-	}
+	}*/
 	
-	private Table getProviderStatTable(IWContext iwc) throws RemoteException {
+	private Table getProviderStatTable(IWContext iwc) {
 		Table table = getTable(7);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 2;
