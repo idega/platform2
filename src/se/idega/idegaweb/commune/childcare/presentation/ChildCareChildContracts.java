@@ -211,9 +211,32 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			
 			if (logs != null && !logs.isEmpty()) {
 				Iterator iterator = logs.iterator();
+				boolean first = true;
 				while (iterator.hasNext()) {
 					SchoolClassMemberLog log = (SchoolClassMemberLog) iterator.next();
-					row = addToTable(iwc, table, row, isActive, provider, log.getSchoolClass(), created, new IWTimestamp(log.getStartDate()), log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null, careTime, viewContract, viewCancelFile);
+					IWTimestamp startDate = null;
+					IWTimestamp endDate = null;
+					if (first) {
+						startDate = new IWTimestamp(contract.getValidFromDate());
+						first = false;
+					}
+					else {
+						startDate = new IWTimestamp(log.getStartDate());
+					}
+					
+					if (!iter.hasNext()) {
+						if (contract.getTerminatedDate() != null) {
+							endDate = contract.getTerminatedDate() != null ? new IWTimestamp(log.getEndDate()) : null;
+						}
+						else {
+							endDate = log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null;
+						}
+					}
+					else {
+						endDate = log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null;
+					}
+					
+					row = addToTable(iwc, table, row, isActive, provider, log.getSchoolClass(), created, startDate, endDate, careTime, viewContract, viewCancelFile);
 				}
 			}
 			else {

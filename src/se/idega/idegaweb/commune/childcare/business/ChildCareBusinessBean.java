@@ -3128,6 +3128,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						try {
 							SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
 							getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
+							createNewStudent = false;
 						}
 						catch (FinderException fe) {
 							log(fe);
