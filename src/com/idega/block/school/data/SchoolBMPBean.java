@@ -507,4 +507,8 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	public static void main(String[] args) {
 		System.out.println("hellu there");
 	}
+	
+	public void removeFromClass(Class entityInterfaceClass) throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(entityInterfaceClass);	
+	}
 }
