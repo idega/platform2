@@ -80,9 +80,9 @@ public class SmallCalendar extends JModuleObject{
     Text t = new Text();
     t.setFontColor(textColor);
     t.setFontSize(1);
-    String[] s = {"S","M","Þ","M","F","F","L"};
+//    String[] s = {"S","M","Þ","M","F","F","L"};
     for(int a = 1; a<8;a++){
-      t = new Text(s[a-1]);
+      t = new Text(cal.getNameOfDay(a,modinfo).substring(0,1));
       t.setFontColor(textColor);
       t.setFontSize(1);
       T.setAlignment(a,1,"center");
