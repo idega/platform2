@@ -70,7 +70,9 @@ import com.idega.util.Age;
  */
 public class InvoiceChildcareThread extends BillingThread{
 
-	private static final String HOURS_PER_WEEK = "hours/week";		//Localize this text in the user interface
+	private static final String HOURS_PER_WEEK = "t/v";		//Localize this text in the user interface
+	private static final String CHECK = "Check ";
+	private static final String DAYS = "dagar";
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
 	private Map siblingOrders = new HashMap();
@@ -263,7 +265,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					log.info("created payment record, Now creating invoice record");
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
-							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, 
+							CHECK+school.getName(),contract.getChild().getFirstName()+", "+hours+" "+HOURS_PER_WEEK+ placementTimes.getDays()+DAYS, paymentRecord, 
 							checkPost[0], checkPost[1], placementTimes, school, contract);
 					log.info("created invoice record");
 
@@ -835,12 +837,13 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws CreateException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, 
+	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, String text2,
 			PaymentRecord paymentRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
 			throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
+		invoiceRecord.setInvoiceText2(text2);
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
