@@ -1921,14 +1921,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public SchoolClassMember createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException{
-		return createNewPlacement(getApplication(applicationID),schooltypeID,schoolclassID,oldStudent,validFrom,user);
+		return createNewPlacement(getApplication(applicationID),(schooltypeID),(schoolclassID),oldStudent,validFrom,user);
+	}
+	public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException{
+		return createNewPlacement(new Integer(application.getChildId()),new Integer(schooltypeID),new Integer(schoolclassID),oldStudent,validFrom,user);
 	}
 	
-	
-	public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException{
+	public SchoolClassMember createNewPlacement(Integer childID, Integer schooltypeID, Integer schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException{
 		
 		SchoolClassMember member = null;
-		if (schoolclassID != -1) {
+		if (schoolclassID.intValue() != -1) {
 			IWTimestamp endDate = new IWTimestamp(validFrom);
 			endDate.addDays(-1);
 			
@@ -1936,8 +1938,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				oldStudent.setRemovedDate(endDate.getTimestamp());
 				oldStudent.store();
 			}
-			IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-			member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), schoolclassID, schooltypeID, validFrom.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());
+			
+			member = getSchoolBusiness().storeSchoolClassMemberCC(childID.intValue(), schoolclassID.intValue(), schooltypeID.intValue(), validFrom.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());
 			//archive.setSchoolClassMember(member);
 			//archive.store();
 		}

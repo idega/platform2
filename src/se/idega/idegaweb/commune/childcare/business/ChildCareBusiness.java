@@ -1,6 +1,9 @@
 package se.idega.idegaweb.commune.childcare.business;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
+
+import javax.ejb.EJBException;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
@@ -233,5 +236,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public Collection getRejectedApplicationsByProvider(Integer providerID, String fromDateOfBirth, String toDateOfBirth, String fromDate, String toDate) throws java.rmi.RemoteException, javax.ejb.FinderException;
  public SchoolClassMember createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,SchoolClassMember oldClassMember,com.idega.util.IWTimestamp validFrom,User user)throws java.rmi.RemoteException;
  public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,SchoolClassMember oldClassMember,IWTimestamp validFrom ,User user)throws java.rmi.RemoteException;
+ public SchoolClassMember createNewPlacement(Integer childID, Integer schooltypeID, Integer schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException;
  public School getCurrentProviderByPlacement(int childID) throws java.rmi.RemoteException;
 }
