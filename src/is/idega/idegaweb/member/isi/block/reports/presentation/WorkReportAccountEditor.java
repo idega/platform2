@@ -652,7 +652,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     public Object getEntry(String accountKeyName) {
       Integer primaryKey = (Integer) accountKeyNamePrimaryKey.get(accountKeyName);
       if (primaryKey == null) {
-        return new Float(999999);
+        return getSpecialValues(accountKeyName));
       }
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
       // sometimes the record does not exist yet
@@ -731,7 +731,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityBrowser browser,
         IWContext iwc) {
       String name = path.getShortKey();
-      String value = (String) ((EntityRepresentation) entity).getColumnValue(name);
+      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
       return new Text(value);
     }
     
