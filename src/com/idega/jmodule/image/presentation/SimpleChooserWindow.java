@@ -22,15 +22,16 @@ import com.idega.util.idegaTimestamp;
     public String sessImageParameter = "image_id";
 
     public SimpleChooserWindow(){
-      super("Image Chooser");
+      super();
     }
 
-    public void  main(ModuleInfo modinfo){
-      super.initAll(modinfo);
+    public void  main(ModuleInfo modinfo) throws Exception{
+      super.main(modinfo);
       SimpleChooser SC = new SimpleChooser();
       SC.setToIncludeLinks(false);
       add(SC);
-      addToLink(SC.getLinkTable());
+      addHeaderObject(SC.getLinkTable());
+      setTitle("Image Chooser");
       setParentToReload();
     }
 }

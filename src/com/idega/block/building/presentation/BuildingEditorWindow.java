@@ -16,15 +16,17 @@ import com.idega.jmodule.object.ModuleInfo;
 public class BuildingEditorWindow extends IWAdminWindow {
 
   public BuildingEditorWindow() {
-    super("Building Editor");
+    super();
   }
 
   public void main(ModuleInfo modinfo) throws Exception{
-    super.initAll(modinfo);
+    super.main(modinfo);
     BuildingEditor BE = new BuildingEditor();
     add(BE);
     BE.setToIncludeLinks(false);
-    addToLink(BE.getLinkTable(modinfo));
+    setTitle("Building Editor");
+    addHeaderObject(BE.getLinkTable(modinfo));
+
 
   }
 
