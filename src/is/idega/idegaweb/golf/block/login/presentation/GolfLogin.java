@@ -338,7 +338,7 @@ public class GolfLogin extends GolfBlock {
 					url.append(modinfo.getServerURL());
 					url.append("?").append(ICBuilderConstants.IB_PAGE_PARAMETER).append("=").append(_logOnPage);
 					if(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE)!=null){
-						url.append(";").append(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE).append("=").append(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE));
+						url.append("&amp;").append(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE).append("=").append(modinfo.getParameter(IWConstants.PARAM_NAME_OUTPUT_MARKUP_LANGUAGE));
 					}
 					this.getParentPage().setToRedirect(modinfo.getResponse().encodeURL(url.toString()),3);
 				}
