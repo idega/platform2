@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.43 2003/11/21 15:57:31 roar Exp $
+ * $Id: PostingBusinessBean.java,v 1.44 2003/11/24 13:37:33 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -249,13 +249,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 	public PostingParameters getPostingParameter(Date date, int act_id, 
 			int reg_id, String com_id, int com_bel_id, int schoolYear1_id, int schoolYear2_id) throws PostingParametersException {
-		System.out.println("date: " + date);				
-		System.out.println("act_id: " + act_id);				
-		System.out.println("reg_id: " + reg_id);				
-		System.out.println("com_id: " + com_id);				
-		System.out.println("com_bel_id: " + com_bel_id);				
-		System.out.println("schoolYear1_id: " + schoolYear1_id);				
-		System.out.println("schoolYear2_id: " + schoolYear2_id);				
+		logDebug("date: " + date);				
+		logDebug("act_id: " + act_id);				
+		logDebug("reg_id: " + reg_id);				
+		logDebug("com_id: " + com_id);				
+		logDebug("com_bel_id: " + com_bel_id);				
+		logDebug("schoolYear1_id: " + schoolYear1_id);				
+		logDebug("schoolYear2_id: " + schoolYear2_id);				
 		
 		try {
 			int match;
@@ -801,13 +801,16 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 			PostingParameters parameters;
 			parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue());
-			System.out.println("Parameters "+parameters.getPostingString()+" + "+parameters.getDoublePostingString());
-			System.out.println("Parameters "+provider.getOwnPosting()+" + "+provider.getDoublePosting());
-			System.out.println("Parameters "+categoryPosting.getAccount()+" + "+categoryPosting.getCounterAccount());
+			System.out.println("Parameters:"+parameters.getPostingString()+"+"+parameters.getDoublePostingString()+".");
+			System.out.println("Parameters:"+provider.getOwnPosting()+"+"+provider.getDoublePosting()+".");
+			System.out.println("Parameters:"+categoryPosting.getAccount()+"+"+categoryPosting.getCounterAccount()+".");
 	
 			ownPosting = parameters.getPostingString();
+			logDebug("ownPosting1: " + ownPosting);
 			ownPosting = generateString(ownPosting, provider.getOwnPosting(), date);
+			logDebug("ownPosting2: " + ownPosting);			
 			ownPosting = generateString(ownPosting, categoryPosting.getAccount(), date);
+			logDebug("ownPosting3: " + ownPosting);				
 			validateString(ownPosting,date);
 	
 			doublePosting = parameters.getDoublePostingString();
