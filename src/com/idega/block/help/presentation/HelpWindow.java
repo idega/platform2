@@ -27,7 +27,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
+import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLCDATA;
@@ -42,7 +42,7 @@ import com.idega.xml.XMLParser;
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class HelpWindow extends Window {
+public class HelpWindow extends StyledIWAdminWindow {
 	private static final String BUNDLE_IDENTIFIER = "com.idega.block.help";
 	public final static String HELP_KEY = Help.HELP_KEY;
 	public final static String HELP_BUNDLE = Help.HELP_BUNDLE;
@@ -66,7 +66,10 @@ public class HelpWindow extends Window {
 	
 	private final static String ERROR_NO_HELP_KEY = "hlp_err_no_key";
 	private final static String ERROR_NO_BUNDLE = "hlp_err_no_bundle";
-
+	
+	//the style for a white table with gray border
+	private String mainTableStyle = "main";
+	
 	private boolean _hasEdit = false;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
@@ -93,13 +96,17 @@ public class HelpWindow extends Window {
 		super();
 		setResizable(true);
 		setScrollbar(true);
-		setHeight(200);
-		setWidth(160);
+		setHeight(500);
+		setWidth(310);
 	}
 
 	private void edit(IWContext iwc) {
+	
 		Form form = new Form();
 		Table t = new Table(1, 10);
+		t.setStyleClass(mainTableStyle);
+		t.setWidth(210);
+		t.setHeight(400);
 		DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(LOCALE);
 		localeDrop.setToSubmit();
 		
@@ -157,6 +164,7 @@ public class HelpWindow extends Window {
 		t.add(bodyLabel, 1, row++);
 		t.add(editor, 1, row++);
 		row++; 
+		t.setAlignment(1,row,"right");
 		t.add(save, 1, row);
 		t.add(Text.NON_BREAKING_SPACE, 1, row);
 		t.add(close, 1, row);
@@ -165,14 +173,19 @@ public class HelpWindow extends Window {
 		form.add(new HiddenInput(EDIT, "true"));
 		form.add(new HiddenInput(HELP_KEY, _helpKey));
 		form.add(new HiddenInput(HELP_BUNDLE, _helpBundle));
-		add(form);
+		add(form,iwc);
 	}
 
 	private void view(IWContext iwc) {
-		Table t = null;
+
+		Table t = new Table();
+		t.setStyleClass(mainTableStyle);
+		t.setWidth(210);
+//		t.setHeight(400);
+		SubmitButton close = new SubmitButton(_iwrb.getLocalizedImageButton(CLOSE, "Close"), CLOSE);
 		int row = 1;
 		if (_hasEdit) {
-			t = new Table(1, 5);
+			t.resize(1, 5);
 
 			Link change = new Link();
 			change.setImage(_iwb.getImage(EDIT_IMAGE));
@@ -183,7 +196,7 @@ public class HelpWindow extends Window {
 			row = 3;
 		}
 		else {
-			t = new Table(1, 3);
+			t.resize(1, 3);
 		}
 
     String localeIdString = iwc.getParameter(LOCALE);
@@ -221,8 +234,10 @@ public class HelpWindow extends Window {
 		}
 						
 		t.add(_localizedHelpText, 1, row);
+		t.add(close,1,++row);
+		t.setAlignment(1,row,"right");
 
-		add(t);
+		add(t,iwc);
 	}
 
 	private void putHelpText(IWContext iwc, String helpKey, String bundle, Locale loc, String title, String body) { 
