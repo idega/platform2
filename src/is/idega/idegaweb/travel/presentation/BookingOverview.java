@@ -349,7 +349,7 @@ public class BookingOverview extends TravelManager {
             Collection cats;
             Product prod;
             ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHome(ProductCategory.class);
-            Collection tempProducts = new Vector();;
+            Collection tempProducts = new Vector();
             int newCat = -1;
             int oldCat = -1;
             String catName = "";

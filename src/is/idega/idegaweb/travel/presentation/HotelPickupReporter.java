@@ -99,7 +99,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
 
 
     Booking[] bookings = {};// = Booker.getBookings(products, stamp);
-    List bookingsList = getBookingList(bookings);;
+    List bookingsList = getBookingList(bookings);
     Booking booking;
     TourBooking tBooking;
     Product prod;

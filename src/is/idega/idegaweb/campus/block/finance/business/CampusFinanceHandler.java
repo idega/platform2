@@ -328,7 +328,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 		//List listOfUsers =
 		// CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
 		Collection listOfUsers = null;
-		;
+		
 		try {
 			listOfUsers = ((ContractAccountApartmentHome) IDOLookup.getHome(ContractAccountApartment.class)).findAll();
 		} catch (IDOLookupException e1) {

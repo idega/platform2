@@ -47,7 +47,7 @@ public class TeeTimeReport extends GolfBlock {
 	private IWTimestamp stamp;
 	private Field field;
 	private HashMap map;
-	private NumberFormat nf = NumberFormat.getInstance();;
+	private NumberFormat nf = NumberFormat.getInstance();
 
 	public void main(IWContext modinfo) throws Exception{
 		String sDate = modinfo.getParameter(PARAMETER_DATE);

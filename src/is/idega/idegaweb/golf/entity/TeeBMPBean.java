@@ -23,7 +23,7 @@ public class TeeBMPBean extends GenericEntity implements Tee{
 		addAttribute("course_rating", "Vallarmat", true, true, "java.lang.Float");
 		addAttribute("hole_name", "Nafn holu", true, true, "java.lang.String");
 		addAttribute("par", "Par", true, true, "java.lang.Integer");
-		addAttribute("hole_number", "Númer holu", true, true, "java.lang.Integer");;
+		addAttribute("hole_number", "Númer holu", true, true, "java.lang.Integer");
 		addAttribute("field_id","Völlur", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Field");
 		addAttribute("tee_color_id","Teigur", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.TeeColor");
 		addAttribute("tee_length","Lengd teigar",true,true,"java.lang.Integer");

@@ -40,7 +40,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	protected final static String COLUMN_NAME_HOME_PHONE = "HOME_PHONE";
 	protected final static String COLUMN_NAME_WORK_PHONE = "WORK_PHONE";
 	protected final static String COLUMN_NAME_FAX = "FAX";
-	protected final static String COLUMN_NAME_EMAIL = "EMAIL";;
+	protected final static String COLUMN_NAME_EMAIL = "EMAIL";
 
 	
 	protected final static String MALE = "m";

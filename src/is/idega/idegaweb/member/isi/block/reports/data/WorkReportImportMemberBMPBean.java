@@ -41,7 +41,7 @@ public class WorkReportImportMemberBMPBean extends GenericEntity implements Work
 	protected final static String COLUMN_NAME_WORK_PHONE = "WORK_PHONE";
 	protected final static String COLUMN_NAME_FAX = "FAX";
 	protected final static String COLUMN_NAME_EMAIL = "EMAIL";
-	;
+	
 
 	protected final static String MALE = "m";
 	protected final static String FEMALE = "f";

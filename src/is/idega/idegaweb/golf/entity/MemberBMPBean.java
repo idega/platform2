@@ -538,7 +538,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
   public void insert() throws SQLException{
     setFullName();
     super.insert();
-  };
+  }
 
     public void insertStartData(){
       //Administrator member created in LoginTable

@@ -153,7 +153,7 @@ public class PhoneFileHandler {
 					String line = null;
 					StringTokenizer st;
 					StringBuffer sbError = new StringBuffer(), sbNoAccount = new StringBuffer();
-					;
+					
 					String anumber, snumber, bnumber;
 					int nightsec, daysec, sec;
 					float price = 0, totPrice = 0;

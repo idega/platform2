@@ -205,7 +205,7 @@ public class UserEditor extends Block {
 	protected boolean allowNewUserRegistration = true;
 
 	/** flag for new user view */
-	private boolean newUserView = false, reqNewUser = false;;
+	private boolean newUserView = false, reqNewUser = false;
 
 	public final static String STYLENAME_TEXT = "Text";
 

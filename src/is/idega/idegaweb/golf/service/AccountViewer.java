@@ -692,7 +692,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         }
         eAccount.update();
       }
-      catch(SQLException sql){ ;
+      catch(SQLException sql){ 
       }
       this.doMain(modinfo);
     }

@@ -312,7 +312,7 @@ public class PriceCatalogueMaker extends com.idega.presentation.PresentationObje
       int number = Integer.parseInt(modinfo.getRequest().getParameter("numofcatal"));
       int cols = 3;
       boolean hasNull = false;
-      if (Values == null);
+      if (Values == null)
         Values = new String[number][cols];
       String text;
       String price;

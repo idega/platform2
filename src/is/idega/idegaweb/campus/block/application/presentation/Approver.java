@@ -140,7 +140,7 @@ public class Approver extends CampusBlock {
 	
 	private int createFamilyFields(IWContext iwc,Table table,int rowStart){
 			int start = rowStart;
-		    int row = start,col=1;;
+		    int row = start,col=1;
 		    table.mergeCells(col1,row,col2,row);
 			table.add(getSmallHeader(localize("spouse","Spouse")),col1,row++);
 			table.add(getSmallHeader(localize("name","Name")),col1,row++);

@@ -828,7 +828,7 @@ public class DailyReport extends TravelManager implements Report{
 	 servNameTxt.setText(iwrb.getLocalizedString("travel.service_name","Service name"));
       Text servNumTxt = (Text) super.theBoldText.clone();
 	servNumTxt.setText(iwrb.getLocalizedString("travel.nr","Nr."));
-      Text timeTxt = (Text) super.theBoldText.clone();;
+      Text timeTxt = (Text) super.theBoldText.clone();
 	timeTxt.setText(iwrb.getLocalizedString("travel.time","Time"));
       Text priceTxt = (Text) super.theBoldText.clone();
 	priceTxt.setText(iwrb.getLocalizedString("travel.price","Price"));

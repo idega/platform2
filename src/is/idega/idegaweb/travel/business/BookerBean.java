@@ -406,7 +406,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
 
   public  float getBookingEntryPrice(BookingEntry entry, Booking booking) throws RemoteException{
-    String applName = bookingEntryPriceApplication+((Integer)entry.getPrimaryKey()).intValue();;
+    String applName = bookingEntryPriceApplication+((Integer)entry.getPrimaryKey()).intValue();
       float total = 0;
 
       try {

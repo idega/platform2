@@ -84,7 +84,7 @@ public class InitialData extends TravelManager {
 	private static String parameterTPosProperties = "parTPosProp";
 	private static String parameterUsers = "parameterUsers";
 	public static String PARAMETER_SUPPLY_POOL= "pSupPool";
-	private static String PARAMETER_USER_ID = "uid";;
+	private static String PARAMETER_USER_ID = "uid";
 	private static String  parameterVoucher = "paraneterVoucher";
 	private String parameterResellerId = "contractResellerId";
 	private String parameterSettings = "parameterSettings";
