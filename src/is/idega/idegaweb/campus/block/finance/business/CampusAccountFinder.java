@@ -118,7 +118,7 @@ public class CampusAccountFinder  {
    */
   public static List listOfContractAccounts(IWTimestamp startDate,IWTimestamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getEntityTableName());
-    sql.append(" where ");
+/*    sql.append(" where ");
     String start = "'"+startDate.toSQLString()+"'";
     String end = "'"+endDate.toSQLString()+"'";
     String validto = is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getColumnValidTo();
@@ -131,7 +131,7 @@ public class CampusAccountFinder  {
       (begin <= valfr && valto <= endin) ||
       (valfr <= begin && endin <= valto)
     */
-    sql.append("(");
+/*    sql.append("(");
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
@@ -139,9 +139,15 @@ public class CampusAccountFinder  {
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
     sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
-    sql.append(")");
-
-
+    sql.append(")");*/
+/*    sql.append(start);
+    sql.append(" > ");
+    sql.append(endDate);
+    sql.append(" and ");
+    sql.append(end)
+    sql.append(" < ")*/
+    
+    
     //System.err.println(sql);
     try {
       return EntityFinder.getInstance().findAll(ContractAccounts.class,sql.toString());
