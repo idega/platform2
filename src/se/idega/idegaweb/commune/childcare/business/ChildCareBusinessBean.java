@@ -2029,7 +2029,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					String body = getLocalizedString("child_care.alter_caretime_body" + localizeBankIdPrefix, defaultContractChangedBody, locale);
 					sendMessageToParents(application, subject, body);
 				}
-				int invoiceReceiverId = application.getContractFileId()>0?getContractFile(application.getContractFileId()).getInvoiceReceiverID():-1;
+				int invoiceReceiverId = -1;
+				if(application!=null && application.getContractFileId()>0){
+					ChildCareContract con = getContractFile(application.getContractFileId());
+					if(con!=null)
+						invoiceReceiverId = con.getInvoiceReceiverID();
+				}
 				addContractToArchive(-1, application, contractID, validFrom.getDate(), employmentTypeID,invoiceReceiverId);
 			}
 			transaction.commit();
