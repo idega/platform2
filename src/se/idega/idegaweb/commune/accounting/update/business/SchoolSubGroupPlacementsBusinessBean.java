@@ -22,7 +22,7 @@ import com.idega.data.IDOAddRelationshipException;
 /**
  * @author laddi
  */
-public class SchoolSubGroupPlacementsBusinessBean extends IBOServiceBean {
+public class SchoolSubGroupPlacementsBusinessBean extends IBOServiceBean implements SchoolSubGroupPlacementsBusiness {
 
 	private SchoolBusiness getSchoolBusiness() {
 		try {
