@@ -1740,9 +1740,10 @@ public class TourBookingForm extends TravelManager {
             debug("SaveSan 6.1.2");
             Reseller res = null;
             if (user != null) {
+            debug("SaveSan 6.1.3");
               res = ResellerManager.getReseller(user);
             }
-            debug("SaveSan 6.1.3");
+            debug("SaveSan 6.1.4");
             if (res != null) {
             debug("SaveSan 6.2.1");
               resId = res.getID();
