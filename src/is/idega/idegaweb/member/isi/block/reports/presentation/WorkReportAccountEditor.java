@@ -638,7 +638,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
       // sometimes the record does not exist yet
       if (record == null) {
-        return new Float(-1);
+        return new Float(0);
       }
       float amount = record.getAmount();
       return new Float(amount);
