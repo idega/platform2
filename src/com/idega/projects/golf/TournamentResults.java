@@ -31,6 +31,7 @@ private Tournament tournament;
 private TournamentType type;
 private TournamentRound[] tournamentRounds;
 private int tournament_id = 0;
+private String tournamentType;
 private int numberOfGolfers = 10;
 private Text tournamentName;
 private Text typeName;
@@ -45,26 +46,20 @@ private Text differenceText;
 private String categoryText = "#000000";
 private String headerText = "#000000";
 private boolean showHeader = true;
+private String gender;
 
-  public TournamentResults() {
-  }
-
-  public TournamentResults(int tournament_id) {
+  public TournamentResults(int tournament_id,String gender) {
     this.tournament_id=tournament_id;
+    this.gender=gender;
   }
 
   public void main(ModuleInfo modinfo) throws SQLException {
 
-    if ( modinfo.getParameter("tournament_id") != null && tournament_id == 0 ) {
-      tournament_id = Integer.parseInt(modinfo.getParameter("tournament_id"));
-    }
-
     tournament = new Tournament(tournament_id);
     type = tournament.getTournamentType();
     tournamentRounds = (TournamentRound[]) (new TournamentRound()).findAllByColumnOrdered("tournament_id",tournament_id+"","round_number");
+    tournamentType = type.getTournamentType();
     setTextValues();
-
-    String tournamentType = type.getTournamentType();
 
     if ( tournamentType.equalsIgnoreCase("strokes") ) {
       getStrokesResult(modinfo);
@@ -204,7 +199,8 @@ private boolean showHeader = true;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAllByColumnOrdered("tournament_id",tournament_id+"","strokes_with_handicap,first_name,last_name,middle_name");
+      String queryString = "select * from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id and gender='"+gender+"' order by strokes_with_handicap,first_name,last_name,middle_name";
+      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
@@ -286,7 +282,7 @@ private boolean showHeader = true;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAllByColumnOrdered("tournament_id",tournament_id+"","strokes_without_handicap,first_name,last_name,middle_name");
+      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll("select * from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id and gender='"+gender+"' order by strokes_without_handicap,first_name,last_name,middle_name");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
@@ -369,7 +365,7 @@ private boolean showHeader = true;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAllByColumnOrdered("tournament_id",tournament_id+"","total_points desc,first_name,last_name,middle_name");
+      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll("select * from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id and gender='"+gender+"' order by total_points desc,first_name,last_name,middle_name");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
