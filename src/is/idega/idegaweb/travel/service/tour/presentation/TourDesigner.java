@@ -573,14 +573,19 @@ public class TourDesigner extends TravelManager implements DesignerForm{
     int tourId = -1;
     if ( sTourId != null ) {
       tourId = Integer.parseInt( sTourId );
-      if (tour == null) {
-        try {
-          tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).create();
-          tour.setPrimaryKey(new Integer(tourId));
-          tour.store();
-        }catch (CreateException ce) {
-          ce.printStackTrace(System.err);
-        }
+      try {
+      	setupData(iwc, tourId);
+      	if (tour == null) {
+        	try {
+	          tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).create();
+          	tour.setPrimaryKey(new Integer(tourId));
+          	tour.store();
+        	}catch (CreateException ce) {
+	          ce.printStackTrace(System.err);
+        	}
+      	}
+      }catch (FinderException e) {
+      	e.printStackTrace(System.err);
       }
     }
 
