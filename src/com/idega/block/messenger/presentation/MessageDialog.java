@@ -45,7 +45,7 @@ public class MessageDialog extends Dialog implements ActionListener{
 
   void jbInit() throws Exception {
     URL url = MessageDialog.class.getResource("idegalogo.gif");
-    Image img=Toolkit.getDefaultToolkit().getImage(url);
+    Image img=this.getToolkit().getImage(url);
     logo = new ImageLabel(img);
 
     recipientName = message.getRecipientName();
