@@ -66,6 +66,7 @@ public class ContractSignWindow extends Window{
     iwb = getBundle(modinfo);
 
     if(isAdmin){
+      add(iwrb.getLocalizedString("manual","Instructions"));
       if(modinfo.getApplicationAttribute(SysProps.getEntityTableName())!=null){
       SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getEntityTableName());
       }
@@ -314,12 +315,13 @@ public class ContractSignWindow extends Window{
     boolean newAccount =  sFinAccount != null ? true:false;
     boolean newPhoneAccount =   sPhoneAccount != null ? true:false;
     boolean createLogin =   sCreateLogin != null ? true:false;
-    ContractBusiness.signContract(id,iGroupId ,1,sEmail,sendMail,
+    passwd = ContractBusiness.signContract(id,iGroupId ,1,sEmail,sendMail,
       newAccount ,newPhoneAccount ,createLogin ,iwrb,login,passwd );
     if(login !=null && passwd !=null)
       print = true;
     else
       print = false;
+    //add(passwd);
   }
 
   private void doAddEmail( int iUserId ,ModuleInfo modinfo){

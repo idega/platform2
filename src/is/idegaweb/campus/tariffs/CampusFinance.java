@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.8 2001/08/30 06:50:01 aron Exp $
+ * $Id: CampusFinance.java,v 1.9 2001/10/01 13:07:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -60,9 +60,12 @@ public class CampusFinance extends JModuleObject {
       iFrame.setScrolling(IFrame.SCROLLING_YES);
       iFrame.setStyle("border: 1 solid #000000");
       //iFrame.setAlignment(IFrame.ALIGN_LEFT);
+
       myTable.add(iFrame,1,1);
 
+
     IFrame iFrame2 = new IFrame(FRAME_NAME);
+     iFrame2.setSrc(CampusFinanceIndex.class);
       iFrame2.setWidth("100%");
       iFrame2.setHeight("100%");
       iFrame2.setBorder(IFrame.FRAMEBORDER_ON);

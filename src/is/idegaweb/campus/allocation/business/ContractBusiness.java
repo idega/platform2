@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.2 2001/10/01 00:22:53 aron Exp $
+ * $Id: ContractBusiness.java,v 1.3 2001/10/01 13:07:20 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,9 +43,10 @@ import com.idega.util.SendMail;
  */
 public  class ContractBusiness {
 
-   public static void signContract(int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
+   public static String signContract(int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
                 boolean newAccount,boolean newPhoneAccount,boolean newLogin,IWResourceBundle iwrb,String login,String passwd){
     Contract eContract = null;
+    String pass = null;
     try {
       eContract = new Contract(iContractId );
     }
@@ -73,12 +74,13 @@ public  class ContractBusiness {
           AccessControl.addUserToPermissionGroup(pg,eUser.getID());
           //gg.addTo(eUser);
           login = LoginCreator.createLogin(eUser.getName());
-          passwd = LoginCreator.createPasswd(8);
+          //passwd = LoginCreator.createPasswd(8);
+          pass = LoginCreator.createPasswd(8);
 
           //idegaTimestamp today = idegaTimestamp.RightNow();
           //int validDays = today.getDaysBetween(today,new idegaTimestamp(eContract.getValidTo()));
           try{
-            LoginDBHandler.createLogin(iUserId,login,passwd);
+            LoginDBHandler.createLogin(iUserId,login,pass);
             //LoginDBHandler.createLogin(iUserId,login,passwd,new Boolean(true),today,validDays,new Boolean(false),new Boolean(true),new Boolean(false),"");
           }
           catch(Exception ex){
@@ -120,7 +122,8 @@ public  class ContractBusiness {
             sbody.append(login );
             sbody.append("\n");
             sbody.append(" Passwd :");
-            sbody.append(passwd  );
+            sbody.append(pass );
+            //System.err.println("passwd "+pass);
             sbody.append("\n");
             String header = iwrb.getLocalizedString("signed_contract","Signed Contract");
             String from = sp!=null?sp.getAdminEmail():"admin@campus.is";
@@ -131,7 +134,7 @@ public  class ContractBusiness {
               host = "mail.idega.is";
             if(address == null || "".equals(address))
               address = "aron@idega.is";
-            SendMail.send(from,address,"","",host,header,sbody.toString());
+            SendMail.send(from,address,"","aron@idega.is",host,header,sbody.toString());
 
             //SendMail.send("admin@campus.is","aron@idega.is","","","mail.idega.is",header,sbody.toString());
           }
@@ -139,7 +142,9 @@ public  class ContractBusiness {
             ex.printStackTrace();
           }
         }
+
       }
     }
+    return pass;
   }
 }
