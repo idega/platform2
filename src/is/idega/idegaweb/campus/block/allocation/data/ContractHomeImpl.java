@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class ContractHomeImpl extends com.idega.data.IDOFactory implements ContractHome
 {
@@ -27,13 +31,14 @@ public java.util.Collection findByApartmentAndRented(java.lang.Integer p0,java.l
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
+public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String[] p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApartmentAndStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
-public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String[] p1)throws javax.ejb.FinderException{
+
+public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApartmentAndStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -193,4 +198,25 @@ public java.util.Collection getUnsignedApplicants(java.lang.String p0)throws jav
 }
 
 
+
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByUserAndStatus(java.lang.Integer, java.lang.String)
+	 */
+	public Collection findByUserAndStatus(Integer userId, String status)throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByUserAndStatus(userId,status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByUserAndStatus(java.lang.Integer, java.lang.String[])
+	 */
+	public Collection findByUserAndStatus(Integer userId, String[] status)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByUserAndStatus(userId,status);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.38 2004/06/25 11:09:45 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.39 2004/06/29 12:48:26 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,6 @@ import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
-import is.idega.idegaweb.campus.presentation.CampusColors;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -44,6 +43,9 @@ import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
+import com.idega.core.accesscontrol.business.LoginCreator;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
@@ -51,7 +53,6 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -59,6 +60,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 import com.idega.util.CypherText;
 import com.idega.util.IWTimestamp;
 
@@ -620,8 +622,120 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 	private void addPersonalIDLookupResults(IWContext iwc) {
 		debug("Handling display of ssn lookup " + iwc.getParameter("cam_ref_number"));
-		java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(refnum);
+		Table table = new Table();
+		table.setCellpadding(2);
+		table.setCellspacing(2);
+		int row = 1;
+		User user = null;
+		try {
+			 user = getUserService(iwc).getUserHome().findByPersonalID(refnum);
+			 if(user==null){
+				table.add(getErrorText(localize("reference.no_user_found_for_personal_id","No user found for personal ID")),1,row++);
+			 }
+			else{
+				
+				Integer userID = (Integer)user.getPrimaryKey();
+				ContractService conService = getCampusService(iwc).getContractService();
+				Collection contracts = conService.getContractHome().findByUserAndStatus(userID,conService.getRentableStatuses());
+				
+				boolean cleared = false;
+				if (iwc.isParameterSet("reference_reset")) {
+					cleared = clearLoginChanged(userID.intValue());
+				}
+			    
+			    LoginTable login = LoginDBHandler.getUserLogin(userID.intValue());
+			    String userLogin = login.getUserLogin();
+			    String password = "********";
+			    java.sql.Timestamp t = login.getLastChanged();
+			    boolean showSubmit = t==null?true:false;
+		        if (showSubmit){
+			        	if(iwc.isParameterSet("reference_submit")){
+			        	 
+			        	  if(iwc.isParameterSet("reference_nwpssw")){
+			        	  	password = iwc.getParameter("reference_nwpssw").trim();
+			        	  }
+			        	  else if(iwc.isParameterSet("reference_upaps"))
+			        	  	password = user.getPersonalID();
+			        	  else
+			        	  	password = LoginCreator.createPasswd(8);
+			          LoginDBHandler.updateLogin(userID.intValue(),login.getUserLogin(),password);
+			          showSubmit = false;
+			        }
+			       else{
+			       	table.add(getHeader(localize("reference.user_login_ready_for_update","Login is ready for update")),1,row);
+			       	table.mergeCells(1,row,2,row);
+			       	row++;
+			       	table.add(getHeader(localize("reference.user_login_submit_to_create_new_password","Submit to create new password")),1,row);
+			       	table.mergeCells(1,row,2,row);
+			       	row++;
+			       }
+				}
+		        else{
+		        		table.add(getErrorText(localize("reference.user_login_already_fetched","Login has already been fetched")),1,row);
+		        		table.mergeCells(1,row,2,row);
+		        		row++;
+		        		table.add(getErrorText(localize("reference.contact_office_to_reopen_acces_to_login","Contact office to reopen")),1,row);
+		        		table.mergeCells(1,row,2,row);
+		        		row++;
+		        }
+		        row++;
+		        table.add(getHeader(localize("reference.user_name","User name")),1,row);
+		        table.add(getText(user.getName()),2,row);
+		        row++;
+		        table.add(getText(user.getPersonalID()),2,row);
+		        row = row+2;
+		        table.add(getHeader(localize("reference.user_login","Login")),1,row);
+		        table.add(getText(userLogin),2,row);
+		        row++;
+		        table.add(getHeader(localize("reference.user_password","Password")),1,row);
+		        table.add(getText(password),2,row);
+		        row = row+2;
+		        boolean isAdmin = isAdministrator(iwc);
+		        if(isAdmin || showSubmit){
+		        		TextInput newPassword = getTextInput("reference_nwpssw");
+		        		table.add(getHeader(localize("reference.user_login_custom_password","Custom password")),1,row);
+		        		table.add(newPassword,2,row);
+		        		row++;
+			        CheckBox userPID = getCheckBox("reference_upaps","true");
+			        table.add(userPID,1,row);
+			        table.add(getText(localize("reference.use_pid_as_password","Use personal ID as password")),1,row);
+			        table.mergeCells(1,row,2,row);
+			        row++;
+		        }
+		        if(isAdmin){
+		        		SubmitButton reset = (SubmitButton)getSubmitButton("reference_reset","true","Reset","reference.reset_login");
+		        		table.add(reset,2,row);
+		        }
+		        if( isAdmin || showSubmit){
+		        		SubmitButton submit = (SubmitButton)getSubmitButton("reference_submit","true","Submit","reference.submit");
+		        		table.add(submit,2,row);
+		        		
+		        }
+		        table.setAlignment(2,row,Table.HORIZONTAL_ALIGN_RIGHT);
+		       
+			}
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (EJBException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		if(user==null)
+			table.add(getErrorText(localize("reference.no_user_found_for_personal_id","No user found for personal ID")),1,row);
+		Form form = new Form();
+		form.maintainParameter(ReferenceNumber.CAM_REF_NUMBER);
+		form.add(table);
+		add(form);
+		add(Text.getBreak());
+		add(Text.getBreak());
 		
+		//java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(refnum);
+		/*
 		if (li == null || li.size() == 0) {
 			add(getErrorText(localize("no_user_with_pid_found","No person found for searched personalID")));
 		}
@@ -630,13 +744,13 @@ public class ReferenceNumberInfo extends CampusBlock {
 			if (li.size() == 1) {
 				if (iwc.isParameterSet("allow") && iwc.isParameterSet("usrid")) {
 					clearLoginChanged(Integer.parseInt(iwc.getParameter("usrid")));
-					add(new Text("Opna? aftur fyrir kennit?lu"));
+					add(new Text());
 				}
 				else {
-					add(new Text("?a? er  b?i? a? n? ? lykilor? fyrir kennit?lu"));
+					add(getHeader(localize("reference.login_has_already_been_fetched","Login has already been fetched")));
 					if (iwc.hasEditPermission(this)) {
 						Form f = new Form();
-						f.add(new SubmitButton("allow", "Leyfa innskr?ningu ? n?"));
+						f.add(new SubmitButton("allow", localize("reference.allow_login_to_be_fetched_again","Allow login to be fetched again")));
 						f.addParameter("usrid", ((Integer) li.get(0)).intValue());
 						add(f);
 					}
@@ -648,16 +762,16 @@ public class ReferenceNumberInfo extends CampusBlock {
 				Text headerText = new Text(_iwrb.getLocalizedString("user_login", "User login"));
 				headerText.setFontColor(CampusColors.WHITE);
 				headerText.setBold();
-				Text idText = new Text(_iwrb.getLocalizedString("userid", "Userid"));
+				Text idText = getText(_iwrb.getLocalizedString("userid", "Userid"));
 				idText.setBold();
 				//add(idText);
 				//add(userid);
 				//add(Text.getBreak());
-				Text passwdText = new Text(_iwrb.getLocalizedString("password", "Password"));
+				Text passwdText = getText(_iwrb.getLocalizedString("password", "Password"));
 				passwdText.setBold();
 				//add(passwdText);
 				//add(passwd);
-				Text msg = new Text(_iwrb.getLocalizedString("change_password", "Change your password by clicking your name when logged in"));
+				Text msg = getText(localize("change_password", "Change your password by clicking your name when logged in"));
 				Table dummyTable = new Table(3, 3);
 				dummyTable.setWidth("100%");
 				dummyTable.setAlignment(2, 2, "center");
@@ -687,10 +801,10 @@ public class ReferenceNumberInfo extends CampusBlock {
 				table.setRowColor(5, CampusColors.WHITE);
 				dummyTable.add(table, 2, 2);
 				add(dummyTable);
-				iwc.removeSessionAttribute(DUMMY_LOGIN);
-				iwc.removeSessionAttribute("referenceNumber");
+				//iwc.removeSessionAttribute(DUMMY_LOGIN);
+				//iwc.removeSessionAttribute("referenceNumber");
 			}
-		}
+		}*/
 	}
 
 	/**

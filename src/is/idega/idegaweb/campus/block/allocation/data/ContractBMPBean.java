@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.15 2004/06/25 10:05:13 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.16 2004/06/29 12:48:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -503,5 +503,11 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 		//System.out.println(outerQuery.toString());
 				
 		return super.idoFindPKsByQuery(outerQuery);
+	}
+	public Collection ejbFindByUserAndStatus(Integer userId,String[] status)throws FinderException{
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(),userId).appendAnd().append(getStatusColumnName()).appendInArrayWithSingleQuotes(status));
+	}
+	public Collection ejbFindByUserAndStatus(Integer userId,String status)throws FinderException{
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getUserIdColumnName(),userId).appendAndEqualsQuoted(getStatusColumnName(),status));
 	}
 }

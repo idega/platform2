@@ -19,14 +19,14 @@ public interface Contract extends com.idega.data.IDOEntity
  public java.lang.Integer getUserId();
  public java.sql.Date getValidFrom();
  public java.sql.Date getValidTo();
- public void setApartmentId(java.lang.Integer p0);
  public void setApartmentId(int p0);
- public void setApplicantId(java.lang.Integer p0);
+ public void setApartmentId(java.lang.Integer p0);
  public void setApplicantId(int p0);
+ public void setApplicantId(java.lang.Integer p0);
  public void setDeliverTime(java.sql.Timestamp p0);
  public void setEnded();
- public void setFileId(java.lang.Integer p0);
  public void setFileId(int p0);
+ public void setFileId(java.lang.Integer p0);
  public void setIsRented(boolean p0);
  public void setMovingDate(java.sql.Date p0);
  public void setResignInfo(java.lang.String p0);
@@ -46,8 +46,8 @@ public interface Contract extends com.idega.data.IDOEntity
  public void setStatusSigned();
  public void setStatusStorage();
  public void setStatusTerminated();
- public void setUserId(int p0);
  public void setUserId(java.lang.Integer p0);
+ public void setUserId(int p0);
  public void setValidFrom(java.sql.Date p0);
  public void setValidTo(java.sql.Date p0);
 }

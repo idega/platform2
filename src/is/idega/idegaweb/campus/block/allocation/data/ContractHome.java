@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public interface ContractHome extends com.idega.data.IDOHome
 {
@@ -7,8 +11,8 @@ public interface ContractHome extends com.idega.data.IDOHome
  public Contract findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAll()throws javax.ejb.FinderException;
  public java.util.Collection findByApartmentAndRented(java.lang.Integer p0,java.lang.Boolean p1)throws javax.ejb.FinderException;
- public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String[] p1)throws javax.ejb.FinderException;
+ public java.util.Collection findByApartmentAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findByApartmentAndUser(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException;
  public java.util.Collection findByApartmentID(java.lang.Integer p0)throws javax.ejb.FinderException;
  public java.util.Collection findByApplicant(java.lang.Integer p0)throws javax.ejb.FinderException;
@@ -30,5 +34,7 @@ public interface ContractHome extends com.idega.data.IDOHome
  public java.sql.Date getLastValidFromForApartment(java.lang.Integer p0)throws javax.ejb.FinderException;
  public java.sql.Date getLastValidToForApartment(java.lang.Integer p0)throws javax.ejb.FinderException;
  public java.util.Collection getUnsignedApplicants(java.lang.String p0)throws javax.ejb.FinderException;
+ public Collection findByUserAndStatus(Integer userId,String[] status)throws FinderException;
+ public Collection findByUserAndStatus(Integer userId,String status)throws FinderException;
 
 }
