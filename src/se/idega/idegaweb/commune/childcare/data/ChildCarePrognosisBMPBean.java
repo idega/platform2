@@ -18,12 +18,12 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 
 	private final static String ENTITY_NAME = "comm_childcare_prognosis";
 	
-	private final static String PROVIDER_ID = "provider_id";
-	private final static String UPDATED_DATE = "updated_date";
-	private final static String THREE_MONTHS_PROGNOSIS = "three_months_prognosis";
-	private final static String ONE_YEAR_PROGNOSIS = "one_year_prognosis";
-	private final static String THREE_MONTHS_PRIORITY = "three_months_priority";
-	private final static String ONE_YEAR_PRIORITY = "one_year_priority";
+	private final static String PROVIDER_ID = "PROVIDER_ID";
+	private final static String UPDATED_DATE = "UPDATED_DATE";
+	private final static String THREE_MONTHS_PROGNOSIS = "THREE_MONTHS_PROGNOSIS";
+	private final static String ONE_YEAR_PROGNOSIS = "ONE_YEAR_PROGNOSIS";
+	private final static String THREE_MONTHS_PRIORITY = "THREE_MONTHS_PRIORITY";
+	private final static String ONE_YEAR_PRIORITY = "ONE_YEAR_PRIORITY";
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()

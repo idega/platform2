@@ -17,10 +17,10 @@ import java.util.Iterator;
 
 public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 
-	public final static String SCHOOL = "sch_school_area";
-	public final static String NAME = "area_name";
-	public final static String INFO = "area_info";
-	public final static String CITY = "area_city";
+	public final static String SCHOOL = "SCH_SCHOOL_AREA";
+	public final static String NAME = "AREA_NAME";
+	public final static String INFO = "AREA_INFO";
+	public final static String CITY = "AREA_CITY";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
