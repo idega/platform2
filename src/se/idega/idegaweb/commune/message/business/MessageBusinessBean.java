@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.5 2002/07/22 15:30:29 palli Exp $
+ * $Id: MessageBusinessBean.java,v 1.6 2002/07/23 11:45:48 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	private MessageHome getMessageHome(String messageType) throws java.rmi.RemoteException {
+//		System.out.println("Getting MessageHome for messageType = " + messageType);
 		if (messageType.equals(TYPE_USER_MESSAGE)) {
 			return (MessageHome) this.getIDOHome(UserMessage.class);
 		}

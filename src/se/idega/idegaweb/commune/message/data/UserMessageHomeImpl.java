@@ -1,15 +1,14 @@
 package se.idega.idegaweb.commune.message.data;
 
 
-public class UserMessageHomeImpl extends com.idega.data.IDOFactory implements UserMessageHome
-{
+public class UserMessageHomeImpl extends com.idega.data.IDOFactory implements UserMessageHome{
  protected Class getEntityInterfaceClass(){
   return UserMessage.class;
  }
 
 
- public UserMessage create() throws javax.ejb.CreateException{
-  return (UserMessage) super.createIDO();
+ public Message create() throws javax.ejb.CreateException{
+  return (Message) super.createIDO();
  }
 
 
@@ -20,10 +19,9 @@ public java.util.Collection findMessages(int p0)throws javax.ejb.FinderException
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
- public UserMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (UserMessage) super.findByPrimaryKeyIDO(pk);
+ public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+  return (Message) super.findByPrimaryKeyIDO(pk);
  }
-
 
 
 }

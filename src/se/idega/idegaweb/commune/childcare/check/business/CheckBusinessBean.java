@@ -108,7 +108,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
       String body,
       int managerId)throws Exception{
     UserMessageHome home = (UserMessageHome)com.idega.data.IDOLookup.getHome(UserMessage.class);
-    UserMessage msg = home.create();
+    UserMessage msg = (UserMessage)home.create();
     msg.setSubject(subject);
     msg.setBody(body);
 //    msg.setSenderId(managerId);
