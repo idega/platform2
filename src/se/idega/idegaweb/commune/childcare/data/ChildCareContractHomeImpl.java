@@ -172,5 +172,10 @@ public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date
 	return theReturn;
 }
 
-
+	public ChildCareContract findBySchoolClassMember (com.idega.block.school.data.SchoolClassMember placement) throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = idoCheckOutPooledEntity();
+		Object pk = ((ChildCareContractBMPBean)entity).ejbFindBySchoolClassMember(placement);
+		idoCheckInPooledEntity(entity);
+		return findByPrimaryKey(pk);
+	}
 }

@@ -27,5 +27,5 @@ public interface ChildCareContractHome extends com.idega.data.IDOHome
  public int getNumberOfActiveForApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getNumberOfActiveNotWithProvider(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date p2)throws com.idega.data.IDOException;
-
+	ChildCareContract findBySchoolClassMember (com.idega.block.school.data.SchoolClassMember placement) throws javax.ejb.FinderException;
 }

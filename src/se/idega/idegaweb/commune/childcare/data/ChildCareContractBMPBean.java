@@ -366,6 +366,11 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Integer ejbFindBySchoolClassMember (SchoolClassMember placement) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCH_CLASS_MEMBER, placement);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
 
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQueryGetSelect();

@@ -24,6 +24,8 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.CalendarMonth;
+import com.idega.util.IWTimestamp;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -67,6 +69,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -81,10 +85,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/16 14:51:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/17 10:11:42 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.89 $
+ * @version $Revision: 1.90 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -564,6 +568,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != searchString && null != period && null != categoryId
             && null != provider && getActionId (context)
             == ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT) {
+					// the form is correctly filled - do search for regulation
             final RegulationHome home = getRegulationHome ();
             try {
                 regulations.addAll
@@ -574,12 +579,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             }
         } 
         if (1 == regulations.size ()) {
+					// found exactly one regulation, display it
             final Regulation regulation
                     = (Regulation) regulations.iterator ().next ();
             addPresentationObjectsForNewRecordForm
-                    (context, inputs, header, business, period, provider,
-                     regulation);
+                    (context, inputs, header, business, provider, regulation,
+										 placement);
         } else {
+					// found 0 or more than 1 regulation, present search form
             if (!regulations.isEmpty ()) {
                 // regulations.size > 1
                 addRegulationLinkListForNewRecordForm (context, inputs,
@@ -938,8 +945,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private void addPresentationObjectsForNewRecordForm
         (final IWContext context, final java.util.Map inputs,
          final InvoiceHeader header, final InvoiceBusiness business,
-         final java.sql.Date period, final Provider provider,
-         final Regulation regulation) throws EJBException, RemoteException {
+				 final Provider provider, final Regulation regulation,
+				 final SchoolClassMember placement)
+		throws FinderException, EJBException, RemoteException {
 		final String regulationName = regulation.getName ();
 		final RegulationSpecType regSpecType = regulation.getRegSpecType ();
 		final Integer regSpecTypeId
@@ -953,9 +961,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final PostingBusiness postingBusiness = getPostingBusiness (context);
 		inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,
                                                        regulationName));
+		final StringBuffer invoiceText1 = new StringBuffer ();
+		final StringBuffer invoiceText2 = new StringBuffer ();
+		fillInvoiceTextBuffers(invoiceText1, invoiceText2, header, provider,
+													 placement, regulationName, regSpecType);
 		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput (INVOICE_TEXT_KEY,
-                                                          regulationName));
-		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput (INVOICE_TEXT2_KEY));
+																											invoiceText1 + ""));
+		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput (INVOICE_TEXT2_KEY,
+																											 invoiceText2 + ""));
 		inputs.put (AMOUNT_KEY, getStyledInput
 		            (AMOUNT_KEY, regulation.getAmount () + ""));
 		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
@@ -966,7 +979,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		try {
 		    final String [] postings = postingBusiness.getPostingStrings
 		            (category, schoolType, regSpecTypeId.intValue (),
-		             provider, period);	
+		             provider, header.getPeriod ());	
 		    final PresentationObject ownPostingForm = getPostingParameterForm
                     (context, OWN_POSTING_KEY, postings [0]);
 		    inputs.put (OWN_POSTING_KEY, ownPostingForm);
@@ -982,7 +995,52 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		}
 	}
 
-    private String getUserInfo (final User user) {
+	private void fillInvoiceTextBuffers
+		(final StringBuffer invoiceText1, final StringBuffer invoiceText2,
+		 final InvoiceHeader header, final Provider provider,
+		 final SchoolClassMember placement, final String regulationName,
+		 final RegulationSpecType regSpecType) {
+		final String regSpecTypeName = null != regSpecType
+				? regSpecType.getRegSpecType () : "";
+		if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
+			try {
+				final User student = null != placement ? placement.getStudent () : null;
+				final String studentName = null != student ? student.getFirstName ()
+						: "?";
+				final ChildCareContract contract
+						= getChildCareContractHome ().findBySchoolClassMember (placement);
+				final CalendarMonth period = new CalendarMonth (header.getPeriod ());
+				final IWTimestamp firstPlacementDate
+						= new IWTimestamp (placement.getRegisterDate ());
+				final IWTimestamp firstCheckDate
+						= period.beginsBefore (firstPlacementDate)
+						? firstPlacementDate : period.getFirstTimestamp();
+				final IWTimestamp lastPlacementDate
+						= null == placement.getRemovedDate ()
+						? null : new IWTimestamp (placement.getRemovedDate ());
+				final IWTimestamp lastCheckDate = null != lastPlacementDate
+						&& !period.endsBefore (lastPlacementDate)
+						? lastPlacementDate : period.getLastTimestamp ();
+				firstCheckDate.setAsDate ();
+				lastCheckDate.setAsDate ();
+				final int days = lastCheckDate.isEarlierThan (firstCheckDate) ? 0
+						: 1 + IWTimestamp.getDaysBetween (firstCheckDate, lastCheckDate);
+				invoiceText1.append ("Check ");
+				invoiceText1.append (provider.getSchool ().getName ());
+				invoiceText2.append (studentName);
+				invoiceText2.append (", " + contract.getCareTime() + "t/v, ");
+				invoiceText2.append (days + " dagar");
+			} catch (Exception e) {
+				e.printStackTrace ();
+				// no problem, use method below ro fill invoice text
+			}
+		}
+		if (0 == invoiceText2.length ()) {
+			invoiceText1.append (regulationName);
+		}
+	}
+
+	private String getUserInfo (final User user) {
         return user == null ? "" : getUserName (user) + " (" + formatSsn
                 (user.getPersonalID ()) + "), " + getAddressString (user);
     }
@@ -2273,6 +2331,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             }
         }
         return dropdown;
+    }
+
+   private static ChildCareContractHome getChildCareContractHome ()
+        throws IDOLookupException {
+        return (ChildCareContractHome)
+						IDOLookup.getHome (ChildCareContract.class);
     }
 
    private static RegulationHome getRegulationHome ()
