@@ -1185,15 +1185,20 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return new int[]{arrivalAddress.getID()};
   }
   
-    public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException{
+  public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException{
     Enumeration enum = iwac.getIWMainApplication().getAttributeNames();
-    Enumeration enum2 = enum;
+    List names = new Vector();
     String name;
-    while (enum2.hasMoreElements()) {
-      name = (String) enum2.nextElement();
+    while (enum.hasMoreElements()) {
+      name = (String) enum.nextElement();
       if (name.indexOf("prodDepDays"+product.getPrimaryKey().toString()+"_") != -1) {
-        iwac.removeApplicationAttribute(name);
+      	names.add(name);
       }
+    }
+    
+    Iterator iter = names.iterator();
+    while (iter.hasNext()) {
+      iwac.removeApplicationAttribute((String) iter.next());
     }
   }
 
