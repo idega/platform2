@@ -27,6 +27,7 @@ public abstract class CampusTemplate extends MainTemplate{
     InsertTilers();
     InsertTopLogo();
     InsertBanners();
+    InsertBottomLogo();
 
     Login login = new Login();
     login.setVertical();
@@ -43,23 +44,10 @@ public abstract class CampusTemplate extends MainTemplate{
     login.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
     login.setInputLength(10);
 
-    BasicPollVoter poll = new BasicPollVoter("/poll/results.jsp");
-      poll.setWidth(135);
-
-    QuoteReader quote = new QuoteReader();
-      quote.setClean();
-      quote.setQuoteWidth("135");
-
     addMenuTitle(new Image("/pics/titles/IS/menutitle.gif"));
     addRightTitle(new Image("/pics/titles/IS/logintitle.gif"));
     addTopLeft(new Menu());
     addTopRight(login);
-//    addRight(quote);
-    addRight(new Image("/pics/titles/IS/poll.gif"));
-
-    addRight(poll);
-    addRight(Text.getBreak());
-    addRight(new Image("/pics/titles/IS/calendar.gif"));
     addMainTitle(new Title());
     addTabs(new Tabber());
 
