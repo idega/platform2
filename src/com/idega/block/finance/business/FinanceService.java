@@ -1,5 +1,7 @@
 package com.idega.block.finance.business;
 
+import java.rmi.RemoteException;
+
 
 public interface FinanceService extends com.idega.business.IBOService
 {
@@ -44,6 +46,11 @@ public interface FinanceService extends com.idega.business.IBOService
  * @param accountID
  * @return
  */
-public java.util.Date getAccountLastUpdate(Integer accountID);
+public java.util.Date getAccountLastUpdate(Integer accountID)throws RemoteException;
+/**
+ * @param accountId
+ * @return
+ */
+public double getAccountBalancePublished(Integer accountId)throws RemoteException;
 
 }

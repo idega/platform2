@@ -206,7 +206,7 @@ public class AccountViewer extends Finance {
 				T.add(accountLink, col++, row);
 				T.add(getText(eUser.getName()), col++, row);
 				T.add(getText(getDateString(new IWTimestamp(account.getLastUpdated()))), col++, row);
-				double b = getFinanceService().getAccountBalance(account.getAccountId(),AssessmentStatus.PUBLISHED);
+				double b = getFinanceService().getAccountBalancePublished(account.getAccountId());
 					//b = b * tax;
 				
 				T.add(getAmountText( b), col++, row);

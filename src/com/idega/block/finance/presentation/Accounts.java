@@ -13,7 +13,6 @@ import javax.ejb.FinderException;
 
 import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.Account;
-import com.idega.block.finance.data.AssessmentStatus;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -368,7 +367,7 @@ public class Accounts extends Finance {
 
 				T.add(getText(U.getName()), col++, row);
 				T.add(getText(U.getPersonalID()), col++, row);
-				T.add(getAmountText((financeService.getAccountBalance(accountID,AssessmentStatus.PUBLISHED))), col++, row);
+				T.add(getAmountText((financeService.getAccountBalancePublished(accountID))), col++, row);
 				T.add(getAmountText((financeService.getAccountBalance(accountID))), col++, row);
 				Date date = financeService.getAccountLastUpdate(accountID);
 				if(date!=null)

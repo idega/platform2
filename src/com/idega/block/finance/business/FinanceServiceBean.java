@@ -31,6 +31,7 @@ import com.idega.block.finance.data.AccountUser;
 import com.idega.block.finance.data.AccountUserHome;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
+import com.idega.block.finance.data.AssessmentStatus;
 import com.idega.block.finance.data.EntryGroup;
 import com.idega.block.finance.data.EntryGroupHome;
 import com.idega.block.finance.data.FinanceHandlerInfo;
@@ -317,10 +318,24 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		} else
 			return null;
 	}
-	  
+	 
+	/**
+	 * Returns calculated account balance from account entries in published assessments
+	 */
+	public double getAccountBalancePublished(Integer accountID){
+		return getAccountBalance(accountID,AssessmentStatus.PUBLISHED);
+	}
+	
+	/**
+	 * Returns calculated account balance from account entries
+	 */
 	public double getAccountBalance(Integer accountID){
 		return getAccountBalance(accountID,null);
 	}
+	/**
+	 * Returns calculated account balance from account entries with given assessment status flag
+	 * See AssessmentStatus for available flags
+	 */
 	public double getAccountBalance(Integer accountID,String roundStatus){
 		try {
 			return getAccountEntryHome().getTotalSumByAccount(accountID,roundStatus);

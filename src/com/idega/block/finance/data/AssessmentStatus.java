@@ -14,8 +14,20 @@ package com.idega.block.finance.data;
  * AssessmentStatus constants for assessments
  */
 public class AssessmentStatus {
+	 /**
+	  * Status ASSESSED for all newly created assessments
+	  */
 	 public static final String ASSESSED = "A";
+	 /**
+	  * Status PUBLISHED used when invoices have been approved legal
+	  */
 	 public static final String PUBLISHED = "P";
+	 /**
+	  * Status SENT when invoices have been sent out of system boundary for processing in other systems
+	  */
 	 public static final String SENT = "S";
+	 /**
+	  * Status RECEIVED when invoices have been received from other system processing
+	  */
 	 public static final String RECEIVED = "R";
 }
