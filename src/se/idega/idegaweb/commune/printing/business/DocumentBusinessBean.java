@@ -467,16 +467,19 @@ public class DocumentBusinessBean
 		}
 	}
 	
-	public void writeBulkPDF(String[] messageIDs,User performer,String fileName,Locale locale,String type,boolean isAddressMessages,boolean flagMessages,boolean registerBulkData) throws FinderException{
+	public int writeBulkPDF(String[] messageIDs,User performer,String fileName,Locale locale,String type,boolean isAddressMessages,boolean flagMessages,boolean registerBulkData) throws FinderException{
+		int fileId = -1;
 		if(messageIDs.length > 0){
-			writeBulkPDF(getPrintedMessagesByPrimaryKeys(messageIDs,type),performer,fileName,locale,type,isAddressMessages,flagMessages,registerBulkData);
+			fileId = writeBulkPDF(getPrintedMessagesByPrimaryKeys(messageIDs,type),performer,fileName,locale,type,isAddressMessages,flagMessages,registerBulkData);
 		}
+		return fileId;
 	}
 
-	public void writeBulkPDF(
+	public int writeBulkPDF(
 		Collection messages,
 		User performer,
 		String fileName,Locale locale,String type,boolean areAddressMessages,boolean flagMessages,boolean registerBulkData) {
+		int fileId = -1;
 		try {
 			Iterator iter = messages.iterator();
 			PrintMessage msg=null;
@@ -547,6 +550,7 @@ public class DocumentBusinessBean
 					pdocs.setCreator(performer);
 					pdocs.setType(type);
 					pdocs.store();
+					fileId = pdocs.getDocumentFileID();
 				}
 			}
 			try {
@@ -566,6 +570,7 @@ public class DocumentBusinessBean
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		return fileId;
 	}
 	
 
