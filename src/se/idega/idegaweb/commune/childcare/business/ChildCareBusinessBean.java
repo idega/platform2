@@ -2245,12 +2245,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			archive.setCareTime(application.getCareTime());
 			if (employmentTypeID != -1)
 				archive.setEmploymentType(employmentTypeID);
-			try {
-				SchoolClassMember student = getLatestPlacement(application.getChildId(), application.getProviderId());
-				archive.setSchoolClassMember(student);
-			}
-			catch (FinderException fe) {
-				throw new NoPlacementFoundException(fe);
+			if (application.getApplicationStatus() != getStatusContract()) {
+				try {
+					SchoolClassMember student = getLatestPlacement(application.getChildId(), application.getProviderId());
+					archive.setSchoolClassMember(student);
+				}
+				catch (FinderException fe) {
+					throw new NoPlacementFoundException(fe);
+				}
 			}
 			archive.store();
 			
