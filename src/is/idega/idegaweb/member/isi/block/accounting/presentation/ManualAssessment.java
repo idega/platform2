@@ -301,11 +301,12 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 					int r = 1;
 					dataTable.add(labelDivision, 1, r);
 					dataTable.add(labelGroup, 2, r);
-					dataTable.add(labelInfo, 3, r);
-					dataTable.add(labelDate, 4, r);
-					dataTable.add(labelAmount, 5, r);
-					dataTable.setAlignment(5, r, "RIGHT");
-					dataTable.add(labelType, 6, r++);
+					dataTable.add(labelTariff, 3, r);
+					dataTable.add(labelInfo, 4, r);
+					dataTable.add(labelDate, 5, r);
+					dataTable.add(labelAmount, 6, r);
+					dataTable.setAlignment(6, r, "RIGHT");
+					dataTable.add(labelType, 7, r++);
 					
 					NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
 					nf.setMaximumFractionDigits(0);
@@ -320,17 +321,20 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 						if (entry.getGroup() != null) {
 							dataTable.add(entry.getGroup().getName(), 2, r);
 						}
+						if (entry.getTariff() != null) {
+							dataTable.add(entry.getTariff().getText(), 3, r);							
+						}
 						if (entry.getInfo() != null) {
-							dataTable.add(entry.getInfo(), 3, r);
+							dataTable.add(entry.getInfo(), 4, r);
 						}
 						if (entry.getDateOfEntry() != null) {
 							IWTimestamp date = new IWTimestamp(entry.getDateOfEntry());
-							dataTable.add(date.getDateString("dd.MM.yyyy"), 4, r);
+							dataTable.add(date.getDateString("dd.MM.yyyy"), 5, r);
 						}
-						dataTable.add(nf.format(entry.getAmount()), 5, r);
+						dataTable.add(nf.format(entry.getAmount()), 6, r);
 						dataTable.setAlignment(5, r, "RIGHT");
 						if (entry.getTypeLocalizationKey() != null) {
-							dataTable.add(iwrb.getLocalizedString(entry.getTypeLocalizationKey(), entry.getTypeLocalizationKey()), 6, r);
+							dataTable.add(iwrb.getLocalizedString(entry.getTypeLocalizationKey(), entry.getTypeLocalizationKey()), 7, r);
 						}
 						r++;
 					}
