@@ -338,8 +338,7 @@ public class TeeTimeSearch extends GolfBlock {
 		
 
 		
-		GenericButton bSearch = getSubmitButton();
-		bSearch.setName(localize("start.search","Search"));
+		SubmitButton bSearch = new SubmitButton(localize("start.search","Search"));
 		table.add(bSearch,1,row++);
 		
 		insertHiddenInput("results", "1", myForm);

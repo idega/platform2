@@ -334,7 +334,7 @@ public class RegisterTime extends GolfBlock {
                   myTable.add(set,1,i+topRows);
               }
 
-              myTable.add(new SubmitButton(localize("teetime.book","Book")),1, i+topRows);
+              myTable.add(new SubmitButton(localize("start.reserve","Reserve")),1, i+topRows);
               frameTable.empty();
               frameTable.add(myTable);
 
