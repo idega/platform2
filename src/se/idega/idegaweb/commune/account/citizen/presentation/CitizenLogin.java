@@ -75,13 +75,18 @@ public class CitizenLogin extends Login {
 		catch (IDOException ie) {
 			numberOfMessages = 0;
 		}
+		String message = "";
 		if (numberOfMessages > 0) {
 			Object[] arguments = { String.valueOf(numberOfMessages) };
-			Text messages = getStyleText(MessageFormat.format(getResourceBundle().getLocalizedString("number_of_messages", "You have {0}Ênew messages"), arguments), iMessageStyleName);
-			table.mergeCells(1, row, 2, row);
-			table.setCellpaddingTop(1, row, 4);
-			table.add(messages, 1, row++);
+			message = MessageFormat.format(getResourceBundle().getLocalizedString("number_of_messages", "You have {0}Ênew messages"), arguments);
 		}
+		else {
+			message = getResourceBundle().getLocalizedString("no_new_messages", "You have no new messages");
+		}
+		Text messages = getStyleText(message, iMessageStyleName);
+		table.mergeCells(1, row, 2, row);
+		table.setCellpaddingTop(1, row, 4);
+		table.add(messages, 1, row++);
 		
 		SubmitButton logoutButton = null;
 		if (iLogoutImage != null) {
