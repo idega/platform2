@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.business;
 
-import javax.ejb.*;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService
 {
@@ -18,6 +17,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService
  public boolean rejectApplication(int p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public boolean assignContractToApplication(java.lang.String[] p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public java.util.Collection getGrantedApplicationsByUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
+ public java.util.Collection getApplicationsByUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public boolean acceptApplication(int p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public boolean rejectApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String p2,int p3,int p4,java.lang.String p5,java.lang.String p6,boolean p7) throws java.rmi.RemoteException;

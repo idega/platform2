@@ -9,6 +9,25 @@
  */
 package se.idega.idegaweb.commune.childcare.business;
 
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+
 import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.contract.business.ContractWriter;
 import com.idega.block.process.business.CaseBusiness;
@@ -21,25 +40,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.lowagie.text.Font;
-
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-
-import java.rmi.RemoteException;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 /**
  * This class does something very clever.....
@@ -523,6 +523,29 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}		
 	}
+	
+	public Collection getApplicationsByUser(User owner) {
+		Collection c = null;
+		try {			
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			
+			c =  home.findAllCasesByUserAndStatus(owner, getCaseStatusGranted().getStatus());
+			c.addAll(home.findAllCasesByUserAndStatus(owner, getCaseStatusOpen().getStatus()));
+			c.addAll(home.findAllCasesByUserAndStatus(owner, getCaseStatusDenied().getStatus()));
+			c.addAll(home.findAllCasesByUserAndStatus(owner, getCaseStatusInactive().getStatus()));
+			
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			c = null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			c = null;
+		}
+		
+		return c;		
+	}	
 	
 	public Collection findAllGrantedApplications() {
 		try {			
