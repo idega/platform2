@@ -692,7 +692,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			//no biggy there is no report for last year
 		}
 		try {
 			HSSFSheet board = workbook.getSheetAt(SHEET_BOARD_PART);
