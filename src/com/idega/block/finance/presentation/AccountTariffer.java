@@ -244,9 +244,13 @@ public class AccountTariffer extends Finance {
 			T.add(getHeader(localize("account_balance", "Account balance")),					1, 4);
 			T.add(getAmountText(getFinanceService().getAccountBalance(account.getAccountId())), 2, 4);
 
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+			
 			T.add(getHeader(localize("last_updated", "Last updated")), 1, 5);
-			T.add(getText(df.format(getFinanceService().getAccountLastUpdate(account.getAccountId()))), 2, 5);
+			java.util.Date lastUpdate = getFinanceService().getAccountLastUpdate(account.getAccountId());
+			if(lastUpdate!=null){
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+				T.add(getText(df.format(lastUpdate)), 2, 5);
+			}
 		}
 		return T;
 	}
