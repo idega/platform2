@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.31 2002/11/15 09:53:57 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.32 2002/11/15 11:35:29 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/15 09:53:57 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 11:35:29 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -342,13 +342,12 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.add(getSingleInput(iwc, MOVING_IN_ADDRESS_KEY, 40, true), 3, row++);
 			table.add(getHeader(MOVING_IN_DATE_KEY, MOVING_IN_DATE_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, MOVING_IN_DATE_KEY, 20, true), 3, row++);
-			table.add(getHeader(PROPERTY_TYPE_KEY, PROPERTY_TYPE_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, PROPERTY_TYPE_KEY, 20, true), 3, row++);
-			
-			table.mergeCells(1, row, 3, row);
+            table.mergeCells(1, row, 3, row);
 			table.add(getRadioButton(HOUSING_TYPE_KEY, TENANCY_AGREEMENT_KEY, TENANCY_AGREEMENT_DEFAULT, false), 1, row++);
 			table.mergeCells(1, row, 3, row);
 			table.add(getRadioButton(HOUSING_TYPE_KEY, DETACHED_HOUSE_KEY, DETACHED_HOUSE_DEFAULT, true), 1, row++);
+			table.add(getHeader(PROPERTY_TYPE_KEY, PROPERTY_TYPE_DEFAULT), 1, row);
+			table.add(getSingleInput(iwc, PROPERTY_TYPE_KEY, 20, false), 3, row++);
 		}
 		else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
 			// applicant wants to put children in Nacka
@@ -446,6 +445,23 @@ public class CitizenAccountApplication extends CommuneBlock {
                     (name, ssn, email, phoneHome, phoneWork, birth.getTime(),
                      street, zipCode, city, genderId, civilStatus,
                      hasCohabitant, childrenCount, applicationReason);
+
+            if (null != applicationId && hasCohabitant) {
+                final String cohabitantFirstName  = parameters.get
+                        (FIRST_NAME_KEY + COHABITANT_KEY).toString ();;
+                final String cohabitantLastName = parameters.get
+                        (LAST_NAME_KEY + COHABITANT_KEY).toString ();
+                final String cohabitantSsn = parameters.get
+                        (SSN_KEY + COHABITANT_KEY).toString ();
+                final String cohabitantCivilStatus = parameters.get
+                        (CIVIL_STATUS_KEY + COHABITANT_KEY).toString ();
+                final String cohabitantPhoneWork = parameters.get
+                        (PHONE_WORK_KEY + COHABITANT_KEY).toString ();
+                business.insertCohabitant
+                        (applicationId, cohabitantFirstName, cohabitantLastName,
+                         cohabitantSsn,cohabitantCivilStatus,
+                         cohabitantPhoneWork);
+            }
 		} catch (final ParseException e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
 			text.setFontColor(COLOR_RED);

@@ -12,10 +12,14 @@ import java.util.*;
 public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
     void acceptApplication (int p0, User p1)
         throws RemoteException, CreateException, FinderException;
+
     CitizenAccount getAccount (int p0)
         throws RemoteException,FinderException, RemoteException;
+
     List getListOfUnapprovedApplications () throws RemoteException;
+
     Gender [] getGenders () throws RemoteException;
+
     User getUser (String p0) throws RemoteException;
 
 	/**
@@ -28,15 +32,22 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
 	 * @return Integer appliaction id or null if insertion was unsuccessful
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-    Integer insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) 
-    		throws RemoteException, UserHasLoginException;
-
+    Integer insertApplication(User user, String pid, String email,
+                              String phoneHome, String phoneWork) 
+        throws RemoteException, UserHasLoginException;
+    
     Integer insertApplication
         (String name, String ssn, String email, String phoneHome,
          String phoneWork, Date birthDate, String street, String zipCode,
          String city, int genderId, String civilStatus, boolean hasCohabitant,
          int childrenCount, String applicationReason)
         throws RemoteException;
+
     void rejectApplication (int p0, User p1, String p2 )
         throws RemoteException,CreateException,FinderException, RemoteException;
+
+    Integer insertCohabitant (Integer applicationId, String firstName,
+                              String lastName, String ssn, String civilStatus,
+                              String phoneWork)
+        throws RemoteException,CreateException;
 }
