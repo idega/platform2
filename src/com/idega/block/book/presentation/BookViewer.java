@@ -599,17 +599,17 @@ public class BookViewer extends CategoryBlock implements IWBlock {
   }
 
   private Link getCategoryLink(ICCategory category) {
-    try {
+    //try {
       Link link = new Link(category.getName());
 	link.addParameter(BookBusiness.PARAMETER_STATE,BookBusiness.BOOK_COLLECTION);
 	link.addParameter(BookBusiness.PARAMETER_CATEGORY_ID,((Integer)category.getPrimaryKey()).intValue());
 	if ( _styles )
 	  link.setStyle(_linkName);
       return link;
-    }
-    catch (RemoteException e) {
-      return null;
-    }
+    //}
+    //catch (java.io.IOException e) {
+    //  return null;
+    //}
   }
 
   private Link getAuthorLink(Author author) {

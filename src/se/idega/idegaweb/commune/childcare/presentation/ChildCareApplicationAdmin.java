@@ -180,11 +180,11 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 				}
 
 				String id = null;;
-				try {
+				//try {
 					id = ((Integer) application.getPrimaryKey()).toString();
-				}
-				catch (RemoteException e) {
-				}
+				//}
+				//catch (RemoteException e) {
+				//}
 
 				try {
 					String status = application.getStatus();

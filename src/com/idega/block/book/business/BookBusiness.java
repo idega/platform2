@@ -203,13 +203,10 @@ public class BookBusiness {
     try {
       getBook(bookID).remove();
     }
-    catch (IDORemoveException ire) {
-      ire.printStackTrace(System.err);
-    }
     catch (RemoveException re) {
       re.printStackTrace(System.err);
     }
-    catch (RemoteException re) {
+    catch (Exception re) {
       re.printStackTrace(System.err);
     }
   }
@@ -340,7 +337,7 @@ public class BookBusiness {
     catch (RemoveException re) {
       re.printStackTrace(System.err);
     }
-    catch (RemoteException re) {
+    catch (Exception re) {
       re.printStackTrace(System.err);
     }
   }

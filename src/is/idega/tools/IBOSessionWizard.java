@@ -41,6 +41,11 @@ public class IBOSessionWizard extends IBOServiceWizard{
 			System.out.println("IBOWizard: You have to supply a valid ClassName as an argument");
 		}
   }
+  
+  
+	protected String getSessionBeanType(EJBWizardClassCreator classCreator){
+		return "Stateful";	
+	}
 
 
 }

@@ -53,5 +53,4 @@ public interface TourBooking extends com.idega.data.IDOEntity,is.idega.idegaweb.
  public void setTelephoneNumber(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setTotalCount(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setUserId(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void store() throws java.rmi.RemoteException;
 }

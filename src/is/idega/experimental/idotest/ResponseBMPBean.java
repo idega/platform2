@@ -38,7 +38,7 @@ public class ResponseBMPBean extends GenericEntity implements Response{
   public void insertStartData()throws SQLException{
     try{
       //ResponseHome rhome = (ResponseHome)IDOLookup.getHome(this.getClass());
-      ResponseHome rhome = (ResponseHome)getEJBHome();
+      ResponseHome rhome = (ResponseHome)getEJBLocalHome();
       Response resp = rhome.create();
       resp.setResponse("My First response");
       resp.store();

@@ -113,9 +113,9 @@ public class DictionaryBusiness {
     catch (RemoveException re) {
       re.printStackTrace(System.err);
     }
-    catch (RemoteException re) {
-      re.printStackTrace(System.err);
-    }
+    //catch (RemoteException re) {
+    //  re.printStackTrace(System.err);
+    //}
   }
 
   public Word getRandomWord(int[] categories) throws FinderException,RemoteException {

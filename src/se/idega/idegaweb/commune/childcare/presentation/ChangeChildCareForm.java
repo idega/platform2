@@ -107,14 +107,14 @@ public class ChangeChildCareForm extends CommuneBlock {
 				}
 
 				Link link = null;
-				try {
+				//try {
 					if (child != null) {
 						link = new Link(child.getName());
 						link.addParameter(PARAM_CHILD_ID, ((Integer) appl.getPrimaryKey()).toString());
 					}
-				}
-				catch (RemoteException e) {
-				}
+				//}
+				//catch (RemoteException e) {
+				//}
 
 				if (link != null) {
 					add(link);

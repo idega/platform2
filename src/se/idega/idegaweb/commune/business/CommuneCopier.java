@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.business;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.data.IDOCopier;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.user.data.GroupRelationHome;
 
 /**
  * Title:        A class to copy the setup of the Commune application from one datasource to another.
@@ -65,9 +64,34 @@ public class CommuneCopier extends IDOCopier {
     super.addEntityToCopy(instance7);
     super.addEntityToCopy(instance8);
     
+    
+
+    
   }
 
+	protected IDOEntityCopyInfo getIDOEntityCopyInfo(Class entityClass, String tableName){
+		return new CommuneIDOEntityCopyInfo(entityClass,tableName);	
+	}
 
+	protected class CommuneIDOEntityCopyInfo extends IDOEntityCopyInfo {
+		protected CommuneIDOEntityCopyInfo(Class entityClass, String tableName) {
+			super(entityClass,tableName);
+		}
+		public boolean equals(Object o) {
+			if (o != null) {
+				if (o instanceof IDOEntityCopyInfo) {
+					return ((IDOEntityCopyInfo) o).tableName.equals(this.tableName);
+				}
+				else if (o instanceof Class) {
+					return ((Class) o).equals(this.entityClass);
+				}
+				else if (o instanceof String) {
+					return ((String) o).equals(this.tableName);
+				}
+			}
+			return false;
+		}
+	}
 
 
 }

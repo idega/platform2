@@ -46,7 +46,7 @@ public class QuestionBMPBean extends GenericEntity implements Question{
   public void insertStartData()throws SQLException{
     try{
       //QuestionHome home = (QuestionHome)IDOLookup.getHome(this.getClass());
-      QuestionHome home = (QuestionHome)getEJBHome();
+      QuestionHome home = (QuestionHome)getEJBLocalHome();
       Question quest = home.create();
       quest.setText("My First question");
       quest.store();

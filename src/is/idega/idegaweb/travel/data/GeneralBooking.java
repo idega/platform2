@@ -57,7 +57,6 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public int getTotalCount() throws java.rmi.RemoteException;
  public void setTotalCount(int p0) throws java.rmi.RemoteException;
  public void setTelephoneNumber(java.lang.String p0) throws java.rmi.RemoteException;
- public void store() throws java.rmi.RemoteException;
  public void removeFromAllResellers()throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void setReferenceNumber(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.String getTelephoneNumber() throws java.rmi.RemoteException;

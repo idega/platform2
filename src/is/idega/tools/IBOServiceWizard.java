@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 import java.lang.reflect.Method;
 
+import com.idega.xml.XMLElement;
+
 /**
  * Title:        idegaclasses
  * Description:
@@ -93,6 +95,7 @@ public class IBOServiceWizard extends EJBWizard {
 	 * @param inst
 	 */
 	protected void setClassCreatorProperties(EJBWizardClassCreator inst) {
+		inst.setToThrowRemoteExceptions(true);
 		inst.setFactorySuperClass("com.idega.business.IBOHomeImpl");
 		inst.setHomeSuperInterface("com.idega.business.IBOHome");
 	}
@@ -145,5 +148,42 @@ public class IBOServiceWizard extends EJBWizard {
 
 		return returningMethods;
 	}
+	protected String getSessionBeanType(EJBWizardClassCreator classCreator){
+		return "Stateless";	
+	}
+
+	protected XMLElement getBeanspecificElement(EJBWizardClassCreator classCreator){
+			ClassIntrospector introspector = classCreator.getClassIntrospector();
+			String beanName = introspector.getEntityBeanName();
+			String beanNameWithPackage = introspector.getPackage() + "." + beanName;
+			String ejbName = beanNameWithPackage;
+			String homeNameWithPackage = introspector.getPackage() + "." + classCreator.getHomeName();
+			String interfaceNameWithPackage = introspector.getPackage() + "." + introspector.getShortName();
+		
+			XMLElement entityElement = new XMLElement("session");
+			
+			addBeanGeneralElements(entityElement,"",ejbName,beanNameWithPackage,homeNameWithPackage,interfaceNameWithPackage);
+	
+
+			XMLElement typeElement = new XMLElement("session-type");
+			String type = getSessionBeanType(classCreator);
+			typeElement.addContent(type);
+			entityElement.addContent(typeElement);
+			
+			
+			XMLElement transactionTypeElement = new XMLElement("transaction-type");
+			String transactionType = "Container";
+			transactionTypeElement.addContent(transactionType);
+			entityElement.addContent(transactionTypeElement);
+			
+			XMLElement reentrantElement = new XMLElement("reentrant");
+			boolean isReentrant = true;
+			reentrantElement.addContent(String.valueOf(isReentrant));
+			entityElement.addContent(reentrantElement);
+			return entityElement;
+	}
+
+
+
 
 }

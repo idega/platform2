@@ -37,6 +37,7 @@ public class EntryReportBMPBean implements EntryReport{
 
   private EntityContext _entityContext;
   private EJBHome _ejbHome;
+  private EJBLocalHome _ejbLocalHome;
   private Object _primaryKey;
 
   /*
@@ -99,6 +100,7 @@ public class EntryReportBMPBean implements EntryReport{
 
   public Class getPrimaryKeyClass(){return Integer.class;}
   public void setEJBHome(EJBHome home){}
+  public void setEJBLocalHome(EJBLocalHome home){}
   public Object ejbFindByPrimaryKey(Object primaryKey){return null;}
   public Object ejbCreate(){return null;}
   public void unsetEntityContext(){_entityContext = null;}

@@ -141,13 +141,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public Collection getUnhandledApplicationsByProvider(School provider) {
-		try {
+		//try {
 			return getUnhandledApplicationsByProvider(((Integer)provider.getPrimaryKey()).intValue());
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-			return null;
-		}
+		//}
+		//catch (RemoteException e) {
+		//	e.printStackTrace();
+		//	return null;
+		//}
 	}
 
 	public Collection getUnhandledApplicationsByProvider(User provider) {
@@ -186,12 +186,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public Collection getUnsignedApplicationsByProvider(School provider) {
-		try {
+		//try {
 			return getUnsignedApplicationsByProvider(((Integer)provider.getPrimaryKey()).intValue());
-		}
-		catch (RemoteException e) {
-			return null;
-		}
+		//}
+		//catch (RemoteException e) {
+		//	return null;
+		//}
 	}
 
 	public Collection getUnsignedApplicationsByProvider(User provider) {
@@ -353,12 +353,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public Collection getApplicationsByProvider(School provider) {
-		try {
+		//try {
 			return getApplicationsByProvider(((Integer)provider.getPrimaryKey()).intValue());
-		}
-		catch (RemoteException e) {
-			return null;
-		}
+		//}
+		//catch (RemoteException e) {
+		//	return null;
+		//}
 	}
 
 	public Collection getApplicationsByProvider(User provider) {

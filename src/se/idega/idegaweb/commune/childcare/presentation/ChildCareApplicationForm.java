@@ -178,14 +178,14 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				}
 
 				Link link = null;
-				try {
+				//try {
 					if (child != null) {
 						link = new Link(child.getName());
 						link.addParameter(PARAM_CHECK_ID, ((Integer) check.getPrimaryKey()).toString());
 					}
-				}
-				catch (RemoteException e) {
-				}
+				//}
+				//catch (RemoteException e) {
+				//}
 
 				if (link != null) {
 					add(link);
@@ -240,11 +240,11 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				e.printStackTrace();
 			}
 
-			try {
+			//try {
 				form.addParameter(PARAM_CHILD_ID, ((Integer) child.getPrimaryKey()).intValue());
-			}
-			catch (RemoteException e) {
-			}
+			//}
+			//catch (RemoteException e) {
+			//}
 		}
 
 		Table nameTable2 = new Table(2, 2);

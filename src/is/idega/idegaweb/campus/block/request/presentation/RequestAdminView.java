@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.9 2002/08/12 13:00:40 palli Exp $
+ * $Id: RequestAdminView.java,v 1.10 2002/11/21 15:57:59 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -130,12 +130,12 @@ public class RequestAdminView extends Block {
         Link details = new Link(linkText);
         Edit.setStyle(details);
         details.setWindowToOpen(RequestAdminViewDetails.class);
-        try {
+        //try {
           details.addParameter("request_id",((Integer)request.getPrimaryKey()).intValue());
-        }
-        catch(java.rmi.RemoteException e) {
-          e.printStackTrace();
-        }
+        //}
+        //catch(java.rmi.RemoteException e) {
+        //  e.printStackTrace();
+        //}
 
 //        details.addParameter("id",request.getpr);
 

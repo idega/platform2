@@ -184,11 +184,11 @@ public class PhoneFinanceHandler implements FinanceHandler {
 					AR.setTariffGroupId(iTariffGroupId);
 					AR.setType(getAccountType());
 					AR.insert();
-					try {
+					//try {
 						iRoundId = ((Integer) AR.getPrimaryKey()).intValue() + 1;
-					}
-					catch (RemoteException e) {
-					}
+					//}
+					//catch (RemoteException e) {
+					//}
 				}
 				catch (SQLException ex) {
 					ex.printStackTrace();

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar>
+  <enterprise-beans>
+    <session>
+      <description />
+      <ejb-name>is.idega.experimental.ibotest.SimpleServiceBean</ejb-name>
+      <ejb-class>is.idega.experimental.ibotest.SimpleServiceBean</ejb-class>
+      <home>is.idega.experimental.ibotest.SimpleServiceHome</home>
+      <remote>is.idega.experimental.ibotest.SimpleService</remote>
+      <session-type>Stateless</session-type>
+      <transaction-type>Container</transaction-type>
+      <reentrant>true</reentrant>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>is.idega.experimental.ibotest.SimpleServiceBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>NotSupported</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>
+
