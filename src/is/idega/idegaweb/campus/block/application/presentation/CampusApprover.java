@@ -1,43 +1,22 @@
 package is.idega.idegaweb.campus.block.application.presentation;
 
 
-import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.application.data.Applied;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
-import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
-import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Image;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.util.idegaTimestamp;
-import com.idega.util.idegaCalendar;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import java.sql.*;
+import java.util.*;
+
+import com.idega.block.application.business.*;
 import com.idega.block.application.business.ApplicationFinder;
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.ApplicationSubject;
-import com.idega.block.application.data.Application;
-import com.idega.block.application.business.ApplicationHolder;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
-
-import java.util.List;
-import java.util.ListIterator;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-import java.sql.SQLException;
-import java.util.Vector;
-import java.util.Hashtable;
+import com.idega.block.application.data.*;
+import com.idega.block.building.business.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
+import is.idega.idegaweb.campus.block.application.business.*;
+import is.idega.idegaweb.campus.block.application.data.*;
+import is.idega.idegaweb.campus.block.mailinglist.business.*;
+import is.idega.idegaweb.campus.presentation.*;
 
 public class CampusApprover extends Block{
 
@@ -724,6 +703,7 @@ public class CampusApprover extends Block{
     eCampusApplication.setStudyTrack(sTrack);
     eApplicant.setLegalResidence(sLegRes);
     eApplicant.setSSN(sSsn);
+    eApplicant.setStatus("S");
     eApplicant.setPO(sPo);
     eApplicant.setResidencePhone(sResPho);
     eApplicant.setMobilePhone(sMobPho);
@@ -890,7 +870,7 @@ public class CampusApprover extends Block{
       boolean update = true;
       if(spouse == null){
         spouse = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
-        spouse.setStatus("P");
+
         update = false;
       }
 
@@ -898,7 +878,7 @@ public class CampusApprover extends Block{
         spouse.setFullName(sSpName);
       }
       spouse.setSSN(sSpSsn);
-
+      spouse.setStatus("P");
       if(update)
         spouse.update();
       else{
@@ -980,13 +960,13 @@ public class CampusApprover extends Block{
             boolean update = true;
             if(child == null){
               child = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
-              child.setStatus("C");
               update = false;
             }
             if(!childName.equals(child.getName())){
               child.setFullName(childName);
             }
             child.setSSN(childSSN);
+            child.setStatus("C");
             if(update)
               child.update();
             else{
