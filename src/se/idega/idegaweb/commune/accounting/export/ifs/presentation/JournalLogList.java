@@ -42,7 +42,9 @@ public class JournalLogList extends AccountingBlock {
 		ApplicationForm form = new ApplicationForm(this);
 
 		try {
-			_currentOperation = getSession().getOperationalField() == null ? "" : _currentOperation;
+			_currentOperation = getSession().getOperationalField();
+			if (_currentOperation == null)
+				_currentOperation = "";
 		}
 		catch (RemoteException e) {
 		}

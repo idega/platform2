@@ -58,6 +58,14 @@ public class SendIFSFiles extends AccountingBlock {
 	}
 
 	private int parseAction(IWContext iwc) {
+		try {
+			_currentOperation = getSession().getOperationalField();
+			if (_currentOperation == null)
+				_currentOperation = "";
+		}
+		catch (RemoteException e) {
+		}
+
 		if (iwc.isParameterSet(PARAM_SEND_FILE)) {
 			return ACTION_SEND;
 		}
@@ -65,12 +73,6 @@ public class SendIFSFiles extends AccountingBlock {
 	}
 
 	private void sendFiles(IWContext iwc) {
-		try {
-			_currentOperation = getSession().getOperationalField() == null ? "" : _currentOperation;
-		}
-		catch (RemoteException e) {
-		}
-		
 		try {
 			getIFSBusiness(iwc).sendFiles(_currentOperation,iwc.getCurrentUser());
 		}
@@ -83,12 +85,6 @@ public class SendIFSFiles extends AccountingBlock {
 
 	private void viewForm() {
 		ApplicationForm form = new ApplicationForm(this);
-
-		try {
-			_currentOperation = getSession().getOperationalField() == null ? "" : _currentOperation;
-		}
-		catch (RemoteException e) {
-		}
 
 		form.setLocalizedTitle(KEY_HEADER, "Send files");
 		form.setSearchPanel(getTopPanel());
