@@ -40,7 +40,8 @@ public class CreditcardRefunder extends TravelManager {
       tSecureForm.setFontColor(TravelManager.WHITE);
 
     Link lSecureForm = new Link(tSecureForm);
-      lSecureForm.setHttps(true);
+    	
+      lSecureForm.setHttps(LinkGenerator.getIsHttps());
       lSecureForm.setWindowToOpen(CreditcardRefunderWindow.class);
 
     form.add(lSecureForm);
