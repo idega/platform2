@@ -232,6 +232,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
 			report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 			report.setRegionalUnionAbbreviation(regionalUnion.getAbbrevation());
+			report.setRegionalUnionName(regionalUnion.getName());
 		
 		}
 		catch (NoRegionalUnionFoundException e3) {
@@ -290,6 +291,21 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		return workReportAccountKeyHome;
+	}
+	
+	/**
+	 * This method returns an ordered collection of workreports or an empty list.
+	 * @param year, int for the work report year
+	 * @param regionalUnionsGroups, a collection of Group
+	 * @return
+	 */
+	public Collection getWorkReportsForRegionalUnionCollection(int year, Collection regionalUnionsGroups){
+		try {
+			return getWorkReportHome().findAllWorkReportsByYearAndRegionalUnionGroupsOrderedByRegionalUnionNameAndClubName(year,regionalUnionsGroups);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
 	}
 
 	public WorkReportMember createWorkReportMember(int reportID, String personalID) throws CreateException {

@@ -13,6 +13,13 @@ public class WorkReportHomeImpl extends com.idega.data.IDOFactory implements Wor
  }
 
 
+public java.util.Collection findAllWorkReportsByYearAndRegionalUnionGroupsOrderedByRegionalUnionNameAndClubName(int p0,java.util.Collection p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportBMPBean)entity).ejbFindAllWorkReportsByYearAndRegionalUnionGroupsOrderedByRegionalUnionNameAndClubName(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllWorkReportsByYearOrderedByGroupType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((WorkReportBMPBean)entity).ejbFindAllWorkReportsByYearOrderedByGroupType(p0);

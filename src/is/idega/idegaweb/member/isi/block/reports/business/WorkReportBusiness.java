@@ -49,6 +49,7 @@ public interface WorkReportBusiness extends com.idega.business.IBOService,is.ide
  public java.sql.Date getWorkReportOpenFromDate() throws java.rmi.RemoteException;
  public java.sql.Date getWorkReportOpenToDate() throws java.rmi.RemoteException;
  public java.lang.String getWorkReportSentText(int p0) throws java.rmi.RemoteException;
+ public java.util.Collection getWorkReportsForRegionalUnionCollection(int p0,java.util.Collection p1) throws java.rmi.RemoteException;
  public com.idega.presentation.ui.DropdownMenu getYearDropdownMenu(int p0) throws java.rmi.RemoteException;
  public boolean isBoardMissingForDivisionWithMembersOrYearlyAccount(int p0) throws java.rmi.RemoteException;
  public boolean isThereAYearlyAccountForAnEmptyDivision(int p0) throws java.rmi.RemoteException;

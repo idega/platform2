@@ -5,8 +5,9 @@
 <class_description class="is.idega.idegaweb.member.isi.block.reports.business.WorkReportStatsBusiness" default_display_name="WorkReportStatsBusiness" type="IBOSessionBean">
 </class_description>
 <input>
-<class_description default_display_name="Regional union" name="regUnions">
-<localized_name name="regionalUnions" locale="sv_SE"/>
+<class_description class="java.lang.Integer" default_display_name="Work report year" name="workReportYear">
+</class_description>
+<class_description class="java.util.Collection" default_display_name="Regional union" name="regUnions">
 <class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.RegionalUnionSelectionBox" />
 </class_description>
 </input>

@@ -1,7 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.data;
 
 
-public interface WorkReport extends com.idega.data.IDOEntity
+public interface WorkReport extends com.idega.data.IDOEntity,com.idega.data.IDOReportableEntity
 {
  public void addLeague(is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p0)throws com.idega.data.IDORelationshipException;
  public java.lang.Integer getAccountFileId();
@@ -19,6 +19,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public int getNumberOfPlayers();
  public java.lang.String getRegionalUnionAbbreviation();
  public java.lang.Integer getRegionalUnionGroupId();
+ public java.lang.String getRegionalUnionName();
  public java.lang.String getRegionalUnionNumber();
  public java.lang.String getSentReportText();
  public java.lang.String getStatus();
@@ -53,6 +54,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setRegionalUnionAbbreviation(java.lang.String p0);
  public void setRegionalUnionGroupId(int p0);
  public void setRegionalUnionGroupId(java.lang.Integer p0);
+ public void setRegionalUnionName(java.lang.String p0);
  public void setRegionalUnionNumber(java.lang.String p0);
  public void setSentReportText(java.lang.String p0);
  public void setStatus(java.lang.String p0);

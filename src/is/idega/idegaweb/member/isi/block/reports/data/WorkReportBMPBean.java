@@ -45,6 +45,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport,IDORe
 	protected final static String COLUMN_NAME_NUMBER_OF_MEMBERS= "TOTAL_MEMBERS";
 	protected final static String COLUMN_NAME_NUMBER_OF_PLAYERS= "TOTAL_PLAYERS";
 	protected final static String COLUMN_NAME_NUMBER_OF_COMPETITORS= "TOTAL_COMPETITORS";
+	protected final static String COLUMN_NAME_REGIONAL_UNION_NAME= "REG_UNI_NAME";
 	protected final static String COLUMN_NAME_REGIONAL_UNION_NR= "REG_UNI_NR";
 	protected final static String COLUMN_NAME_REGIONAL_UNION_ABBR= "REG_UNI_ABBR";
 	protected final static String COLUMN_NAME_CONTINUANCE_TILL= "CONTINUANCE_TILL";
@@ -77,11 +78,11 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport,IDORe
 		addAttribute(COLUMN_NAME_NUMBER_OF_COMPETITORS,"Total sum of players",true,true,Integer.class);
 		
 		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
-    addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_SENT, "Has the workreport been sent, finalized", true, true, Boolean.class);
 		addAttribute(COLUMN_NAME_SENT_REPORT, "Results from report check",true,true,String.class,3500);
 		
-
+		addAttribute(COLUMN_NAME_REGIONAL_UNION_NAME , "Regional union name",true,true,String.class);
 		addAttribute(COLUMN_NAME_REGIONAL_UNION_NR , "Regional union nr",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_REGIONAL_UNION_ABBR, "Regional union abbreviation",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_CONTINUANCE_TILL, "Continuance till text field",true,true,String.class,30);
@@ -194,6 +195,14 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport,IDORe
 		setColumn(COLUMN_NAME_REGIONAL_UNION_NR,number);
 	}
 	
+	public String getRegionalUnionName(){
+		return getStringColumnValue(COLUMN_NAME_REGIONAL_UNION_NAME);
+	}
+	
+	public void setRegionalUnionName(String name){
+		setColumn(COLUMN_NAME_REGIONAL_UNION_NAME,name);
+	}
+	
 	public String getRegionalUnionAbbreviation(){
 		return getStringColumnValue(COLUMN_NAME_REGIONAL_UNION_ABBR);
 	}
@@ -295,6 +304,20 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport,IDORe
 	
 	public Collection ejbFindAllWorkReportsByYearOrderedByGroupType(int yearOfReport) throws FinderException{
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport,COLUMN_NAME_GROUP_TYPE);
+	}
+	
+	public Collection ejbFindAllWorkReportsByYearAndRegionalUnionGroupsOrderedByRegionalUnionNameAndClubName(int year, Collection regionalUnionGroups) throws FinderException{
+		IDOQuery sql = idoQuery();
+		String[] ordering = {COLUMN_NAME_REGIONAL_UNION_NAME,COLUMN_NAME_GROUP_NAME};
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.appendEquals(COLUMN_NAME_WORK_REPORT_YEAR,year)
+		.appendInCollection(regionalUnionGroups)
+		.appendOrderBy(ordering);
+		
+		return idoFindIDsBySQL(sql.toString());
+		
+		
 	}
 	
 	public int ejbHomeGetCountOfWorkReportsByStatusAndYear(String status, int year){

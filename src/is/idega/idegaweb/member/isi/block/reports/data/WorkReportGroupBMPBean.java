@@ -227,6 +227,7 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_GROUP_YEAR,year);
 	}
 	
+	
 	public Collection ejbFindAllWorkReportGroupsByGroupTypeAndYear(String groupType, int year) throws FinderException{
 		IDOQuery sql = idoQuery();
 		

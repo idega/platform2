@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport name="NewReport" columnCount="1" pageWidth="612" pageHeight="792" columnWidth="540" columnSpacing="0" leftMargin="36" rightMargin="36" topMargin="36" bottomMargin="36">
+  <parameter name="GROUP_NAME" class="java.lang.String">
+    <parameterDescription><![CDATA[Name of group]]></parameterDescription>
+    <defaultValueExpression></defaultValueExpression>
+  </parameter>
+  <title>
+    <band height="0" />
+  </title>
+  <pageHeader>
+    <band height="36">
+      <textField>
+        <reportElement positionType="Float" mode="Transparent" x="7" y="-20" width="73" height="30" />
+        <textElement>
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+        </textElement>
+        <textFieldExpression class="java.lang.String">$P{GROUP_NAME}</textFieldExpression>
+      </textField>
+    </band>
+  </pageHeader>
+  <columnHeader>
+    <band height="0" />
+  </columnHeader>
+  <detail>
+    <band height="12" />
+  </detail>
+  <columnFooter>
+    <band height="0" />
+  </columnFooter>
+  <pageFooter>
+    <band height="36" />
+  </pageFooter>
+  <summary>
+    <band height="0" />
+  </summary>
+</jasperReport>
+
