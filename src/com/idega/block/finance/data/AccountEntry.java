@@ -124,6 +124,10 @@ public class AccountEntry extends GenericEntity implements Entry {
   public void setInfo(String info){
     setColumn(getInfoColumnName(), info);
   }
+
+  public void setNetto(float netto){
+    setColumn(getColumnNetto(), netto);
+  }
   public float getNetto(){
     return getFloatColumnValue(getColumnNetto());
   }

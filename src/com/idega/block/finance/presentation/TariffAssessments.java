@@ -9,6 +9,8 @@ import com.idega.block.finance.business.*;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.finance.presentation.KeyEditor;
+import com.idega.idegaweb.presentation.BusyBar;
+import com.idega.idegaweb.presentation.StatusBar;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.*;
@@ -51,6 +53,12 @@ public class TariffAssessments extends Block {
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
+  private StatusBar status ;
+
+  public TariffAssessments(){
+    StatusBar status = new StatusBar("ass_status");
+
+  }
 
   public String getLocalizedNameKey(){
     return "assessment";
@@ -110,6 +118,7 @@ public class TariffAssessments extends Block {
         T.setCellpadding(2);
         T.setCellspacing(0);
         T.add(Edit.headerText(iwrb.getLocalizedString("tariff_assessment","Tariff assessment"),3),1,1);
+        //T.add(status,1,1);
         T.add(getGroupLinks(iCategoryId,iGroupId,groups),1,2);
         if(group != null)
           T.add(makeLinkTable(  1,iCategoryId,iGroupId),1,3);
@@ -126,21 +135,28 @@ public class TariffAssessments extends Block {
   }
 
   private PresentationObject getGroupLinks(int iCategoryId , int iGroupId,List groups){
-    Table T = new Table(1,1);
+    Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
+    T.setWidth("100%");
+    int col = 1;
     if(groups!=null){
       java.util.Iterator I = groups.iterator();
       TariffGroup group;
       Link tab;
+
       while (I.hasNext()) {
         group = (TariffGroup) I.next();
         tab = new Link(iwb.getImageTab(group.getName(),true));
         tab.addParameter(Finance.getCategoryParameter(iCategoryId));
         tab.addParameter(prmGroup,group.getID());
-        T.add(tab,1,1);
+        T.add(tab,col++,1);
+
       }
     }
+    T.setWidth(col,1,"100%");
+    T.add(status,++col,1);
+    T.setAlignment(col,1,"right");
     return T;
   }
 
@@ -182,11 +198,16 @@ public class TariffAssessments extends Block {
           idegaTimestamp startdate = new idegaTimestamp(start);
           idegaTimestamp enddate = new idegaTimestamp(end);
           //add(paydate.getISLDate());
+          debug("Starting Execution "+idegaTimestamp.RightNow().toString());
           boolean assessed = handler.executeAssessment(iCategoryId, iGroupId,roundName,1,iAccountKeyId,paydate,startdate,enddate);
-          if(assessed)
-            MO = new Text("done");
-          else
-            MO = new Text("assessment failed");
+          debug("Ending Execution "+idegaTimestamp.RightNow().toString());
+          if(assessed){
+            status.setMessage(iwrb.getLocalizedString("assessment_sucess","Assessment succeded"));
+          }
+          else{
+            status.setMessage(iwrb.getLocalizedString("assessment_failure","Assessment failed"));
+          }
+          MO = getTableOfAssessments(iwc,iGroupId);
         }
         else{
           add(iwrb.getLocalizedString("no_name_error","No name entered"));
@@ -226,6 +247,9 @@ public class TariffAssessments extends Block {
     Link3.addParameter(prmGroup,iGroupId);
     Link3.addParameter(Finance.getCategoryParameter(iCategoryId));
     if(isAdmin){
+      status.setMessageCaller(Link1,iwrb.getLocalizedString("view_assessments","View assessments"));
+      status.setMessageCaller(Link2,iwrb.getLocalizedString("make_new_assessment","Create new assessment"));
+      status.setMessageCaller(Link3,iwrb.getLocalizedString("preview_assessment","Preview assessment"));
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
       LinkTable.add(Link3,3,1);
@@ -365,7 +389,8 @@ public class TariffAssessments extends Block {
     String id = iwc.getParameter("ass_round_id");
     String acc_id = iwc.getParameter("ass_acc_id");
     if(id != null){
-      List L = FinanceFinder.listOfAssessmentAccountEntries(Integer.parseInt(acc_id),Integer.parseInt(id));
+      int iAccountId = Integer.parseInt(acc_id);
+      List L = FinanceFinder.listOfAssessmentAccountEntries(iAccountId,Integer.parseInt(id));
 
       if(L!= null){
         int len = L.size();
@@ -469,6 +494,13 @@ public class TariffAssessments extends Block {
     T.add(rn,2,row);
     row++;
     T.add(sb,2,row);
+    //sb.setOnClick("this.disabled = true");
+    status.setMessageCaller(sb,iwrb.getLocalizedString("assessment_time","Assessment takes time"));
+
+    sb.setOnClick("this.form.submit()");
+    BusyBar bb = new BusyBar("busyguy");
+    bb.setInterfaceObject(sb);
+    T.add(bb,2,row);
     row++;
 
 
@@ -536,8 +568,26 @@ public class TariffAssessments extends Block {
   public void main(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
+    if(status==null)
+      status = new StatusBar("ass_status");
+    status.setStyle("color: #003366;  font-style: normal; font-family: verdana; font-weight: normal; font-size:14px;");
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
+
+  public Object clone() {
+    TariffAssessments obj = null;
+    debug("cloning");
+    try {
+      obj = (TariffAssessments)super.clone();
+      if(this.status!=null)
+        obj.status = this.status;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
 }
