@@ -3917,19 +3917,19 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			mLastYearTotal += mLastYear;
 			regData = addToIntegerCount(membersThisYear, regData, mThisYear);
 			regData = addToIntegerCount(membersLastYear, regData, mLastYear);
-			regData = addToIntegerCount(membersAnnualChange, regData, mThisYear - mLastYear);
+			regData = addToIntegerCount(membersAnnualChange, regData, mLastYear - mThisYear);
 			int now = ((Integer)regData.getFieldValue(membersThisYear)).intValue();
 			int last = ((Integer)regData.getFieldValue(membersLastYear)).intValue();
-			int difference = now - last;
-			
+			/*int difference = now - last;
 			double change = (
 							 ((double) difference) /
 							 ((double) (now>0?now:(difference!=0?difference:1)))
 							) * 100.0;
-							  //* (((difference!=0 && now!=0) && (now>=last))?1.0:-1.0);
+							  //* (((difference!=0 && now!=0) && (now>=last))?1.0:-1.0);*/
+			double change = ((double)now)/((double)last)*100.0;
 			
 
-			regData.addData(membersAnnualChangePercent, change==-1?"":Integer.toString((int)change));
+			regData.addData(membersAnnualChangePercent, Integer.toString((int)change));
 					
 			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
@@ -3937,20 +3937,18 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			pLastYearTotal += pLastYear;
 			regData = addToIntegerCount(playersThisYear, regData, pThisYear);
 			regData = addToIntegerCount(playersLastYear, regData, pLastYear);
-			regData = addToIntegerCount(playersAnnualChange, regData, pThisYear - pLastYear);
+			regData = addToIntegerCount(playersAnnualChange, regData, pLastYear - pThisYear);
 			now = ((Integer)regData.getFieldValue(playersThisYear)).intValue();
 			last = ((Integer)regData.getFieldValue(playersLastYear)).intValue();
-			difference = now - last;
+			/*difference = now - last;
 			
 			change = (
 					  ((double) difference) /
 					  ((double) (now>0?now:(difference!=0?difference:1)))
 					 ) * 100.0;
-					   //* (((difference!=0 && now!=0) && (now>=last))?1.0:-1.0);
-	
-			
-	//		change = (last==0)?-1:((100*now)/(last));
-			regData.addData(playersAnnualChangePercent, change==-1?"":Integer.toString((int)change));
+					   //* (((difference!=0 && now!=0) && (now>=last))?1.0:-1.0);*/
+			change = ((double)now)/((double)last)*100.0;
+			regData.addData(playersAnnualChangePercent, Integer.toString((int)change));
 		}
 
 		Collection regDataCollection = regionalUnionsStatsMap.values();
@@ -3961,8 +3959,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
-		int mChangeTotal = mThisYearTotal - mLastYearTotal;
-		int pChangeTotal = pThisYearTotal - pLastYearTotal;
+		int mMissing = mLastYearTotal - mThisYearTotal;
+		int pMissing = pLastYearTotal - pThisYearTotal;
 		// get the percentage from total and create last row
 		Iterator rData = regDataCollection.iterator();
 		DecimalFormat format = new DecimalFormat("##0.#");
@@ -3973,25 +3971,27 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int mc = ((Integer)rd.getFieldValue(membersAnnualChange)).intValue();
 //			double mwn = 100.0*((double)mc)/((double)mChangeTotal);
 
-			double mwn = (
+			/*double mwn = (
 													((double)mc) /
 													((double) (mThisYearTotal>0?mThisYearTotal:(mc!=0?mc:1)))
 													) * 100.0;
-													//* (((mc!=0 && mThisYearTotal!=0) && (mc>=mThisYearTotal))?1.0:-1.0);
-			
-			String value = format.format(mwn);
+													//* (((mc!=0 && mThisYearTotal!=0) && (mc>=mThisYearTotal))?1.0:-1.0);*/
+			double mwn = ((double)mc)/((double)mLastYearTotal)*100.0;
+					
+			String value = (mwn<0.0)?"":format.format(mwn);
 			rd.addData(membersAnnualChangePercentOfTotal, value);
 			
 			int pc = ((Integer)rd.getFieldValue(playersAnnualChange)).intValue();
 	//		double pwn = 100.0*((double)pc)/((double)pChangeTotal);
 			
-			double pwn = (
+			/*double pwn = (
 													((double)pc) /
 													((double) (pThisYearTotal>0?pThisYearTotal:(pc!=0?pc:1)))
 													)  * 100.0;
-													//* (((pc!=0 && pThisYearTotal!=0) && (pc>=pThisYearTotal))?1.0:-1.0);
+													//* (((pc!=0 && pThisYearTotal!=0) && (pc>=pThisYearTotal))?1.0:-1.0);*/
+			double pwn = ((double)pc)/((double)pLastYearTotal)*100.0;
 			
-			value = format.format(pwn);
+			value = (pwn<0.0)?"":format.format(pwn);
 			rd.addData(playersAnnualChangePercentOfTotal, value);
 			macptTotal += mwn;
 			pacptTotal += pwn;
