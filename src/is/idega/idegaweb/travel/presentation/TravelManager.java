@@ -167,8 +167,10 @@ public class TravelManager extends Block {
           iwc.setSessionAttribute(sAction, action);
         }
 
-        Image iDesign = iwrb.getImage("buttons/design_trip.gif");
-        Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
+        Image iDesign = iwrb.getImage("buttons/design_products.gif");
+        Image iMyTrip = iwrb.getImage("buttons/my_products.gif");
+        //Image iDesign = iwrb.getImage("buttons/design_trip.gif");
+        //Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
         Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
         Image iBooking = iwrb.getImage("buttons/booking.gif");
         Image iStatistics = iwrb.getImage("buttons/statistics.gif");
@@ -179,9 +181,11 @@ public class TravelManager extends Block {
         Image iHome = iwrb.getImage("buttons/home.gif");
 
         if (action.equals(this.parameterServiceDesigner)) {
-          iDesign = iwrb.getImage("buttons/design_trip_on.gif");
+          iDesign = iwrb.getImage("buttons/design_products_on.gif");
+          //iDesign = iwrb.getImage("buttons/design_trip_on.gif");
         }else if (action.equals(this.parameterServiceOverview)) {
-          iMyTrip = iwrb.getImage("buttons/my_trips_on.gif");
+          iMyTrip = iwrb.getImage("buttons/my_products_on.gif");
+          //iMyTrip = iwrb.getImage("buttons/my_trips_on.gif");
         }else if (action.equals(this.parameterBookingOverview)) {
           iOverview = iwrb.getImage("buttons/booking_overview_on.gif");
         }else if (action.equals(this.parameterBooking)) {

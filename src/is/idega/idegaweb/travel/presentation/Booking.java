@@ -215,7 +215,7 @@ public class Booking extends TravelManager {
           }
 
       Text nameText = (Text) theText.clone();
-          nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
+          nameText.setText(iwrb.getLocalizedString("travel.product_name_lg","Name of product"));
           nameText.addToText(":");
 
 

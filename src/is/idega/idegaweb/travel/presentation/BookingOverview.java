@@ -102,7 +102,7 @@ public class BookingOverview extends TravelManager {
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
         }
         if (productId != null && !productId.equals("-1")) {
-          product = new Product(Integer.parseInt(productId));
+          product = ProductBusiness.getProduct(Integer.parseInt(productId));
           service = tsb.getService(product);
           tour = TourBusiness.getTour(product);
           timeframe = tsb.getTimeframe(product);
@@ -240,7 +240,7 @@ public class BookingOverview extends TravelManager {
 
 
       Text nameText = (Text) theText.clone();
-          nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
+          nameText.setText(iwrb.getLocalizedString("travel.product_name_lg","Name of product"));
           nameText.addToText(":");
       Text timeframeText = (Text) theText.clone();
           timeframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
@@ -314,7 +314,7 @@ public class BookingOverview extends TravelManager {
           Text dateText = (Text) theText.clone();
               dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
           Text nameText = (Text) theText.clone();
-              nameText.setText(iwrb.getLocalizedString("travel.trip_name_sm","name of trip"));
+              nameText.setText(iwrb.getLocalizedString("travel.product_name_sm","name of product"));
           Text countText = (Text) theText.clone();
               countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
           Text assignedText = (Text) theText.clone();
@@ -376,7 +376,7 @@ public class BookingOverview extends TravelManager {
                   }
                   else {
                     products = new Product[1];
-                      products[0] = new Product(productId);
+                      products[0] = ProductBusiness.getProduct(productId);
                   }
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);

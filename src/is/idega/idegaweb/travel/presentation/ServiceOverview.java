@@ -398,7 +398,7 @@ public class ServiceOverview extends TravelManager {
       int[] dayOfWeek = new int[] {};
 
         Text nameText = (Text) theText.clone();
-            nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
+            nameText.setText(iwrb.getLocalizedString("travel.name_of_product","Name of product"));
             nameText.addToText(":");
             nameText.setFontColor(super.BLACK);
         Text timeframeText = (Text) theText.clone();
