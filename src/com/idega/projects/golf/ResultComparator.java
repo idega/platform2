@@ -20,6 +20,7 @@ public class ResultComparator implements Comparator {
   public static final int NAME = 4;
   public static final int ABBREVATION = 5;
   public static final int TOURNAMENTROUND = 6;
+  public static final int TOTAL_STROKES_V_2 = 7;
 
   private int sortBy;
   private int roundNumber_ = 0;
@@ -88,6 +89,11 @@ public class ResultComparator implements Comparator {
         if (result == 0)
           result = nameCompare(r1,r2);
       break;
+
+      case TOTAL_STROKES_V_2 :
+        result = totalStrokesCompareV2(r1,r2);
+        if (result == 0)
+          result = nameCompare(r1,r2);
     }
     return(result);
   }
@@ -196,6 +202,75 @@ public class ResultComparator implements Comparator {
             }
           }
         }
+      }
+      else {
+        if ( r1.getDifference() < r2.getDifference() )
+          result = -1;
+        else
+          result = 1;
+      }
+
+      if ( r1.getTotalScore() == 0 && r2.getTotalScore() > 0 )
+        result = 1;
+      if ( r1.getTotalScore() > 0 && r2.getTotalScore() == 0 )
+        result = -1;
+      if ( r1.getTotalScore() == 0 && r2.getTotalScore() == 0 )
+        result = 0;
+    }
+    else {
+      if ( r1.getDismissal() == 0 && r2.getDismissal() > 0 ) {
+        result = -1;
+      }
+      else if ( r1.getDismissal() > 0 && r2.getDismissal() == 0 ) {
+        result = 1;
+      }
+      else {
+        return 0;
+      }
+    }
+
+    return result;
+  }
+
+  public int totalStrokesCompareV2(Object o1, Object o2) {
+    ResultsCollector r1 = (ResultsCollector) o1;
+    ResultsCollector r2 = (ResultsCollector) o2;
+    int result = 0;
+
+    if ( r1.getDismissal() == 0 && r2.getDismissal() == 0 ) {
+      if ( r1.getDifference() == r2.getDifference() ) {
+          if (r1.getLastNine() == r2.getLastNine()) {
+            if (r1.getLastSix() == r2.getLastSix()) {
+              if (r1.getLastThree() == r2.getLastThree()) {
+                if (r1.getLast() == r2.getLast())
+                  result = 0;
+                else {
+                  if (r1.getLast() < r2.getLast())
+                    result = -1;
+                  else
+                    result = 1;
+                }
+              }
+              else {
+                if (r1.getLastThree() < r2.getLastThree())
+                  result = -1;
+                else
+                  result = 1;
+              }
+            }
+            else {
+              if (r1.getLastSix() < r2.getLastSix())
+                result = -1;
+              else
+                result = 1;
+            }
+          }
+          else {
+            if (r1.getLastNine() < r2.getLastNine())
+              result = -1;
+            else
+              result = 1;
+          }
       }
       else {
         if ( r1.getDifference() < r2.getDifference() )
