@@ -70,7 +70,7 @@ private String getImageURL(ImageEntity image, ModuleInfo modinfo){
   String URIString = com.idega.util.caching.BlobCacher.getCachedUrl(image, modinfo ,"image_value");
   if( URIString == null ){
     URIString = IWMainApplication.IMAGE_SERVLET_URL;
-    URIString += "?image_id="+image.getID();
+    URIString += image.getID()+"image?image_id="+image.getID();
   }
   return URIString;
 }
@@ -126,17 +126,7 @@ public Image(int image_id) throws SQLException{
   super();
   this.imageId = image_id;
   setBorder(0);
-/*
-public Image(int imageId) throws SQLException{
-  super();
-  this.imageId = imageId;
-  StringBuffer URIString = new StringBuffer("");
-  URIString.append("/servlet/imageModule?image_id=");
-  URIString.append(imageId);
-  setURL(URIString.toString());
-  setBorder(0);
->>>>>>> 1.6
-*/
+
 }
 
 public void setBorder(String s){
