@@ -92,7 +92,7 @@ public class MessageBox extends CommuneBlock {
       mainTable.setCellpadding(14);
       mainTable.setCellspacing(0);
       mainTable.setColor(getBackgroundColor());
-      mainTable.setWidth(600);
+      //mainTable.setWidth(600);
     }
     mainTable.add(po);
   }
