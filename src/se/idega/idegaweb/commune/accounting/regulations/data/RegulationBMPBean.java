@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.17 2003/11/18 10:41:56 staffan Exp $
+ * $Id: RegulationBMPBean.java,v 1.18 2003/11/28 16:20:23 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.17 2003/11/18 10:41:56 staffan Exp $
+ * $Id: RegulationBMPBean.java,v 1.18 2003/11/28 16:20:23 joakim Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -464,7 +464,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		}
 
 		sql.appendOrderBy(COLUMN_CONDITION_ORDER);
-
+		System.out.println("SQL: "+sql);
 		return idoFindPKsBySQL(sql.toString());
 	}
 

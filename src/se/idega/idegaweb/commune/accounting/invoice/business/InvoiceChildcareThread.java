@@ -45,6 +45,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
+import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -180,6 +181,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,(Integer)employmentType.getPrimaryKey()));
+						log.info("Emplyment: "+employmentType.getLocalizationKey());
 					}
 
 					log.info("\nSchool type: "+childcareType+
@@ -230,7 +232,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
 						category.getCategory(),//The ID that selects barnomsorg in the regulation
 						PaymentFlowConstant.IN, 			//The payment flow is out
-						currentDate,							//Current date to select the correct date range
+						startPeriod.getDate(),							//Current date to select the correct date range
 						RuleTypeConstant.DERIVED,			//The conditiontype
 						conditions								//The conditions that need to fulfilled
 						);
@@ -242,7 +244,9 @@ public class InvoiceChildcareThread extends BillingThread{
 						postingDetail = regBus.getPostingDetailForContract(
 							totalSum,
 							contract,
-							regulation);
+							regulation,
+							startPeriod.getDate(),
+							conditions);
 
 						// **Create the invoice record
 						//TODO (JJ) get these strings from the postingDetail instead.
@@ -449,10 +453,10 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @return the sibling order for the child connected to the contract
 	 */
 	private int getSiblingOrder(ChildCareContract contract) throws EJBException, SiblingOrderException, IDOLookupException, RemoteException, CreateException{
-		UserBusiness userBus = (UserBusiness) IDOLookup.create(UserBusiness.class);
+		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 	
 		//First see if the child already has been given a sibling order
-		MemberFamilyLogic familyLogic = (MemberFamilyLogic) IDOLookup.create(MemberFamilyLogic.class);
+		MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 		Integer order = (Integer)siblingOrders.get(contract.getChild().getPrimaryKey());
 		if(order != null)
 		{
@@ -498,7 +502,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			
 				//Check if the sibling has a valid contract of right type
 				try {
-					getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),currentDate);
+					getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
 					//If kids have same address add to collection
 					Address siblingAddress = userBus.getUsersMainAddress(contract.getChild());
 					if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&

@@ -283,7 +283,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 														while(regulationForTypeIter.hasNext())
 														{
 															regulation = (Regulation)regulationForTypeIter.next();
-															postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+															postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation, currentDate, conditions);
 															regSpecType = getRegulationSpecTypeHome().
 																findByRegulationSpecType(postingDetail.getRuleSpecType());
 															createPaymentRecord(postingDetail,postings[0],postings[1]);
@@ -309,7 +309,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 														while(regulationForTypeIter.hasNext())
 														{
 															regulation = (Regulation)regulationForTypeIter.next();
-															postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+															postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation,currentDate, conditions);
 															regSpecType = getRegulationSpecTypeHome().
 																findByRegulationSpecType(postingDetail.getRuleSpecType());
 															createPaymentRecord(postingDetail,postings[0],postings[1]);
@@ -347,7 +347,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											while(regulationForResourceIter.hasNext())
 											{
 												regulation = (Regulation)regulationForResourceIter.next();
-												postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+												postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation,currentDate, conditions);
 												regSpecType = getRegulationSpecTypeHome().
 													findByRegulationSpecType(postingDetail.getRuleSpecType());
 												createPaymentRecord(postingDetail,postings[0],postings[1]);

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.75 2003/11/28 14:13:25 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.76 2003/11/28 16:20:08 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1558,9 +1558,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
 					Regulation regulation = (Regulation) it.next();
+					System.out.println("Checking Regulation "+regulation.getName());
 					int i = checkConditions(regulation, condition);
-					if (i == 1)
+					if (i == 1){
+						System.out.println("Regulation found "+regulation.getName());
 						match.add(regulation);
+					}
 				}
 
 				if (match.size() == 1) {
@@ -1839,8 +1842,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param contract
 	 * @return PostingDetail
 	 */
-	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation) {
-		return getPostingDetailFromRegulation(regulation, null, contract, null, null, totalSum);
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) {
+		return getPostingDetailFromRegulation(regulation, condition, contract, null, period, totalSum);
 	}
 
 	/**
@@ -1852,8 +1855,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param regulation
 	 * @return
 	 */
-	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation) {
-		return getPostingDetailFromRegulation(regulation, null, null, schoolClassMember, null, totalSum);
+	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) {
+		return getPostingDetailFromRegulation(regulation, condition, null, schoolClassMember, period, totalSum);
 	}
 
 	/**
