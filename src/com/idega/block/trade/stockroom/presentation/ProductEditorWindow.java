@@ -132,7 +132,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 				displayForm(iwc);
 			}
 			else {
-
+				displayForm(iwc);
 			}
 		}
 		else if (action.equals(this.PAR_DELETE)) {
@@ -397,8 +397,8 @@ public class ProductEditorWindow extends IWAdminWindow {
 
 		boolean returner = false;
 
-		if (!name.equals("")) {
-			if (_product == null) {
+//		if (!name.equals("")) {
+			if (_product == null && !name.equals("")) {
 				try {
 					_productId = getProductBusiness(iwc).createProduct(null, name, number, description, true, iLocaleID);
 					_product = getProductBusiness(iwc).getProduct(_productId);
@@ -418,6 +418,9 @@ public class ProductEditorWindow extends IWAdminWindow {
 			}
 			else {
 				try {
+					if ("".equals(name)) {
+						name = null;
+					}
 					_product = getProductBusiness(iwc).getProduct(getProductBusiness(iwc).updateProduct(this._productId, null, name, number, description, true, iLocaleID));
 
 					_business.setThumbnail(_product, Integer.parseInt(thumbnailId));
@@ -438,7 +441,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 					e.printStackTrace(System.err);
 				}
 			}
-		}
+//		}
 
 		return returner;
 	}
