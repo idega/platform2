@@ -103,7 +103,7 @@ public class BookBMPBean extends GenericEntity implements Book {
 
   public Collection ejbFindAllNewestBooks(int[] categories,int numberOfReturns)throws FinderException{
     StringBuffer sql = new StringBuffer();
-    sql.append("select b.* from ");
+    sql.append("select distinct b.* from ");
     sql.append(getEntityTableName()+" b,"+getTableNameBookCategory()+" bc");
     sql.append(" where ");
     sql.append("b."+getIDColumnName()+" = bc."+getIDColumnName());
@@ -167,8 +167,8 @@ public class BookBMPBean extends GenericEntity implements Book {
       Collection reviews = getReviewHome().findAllReviewsForBook(this.getID());
       Iterator iter = reviews.iterator();
       while (iter.hasNext()) {
-        Review item = (Review)iter.next();
-        item.remove();
+	Review item = (Review)iter.next();
+	item.remove();
       }
       //SimpleQuerier.execute("delete from "+ReviewBMPBean.getEntityTableName()+" where "+getIDColumnName()+" = "+String.valueOf(((Integer)this.getPrimaryKey()).intValue()));
     }
