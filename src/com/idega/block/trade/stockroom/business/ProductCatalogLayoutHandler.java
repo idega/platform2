@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCatalogLayoutHandler.java,v 1.8 2004/06/28 14:07:44 thomas Exp $
+ *  $Id: ProductCatalogLayoutHandler.java,v 1.9 2004/08/27 10:35:37 gimmi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -48,6 +48,7 @@ public class ProductCatalogLayoutHandler implements ICPropertyHandler {
   menu.addMenuElement( ProductCatalogLayoutCategories.class.getName(), "Category list" );
   menu.addMenuElement( ProductCatalogLayoutSimple.class.getName(), "Simple list" );
   menu.addMenuElement( ProductCatalogLayoutWineList.class.getName(), "Category tree" );
+  menu.addMenuElement( ProductCatalogLayoutMetadataList.class.getName(), "Metadata list" );
   menu.setSelectedElement( value );
   return ( menu );
  }
