@@ -124,7 +124,10 @@ public class ReportQueryBuilder extends Block {
 	private int tableBorder = 0;
 	private String zebraColor1 = "#CCCC99";
 	private String zebraColor2 = "#FFFFFF";
-	private String stepTableColor = "#CDD6E6";
+	private String stepTableColor = "#ffffff";
+	private String stepTableStyle = "main";
+	private String stepFontStyle = "headingFont";
+	private String messageFontStyle = "messageFont";
 	private boolean allowEmptyConditions = true;
 	private boolean showSourceEntityInSelectBox = true;
 	private boolean showQueries = true;
@@ -223,6 +226,7 @@ public class ReportQueryBuilder extends Block {
 				table.setWidth(width != null ? width : "300");
 				table.setBorder(tableBorder);
 				table.setColor(stepTableColor);
+				table.setStyleClass(stepTableStyle);
 				table.setColor(1, 1, "#FFFFFF");
 
 				Table headerTable = new Table(2, 2);
@@ -236,7 +240,7 @@ public class ReportQueryBuilder extends Block {
 				headerTable.add(getStepText(iwrb.getLocalizedString("step", "Step") + " " + displayStep), 1, 1);
 				headerTable.add(getMsgText(getStepMessage()), 1, 2);
 				headerTable.mergeCells(2, 1, 2, 2);
-				headerTable.add(iwb.getImage("wizard.png"), 2, 1);
+//				headerTable.add(iwb.getImage("wizard.png"), 2, 1);
 				headerTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 				table.add(headerTable, 1, 1);
@@ -1146,13 +1150,21 @@ public class ReportQueryBuilder extends Block {
 		Table table = getStepTable();
 		int row = 1;
 		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 2, row);
+		table.setColor(2,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 3, row);
+		table.setColor(3,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 4, row);
+		table.setColor(4,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
+		table.setColor(5,row,"#dfdfdf");
 		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
+		table.setColor(6,row,"#dfdfdf");
+		table.setColor(7,row,"#dfdfdf");
 		if (hasTemplatePermission) {
 			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 8, row);
+			table.setColor(8,row,"#dfdfdf");
 			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")),9,row);
+			table.setColor(9,row,"#dfdfdf");
 		}
 
 		row++;
@@ -1213,10 +1225,10 @@ public class ReportQueryBuilder extends Block {
 			booleanExpressionPart.getBadSyntaxBooleanExpression();
 		}
 		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
-		textInput.setLength(50);
+		textInput.setLength(150);
 		row++;
-		table.mergeCells(1, row, 6, row);
-		table.add(textInput, 1 , row); 
+		table.mergeCells(3, row, 6, row);
+		table.add(textInput, 3 , row); 
 		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),7 ,row);
 		
 		return table;
@@ -1479,17 +1491,19 @@ public class ReportQueryBuilder extends Block {
 
 	private Text getStepText(String string) {
 		Text text = new Text(string);
-		text.setStyle(Text.FONT_FACE_ARIAL);
-		text.setFontSize(Text.FONT_SIZE_14_HTML_4);
-		text.setBold();
+		text.setStyleClass(stepFontStyle);
+//		text.setStyle(Text.FONT_FACE_ARIAL);
+//		text.setFontSize(Text.FONT_SIZE_14_HTML_4);
+//		text.setBold();
 		return text;
 	}
 
 	private Text getMsgText(String string) {
 		Text text = new Text(string);
-		text.setStyle(Text.FONT_FACE_ARIAL);
-		text.setFontSize(Text.FONT_SIZE_10_HTML_2);
-		text.setBold();
+		text.setStyleClass(messageFontStyle);
+//		text.setStyle(Text.FONT_FACE_ARIAL);
+//		text.setFontSize(Text.FONT_SIZE_10_HTML_2);
+//		text.setBold();
 		return text;
 	}
 
