@@ -7,6 +7,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOServiceBean;
+import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICCategoryHome;
 import com.idega.core.data.ICFile;
@@ -36,6 +37,21 @@ public class CommuneForumBusinessBean extends IBOServiceBean implements CommuneF
 	}
 	
 	public boolean isModerator(ICCategory cat, User currentUser) {
+		User user = getModerator(cat);
+		int userId = -1; 
+		int currUserId = -2;
+		if (user != null) {
+			userId = user.getID();
+		}
+		if (currentUser != null) {
+			currUserId = currentUser.getID();	
+		}
+				
+		return userId == currUserId;	
+	}
+	
+	public boolean isModerator(int topicID, User currentUser) {
+		ICCategory cat = CategoryFinder.getInstance().getCategory(topicID);
 		User user = getModerator(cat);
 		int userId = -1; 
 		int currUserId = -2;

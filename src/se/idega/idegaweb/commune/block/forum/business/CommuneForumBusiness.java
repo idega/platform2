@@ -9,4 +9,5 @@ public interface CommuneForumBusiness extends com.idega.business.IBOService
  public com.idega.core.data.ICFileHome getICFileHome()throws com.idega.data.IDOLookupException, java.rmi.RemoteException;
  public com.idega.user.data.User getModerator(com.idega.core.data.ICCategory p0) throws java.rmi.RemoteException;
  public boolean isModerator(com.idega.core.data.ICCategory p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
+ public boolean isModerator(int topicID, com.idega.user.data.User currentUser) throws java.rmi.RemoteException;
 }
