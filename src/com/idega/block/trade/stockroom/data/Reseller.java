@@ -2,7 +2,7 @@ package com.idega.block.trade.stockroom.data;
 
 import javax.ejb.*;
 
-public interface Reseller extends com.idega.data.IDOLegacyEntity
+public interface Reseller extends com.idega.data.IDOLegacyEntity, com.idega.data.TreeableEntity
 {
  public void delete()throws java.sql.SQLException;
  public com.idega.core.data.Address getAddress()throws java.sql.SQLException;
