@@ -657,7 +657,7 @@ public class ReportQueryBuilder extends Block {
 			case 5 :
 				processStep5(iwc);
 				//System.out.println("helper step is " + helper.getStep());
-				step = helper.getStep() + 1;
+				//step = helper.getStep() + 1;
 				//helper.clearConditions();
 				break;
 		}
