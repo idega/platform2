@@ -73,6 +73,7 @@ public class CalendarView extends Block{
 	private CalBusiness calBiz;
 	private int userID = -1;
 	private int groupID = -2;
+	private boolean isPrintable = false;
 
 
 	public CalendarView() {
@@ -224,7 +225,7 @@ public class CalendarView extends Block{
 						headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
 						headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
 						headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
-						if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
+						if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc) || isPrintable) {
 							headlineLink.setWindowToOpen(EntryInfoWindow.class);
 						}
 						headlineLink.setStyleClass(entryLink);
@@ -421,7 +422,7 @@ public class CalendarView extends Block{
 								headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
 								headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
 								headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
-								if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
+								if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc) || isPrintable) {
 									headlineLink.setWindowToOpen(EntryInfoWindow.class);
 								}									
 								headlineLink.setStyleClass(entryLink);
@@ -479,7 +480,10 @@ public class CalendarView extends Block{
 		String dateString = stamp.getDateString("MMMMMMMM, yyyy",iwc.getCurrentLocale());
 		backTable.mergeCells(1,1,7,1);
 		Table headTable = new Table();
+		headTable.setCellspacing(0);
+		headTable.setCellpadding(1);
 		headTable.setWidth("100%");
+		headTable.setHeight("100%");
 		headTable.setStyleClass(mainTableStyle);
 		headTable.setVerticalAlignment(1,1,"top");
 		headTable.add(left,1,1);
@@ -498,9 +502,15 @@ public class CalendarView extends Block{
 			if (weekday == 0)
 				weekday = 7;
 			nameOfDay = new Text(cal.getDayName(weekday, iwc.getCurrentLocale(), IWCalendar.LONG).toString().toLowerCase());
-			backTable.add(nameOfDay,i,2);
+			Table nameOfDayTable = new Table();
+			nameOfDayTable.setCellspacing(0);
+			nameOfDayTable.setCellpadding(1);
+			nameOfDayTable.setWidth("100%");
+			nameOfDayTable.setHeight("100%");
+			nameOfDayTable.setColor("#ffffff");
+			nameOfDayTable.add(nameOfDay,1,1);
+			backTable.add(nameOfDayTable,i,2);
 			backTable.setWidth(i,2,"200");
-			backTable.setStyleClass(i,2,"main");
 		}
 		while (n <= daycount) {
 			Table dayCell = new Table();
@@ -620,7 +630,7 @@ public class CalendarView extends Block{
 					headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
 					headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
 					headlineLink.addParameter(CalendarEntryCreator.entryIDParameterName, entry.getPrimaryKey().toString());
-					if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
+					if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc) || isPrintable) {
 						headlineLink.setWindowToOpen(EntryInfoWindow.class);
 					}
 					headlineLink.setStyleClass(entryLink);
@@ -659,7 +669,7 @@ public class CalendarView extends Block{
 				row++;
 			n++;
 			
-		}		
+		}	
 		return backTable;
 	}
 	
@@ -758,11 +768,11 @@ public class CalendarView extends Block{
 		addLinkParameters(dayView,CalendarParameters.DAY,timeStamp);
 		dayView.setImage(day_on);
 		
-		Image week_on = iwb.getImage("week_on_blue.gif");
+/*		Image week_on = iwb.getImage("week_on_blue.gif");
 		Link weekView = new Link();
 		addLinkParameters(weekView,CalendarParameters.WEEK,timeStamp);
 		weekView.setImage(week_on);
-		
+*/		
 		Image month_on = iwb.getImage("month_on_blue.gif");
 		Link monthView = new Link();
 		addLinkParameters(monthView,CalendarParameters.MONTH,timeStamp);
@@ -774,7 +784,7 @@ public class CalendarView extends Block{
 		yearView.setImage(year_on);
 		
 		iconTable.add(dayView,1,1);
-		iconTable.add(weekView,2,1);
+//		iconTable.add(weekView,2,1);
 		iconTable.add(monthView,3,1);
 		iconTable.add(yearView,4,1);
 		
@@ -879,7 +889,7 @@ public class CalendarView extends Block{
 		table.add(viewTable,1,1);
 //		table.setBorder(1);
 		
-		if(iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) { 
+		if(iwc.getAccessController().hasRole("cal_view_entry_creator",iwc) && !isPrintable) { 
 			table.setWidth(800);
 			Table headlineTable = new Table();
 			headlineTable.setCellpadding(0);
@@ -941,9 +951,12 @@ public class CalendarView extends Block{
 		else {
 			table.setWidth(500);
 		}
-		
-		
-
+		if(!isPrintable) {
+			Link printLink = new Link(iwrb.getLocalizedString("calendarwindow.printable_cal","Printerfriendly Calendar"));
+			printLink.setWindowToOpen(PrintableCalendarView.class);
+			printLink.setStyleClass(styledLink);
+			table.add(printLink,1,3);
+		}
 		add(table);
 	}
 	/**
@@ -990,6 +1003,9 @@ public class CalendarView extends Block{
 	}
 	public int getViewUserID() {
 		return userID;
+	}
+	public void setPrintableVersion(boolean isPrintable) {
+		this.isPrintable = isPrintable;
 	}
 	/**
 	 * Adds parameters for the next day to the next day link

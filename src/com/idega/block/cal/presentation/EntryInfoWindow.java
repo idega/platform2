@@ -71,9 +71,10 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	private Table table;
 	
 	public EntryInfoWindow() {
-		setHeight(200);
-		setWidth(300);
+		setHeight(300);
+		setWidth(400);
 		setResizable(true);
+		setScrollbar(false);
 	}
 	public void initializeTexts(IWContext iwc) {
 
