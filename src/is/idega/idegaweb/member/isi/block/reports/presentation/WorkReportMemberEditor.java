@@ -86,6 +86,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private List fieldList;
   
+  private boolean personalIdnotCorrect = false;
+  
   // key: member id, value: collection of league names, to that the member belongs
   private Map memberLeaguesMap = null;
   // key: league name, int number of members that belong to that league 
@@ -291,13 +293,20 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
     }
     EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
+    // get error message
+    if (personalIdnotCorrect) {
+      String message = resourceBundle.getLocalizedString("wr_account_member_ssn_not_valid", "The input of the social security number is not valid");
+      Text text = new Text(message);
+      text.setBold();
+      add(text);
+    }
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
     PresentationObject inputField = getPersonalIdInputField(resourceBundle);
     PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
     PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-    PresentationObject cancelButton = getCancelButton(resourceBundle);
+    PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
     Table buttonTable = new Table(4,1);
     buttonTable.add(inputField,1,1);
     buttonTable.add(newEntryButton,2,1);
@@ -333,11 +342,18 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     return button;
   }  
 
-  private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
-    String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
-    SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
+  private PresentationObject getCancelButton(IWResourceBundle resourceBundle, IWContext iwc)  {
+     String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
+     Link link = new Link(cancelText);
+     link.addParameter( SUBMIT_CANCEL_KEY, "dummy_value");
+     // add maintain parameters
+     Iterator iteratorList = getParametersToMaintain().iterator();
+     while (iteratorList.hasNext())  {
+      String parameter = (String) iteratorList.next();
+      link.maintainParameter(parameter, iwc);
+    }
+    link.setAsImageButton(true);
+    return link;
   }    
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form, IWContext iwc)  {
@@ -347,6 +363,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     TextEditorConverter socialSecurityNumberEditorConverter = new TextEditorConverter(form);
     String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social securirty number");
     socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
+    socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     
@@ -464,6 +481,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private void createWorkReportMember(String personalId, IWApplicationContext iwac)  {
     try {
       WorkReportMember member = getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
+      if (member == null) {
+        personalIdnotCorrect = true;
+      }
     } catch (CreateException e) {
       System.err.println("[WorkReportDivisionBoardEditor] Could not create new WorkReportDivisionBoard. Message is: "+ e.getMessage());
       e.printStackTrace(System.err);
@@ -487,6 +507,11 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     else if (pathShortKey.equals(PERSONAL_ID))  {
       String socialSecurityNumber = value.toString();
       Integer userId = getUserIdBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
+      if (userId == null) {
+        personalIdnotCorrect = true;
+        return;
+      }
+      member.setUserId(userId.intValue());
       member.setPersonalId(value.toString());
     }
     else if (pathShortKey.equals(STREET_NAME))  {
