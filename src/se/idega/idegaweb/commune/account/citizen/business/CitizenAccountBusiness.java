@@ -19,9 +19,10 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
         (User user, String pid, String email, String phoneHome,
          String phoneWork) throws RemoteException;
     boolean insertApplication
-        (String pid, String email, String phoneHome, String phoneWork,
-         String custodian, String civilStatus, String street, String zipCode,
-         String city) throws RemoteException;
+        (String name, String pid, String email, String phoneHome,
+         String phoneWork, String custodian1Pid, String custodian1CivilStatus,
+         String custodian2Pid, String custodian2CivilStatus, String street,
+         String zipCode, String city) throws RemoteException;
     void rejectApplication (int p0, User p1, String p2 )
         throws RemoteException,CreateException,FinderException, RemoteException;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.4 2002/10/31 13:01:54 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.5 2002/10/31 15:13:02 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,21 +34,30 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 	protected final static String PHONE_HOME = "phone_home";
 	protected final static String PHONE_WORK = "phone_work";
 	protected final static String PID = "pid";
-    protected final static String CUSTODIAN = "custodian";
-    protected final static String CIVIL_STATUS = "civilStatus";
+    protected final static String CUSTODIAN1_PID = "custodian1_pid";
+    protected final static String CUSTODIAN1_CIVIL_STATUS
+        = "custodian1_civil_status";
+    protected final static String CUSTODIAN2_PID = "custodian2_pid";
+    protected final static String CUSTODIAN2_CIVIL_STATUS
+        = "custodian2_civil_status";
     protected final static String STREET = "street";
     protected final static String ZIP_CODE = "zipCode";
     protected final static String CITY = "city";
 
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
-		addAttribute(EMAIL, "E-mail", true, true, String.class, 40);
-		addAttribute(PHONE_HOME, "Home phone", true, true, String.class, 20);
-		addAttribute(PHONE_WORK, "Work phone", true, true, String.class, 20);
-		addAttribute(PID, "PID", true, true, String.class, 40);
-        addAttribute (CUSTODIAN, "custodian", true, true, String.class, 40);
-        addAttribute (CIVIL_STATUS, "civilStatus", true, true, String.class,
-                      40);
+		addAttribute (getIDColumnName());
+		addAttribute (EMAIL, "E-mail", true, true, String.class, 40);
+		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
+		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
+		addAttribute (PID, "PID", true, true, String.class, 40);
+        addAttribute (CUSTODIAN1_PID, "custodian1_pid", true, true,
+                      String.class, 40);
+        addAttribute (CUSTODIAN1_CIVIL_STATUS, "custodian1_civilStatus", true,
+                      true, String.class, 40);
+        addAttribute (CUSTODIAN2_PID, "custodian2_pid", true, true,
+                      String.class, 40);
+        addAttribute (CUSTODIAN2_CIVIL_STATUS, "custodian2_civilStatus", true,
+                      true, String.class, 40);
         addAttribute (STREET, "street", true, true, String.class, 40);
         addAttribute (ZIP_CODE, "zipCode", true, true, String.class, 40);
         addAttribute (CITY, "city", true, true, String.class, 40);
@@ -82,13 +91,22 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 		setColumn(PID, pid);
 	}
 
-    public void setCustodian (final String custodian) throws RemoteException {
-        setColumn (CUSTODIAN, custodian);
+    public void setCustodian1Pid (final String pid) throws RemoteException {
+        setColumn (CUSTODIAN1_PID, pid);
     }
     
-    public void setCivilStatus (final String civilStatus)
+    public void setCustodian1CivilStatus (final String civilStatus)
         throws RemoteException {
-        setColumn (CIVIL_STATUS, civilStatus);
+        setColumn (CUSTODIAN1_CIVIL_STATUS, civilStatus);
+    }
+    
+    public void setCustodian2Pid (final String pid) throws RemoteException {
+        setColumn (CUSTODIAN2_PID, pid);
+    }
+    
+    public void setCustodian2CivilStatus (final String civilStatus)
+        throws RemoteException {
+        setColumn (CUSTODIAN2_CIVIL_STATUS, civilStatus);
     }
     
     public void setStreet (String street) throws RemoteException {

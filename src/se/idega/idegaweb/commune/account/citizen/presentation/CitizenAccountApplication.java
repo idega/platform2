@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.6 2002/10/31 13:01:54 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.7 2002/10/31 15:13:02 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,15 +36,25 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM = 2;
 
+	private final static String PARAM_NAME = "caa_name";
 	private final static String PARAM_PID = "caa_pid";
 	private final static String PARAM_EMAIL = "caa_email";
 	private final static String PARAM_PHONE_HOME = "caa_phone_home";
 	private final static String PARAM_PHONE_WORK = "caa_phone_work";
-    private final static String PARAM_CUSTODIAN = "caa_custodian";
-    private final static String PARAM_CIVIL_STATUS = "caa_civil_status";
     private final static String PARAM_STREET = "caa_street";
     private final static String PARAM_ZIP_CODE = "caa_zip_code";
     private final static String PARAM_CITY = "caa_city";
+
+    private final static String PARAM_CUSTODIAN1_PID = "caa_custodian1_pid";
+    private final static String PARAM_CUSTODIAN1_CIVIL_STATUS
+        = "caa_custodian1_civil_status";
+    private final static String PARAM_CUSTODIAN2_PID = "caa_custodian2_pid";
+    private final static String PARAM_CUSTODIAN2_CIVIL_STATUS
+        = "caa_custodian2_civil_status";
+
+    private final static String CUSTODIAN1_KEY = "caa_custodian1";
+    private final static String CUSTODIAN2_KEY = "caa_custodian2";
+
 	private final static String PARAM_SIMPLE_FORM_SUBMIT = "caa_simpleSubmit";
 	private final static String PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT
         = "caa_unknownCitizenSubmit";
@@ -133,25 +143,40 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private void viewUnknownCitizenApplicationForm(IWContext iwc) {
 		Form accountForm = new Form();
 
-		Table inputTable = new Table(2, 12);
+		Table inputTable = new Table(2, 15);
 		inputTable.setCellspacing(2);
 		inputTable.setCellpadding(4);
 		inputTable.setColor(getBackgroundColor());
 
         addSimpleInputs (iwc, inputTable);
 
-        addSingleInput (iwc, PARAM_CUSTODIAN, "Vårdnashavare", inputTable, 40,
-                        false, 1, 5);
-        addSingleInput (iwc, PARAM_CIVIL_STATUS, "Civilstånd", inputTable, 40,
-                        false, 2, 5);
+        addSingleInput (iwc, PARAM_NAME, "Namn", inputTable, 40, false, 1, 5);
         addSingleInput (iwc, PARAM_STREET, "Gatuadress", inputTable, 40, false,
-                        1, 7);
+                        2, 5);
         addSingleInput (iwc, PARAM_ZIP_CODE, "Postnummer", inputTable, 40,
-                        false, 1, 9);
+                        false, 1, 7);
         addSingleInput (iwc, PARAM_CITY, "Postadress", inputTable, 40, false, 2,
-                        9);
+                        7);
+
+        final Text custodianHeader1
+                = getLocalizedHeader (CUSTODIAN1_KEY, "Vårdnashavare 1");
+
+        inputTable.add (custodianHeader1, 1, 9);
+        addSingleInput (iwc, PARAM_CUSTODIAN1_PID, "Personnummer", inputTable,
+                        40, false, 1, 10);
+        addSingleInput (iwc, PARAM_CUSTODIAN1_CIVIL_STATUS, "Civilstånd",
+                        inputTable, 40, false, 2, 10);
+
+        final Text custodianHeader2
+                = getLocalizedHeader (CUSTODIAN2_KEY, "Vårdnashavare 2");
+        inputTable.add (custodianHeader2, 1, 12);
+        addSingleInput (iwc, PARAM_CUSTODIAN2_PID, "Personnummer", inputTable,
+                        40, false, 1, 13);
+        addSingleInput (iwc, PARAM_CUSTODIAN2_CIVIL_STATUS, "Civilstånd",
+                        inputTable, 40, false, 2, 13);
+
         addSubmitButton (iwc, PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT,
-                         "Submit application", inputTable, 12);
+                         "Submit application", inputTable, 15);
 
 		if (_isError) {
 			if (_errorMsg != null) {
@@ -276,12 +301,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
     private void submitUnknownCitizenForm (final IWContext iwc) {
+		final String name = iwc.getParameter(PARAM_NAME);
 		final String pid = iwc.getParameter(PARAM_PID);
 		final String phoneHome = iwc.getParameter(PARAM_PHONE_HOME);
 		final String email = iwc.getParameter(PARAM_EMAIL);
 		final String phoneWork = iwc.getParameter(PARAM_PHONE_WORK);
-        final String custodian = iwc.getParameter (PARAM_CUSTODIAN);
-        final String civilStatus = iwc.getParameter (PARAM_CIVIL_STATUS);
+        final String custodian1Pid = iwc.getParameter (PARAM_CUSTODIAN1_PID);
+        final String custodian1CivilStatus
+                = iwc.getParameter (PARAM_CUSTODIAN1_CIVIL_STATUS);
+        final String custodian2Pid = iwc.getParameter (PARAM_CUSTODIAN2_PID);
+        final String custodian2CivilStatus
+                = iwc.getParameter (PARAM_CUSTODIAN2_CIVIL_STATUS);
         final String street = iwc.getParameter (PARAM_STREET);
         final String zipCode = iwc.getParameter (PARAM_ZIP_CODE);
         final String city = iwc.getParameter (PARAM_CITY);
@@ -322,8 +352,9 @@ public class CitizenAccountApplication extends CommuneBlock {
                 return;
             }
 			isInserted = business.insertApplication
-                    (pid, email, phoneHome, phoneWork, custodian,
-                     civilStatus, street, zipCode, city);
+                    (name, pid, email, phoneHome, phoneWork, custodian1Pid,
+                     custodian1CivilStatus, custodian2Pid,
+                     custodian2CivilStatus, street, zipCode, city);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.12 2002/10/31 13:01:54 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.13 2002/10/31 15:13:02 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -58,20 +58,29 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
     public boolean insertApplication
-        (final String pid, final String email, final String phoneHome,
-         final String phoneWork, final String custodian,
-         final String civilStatus, final String street, final String zipCode,
-         final String city) throws RemoteException {
+        (final String name, final String pid, final String email,
+         final String phoneHome, final String phoneWork,
+         final String custodian1Pid, final String custodian1CivilStatus,
+         final String custodian2Pid, final String custodian2CivilStatus,
+         final String street, final String zipCode, final String city)
+        throws RemoteException {
 		try {
             final CitizenAccountHome citizenAccountHome = (CitizenAccountHome)
                     IDOLookup.getHome(CitizenAccount.class);
 			final CitizenAccount application = citizenAccountHome.create ();
+			application.setApplicantName (name != null ? name : "");
 			application.setPID (pid != null ? pid : "");
 			application.setPhoneHome (phoneHome != null ? phoneHome : "");
             application.setEmail (email != null ? email : "");
             application.setPhoneWork (phoneWork != null ? phoneWork : "");
-            application.setCustodian (custodian != null ? custodian : "");
-            application.setCivilStatus (civilStatus != null ? civilStatus : "");
+            application.setCustodian1Pid (custodian1Pid != null ? custodian1Pid
+                                          : "");
+            application.setCustodian1CivilStatus (custodian1CivilStatus != null
+                                                  ? custodian1CivilStatus : "");
+            application.setCustodian2Pid (custodian2Pid != null ? custodian2Pid
+                                          : "");
+            application.setCustodian2CivilStatus (custodian2CivilStatus != null
+                                                  ? custodian2CivilStatus : "");
             application.setStreet (street != null ? street : "");
             application.setZipCode (zipCode != null ? zipCode : "");
             application.setCity (city != null ? city : "");

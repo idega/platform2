@@ -20,8 +20,10 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     void setPID (String pid) throws RemoteException;
     void setPhoneHome (String phoneHome) throws RemoteException;
     void setPhoneWork (String phoneWork) throws RemoteException;
-    void setCustodian (String custodian) throws RemoteException;
-    void setCivilStatus (String civilStatus) throws RemoteException;
+    void setCustodian1Pid (String pid) throws RemoteException;
+    void setCustodian1CivilStatus (String civilStatus) throws RemoteException;
+    void setCustodian2Pid (String pid) throws RemoteException;
+    void setCustodian2CivilStatus (String civilStatus) throws RemoteException;
     void setStreet (String street) throws RemoteException;
     void setZipCode (String zipCode) throws RemoteException;
     void setCity (String city) throws RemoteException;
