@@ -37,11 +37,36 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 
 	public static String UserAttributeParameter = AccessControl.USER_ATTRIBUTE_PARAMETER;
 	public static String UserAccessAttributeParameter = "member_access";
-	public static String LoginStateParameter = GolfLoginBusiness.LoginStateParameter;//"login_state";
 
 	public LoginBusiness() {
+		// default constructor
 	}
 
+	
+    // this method must be implemented in this class otherwise the static method getControlActionValue
+    // of the super class is used! (inheritance problem of static methods in java)
+	public static boolean isLogOnAction(IWContext iwc) {
+		return "login".equals(getControlActionValue(iwc));
+	}
+
+    // this method must be implemented in this class otherwise the static method getControlActionValue
+    // of the super class is used! (inheritance problem of static methods in java)
+	public static boolean isLogOffAction(IWContext iwc) {
+		return "logoff".equals(getControlActionValue(iwc));
+	}
+
+    // this method must be implemented in this class otherwise the static method getControlActionValue
+    // of the super class is used! (inheritance problem of static methods in java)
+	protected static boolean isTryAgainAction(IWContext iwc) {
+		return "tryagain".equals(getControlActionValue(iwc));
+	}
+
+	// this method uses a different parameter than the super method!
+	private static String getControlActionValue(IWContext iwc) {
+		return iwc.getParameter(GolfLoginBusiness.LoginStateParameterForGolf);
+	}	
+	
+	
 	public static boolean isLoggedOn(IWContext modinfo) {
 		if (modinfo.getSessionAttribute(UserAttributeParameter) == null) {
 			return false;
@@ -50,11 +75,11 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 	}
 
 	public static void internalSetState(IWContext modinfo, String state) {
-		modinfo.setSessionAttribute(LoginStateParameter, state);
+		modinfo.setSessionAttribute(GolfLoginBusiness.LoginStateParameterForGolf, state);
 	}
 
 	public static String internalGetStateString(IWContext modinfo) {
-		return (String) modinfo.getSessionAttribute(LoginStateParameter);
+		return (String) modinfo.getSessionAttribute(GolfLoginBusiness.LoginStateParameterForGolf);
 	}
 
 	public boolean actionPerformed(IWContext modinfo) throws IWException {
@@ -63,7 +88,7 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 		try {
 
 			if (isLoggedOn(modinfo)) {
-				String controlParameter = modinfo.getParameter(LoginBusiness.LoginStateParameter);
+				String controlParameter = modinfo.getParameter(GolfLoginBusiness.LoginStateParameterForGolf);
 				if (controlParameter != null) {
 
 					if (controlParameter.equals("logoff")) {
@@ -76,7 +101,7 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 
 			}
 			else {
-				String controlParameter = modinfo.getParameter(LoginBusiness.LoginStateParameter);
+				String controlParameter = modinfo.getParameter(GolfLoginBusiness.LoginStateParameterForGolf);
 
 				if (controlParameter != null) {
 					if (controlParameter.equals("login")) {
