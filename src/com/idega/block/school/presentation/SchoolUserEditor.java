@@ -563,13 +563,26 @@ public class SchoolUserEditor extends Block {
 		
 		String sUserType = iwc.getParameter(PARAMETER_SCHOOL_USER_TYPE);
 		int iUserType = Integer.parseInt(sUserType);
+		String category = getSchoolUserBusiness(iwc).getSchoolCategory(school);
+		Group priGroup = null;
+		try {
+			if (category.equalsIgnoreCase("SCHOOL"))
+				priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
+			else if (category.equalsIgnoreCase("CHILDCARE"))
+				priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
+		}
+		catch (CreateException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		}
 
 		/** Updateing headmasters */
 		try {
 			String hId = iwc.getParameter(sid);
 			
-			if (hId != null) {
-				Group priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
+			if (hId != null && priGroup != null) {
 				UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
 				User user;
 				user = userHome.findByPrimaryKey(new Integer(hId));
@@ -659,8 +672,7 @@ public class SchoolUserEditor extends Block {
 			String hmEmail    = iwc.getParameter(semail);
 			String hmPhone    = iwc.getParameter(sphone);
 			
-			if (headmaster != null && !headmaster.equals("")) {
-				Group priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
+			if (headmaster != null && !headmaster.equals("") && priGroup != null) {
 				User user = getUserBusiness(iwc).createUser(headmaster, "","", ((Integer)priGroup.getPrimaryKey()).intValue());
 //				getSchoolUserBusiness(iwc).addWebAdmin(school, user);
 //				getSchoolBusiness(iwc).addHeadmaster(school, user);
