@@ -143,6 +143,7 @@ public class ReportQueryOverview extends Block {
   	IWBundle bundle = getBundle(iwc);
     IWResourceBundle resourceBundle = getResourceBundle(iwc);
     String action = parseAction(iwc);
+    
     if (SHOW_SINGLE_QUERY.equals(action) || SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action))	{
     	//getSingleQueryView(bundle, resourceBundle, action, iwc);
     }
@@ -229,24 +230,21 @@ public class ReportQueryOverview extends Block {
 		return action;
 	}
 
+	// returns a collection of EntityRepresentation
 	public static Collection getQueries(IWContext iwc) throws RemoteException, FinderException {
 		return ReportQueryOverview.getQueries(iwc, -1);
 	}
 	
+	public static Collection getOwnQueries(IWContext iwc) throws RemoteException, FinderException {
+		Group topGroup = ReportQueryOverview.getTopGroupForUser(iwc);
+		TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+		ReportQueryOverview.getOwnQueries(topGroup,queryRepresentations, -1);
+		return queryRepresentations.values();
+	}
+	
   private static Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException, FinderException {
-  	User currentUser = iwc.getCurrentUser();
-  	GroupBusiness groupBusiness = getGroupBusiness(iwc);
-  	UserBusiness userBusiness = getUserBusiness(iwc);
-  	//TODO: thi solve problem with the group types
-  	String[] groupTypes = 
-			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
-		Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
-		// special hack for damaged databases
-		if (topGroup == null) {
-			List groupType = new ArrayList();
-			groupType.add("general");
-			topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
-		}
+		Group topGroup = ReportQueryOverview.getTopGroupForUser(iwc);
+		GroupBusiness groupBusiness = ReportQueryOverview.getGroupBusiness(iwc);
   	Collection parentGroups = new ArrayList();
   	try {
   		// bad implementation in GroupBusiness
@@ -264,8 +262,7 @@ public class ReportQueryOverview extends Block {
   	//To keep them ordered alphabetically
   	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		// add own queries
-		getQueriesFromGroup(queryRepresentations, topGroup, true, true, showOnlyOneQueryWithId);
-		getQueriesFromGroup(queryRepresentations, topGroup, false, true, showOnlyOneQueryWithId);
+		ReportQueryOverview.getOwnQueries(topGroup, queryRepresentations, showOnlyOneQueryWithId);
 		// add public queries
   	Iterator parentGroupsIterator = parentGroups.iterator();
   	while (parentGroupsIterator.hasNext()) {
@@ -274,6 +271,29 @@ public class ReportQueryOverview extends Block {
   	}
   	return queryRepresentations.values();
   }
+  
+  private static Group getTopGroupForUser(IWContext iwc) throws RemoteException {
+  	User currentUser = iwc.getCurrentUser();
+  	UserBusiness userBusiness = getUserBusiness(iwc);
+  	//TODO: thi solve problem with the group types
+  	String[] groupTypes = 
+			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+		Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+		// special hack for damaged databases
+		if (topGroup == null) {
+			List groupType = new ArrayList();
+			groupType.add("general");
+			topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
+		}
+		return topGroup;
+  }
+  
+  private static void getOwnQueries(Group topGroup, TreeMap queryRepresentations, int showOnlyOneQueryWithId) throws  FinderException {
+  	// add own queries
+		getQueriesFromGroup(queryRepresentations, topGroup, true, true, showOnlyOneQueryWithId);
+		getQueriesFromGroup(queryRepresentations, topGroup, false, true, showOnlyOneQueryWithId);
+	}
+
   	
   private void getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException, FinderException {
   	Collection queries = ReportQueryOverview.getQueries(iwc, showOnlyOneQueryWithId);
@@ -297,39 +317,6 @@ public class ReportQueryOverview extends Block {
   	add(form);
   }
   	
-//  private static void getQueriesFromFolder(ICFile folderFile, TreeMap queryRepresentations, String groupName, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) { 
-//			// bad implementation:
-//			// if the children list is empty null is returned. 
-//			//TODO: thi: change the implementation
-//			Iterator iterator = folderFile.getChildren();
-//			if (iterator == null) {
-//				iterator = (new ArrayList(0)).iterator();
-//			}
-//			while (iterator.hasNext())	{
-//				ICTreeNode node = (ICTreeNode) iterator.next();
-//				int id = node.getNodeID();
-//				String name = node.getNodeName();
-//				int countOfSameName = 2;
-//				
-//				boolean alreadyAddedKey = queryRepresentations.containsKey(name);
-//				if(alreadyAddedKey){
-//					String newName = name;
-//					while(alreadyAddedKey){
-//						//probably crappy code its 4am and i dead tired - Eiki
-//						//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
-//						newName = new String(name+countOfSameName);
-//						alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
-//						countOfSameName++;
-//					}
-//					name = newName;
-//				}
-//				// show only the query with a specified id if desired 
-//				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
-//					QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
-//					queryRepresentations.put(name,representation);
-//				}
-//			}  
-//  	}
   private static void getQueriesFromGroup(TreeMap queryRepresentations, Group group, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) throws FinderException { 
 			// bad implementation:
 			// if the children list is empty null is returned. 
@@ -360,6 +347,11 @@ public class ReportQueryOverview extends Block {
 				// show only the query with a specified id if desired 
 				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
 					QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
+					if (queryRepresentations.containsKey(name)) {
+						// usually all names are different (you can't store the same name twice), that is
+						// this shouldn't happen at all therefore we do a very simple solution
+						name += " (1)";
+					}
 					queryRepresentations.put(name,representation);
 				}
 			}  
@@ -394,25 +386,26 @@ public class ReportQueryOverview extends Block {
 	  	table.add(expertModeLink,column++,1);
   	}
   	
-		// new button for query builder (simple mode)
-		String uploadQueryText = resourceBundle.getLocalizedString("ro_upload_query", "Upload query");
-		Link uploadQueryLink = new Link(uploadQueryText);
-		uploadQueryLink.addParameter(ReportQueryOverview.UPLOAD_QUERY, ReportQueryOverview.UPLOAD_QUERY);
-		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
-		uploadQueryLink.setAsImageButton(true);
+  	if (isAdmin) {
+  		// new button for query builder (simple mode)
+  		String uploadQueryText = resourceBundle.getLocalizedString("ro_upload_query", "Upload query");
+  		Link uploadQueryLink = new Link(uploadQueryText);
+  		uploadQueryLink.addParameter(ReportQueryOverview.UPLOAD_QUERY, ReportQueryOverview.UPLOAD_QUERY);
+  		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+  		uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+  		uploadQueryLink.setAsImageButton(true);
+  		table.add(uploadQueryLink, column++, 1);
+  	
+  		// new button for query builder (simple mode)
+  		String uploadLayoutText = resourceBundle.getLocalizedString("ro_upload_layout", "Upload layout");
+  		Link uploadLayoutLink = new Link(uploadLayoutText);
+  		uploadLayoutLink.addParameter(ReportQueryOverview.UPLOAD_LAYOUT, ReportQueryOverview.UPLOAD_LAYOUT);
+  		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+  		uploadLayoutLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+  		uploadLayoutLink.setAsImageButton(true);
 		
-		table.add(uploadQueryLink, column++, 1);
-
-		// new button for query builder (simple mode)
-		String uploadLayoutText = resourceBundle.getLocalizedString("ro_upload_layout", "Upload layout");
-		Link uploadLayoutLink = new Link(uploadLayoutText);
-		uploadLayoutLink.addParameter(ReportQueryOverview.UPLOAD_LAYOUT, ReportQueryOverview.UPLOAD_LAYOUT);
-		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		uploadLayoutLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
-		uploadLayoutLink.setAsImageButton(true);
-		
-		table.add(uploadLayoutLink, column++, 1);
+  		table.add(uploadLayoutLink, column++, 1);
+  	}
 
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");

@@ -54,7 +54,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     	overview.setShowOnlyOneQueryWithId(queryId);
     	add(overview,iwc);
     }
-    else if (iwc.isParameterSet(ReportQueryOverview.UPLOAD_LAYOUT)){
+    else if (iwc.isParameterSet(ReportQueryOverview.UPLOAD_LAYOUT) || iwc.isParameterSet(LayoutUploader.KEY_DELETE_LAYOUT_IS_SUBMITTED)) {
     	LayoutUploader layoutUploader = new LayoutUploader();
     	add(layoutUploader, iwc);
     }
