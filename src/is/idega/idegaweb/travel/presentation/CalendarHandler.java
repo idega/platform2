@@ -120,75 +120,99 @@ public class CalendarHandler extends TravelManager {
 
 
       Text jan = (Text) theText.clone();
+        jan.setFontStyle("text-decoration: none;");
         jan.setText(cal.getShortNameOfMonth(1,iwc).substring(0,3));
       Text feb = (Text) theText.clone();
+        feb.setFontStyle("text-decoration: none;");
         feb.setText(cal.getShortNameOfMonth(2,iwc).substring(0,3));
       Text mar = (Text) theText.clone();
+        mar.setFontStyle("text-decoration: none;");
         mar.setText(cal.getShortNameOfMonth(3,iwc).substring(0,3));
       Text apr = (Text) theText.clone();
+        apr.setFontStyle("text-decoration: none;");
         apr.setText(cal.getShortNameOfMonth(4,iwc).substring(0,3));
       Text may = (Text) theText.clone();
+        may.setFontStyle("text-decoration: none;");
         may.setText(cal.getShortNameOfMonth(5,iwc).substring(0,3));
       Text jun = (Text) theText.clone();
+        jun.setFontStyle("text-decoration: none;");
         jun.setText(cal.getShortNameOfMonth(6,iwc).substring(0,3));
       Text jul = (Text) theText.clone();
+        jul.setFontStyle("text-decoration: none;");
         jul.setText(cal.getShortNameOfMonth(7,iwc).substring(0,3));
       Text aug = (Text) theText.clone();
+        aug.setFontStyle("text-decoration: none;");
         aug.setText(cal.getShortNameOfMonth(8,iwc).substring(0,3));
       Text sep = (Text) theText.clone();
+        sep.setFontStyle("text-decoration: none;");
         sep.setText(cal.getShortNameOfMonth(9,iwc).substring(0,3));
       Text oct = (Text) theText.clone();
+        oct.setFontStyle("text-decoration: none;");
         oct.setText(cal.getShortNameOfMonth(10,iwc).substring(0,3));
       Text nov = (Text) theText.clone();
+        nov.setFontStyle("text-decoration: none;");
         nov.setText(cal.getShortNameOfMonth(11,iwc).substring(0,3));
       Text dec = (Text) theText.clone();
+        dec.setFontStyle("text-decoration: none;");
         dec.setText(cal.getShortNameOfMonth(12,iwc).substring(0,3));
 
       Link lJan = new Link(jan,Booking.class);
+        lJan.setBold();
         lJan.addParameter("year",_fromStamp.getYear());
         lJan.addParameter("month",1);
         lJan.addParameter("day",_fromStamp.getDate());
       Link lFeb = new Link(feb,Booking.class);
+        lFeb.setBold();
         lFeb.addParameter("year",_fromStamp.getYear());
         lFeb.addParameter("month",2);
         lFeb.addParameter("day",_fromStamp.getDate());
       Link lMar = new Link(mar,Booking.class);
+        lMar.setBold();
         lMar.addParameter("year",_fromStamp.getYear());
         lMar.addParameter("month",3);
         lMar.addParameter("day",_fromStamp.getDate());
       Link lApr = new Link(apr,Booking.class);
+        lApr.setBold();
         lApr.addParameter("year",_fromStamp.getYear());
         lApr.addParameter("month",4);
         lApr.addParameter("day",_fromStamp.getDate());
       Link lMay = new Link(may,Booking.class);
+        lMay.setBold();
         lMay.addParameter("year",_fromStamp.getYear());
         lMay.addParameter("month",5);
         lMay.addParameter("day",_fromStamp.getDate());
       Link lJun = new Link(jun,Booking.class);
+        lJun.setBold();
         lJun.addParameter("year",_fromStamp.getYear());
         lJun.addParameter("month",6);
         lJun.addParameter("day",_fromStamp.getDate());
       Link lJul = new Link(jul,Booking.class);
+        lJul.setBold();
         lJul.addParameter("year",_fromStamp.getYear());
         lJul.addParameter("month",7);
         lJul.addParameter("day",_fromStamp.getDate());
       Link lAug = new Link(aug,Booking.class);
+        lAug.setBold();
         lAug.addParameter("year",_fromStamp.getYear());
         lAug.addParameter("month",8);
         lAug.addParameter("day",_fromStamp.getDate());
       Link lSep = new Link(sep,Booking.class);
+        lSep.setBold();
         lSep.addParameter("year",_fromStamp.getYear());
         lSep.addParameter("month",9);
         lSep.addParameter("day",_fromStamp.getDate());
       Link lOct = new Link(oct,Booking.class);
+        lOct.setBold();
         lOct.addParameter("year",_fromStamp.getYear());
         lOct.addParameter("month",10);
         lOct.addParameter("day",_fromStamp.getDate());
       Link lNov = new Link(nov,Booking.class);
+        lNov.setBold();
         lNov.addParameter("year",_fromStamp.getYear());
         lNov.addParameter("month",11);
         lNov.addParameter("day",_fromStamp.getDate());
       Link lDec = new Link(dec,Booking.class);
+        lDec.setBold();
         lDec.addParameter("year",_fromStamp.getYear());
         lDec.addParameter("month",12);
         lDec.addParameter("day",_fromStamp.getDate());
@@ -227,6 +251,8 @@ public class CalendarHandler extends TravelManager {
         }else {
           depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
         }
+      }else {
+          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product);
       }
 
 
@@ -337,6 +363,7 @@ public class CalendarHandler extends TravelManager {
     _product = product;
     _productId = product.getID();
     try {
+      _supplier = new Supplier(product.getSupplierId());
       _service = TravelStockroomBusiness.getService(product);
       _timeframe = _service.getTimeframe();
     }catch (Exception e) {

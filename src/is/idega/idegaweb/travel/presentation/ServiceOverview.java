@@ -18,6 +18,8 @@ import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
 import java.text.DecimalFormat;
 
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
+
 import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
 
@@ -39,8 +41,16 @@ public class ServiceOverview extends TravelManager {
   private String deleteParameter = "service_to_delete_id";
 
   private idegaCalendar cal = new idegaCalendar();
+  TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  String[] dayOfWeekName = new String[8];
+
 
   public ServiceOverview() {
+  }
+
+  public ServiceOverview(IWContext iwc)throws Exception {
+    super.main(iwc);
+    init(iwc);
   }
 
   public void add(PresentationObject mo) {
@@ -50,8 +60,7 @@ public class ServiceOverview extends TravelManager {
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
-      bundle = super.getBundle();
-      iwrb = super.getResourceBundle();
+      init(iwc);
 
       if (super.isLoggedOn(iwc) ) {
 
@@ -72,6 +81,17 @@ public class ServiceOverview extends TravelManager {
       //super.add(tm);
   }
 
+  private void init(IWContext iwc) {
+      bundle = super.getBundle();
+      iwrb = super.getResourceBundle();
+      dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
+      dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
+      dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,iwc).substring(0,3);
+      dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,iwc).substring(0,3);
+      dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
+      dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
+      dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
+  }
 
   public Table getTopTable(IWContext iwc) {
       Table topTable = new Table(4,2);
@@ -132,13 +152,7 @@ public class ServiceOverview extends TravelManager {
       Table table = new Table();
         table.setBorder(0);
         form.add(table);
-        /*
-      ShadowBox sb = new ShadowBox();
-        form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-        sb.add(table);
-*/
+
       table.setWidth("90%");
       String sYear = iwc.getParameter("year");
       if (sYear == null) {
@@ -147,18 +161,8 @@ public class ServiceOverview extends TravelManager {
 
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
-      DecimalFormat df = new DecimalFormat("0.00");
 
-      String[] dayOfWeekName = new String[8];
-        dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
 
-      int[] dayOfWeek = new int[] {};
 
       Link delete;
       Link getLink;
@@ -171,246 +175,20 @@ public class ServiceOverview extends TravelManager {
       Link edit;
 
 
-      Text nameText = (Text) theText.clone();
-          nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
-          nameText.addToText(":");
-          nameText.setFontColor(super.BLACK);
-      Text timeframeText = (Text) theText.clone();
-          timeframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
-          timeframeText.addToText(":");
-          timeframeText.setFontColor(super.BLACK);
-      Text departureFromText = (Text) theText.clone();
-          departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
-          departureFromText.addToText(":");
-          departureFromText.setFontColor(super.BLACK);
-      Text departureTimeText = (Text) theText.clone();
-          departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
-          departureTimeText.addToText(":");
-          departureTimeText.setFontColor(super.BLACK);
-      Text arrivalFromText = (Text) theText.clone();
-          arrivalFromText.setText(iwrb.getLocalizedString("travel.arrival_at","Arrival at"));
-          arrivalFromText.addToText(":");
-          arrivalFromText.setFontColor(super.BLACK);
-      Text arrivalTimeText = (Text) theText.clone();
-          arrivalTimeText.setText(iwrb.getLocalizedString("travel.arrival_time","Arrival time"));
-          arrivalTimeText.addToText(":");
-          arrivalTimeText.setFontColor(super.BLACK);
-      Text activeDaysText = (Text) theText.clone();
-          activeDaysText.setText(iwrb.getLocalizedString("travel.active_days","Active days"));
-          activeDaysText.addToText(":");
-          activeDaysText.setFontColor(super.BLACK);
-
-      Image imageToClone = new Image("/pics/mynd.gif");
-      Image image;
 
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
-        TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
         //Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(iwc), this.getToIdegaTimestamp(iwc));
         Product[] products = tsb.getProducts(supplier.getID());
 
-        Service service;
-        Timeframe timeframe;
-        Address depAddress;
-        Address arrAddress;
-
-        idegaTimestamp depTimeStamp;
-        idegaTimestamp arrTimeStamp;
-        Text prodName;
-        Text timeframeTxt;
-        Text depFrom;
-        Text depTime;
-        Text arrFrom;
-        Text arrTime;
-        Text actDays;
-
-        Text nameOfCategory;
-        Text priceText;
-        ProductPrice[] prices;
-        Currency currency;
-
-        String stampTxt1;
-        String stampTxt2;
-
         Table contentTable;
-        int contRow = 1;
-
         for (int i = 0; i < products.length; i++) {
           try {
-            contRow = 0;
-            contentTable = new Table();
-
-
-            service = TravelStockroomBusiness.getService(products[i]);
-            timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
-            depAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getDepartureAddress(service);
-            arrAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getArrivalAddress(service);
-            if (products[i].getFileId() != -1) {
-              image = new Image(products[i].getFileId());
-              image.setMaxImageWidth(138);
-            }else{
-              image = (Image) imageToClone.clone();
-            }
-            prodName = (Text) theBoldText.clone();
-                prodName.setText(service.getName());
-                prodName.setFontColor(super.BLACK);
-
-            timeframeTxt = (Text) theBoldText.clone();
-                timeframeTxt.setFontColor(super.BLACK);
-                stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
-                stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
-                try {
-                  if (timeframe.getIfYearly() ){
-                    stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
-                    stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -4);
-                  }
-                }catch (ArrayIndexOutOfBoundsException ai) {}
-                timeframeTxt.setText(stampTxt1 + " - ");
-                timeframeTxt.addToText(Text.BREAK);
-                timeframeTxt.addToText(stampTxt2);
-
-
-            depFrom = (Text) theBoldText.clone();
-                depFrom.setFontColor(super.BLACK);
-            if (depAddress != null)
-                depFrom.setText(depAddress.getStreetName());
-
-            depTimeStamp = new idegaTimestamp(service.getDepartureTime());
-            depTime = (Text) theBoldText.clone();
-                depTime.setFontColor(super.BLACK);
-                depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
-
-            arrFrom = (Text) theBoldText.clone();
-                arrFrom.setFontColor(super.BLACK);
-            if (arrAddress != null)
-                arrFrom.setText(arrAddress.getStreetName());
-
-            arrTimeStamp = new idegaTimestamp(service.getArrivalTime());
-            arrTime = (Text) theBoldText.clone();
-                arrTime.setFontColor(super.BLACK);
-                arrTime.setText(TextSoap.addZero(arrTimeStamp.getHour())+":"+TextSoap.addZero(arrTimeStamp.getMinute()));
-
-
-
-            actDays = (Text) theBoldText.clone();
-                actDays.setFontColor(super.BLACK);
-
-
+            contentTable = getProductInfoTable(iwc,iwrb,products[i]);
 
             ++row;
             table.mergeCells(1,row,5,row);
             table.add(contentTable,1,row);
-
-            ++contRow;
-            contentTable.mergeCells(1,contRow,1,contRow+3);
-            contentTable.add(image,1,contRow);
-            contentTable.add(nameText,2,contRow);
-            contentTable.add(timeframeText,4,contRow);
-            contentTable.setVerticalAlignment(2,contRow,"top");
-            contentTable.setVerticalAlignment(3,contRow,"top");
-            contentTable.setVerticalAlignment(4,contRow,"top");
-            contentTable.setVerticalAlignment(5,contRow,"top");
-            contentTable.setAlignment(2,contRow,"right");
-            contentTable.setAlignment(3,contRow,"left");
-            contentTable.setAlignment(4,contRow,"right");
-            contentTable.setAlignment(5,contRow,"left");
-            contentTable.add(prodName,3,contRow);
-            contentTable.add(timeframeTxt,5,contRow);
-            contentTable.setRowColor(contRow, super.GRAY);
-
-            ++contRow;
-            contentTable.setVerticalAlignment(2,contRow,"top");
-            contentTable.setVerticalAlignment(3,contRow,"top");
-            contentTable.setVerticalAlignment(4,contRow,"top");
-            contentTable.setVerticalAlignment(5,contRow,"top");
-            contentTable.add(departureFromText,2,contRow);
-            contentTable.add(departureTimeText,4,contRow);
-            contentTable.setAlignment(2,contRow,"right");
-            contentTable.setAlignment(3,contRow,"left");
-            contentTable.setAlignment(4,contRow,"right");
-            contentTable.setAlignment(5,contRow,"left");
-            contentTable.add(depFrom,3,contRow);
-            contentTable.add(depTime,5,contRow);
-            contentTable.setRowColor(contRow, super.GRAY);
-
-            ++contRow;
-            contentTable.setVerticalAlignment(2,contRow,"top");
-            contentTable.setVerticalAlignment(3,contRow,"top");
-            contentTable.setVerticalAlignment(4,contRow,"top");
-            contentTable.setVerticalAlignment(5,contRow,"top");
-            contentTable.add(arrivalFromText,2,contRow);
-            contentTable.add(arrivalTimeText,4,contRow);
-            contentTable.setAlignment(2,contRow,"right");
-            contentTable.setAlignment(3,contRow,"left");
-            contentTable.setAlignment(4,contRow,"right");
-            contentTable.setAlignment(5,contRow,"left");
-            contentTable.add(arrFrom,3,contRow);
-            contentTable.add(arrTime,5,contRow);
-            contentTable.setRowColor(contRow, super.GRAY);
-
-            ++contRow;
-            contentTable.setVerticalAlignment(2,contRow,"top");
-            contentTable.setVerticalAlignment(3,contRow,"top");
-            contentTable.setAlignment(2,contRow,"right");
-            contentTable.setAlignment(3,contRow,"left");
-            contentTable.setRowColor(contRow, super.GRAY);
-
-            dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
-            for (int j = 0; j < dayOfWeek.length; j++) {
-              if (j > 0) actDays.addToText(", ");
-              actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
-            }
-
-            contentTable.add(activeDaysText,2,contRow);
-            contentTable.add(actDays,3,contRow);
-
-
-            prices = ProductPrice.getProductPrices(service.getID(), false);
-            table.mergeCells(2,row,2,(row+prices.length-1));
-            table.mergeCells(3,row,3,(row+prices.length-1));
-
-            for (int j = 0; j < prices.length; j++) {
-              currency = new Currency(prices[j].getCurrencyId());
-              nameOfCategory = (Text) theText.clone();
-                nameOfCategory.setFontColor(super.BLACK);
-                nameOfCategory.setText(prices[j].getPriceCategory().getName());
-                nameOfCategory.addToText(":");
-              priceText = (Text) theBoldText.clone();
-                priceText.setFontColor(super.BLACK);
-              try {
-                priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
-                priceText.addToText(Text.NON_BREAKING_SPACE);
-                priceText.addToText(currency.getCurrencyAbbreviation());
-              }catch (ProductPriceException p) {
-                priceText.setText("T - rangt upp sett");
-              }
-
-              if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
-                priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
-              }
-
-
-
-              contentTable.setVerticalAlignment(4,contRow,"top");
-              contentTable.setVerticalAlignment(5,contRow,"top");
-              contentTable.setAlignment(4,contRow,"right");
-              contentTable.setAlignment(5,contRow,"left");
-
-              contentTable.add(nameOfCategory,4,contRow);
-              contentTable.add(priceText,5,contRow);
-            contentTable.setRowColor(contRow, super.GRAY);
-              ++contRow;
-            }
-            contentTable.setWidth("100%");
-            contentTable.setBorder(0);
-            contentTable.setAlignment("center");
-            contentTable.setWidth(1,"138");
-            contentTable.setWidth(2,"90");
-            contentTable.setWidth(3,"300");
-            contentTable.setWidth(4,"90");
-            contentTable.setCellspacing(1);
-            contentTable.setColor(super.WHITE);
-
 
 
 
@@ -420,11 +198,11 @@ public class ServiceOverview extends TravelManager {
 
             getLink = new Link(iwrb.getImage("buttons/link.gif"));
               getLink.setWindowToOpen(LinkGenerator.class);
-              getLink.addParameter(LinkGenerator.parameterProductId ,service.getID());
+              getLink.addParameter(LinkGenerator.parameterProductId ,products[i].getID());
 
             delete = new Link(iwrb.getImage("buttons/delete.gif"));
               delete.addParameter(actionParameter,"delete");
-              delete.addParameter(deleteParameter,service.getID());
+              delete.addParameter(deleteParameter,products[i].getID());
 
             book = (Link) bookClone.clone();
               book.addParameter(Booking.parameterProductId,products[i].getID());
@@ -449,9 +227,6 @@ public class ServiceOverview extends TravelManager {
               hr.setAlignment(hr.ALIGN_CENTER);
               hr.setNoShade(true);
               hr.setColor(super.textColor);
-//            table.add(hr,1,row);
-
-//            ++row;
 
             ++row;
             table.mergeCells(1,row,5,row);
@@ -498,5 +273,236 @@ public class ServiceOverview extends TravelManager {
   }
 
 
+
+  public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws SQLException, ServiceNotFoundException, TimeframeNotFoundException {
+        Table contentTable;
+        int contRow = 0;
+        contentTable = new Table();
+
+      DecimalFormat df = new DecimalFormat("0.00");
+      int[] dayOfWeek = new int[] {};
+
+        Text nameText = (Text) theText.clone();
+            nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
+            nameText.addToText(":");
+            nameText.setFontColor(super.BLACK);
+        Text timeframeText = (Text) theText.clone();
+            timeframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
+            timeframeText.addToText(":");
+            timeframeText.setFontColor(super.BLACK);
+        Text departureFromText = (Text) theText.clone();
+            departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
+            departureFromText.addToText(":");
+            departureFromText.setFontColor(super.BLACK);
+        Text departureTimeText = (Text) theText.clone();
+            departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
+            departureTimeText.addToText(":");
+            departureTimeText.setFontColor(super.BLACK);
+        Text arrivalFromText = (Text) theText.clone();
+            arrivalFromText.setText(iwrb.getLocalizedString("travel.arrival_at","Arrival at"));
+            arrivalFromText.addToText(":");
+            arrivalFromText.setFontColor(super.BLACK);
+        Text arrivalTimeText = (Text) theText.clone();
+            arrivalTimeText.setText(iwrb.getLocalizedString("travel.arrival_time","Arrival time"));
+            arrivalTimeText.addToText(":");
+            arrivalTimeText.setFontColor(super.BLACK);
+        Text activeDaysText = (Text) theText.clone();
+            activeDaysText.setText(iwrb.getLocalizedString("travel.active_days","Active days"));
+            activeDaysText.addToText(":");
+            activeDaysText.setFontColor(super.BLACK);
+
+        Image imageToClone = new Image("/pics/mynd.gif");
+        Image image;
+
+        Service service;
+        Timeframe timeframe;
+        Address depAddress;
+        Address arrAddress;
+
+        idegaTimestamp depTimeStamp;
+        idegaTimestamp arrTimeStamp;
+        Text prodName;
+        Text timeframeTxt;
+        Text depFrom;
+        Text depTime;
+        Text arrFrom;
+        Text arrTime;
+        Text actDays;
+
+        Text nameOfCategory;
+        Text priceText;
+        ProductPrice[] prices;
+        Currency currency;
+
+        String stampTxt1;
+        String stampTxt2;
+
+
+
+        service = TravelStockroomBusiness.getService(product);
+        timeframe = TravelStockroomBusiness.getTimeframe(product);
+        depAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getDepartureAddress(service);
+        arrAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getArrivalAddress(service);
+        if (product.getFileId() != -1) {
+          image = new Image(product.getFileId());
+          image.setMaxImageWidth(138);
+        }else{
+          image = (Image) imageToClone.clone();
+        }
+        prodName = (Text) theBoldText.clone();
+            prodName.setText(service.getName());
+            prodName.setFontColor(super.BLACK);
+
+        timeframeTxt = (Text) theBoldText.clone();
+            timeframeTxt.setFontColor(super.BLACK);
+            stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
+            stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
+            try {
+              if (timeframe.getIfYearly() ){
+                stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
+                stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -4);
+              }
+            }catch (ArrayIndexOutOfBoundsException ai) {}
+            timeframeTxt.setText(stampTxt1 + " - ");
+            timeframeTxt.addToText(Text.BREAK);
+            timeframeTxt.addToText(stampTxt2);
+
+
+        depFrom = (Text) theBoldText.clone();
+            depFrom.setFontColor(super.BLACK);
+        if (depAddress != null)
+            depFrom.setText(depAddress.getStreetName());
+
+        depTimeStamp = new idegaTimestamp(service.getDepartureTime());
+        depTime = (Text) theBoldText.clone();
+            depTime.setFontColor(super.BLACK);
+            depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
+
+        arrFrom = (Text) theBoldText.clone();
+            arrFrom.setFontColor(super.BLACK);
+        if (arrAddress != null)
+            arrFrom.setText(arrAddress.getStreetName());
+
+        arrTimeStamp = new idegaTimestamp(service.getArrivalTime());
+        arrTime = (Text) theBoldText.clone();
+            arrTime.setFontColor(super.BLACK);
+            arrTime.setText(TextSoap.addZero(arrTimeStamp.getHour())+":"+TextSoap.addZero(arrTimeStamp.getMinute()));
+
+        actDays = (Text) theBoldText.clone();
+            actDays.setFontColor(super.BLACK);
+
+        ++contRow;
+        contentTable.mergeCells(1,contRow,1,contRow+3);
+        contentTable.add(image,1,contRow);
+        contentTable.setVerticalAlignment(1,contRow,"top");
+        contentTable.add(nameText,2,contRow);
+        contentTable.add(timeframeText,4,contRow);
+        contentTable.setVerticalAlignment(2,contRow,"top");
+        contentTable.setVerticalAlignment(3,contRow,"top");
+        contentTable.setVerticalAlignment(4,contRow,"top");
+        contentTable.setVerticalAlignment(5,contRow,"top");
+        contentTable.setAlignment(2,contRow,"right");
+        contentTable.setAlignment(3,contRow,"left");
+        contentTable.setAlignment(4,contRow,"right");
+        contentTable.setAlignment(5,contRow,"left");
+        contentTable.add(prodName,3,contRow);
+        contentTable.add(timeframeTxt,5,contRow);
+        contentTable.setRowColor(contRow, super.GRAY);
+
+        ++contRow;
+        contentTable.setVerticalAlignment(2,contRow,"top");
+        contentTable.setVerticalAlignment(3,contRow,"top");
+        contentTable.setVerticalAlignment(4,contRow,"top");
+        contentTable.setVerticalAlignment(5,contRow,"top");
+        contentTable.add(departureFromText,2,contRow);
+        contentTable.add(departureTimeText,4,contRow);
+        contentTable.setAlignment(2,contRow,"right");
+        contentTable.setAlignment(3,contRow,"left");
+        contentTable.setAlignment(4,contRow,"right");
+        contentTable.setAlignment(5,contRow,"left");
+        contentTable.add(depFrom,3,contRow);
+        contentTable.add(depTime,5,contRow);
+        contentTable.setRowColor(contRow, super.GRAY);
+
+        ++contRow;
+        contentTable.setVerticalAlignment(2,contRow,"top");
+        contentTable.setVerticalAlignment(3,contRow,"top");
+        contentTable.setVerticalAlignment(4,contRow,"top");
+        contentTable.setVerticalAlignment(5,contRow,"top");
+        contentTable.add(arrivalFromText,2,contRow);
+        contentTable.add(arrivalTimeText,4,contRow);
+        contentTable.setAlignment(2,contRow,"right");
+        contentTable.setAlignment(3,contRow,"left");
+        contentTable.setAlignment(4,contRow,"right");
+        contentTable.setAlignment(5,contRow,"left");
+        contentTable.add(arrFrom,3,contRow);
+        contentTable.add(arrTime,5,contRow);
+        contentTable.setRowColor(contRow, super.GRAY);
+
+        ++contRow;
+        contentTable.setVerticalAlignment(2,contRow,"top");
+        contentTable.setVerticalAlignment(3,contRow,"top");
+        contentTable.setAlignment(2,contRow,"right");
+        contentTable.setAlignment(3,contRow,"left");
+        contentTable.setRowColor(contRow, super.GRAY);
+
+        dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
+        for (int j = 0; j < dayOfWeek.length; j++) {
+          if (j > 0) actDays.addToText(", ");
+          actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+        }
+
+        contentTable.add(activeDaysText,2,contRow);
+        contentTable.add(actDays,3,contRow);
+
+
+        prices = ProductPrice.getProductPrices(service.getID(), false);
+//        contentTable.mergeCells(2,contRow,2,(contRow+prices.length-1));
+//        contentTable.mergeCells(3,contRow,3,(contRow+prices.length-1));
+
+        for (int j = 0; j < prices.length; j++) {
+          currency = new Currency(prices[j].getCurrencyId());
+          nameOfCategory = (Text) theText.clone();
+            nameOfCategory.setFontColor(super.BLACK);
+            nameOfCategory.setText(prices[j].getPriceCategory().getName());
+            nameOfCategory.addToText(":");
+          priceText = (Text) theBoldText.clone();
+            priceText.setFontColor(super.BLACK);
+          try {
+            priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+            priceText.addToText(Text.NON_BREAKING_SPACE);
+            priceText.addToText(currency.getCurrencyAbbreviation());
+          }catch (ProductPriceException p) {
+            priceText.setText("T - rangt upp sett");
+          }
+
+          if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
+            priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
+          }
+
+
+
+          contentTable.setVerticalAlignment(4,contRow,"top");
+          contentTable.setVerticalAlignment(5,contRow,"top");
+          contentTable.setAlignment(4,contRow,"right");
+          contentTable.setAlignment(5,contRow,"left");
+
+          contentTable.add(nameOfCategory,4,contRow);
+          contentTable.add(priceText,5,contRow);
+        contentTable.setRowColor(contRow, super.GRAY);
+          ++contRow;
+        }
+        contentTable.setWidth("100%");
+        contentTable.setBorder(0);
+        contentTable.setAlignment("center");
+        contentTable.setWidth(1,"138");
+        contentTable.setWidth(2,"90");
+        contentTable.setWidth(4,"90");
+        contentTable.setWidth(5,"150");
+        contentTable.setCellspacing(1);
+        contentTable.setColor(super.WHITE);
+
+    return contentTable;
+  }
 
 }

@@ -11,8 +11,7 @@ import com.idega.util.*;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import com.idega.data.EntityControl;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import com.idega.util.datastructures.HashtableDoubleKeyed;
 import com.idega.presentation.IWContext;
 import com.idega.transaction.IdegaTransactionManager;
@@ -698,6 +697,42 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       }
 
 
+  }
+
+  public static List getDepartureDays(IWContext iwc, Product product) {
+    return getDepartureDays(iwc, product, null, null);
+  }
+
+  public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp from, idegaTimestamp to) {
+    List returner = new Vector();
+    try {
+      Service service = new Service(product.getID());
+      Timeframe frame = service.getTimeframe();
+
+      if (from == null) from = new idegaTimestamp(frame.getFrom());
+      if (to == null)   to   = new idegaTimestamp(frame.getTo());
+        to.addDays(1);
+
+      idegaTimestamp stamp = new idegaTimestamp(from);
+      idegaTimestamp temp;
+
+      int[] weekDays = ServiceDay.getDaysOfWeek(product.getID());
+
+      while (to.isLaterThan(stamp)) {
+        for (int i = 0; i < weekDays.length; i++) {
+          if (stamp.getDayOfWeek() == weekDays[i]) {
+            returner.add(stamp);
+            stamp = new idegaTimestamp(stamp);
+          }
+        }
+        stamp.addDays(1);
+      }
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return returner;
   }
 
 }

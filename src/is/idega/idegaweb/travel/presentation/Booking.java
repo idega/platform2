@@ -248,67 +248,11 @@ public class Booking extends TravelManager {
       return topTable;
   }
 
-  public Form getContentHeader(IWContext iwc) {
-    Form form = new Form();
-      Table table = new Table(3,4);
-      form.add(table);
-      table.setBorder(0);
-      table.setWidth("100%");
+  public Table getContentHeader(IWContext iwc) throws Exception{
+    ServiceOverview so = new ServiceOverview(iwc);
+    Table table = so.getProductInfoTable(iwc, iwrb, this.product);
 
-
-      Text nameText = (Text) theBoldText.clone();
-          nameText.setText(iwrb.getLocalizedString("travel.trip","Trip"));
-      Text timeText = (Text) theBoldText.clone();
-          timeText.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
-
-      Image image = new Image("/pics/mynd.gif");
-
-      Text departureFromText = (Text) theBoldText.clone();
-          departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
-      Text departureTimeText = (Text) theBoldText.clone();
-          departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
-
-      try {
-          if (product.getFileId() != -1) {
-            image = new Image(product.getFileId());
-                image.setMaxImageWidth(138);
-          }
-
-          Text nameTextC = (Text) theText.clone();
-            nameTextC.setText(service.getName());
-
-          Text timeTextC = (Text) theText.clone();
-            timeTextC.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc)+" - "+new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc) );
-
-          Text depFrom = (Text) theText.clone();
-            depFrom.setText(tsb.getDepartureAddress(service).getStreetName());
-
-          idegaTimestamp temp = new idegaTimestamp(service.getDepartureTime());
-          Text depAt = (Text) theText.clone();
-            depAt.setText(TextSoap.addZero(temp.getHour())+":"+TextSoap.addZero(temp.getMinute()));
-
-          table.add(nameTextC,2,2);
-          table.add(timeTextC,3,2);
-          table.add(depFrom,2,4);
-          table.add(depAt,3,4);
-
-
-      }catch (SQLException sql) {
-          sql.printStackTrace(System.err);
-      }
-
-      table.mergeCells(1,1,1,4);
-
-      table.add(image,1,1);
-      table.setWidth(1,"150");
-      table.setColumnAlignment(2,"left");
-      table.setColumnAlignment(3,"left");
-      table.add(nameText,2,1);
-      table.add(timeText,3,1);
-      table.add(departureFromText,2,3);
-      table.add(departureTimeText,3,3);
-
-      return form;
+    return table;
   }
 
   public Table getContentTable(IWContext iwc) throws Exception{
