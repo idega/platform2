@@ -30,6 +30,7 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	private static final String COLUMN_CASH_FLOW_IN = "cash_flow_in";
 	private static final String COLUMN_CASH_FLOW_OUT = "cash_flow_out";
 	private static final String COLUMN_PROVIDER_AUTHORIZATION = "provider_authorization";
+	private static final String COLUMN_STANDARD_PAYMENT_DAY = "standard_payment_day";
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -66,6 +67,7 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		addAttribute(COLUMN_CUSTOMER_CLAIM_ACCOUNT, "Customer claim account number", String.class, 255);
 
 		addAttribute(COLUMN_ACCOUNT_SETTLEMENT_TYPE, "Account settlement type", Integer.class);
+		addAttribute(COLUMN_STANDARD_PAYMENT_DAY, "Standard payment day", Integer.class);
 
 		addAttribute(COLUMN_CASH_FLOW_IN, "Has cash flow in", Boolean.class);
 		addAttribute(COLUMN_CASH_FLOW_OUT, "Has cash flow out", Boolean.class);
@@ -100,6 +102,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 
 	public int getAccountSettlementType() {
 		return getIntColumnValue(COLUMN_ACCOUNT_SETTLEMENT_TYPE);
+	}
+
+	public int getStandardPaymentDay() {
+		return getIntColumnValue(COLUMN_STANDARD_PAYMENT_DAY);
 	}
 
 	public boolean getCashFlowIn() {
@@ -146,6 +152,10 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 
 	public void setAccountSettlementType(int accountSettlementType) {
 		setColumn(COLUMN_ACCOUNT_SETTLEMENT_TYPE, accountSettlementType);
+	}
+
+	public void setStandardPaymentDay(int standardPaymentDay) {
+		setColumn(COLUMN_STANDARD_PAYMENT_DAY, standardPaymentDay);
 	}
 
 	public void setCashFlowIn(boolean cashFlowIn) {

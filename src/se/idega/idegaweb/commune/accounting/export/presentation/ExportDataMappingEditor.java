@@ -33,6 +33,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	private static final String PARAMETER_PAYABLE_ACCOUNT = "edm_payable_account";
 	private static final String PARAMETER_CUSTOMER_CLAIM_ACCOUNT = "edm_customer_claim_account";
 	private static final String PARAMETER_ACCOUNT_SETTLEMENT_TYPE = "edm_account_settlement_type";
+	private static final String PARAMETER_STANDARD_PAYMENT_DAY = "edm_standard_payment_day";
 	private static final String PARAMETER_CASH_FLOW_IN = "edm_cash_flow_in";
 	private static final String PARAMETER_CASH_FLOW_OUT = "edm_cash_flow_out";
 	private static final String PARAMETER_PROVIDER_AUTHORIZATION = "edm_provider_authorization";
@@ -118,6 +119,18 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.add(getSmallHeader(localize("export.account_settlement_type", "Account settlement type") + ":"), 1, row);
 		table.add(accountSettlementType, 3, row++);
 		
+		DropdownMenu standardPaymentDay = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_STANDARD_PAYMENT_DAY));
+		standardPaymentDay.addMenuElement(-1, localize("export.select_day", "Select day"));
+		for (int i = 1; i <= 31; i++) {
+			standardPaymentDay.addMenuElement(i, String.valueOf(i));
+		}
+		if (_mapping != null && _mapping.getStandardPaymentDay() != -1)
+			standardPaymentDay.setSelectedElement(_mapping.getStandardPaymentDay());
+		
+		table.setHeight(row++, 3);
+		table.add(getSmallHeader(localize("export.standard_payment_day", "Standard payment day") + ":"), 1, row);
+		table.add(standardPaymentDay, 3, row++);
+		
 		CheckBox cashFlowIn = getCheckBox(PARAMETER_CASH_FLOW_IN, "true");
 		if (_mapping != null)
 			cashFlowIn.setChecked(_mapping.getCashFlowIn());
@@ -174,7 +187,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 				providerAuthorization = true;
 				
 			try {
-				getBusiness().getExportBusiness().storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), cashFlowIn, cashFlowOut, providerAuthorization);
+				getBusiness().getExportBusiness().storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), Integer.parseInt(iwc.getParameter(PARAMETER_STANDARD_PAYMENT_DAY)), cashFlowIn, cashFlowOut, providerAuthorization);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();

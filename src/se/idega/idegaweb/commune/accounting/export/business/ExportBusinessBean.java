@@ -60,7 +60,7 @@ public class ExportBusinessBean extends IBOServiceBean implements ExportBusiness
 	/**
 	 * Stores the export data for a specific operational field, creating a new entry if none exists.
 	 */
-	public void storeExportDataMapping(String operationalField, String journalNumber, String account, String counterAccount, String payableAccount, String customerClaimAccount, int accountSettlementType, boolean cashFlowIn, boolean cashFlowOut, boolean providerAuthorization) {
+	public void storeExportDataMapping(String operationalField, String journalNumber, String account, String counterAccount, String payableAccount, String customerClaimAccount, int accountSettlementType, int standardPaymentDay, boolean cashFlowIn, boolean cashFlowOut, boolean providerAuthorization) {
 		ExportDataMapping mapping = null;
 		try {
 			mapping = getExportDataMapping(operationalField);
@@ -83,6 +83,7 @@ public class ExportBusinessBean extends IBOServiceBean implements ExportBusiness
 			mapping.setPayableAccount(payableAccount);
 			mapping.setCustomerClaimAccount(customerClaimAccount);
 			mapping.setAccountSettlementType(accountSettlementType);
+			mapping.setStandardPaymentDay(standardPaymentDay);
 			mapping.setCashFlowIn(cashFlowIn);
 			mapping.setCashFlowOut(cashFlowOut);
 			mapping.setProviderAuthorization(providerAuthorization);
