@@ -382,13 +382,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
+    EntityToPresentationObjectConverter textConverter = new WorkReportTextConverter();
     
     // define path short keys and map corresponding converters
     // if a converter is "null" the default converter of the entity browser is used
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
-      NAME, null,
+      NAME, textConverter,
       PERSONAL_ID, socialSecurityNumberEditorConverter,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
@@ -529,10 +530,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
     
-    if (pathShortKey.equals(NAME)) {
-      member.setName(value.toString());
-    }
-    else if (pathShortKey.equals(PERSONAL_ID))  {
+    if (pathShortKey.equals(PERSONAL_ID))  {
       String socialSecurityNumber = value.toString();
       User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
       // there are some users in the system without any social security number
@@ -722,5 +720,26 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       return text;
     }
   }
+
+  class WorkReportTextConverter implements  EntityToPresentationObjectConverter  {    
     
+    public PresentationObject getHeaderPresentationObject (
+        EntityPath entityPath,
+        EntityBrowser browser,
+        IWContext iwc) {
+      return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);   
+    }
+    
+    public PresentationObject getPresentationObject(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc) {
+      String name = path.getShortKey();
+      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
+      return new Text(value);
+    }
+    
+  }
+
 }

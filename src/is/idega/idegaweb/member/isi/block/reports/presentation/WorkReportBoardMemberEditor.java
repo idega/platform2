@@ -398,6 +398,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     EntityToPresentationObjectConverter statusDropDownMenuConverter = getConverterForStatus(resourceBundle, form);
     EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
+    EntityToPresentationObjectConverter textConverter = new WorkReportTextConverter();
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
@@ -606,9 +607,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     if (pathShortKey.equals(STATUS))  {
       member.setStatus(value.toString());
     }
-    else if (pathShortKey.equals(NAME)) {
-      member.setName(value.toString());
-    }
     else if (pathShortKey.equals(PERSONAL_ID))  {
       String socialSecurityNumber = value.toString();
       User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
@@ -722,6 +720,28 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       return ((EntityRepresentation) member).getPrimaryKey();
     }
   }
+
+  class WorkReportTextConverter implements  EntityToPresentationObjectConverter  {    
+    
+    public PresentationObject getHeaderPresentationObject (
+        EntityPath entityPath,
+        EntityBrowser browser,
+        IWContext iwc) {
+      return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);   
+    }
+    
+    public PresentationObject getPresentationObject(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc) {
+      String name = path.getShortKey();
+      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
+      return new Text(value);
+    }
+    
+  }
+
 
 } 
 

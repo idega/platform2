@@ -517,10 +517,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       browser.setMandatoryColumn(i++, fieldName);
       EntityToPresentationObjectConverter converter =
         (specialFieldList.contains(fieldName)) ? textConverter : textEditorConverter;
-      if (fieldName.equals(LEAGUE_NAME))  {
-        //converter = getConverterForLeague(resourceBundle, form);
-        converter = null;
-      }
       browser.setEntityToPresentationConverter(fieldName, converter);
     }
     browser.setMandatoryColumn(i++, CHECK_BOX);
