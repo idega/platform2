@@ -346,11 +346,8 @@ public class CampusEntryGroups extends PresentationObjectContainer {
   public void main(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-      isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+    isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
 }

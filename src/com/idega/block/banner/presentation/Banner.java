@@ -50,7 +50,7 @@ public Banner(String attribute){
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
 
-    _isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
+    _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     String mode = iwc.getParameter(BannerBusiness.PARAMETER_MODE);

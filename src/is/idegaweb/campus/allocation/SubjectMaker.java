@@ -141,12 +141,7 @@ public class SubjectMaker extends PresentationObjectContainer{
   }
 
    public void main(IWContext iwc){
-    try{
-      isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){
-      isAdmin = false;
-    }
+    isAdmin = iwc.hasEditPermission(this);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     control(iwc);

@@ -193,13 +193,10 @@ public class ContractReSignWindow extends Window{
     return S.toString();
   }
 
-  public void main(IWContext iwc){
-    eUser = com.idega.block.login.business.LoginBusiness.getUser(iwc);
-    try{
+  public void main(IWContext iwc) throws Exception {
+    eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-      isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+    isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
 }

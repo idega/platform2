@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.20 2001/10/16 17:25:33 gummi Exp $
+ * $Id: Menu.java,v 1.21 2001/10/17 12:54:26 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -184,11 +184,7 @@ public class Menu extends Block{
   }
 
   public void main(IWContext iwc)  {
-    try{
-    isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
-
+    isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
 }// class Menu

@@ -629,10 +629,8 @@ public class ReportEditorWindow extends IWAdminWindow {
     setTitle(title);
     addTitle(title);
 
-    try{
-      isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+    isAdmin = iwc.hasEditPermission(this);
+
     control(iwc);
     sManual = iwrb.getLocalizedString("manual","");
   }

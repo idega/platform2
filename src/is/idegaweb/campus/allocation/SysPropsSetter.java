@@ -277,9 +277,9 @@ public class SysPropsSetter extends PresentationObjectContainer{
 
   public void main(IWContext iwc){
     try{
-      isAdmin = iwc.getAccessController().isAdmin(iwc);
+      isAdmin = iwc.hasEditPermission(this);
     }
-    catch(SQLException sql){
+    catch(Exception sql){
       isAdmin = false;
     }
     iwrb = getResourceBundle(iwc);

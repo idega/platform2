@@ -62,7 +62,7 @@ public BoxEditorWindow(){
      * @todo permission
      */
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-    _superAdmin = iwc.getAccessController().isAdmin(iwc);
+    _superAdmin = iwc.isAdmin();
     _iwb = getBundle(iwc);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));

@@ -34,8 +34,8 @@ public QuoteEditor(){
   setMethod("get");
 }
 
-	public void main(IWContext iwc) throws Exception {
-    _isAdmin=iwc.getAccessController().hasEditPermission(new Quote(),iwc);
+  public void main(IWContext iwc) throws Exception {
+    _isAdmin=iwc.hasEditPermission(new Quote());
     _iwb = getBundle(iwc);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("quote_admin","Quote Admin"));

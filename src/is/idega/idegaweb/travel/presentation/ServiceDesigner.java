@@ -60,7 +60,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  public void main(IWContext iwc) throws SQLException{
+  public void main(IWContext iwc) throws Exception{
       super.main(iwc);
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
@@ -97,7 +97,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  private void displayForm(IWContext iwc) throws SQLException{
+  private void displayForm(IWContext iwc) throws Exception{
     /**
      * @todo implement for other types
      */
@@ -120,7 +120,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  private void createService(IWContext iwc) throws SQLException{
+  private void createService(IWContext iwc) throws Exception{
 
       if ( this.priceCategoryCreation == null ) {
         TourDesigner td = new TourDesigner(iwc);

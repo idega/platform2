@@ -60,7 +60,7 @@ public Quote(int quoteID){
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
 
-    _isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
+    _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
 		drawTable();

@@ -47,7 +47,7 @@ public class ServiceOverview extends TravelManager {
   }
 
 
-  public void main(IWContext iwc) throws SQLException{
+  public void main(IWContext iwc) throws Exception{
       super.main(iwc);
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();

@@ -81,7 +81,7 @@ public class TravelManager extends Block {
         return supplier;
     }
 
-    public void main(IWContext iwc) throws SQLException{
+    public void main(IWContext iwc) throws Exception{
         initializer(iwc);
 
         String action = iwc.getParameter(this.sAction);
@@ -132,7 +132,7 @@ public class TravelManager extends Block {
           iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
         }
 
-        if (iwc.getAccessController().isAdmin(iwc)){
+        if (iwc.hasEditPermission(this)){
 
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
@@ -254,4 +254,3 @@ public class TravelManager extends Block {
 
 
 }
-

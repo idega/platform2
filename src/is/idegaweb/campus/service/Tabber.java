@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.26 2001/10/16 17:25:33 gummi Exp $
+ * $Id: Tabber.java,v 1.27 2001/10/17 12:54:26 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -282,10 +282,7 @@ public class Tabber extends Block {
   public void main(IWContext iwc)  {
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    try{
-      isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+    isAdmin = iwc.hasEditPermission(this);
     /** @todo fixa Admin*/
     control(iwc);
   }

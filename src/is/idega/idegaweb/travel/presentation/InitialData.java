@@ -58,7 +58,7 @@ public class InitialData extends TravelManager {
     return super.IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(IWContext iwc) throws SQLException{
+  public void main(IWContext iwc) throws Exception{
       super.main(iwc);
       initialize(iwc);
 

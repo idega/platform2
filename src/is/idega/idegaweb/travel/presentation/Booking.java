@@ -72,7 +72,7 @@ public class Booking extends TravelManager {
     super.add(mo);
   }
 
-  public void main(IWContext iwc) throws SQLException {
+  public void main(IWContext iwc) throws Exception {
       super.main(iwc);
       initialize(iwc);
 

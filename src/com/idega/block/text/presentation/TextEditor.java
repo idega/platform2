@@ -36,13 +36,10 @@ public TextEditor(){
   setUnMerged();
 }
 
-	public void main(IWContext iwc) {
-    try {
-      isAdmin = iwc.getAccessController().hasEditPermission(new TextReader(),iwc);
-    }
-    catch (SQLException e) {
-      isAdmin = false;
-    }
+  public void main(IWContext iwc) throws Exception{
+
+    isAdmin = iwc.hasEditPermission(new TextReader());
+
 
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);

@@ -41,11 +41,11 @@ public class TourDesigner extends TravelManager {
   private String parameterIsUpdate = "isTourUpdate";
   private String parameterTimeframeId = "td_timeframeId";
 
-  public TourDesigner(IWContext iwc) throws SQLException{
+  public TourDesigner(IWContext iwc) throws Exception{
     init(iwc);
   }
 
-  public void init(IWContext iwc) throws SQLException{
+  public void init(IWContext iwc) throws Exception{
     super.main(iwc);
     iwrb = super.getResourceBundle();
     iwb = super.getBundle();

@@ -69,7 +69,7 @@ public Box(String attribute){
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
 
-    _isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
+    _isAdmin = iwc.hasEditPermission(this);
     //_isAdmin = true;
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 

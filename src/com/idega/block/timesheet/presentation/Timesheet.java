@@ -363,8 +363,8 @@ public class Timesheet extends Block{
 	}
 
 
-  private void initialize(IWContext iwc) throws SQLException {
-    this.isAdmin = iwc.getAccessController().isAdmin(iwc);
+  private void initialize(IWContext iwc) throws Exception {
+    this.isAdmin = iwc.hasEditPermission(this);
     user = LoginBusiness.getUser(iwc);
 
     iwb = getBundle(iwc);

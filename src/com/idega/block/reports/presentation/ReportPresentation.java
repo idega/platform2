@@ -175,10 +175,8 @@ public abstract class ReportPresentation extends com.idega.presentation.Presenta
     O.setAttribute("style",styleAttribute);
   }
   public void main(IWContext iwc){
-    try{
-    isAdmin = iwc.getAccessController().isAdmin(iwc);
-    }
-    catch(SQLException sql){ isAdmin = false;}
+    isAdmin = iwc.hasEditPermission(this);
+
     control(iwc);
   }
 }// class TariffKeyEditor

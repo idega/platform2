@@ -52,7 +52,7 @@ public BannerEditorWindow(){
      * @todo permission
      */
     _isAdmin = true;
-    _superAdmin = iwc.getAccessController().isAdmin(iwc);
+    _superAdmin = iwc.isAdmin();
     _iwb = getBundle(iwc);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("banner_admin","Banner Admin"));

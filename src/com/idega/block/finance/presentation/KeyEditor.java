@@ -160,9 +160,9 @@ public abstract class KeyEditor extends com.idega.presentation.PresentationObjec
   public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.getAccessController().isAdmin(iwc);
+    isAdmin = iwc.isAdmin();
     }
-    catch(SQLException sql){ isAdmin = false;}
+    catch(Exception sql){ isAdmin = false;}
     control(iwc);
   }
 }// class TariffKeyEditor

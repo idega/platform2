@@ -330,12 +330,11 @@ System.err.print("2");
         this.iwc = iwc;
         URI = iwc.getRequestURI();
         project_id = iwc.getParameter("project_id");
-        isAdmin = iwc.getAccessController().isAdmin(iwc);
-
+        isAdmin = iwc.hasEditPermission(this);
 
         if ( isAdmin) {
-System.err.println("ER admind");
-          add("ER admind");
+System.err.println("ER admin");
+          add("ER admin");
 
             Form myForm = new Form(ProjectAdmin.class);
                     myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/Verkefnastjori.gif","Verkefnisstjórinn")));
