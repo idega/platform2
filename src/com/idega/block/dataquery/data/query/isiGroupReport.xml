@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!-- group view for isi (created by Jonas and Thomas) Sep 10, 2004 -->
+<!-- group view for isi (created by Jonas and Thomas) Sep 20, 2004 -->
 <query name="Hópaskýrsla">
 <query name="abrv">
 <query name="conn">
@@ -16,186 +16,211 @@
 <query name="status">
 <query name="system">
 <query name="type">
+<query name="email">
+<query name="homepage">
       <sql>
       <statement>
-      create view type_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_type) as select g.ic_group_id, m.metadata_value
+      create view tp_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_type) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_TYPE'
       </statement>
       <postStatement>
-      drop view type_view_UNIQUE_IDENTIFIER
+      drop view tp_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of type -->
       <sql>
       <statement>
-      create view system_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_system) as select g.ic_group_id, m.metadata_value
+      create view sy_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_system) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_SYSTEM'
       </statement>
       <postStatement>
-      drop view system_view_UNIQUE_IDENTIFIER
+      drop view sy_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of system -->
       <sql>
       <statement>
-      create view status_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_status) as select g.ic_group_id, m.metadata_value
+      create view st_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_status) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_STATUS'
       </statement>
       <postStatement>
-      drop view status_view_UNIQUE_IDENTIFIER
+      drop view st_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of status -->
       <sql>
       <statement>
-      create view ssn_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_ssn) as select g.ic_group_id, m.metadata_value
+      create view ss_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_ssn) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_SSN'
       </statement>
       <postStatement>
-      drop view ssn_view_UNIQUE_IDENTIFIER
+      drop view ss_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of ssn -->
       <sql>
       <statement>
-      create view short_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_short) as select g.ic_group_id, m.metadata_value
+      create view sh_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_short) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_SHORT'
       </statement>
       <postStatement>
-      drop view short_view_UNIQUE_IDENTIFIER
+      drop view sh_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of short -->
       <sql>
       <statement>
-      create view regional_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_regional) as select g.ic_group_id, m.metadata_value
+      create view re_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_regional) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_REGIONAL'
       </statement>
       <postStatement>
-      drop view regional_view_UNIQUE_IDENTIFIER
+      drop view re_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of regional -->
       <sql>
       <statement>
-      create view premier_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_premier) as select g.ic_group_id, m.metadata_value
+      create view pr_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_premier) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_PREMIER'
       </statement>
       <postStatement>
-      drop view premier_view_UNIQUE_IDENTIFIER
+      drop view pr_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of premier -->
       <sql>
       <statement>
-      create view operation_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_operation) as select g.ic_group_id, m.metadata_value
+      create view op_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_operation) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_OPERATION'
       </statement>
       <postStatement>
-      drop view operation_view_UNIQUE_IDENTIFIER
+      drop view op_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of operation -->
       <sql>
       <statement>
-      create view number_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_number) as select g.ic_group_id, m.metadata_value
+      create view nu_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_number) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_NUMBER'
       </statement>
       <postStatement>
-      drop view number_view_UNIQUE_IDENTIFIER
+      drop view nu_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of number -->
       <sql>
       <statement>
-      create view name_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_name) as select g.ic_group_id, m.metadata_value
+      create view na_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_name) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_NAME'
       </statement>
       <postStatement>
-      drop view name_view_UNIQUE_IDENTIFIER
+      drop view na_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of name -->
       <sql>
       <statement>
-      create view member_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_member) as select g.ic_group_id, m.metadata_value
+      create view me_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_member) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id =                        m.ic_metadata_id
       and metadata_name = 'CLUBINFO_MEMBER'
       </statement>
       <postStatement>
-      drop view member_view_UNIQUE_IDENTIFIER
+      drop view me_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of member view -->
       <sql>
       <statement>
-      create view make_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_make) as select g.ic_group_id, m.metadata_value
+      create view ma_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_make) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_MAKE'
       </statement>
       <postStatement>
-      drop view make_view_UNIQUE_IDENTIFIER
+      drop view ma_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of make view -->
       <sql>
       <statement>
-      create view founded_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_founded) as select g.ic_group_id, m.metadata_value
+      create view fo_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_founded) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_FOUNDED'
       </statement>
       <postStatement>
-      drop view founded_view_UNIQUE_IDENTIFIER
+      drop view fo_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of founded view -->
       <sql>
       <statement>
-      create view conn_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_conn) as select g.ic_group_id, m.metadata_value
+      create view co_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_conn) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_CONN'
       </statement>
       <postStatement>
-      drop view conn_view_UNIQUE_IDENTIFIER
+      drop view co_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of conn view -->
       <sql>
       <statement>
-      create view abrv_view_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_abrv) as select g.ic_group_id, m.metadata_value
+      create view ab_UNIQUE_IDENTIFIER (ic_group_id, clubinfo_abrv) as select g.ic_group_id, m.metadata_value
       clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
       and metadata_name = 'CLUBINFO_ABRV'
       </statement>
       <postStatement>
-      drop view abrv_view_UNIQUE_IDENTIFIER
+      drop view ab_UNIQUE_IDENTIFIER
       </postStatement>
       </sql>
       </query>
 <!-- end of abrv view -->
+	 <sql>
+	 <statement>
+	 create view em_UNIQUE_IDENTFIER (ic_group_id, email) as select ge.ic_group_id, e.address from ic_group_email ge, ic_email e where ge.ic_email_id = e.ic_email_id
+	 </statement>
+	 <poststatement>
+	 drop view em_UNIQUE_IDENTIFIER
+	 </poststatement>
+	 </sql>
+	 </query>
+<!-- end of email view -->
+	<sql>
+	<statement>
+	create view hp_UNIQUE_IDENTIFER (ic_group_id, homepage) as select g.ic_group_id, m.metadata_value 
+	from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id and 
+	metadata_name = 'homepage'
+	</statement>
+	<poststatement>
+	drop view hp_UNIQUE_IDENTIFER
+	</poststatement>
+	</sql>
+	</query>
+<!-- end of view homepage -->
+
   <sql>
   <statement>
 SELECT G.NAME , G.SHORT_NAME , G.DESCRIPTION , G.EXTRA_INFO , A_2.PHONE_NUMBER , A_3.ADDRESS , A_4.STREET_NAME , A_4.STREET_NUMBER , A_4.CITY , A_4.PROVINCE , A_4.P_O_BOX , A_5.POSTAL_CODE , A_6.COUNTRY_NAME , A_7.GROUP_TYPE , A_7.DESCRIPTION GROUPTYPE_DESCRIPTION,
@@ -215,21 +240,23 @@ STATUS_VIEW_A.CLUBINFO_STATUS,
 SYSTEM_VIEW_A.CLUBINFO_SYSTEM,
 TYPE_VIEW_A.CLUBINFO_TYPE
 FROM ic_group G LEFT JOIN IC_GROUP_ADDRESS A_8 ON (G.IC_GROUP_ID=A_8.IC_GROUP_ID) LEFT JOIN ic_address A_4 ON (A_8.IC_ADDRESS_ID=A_4.IC_ADDRESS_ID) LEFT JOIN IC_POSTAL_CODE A_5 ON (A_4.POSTAL_CODE_ID=A_5.IC_POSTAL_CODE_ID) LEFT JOIN IC_GROUP_TYPE A_7 ON (G.GROUP_TYPE=A_7.GROUP_TYPE) LEFT JOIN IC_GROUP_PHONE A_9 ON (G.IC_GROUP_ID=A_9.IC_GROUP_ID) LEFT JOIN ic_phone A_2 ON (A_9.IC_PHONE_ID=A_2.IC_PHONE_ID) LEFT JOIN ic_country A_6 ON (A_5.IC_COUNTRY_ID=A_6.IC_COUNTRY_ID) LEFT JOIN IC_GROUP_EMAIL A_10 ON (G.IC_GROUP_ID=A_10.IC_GROUP_ID) LEFT JOIN IC_EMAIL A_3 ON (A_10.IC_EMAIL_ID=A_3.IC_EMAIL_ID)
-LEFT JOIN  ABRV_view_UNIQUE_IDENTIFIER ABRV_VIEW_A ON (G.IC_GROUP_ID=ABRV_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  CONN_view_UNIQUE_IDENTIFIER CONN_VIEW_A ON (G.IC_GROUP_ID=CONN_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  FOUNDED_view_UNIQUE_IDENTIFIER FOUNDED_VIEW_A ON (G.IC_GROUP_ID=FOUNDED_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  MAKE_view_UNIQUE_IDENTIFIER MAKE_VIEW_A ON (G.IC_GROUP_ID=MAKE_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  MEMBER_view_UNIQUE_IDENTIFIER MEMBER_VIEW_A ON (G.IC_GROUP_ID=MEMBER_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  NAME_view_UNIQUE_IDENTIFIER NAME_VIEW_A ON (G.IC_GROUP_ID=NAME_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  NUMBER_view_UNIQUE_IDENTIFIER NUMBER_VIEW_A ON (G.IC_GROUP_ID=NUMBER_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  OPERATION_view_UNIQUE_IDENTIFIER OPERATION_VIEW_A ON (G.IC_GROUP_ID=OPERATION_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  PREMIER_view_UNIQUE_IDENTIFIER PREMIER_VIEW_A ON (G.IC_GROUP_ID=PREMIER_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  REGIONAL_view_UNIQUE_IDENTIFIER REGIONAL_VIEW_A ON (G.IC_GROUP_ID=REGIONAL_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  SHORT_view_UNIQUE_IDENTIFIER SHORT_VIEW_A ON (G.IC_GROUP_ID=SHORT_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  SSN_view_UNIQUE_IDENTIFIER SSN_VIEW_A ON (G.IC_GROUP_ID=SSN_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  STATUS_view_UNIQUE_IDENTIFIER STATUS_VIEW_A ON (G.IC_GROUP_ID=STATUS_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  SYSTEM_view_UNIQUE_IDENTIFIER SYSTEM_VIEW_A ON (G.IC_GROUP_ID=SYSTEM_VIEW_A.IC_GROUP_ID)
-LEFT JOIN  TYPE_view_UNIQUE_IDENTIFIER TYPE_VIEW_A ON (G.IC_GROUP_ID=TYPE_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  ab_UNIQUE_IDENTIFIER ABRV_VIEW_A ON (G.IC_GROUP_ID=ABRV_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  co_UNIQUE_IDENTIFIER CONN_VIEW_A ON (G.IC_GROUP_ID=CONN_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  fo_UNIQUE_IDENTIFIER FOUNDED_VIEW_A ON (G.IC_GROUP_ID=FOUNDED_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  ma_UNIQUE_IDENTIFIER MAKE_VIEW_A ON (G.IC_GROUP_ID=MAKE_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  me_UNIQUE_IDENTIFIER MEMBER_VIEW_A ON (G.IC_GROUP_ID=MEMBER_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  na_UNIQUE_IDENTIFIER NAME_VIEW_A ON (G.IC_GROUP_ID=NAME_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  nu_UNIQUE_IDENTIFIER NUMBER_VIEW_A ON (G.IC_GROUP_ID=NUMBER_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  op_UNIQUE_IDENTIFIER OPERATION_VIEW_A ON (G.IC_GROUP_ID=OPERATION_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  pr_UNIQUE_IDENTIFIER PREMIER_VIEW_A ON (G.IC_GROUP_ID=PREMIER_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  re_UNIQUE_IDENTIFIER REGIONAL_VIEW_A ON (G.IC_GROUP_ID=REGIONAL_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  sh_UNIQUE_IDENTIFIER SHORT_VIEW_A ON (G.IC_GROUP_ID=SHORT_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  ss_UNIQUE_IDENTIFIER SSN_VIEW_A ON (G.IC_GROUP_ID=SSN_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  st_UNIQUE_IDENTIFIER STATUS_VIEW_A ON (G.IC_GROUP_ID=STATUS_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  sy_UNIQUE_IDENTIFIER SYSTEM_VIEW_A ON (G.IC_GROUP_ID=SYSTEM_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  tp_UNIQUE_IDENTIFIER TYPE_VIEW_A ON (G.IC_GROUP_ID=TYPE_VIEW_A.IC_GROUP_ID)
+LEFT JOIN em_UNIQUE_IDENTIFIER em_VIEW_A ON (G.IC_GROUP_ID=em_VIEW_A.IC_GROUP_ID)
+LEFT JOIN hp_UNIQUE_IDENTIFIER hp_VIEW_A ON (G.IC_GROUP_ID=hp_VIEW_A.IC_GROUP_ID)
 <!-- group_access_variable is defined in ReportOverview -->
 where G.IC_GROUP_ID in group_access_variable
   </statement>
@@ -404,6 +431,16 @@ TYPE_VIEW_A.CLUBINFO_TYPE -->
   	<resultField>CLUBINFO_TYPE</resultField>
 	<resultType>java.lang.String</resultType>
 	<resultDescription>club info type</resultDescription>
+  </result>
+  <result>
+  	<resultField>EMAIL</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>email</resultDescription>
+  </result>
+  <result>
+  	<resultField>HOMEPAGE</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>homepage</resultDescription>
   </result>
 <!-- access variable used in ReportOverview -->
   <variable>
