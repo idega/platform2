@@ -9,6 +9,7 @@ import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
@@ -2870,17 +2870,33 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
 			int mLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
-			int mChange = mLastYear==0?-1:(100*mThisYear)/mLastYear;
+			double mChange = (
+			                  ((double) mThisYear) /
+			                  ((double) (mLastYear>0?mLastYear:(mThisYear!=0?mThisYear:1)))
+			                 ) * 100.0 
+					           * (((mThisYear!=0 && mLastYear!=0) && (mThisYear>=mLastYear))?1.0:-1.0);
+			
+			
+			/*new DecimalFormat("##0.#").format( 
+					((($V{AllSum}!=null && $V{AllSum}.floatValue()>0)? $V{AllSum}.floatValue() : 0 )/
+					 (($V{AllSumLastYear}!=null && $V{AllSumLastYear}.floatValue()>0)? $V{AllSumLastYear}.floatValue() : (($V{AllSum}!=null && $V{AllSum}.floatValue()>0)? $V{AllSum}.floatValue() : 1 )))
+					* 100.0 * ( (($V{AllSum}!=null && $V{AllSumLastYear}!=null) && ($V{AllSum}.intValue()>= $V{AllSumLastYear}.intValue()) ) ? 1.0 : -1.0 ) 
+			)*/
+			
 			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
-			int pChange = pLastYear==0?-1:(100*pThisYear)/pLastYear;
+			double pChange = (
+			                  ((double) pThisYear) /
+			                  ((double) (pLastYear>0?pLastYear:(pThisYear!=0?pThisYear:1)))
+			                 ) * 100.0 
+			                   * (((pThisYear!=0 && pLastYear!=0) && (pThisYear>=pLastYear))?1.0:-1.0);
 			
 			regData.addData(membersThisYear, new Integer(mThisYear));
 			regData.addData(membersLastYear, new Integer(mLastYear));
-			regData.addData(membersAnnualChangePercent, mChange==-1?"":Integer.toString(mChange));
+			regData.addData(membersAnnualChangePercent, (new DecimalFormat("##0.#")).format(mChange));
 			regData.addData(playersThisYear, new Integer(pThisYear));
 			regData.addData(playersLastYear, new Integer(pLastYear));
-			regData.addData(playersAnnualChangePercent, pChange==-1?"":Integer.toString(pChange));
+			regData.addData(playersAnnualChangePercent, (new DecimalFormat("##0.#")).format(pChange));
 			
 			reportCollection.add(regData);
 		}
