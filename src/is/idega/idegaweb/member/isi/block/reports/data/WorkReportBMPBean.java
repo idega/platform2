@@ -3,11 +3,9 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
-
 import javax.ejb.FinderException;
 
+import com.idega.core.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
@@ -29,7 +27,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";
 	protected final static String COLUMN_NAME_BOARD_DONE = "BOARD_DONE";
 	protected final static String COLUMN_NAME_STATUS = "STATUS";
-	
+	protected final static String COLUMN_NAME_FILE_ID = "IC_FILE_ID";
 
 	
 	public WorkReportBMPBean() {
@@ -39,13 +37,16 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_CLUB_ID, "Group id of club",true,true,Integer.class,"many-to-one",Group.class);
+		addAttribute(COLUMN_NAME_FILE_ID, "Uploaded files id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_CLUB_NAME, "Club name",true,true,String.class);
 		addAttribute(COLUMN_NAME_CLUB_SHORT_NAME, "Club short name",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_CLUB_NUMBER, "Club number",true,true,String.class);
 		addAttribute(COLUMN_NAME_WORK_REPORT_YEAR,"The year this report is valid for",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_MEMBERS_DONE, "Is the members-part of the work report finished", true, true, Boolean.class);
 		addAttribute(COLUMN_NAME_ACCOUNT_DONE, "Is the account-part of the work report finished", true, true, Boolean.class);		
-		addAttribute(COLUMN_NAME_BOARD_DONE, "Is the board-part of the work report finished", true, true, Boolean.class);		
+		addAttribute(COLUMN_NAME_BOARD_DONE, "Is the board-part of the work report finished", true, true, Boolean.class);	
+		addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
+		
 		addManyToManyRelationShip(WorkReportGroup.class);//so we can get the clubs related to leagues/divisions
 		
 		//TODO add stats
@@ -67,6 +68,18 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 		setColumn(COLUMN_NAME_CLUB_ID,clubId);
 	}
 	
+	public Integer getFileId(){
+		return getIntegerColumnValue(COLUMN_NAME_FILE_ID);
+	}
+	
+	public void setFileId(int fileId){
+		setColumn(COLUMN_NAME_FILE_ID,fileId);
+	}
+	
+	public void setFileId(Integer fileId){
+		setColumn(COLUMN_NAME_FILE_ID,fileId);
+	}
+	
 	public String getClubName(){
 		return getStringColumnValue(COLUMN_NAME_CLUB_NAME);
 	}
@@ -80,6 +93,13 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 		return getStringColumnValue(COLUMN_NAME_CLUB_SHORT_NAME);
 	}
 	
+	public void setStatus(String status){
+		setColumn(COLUMN_NAME_STATUS,status);
+	}
+	
+	public String getStatus(){
+		return getStringColumnValue(COLUMN_NAME_STATUS);
+	}
 
 	public void setClubName(String name){
 		setColumn(COLUMN_NAME_CLUB_NAME,name);

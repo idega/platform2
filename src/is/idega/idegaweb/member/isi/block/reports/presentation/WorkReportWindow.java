@@ -38,21 +38,21 @@ public class WorkReportWindow extends IWAdminWindow {
 	
 	public static final String PARAMETER_CLUB_ID = "iwme_wr_club_id";
 
-	private static final String ACTION = "iwme_wr_act";
-	private static final String ACTION_SAVE ="iwme_wr_act_sv";
+	protected static final String ACTION = "iwme_wr_act";
+
 	
-	private static final String ACTION_WORK_ON_REPORT ="iwme_wr_act_b1";
-	private static final String ACTION_EDIT_MEMBER_LIST ="iwme_wr_act_b2";
-	private static final String ACTION_EDIT_ACCOUNT ="iwme_wr_act_b3";
-	private static final String ACTION_EDIT_BOARD ="iwme_wr_act_b4";
-	private static final String ACTION_UPLOAD_REPORT ="iwme_wr_act_b5"; //b6 is useless
-	private static final String ACTION_IMPORT_MEMBERS ="iwme_wr_act_b7";
-	private static final String ACTION_IMPORT_ACCOUNT ="iwme_wr_act_b8";
-	private static final String ACTION_IMPORT_BOARD ="iwme_wr_act_b9";
-	private static final String ACTION_REPORT_OVERVIEW ="iwme_wr_act_b10";
-	private static final String ACTION_CLOSE_REPORT ="iwme_wr_act_b11";
-	private static final String ACTION_STATISTICS ="iwme_wr_act_b12";
-	private static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
+	protected static final String ACTION_WORK_ON_REPORT ="iwme_wr_act_b1";
+	protected static final String ACTION_EDIT_MEMBER_LIST ="iwme_wr_act_b2";
+	protected static final String ACTION_EDIT_ACCOUNT ="iwme_wr_act_b3";
+	protected static final String ACTION_EDIT_BOARD ="iwme_wr_act_b4";
+	protected static final String ACTION_UPLOAD_REPORT ="iwme_wr_act_b5"; //b6 is useless
+	protected static final String ACTION_IMPORT_MEMBERS ="iwme_wr_act_b7";
+	protected static final String ACTION_IMPORT_ACCOUNT ="iwme_wr_act_b8";
+	protected static final String ACTION_IMPORT_BOARD ="iwme_wr_act_b9";
+	protected static final String ACTION_REPORT_OVERVIEW ="iwme_wr_act_b10";
+	protected static final String ACTION_CLOSE_REPORT ="iwme_wr_act_b11";
+	protected static final String ACTION_STATISTICS ="iwme_wr_act_b12";
+	protected static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
 	
 	private IWResourceBundle iwrb;
 
@@ -61,15 +61,12 @@ public class WorkReportWindow extends IWAdminWindow {
 		setHeight(800);
 		setWidth(600);	
 		setResizable(true);
-		
 	}
 	
 	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		iwrb = getResourceBundle(iwc);
-		groupBiz = getGroupBusiness(iwc);
-		userBiz = getUserBusiness(iwc);
 		memBiz = getMemberUserBusiness(iwc);
 		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
@@ -84,75 +81,53 @@ public class WorkReportWindow extends IWAdminWindow {
 		table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
 		
 		table.add(getMenuTable(iwc),1,1);
+		
+	
 			
 		add(table);
 		
-		if (action == null) {
+		if(action!=null){
 			
-		}else if(action.equals(ACTION_SAVE)) {
-			//save(iwc);
-		}
-		else if( action.equals(ACTION_WORK_ON_REPORT) ){
-			
-		}
-		else if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
-			
-		}
-		else if( action.equals(ACTION_EDIT_ACCOUNT) ){
-			
-		}
-		else if( action.equals(ACTION_EDIT_BOARD) ){
-			
-		}
-		else if( action.equals(ACTION_UPLOAD_REPORT) ){
-			
-		}
-		else if( action.equals(ACTION_IMPORT_MEMBERS) ){
-			
-		}
-		else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
-			
-		}
-		else if( action.equals(ACTION_IMPORT_BOARD) ){
-			
-		}
-		else if( action.equals(ACTION_REPORT_OVERVIEW) ){
-			
-		}
-		else if( action.equals(ACTION_CLOSE_REPORT) ){
-			
-		}
-		else if( action.equals(ACTION_STATISTICS) ){
-			
-		}
 		
+			if( action.equals(ACTION_WORK_ON_REPORT) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_EDIT_ACCOUNT) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_EDIT_BOARD) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_UPLOAD_REPORT) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_IMPORT_MEMBERS) ){
+				table.add(new WorkReportImporter(),2,1);
+			}
+			else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
+				table.add(new WorkReportImporter(),2,1);
+			}
+			else if( action.equals(ACTION_IMPORT_BOARD) ){
+				table.add(new WorkReportImporter(),2,1);
+			}
+			else if( action.equals(ACTION_REPORT_OVERVIEW) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_CLOSE_REPORT) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+			else if( action.equals(ACTION_STATISTICS) ){
+				table.add(new WorkReportSelector(),2,1);	
+			}
+		
+		}
 
 	}
 	
-
-	private void save(IWContext iwc) {
-
-		try {
-			User user = iwc.getCurrentUser();
 		
-			boolean success = true;
-			if(success){
-				close();
-			}
-			else{
-				add(iwrb.getLocalizedString("workreportwindow.error_occured", "An error occurred. Please try again or contact your system administrator."));
-				add(new CloseButton(iwrb.getLocalizedImageButton("workreportwindow.close", "close")));
-			}
-			
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-				
-	}
-
-
 	private Table getMenuTable(IWContext iwc) {
 	
 		Table menu = new Table(1,11);
@@ -163,6 +138,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		//B.1
 		LinkContainer workOnReport = new LinkContainer();
 		workOnReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report","Select report"),true));
+		workOnReport.addParameter(ACTION,ACTION_WORK_ON_REPORT);
 		Lists editList = new Lists();
 		//B.2
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_members","Edit member list")));
@@ -232,90 +208,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		
 		
 		return menu;
-		
-	
-		/*List groups = null;
-		try {
-			List list = memBiz.getLeaguesListForUser(iwc.getCurrentUser(),iwc);
 			
-			
-			if(list!=null && !list.isEmpty()){
-				groups = new Vector();
-				Iterator iter = list.iterator();
-				while (iter.hasNext()) {
-					Group group = (Group) iter.next();
-					groups.addAll(memBiz.getAllClubDivisionsForLeague(group));
-				}
-				
-			}
-			
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if(groups!=null){
-			GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
-			groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
-			Collections.sort(groups, groupComparator);//sort alphabetically
-		}else{
-			add(iwrb.getLocalizedString("clubexchangewindow.no_club_division_to_manage","You do not have any club divisions to manage!" ));
-			return;
-		}
-	*/
-				
-
-		
-	}
-
-
-
-	/**
-	 * @param groups
-	 * @param name
-	 * @return DropdownMenu
-	 */
-	private DropdownMenu getGroupDropDown(Collection groups, String name) {
-		DropdownMenu menu = new DropdownMenu(name);
-		
-		if( groups!=null && !groups.isEmpty()){
-			Iterator iter = groups.iterator();
-			while (iter.hasNext()) {
-				Group group = (Group) iter.next();
-				menu.addMenuElement(group.getPrimaryKey().toString(),groupBiz.getNameOfGroupWithParentName(group));
-			}
-			
-		}
-		else menu.addMenuElement(-1,iwrb.getLocalizedString("workreportwindow.no_values", "No values!"));
-	
-
-		
-		return menu;
-	}
-
-
-	public UserBusiness getUserBusiness(IWApplicationContext iwc) {
-		if (userBiz == null) {
-			try {
-				userBiz = (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-			}
-			catch (java.rmi.RemoteException rme) {
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return userBiz;
-	}
-	
-	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
-		if (groupBiz == null) {
-			try {
-				groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
-			}
-			catch (java.rmi.RemoteException rme) {
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return groupBiz;
 	}
 	
 	public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
