@@ -192,11 +192,13 @@ public void setToSubmit(){
 
 public void setYear(int year){
 	setCheck=true;
-        if(year<fromYear){
-          fromYear=year;
-        }
-        if(year>toYear){
-          toYear=year;
+        if(!(year>fromYear && year<toYear) || !(year<fromYear && year>toYear)){
+          if(year<fromYear){
+            fromYear=year;
+          }
+          if(year>toYear){
+            toYear=year;
+          }
         }
 	//theYear.setSelectedElement(Integer.toString(year));
         selectedYear=year;
@@ -268,10 +270,15 @@ public void setYearRange(int fromYear,int toYear){
 
 public void print(ModuleInfo modinfo)throws IOException{
 
-  for (int i=fromYear;i<=toYear;i++){
-    theYear.addMenuElement(Integer.toString(i));
+  if(fromYear < toYear){
+    for (int i=fromYear;i<=toYear;i++){
+      theYear.addMenuElement(Integer.toString(i));
+    }
+  }else{
+    for (int i=fromYear;i>=toYear;i--){
+      theYear.addMenuElement(Integer.toString(i));
+    }
   }
-
 
   if (selectedYear!=-1){
     theYear.setSelectedElement(Integer.toString(selectedYear));

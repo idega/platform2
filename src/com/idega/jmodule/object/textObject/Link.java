@@ -32,6 +32,7 @@ private String parameterString;
 private boolean addSessionId = true;
 private static String sessionStorageName=IWMainApplication.windowOpenerParameter;
 private static String emptyString="";
+private Form formToSubmit;
 
 
 
@@ -520,18 +521,31 @@ public void print(ModuleInfo modinfo)throws IOException{
   }
 
 
-  public void postIWLinkEvent(ModuleInfo modinfo){
-      String sessionAddress = this.getID();
+  private void postIWLinkEvent(ModuleInfo modinfo){
+      eventLocationString = this.getID();
       IWLinkEvent event = new IWLinkEvent(this,IWLinkEvent.LINK_ACTION_PERFORMED);
-      this.addParameter(sessionEventStorageName,sessionAddress);
-      modinfo.setSessionAttribute(sessionAddress, event);
+      if(this.formToSubmit == null){
+        this.addParameter(sessionEventStorageName,eventLocationString);
+      }
+      modinfo.setSessionAttribute(eventLocationString, event);
       listenerAdded(true);
   }
 
+//end
+
 
   public void setToFormSubmit(Form form) {
-      this.setOnClick("document."+form.getID()+".submit()");
+      this.setToFormSubmit(form,false);
+  }
+
+  public void setToFormSubmit(Form form, boolean useEvent ) {
+      this.formToSubmit = form;
       this.setURL("#");
+      if((this.getIWLinkListeners() != null && this.getIWLinkListeners().length != 0) || useEvent ){
+         this.setOnClick("javascript:document."+form.getID()+"."+IWMainApplication.IWEventSessionAddressParameter+".value=this.id ;document."+form.getID()+".submit()");
+      } else {
+        this.setOnClick("javascript:document."+form.getID()+".submit()");
+      }
   }
 
   public void setAsBackLink(int backUpHowManyPages) {
@@ -544,7 +558,7 @@ public void print(ModuleInfo modinfo)throws IOException{
   }
 
 
-//end
+
 
 
 

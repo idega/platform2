@@ -10,6 +10,7 @@ import java.util.*;
 import com.idega.jmodule.object.*;
 import com.idega.idegaweb.*;
 
+
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
@@ -23,6 +24,7 @@ private ModuleObject submitToObject;
 private Parameter controlParameter;
 
 private static String FORM_EVENT_PARAMETER="idega_special_form_event";
+
 
 /**
 *Defaults to send to the page itself and the POST method
@@ -74,6 +76,7 @@ public Form(Window myWindow){
 
 public void initialize(){
    add(new Parameter(FORM_EVENT_PARAMETER,this.getID()));
+   this.add(new HiddenInput(IWMainApplication.IWEventSessionAddressParameter,""));
 }
 
 
@@ -351,5 +354,5 @@ public void setEventListener(String eventListenerClassName){
 }
 
 
-}
+} // Class ends
 

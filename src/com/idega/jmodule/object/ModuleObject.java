@@ -49,13 +49,14 @@ private static String emptyString="";
 
 //added by gummi@idega.is
 //begin
-public static String sessionEventStorageName= IWMainApplication.IWEventSessionAddressParameter;  //gummi@idega.is
-public EventListenerList listenerList = new EventListenerList(); //gummi@idega.is
-//public IWEvent moduleEvent = null;  //gummi@idega.is
+public static String sessionEventStorageName= IWMainApplication.IWEventSessionAddressParameter;
+public EventListenerList listenerList = new EventListenerList();
 private Hashtable eventAttributes = null;
 private static long InstnceUniqueID;
 private String UniqueInstnceName;
 private boolean listenerAdded = false;
+public String eventLocationString = "";
+private ModuleInfo eventModuleInfo=null;
 //end
 
 
@@ -87,12 +88,11 @@ public void setID(){
 
 public String getID(){
 	String theReturn = getAttribute("id");
-        if(theReturn.equals(this.emptyString)){
+        if(theReturn == null || this.emptyString.equals(theReturn)){
           setID();
           theReturn=getAttribute("id");
         }
         return theReturn;
-
 }
 
 public ModuleObject getRootParent(){
@@ -542,6 +542,7 @@ public IBObjectInstance getIBInstance(ModuleInfo modinfo)throws IWException{
 //begin
 
   public void addIWLinkListener(IWLinkListener l,ModuleInfo modinfo){
+    System.err.println(this.getClass().getName() + " : listener added of type -> " + l.getClass().getName());
     listenerList.add(IWLinkListener.class,l);
   }
 
@@ -625,6 +626,13 @@ public IBObjectInstance getIBInstance(ModuleInfo modinfo)throws IWException{
     public void fireEvent(){
     }
 
+
+  public void endEvent(ModuleInfo modinfo){
+    modinfo.removeSessionAttribute(eventLocationString);
+  }
+
+
+
   public void listenerAdded(boolean added){
     listenerAdded = added;
   }
@@ -635,6 +643,22 @@ public IBObjectInstance getIBInstance(ModuleInfo modinfo)throws IWException{
 
 //end
 
+//temp
 
+public void setModuleInfo(ModuleInfo modinfo){
+//  System.err.println(this.getClass().getName() + ": modinfo set");
+  eventModuleInfo = modinfo;
+}
+
+public ModuleInfo getEventModuleInfo(){
+  return eventModuleInfo;
+}
+
+
+public void _setModuleInfo(ModuleInfo modinfo){
+  setModuleInfo(modinfo);
+}
+
+//temp ends
 
 }

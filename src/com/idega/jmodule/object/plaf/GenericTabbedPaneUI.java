@@ -11,6 +11,7 @@ import java.util.EventListener;
 import javax.swing.SingleSelectionModel;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.util.IWColor;
+import com.idega.jmodule.object.interfaceobject.Form;
 
 /**
  * Title:        idegaWeb project
@@ -93,12 +94,22 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
     protected Vector tabs;
     protected ChangeEvent changeEvent = null;
     protected EventListenerList listenerList = new EventListenerList();
+    protected Form linkForm = null;
 
     private int index = -1;
 
     public GenericTabPresentation(){
       super();
       tabs = new Vector();
+    }
+
+
+    public void setForm(Form form){
+      linkForm = form;
+    }
+
+    public Form getForm(){
+      return linkForm;
     }
 
 

@@ -24,7 +24,8 @@ public HiddenInput(String name){
 }
 
 public HiddenInput(String name,String value){
-	super(name,value);
+        super(name,value);
+	System.err.println("HiddenInput created");
 }
 
 

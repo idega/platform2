@@ -58,6 +58,7 @@ public class IWTabbedPane extends Table implements SwingConstants {
         setTabPlacement(tabPlacement);
         pages = new Vector(1);
         setModel(new DefaultSingleSelectionModel());
+        getModel().addChangeListener(this.createChangeListener());
         updateUI();
         this.currentPage = (GenericTabbedPaneUI.GenericTabPagePresentation)this.getUI().getTabPagePresentation();
         this.addTabePage(this.currentPage);
@@ -69,12 +70,10 @@ public class IWTabbedPane extends Table implements SwingConstants {
     public static IWTabbedPane getInstance(String key, ModuleInfo modinfo, int tabPlacement ){
       Object  obj = modinfo.getSessionAttribute(key+TabbedPaneAttributeString);
       if(obj != null && obj instanceof IWTabbedPane){
-        System.err.println("if");
         IWTabbedPane TabbedPaneObj = (IWTabbedPane)obj;
         TabbedPaneObj.justConstructed(false);
         return TabbedPaneObj;
       }else{
-        System.err.println("else");
         IWTabbedPane tempTab = new IWTabbedPane(tabPlacement);
         modinfo.setSessionAttribute(key+TabbedPaneAttributeString, tempTab);
         tempTab.setAttributeString(key+TabbedPaneAttributeString);
@@ -94,8 +93,14 @@ public class IWTabbedPane extends Table implements SwingConstants {
       this.attributeString = attributeString;
     }
 
-    public void finalize(ModuleInfo modinfo){
+    public void dispose(ModuleInfo modinfo){
       modinfo.getSession().removeAttribute(attributeString);
+      Vector evetLinks = this.getUI().getTabPresentation().getAddedTabs();
+      if ( evetLinks != null ) {
+        for (int i = 0; i < evetLinks.size(); i++) {
+          ((Link)evetLinks.get(i)).endEvent(modinfo);
+        }
+      }
     }
 
 
@@ -131,7 +136,10 @@ public class IWTabbedPane extends Table implements SwingConstants {
 
     protected class LinkListener implements IWLinkListener {
         public void actionPerformed(IWLinkEvent e) {
+            System.err.println(this.getClass().getName() + " : setSelectedIndex begins eventsource = " + e.getSource().getClass().getName() + " at index : " + getUI().getTabPresentation().getAddedTabs().indexOf(e.getSource()) );
             setSelectedIndex(getUI().getTabPresentation().getAddedTabs().indexOf(e.getSource()));
+            System.err.println(this.getClass().getName() + " : setSelectedIndex ends");
+            //fireStateChanged();
         }
     }
 
@@ -165,7 +173,9 @@ public class IWTabbedPane extends Table implements SwingConstants {
                 // Lazily create the event:
                 if (changeEvent == null)
                     changeEvent = new ChangeEvent(this);
+                System.err.println("ChangeListener : 1 "+((ChangeListener)listeners[i+1]).getClass().getName() + " : length -> " + listeners.length);
                 ((ChangeListener)listeners[i+1]).stateChanged(changeEvent);
+                System.err.println("ChangeListener : 2 "+((ChangeListener)listeners[i+1]).getClass().getName());
             }
         }
     }
@@ -236,13 +246,13 @@ public class IWTabbedPane extends Table implements SwingConstants {
 
         model.setSelectedIndex(index);
 
-        if ((oldIndex >= 0) && (oldIndex != index)) {
-            Page oldPage = (Page) pages.elementAt(oldIndex);
-        }
-        if ((index >= 0) && (oldIndex != index)) {
-            Page newPage = (Page) pages.elementAt(index);
-
-        }
+//        if ((oldIndex >= 0) && (oldIndex != index)) {
+//            Page oldPage = (Page) pages.elementAt(oldIndex);
+//        }
+//        if ((index >= 0) && (oldIndex != index)) {
+//            Page newPage = (Page) pages.elementAt(index);
+//
+//        }
 
         currentPage.empty();
         currentPage.add(this.getComponentAt(this.getSelectedIndex()));
@@ -269,14 +279,14 @@ public class IWTabbedPane extends Table implements SwingConstants {
     public void insertTab(String title, ModuleObject moduleobject, int index, ModuleInfo modinfo) {
 
         int i;
+
         if (moduleobject != null && (i = indexOfComponent(moduleobject)) != -1) {
             removeTabAt(i);
         }
 
         pages.insertElementAt(new Page(this, title != null? title : " --- ", moduleobject, modinfo), index);
-        if (moduleobject != null) {
-        }
-
+//        if (moduleobject != null) {
+//        }
         if (pages.size() == 1) {
             setSelectedIndex(0);
         }
@@ -435,8 +445,21 @@ public class IWTabbedPane extends Table implements SwingConstants {
   }
 
 
+  public void setTabsToFormSubmit(Form form){
+    Vector tabs = getUI().getTabPresentation().getAddedTabs();
+    if (tabs != null){
+      for (int i = 0; i < tabs.size(); i++) {
+        ((Link)tabs.get(i)).setToFormSubmit(form,true);
+      }
+    }
+    getUI().getTabPresentation().setForm(form);
+  }
+
+
+
+
   public void main(ModuleInfo modinfo) throws Exception {
-    fireStateChanged();
+//    fireStateChanged();
 /*    if(this.getUI().getTabPagePresentation() instanceof ModuleObject){
       addTabePage((ModuleObject)this.getUI().getTabPagePresentation());
       this.getUI().getTabPagePresentation().add(this.getSelectedComponent());

@@ -74,7 +74,11 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
 
 
     public Link getTabLink(ModuleObject obj){
+//      if(obj instanceof Link)
       Link tempLink = new Link(obj.getName());
+      if(getForm() != null){
+        tempLink.setToFormSubmit(getForm(),true);
+      }
       return tempLink;
     }
 
@@ -82,9 +86,12 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
     public ModuleObject getTab(int index,boolean selected){
       Link tempObj = (Link)this.getAddedTabs().elementAt(index);
       Tab tempTab = new Tab(this.getColor());
-      System.err.println("selected : " + selected);
       tempTab.setSelected(selected);
-      tempTab.addLink(tempObj);
+      if(selected){
+        tempTab.addLink(tempObj.getObject());
+      } else {
+        tempTab.addLink(tempObj);
+      }
       return tempTab;
     }
 
@@ -107,7 +114,6 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
         this.setSelectedIndex(0);
       }
       for (int i = 0; i < this.getAddedTabs().size(); i++) {
-        System.err.println(" Index : " + this.getSelectedIndex()+ " = "+ i +" : " + (this.getSelectedIndex()==i));
         ModuleObject tempObj = this.getTab(i,(this.getSelectedIndex()==i));
         this.add(tempObj,i+2,1);
         this.add(Text.emptyString(),i+2,2);
@@ -218,7 +224,7 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
 
         }
 
-        public void addLink(Link link){
+        public void addLink(ModuleObject link){
           this.add(link,3,3);
         }
 
@@ -325,7 +331,7 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
 //    super.setHeight(3,1, Integer.toString(paneModel.getTabPageHeight()-2));
 //    super.setWidth(3,1,Integer.toString(paneModel.getTabPageWidth()-4));
     super.setHeight(3,1, Integer.toString(400));
-    super.setWidth(3,1,Integer.toString(350));
+    super.setWidth(3,1,Integer.toString(390));
 
     this.setAlignment(3,1,"center");
 }

@@ -49,11 +49,11 @@ public void add(ModuleObject modObject){
 }
 
 
-public void add(Object obj){
-  if(obj instanceof ModuleObject){
-    add((ModuleObject)obj);
+public void add(Object moduleObject){
+  if(moduleObject instanceof ModuleObject){
+    add((ModuleObject)moduleObject);
   }else{
-    System.err.println("Not instance of ModuleObject and therefore cannot be added to ModuleObjectContainer: " + obj);
+    System.err.println("Not instance of ModuleObject and therefore cannot be added to ModuleObjectContainer: " + moduleObject);
   }
 }
 
@@ -413,5 +413,27 @@ public ModuleObject objectAt(int index){
     return null;
   }
 }
+
+
+//temp
+
+public void _setModuleInfo(ModuleInfo modinfo){
+  setModuleInfo(modinfo);
+  if ( ! isEmpty() ){
+    for(int index=0;index<numberOfObjects();index++){
+      ModuleObject tempobj = objectAt(index);
+      if(tempobj!=null){
+        if(tempobj!=this){
+          tempobj._setModuleInfo(modinfo);
+        }
+      }
+    }
+  }
+}
+
+// temp ends
+
+
+
 
 }

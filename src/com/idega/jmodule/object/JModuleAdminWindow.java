@@ -46,6 +46,10 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
     initialize();
   }
 
+  public JModuleAdminWindow(int x,int y){
+    super(x,y);
+  }
+
   /*public void main(ModuleInfo modinfo)throws Exception{
     super.main(modinfo);
     //initialize(modinfo);

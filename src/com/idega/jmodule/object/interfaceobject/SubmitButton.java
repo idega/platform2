@@ -9,6 +9,9 @@ import java.io.*;
 import java.util.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.event.IWSubmitEvent;
+import com.idega.event.IWSubmitListener;
+import com.idega.idegaweb.IWMainApplication;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -110,6 +113,29 @@ public void setOnSubmit(String script){
 public void setTarget(String target){
 	setAttribute("target",target);
 }
+
+
+
+  public void addIWSubmitListener(IWSubmitListener l, Form form, ModuleInfo modinfo){
+    if (!listenerAdded()){
+      postIWSubmitEvent(modinfo, form);
+    }
+    super.addIWSubmitListener(l, modinfo);
+  }
+
+
+  private void postIWSubmitEvent(ModuleInfo modinfo, Form form){
+      eventLocationString = this.getID();
+      IWSubmitEvent event = new IWSubmitEvent(this,IWSubmitEvent.SUBMIT_PERFORMED);
+      //this.addParameter(sessionEventStorageName,eventLocationString);
+      this.setOnClick("javascript:document."+form.getID()+"."+IWMainApplication.IWEventSessionAddressParameter+".value=this.id ");
+      modinfo.setSessionAttribute(eventLocationString, event);
+      listenerAdded(true);
+  }
+
+
+
+
 
 private void printButton(ModuleInfo modinfo) throws IOException{
 

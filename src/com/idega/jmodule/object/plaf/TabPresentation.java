@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.textObject.Link;
 import com.idega.util.IWColor;
+import com.idega.jmodule.object.interfaceobject.Form;
 /**
  * Title:        idegaWeb
  * Description:
@@ -26,6 +27,6 @@ public interface TabPresentation extends SingleSelectionModel {
         public void setColor(IWColor color);
         public Link getTabLink(ModuleObject obj);
         public IWColor getColor();
-
+        public void setForm(Form form);
 
 }   //  Interface TabPresentation
