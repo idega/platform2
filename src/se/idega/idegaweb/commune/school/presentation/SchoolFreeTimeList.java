@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import se.idega.idegaweb.commune.school.accounting.presentation.SchoolAccountingCommuneBlock;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceComparator;
 import se.idega.idegaweb.commune.school.business.SchoolFreetimeWriter;
@@ -42,7 +43,7 @@ import com.idega.util.text.Name;
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class SchoolFreeTimeList extends SchoolCommuneBlock {
+public class SchoolFreeTimeList extends SchoolAccountingCommuneBlock {
 	
 	public static final String PARAMETER_ACTION = "sch_action";	
 

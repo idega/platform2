@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.school.accounting.presentation.SchoolAccountingCommuneBlock;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
 import se.idega.idegaweb.commune.school.event.SchoolEventListener;
 
@@ -25,7 +26,7 @@ import com.idega.user.presentation.UserChooser;
 /**
  * @author Laddi
  * */
-public class SchoolClassBuilder extends SchoolCommuneBlock {
+public class SchoolClassBuilder extends SchoolAccountingCommuneBlock {
 	
 	private final String PARAMETER_ACTION = "scb_action";
 	private final String PARAMETER_CLASS_NAME = "scb_class_name";
