@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.20 2004/01/11 22:46:15 tryggvil Exp $
+ * $Id: VATBusinessBean.java,v 1.21 2004/01/13 12:33:41 roar Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 /**
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/01/11 22:46:15 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/13 12:33:41 $ by $Author: roar $
  * 
  * @author Anders Lindman
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness {
 
@@ -59,7 +59,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_CANNOT_DELETE_VAT_REGULATION = KP + "cannot_delete_vat_regulation";
 	public final static String KEY_CANNOT_FIND_VAT_REGULATION = KP + "cannot_find_vat_regulation";
 
-	public final static String DEFAULT_DATE_FORMAT = "Datum måste anges på formen ÅÅMM, ÅÅMMDD, eller ÅÅÅÅMMDD.";
+	public final static String DEFAULT_DATE_FORMAT = "Datum måste anges på formen ??MM, ??MMDD, eller ????MMDD.";
 	public final static String DEFAULT_SEARCH_PERIOD_VALUES = "Sökperiodens startdatum måste vara mindre eller lika med slutdatum.";
 	public final static String DEFAULT_PERIOD_VALUES = "Periodens startdatum måste vara mindre eller lika med slutdatum.";
 	public final static String DEFAULT_PERIOD_OVERLAP = "Det finns redan en momssats inom denna period.";
@@ -458,7 +458,8 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	}
 
 	public float getVATPercentForRegulation(Regulation normalRegulation) throws VATException {
-		return getVATRegulationFromRegulation(normalRegulation).getVATPercent();
+		VATRegulation vatRegulation = getVATRegulationFromRegulation(normalRegulation);
+		return vatRegulation != null ? vatRegulation.getVATPercent() : 0f;
 	}
 
 	/**
@@ -481,6 +482,10 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 *         VATException
 	 */
 	protected VATRegulation getVATRegulationFromVATRuleRegulation(Regulation vatRuleRegulation) throws VATException {
+		if (vatRuleRegulation == null){
+			return null;
+		}
+		
 		try {
 			RegulationsBusiness regBus = getRegulationsBusiness();
 			Collection conditions;
