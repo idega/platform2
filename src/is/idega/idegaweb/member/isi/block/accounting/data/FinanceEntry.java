@@ -28,6 +28,7 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public java.sql.Timestamp getPaymentDate();
  public is.idega.idegaweb.member.isi.block.accounting.data.PaymentType getPaymentType();
  public int getPaymentTypeID();
+ public boolean getSent();
  public is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff getTariff();
  public int getTariffID();
  public is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType getTariffType();
@@ -57,6 +58,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public void setPaymentDate(java.sql.Timestamp p0);
  public void setPaymentType(is.idega.idegaweb.member.isi.block.accounting.data.PaymentType p0);
  public void setPaymentTypeID(int p0);
+ public void setSent(boolean p0);
+ public void setSent(java.lang.Boolean p0);
  public void setStatusCreated();
  public void setStatusReady();
  public void setStatusSent();
