@@ -629,7 +629,7 @@ public class InitialData extends TravelManager {
         table.setAlignment(1,row,"left");
         table.add(lBack,1,row);
       }
-      if (super.getTravelSessionManager(iwc).getSupplier() != null ) {
+      if (super.isTravelAdministrator(iwc)) {
         table.setAlignment(2,row,"right");
         table.add(submit,2,row);
       }
