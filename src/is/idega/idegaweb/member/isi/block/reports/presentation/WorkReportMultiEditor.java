@@ -244,6 +244,10 @@ public class WorkReportMultiEditor extends Block {
 				IWContext iwc)  {
 					String statusCode = (String) ((EntityRepresentation) entity).getColumnValue(REPORT_STATUS);
 					
+					if(statusCode==null) {
+						statusCode = WorkReportConstants.WR_STATUS_NOT_DONE;
+					}
+					
 					return resourceBundle.getLocalizedString(statusCode,statusCode);
 				}
 			};        
