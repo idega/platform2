@@ -5096,7 +5096,7 @@ private ReportableData addToIntegerCountFromFieldInAnotherReportableData(Reporta
 private String getLeagueIdentifier(WorkReportGroup league) {
 	StringBuffer leagueBuf = new StringBuffer();
 	String number = league.getNumber();
-	if(number==null) {
+	if(number==null || "".equals(number)) {
 		number = "";
 	} else {
 		number += " ";
@@ -5121,8 +5121,8 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 
 private String getRegionalUnionIdentifier(WorkReport report) {
 	StringBuffer ruBuf = new StringBuffer();
-	ruBuf.append( (report.getRegionalUnionNumber()!=null)? report.getRegionalUnionNumber()+" " : "" )
-	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "");
+	ruBuf.append( ( ( (report.getRegionalUnionNumber()!=null) && (!"".equals(report.getRegionalUnionNumber()))) )? report.getRegionalUnionNumber()+" " : "" )
+	.append( ( ( (report.getRegionalUnionAbbreviation()!=null) && (!"".equals(report.getRegionalUnionAbbreviation()))) )? report.getRegionalUnionAbbreviation() : "");
 	String regText = ruBuf.toString();
 	if("".equals(regText)){
 		regText = (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : _iwrb.getLocalizedString(LOCALIZED_NO_REGIONAL_UNION_NAME, "No Reg.Un. name");
