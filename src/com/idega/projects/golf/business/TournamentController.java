@@ -754,12 +754,9 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
         }
 }
 
-public static void createScorecardForMember(com.idega.projects.golf.entity.Member member, Tournament tournament, TournamentTournamentGroup tTGroup) throws SQLException {
-    TournamentDay[] tDays = tournament.getTournamentDays();
-    TournamentRound[] tRound = tournament.getTournamentRounds();
+
+public static void createScorecardForMember(com.idega.projects.golf.entity.Member member, Tournament tournament, TournamentTournamentGroup tTGroup, TournamentRound tRound) throws SQLException {
     TournamentType tType = tournament.getTournamentType();
-    int numberOfRounds = tRound.length;
-    int numberOfDays = tDays.length;
     Scorecard scorecard;
     Field field = tournament.getField();
     Handicap handicapper;
@@ -768,7 +765,7 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     float CR = 0;
     int slope = 0;
     float maxHandicap = 36;
-    float modifier = -1;
+    float modifier = 1;
 
     try {
         Tee[] tee = (Tee[]) (new Tee()).findAllByColumn("field_id",field.getID()+"","tee_color_id",tTGroup.getTeeColorId()+"","hole_number","1");
@@ -780,7 +777,6 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     catch (Exception e) {
     }
 
-    for (int i = 0; i < numberOfRounds; i++) {
         handicap = member.getHandicap();
         if (handicap > 36 ) {
             MemberInfo memberInfo = new MemberInfo(member.getID());
@@ -817,7 +813,7 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
 
         scorecard = new Scorecard();
           scorecard.setMemberId(member.getID());
-          scorecard.setTournamentRoundId(tRound[i].getID());
+          scorecard.setTournamentRoundId(tRound.getID());
           //scorecard.setScorecardDate(new idegaTimestamp(tDays[i].getDate()).getTimestamp());
           scorecard.setTotalPoints(0);
           scorecard.setHandicapBefore(handicap);
@@ -829,6 +825,14 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
           scorecard.setHandicapCorrection("N");
           scorecard.setUpdateHandicap(false);
         scorecard.insert();
+
+}
+
+public static void createScorecardForMember(com.idega.projects.golf.entity.Member member, Tournament tournament, TournamentTournamentGroup tTGroup) throws SQLException {
+    TournamentRound[] tRound = tournament.getTournamentRounds();
+    int numberOfRounds = tRound.length;
+    for (int i = 0; i < numberOfRounds; i++) {
+        TournamentController.createScorecardForMember(member,tournament,tTGroup,tRound[i]);
     }
 }
 
