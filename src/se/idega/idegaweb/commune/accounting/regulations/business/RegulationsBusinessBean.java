@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.58 2003/11/06 09:19:51 laddi Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.59 2003/11/06 23:18:09 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -405,9 +405,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	private int checkConditions(Regulation r, Collection c) {
+		//If there are no conditions then the rule of course is allowed
 		if (c == null || c.isEmpty())
 			return 1;
-			
+
+		//Find all the conditions on this rule
 		Collection cond = null;
 		try {
 			cond = getConditionHome().findAllConditionsByRegulation(r);
@@ -419,63 +421,188 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		catch (FinderException e) {
 			e.printStackTrace();
 			return 0;
-		}	
-		
+		}
+
+		//If there are no conditions on the rule then the rule does not satisfy the conditions sent into the method. NB Lotta is checking this
 		if (cond != null || cond.isEmpty())
 			return 0;
-			
+
+		//Go through each condition sent in and try to see if the rule has all the conditions it needs. If some are missing 0 will be returned.
 		Iterator it = c.iterator();
 		while (it.hasNext()) {
-			ConditionParameter param = (ConditionParameter)it.next();
-			
+			ConditionParameter param = (ConditionParameter) it.next();
+
 			String condition = param.getCondition();
-			
+
+			//Checking each type of condition
 			if (condition.equals(IntervalConstant.ACTIVITY)) {
+				String value = (String) param.getInterval();
 				Iterator i = cond.iterator();
-				boolean noMatch = true;
-				while (i.hasNext() && noMatch) {
-					Condition regCond = (Condition)i.next();
+				boolean match = false;
+				while (i.hasNext() && !match) {
+					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_OPERATION)) {
-						//Do check
-						//Some funky check shit removed until tomorrow
+						int id = regCond.getIntervalID();
+						try {
+							SchoolType act = getSchoolTypeHome().findByPrimaryKey(new Integer(id));
+							if (act.getLocalizationKey().equals(value))
+								match = true;
+						}
+						catch (RemoteException e1) {
+							e1.printStackTrace();
+							return 0;
+						}
+						catch (FinderException e1) {
+							e1.printStackTrace();
+							return 0;
+						}
 					}
-				} 	
-				
-				if (noMatch)
+				}
+
+				if (!match)
 					return 0;
 			}
 			else if (condition.equals(IntervalConstant.AGE)) {
+				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
-				boolean noMatch = true;
-				while (i.hasNext() && noMatch) {
-					Condition regCond = (Condition)i.next();
+				boolean match = false;
+				while (i.hasNext() && !match) {
+					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
-						//Do check
-						//Some funky check shit removed until tomorrow
+						int id = regCond.getIntervalID();
+						
+						//This is not needed here. I'll just use the fact that this is hardcoded.
+/*						ArrayList ages = (ArrayList)findAllAgeIntervals();
+						Iterator it2 = ages.iterator();
+						while (it2.hasNext()) {
+							Object age[] = (Object[])it.next();
+							if (((Integer)age[0]).intValue() == value.intValue())
+								match = checkAgeIntervals(value.intValue(),(String)age[1]);
+								if (match)
+									break;					
+						}*/
+						
+						switch (id) {
+							case 1 : 
+								if (1 <= value.intValue() && value.intValue() <= 2)
+									match = true;
+								break;
+							case 2 :
+								if (3 <= value.intValue() && value.intValue() <= 5)
+									match = true;
+								break;
+							case 3 :
+								if (4 <= value.intValue() && value.intValue() <= 5)
+									match = true;
+								break;
+							case 4 :
+								if (6 == value.intValue())
+									match = true;
+								break;
+							case 5 :
+								if (value.intValue() >= 5)
+									match = true;
+								break;	
+						}
 					}
-				} 	
-				
-				if (noMatch)
+				}
+
+				if (!match)
 					return 0;
 			}
 			else if (condition.equals(IntervalConstant.HOURS)) {
+				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
-				boolean noMatch = true;
-				while (i.hasNext() && noMatch) {
-					Condition regCond = (Condition)i.next();
+				boolean match = true;
+				while (i.hasNext() && !match) {
+					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_HOURS)) {
-						//Do check
-						//Some funky check shit removed until tomorrow						
+						int id = regCond.getIntervalID();
+						//I'll just use the fact that this is hardcoded.						
+						switch (id) {
+							case 1 : 
+								if (1 <= value.intValue() && value.intValue() <= 25)
+									match = true;
+								break;
+							case 2 :
+								if (26 <= value.intValue() && value.intValue() <= 35)
+									match = true;
+								break;
+							case 3 :
+								if (value.intValue() >= 36)
+									match = true;
+								break;
+							case 4 :
+								if (value.intValue() <= 24)
+									match = true;
+								break;
+							case 5 :
+								if (value.intValue() >= 25)
+									match = true;
+								break;	
+							case 6 :
+								if (value.intValue() <= 13)
+									match = true;
+								break;	
+							case 7 :
+								if (value.intValue() >= 14)
+									match = true;
+								break;	
+						}
 					}
-				} 	
-				
-				if (noMatch)
-					return 0;				
+				}
+
+				if (!match)
+					return 0;
+			}
+			else if (condition.equals(IntervalConstant.SIBLING_NUMBER)) {
+				Integer value = (Integer) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && !match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SIBLINGS)) {
+						int id = regCond.getIntervalID();
+						//I'll just use the fact that this is hardcoded.						
+						switch (id) {
+							case 1 : 
+								if (1 == value.intValue())
+									match = true;
+								break;
+							case 2 :
+								if (2 == value.intValue())
+									match = true;
+								break;
+							case 3 :
+								if (3 == value.intValue())
+									match = true;
+								break;
+							case 4 :
+								if (value.intValue() >= 4)
+									match = true;
+								break;
+						}
+					}
+				}
+
+				if (!match)
+					return 0;
 			}			
 		}
 
 		return 1;
 	}
+
+//	private boolean checkAgeIntervals(int age, String condition) {
+//		if (condition.indexOf("-") > 0) {
+//			
+//		}
+//		else if (condition.indexOf(">=") > 0) {
+//			
+//		}
+//		
+//		return true;
+//	}
 
 	/**
 	 * Gets a Condition by Regulation ID and Index
@@ -931,6 +1058,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Finds all age intervals
 	 * These are not put in an entity bean since Lotta Ringborg 
 	 * tells me they shall be fixed and never changed.
+	 * 
+	 * If these change please fix the method checkAgeIntervals as well.
+	 * 
 	 * @return Collection of hour intervals
 	 * @author Kelly
 	 */
@@ -1244,45 +1374,54 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		//Insert code here to create postingDetail
 		try {
 			RegulationHome home = getRegulationHome();
-			/*int flowID = -1;
+			int flowID = -1;
 			int condTypeID = -1;
 			int regSpecTypeID = -1;
 
 			try {
-				flowID = Integer.parseInt(flow);
+				PaymentFlowType pfType = getPaymentFlowTypeHome().findByLocalizationKey(flow);
+				if (pfType != null)
+					flowID = ((Integer) pfType.getPrimaryKey()).intValue();
 			}
-			catch(NumberFormatException e) {
+			catch (Exception e) {
+				e.printStackTrace();
 				flowID = -1;
 			}
 
 			try {
-				condTypeID = Integer.parseInt(conditionType);
+				ConditionType cType = getConditionTypeHome().findByConditionType(conditionType);
+				if (cType != null)
+					condTypeID = ((Integer) cType.getPrimaryKey()).intValue();
 			}
-			catch(NumberFormatException e) {
+			catch (Exception e) {
+				e.printStackTrace();
 				condTypeID = -1;
 			}
 
 			try {
-				regSpecTypeID = Integer.parseInt(regSpecType);
+				RegulationSpecType sType = getRegulationSpecTypeHome().findByRegulationSpecType(regSpecType);
+				if (sType != null)
+					regSpecTypeID = ((Integer) sType.getPrimaryKey()).intValue();
 			}
-			catch(NumberFormatException e) {
+			catch (Exception e) {
+				e.printStackTrace();
 				regSpecTypeID = -1;
-			}*/
-			
-			Collection reg = home.findRegulationsByPeriod(period,period,conditionType,Integer.parseInt(flow),1);
+			}
+
+			Collection reg = home.findRegulations(period, period, conditionType, flowID, condTypeID, regSpecTypeID);
 			if (reg != null && !reg.isEmpty()) {
 				List match = new Vector();
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
-					Regulation regulation = (Regulation)it.next();
-					int i = checkConditions(regulation,condition);
+					Regulation regulation = (Regulation) it.next();
+					int i = checkConditions(regulation, condition);
 					if (i == 1)
 						match.add(regulation);
 				}
-				
+
 				if (match.size() == 1) {
-					Regulation res = (Regulation)match.get(0);
-					
+					Regulation res = (Regulation) match.get(0);
+
 					if (res.getSpecialCalculation() != null) {
 						//String calcType = res.getSpecialCalculation().getSpecialCalculationType();
 						//if statements for each type. get info from joakim
@@ -1291,11 +1430,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						postingDetail = new PostingDetail();
 						postingDetail.setAmount(res.getAmount().floatValue());
 						postingDetail.setRuleSpecType(res.getRegSpecType().getLocalizationKey()); //??? String
-						postingDetail.setTerm("Testing (JJ)"); //What is this supposed to be
-//						postingDetail.setVat(res.getv);
-//						postingDetail.setVatRegulationID(1);
+						postingDetail.setTerm(res.getName());
+						//						postingDetail.setVat(res.getv);
+						//						postingDetail.setVatRegulationID(1);
 						return postingDetail;
-					}							
+					}
 				}
 				else if (match.size() > 1) {
 					//What to do here??? throw new Exception("Too many regulation match conditions");
@@ -1318,7 +1457,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			postingDetail.setRuleSpecType("TestRule"); //??? String
 			postingDetail.setTerm("Testing (JJ)");
 			postingDetail.setVat(32.0f);
-			postingDetail.setVatRegulationID(1);			
+			postingDetail.setVatRegulationID(1);
 		}
 
 		return postingDetail;
@@ -1336,19 +1475,66 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @return ArrayList containing the regulations 
 	 */
 	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, String conditionType, Collection condition) {
+		/*
+				Collection regulations = new ArrayList();
+		
+				try {
+					regulations = getRegulationHome().findRegulationsByPeriod(new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()));
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+		
+				return regulations;
+		*/
 
-		Collection regulations = new ArrayList();
+		Collection match = new ArrayList();
 
 		try {
-			regulations = getRegulationHome().findRegulationsByPeriod(new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()));
+			RegulationHome home = getRegulationHome();
+			int flowID = -1;
+			int condTypeID = -1;
+
+			try {
+				PaymentFlowType pfType = getPaymentFlowTypeHome().findByLocalizationKey(flow);
+				if (pfType != null)
+					flowID = ((Integer) pfType.getPrimaryKey()).intValue();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				flowID = -1;
+			}
+
+			try {
+				ConditionType cType = getConditionTypeHome().findByConditionType(conditionType);
+				if (cType != null)
+					condTypeID = ((Integer) cType.getPrimaryKey()).intValue();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				condTypeID = -1;
+			}
+
+
+			Collection reg = home.findRegulations(period, period, conditionType, flowID, condTypeID, -1);
+			if (reg != null && !reg.isEmpty()) {
+				Iterator it = reg.iterator();
+				while (it.hasNext()) {
+					Regulation regulation = (Regulation) it.next();
+					int i = checkConditions(regulation, condition);
+					if (i == 1)
+						match.add(regulation);
+				}
+			}
 		}
-		catch (Exception e) {
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
 			e.printStackTrace();
 		}
 
-//Add the call to checkCondition here and this should be done!
-
-		return regulations;
+		return match;
 	}
 
 	/**
@@ -1448,5 +1634,4 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	protected MainRuleHome getMainRuleHome() throws RemoteException {
 		return (MainRuleHome) com.idega.data.IDOLookup.getHome(MainRule.class);
 	}
-
 }

@@ -20,6 +20,13 @@ public java.util.Collection findAllConditionTypes()throws javax.ejb.FinderExcept
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public ConditionType findByConditionType(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ConditionTypeBMPBean)entity).ejbFindByConditionType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public ConditionType findConditionType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ConditionTypeBMPBean)entity).ejbFindConditionType(p0);

@@ -20,6 +20,13 @@ public java.util.Collection findAll()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public PaymentFlowType findByLocalizationKey(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((PaymentFlowTypeBMPBean)entity).ejbFindByLocalizationKey(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public PaymentFlowType findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PaymentFlowType) super.findByPrimaryKeyIDO(pk);
  }

@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentFlowTypeBMPBean.java,v 1.8 2003/09/03 08:12:06 anders Exp $
+ * $Id: PaymentFlowTypeBMPBean.java,v 1.9 2003/11/06 23:18:09 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the payment flow type (in, out, e t c).
  * <p>
- * Last modified: $Date: 2003/09/03 08:12:06 $ by $Author: anders $
+ * Last modified: $Date: 2003/11/06 23:18:09 $ by $Author: palli $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlowType {
 
@@ -96,4 +96,12 @@ public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlo
 		sql.appendSelectAllFrom(this);
 		return idoFindPKsBySQL(sql.toString());
 	}
+	
+	public Object ejbFindByLocalizationKey(String key) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEqualsWithSingleQuotes(COLUMN_LOCALIZATION_KEY,key);
+		return idoFindOnePKByQuery(sql);
+	}
+	
+	
 }
