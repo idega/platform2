@@ -59,7 +59,8 @@ public class RegisterTime extends GolfWindow {
 
 
   public RegisterTime() {
-    super();
+  	super("Register Tee Time",400,340);
+    this.setScrollbar(true);
     myForm = new Form();
     frameTable = new Table();
     frameTable.setAlignment("center");
