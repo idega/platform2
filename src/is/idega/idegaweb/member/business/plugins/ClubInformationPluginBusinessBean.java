@@ -261,7 +261,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
-						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);					
+//						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);					
 
 						newSpecialPlayerGroup.addGroup(newSpecialPlayerAliasGroup);
 					}
@@ -292,7 +292,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
-						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);
+//						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);
 						child.addGroup(newSpecialPlayerAliasGroup);
 
 						return true;
