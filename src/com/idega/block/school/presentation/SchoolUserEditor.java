@@ -186,7 +186,7 @@ public class SchoolUserEditor extends Block {
 */			
 			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.other_users","Other Users")), 1, 5);
 			/** Populated User field */
-			Collection users = getUserBusiness(iwc).getGroupBusiness().getUsersContained(school.getHeadmasterGroupId());
+			Collection users = getUserBusiness(iwc).getGroupBusiness().getUsers(school.getHeadmasterGroupId());
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
 				Table table = new Table();

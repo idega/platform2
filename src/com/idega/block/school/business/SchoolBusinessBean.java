@@ -316,7 +316,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		if (user != null && school != null) {
 			Collection users = null;
 			try {
-				users = uBus.getGroupBusiness().getUsersContained(school.getHeadmasterGroupId());
+				users = uBus.getGroupBusiness().getUsers(school.getHeadmasterGroupId());
 			}
 			catch (FinderException e) {
 				e.printStackTrace(System.err);
@@ -430,7 +430,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public Collection getHeadmasters(School school) throws RemoteException {
 		try {
-			return getUserBusiness().getGroupBusiness().getUsersContained(school.getHeadmasterGroupId());
+			return getUserBusiness().getGroupBusiness().getUsers(school.getHeadmasterGroupId());
 		}
 		catch (FinderException fe) {
 			throw new RemoteException(fe.getMessage());

@@ -21,9 +21,9 @@ create index IDX_IC_POSTALCODE on IC_POSTAL_CODE(postal_code);
 commit;
 create index IDX_IC_POSTALCODE2 on IC_POSTAL_CODE(postal_code,name);
 commit;
-create index IDX_IC_POSTALCODE3 on IC_POSTAL_CODE(postal_code,country_id);
+create index IDX_IC_POSTALCODE3 on IC_POSTAL_CODE(postal_code,ic_country_id);
 commit;
-create index IDX_IC_POSTALCODE4 on IC_POSTAL_CODE(country_id);
+create index IDX_IC_POSTALCODE4 on IC_POSTAL_CODE(ic_country_id);
 commit;
 
 Address
@@ -41,7 +41,7 @@ commit;
 create index IDX_PROC_CASE_5 on PROC_CASE(PROC_CASE_ID,CASE_CODE,CASE_STATUS);
 commit;
 
-SchoolChoice
+//SchoolChoice
 create index IDX_COMM_SCH_CHOICE_1 on COMM_SCH_CHOICE(COMM_SCH_CHOICE_ID);
 commit;
 create index IDX_COMM_SCH_CHOICE_2 on COMM_SCH_CHOICE(COMM_SCH_CHOICE_ID,CHILD_ID);
