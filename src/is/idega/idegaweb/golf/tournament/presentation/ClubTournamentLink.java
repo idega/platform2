@@ -44,7 +44,7 @@ public class ClubTournamentLink extends Link {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		this.setText(iwrb.getLocalizedString("tournaments","Tournaments"));
 		if(page != null) {
-			int rootPageID = page.getDPTRootPageID();
+			int rootPageID = page.getDynamicPageTrigger().getRootPage();
 			if(rootPageID != -1) {
 				try {
 					Group gr = ((GroupHome)IDOLookup.getHome(Group.class)).findByHomePageID(rootPageID);
