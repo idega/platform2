@@ -538,12 +538,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean acceptApplication(ChildCareApplication application, String subject, String message, User user) {
+	public boolean acceptApplication(ChildCareApplication application, IWTimestamp validUntil, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			application.setApplicationStatus(getStatusAccepted());
+			application.setOfferValidUntil(validUntil.getDate());
 			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
 			sendMessageToParents(application, subject, message);
@@ -593,12 +594,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean acceptApplication(int applicationId, String subject, String message, User user) {
+	public boolean acceptApplication(int applicationId, IWTimestamp validUntil, String subject, String message, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = (ChildCareApplication) home.findByPrimaryKey(new Integer(applicationId));
 
-			return acceptApplication(appl, subject, message, user);
+			return acceptApplication(appl, validUntil, subject, message, user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -752,9 +753,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void parentsAgree(int applicationID, User user, String subject, String message) throws RemoteException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
-			application.setApplicationStatus(this.getStatusParentsAccept());
-			changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
-			sendMessageToProvider(application, subject, message);
+			parentsAgree(application, user, subject, message);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void parentsAgree(ChildCareApplication application, User user, String subject, String message) throws RemoteException {
+		application.setApplicationStatus(this.getStatusParentsAccept());
+		changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
+		sendMessageToProvider(application, subject, message);
+	}
+	
+	public void saveComments(int applicationID, String comment) throws RemoteException {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			application.setPresentation(comment);
+			application.store();
 		}
 		catch (FinderException e) {
 			e.printStackTrace();

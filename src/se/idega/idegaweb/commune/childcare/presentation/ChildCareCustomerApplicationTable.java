@@ -34,7 +34,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.5 2003/03/24 10:18:50 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.6 2003/03/26 10:13:20 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -209,11 +209,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 				if(status.equals(CCConstants.YES)) {
 					System.out.println("Accepting application.");
-					getChildCareBusiness(iwc).acceptApplication(
-						application, 
+					getChildCareBusiness(iwc).parentsAgree(
+						application,
+						application.getOwner(),
 						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT), 
-						getAcceptedMessage(iwc, application),
-						application.getOwner()); 
+						getAcceptedMessage(iwc, application)
+						); 
 						
 				} else if(status.equals(CCConstants.NO_NEW_DATE)) {
 					getChildCareBusiness(iwc).rejectApplication(

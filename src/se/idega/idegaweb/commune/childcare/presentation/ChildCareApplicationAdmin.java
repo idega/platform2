@@ -22,8 +22,8 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
-import se.idega.idegaweb.commune.childcare.presentation.ViewChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -340,6 +340,8 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					
 					String prognosis = iwc.getParameter(PARAM_PROGNOSIS);
 					String presentation = iwc.getParameter(PARAM_PRESENTATION);
+					IWTimestamp stamp = new IWTimestamp();
+					stamp.addDays(75);
 					
 					if (prognosis != null) {
 						message.append("\n");
@@ -351,7 +353,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 						message.append(presentation);	
 					}
 
-					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),subject,message.toString(),iwc.getCurrentUser());
+					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),stamp,subject,message.toString(),iwc.getCurrentUser());
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();

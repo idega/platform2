@@ -43,6 +43,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_OLD_GROUP = "cc_old_group";
 	public static final String PARAMETER_THREE_MONTHS_PROGNOSIS = "cc_three_months";
 	public static final String PARAMETER_ONE_YEAR_PROGNOSIS = "cc_one_year";
+	public static final String PARAMETER_OFFER_VALID_UNTIL = "cc_offer_valid_until";
 
 	private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
 	private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
@@ -235,6 +236,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		table.add(getSmallHeader(localize("child_care.offer_message_info", "The following message will be sent to the child's parents.")), 1, row++);
 		table.add(textArea, 1, row++);
+
+		IWTimestamp stamp = new IWTimestamp();
+		stamp.addDays(14);
+		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_OFFER_VALID_UNTIL));
+		dateInput.setDate(stamp.getDate());
+
+		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until")+":"), 1, row++);
+		table.add(dateInput, 1, row++);
 
 		SubmitButton reject = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
 		table.add(reject, 1, row);
@@ -431,7 +440,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void makeOffer(IWContext iwc) throws RemoteException {
 		String messageHeader = localize("child_care.application_accepted_subject", "Child care application accepted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
-		getBusiness().acceptApplication(_applicationID, messageHeader, messageBody, iwc.getCurrentUser());
+		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
+		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
 
 		close(iwc);
 	}

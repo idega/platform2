@@ -14,7 +14,10 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -24,6 +27,8 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareAdminApplication extends ChildCareBlock {
 
+	private static final String PARAMETER_COMMENTS = "cc_comments";
+	
 	private User child;
 	private ChildCareApplication application;
 	
@@ -31,6 +36,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
+		parse(iwc);
+		
 		Table table = new Table(1,7);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -53,7 +60,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		add(table);
 	}
 
-	protected Table getInformationTable(IWContext iwc) throws RemoteException {
+	protected Form getInformationTable(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(0);
@@ -61,6 +70,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.setColumns(3);
 		table.setWidth(1, "100");
 		table.setWidth(2, "6");
+		form.add(table);
 		int row = 1;
 		
 		child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
@@ -121,14 +131,29 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			}
 			
 			if (application != null) {
-				if (application.getPresentation() != null) {
+				if (application.getMessage() != null) {
+					table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 					table.add(getLocalizedSmallHeader("child_care.message","Message"), 1, row);
-					table.add(getSmallText(application.getPresentation()), 3, row);
+					table.add(getSmallText(application.getMessage()), 3, row++);
+					table.setHeight(row++, 12);
 				}
+				
+				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+				table.add(getLocalizedSmallHeader("child_care.comments","Comments"), 1, row);
+				
+				TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
+				comments.setWidth(Table.HUNDRED_PERCENT);
+				comments.setRows(4);
+				if (application.getPresentation() != null)
+					comments.setContent(application.getPresentation());
+				table.add(comments, 3, row++);
+				SubmitButton saveComments = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.save_comments","Save comments")));
+				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				table.add(saveComments, 3, row);
 			}
 		}
 		
-		return table;
+		return form;
 	}
 	
 	protected Table getApplicationTable(IWContext iwc) throws RemoteException {
@@ -266,5 +291,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			return getSmallHeader(text);
 		else
 			return getSmallText(text);
+	}
+	
+	private void parse(IWContext iwc) throws RemoteException {
+		if (iwc.isParameterSet(PARAMETER_COMMENTS))
+			getBusiness().saveComments(getSession().getApplicationID(), iwc.getParameter(PARAMETER_COMMENTS));
 	}
 }

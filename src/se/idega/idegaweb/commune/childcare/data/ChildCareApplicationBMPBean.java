@@ -50,6 +50,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String CHECK_ID = "check_id";
 	protected final static String CONTRACT_ID = "contract_id";
 	protected final static String CONTRACT_FILE_ID = "contract_file_id";
+	protected final static String OFFER_VALID_UNTIL = "offer_valid_until";
 	protected final static String REJECTION_DATE = "rejection_date";
 	protected final static String PROGNOSIS = "prognosis";
 	protected final static String PRESENTATION = "presentation";
@@ -94,6 +95,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(CARE_TIME,"",true,true,java.lang.Integer.class);
 		addAttribute(CHOICE_NUMBER,"",true,true,java.lang.Integer.class);
 		addAttribute(REJECTION_DATE,"",true,true,java.sql.Date.class);
+		addAttribute(OFFER_VALID_UNTIL,"",true,true,java.sql.Date.class);
 		addAttribute(PROGNOSIS,"",true,true,java.lang.String.class,1000);
 		addAttribute(PRESENTATION,"",true,true,java.lang.String.class,1000);
 		addAttribute(CC_MESSAGE,"",true,true,java.lang.String.class,1000);
@@ -154,6 +156,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		
 	public Date getRejectionDate() {
 		return (Date)getColumnValue(REJECTION_DATE);	
+	}
+	
+	public Date getOfferValidUntil() {
+		return (Date)getColumnValue(OFFER_VALID_UNTIL);	
 	}
 	
 	public int getContractId() {
@@ -242,6 +248,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 	public void setRejectionDate(Date date) {
 		setColumn(REJECTION_DATE,date);	
+	}
+
+	public void setOfferValidUntil(Date date) {
+		setColumn(OFFER_VALID_UNTIL,date);	
 	}
 
 	public void setContractId(int id) {
