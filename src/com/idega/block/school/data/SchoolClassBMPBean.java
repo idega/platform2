@@ -180,7 +180,10 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	
 	public boolean hasRelationToSchoolYear(SchoolYear schoolYear) {
 		try {
-			return super.idoGetRelatedEntities(schoolYear) != null;
+			Collection relations = super.idoGetRelatedEntities(schoolYear);
+			if (relations != null && !relations.isEmpty())
+				return true;
+			return false;
 		}
 		catch (IDORelationshipException e) {
 			return false;
@@ -189,7 +192,10 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 	public boolean hasRelationToTeacher(User teacher) {
 		try {
-			return super.idoGetRelatedEntities(teacher) != null;
+			Collection relations = super.idoGetRelatedEntities(teacher);
+			if (relations != null && !relations.isEmpty())
+				return true;
+			return false;
 		}
 		catch (IDORelationshipException e) {
 			return false;
