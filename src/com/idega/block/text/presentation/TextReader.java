@@ -174,8 +174,8 @@ public final static String CACHE_KEY="tx_text";
 
     textBody = TextFormatter.formatText(textBody,tableTextSize,"100%");
 
-    Paragraph bodyParagraph = new Paragraph();
-      bodyParagraph.setAlign(textAlignment);
+    Layer bodyParagraph = new Layer(Layer.SPAN);
+      bodyParagraph.setAttribute("align",textAlignment);
 
     Text body = new Text(textBody);
       if ( textSize > -1 )
