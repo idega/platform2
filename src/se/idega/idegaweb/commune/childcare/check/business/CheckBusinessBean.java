@@ -4,6 +4,7 @@ import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.SchoolType;
 import com.idega.core.data.Address;
+import com.idega.core.data.PostalCode;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
@@ -184,11 +185,11 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public String getUserPostalCode(IWContext iwc, User user) {
+	public PostalCode getUserPostalCode(IWContext iwc, User user) {
 		try {
-			return getUserBusiness(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue()).getPostalCode().getPostalCode();
+			return getUserBusiness(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue()).getPostalCode();
 		} catch (Exception e) {
-			return "";
+			return null;
 		}
 	}
 

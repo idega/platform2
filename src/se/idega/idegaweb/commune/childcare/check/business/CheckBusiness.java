@@ -4,7 +4,7 @@ import javax.ejb.*;
 
 public interface CheckBusiness extends com.idega.business.IBOService {
 	public void saveCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0) throws java.lang.Exception, java.rmi.RemoteException;
-	public java.lang.String getUserPostalCode(com.idega.presentation.IWContext p0, com.idega.user.data.User p1) throws java.rmi.RemoteException;
+	public com.idega.core.data.PostalCode getUserPostalCode(com.idega.presentation.IWContext p0, com.idega.user.data.User p1) throws java.rmi.RemoteException;
 	public java.util.Collection findChecks() throws java.lang.Exception, java.rmi.RemoteException;
 	public java.util.Collection findUnhandledChecks() throws java.lang.Exception, java.rmi.RemoteException;
 	public void createCheck(int p0, int p1, int p2, java.lang.String p3, java.lang.String p4, java.lang.String p5, int p6, int p7, int p8, int p9, com.idega.user.data.User p10, java.lang.String p11, boolean p12, boolean p13, boolean p14, boolean p15, boolean p16) throws java.lang.Exception, java.rmi.RemoteException;
