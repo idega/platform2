@@ -56,9 +56,13 @@ private ImageViewer viewer = new ImageViewer();
     String edit = modinfo.getParameter("edit");//so it doesn't conflict with imageviewer
     String action = modinfo.getParameter("action");//so it doesn't conflict with imageviewer
 
+    String refreshing = (String) modinfo.getSession().getAttribute("refresh");
+    if( refreshing!=null ) refresh = true;
+
     if ( refresh ) {
       tree.refresh();
       viewer.refresh();
+      modinfo.getSession().removeAttribute("refresh");
     }
 
       if ( mode == null ) { mode = "image"; }

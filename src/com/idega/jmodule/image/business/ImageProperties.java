@@ -42,7 +42,7 @@ public class ImageProperties {
   public void setName(String name){
     this.sName = name;
   }
-  public String getContenType(){
+  public String getContentType(){
     return this.sContentType;
   }
   public void setContentType(String type){

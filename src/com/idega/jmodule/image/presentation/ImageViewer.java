@@ -38,7 +38,7 @@ private String callingModule = "";
 
 private boolean backbutton = false;
 private boolean refresh = false;
-private Table outerTable = new Table(1,3);
+private Table outerTable = new Table(2,3);
 private boolean isAdmin = false;
 private String outerTableWidth = "100%";
 private String outerTableHeight = "100%";
@@ -135,6 +135,9 @@ public void main(ModuleInfo modinfo)throws Exception{
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
+  String refreshing = (String) modinfo.getSession().getAttribute("refresh");
+  if( refreshing!=null ) refresh = true;
+
   /*  ImageBusiness.storeEditForm(modinfo);
 
   outerTable.add(getEditForm(),1,2);
@@ -142,6 +145,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 */
   if( refresh ){
     refresh(modinfo);
+    modinfo.getSession().removeAttribute("refresh");
   }
 
   view = new Image("/pics/jmodules/image/"+language+"/view.gif","View all sizes");
@@ -154,15 +158,31 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   save = new Image("/pics/jmodules/image/"+language+"/save.gif","Edit this image");
   cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif","Edit this image");
-  newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Edit this image");
+  newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Upload a new image");
   newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit this image");
+
+
+  Window window = new Window("IdegaWeb : Image",800,600,"/image/editWindow.jsp");
+  window.setAllMargins(0);
+  window.setResizable(true);
+  Link uploadLink = new Link(newImage,window);
+  uploadLink.addParameter("action","upload");
+
+
+  if(isAdmin) {
+    outerTable.add(uploadLink,2,1);
+    outerTable.add(newCategory,2,1);
+  }
 
   outerTable.setColor(1,1,headerFooterColor);
   outerTable.setColor(1,3,headerFooterColor);
   outerTable.setAlignment(1,1,"left");
+  outerTable.setAlignment(2,1,"right");
   outerTable.setAlignment(1,2,"center");
   outerTable.setAlignment(1,3,"center");
   outerTable.setVerticalAlignment(1,2,"top");
+  outerTable.mergeCells(1,2,2,2);
+  outerTable.mergeCells(1,3,2,3);
   outerTable.setWidth(outerTableWidth);
   outerTable.setHeight(outerTableHeight);
   outerTable.setHeight(1,1,"23");
@@ -307,9 +327,9 @@ public void main(ModuleInfo modinfo)throws Exception{
               back.setFontColor(textColor);
               int iback = ifirst-numberOfDisplayedImages;
               if( iback<0 ) ifirst = 0;
-              back.addParameter("iv_first",iback);
+              back.addParameter("iv_first",ifirst);
               back.addParameter("image_catagory_id",category.getID());
-              String middle = (ifirst+1)+" til "+too+" af "+(imageEntity.length-1);
+              String middle = (ifirst+1)+" til "+too+" af "+(imageEntity.length);
               Text middleText = new Text(middle);
               middleText.setBold();
               middleText.setFontColor(textColor);
@@ -373,12 +393,14 @@ return table;
 private Table displayImage( ImageEntity image ) throws SQLException
 {
   String texti = image.getText();
+
   int imageId = image.getID();
-  Table imageTable = new Table(1, 2);
+  Table imageTable = new Table(1, 3);
 
   imageTable.setAlignment("center");
   imageTable.setAlignment(1,1,"center");
   imageTable.setAlignment(1,2,"center");
+  imageTable.setAlignment(1,3,"center");
   imageTable.setVerticalAlignment("top");
   imageTable.setCellpadding(0);
 
@@ -389,10 +411,9 @@ private Table displayImage( ImageEntity image ) throws SQLException
 
   imageTable.add(bigger, 1, 1);
 
-  if ( texti!=null){
+  if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
     Text imageText = new Text(texti);
     getTextProxy().setFontSize(1);
-   // getTextProxy().setFontColor("#FFFFFF");
     imageText = setTextAttributes( imageText );
     imageTable.add(imageText, 1, 2);
     imageTable.setColor(1,2,"#CCCCCC");
@@ -418,7 +439,11 @@ private Table displayImage( ImageEntity image ) throws SQLException
     Link imageEdit6 = new Link(edit);
     imageEdit6.addParameter("image_id",imageId);
     imageEdit6.addParameter("edit","true");
-    Link imageEdit7 = new Link(text,new Window("Edit text",300,200));
+
+    Window window = new Window("IdegaWeb : Image",350,300,"/image/editWindow.jsp");
+    window.setAllMargins(0);
+    window.setResizable(true);
+    Link imageEdit7 = new Link(text,window);
     imageEdit7.addParameter("image_id",imageId);
     imageEdit7.addParameter("action","text");
 
@@ -435,7 +460,7 @@ private Table displayImage( ImageEntity image ) throws SQLException
 
     editTable.add(imageEdit7,3,1);
 
-    imageTable.add(editTable, 1, 2);
+    imageTable.add(editTable, 1, 3);
   }
 
 return imageTable;
@@ -468,7 +493,7 @@ private Table displayCatagory( ImageEntity[] imageEntity )  throws SQLException 
 
   int x=0;
   for (int i = ifirst ; (x<k) && ( i < imageEntity.length ) ; i++ ) {
-    table.setVerticalAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"top");
+    table.setVerticalAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"bottom");
     table.setAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"center");
     table.setWidth((x%iNumberInRow)+1,Integer.toString((int)(100/iNumberInRow))+"%");
     table.add( displayImage(imageEntity[i]) ,(x%iNumberInRow)+1,(x/iNumberInRow)+1);
@@ -838,44 +863,7 @@ private Form getEditForm(){
 }
 
 
-
-
-public void drawUploadTable(String image_id,boolean replace){
-	Form MultipartForm = new Form();
-	MultipartForm.setMultiPart();
-	//MultipartForm.add(new HiddenInput("statement","insert into images (image_name,image_value,content_type,from_file,image_category_id) values('gunnar', ? ,?,'N',4)"));
-	if (replace) {
-		MultipartForm.add(new HiddenInput("statement","update image set image_value=?,content_type=?,image_name=? where image_id="+image_id+""));
-	}
-	else {
-
-		idegaTimestamp dags = new idegaTimestamp();
-
-	   //  MultipartForm.add(new HiddenInput("statement","insert into image (image_id,image_value,content_type,image_name,from_file) values("+image_id+",?,?,?,'N')"));
-            if( !ImageBusiness.getDatastoreType(new ImageEntity()).equals("oracle") )
-                MultipartForm.add(new HiddenInput("statement","insert into image (image_id,image_value,content_type,image_name,date_added,from_file) values("+image_id+",?,?,?,'"+dags.getTimestampRightNow().toString()+"','N')"));
-	        else  MultipartForm.add(new HiddenInput("statement","insert into image (image_id,image_value,content_type,image_name,date_added,from_file) values("+image_id+",?,?,?,"+dags.RightNow().toOracleString()+",'N')"));
-
- }
-
-	MultipartForm.add(new HiddenInput("toDatabase","true"));
-
-	MultipartForm.add(new FileInput());
-	MultipartForm.add(new SubmitButton());
-
-
-	Table UploadTable = new Table(1,3);
-	UploadTable.add(new Text("Veldu mynd af harðadisknum þínum með \"Browse\" hnappnum"),1,1);
-	UploadTable.add(new Text("og smelltu svo á \"Submit\". ATH ef myndin er stór getur þetta tekið lengri tíma"),1,2);
-	UploadTable.add(MultipartForm,1,3);
-
-	add(UploadTable);
-}
-
-
 public void getEditor(ModuleInfo modinfo) throws Throwable{
-
-  Connection Conn = null;
 
   String whichButton = modinfo.getParameter("submit");
   String ImageId = modinfo.getParameter("image_id");

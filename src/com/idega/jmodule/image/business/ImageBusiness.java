@@ -15,6 +15,8 @@ import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.oreilly.servlet.multipart.*;
+import com.idega.io.ImageSave;
+import com.idega.jmodule.image.business.ImageProperties;
 
 /**
  * Title: ImageBusiness
@@ -334,29 +336,44 @@ public void makeDefaultSizes(){
   return newImageForm;
 }
 
-  private int SaveImage(ImageProperties ip){
+  public static int SaveImage(ImageProperties ip){
+    int id = -1;
+    Connection Conn = null;
+
     try{
-      java.sql.Connection conn = com.idega.util.database.ConnectionBroker.getConnection();
-      FileInputStream fin = new FileInputStream(ip.getRealPath() );
-      int id = com.idega.io.ImageSave.saveImageToDB(conn,-1,fin,ip.getContenType(),ip.getName(),true);
-      ip.setId(id);
-      fin.close();
-      com.idega.util.database.ConnectionBroker.freeConnection(conn);
-      return id;
+      FileInputStream input = new FileInputStream(ip.getRealPath() );
+      String dataBaseType = "";
+      Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
+
+      if (Conn!=null) dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
+      else dataBaseType="oracle";
+
+      if( dataBaseType.equals("oracle") ) {
+        id = ImageSave.saveImageToOracleDB(-1,-1,input,ip.getContentType(),ip.getName(),"-1","-1", true);
+      }//other databases
+      else {
+        id = ImageSave.saveImageToDB(-1,-1,input,ip.getContentType(),ip.getName(),"-1","-1", true);
+      }
     }
-    catch(Exception e){ip.setId(-1); return -1;}
+    catch(Exception e){
+      e.printStackTrace(System.err);
+      ip.setId(-1);
+      return -1;
+    }
+    finally{
+      if(Conn != null ) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
+    }
+
+    return id;
   }
 
-
-
-  private void doUpload(ModuleInfo modinfo){
+  public static ImageProperties doUpload(ModuleInfo modinfo) throws Exception{
     String sep = System.getProperty("file.separator");
     String realPath = modinfo.getServletContext().getRealPath(sep);
     String webPath = sep+"pics"+sep;
     String realFile = "";
     ImageProperties  ip = null;
 
-    try {
     MultipartParser mp = new MultipartParser(modinfo.getRequest(), 10*1024*1024); // 10MB
     Part part;
     File dir = null;
@@ -380,50 +397,11 @@ public void makeDefaultSizes(){
           File file = new File(realFile);
           long size = filePart.writeTo(file);
           ip = new ImageProperties(fileName,filePart.getContentType(),realFile,webPath,size);
-          modinfo.setSessionAttribute("im_ip",ip);
-          //modinfo.getSession().removeAttribute("bm_ip");
         }
       }
     }
-    boolean multi = true;
-    modinfo.getSession().setAttribute("isMultiPart",new Boolean(multi));
-  }
-   catch (Exception s) {
-    s.printStackTrace();
-  }
-/*
-      int iImageId = -1;
-      int id = -1;
 
-      iImageId = SaveImage(ip);
-
-      if(imageid != -1){
-        this.addImage(new Image(imageid));
-        try {
-          ImageEntity im = new ImageEntity(imageid);
-          ImageProperties ip = new ImageProperties(im.getImageName(),im.getContentType(),"","",0);
-          ip.setId(imageid);
-          modinfo.getSession().setAttribute("im_ip",ip);
-        }
-        catch (SQLException ex) {     }
-      }
-      else
-      this.addSave(new SubmitButton("submit","Save"));
-    }
-    else{
-      if(ip !=null){
-        if(ip.getId() != -1)
-          this.addImage(new Image(ip.getId()));
-        else
-         this.addImage(new Image(ip.getWebPath()));
-        }
-    }
-
-  }
-  catch (Exception s) {
-    s.printStackTrace();
-  }
-  */
+    return ip;
 }
 
 }//end of class
