@@ -104,11 +104,14 @@ public class Contracts extends TravelManager {
       reseller = super.getReseller();
 
       if (supplier != null)
-        resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
-
+        resellers = getResellers(supplier);
       if (reseller != null)
         suppliers = ResellerManager.getSuppliers(reseller.getID(), Supplier.getColumnNameName());
 
+  }
+
+  private Reseller[] getResellers(Supplier supplier) {
+     return ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
   }
 
   public void mainMenu(IWContext iwc) {
@@ -134,7 +137,9 @@ public class Contracts extends TravelManager {
         addReseller.addParameter(this.sAction,this.parameterAddReseller);
         linkTable.add(addReseller,1,1);
 
+      if (supplier != null)
       form.add(linkTable);
+
       form.add(Text.BREAK);
 
       Table table = new Table();
@@ -177,14 +182,9 @@ public class Contracts extends TravelManager {
             assign = new Link(iwrb.getImage("buttons/closer.gif"));
               assign.addParameter(this.sAction,this.parameterAssignReseller);
               assign.addParameter(this.parameterResellerId,resellers[i].getID());
-            edit = new Link(iwrb.getImage("buttons/change.gif"));
-              edit.addParameter(this.sAction,this.parameterEditReseller);
-              edit.addParameter(this.parameterResellerId,resellers[i].getID());
 
             table.add(resName,1,row);
             table.add(refNum,2,row);
-            table.add(edit,3,row);
-            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,3,row);
             table.add(assign,3,row);
             table.setRowColor(row,theColor);
             table.setAlignment(3,row,"right");
@@ -213,16 +213,13 @@ public class Contracts extends TravelManager {
 
 
   public void resellerCreation(int resellerId) throws SQLException{
-  /*
-      ShadowBox sb = new ShadowBox();
-        sb.setWidth("90%");
-*/
       Form form = new Form();
       Table table = new Table();
         form.add(table);
+        table.setColor(super.WHITE);
+        table.setCellspacing(1);
         table.setAlignment("center");
         table.setColumnAlignment(1,"right");
-        table.setColumnAlignment(2,"left");
         table.setBorder(0);
 
       boolean isUpdate = false;
@@ -239,34 +236,42 @@ public class Contracts extends TravelManager {
       Text nameText = (Text) theBoldText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name","Name"));
           nameText.addToText(":");
+          nameText.setFontColor(super.BLACK);
 
       Text descText = (Text) theBoldText.clone();
           descText.setText(iwrb.getLocalizedString("travel.Description","Description"));
           descText.addToText(":");
+          descText.setFontColor(super.BLACK);
 
       Text addressText = (Text) theBoldText.clone();
           addressText.setText(iwrb.getLocalizedString("travel.address_long","Address"));
           addressText.addToText(":");
+          addressText.setFontColor(super.BLACK);
 
       Text phoneText = (Text) theBoldText.clone();
           phoneText.setText(iwrb.getLocalizedString("travel.telephone_number_lg","Telephone number"));
           phoneText.addToText(":");
+          phoneText.setFontColor(super.BLACK);
 
       Text faxText = (Text) theBoldText.clone();
           faxText.setText(iwrb.getLocalizedString("travel.fax","Fax number"));
           faxText.addToText(":");
+          faxText.setFontColor(super.BLACK);
 
       Text emailText = (Text) theBoldText.clone();
           emailText.setText(iwrb.getLocalizedString("travel.email_lg","E-mail"));
           emailText.addToText(":");
+          emailText.setFontColor(super.BLACK);
 
       Text loginText = (Text) theBoldText.clone();
           loginText.setText(iwrb.getLocalizedString("travel.user_name","User name"));
           loginText.addToText(":");
+          loginText.setFontColor(super.BLACK);
 
       Text passwordText = (Text) theBoldText.clone();
           passwordText.setText(iwrb.getLocalizedString("travel.password","Password"));
           passwordText.addToText(":");
+          passwordText.setFontColor(super.BLACK);
 
       int inputSize = 40;
 
@@ -286,7 +291,6 @@ public class Contracts extends TravelManager {
       TextInput userName = new TextInput("reseller_user_name");
         userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verður að velja notendanafn"));
       PasswordInput passOne = new PasswordInput("reseller_password_one");
-        passOne.setAsNotEmpty("Gimmi flippar");
       PasswordInput passTwo = new PasswordInput("reseller_password_two");
 
 
@@ -341,37 +345,44 @@ public class Contracts extends TravelManager {
       table.mergeCells(1,row,2,row);
       table.setAlignment(1,row,"center");
       table.add(newSupplierText,1,row);
+      table.setRowColor(row,super.backgroundColor);
 
-      ++row;
       ++row;
       table.add(nameText,1,row);
       table.add(name,2,row);
+      table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(descText,1,row);
       table.setVerticalAlignment(1,row,"top");
       table.add(description,2,row);
+      table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(addressText,1,row);
       table.add(address,2,row);
+      table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(phoneText,1,row);
       table.add(phone,2,row);
+      table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(faxText,1,row);
       table.add(fax,2,row);
+      table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(emailText,1,row);
       table.add(email,2,row);
+      table.setRowColor(row,super.GRAY);
 
       if (!isUpdate) {
         ++row;
         table.add(loginText,1,row);
         table.add(userName,2,row);
+        table.setRowColor(row,super.GRAY);
 
         ++row;
         table.add(passwordText,1,row);
@@ -379,16 +390,21 @@ public class Contracts extends TravelManager {
         table.add(passOne,2,row);
         table.addBreak(2,row);
         table.add(passTwo,2,row);
+        table.setRowColor(row,super.GRAY);
       }
 
+
+      table.setColumnAlignment(2,"left");
       ++row;
       table.setAlignment(1,row,"left");
       table.add(back,1,row);
       table.setAlignment(2,row,"right");
       table.add(submit,2,row);
+      table.setRowColor(row,super.GRAY);
 
       add(Text.getBreak());
       add(form);
+
   }
 
   public void saveReseller(IWContext iwc) {
@@ -525,7 +541,7 @@ public class Contracts extends TravelManager {
                 reseller.addTo(supplier);
 
                 //add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));
-                resellers = null;
+                resellers = getResellers(supplier);
                 this.mainMenu(iwc);
             }else {
                 add("TEMP - PASSWORDS not the same");
@@ -534,7 +550,7 @@ public class Contracts extends TravelManager {
 
       }
       catch (Exception sql) {
-          add(iwrb.getLocalizedString("travel.supplier_not_created","Supplier was not created"));
+          add(iwrb.getLocalizedString("travel.reseller_not_created","Reseller was not created"));
         sql.printStackTrace(System.err);
       }
   }

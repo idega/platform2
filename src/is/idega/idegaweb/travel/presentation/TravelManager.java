@@ -239,6 +239,9 @@ public class TravelManager extends Block {
             Link lContracts = new Link(iContracts,Contracts.class);
               lContracts.addParameter(this.sAction,this.parameterContracts);
             table.add(lContracts,1,1);
+            Link lInitialData = new Link(iInitialData,InitialData.class);
+              lInitialData.addParameter(this.sAction,this.parameterInitialData);
+            table.add(lInitialData,1,1);
 
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);

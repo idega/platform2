@@ -8,6 +8,7 @@ import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.business.*;
+import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.business.UserGroupBusiness;
@@ -34,7 +35,7 @@ public class InitialData extends TravelManager {
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
   private Supplier supplier;
-  String tableBackgroundColor = "#FFFFFF";
+  private Reseller reseller;
 
   private static String sAction = "admin_action";
   private static String parameterEdit = "edit";
@@ -50,6 +51,9 @@ public class InitialData extends TravelManager {
   private static String parameteViewHotelPickup = "parameteViewHotelPickup";
   private static String parameteViewPriceCategories = "parameteViewPriceCategories";
 
+  private String parameterResellerId = "contractResellerId";
+  private String parameterUpdateReseller = "contractUpdateReseller";
+  private String parameterSaveNewReseller = "contractSaveNewReseller";
 
   public InitialData() {
   }
@@ -89,6 +93,7 @@ public class InitialData extends TravelManager {
       iwrb = super.getResourceBundle();
 
       supplier = super.getSupplier();
+      reseller = super.getReseller();
   }
 
   private Form getSupplierDropdownForm(IWContext iwc) {
@@ -119,6 +124,7 @@ public class InitialData extends TravelManager {
         if (action == null) action = "";
 
         if (supplier != null) {
+
             add(getSupplierDropdownForm(iwc));
             String selected = iwc.getParameter(this.supplierView);
             if (selected == null)  selected = this.parameteViewSupplierInfo;
@@ -148,8 +154,16 @@ public class InitialData extends TravelManager {
 
             form.maintainParameter(this.supplierView);
             add(form);
-        }
-        else {
+        }else if (reseller != null) {
+          System.err.println(action +" = "+ this.parameterUpdateReseller);
+            if (action.equals(this.parameterUpdateReseller)) {
+              String sResellerId = iwc.getParameter(this.parameterResellerId);
+              saveReseller(iwc,Integer.parseInt(sResellerId));
+            }
+            Form form = new Form();
+              form = getResellerCreation(reseller.getID());
+            add(form);
+        }else {
             if (action.equals("")) {
               Table extra = new Table();
                 extra.setWidth("90%");
@@ -261,7 +275,7 @@ public class InitialData extends TravelManager {
 
 
         //pGroup = SupplierManager.getPermissionGroup(supps[i]);
-        try { // skoða eftir mat.......
+        try { /** @todo Skoða betur.......*/
           //users = UserGroupBusiness.getUsersContained(pGroup);
           users = UserGroupBusiness.getUsersContained(new GenericGroup(supps[i].getGroupId()));
           if (users != null) {
@@ -675,6 +689,338 @@ public class InitialData extends TravelManager {
       }
   }
 
+  private Form getResellerCreation(int resellerId) throws SQLException{
+      Form form = new Form();
+      Table table = new Table();
+        form.add(table);
+        table.setColor(super.WHITE);
+        table.setCellspacing(1);
+        table.setAlignment("center");
+        table.setColumnAlignment(1,"right");
+        table.setBorder(0);
 
+      boolean isUpdate = false;
+      if (resellerId != -1) {
+        isUpdate = true;
+      }
+
+      int row = 0;
+
+      Text newSupplierText = (Text) theBoldText.clone();
+        if (isUpdate) newSupplierText.setText(iwrb.getLocalizedString("travel.update_reseller_information","Update reseller information"));
+        else newSupplierText.setText(iwrb.getLocalizedString("travel.new_reseller","New Reseller"));
+
+      Text nameText = (Text) theBoldText.clone();
+          nameText.setText(iwrb.getLocalizedString("travel.name","Name"));
+          nameText.addToText(":");
+          nameText.setFontColor(super.BLACK);
+
+      Text descText = (Text) theBoldText.clone();
+          descText.setText(iwrb.getLocalizedString("travel.Description","Description"));
+          descText.addToText(":");
+          descText.setFontColor(super.BLACK);
+
+      Text addressText = (Text) theBoldText.clone();
+          addressText.setText(iwrb.getLocalizedString("travel.address_long","Address"));
+          addressText.addToText(":");
+          addressText.setFontColor(super.BLACK);
+
+      Text phoneText = (Text) theBoldText.clone();
+          phoneText.setText(iwrb.getLocalizedString("travel.telephone_number_lg","Telephone number"));
+          phoneText.addToText(":");
+          phoneText.setFontColor(super.BLACK);
+
+      Text faxText = (Text) theBoldText.clone();
+          faxText.setText(iwrb.getLocalizedString("travel.fax","Fax number"));
+          faxText.addToText(":");
+          faxText.setFontColor(super.BLACK);
+
+      Text emailText = (Text) theBoldText.clone();
+          emailText.setText(iwrb.getLocalizedString("travel.email_lg","E-mail"));
+          emailText.addToText(":");
+          emailText.setFontColor(super.BLACK);
+
+      Text refNumberText = (Text) theBoldText.clone();
+          refNumberText.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+          refNumberText.addToText(":");
+          refNumberText.setFontColor(super.BLACK);
+
+      Text refNumberText2 = (Text) theText.clone();
+          refNumberText2.setFontColor(super.BLACK);
+
+      int inputSize = 40;
+
+      TextInput name = new TextInput("reseller_name");
+        name.setSize(inputSize);
+      TextArea description = new TextArea("reseller_description");
+        description.setWidth(inputSize);
+        description.setHeight(5);
+      TextInput address = new TextInput("reseller_address");
+        address.setSize(inputSize);
+      TextInput phone = new TextInput("reseller_phone");
+        phone.setSize(inputSize);
+      TextInput fax = new TextInput("reseller_fax");
+        fax.setSize(inputSize);
+      TextInput email = new TextInput("reseller_email");
+        email.setSize(inputSize);
+      TextInput userName = new TextInput("reseller_user_name");
+        userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verður að velja notendanafn"));
+      PasswordInput passOne = new PasswordInput("reseller_password_one");
+      PasswordInput passTwo = new PasswordInput("reseller_password_two");
+
+
+      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveNewReseller);
+      BackButton back = new BackButton(iwrb.getImage("buttons/back.gif"));
+
+
+
+      if (resellerId != -1) {
+        table.add(new HiddenInput(this.parameterResellerId,Integer.toString(resellerId)));
+
+        Reseller reseller = new Reseller(resellerId);
+          name.setContent(reseller.getName());
+          description.setContent(reseller.getDescription());
+
+          Address addr = reseller.getAddress();
+          if (addr != null) {
+            String namer = addr.getStreetName();
+            String number = addr.getStreetNumber();
+            if (number == null) {
+                address.setContent(namer);
+            }else {
+                address.setContent(namer+" "+number);
+            }
+          }
+
+          List phones = reseller.getHomePhone();
+          if (phones != null) {
+            if (phones.size() > 0) {
+              Phone phone1 = (Phone) phones.get(0);
+              phone.setContent(phone1.getNumber());
+            }
+          }
+
+          phones = reseller.getFaxPhone();
+          if (phones != null) {
+            if (phones.size() > 0) {
+              Phone phone2 = (Phone) phones.get(0);
+              fax.setContent(phone2.getNumber());
+            }
+          }
+
+          Email eEmail = reseller.getEmail();
+          if (eEmail != null) {
+            email.setContent(eEmail.getEmailAddress());
+          }
+          refNumberText2.setText(reseller.getReferenceNumber());
+          submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction,this.parameterUpdateReseller);
+
+      }
+
+
+      ++row;
+      table.mergeCells(1,row,2,row);
+      table.setAlignment(1,row,"center");
+      table.add(newSupplierText,1,row);
+      table.setRowColor(row,super.backgroundColor);
+
+      ++row;
+      table.add(nameText,1,row);
+      table.add(name,2,row);
+      table.setRowColor(row,super.GRAY);
+      table.setAlignment(1,row,"left");
+
+      ++row;
+      table.add(descText,1,row);
+      table.setVerticalAlignment(1,row,"top");
+      table.add(description,2,row);
+      table.setRowColor(row,super.GRAY);
+      table.setAlignment(1,row,"left");
+
+      ++row;
+      table.add(addressText,1,row);
+      table.add(address,2,row);
+      table.setAlignment(1,row,"left");
+      table.setRowColor(row,super.GRAY);
+
+      ++row;
+      table.add(phoneText,1,row);
+      table.add(phone,2,row);
+      table.setRowColor(row,super.GRAY);
+      table.setAlignment(1,row,"left");
+
+      ++row;
+      table.add(faxText,1,row);
+      table.add(fax,2,row);
+      table.setRowColor(row,super.GRAY);
+      table.setAlignment(1,row,"left");
+
+      ++row;
+      table.add(emailText,1,row);
+      table.add(email,2,row);
+      table.setRowColor(row,super.GRAY);
+      table.setAlignment(1,row,"left");
+
+      ++row;
+      table.add(refNumberText,1,row);
+      table.add(refNumberText2,2,row);
+      table.setRowColor(row,super.GRAY);
+      table.setAlignment(1,row,"left");
+
+      table.setColumnAlignment(2,"left");
+      ++row;
+      table.setAlignment(1,row,"left");
+      table.add(back,1,row);
+      table.setAlignment(2,row,"right");
+      table.add(submit,2,row);
+      table.setRowColor(row,super.GRAY);
+
+
+      //      add(Text.getBreak());
+      return form;
+
+
+  }
+  public void saveReseller(IWContext iwc, int resellerId)  {
+      add(Text.getBreak());
+      try {
+          String name = iwc.getParameter("reseller_name");
+          String description = iwc.getParameter("reseller_description");
+          String address = iwc.getParameter("reseller_address");
+          String phone = iwc.getParameter("reseller_phone");
+          String fax = iwc.getParameter("reseller_fax");
+          String email = iwc.getParameter("reseller_email");
+
+          String userName = iwc.getParameter("reseller_user_name");
+          String passOne = iwc.getParameter("reseller_password_one");
+          String passTwo = iwc.getParameter("reseller_password_one");
+//                  tm.begin();
+          boolean isUpdate = false;
+          if (resellerId != -1) isUpdate = true;
+
+          System.err.println(name+" : "+description+" : "+address+" : "+phone+" : "+fax+" : "+email);
+
+
+          if (isUpdate) {
+              Vector phoneIDS = new Vector();
+              Reseller reseller = new Reseller(resellerId);
+
+              Phone ph;
+              List phones = reseller.getPhones(Phone.getHomeNumberID());
+              if (phones != null) {
+                if (phones.size() > 0) {
+                  for (int i = 0; i < phones.size(); i++) {
+                    ph = (Phone) phones.get(i);
+                      ph.setNumber(phone);
+                    ph.update();
+                    phoneIDS.add(new Integer(ph.getID()));
+                  }
+                }else {
+                  ph = new Phone();
+                    ph.setNumber(phone);
+                    ph.setPhoneTypeId(Phone.getHomeNumberID());
+                  ph.insert();
+                  phoneIDS.add(new Integer(ph.getID()));
+                }
+              }
+
+              phones = reseller.getPhones(Phone.getFaxNumberID());
+              if (phones != null) {
+                if (phones.size() > 0 ) {
+                  for (int i = 0; i < phones.size(); i++) {
+                    ph = (Phone) phones.get(i);
+                      ph.setNumber(fax);
+                    ph.update();
+                    phoneIDS.add(new Integer(ph.getID()));
+                  }
+                }else {
+                  ph = new Phone();
+                    ph.setNumber(fax);
+                    ph.setPhoneTypeId(Phone.getFaxNumberID());
+                  ph.insert();
+                  phoneIDS.add(new Integer(ph.getID()));
+                }
+              }
+
+              int[] phoneIds = new int[phoneIDS.size()];
+              for (int i = 0; i < phoneIDS.size(); i++) {
+                  phoneIds[i] = ((Integer) phoneIDS.get(i)).intValue() ;
+              }
+
+
+              Address addr = reseller.getAddress();
+                addr.setStreetName(address);
+              addr.update();
+
+              int[] addressIds = new int[1];
+              addressIds[0] = addr.getID();
+
+
+              Email eml = reseller.getEmail();
+                eml.setEmailAddress(email);
+              eml.update();
+
+              int[] emailIds = new int[1];
+              emailIds[0] = eml.getID();
+
+              ResellerManager resMan = new ResellerManager();
+              reseller = resMan.updateReseller(resellerId,name, description, addressIds, phoneIds, emailIds);
+
+
+              add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
+
+          }else {
+            if (passOne.equals(passTwo)) {
+
+                Vector phoneIDS = new Vector();
+                if (phone.length() > 0) {
+                  Phone phonePhone = new Phone();
+                    phonePhone.setNumber(phone);
+                    phonePhone.setPhoneTypeId(Phone.getHomeNumberID());
+                  phonePhone.insert();
+                  phoneIDS.add(new Integer(phonePhone.getID()));
+                }
+                if (fax.length() > 0) {
+                  Phone faxPhone = new Phone();
+                    faxPhone.setNumber(fax);
+                    faxPhone.setPhoneTypeId(Phone.getFaxNumberID());
+                  faxPhone.insert();
+                  phoneIDS.add(new Integer(faxPhone.getID()));
+                }
+
+
+                int[] phoneIds = new int[phoneIDS.size()];
+                for (int i = 0; i < phoneIDS.size(); i++) {
+                    phoneIds[i] = ((Integer) phoneIDS.get(i)).intValue() ;
+                }
+
+                int[] addressIds = new int[1];
+                Address addressAddress = new Address();
+                    addressAddress.setStreetName(address);
+                    addressAddress.insert();
+                addressIds[0] = addressAddress.getID();
+
+                int[] emailIds = new int[1];
+                Email eEmail = new Email();
+                  eEmail.setEmailAddress(email);
+                  eEmail.insert();
+                emailIds[0] = eEmail.getID();
+
+                ResellerManager resellerMan = new ResellerManager();
+                Reseller reseller = resellerMan.createReseller(name, userName, passOne, description, addressIds, phoneIds, emailIds);
+                reseller.addTo(supplier);
+
+                //add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));
+            }else {
+                add("TEMP - PASSWORDS not the same");
+            }
+          }
+
+      }
+      catch (Exception sql) {
+          add(iwrb.getLocalizedString("travel.reseller_not_created","Reseller was not created"));
+        sql.printStackTrace(System.err);
+      }
+  }
 
 }
