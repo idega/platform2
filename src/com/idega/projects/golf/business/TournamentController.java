@@ -20,6 +20,9 @@ import com.idega.data.genericentity.*;
 import com.idega.data.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.util.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.login.business.AccessControl;
 import com.idega.projects.golf.presentation.TournamentBox;
 import com.idega.data.SimpleQuerier;
@@ -28,7 +31,13 @@ import com.idega.data.SimpleQuerier;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>,<a href="mailto:gimmi@idega.is">Grímur Jónsson</a>,<a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
 */
 
-public class TournamentController{
+public class TournamentController  {
+
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+
+    public static String getBundleIdentifier(){
+        return IW_BUNDLE_IDENTIFIER;
+    }
 
     public static Tournament[] getNextTwoTournaments()throws Exception{
       Tournament tournament = new Tournament();
@@ -43,7 +52,6 @@ public class TournamentController{
       Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where start_time<'"+stamp.toSQLDateString()+"' order by start_time desc",2);
       return tourns;
     }
-
 
     public static Tournament[] getNextTournaments(int number)throws Exception{
       Tournament tournament = new Tournament();
@@ -436,15 +444,19 @@ public class TournamentController{
 
     }
 
-    public static Link getBackLink(int backUpHowManyPages) {
-        Link backLink = new Link(new com.idega.jmodule.object.Image("/pics/formtakks/tilbaka.gif","",76,19),"#");
+    public static Link getBackLink(ModuleInfo modinfo,int backUpHowManyPages) {
+        IWMainApplication iwma = modinfo.getApplication();
+        IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
+        IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
+
+        Link backLink = new Link(iwrb.getImage("buttons/back.gif"),"#");
             backLink.setAttribute("onClick","history.go(-"+backUpHowManyPages+")");
 
         return backLink;
     }
 
-    public static Link getBackLink() {
-        return getBackLink(1);
+    public static Link getBackLink(ModuleInfo modinfo) {
+        return getBackLink(modinfo,1);
     }
 
     public static List getUnionTournamentGroups(ModuleInfo modinfo) throws SQLException {
@@ -470,8 +482,12 @@ public class TournamentController{
     }
 
 
-    public static SubmitButton getAheadButton(String name, String value) {
-        com.idega.jmodule.object.Image aheadImage = new com.idega.jmodule.object.Image("/pics/formtakks/afram.gif","");
+    public static SubmitButton getAheadButton(ModuleInfo modinfo, String name, String value) {
+        IWMainApplication iwma = modinfo.getApplication();
+        IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
+        IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
+
+        com.idega.jmodule.object.Image aheadImage = iwrb.getImage("buttons/continue.gif");
         SubmitButton aheadButton = new SubmitButton(aheadImage,name,value);
 
         return aheadButton;
