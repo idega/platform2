@@ -30,6 +30,7 @@ import com.idega.util.database.ConnectionBroker;
  * Created on May 27, 2003
  */
 public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQLBridge {
+	
   
   public QuerySQL createQuerySQL(QueryHelper queryHelper, IWContext iwc) throws QueryGenerationException  {
   	// avoid trouble with other users that use the query at the same time
@@ -105,7 +106,6 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
   	while (currentQuery.hasPreviousQuery())	{
   		currentQuery = currentQuery.previousQuery();
   	}
-  	//Map queryTableNames = new HashMap();
   	do {
   		if (currentQuery.hasNextQuery())	{
    			// mark the generated table
