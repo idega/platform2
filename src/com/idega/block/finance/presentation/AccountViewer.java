@@ -65,7 +65,7 @@ public class AccountViewer extends Finance {
 		specialview = iwc.isParameterSet("specview");
 		boolean clean = iwc.isParameterSet(prmClean);
 		if (isAdmin || isLoggedOn) {
-			if (accounts != null && accounts.size() > 0 && accountID != null) {
+			if (accounts != null && accounts.size() > 0) {
 				FinanceAccount eAccount = getAccount(accountID, accounts);
 				setMainPanel(getAccountView(eAccount, accounts, itFromDate, itToDate, isAdmin, clean));
 			} else
@@ -75,12 +75,14 @@ public class AccountViewer extends Finance {
 		}
 	}
 	private FinanceAccount getAccount(Integer accountID, Collection listOfAccounts) throws java.rmi.RemoteException {
+	    if (accountID == null) {
+	        return null;
+	    }
+	    
 		Iterator iter = listOfAccounts.iterator();
 		FinanceAccount account = (FinanceAccount) iter.next();
 		while (iter.hasNext()) {
 			FinanceAccount acc = (FinanceAccount) iter.next();
-			System.out.println("acc = " + acc);
-			System.out.println("accountID = " + accountID);
 			if (acc.getAccountId().intValue() == accountID.intValue()) {
 				account = acc;
 				break;
