@@ -1,5 +1,5 @@
 /*
- * $Id: ISBDataInsert.java,v 1.1 2005/03/02 13:01:30 birna Exp $
+ * $Id: ISBDataInsert.java,v 1.2 2005/03/02 13:13:09 birna Exp $
  * Created on Dec 20, 2004
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.block.finance.business.InvoiceDataInsert;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/02 13:01:30 $ by $Author: birna $
+ *  Last modified: $Date: 2005/03/02 13:13:09 $ by $Author: birna $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 	
@@ -139,6 +139,8 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 		KrofurWSSoapStub ws = null;
 		try {
 			ws = new KrofurWSSoapStub(new URL(ACTION_URL),null);
+			ws.setUsername(bfm.getUsername(groupId));
+			ws.setPassword(bfm.getPassword(groupId));
 			//sending the request to the bank
 			BigDecimal bunkanumer = ws.stofnaKrofubunka(arrayOfKrafa);
 //			System.out.println("bunkanumer: " + bunkanumer);

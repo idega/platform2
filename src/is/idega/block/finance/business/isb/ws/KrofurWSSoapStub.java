@@ -16,6 +16,10 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
     private java.util.Vector cachedSerQNames = new java.util.Vector();
     private java.util.Vector cachedSerFactories = new java.util.Vector();
     private java.util.Vector cachedDeserFactories = new java.util.Vector();
+    
+    /*added - birna*/
+    private String username;
+    private String password;
 
     static org.apache.axis.description.OperationDesc [] _operations; 
 
@@ -374,17 +378,17 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
             _call.setProperty(WsseClientHandler.PASSWORD_OPTION,
                 WsseClientHandler.PASSWORD_CLEARTEXT);
             _call.setClientHandlers(new WsseClientHandler(), null);
-            _call.setUsername("idegatest");
-            _call.setPassword("iwccJi432s");
+            _call.setUsername(username);
+            _call.setPassword(password);
             
             if (super.maintainSessionSet) {
                 _call.setMaintainSession(super.maintainSession);
             }
             if (super.cachedUsername != null) {
-                _call.setUsername("idegatest");//super.cachedUsername);
+                _call.setUsername(username);//super.cachedUsername);
             }
             if (super.cachedPassword != null) {
-                _call.setPassword("iwccJi432s");//super.cachedPassword);
+                _call.setPassword(password);//super.cachedPassword);
             }
             if (super.cachedEndpoint != null) {
                 _call.setTargetEndpointAddress(super.cachedEndpoint);
@@ -957,6 +961,20 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
 		usernameToken.addChild(password);
 		return usernameToken;
 
+  	}
+  	
+  	/*added - birna*/
+  	public void setUsername(String username) {
+  		this.username = username;
+  	}
+  	public String getUsername() {
+  		return this.username;
+  	}
+  	public void setPassword(String password) {
+  		this.password = password;
+  	}
+  	public String getPassword() {
+  		return this.password;
   	}
 
 }
