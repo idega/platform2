@@ -10,6 +10,7 @@ import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
@@ -153,6 +154,8 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 					if ( (queuePriority && qP == null) || (!queuePriority && qP != null)) {
 						application.setHasQueuePriority(!queuePriority);
 						application.store();
+						add(getLocalizedText("child_care.priority_update_done","Update done"));
+						add(new Break(2));
 					} 
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
