@@ -72,10 +72,7 @@ public class TournamentRegistrationMobile extends Block {
 			IWTimestamp begin = new IWTimestamp();
 			begin.setHour(6);
 			begin.setMinute(0);
-			IWTimestamp end = new IWTimestamp(begin);
-			end.addDays(days);
-			end.setHour(23);
-			Tournament[] tournaments = getTournamentBusiness(iwc).getTournaments(begin, end);
+			Tournament[] tournaments = getTournamentBusiness(iwc).getTournamentsWithRegistration(begin, days);
 			for(int i=0; i<tournaments.length; i++) {
 				Tournament t = tournaments[i];
 				String day = (new IWTimestamp(t.getStartTime())).getDateString("EEE d MMM", iwc.getCurrentLocale());
