@@ -25,6 +25,7 @@ import com.idega.block.datareport.business.jasperdesignxml.TextField;
 import com.idega.block.datareport.business.jasperdesignxml.TextFieldExpression;
 import com.idega.block.datareport.business.jasperdesignxml.Title;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
@@ -419,7 +420,7 @@ public class DynamicReportDesign {
 		String separator = FileUtil.getFileSeparator();
 		StringBuffer uri = new StringBuffer(mainApp.getApplicationContextURI());
 		uri.append(separator)
-			.append(mainApp.getIWCacheManager().IW_ROOT_CACHE_DIRECTORY)
+			.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
 			.append(separator)
 			.append(REPORT_FOLDER)
 			.append(separator)
@@ -438,7 +439,7 @@ public class DynamicReportDesign {
 		IWMainApplication mainApp = iwc.getApplication();
 		String separator = FileUtil.getFileSeparator();
 		StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
-		path.append(mainApp.getIWCacheManager().IW_ROOT_CACHE_DIRECTORY)
+		path.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
 			.append(separator)
 			.append(REPORT_FOLDER)
 			.append(separator)
