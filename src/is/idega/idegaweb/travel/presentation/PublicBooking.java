@@ -940,6 +940,7 @@ public class PublicBooking extends Block  {
         e.printStackTrace(System.err);
         gBooking.setIsValid(false);
         gBooking.store();
+        gBooking = null;
         success = false;
       }catch (Exception e) {
         debug("Exception caught");
@@ -953,6 +954,7 @@ public class PublicBooking extends Block  {
       }
 
       if (success && gBooking != null) {
+        debug("Choise 1");
         boolean sendEmail = false;
         try {
           Product prod = ((ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(gBooking.getServiceID());
@@ -1059,10 +1061,12 @@ public class PublicBooking extends Block  {
         table.setAlignment(1,2,"right");
         table.setAlignment(1,3,"right");
       }else if (inquirySent) {
+        debug("Choise 2");
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
         table.add(Text.BREAK);
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
       }else {
+        debug("Choise 3");
         table.add(display);
         if (gBooking == null) {
           debug("gBooking == null");
