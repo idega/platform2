@@ -79,6 +79,7 @@ private static String prmCatName= "nwep_categoryname";
 private static String prmCatDesc = "nwep_categorydesc";
 private static String prmPubFrom = "nwep_publishfrom";
 private static String prmPubTo = "nwep_publishto";
+private static String prmNewsDate = "nwep_newsdate";
 private static String prmMoveToCat = "nwep_movtocat";
 public static final  String imageAttributeKey = "newsimage";
 private String sNewsId = null;
@@ -86,7 +87,7 @@ private int iCategoryId = -1;
 
 
 
-private String sEditor,sHeadline,sTeaser,sNews,sCategory,sAuthor,sSource,sDaysShown,sImage,sLocale,sPublisFrom,sPublisTo;
+private String sEditor,sHeadline,sTeaser,sNews,sNewsDate,sCategory,sAuthor,sSource,sDaysShown,sImage,sLocale,sPublisFrom,sPublisTo;
 
 private int attributeId = 3;
 private IWBundle iwb,core;
@@ -94,7 +95,7 @@ private IWResourceBundle iwrb;
 
   public NewsEditorWindow(){
     setWidth(570);
-    setHeight(570);
+    setHeight(620);
     setResizable(true);
     setScrollbar(true);
     setUnMerged();
@@ -113,6 +114,7 @@ private IWResourceBundle iwrb;
     sEditor = iwrb.getLocalizedString("news_editor","News Editor");
     sPublisFrom = iwrb.getLocalizedString("publish_from","Publish from");
     sPublisTo = iwrb.getLocalizedString("publish_to","Publish to");
+    sNewsDate = iwrb.getLocalizedString("news_date","News date");
     setAllMargins(0);
     setTitle(sEditor);
   }
@@ -312,6 +314,7 @@ private IWResourceBundle iwrb;
     String sSource = iwc.getParameter(prmSource);
     String sPubFrom = iwc.getParameter(prmPubFrom);
     String sPubTo = iwc.getParameter(prmPubTo);
+    String sNewsDate = iwc.getParameter(prmNewsDate);
     //System.err.println("publish from" + sPubFrom);
     //System.err.println("publish to" + sPubTo);
     if(sHeadline != null || sBody != null){
@@ -323,6 +326,7 @@ private IWResourceBundle iwrb;
       boolean bUseImage = sUseImage!= null?true:false;
       IWTimestamp today = IWTimestamp.RightNow();
       IWTimestamp pubFrom = sPubFrom!=null ? new IWTimestamp(sPubFrom):today;
+      Timestamp newsDate = sNewsDate != null ? new IWTimestamp(sNewsDate).getTimestamp() : null;
       today.addDays(defaultPublishDays);
       IWTimestamp pubTo = sPubTo!=null ?new IWTimestamp(sPubTo):today;
       Vector V = null;
@@ -341,7 +345,7 @@ private IWResourceBundle iwrb;
 
       //System.err.println(pubFrom.toSQLString());
       //System.err.println(pubTo.toString());
-      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,sTeaser,sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
+      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,sTeaser,sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V, newsDate);
       if(news!=null)
         sNewsId = String.valueOf(news.getID());
     }
@@ -499,6 +503,9 @@ private IWResourceBundle iwrb;
 
     TimestampInput publishTo = new TimestampInput(prmPubTo,true);
       publishTo.setTimestamp(now.getTimestamp());
+      
+    TimestampInput newsDate = new TimestampInput(prmNewsDate,true);
+    	newsDate.setTimestamp(now.getTimestamp());
 
     List L = NewsFinder.listOfLocales();
     DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
@@ -569,6 +576,9 @@ private IWResourceBundle iwrb;
         }
         if(content.getPublishTo()!=null){
           publishTo.setTimestamp(content.getPublishTo());
+        }
+        if(content.getCreated()!=null){
+        	newsDate.setTimestamp(content.getCreated());
         }
       }
       catDrop.setSelectedElement(String.valueOf(nwNews.getNewsCategoryId()));
@@ -646,6 +656,7 @@ private IWResourceBundle iwrb;
     addLeft(sLocale, LocaleDrop,true);
     addLeft(sTeaser,taTeaser,true);
     addLeft(sNews,taBody,true);
+    addLeft(sNewsDate,newsDate,true);
     addLeft(sPublisFrom, publishFrom,true);
     addLeft(sPublisTo,publishTo,true);
 
