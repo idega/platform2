@@ -678,10 +678,11 @@ public class PublicBooking extends Block  {
       table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
 
 //      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
-      SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"), this.sAction, this.parameterBookingVerified);
-        yes.setOnSubmit("this.form."+yes.getName()+".disabled = true");
-//        yes.setOnClick("this.form.submit()");
-//        yes.setOnClick("this.form."+yes.getName()+".disabled = true");
+      SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
+//        yes.setOnSubmit("this.form."+yes.getName()+".disabled = true");
+      table.add(new HiddenInput(this.sAction, this.parameterBookingVerified),2,row);
+        yes.setOnClick("this.form.submit()");
+        yes.setOnClick("this.form."+yes.getName()+".disabled = true");
       Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
           no.setAttribute("onClick","history.go(-1)");
 
