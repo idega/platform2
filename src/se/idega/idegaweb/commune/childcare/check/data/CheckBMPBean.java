@@ -1,13 +1,14 @@
 package se.idega.idegaweb.commune.childcare.check.data;
 
-import com.idega.data.*;
-import com.idega.block.process.data.*;
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseStatus;
+import com.idega.user.data.User;
 
-import javax.ejb.*;
-
-import java.util.Collection;
-import java.util.Iterator;
 import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -249,7 +250,18 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	}
 
 	public Collection ejbFindChecks() throws FinderException {
-		return this.idoFindPKsBySQL("select * from " + this.getEntityName());
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(this.getEntityName());
+		return this.idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindChecksByUser(User user) throws FinderException {
+		try {
+			return super.ejbFindAllCasesByUser(user);
+		}
+		catch (RemoteException e) {
+			return null;
+		}
 	}
 
 	/**

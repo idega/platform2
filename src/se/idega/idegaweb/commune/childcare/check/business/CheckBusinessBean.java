@@ -312,4 +312,16 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	public int getMethodSystem() {
 		return METHOD_SYSTEM;	
 	}
+	
+	public Collection findAllChecksByUser(User user) {
+		try {
+			return getCheckHome().findChecksByUser(user);
+		}
+		catch (RemoteException e) {
+		}
+		catch (FinderException e) {
+		}
+		
+		return null;
+	}
 }
