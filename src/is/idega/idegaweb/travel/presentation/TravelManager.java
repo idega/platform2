@@ -79,6 +79,16 @@ public class TravelManager extends Block {
       return tsm.getIWBundle();
     }
 
+    /**
+     * @deprecated
+     * @param iwc IWContext
+     * @return IWResourceBundle
+     * @throws RemoteException
+     */
+    public IWResourceBundle getResourceBundle(IWContext iwc)  throws RemoteException{
+      return tsm.getIWResourceBundle();
+    }
+
     public IWResourceBundle getResourceBundle()  throws RemoteException{
       return tsm.getIWResourceBundle();
     }
