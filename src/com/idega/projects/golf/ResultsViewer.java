@@ -80,8 +80,12 @@ private Table resultTable;
     String tournamentGroupId_ = modinfo.getParameter("tournament_group_id");
       if ( tournamentGroupId_ != null ) {
         if ( tournamentGroupId_.length() > 0 ) {
-          if ( tournamentGroupId_ != "0" ) {
+          int tournamentGroupId = Integer.parseInt(tournamentGroupId_);
+          if ( tournamentGroupId > 0 ) {
             tournamentGroupID = Integer.parseInt(tournamentGroupId_);
+          }
+          else {
+            tournamentGroupID = -1;
           }
         }
       }
