@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.util.Locale;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -76,6 +77,9 @@ public class TravelManager extends Block {
 
     private int tableWidth = 849;
     private boolean showLogo = true;
+
+    protected int _localeId = -1;
+    protected Locale _locale;
 
     public TravelManager(){
         super();
@@ -292,6 +296,9 @@ public class TravelManager extends Block {
         bundle = getBundle(iwc);
         iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
         user = LoginBusiness.getUser(iwc);
+        _localeId = iwc.getCurrentLocaleId();
+        _locale = iwc.getCurrentLocale();
+
         if (user != null) {
           userId = user.getID();
           isSuperAdmin = iwc.isSuperAdmin();

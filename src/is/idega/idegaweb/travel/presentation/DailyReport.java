@@ -296,7 +296,7 @@ public class DailyReport extends TravelManager {
           timeText.setText(stamp.getLocaleDate(iwc));
           timeText.setFontColor(super.textColor);
       Text nameText = (Text) theBoldText.clone();
-          nameText.setText(ProductBusiness.getProductName(product));
+          nameText.setText(ProductBusiness.getProductName(product, super._localeId));
 
 
       table.setColumnAlignment(1,"left");
@@ -1013,7 +1013,7 @@ public class DailyReport extends TravelManager {
         pPriceTxt = (Text) super.theText.clone();
 
         pNumberTxt.setText(prod.getNumber());
-        pNameTxt.setText(ProductBusiness.getProductName(prod));
+        pNameTxt.setText(ProductBusiness.getProductName(prod, super._localeId));
         pTimeTxt.setText(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()));
         pCountTxt.setText(Integer.toString(count));
         pPriceTxt.setText(TextSoap.decimalFormat(price, 2));
