@@ -260,7 +260,7 @@ public class IFSFileCreationThread extends Thread {
 				}
 				try {
 					createInvoiceFiles(fileName3.toString(), fileName7.toString(), fileName8.toString(),
-							schoolCategory, now, currentLocale, header, mapping);
+							schoolCategory, now, currentLocale, header);
 				}
 				catch (IOException e6) {
 					e6.printStackTrace();
@@ -775,8 +775,7 @@ public class IFSFileCreationThread extends Thread {
 	}
 
 	private void createInvoiceFiles(String fileName1, String fileName2, String fileName3, String schoolCategory,
-			IWTimestamp executionDate, Locale currentLocale, IFSCheckHeader checkHeader,
-			ExportDataMapping mapping) throws IOException {
+			IWTimestamp executionDate, Locale currentLocale, IFSCheckHeader checkHeader) throws IOException {
 		Collection iHeaders = null;
 		try {
 			iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("P",
