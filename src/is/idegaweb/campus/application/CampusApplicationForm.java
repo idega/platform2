@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.7 2001/07/30 13:10:37 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.8 2001/08/08 12:46:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,10 @@ import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.Form;
@@ -39,6 +42,7 @@ import is.idegaweb.campus.entity.Applied;
 import java.util.List;
 import java.sql.SQLException;
 
+
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -50,6 +54,11 @@ public class CampusApplicationForm extends ApplicationForm {
   private final int statusGeneralInfo_ = 2;
   private final int statusCampusInfo_ = 3;
   private final int statusAppliedFor_ = 4;
+  private final int statusSelectingApartmentTypes_ = 99;
+
+  private int pic1 = -1;
+  private int pic2 = -1;
+  private int pic3 = -1;
 
   private String styleAttribute = "font-size: 8pt";
   private TextInput textInputTemplate = new TextInput();
@@ -67,6 +76,8 @@ public class CampusApplicationForm extends ApplicationForm {
   protected void control(ModuleInfo modinfo) {
     String statusString = modinfo.getParameter("status");
     int status = 0;
+
+    System.out.println("status = " + statusString);
 
     if (statusString == null) {
       status = statusEnteringPage_;
@@ -96,6 +107,10 @@ public class CampusApplicationForm extends ApplicationForm {
         doDone();
       else
         doError();
+    }
+    else if (status == statusSelectingApartmentTypes_) {
+      checkAparmentTypesSelected(modinfo);
+      doSelectAppliedFor(modinfo);
     }
   }
 
@@ -203,14 +218,25 @@ public class CampusApplicationForm extends ApplicationForm {
       aprtType.addMenuElement(eAprtType.getKey(),eAprtType.getName());
       aprtType2.addMenuElement(eAprtType.getKey(),eAprtType.getName());
       aprtType3.addMenuElement(eAprtType.getKey(),eAprtType.getName());
+
+      if (i == 0) {
+        if (pic1 == -1) {
+          try {
+            int type = ApartmentTypeComplexHelper.getPartKey(eAprtType.getKey(),1);
+            ApartmentType room = new ApartmentType(type);
+            pic1 = room.getFloorPlanId();
+          }
+          catch(SQLException e) {
+            e.printStackTrace();
+          }
+        }
+      }
     }
 
     Text textTemplate = new Text();
 
     Form form = new Form();
-    Table t = new Table(2,5);
-    t.setWidth(1,"50%");
-    t.setWidth(2,"50%");
+    Table t = new Table(3,5);
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
@@ -233,7 +259,7 @@ public class CampusApplicationForm extends ApplicationForm {
     info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
 
-    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    SubmitButton ok = new SubmitButton(iwrb.getLocalizedString("ok","áfram"),"status",Integer.toString(statusAppliedFor_));
     ok.setStyle("idega");
 
     form.add(heading);
@@ -244,16 +270,55 @@ public class CampusApplicationForm extends ApplicationForm {
     t.add(text1,1,1);
     t.add(required,1,1);
     t.add(aprtType,2,1);
+
+    if (pic1 > -1) {
+      try {
+        Image floorPlan1 = new Image(pic1);
+        t.add(floorPlan1,3,1);
+      }
+      catch(SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
     t.add(text2,1,2);
     t.add(aprtType2,2,2);
+    if (pic2 > -1) {
+      try {
+        Image floorPlan2 = new Image(pic2);
+        t.add(floorPlan2,3,2);
+      }
+      catch(SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
     t.add(text3,1,3);
     t.add(aprtType3,2,3);
+    if (pic3 > -1) {
+      try {
+        Image floorPlan3 = new Image(pic3);
+        t.add(floorPlan3,3,3);
+      }
+      catch(SQLException e) {
+        e.printStackTrace();
+      }
+    }
+
     t.add(ok,2,5);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(info);
-    form.add(new HiddenInput("status",Integer.toString(statusAppliedFor_)));
+    aprtType.setOnChange("this.form.status.value='" + statusSelectingApartmentTypes_ + "'");
+    aprtType2.setOnChange("this.form.status.value='" + statusSelectingApartmentTypes_ + "'");
+    aprtType3.setOnChange("this.form.status.value='" + statusSelectingApartmentTypes_ + "'");
+    aprtType.setToSubmit();
+    aprtType2.setToSubmit();
+    aprtType3.setToSubmit();
+    aprtType.keepStatusOnAction();
+    aprtType2.keepStatusOnAction();
+    aprtType3.keepStatusOnAction();
     add(form);
   }
 
@@ -780,5 +845,36 @@ public class CampusApplicationForm extends ApplicationForm {
 
   public String getBundleIdentifier() {
     return("is.idegaweb.campus");
+  }
+
+  private void checkAparmentTypesSelected(ModuleInfo modinfo) {
+    String key1 = (String)modinfo.getParameter("aprtType");
+    String key2 = (String)modinfo.getParameter("aprtType2");
+    String key3 = (String)modinfo.getParameter("aprtType3");
+
+    try {
+      int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
+      ApartmentType room = new ApartmentType(type);
+      pic1 = room.getFloorPlanId();
+
+      if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
+        type = ApartmentTypeComplexHelper.getPartKey(key2,1);
+        room = new ApartmentType(type);
+        pic2 = room.getFloorPlanId();
+      }
+
+      if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
+        type = ApartmentTypeComplexHelper.getPartKey(key3,1);
+        room = new ApartmentType(type);
+        pic3 = room.getFloorPlanId();
+      }
+
+      System.out.println("pic1 = " + pic1);
+      System.out.println("pic2 = " + pic2);
+      System.out.println("pic3 = " + pic3);
+    }
+    catch(SQLException e) {
+      e.printStackTrace();
+    }
   }
 }

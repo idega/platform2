@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.12 2001/07/30 13:10:37 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.13 2001/08/08 12:46:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -211,37 +211,33 @@ public abstract class CampusApplicationFinder {
   /**
    *
    */
-  public static CampusApplicationHolder getCampusApplicationInfo(CampusApplication app) {
-/*    CampusApplicationHolder cah = null;
-    if (app != null) {
+  public static CampusApplicationHolder getCampusApplicationInfo(CampusApplication ca) {
+    CampusApplicationHolder cah = null;
+    List resultSet = null;
+    if (ca != null) {
       try {
-        Application eApplication =  new Application();
-        List L = EntityFinder.findAllByColumn(eApplication,eApplication.getApplicantIdColumnName(),eApplicant.getID());
-        if(L!=null){
-          eApplication = (Application) L.get(0);
-          CampusApplication eCampusApplication = new CampusApplication();
-          L = EntityFinder.findAllByColumn(eCampusApplication,eCampusApplication.getApplicationIdColumnName(),eApplication.getID());
-          if(L!=null){
-            eCampusApplication = (CampusApplication) L.get(0);
-            Applied eApplied = new Applied();
-            L = EntityFinder.findAllByColumn(eApplied,eApplied.getApplicationIdColumnName(),eCampusApplication.getID());
-            Vector V = null;
-            if(L!=null){
-              V = new Vector(L.size());
-              for (int i = 0; i < L.size(); i++) {
-                Applied A = (Applied) L.get(i);
-                V.add(A);
-              }
-            }
-            CAH = new CampusApplicationHolder(eApplication,eApplicant,eCampusApplication,V);
+        Applied applied = new Applied();
+        resultSet = EntityFinder.findAllByColumn(applied,applied.getApplicationIdColumnName(),ca.getID());
+        Vector v = null;
+        if (resultSet != null) {
+          v = new Vector(resultSet.size());
+          for (int i = 0; i < resultSet.size(); i++) {
+            applied = (Applied) resultSet.get(i);
+            v.add(applied);
           }
         }
+
+        Application app = new Application(ca.getAppApplicationId().intValue());
+        Applicant applicant = new Applicant(app.getApplicantId());
+
+        cah = new CampusApplicationHolder(app,applicant,ca,v);
       }
       catch (SQLException ex) {
         ex.printStackTrace();
       }
-    }*/
-    return(null);
+    }
+
+    return(cah);
   }
 
   /**
@@ -409,8 +405,58 @@ public abstract class CampusApplicationFinder {
       count = 0;
     return count;
   }
+
+  /**
+   *
+   */
+  public static CampusApplicationHolder getApplicationInfo(int applicationId) {
+    CampusApplicationHolder cah = null;
+    Application a = null;
+
+    try {
+      a = new Application(applicationId);
+      cah = getApplicationInfo(a);
+    }
+    catch(SQLException e) {
+      System.out.println(e.getMessage());
+    }
+
+    return(cah);
+  }
+
+  /**
+   *
+   */
+  public static CampusApplicationHolder getApplicationInfo(Application a) {
+    CampusApplicationHolder cah = null;
+    List resultSet = null;
+    if (a != null) {
+      try {
+        CampusApplication ca = new CampusApplication();
+        resultSet = EntityFinder.findAllByColumn(ca,ca.getApplicationIdColumnName(),a.getID());
+        if (resultSet != null)
+          ca = (CampusApplication)resultSet.get(0);
+
+        Applied applied = new Applied();
+        resultSet = EntityFinder.findAllByColumn(applied,applied.getApplicationIdColumnName(),ca.getID());
+        Vector v = null;
+        if (resultSet != null) {
+          v = new Vector(resultSet.size());
+          for (int i = 0; i < resultSet.size(); i++) {
+            applied = (Applied) resultSet.get(i);
+            v.add(applied);
+          }
+        }
+
+        Applicant applicant = new Applicant(a.getApplicantId());
+
+        cah = new CampusApplicationHolder(a,applicant,ca,v);
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }
+
+    return(cah);
+  }
 }
-
-
-
-
