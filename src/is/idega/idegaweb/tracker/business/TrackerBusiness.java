@@ -49,17 +49,17 @@ public class TrackerBusiness {
     if( cm == null ) cm = IWCacheManager.getInstance(iwc.getApplication());
     if( domainEntity == null ) domainEntity = BuilderLogic.getInstance().getCurrentDomain(iwc);/**@todo add multidomain support**/
     if( pages == null ){pages = new HashMap();}
-    if( pageSessions == null ){ pageSessions = new Hashtable();}
-    if( pageHits == null ){ pageHits = new Hashtable();}
     if( agents == null ){ agents = new Hashtable();}
   }
 
   private static void incrementPageHits(String pageId){
+    if( pageHits == null ){ pageHits = new Hashtable();}
     Integer hits = (Integer) pageHits.get(pageId);
     pageHits.put(pageId,getIncrementedInteger(hits));
   }
 
   private static void incrementPageSessions(String pageId){
+    if( pageSessions == null ){ pageSessions = new Hashtable();}
     Integer hits = (Integer) pageSessions.get(pageId);
     pageSessions.put(pageId,getIncrementedInteger(hits));
   }
@@ -175,12 +175,16 @@ public class TrackerBusiness {
   }
 
   public static int getCurrentPageHits(IWContext iwc){
+    if( pageHits == null ){ pageHits = new Hashtable();}
+
     Integer hits = (Integer) pageHits.get(String.valueOf(getCurrentPageId(iwc)));
     if( hits == null ) return 0;
     else return hits.intValue();
   }
 
   public static int getCurrentPageSessions(IWContext iwc){
+    if( pageSessions == null ){ pageSessions = new Hashtable();}
+
     Integer sessions = (Integer) pageSessions.get(String.valueOf(getCurrentPageId(iwc)));
     if( sessions == null ) return 0;
     else return sessions.intValue();
