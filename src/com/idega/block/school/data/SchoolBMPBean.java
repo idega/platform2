@@ -382,7 +382,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	}
 
 	public Collection ejbFindAllByAreaTypeManagementCommune(int areaId, Collection typeIds, Collection managementTypes, int communeId) throws javax.ejb.FinderException {
-		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_id = s.sch_school_id " +
+		String select = "select distinct s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_id = s.sch_school_id " +
 				" and " + SCHOOLAREA + " = " + areaId + 
 				" and " + COMMUNE + " = " + communeId + 
 				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')";
