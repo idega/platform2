@@ -73,7 +73,6 @@ public class LoginBusiness implements IWEventListener{
           if(controlParameter.equals("login")){
             if (modinfo.getParameter(newLoginStateParameter)!= null || modinfo.getParameter(newLoginStateParameter+ ".x")!= null ){
               String temp = modinfo.getRequest().getParameter("login");
-              System.err.println("newLogin = " + temp);
               if(temp != null){
                 if(temp.length() == 10){
                   registerLogin(modinfo,modinfo.getRequest().getParameter("login"));
