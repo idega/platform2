@@ -109,7 +109,7 @@ public class TextFinder {
     and lt.ic_locale_id = 2
 
     */
-    StringBuffer sql = new StringBuffer("select lt.* from tx_localized_text lt, tx_text t,tx_text_localized ttl ");
+    StringBuffer sql = new StringBuffer("select lt.* from tx_localized_text lt, tx_text t,TX_TEXT_TX_LOCALIZED_TEXT ttl ");
     sql.append(" where ttl.tx_text_id = t.tx_text_id ");
     sql.append(" and ttl.tx_localized_text_id = lt.tx_localized_text_id ");
     sql.append(" and t.tx_text_id = ");

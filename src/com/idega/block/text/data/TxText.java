@@ -35,7 +35,7 @@ public class TxText extends GenericEntity{
     addAttribute(getColumnNameIncludeImage(), "Include image", true, true, java.lang.Boolean.class,1);
     addAttribute(getColumnNameImageId(), "image_id", true, true, java.lang.Integer.class);
     addAttribute(getColumnNameAttribute(), "attribute", true, true, java.lang.String.class);
-    this.addManyToManyRelationShip(LocalizedText.class,"TX_TEXT_LOCALIZED");
+    this.addManyToManyRelationShip(LocalizedText.class,"TX_TEXT_TX_LOCALIZED_TEXT");
   }
 
 

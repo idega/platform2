@@ -4,6 +4,7 @@ import java.sql.*;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.text.data.*;
 import com.idega.util.idegaTimestamp;
+import java.util.List;
 
 public class TextBusiness{
 
@@ -26,12 +27,29 @@ public class TextBusiness{
 
   public static void deleteText(int iTextId) {
 
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
+      t.begin();
+      List L = TextFinder.listOfLocalizedText(iTextId);
+      if(L != null){
+        LocalizedText lt;
+        for (int i = 0; i < L.size(); i++) {
+          lt = (LocalizedText) L.get(i);
+          lt.delete();
+        }
+
+      }
       new TxText(iTextId).delete();
+     t.commit();
     }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
-      System.out.println("Text not deleted");
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+      e.printStackTrace();
     }
   }
 
