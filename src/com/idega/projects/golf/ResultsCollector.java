@@ -15,6 +15,7 @@ public class ResultsCollector {
   private Vector points_ = null;
   private Vector par_ = null;
   private Vector roundScore_ = null;
+  private Vector roundNumber_ = null;
 
   private boolean strokeGame_ = true;
   private double handicap_ = 0;
@@ -58,6 +59,29 @@ public class ResultsCollector {
 
   public void setPoints(Vector points) {
     points_ = points;
+  }
+
+  public void addRoundNumber(int roundNumber) {
+    if (roundNumber_ == null)
+      roundNumber_ = new Vector();
+
+    roundNumber_.add(new Integer(roundNumber));
+  }
+
+  public int getRound(int roundNumber) {
+    int position = 0;
+
+    if (roundNumber_ != null) {
+      position = roundNumber_.indexOf(new Integer(roundNumber));
+      if ( position != -1 ) {
+        position = ((Integer) roundNumber_.elementAt(position)).intValue();
+        if ( this.memberId_ == 10558 ) {
+          System.out.println(position);
+        }
+      }
+    }
+
+    return position;
   }
 
   public void addStroke(double stroke) {

@@ -242,12 +242,12 @@ public class TournamentResults extends JModuleObject {
           case ResultComparator.TOTALSTROKES :
             int roundScoreColumn = 10;
             for ( int b = 1; b <= numberOfRounds; b++ ) {
+              int position = roundScoreColumn + collector.getRound(b) - 1;
               int roundScore2 = collector.getRoundScore(b);
               Text roundScoreText = new Text(Integer.toString(roundScore2));
                 roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               if ( roundScore2 > 0 ) {
-                myTable.add(roundScoreText,roundScoreColumn,a+3);
-                roundScoreColumn++;
+                myTable.add(roundScoreText,position,a+3);
               }
             }
             Text finalScoreText = new Text(Integer.toString(finalScore));
@@ -275,6 +275,7 @@ public class TournamentResults extends JModuleObject {
             }
 
             for ( int b = 1; b <= numberOfRounds; b++ ) {
+              int position2 = roundScoreColumn2 + collector.getRound(b) - 1;
               int roundScore2 = collector.getRoundScore(b);
               int roundScoreBrutto = roundScore2 + handicap;
               Text roundScoreText = new Text(Integer.toString(roundScore2));
@@ -282,9 +283,8 @@ public class TournamentResults extends JModuleObject {
               Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
                 roundScoreBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               if ( roundScore2 > 0 ) {
-                myTable.add(roundScoreBruttoText,roundScoreColumn2,a+3);
-                myTable.add(roundScoreText,roundScoreColumn2+1,a+3);
-                roundScoreColumn2 += 2;
+                myTable.add(roundScoreBruttoText,position2,a+3);
+                myTable.add(roundScoreText,position2+1,a+3);
               }
             }
             Text finalBruttoText = new Text(Integer.toString(collector.getTotalStrokes()));
@@ -306,12 +306,12 @@ public class TournamentResults extends JModuleObject {
           case ResultComparator.TOTALPOINTS :
             int roundScoreColumn3 = 9;
             for ( int b = 1; b <= numberOfRounds; b++ ) {
+              int position3 = roundScoreColumn3 + collector.getRound(b) - 1;
               int roundScore2 = collector.getRoundScore(b);
               Text roundScoreText = new Text(Integer.toString(roundScore2));
                 roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               if ( roundScore2 > 0 ) {
-                myTable.add(roundScoreText,roundScoreColumn3,a+3);
-                roundScoreColumn3++;
+                myTable.add(roundScoreText,position3,a+3);
               }
             }
             Text finalScoreText3 = new Text(Integer.toString(finalScore));
@@ -380,16 +380,26 @@ public class TournamentResults extends JModuleObject {
       addHeaders(frontNine,column,2);
       addHeaders(backNine,column+1,2);
 
+      String roundShort = iwrb.getLocalizedString("tournament.round_short","R");
+      if ( tournament.getNumberOfRounds() > 4 ) {
+        roundShort = iwrb.getLocalizedString("tournament.day_short","D");
+      }
+
+      String rounds = iwrb.getLocalizedString("tournament.rounds","Rounds");
+      if ( tournament.getNumberOfRounds() > 4 ) {
+        roundShort = iwrb.getLocalizedString("tournament.days","Days");
+      }
+
       switch (tournamentType_) {
         case ResultComparator.TOTALSTROKES :
           addHeaders(total,column+2,2);
           addHeaders(difference,column+3,2);
           column += 4;
           for ( int a = 0; a < numberOfRounds; a++ ) {
-            addHeaders(iwrb.getLocalizedString("tournament.round_short","R")+Integer.toString(a+1),column+a,2);
+            addHeaders(roundShort+Integer.toString(a+1),column+a,2);
           }
           myTable.mergeCells(column,1,column+numberOfRounds-1,1);
-          addHeaders(iwrb.getLocalizedString("tournament.rounds","Rounds"),column,1);
+          addHeaders(rounds,column,1);
           addHeaders(total,column+numberOfRounds,2);
           addHeaders(difference,column+numberOfRounds+1,2);
           myTable.mergeCells(column+numberOfRounds,1,column+numberOfRounds+1,1);
@@ -405,7 +415,7 @@ public class TournamentResults extends JModuleObject {
             myTable.mergeCells(roundColumn,1,roundColumn+1,1);
             addHeaders(total,roundColumn,2);
             addHeaders(netto,roundColumn+1,2);
-            addHeaders(iwrb.getLocalizedString("tournament.round_short","R")+Integer.toString(a+1),roundColumn,1);
+            addHeaders(roundShort+Integer.toString(a+1),roundColumn,1);
             roundColumn += 2;
           }
           addHeaders(total,roundColumn,2);
@@ -418,10 +428,10 @@ public class TournamentResults extends JModuleObject {
           addHeaders(total,column+2,2);
           column += 3;
           for ( int a = 0; a < numberOfRounds; a++ ) {
-            addHeaders(iwrb.getLocalizedString("tournament.round_short","R")+Integer.toString(a+1),column+a,2);
+            addHeaders(roundShort+Integer.toString(a+1),column+a,2);
           }
           myTable.mergeCells(column,1,column+numberOfRounds-1,1);
-          addHeaders(iwrb.getLocalizedString("tournament.rounds","Rounds"),column,1);
+          addHeaders(rounds,column,1);
           myTable.mergeCells(column+numberOfRounds,1,column+numberOfRounds,2);
           addHeaders(iwrb.getLocalizedString("tournament.total","Total"),column+numberOfRounds,1);
         break;

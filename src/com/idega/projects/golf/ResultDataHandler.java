@@ -101,6 +101,8 @@ public class ResultDataHandler {
         ResultSet RS2  = stmt2.executeQuery(getMemberSQLString(member_id));
 
         a = 0;
+        int roundNumber = 0;
+
         while (RS2.next() ) {
           double stroke = RS2.getDouble("stroke_count");
           double point = RS2.getDouble("point_count");
@@ -114,6 +116,11 @@ public class ResultDataHandler {
             r.setHoles(holes);
             r.setNumberOfRounds(numberOfRounds);
           }
+          if ( roundNumber != RS2.getInt("round_number") ) {
+            roundNumber = RS2.getInt("round_number");
+            r.addRoundNumber(roundNumber);
+          }
+
           r.addStroke(stroke);
           r.addPoints(point);
           r.addPar(par);
@@ -157,7 +164,7 @@ public class ResultDataHandler {
 
   private String getMemberSQLString(int memberId) {
     StringBuffer sql = new StringBuffer();
-      sql.append("select tournament_group_id,holes,rounds,stroke_count,point_count,hole_par,");
+      sql.append("select round_number,tournament_group_id,holes,rounds,stroke_count,point_count,hole_par,");
       sql.append(" cast(( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ) as numeric(3,0)) as tournament_handicap");
       sql.append(" from scorecard s, stroke st, tee t, tournament_round tr, tournament tou, field f, tournament_member tm");
       sql.append(" where t.tee_id = st.tee_id");
