@@ -20,7 +20,7 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 	public final static String QUESTION = "question_id";
 	public final static String ANSWER = "answer_id";
 	public final static String VALID = "valid";
-	public final static String SEQUENCE = "sequence";
+	public final static String SEQUENCE = "sequence_number";
 	
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()

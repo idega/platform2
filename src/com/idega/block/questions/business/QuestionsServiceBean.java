@@ -1,10 +1,20 @@
 package com.idega.block.questions.business;
 import java.rmi.RemoteException;
 
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
 import com.idega.block.questions.data.Question;
 import com.idega.block.questions.data.QuestionHome;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.business.TextService;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.TxText;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOStoreException;
 /**
  * 
  * <p>Company: idegaweb </p>
@@ -39,6 +49,75 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 		}
 		catch (Exception e) {
 			throw new RemoteException(e.getMessage());
+		}
+		return null;
+	}
+	
+	public Question storeQuestion(Integer entityID,Integer localeID,Integer categoryID,Integer userID,String qTitle,String qBody,String aTitle,String aBody){
+		if(categoryID!=null && categoryID.intValue() >0){
+			try {
+				Question entity = getQuestionHome().create();
+				Integer qlocID = null,alocID =null;
+				Integer qtextID = null,atextID = null;
+				boolean freshentity = true;
+				if(entityID!=null && entityID.intValue()>0){
+					freshentity = false;
+					entity = getQuestionHome().findByPrimaryKey(entityID);
+					qtextID = new Integer(entity.getQuestionID());
+					ContentHelper qhelper = TextFinder.getContentHelper(qtextID.intValue(),localeID.intValue());
+					if(qhelper!=null){
+					    LocalizedText qtext = qhelper.getLocalizedText();
+					    if(qtext!=null){
+					    	qlocID = (Integer) qtext.getPrimaryKey();
+					    }
+					}
+					atextID = new Integer(entity.getAnswerID());
+					ContentHelper ahelper = TextFinder.getContentHelper(atextID.intValue(),localeID.intValue());
+					if(ahelper!=null){
+						LocalizedText atext = ahelper.getLocalizedText();
+						if(atext!=null){
+							alocID = (Integer) atext.getPrimaryKey();
+						}
+					}
+				}
+				TextService tservice = getTextService();
+				if(qTitle!=null || qBody!=null){
+					TxText qText = tservice.storeText(qtextID,qlocID,localeID,userID,qTitle,null,qBody);
+					qtextID = (Integer) qText.getPrimaryKey();
+				}
+				if(aTitle!=null || aBody!=null){
+					TxText aText = tservice.storeText(atextID,alocID,localeID,userID,aTitle,null,aBody);
+					atextID = (Integer) aText.getPrimaryKey();
+				}
+				entity.setCategoryId(categoryID.intValue());
+				entity.setValid(true);
+				if(qtextID!=null)
+					entity.setQuestionID(qtextID.intValue());
+				if(atextID!=null)
+					entity.setAnswerID(atextID.intValue());
+				entity.store();
+				if(freshentity){
+					entity.setSequence(((Integer)entity.getPrimaryKey()).intValue());
+					entity.store();
+				}
+				
+				return entity;
+			}
+			catch (IDOStoreException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (EJBException e) {
+				e.printStackTrace();
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -95,6 +174,10 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 		catch (Exception e) {
 			throw new RemoteException(e.getMessage());
 		}
+	}
+	
+	public TextService getTextService()throws RemoteException{
+		return (TextService)getServiceInstance(TextService.class);
 	}
 	
 }
