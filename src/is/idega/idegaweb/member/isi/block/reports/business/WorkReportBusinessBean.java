@@ -407,12 +407,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * @param report
 	 */
 	private WorkReport updateAndStoreWorkReport(WorkReport report) throws RemoteException, FinderException {
-		Group club = this.getGroupBusiness().getGroupByGroupID(report.getGroupId().intValue()); //could
-																								// be
-																								// club,regional
-																								// union
-																								// or
-																								// league
+		 //could be club,regional union or league
+		Group club = this.getGroupBusiness().getGroupByGroupID(report.getGroupId().intValue());
 		report.setGroupName(club.getName());
 		report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 		report.setGroupShortName(club.getShortName());
@@ -426,29 +422,42 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		String club_type = club.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
 		report.setType(club_type);
 		String club_in_umfi = club.getMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI);
-		if (club_in_umfi != null && club_in_umfi.equalsIgnoreCase("true")) {
+		if (club_in_umfi != null && (club_in_umfi.equalsIgnoreCase("true") || club_in_umfi.equalsIgnoreCase("y") ) ) {
 			report.setIsInUMFI(true);
 		}
 		else {
 			report.setIsInUMFI(false);
 		}
 		try {
-			Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
-			report.setRegionalUnionGroupId((Integer) regionalUnion.getPrimaryKey());
-			report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-			String abbr = regionalUnion.getAbbrevation();
-			if (abbr == null) {
-				abbr = regionalUnion.getShortName();
+			if(club.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB)){
+				Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
+				report.setRegionalUnionGroupId((Integer) regionalUnion.getPrimaryKey());
+				report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+				String abbr = regionalUnion.getAbbrevation();
 				if (abbr == null) {
-					abbr = regionalUnion.getName();
+					abbr = regionalUnion.getShortName();
+					if (abbr == null) {
+						abbr = regionalUnion.getName();
+					}
 				}
+				report.setRegionalUnionAbbreviation(abbr);
+				report.setRegionalUnionName(regionalUnion.getName());
 			}
-			report.setRegionalUnionAbbreviation(abbr);
-			report.setRegionalUnionName(regionalUnion.getName());
+			else if(club.getGroupType().equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){
+				report.setRegionalUnionNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+				String abbr = club.getAbbrevation();
+				if (abbr == null) {
+					abbr = club.getShortName();
+				}
+				report.setRegionalUnionAbbreviation(abbr);
+				report.setRegionalUnionName(club.getName());
+			}	
 		}
 		catch (NoRegionalUnionFoundException e3) {
 			//no regional union, must be a league or a regional union itself
 		}
+		
+		
 		report.store();
 		return report;
 	}
