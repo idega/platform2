@@ -211,17 +211,18 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
         return idoFindPKsByQuery (sql);
 	}
 	
+	
 	/**
-	 * Finds a payment record for the payment header and with the given rule spec type
+	 * Finds a payment record for the given posting strings
 	 * @param paymentHeader
 	 * @param ruleSpecType
 	 * @return
-	 * @throws FinderException
+	 * @throws FinderException if none was found
 	 */
-	public Integer ejbFindByPaymentHeaderAndRuleSpecType(PaymentHeader paymentHeader, String ruleSpecType) throws FinderException {
+	public Integer ejbFindByPostingStrings(String ownPostingString,String doublePostingString) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
-		sql.appendAndEqualsQuoted(COLUMN_RULE_SPEC_TYPE, ruleSpecType);
+		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
+		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
