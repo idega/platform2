@@ -150,7 +150,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   /**
    * @todo createTourService
    */
-  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String pickupPlace, idegaTimestamp pickupTime, int[] activeDays) throws Exception {
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String pickupPlace, idegaTimestamp pickupTime, int[] activeDays, Integer numberOfSeats) throws Exception {
 
       boolean isError = false;
 
@@ -197,6 +197,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
           Tour tour = new Tour();
             tour.setID(serviceId);
+            tour.setTotalSeats(numberOfSeats.intValue());
 
 
           if(hotePickupPlaceIds.length > 0){

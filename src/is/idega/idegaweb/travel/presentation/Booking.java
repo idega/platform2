@@ -12,8 +12,12 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
+import is.idega.travel.business.TravelStockroomBusiness;
+import com.idega.util.text.*;
 import java.sql.SQLException;
 
+import is.idega.travel.data.*;
+import javax.swing.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -28,11 +32,15 @@ public class Booking extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
-  String tableBackgroundColor = "#FFFFFF";
-  int numberOfTripsToDiplay = 6;
+  private Supplier supplier;
+  private Product product;
+  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
-  String textColor = "#666699";
+  private Service service;
+  private Timeframe timeframe;
+  private Tour tour;
 
+  private idegaTimestamp stamp;
 
   public Booking() {
   }
@@ -46,12 +54,15 @@ public class Booking extends TravelManager {
       super.main(modinfo);
       initialize(modinfo);
 
+      if (supplier != null) {
+        String action = modinfo.getParameter("action");
+        if (action == null) {action = "";}
 
-      String action = modinfo.getParameter("action");
-      if (action == null) {action = "";}
-
-      if (action.equals("")) {
-          displayForm(modinfo);
+        if (action.equals("")) {
+            displayForm(modinfo);
+        }
+      }else {
+        add("TEMP _LOGIN");
       }
 
       super.addBreak();
@@ -60,6 +71,32 @@ public class Booking extends TravelManager {
   public void initialize(ModuleInfo modinfo) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
+
+      supplier = super.getSupplier();
+
+      String productId = modinfo.getParameter(Product.getProductEntityName());
+      try {
+        if (productId == null) {
+          productId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
+        }else {
+          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
+        }
+        if (productId != null) {
+          product = new Product(Integer.parseInt(productId));
+          service = tsb.getService(product);
+          tour = tsb.getTour(product);
+          timeframe = tsb.getTimeframe(product);
+        }
+      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+          snfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+          tfnfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+          tnfe.printStackTrace(System.err);
+      }catch (SQLException sql) {sql.printStackTrace(System.err);}
+
+      stamp = getIdegaTimestamp(modinfo);
+
   }
 
   public void displayForm(ModuleInfo modinfo) {
@@ -68,21 +105,25 @@ public class Booking extends TravelManager {
       Table topTable = getTopTable(modinfo);
         form.add(topTable);
 
-      Table contentTable = new Table(1,1);
-          contentTable.setBorder(1);
-          contentTable.add(getContentHeader(modinfo));
-          contentTable.add(getTotalTable(modinfo));
-          contentTable.add(getContentTable(modinfo));
-          contentTable.setWidth("95%");
-          contentTable.setCellspacing(0);
-          contentTable.setCellpadding(0);
-          contentTable.setBorderColor(NatBusiness.textColor);
-
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
-        sb.add(contentTable);
+        if (product != null) {
+          Table contentTable = new Table(1,1);
+              contentTable.setBorder(1);
+              contentTable.add(getContentHeader(modinfo));
+              contentTable.add(getTotalTable(modinfo));
+              contentTable.add(getContentTable(modinfo));
+              contentTable.setWidth("95%");
+              contentTable.setCellspacing(0);
+              contentTable.setCellpadding(0);
+              contentTable.setBorderColor(NatBusiness.textColor);
+          sb.add(contentTable);
+        }
+        else {
+          sb.add("TEMP - Veldu ferð");
+        }
 
 
 
@@ -101,13 +142,16 @@ public class Booking extends TravelManager {
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           tframeText.addToText(":");
 
-      DropdownMenu trip = new DropdownMenu("trip");
-          trip.addMenuElement("1","Dropdown af ferðum sem eru til :)");
-          trip.addMenuElement("2","Annað dropdown hér ;)");
+      DropdownMenu trip = null;
+      try {
+        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+        trip = new DropdownMenu(Product.getProductEntityName());
+      }
 
-          String parTrip = modinfo.getParameter("trip");
-          if (parTrip != null) {
-              trip.setSelectedElement(parTrip);
+          if (product != null) {
+              trip.setSelectedElement(Integer.toString(product.getID()));
           }
 
       idegaTimestamp stamp = idegaTimestamp.RightNow();
@@ -149,6 +193,7 @@ public class Booking extends TravelManager {
       table.setBorder(0);
       table.setWidth("100%");
 
+
       Text nameText = (Text) theBoldText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.trip","Trip"));
       Text timeText = (Text) theBoldText.clone();
@@ -172,6 +217,29 @@ public class Booking extends TravelManager {
       table.add(timeText,3,1);
       table.add(departureFromText,2,3);
       table.add(departureTimeText,3,3);
+      try {
+
+          Text nameTextC = (Text) theText.clone();
+            nameTextC.setText(service.getName());
+
+          Text timeTextC = (Text) theText.clone();
+            timeTextC.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(modinfo)+" - "+new idegaTimestamp(timeframe.getTo()).getLocaleDate(modinfo) );
+
+          Text depFrom = (Text) theText.clone();
+            depFrom.setText(service.getAddress().getStreetName());
+
+          idegaTimestamp stamp = new idegaTimestamp(service.getDepartureTime());
+          Text depAt = (Text) theText.clone();
+            depAt.setText(TextSoap.addZero(stamp.getHour())+":"+TextSoap.addZero(stamp.getMinute()));
+
+          table.add(nameTextC,2,2);
+          table.add(timeTextC,3,2);
+          table.add(depFrom,2,4);
+          table.add(depAt,3,4);
+
+      }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+      }
 
       return table;
   }
@@ -185,9 +253,6 @@ public class Booking extends TravelManager {
         table.setWidth(6,"200");
 
       int row = 1;
-
-      idegaTimestamp stamp = getIdegaTimestamp(modinfo);
-
 
       table.mergeCells(1,row,5,row);
       table.add(getInqueries(),1,row);
@@ -209,6 +274,8 @@ public class Booking extends TravelManager {
 
 
   public Table getCalendar(ModuleInfo modinfo) {
+      String colorForAvailableDay = NatBusiness.LIGHTORANGE;
+
       Table table = new Table(4,5);
           table.setBorder(0);
           table.setColor(NatBusiness.backgroundColor);
@@ -216,7 +283,6 @@ public class Booking extends TravelManager {
 
 
       idegaCalendar cal = new idegaCalendar();
-      idegaTimestamp stamp = getIdegaTimestamp(modinfo);
 
       Text jan = (Text) theText.clone();
         jan.setText(cal.getShortNameOfMonth(1,modinfo));
@@ -321,12 +387,48 @@ public class Booking extends TravelManager {
           sm.setHeaderColor(NatBusiness.textColor);
           sm.setBodyColor(NatBusiness.textColor);
           sm.setInActiveCellColor(NatBusiness.BLUE);
-          sm.setDayColor(2001,7,1,NatBusiness.RED);
-          sm.setDayColor(2001,7,4,NatBusiness.RED);
-          sm.setDayColor(2001,8,11,NatBusiness.RED);
-          sm.setDayColor(2001,8,14,NatBusiness.RED);
-          sm.setDayColor(2001,7,21,NatBusiness.RED);
-          sm.setDayColor(2001,7,24,NatBusiness.RED);
+          sm.useColorToday(false);
+
+      int[] availableDays = ServiceDay.getDaysOfWeek(service.getID());
+
+      idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
+      idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
+      if (to.isLaterThan(stamp) && stamp.isLaterThan(from)) {
+          int lengthOfMonth = cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear());
+          idegaTimestamp temp = new idegaTimestamp(lengthOfMonth, stamp.getMonth(), stamp.getYear());
+          if (temp.isLaterThan(to)) {
+              int dayOfWeek;
+              for (int i = 1; i <= to.getDay(); i++) {
+                  dayOfWeek = cal.getDayOfWeek(stamp.getYear(), stamp.getMonth(), i);
+                  for (int j = 0; j < availableDays.length; j++) {
+                      if (dayOfWeek == availableDays[j]) {
+                          sm.setDayColor(stamp.getYear() , stamp.getMonth(),i , colorForAvailableDay);
+                      }
+                  }
+              }
+
+
+          }else {
+              for (int i = 0; i < availableDays.length; i++) {
+                  sm.setDayOfWeekColor(availableDays[i],colorForAvailableDay);
+              }
+          }
+
+      }else {
+          idegaTimestamp temp = new idegaTimestamp(timeframe.getFrom());
+          int dayOfWeek;
+
+          while (temp.getMonth() == stamp.getMonth()) {
+            dayOfWeek = cal.getDayOfWeek(temp.getYear(), temp.getMonth(), temp.getDay());
+            for (int i = 0; i < availableDays.length; i++) {
+                if (dayOfWeek == availableDays[i]) {
+                    sm.setDayColor(temp.getYear() , temp.getMonth(),temp.getDay(), colorForAvailableDay);
+                }
+            }
+            temp.addDays(1);
+          }
+      }
+
 
       table.mergeCells(1,5,4,5);
       table.add(sm,1,5);
@@ -404,7 +506,6 @@ public class Booking extends TravelManager {
       table.setWidth(5,cellWidth);
       table.setWidth(6,"200");
 
-      idegaTimestamp stamp = getIdegaTimestamp(modinfo);
 
       Text dateText = (Text) theBoldText.clone();
           dateText.setText(stamp.getLocaleDate(modinfo));
@@ -426,7 +527,10 @@ public class Booking extends TravelManager {
 
       Text dateTextBold = (Text) theSmallBoldText.clone();
       Text nameTextBold = (Text) theSmallBoldText.clone();
+
       Text countTextBold = (Text) theSmallBoldText.clone();
+        countTextBold.setText(Integer.toString(tour.getTotalSeats()));
+
       Text assignedTextBold = (Text) theSmallBoldText.clone();
       Text inqTextBold = (Text) theSmallBoldText.clone();
       Text bookedTextBold = (Text) theSmallBoldText.clone();
@@ -449,6 +553,7 @@ public class Booking extends TravelManager {
       table.setColor(4,row,NatBusiness.YELLOW);
       table.setColor(5,row,NatBusiness.LIGHTGREEN);
 
+      table.add(countTextBold,2,row);
 
       table.setColumnAlignment(1,"left");
       table.setColumnAlignment(2,"center");
@@ -584,8 +689,6 @@ public class Booking extends TravelManager {
 
       return stamp;
   }
-
-
 
 
 

@@ -15,6 +15,8 @@ import com.idega.projects.nat.business.NatBusiness;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 
+import is.idega.travel.data.Service;
+import is.idega.travel.data.Tour;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -98,12 +100,6 @@ public class BookingOverview extends TravelManager {
       String from_time = modinfo.getParameter("active_from");
       if (from_time!= null) {
           stamp = new idegaTimestamp(from_time);
-          /*try {
-              stamp = new idegaTimestamp(from_time);
-          }
-          catch (Exception e) {
-              stamp = idegaTimestamp.RightNow();
-          }*/
       }
       else {
           stamp = idegaTimestamp.RightNow();
@@ -117,13 +113,6 @@ public class BookingOverview extends TravelManager {
       String from_time = modinfo.getParameter("active_to");
       if (from_time!= null) {
           stamp = new idegaTimestamp(from_time);
-          /*try {
-              stamp = new idegaTimestamp(from_time);
-          }
-          catch (Exception e) {
-              stamp = idegaTimestamp.RightNow();
-              stamp.addDays(15);
-          }*/
       }
       else {
           stamp = idegaTimestamp.RightNow();
@@ -319,6 +308,11 @@ public class BookingOverview extends TravelManager {
           int dayOfWeek;
           boolean upALine = false;
 
+          Service service;
+          Tour tour;
+
+          int seatCounter;
+
           while (toStamp.isLaterThan(fromStamp)) {
               dayOfWeek = cal.getDayOfWeek(fromStamp.getYear(), fromStamp.getMonth(), fromStamp.getDay());
               try {
@@ -341,39 +335,57 @@ public class BookingOverview extends TravelManager {
 
               for (int i = 0; i < products.length; i++) {
                   if (TravelStockroomBusiness.getIfDay(products[i].getID(),dayOfWeek) ) {
-                      nameTextBold  = (Text) theSmallBoldText.clone();
-                          nameTextBold.setText(products[i].getName());
-                      countTextBold = (Text) theSmallBoldText.clone();
-                          countTextBold.setText("30");
-                      assignedTextBold = (Text) theSmallBoldText.clone();
-                          assignedTextBold.setText("5");
-                      inqTextBold = (Text) theSmallBoldText.clone();
-                          inqTextBold.setText("6");
-                      bookedTextBold = (Text) theSmallBoldText.clone();
-                          bookedTextBold.setText("17");
-                      availableTextBold = (Text) theSmallBoldText.clone();
-                          availableTextBold.setText("8");
+                      try {
+                          service = tsb.getService(products[i]);
+                          tour = tsb.getTour(products[i]);
 
-                      SubmitButton btnNanar = new SubmitButton("N");
-                      SubmitButton btnBook = new SubmitButton("B");
+                          seatCounter =tour.getTotalSeats();
+
+                          nameTextBold  = (Text) theSmallBoldText.clone();
+                              nameTextBold.setText(service.getName());
+                          countTextBold = (Text) theSmallBoldText.clone();
+                              countTextBold.setText(Integer.toString(tour.getTotalSeats()));
+
+                          assignedTextBold = (Text) theSmallBoldText.clone();
+                              assignedTextBold.setText("0");
+                          inqTextBold = (Text) theSmallBoldText.clone();
+                              inqTextBold.setText("0");
+                          bookedTextBold = (Text) theSmallBoldText.clone();
+                              bookedTextBold.setText("0");
+
+                          seatCounter = seatCounter - 0;
+                          seatCounter = seatCounter - 0;
+                          seatCounter = seatCounter - 0;
 
 
-                      table.add(nameTextBold,2,row);
-                      table.add(countTextBold,3,row);
-                          table.setColor(3,row,NatBusiness.backgroundColor);
-                      table.add(assignedTextBold,4,row);
-                          table.setColor(4,row,NatBusiness.ORANGE);
-                      table.add(inqTextBold,5,row);
-                          table.setColor(5,row,NatBusiness.YELLOW);
-                      table.add(bookedTextBold,6,row);
-                          table.setColor(6,row,NatBusiness.RED);
-                      table.add(availableTextBold,7,row);
-                          table.setColor(7,row,NatBusiness.LIGHTGREEN);
+                          availableTextBold = (Text) theSmallBoldText.clone();
+                              availableTextBold.setText(Integer.toString(seatCounter));
 
-                      table.add(btnNanar,8,row);
-                      table.add(btnBook,8,row);
-                      ++row;
-                      upALine = true;
+                          SubmitButton btnNanar = new SubmitButton("N");
+                          SubmitButton btnBook = new SubmitButton("B");
+
+
+                          table.add(nameTextBold,2,row);
+                          table.add(countTextBold,3,row);
+                              table.setColor(3,row,NatBusiness.backgroundColor);
+                          table.add(assignedTextBold,4,row);
+                              table.setColor(4,row,NatBusiness.ORANGE);
+                          table.add(inqTextBold,5,row);
+                              table.setColor(5,row,NatBusiness.YELLOW);
+                          table.add(bookedTextBold,6,row);
+                              table.setColor(6,row,NatBusiness.RED);
+                          table.add(availableTextBold,7,row);
+                              table.setColor(7,row,NatBusiness.LIGHTGREEN);
+
+                          table.add(btnNanar,8,row);
+                          table.add(btnBook,8,row);
+                          ++row;
+                          upALine = true;
+                      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+                        snfe.printStackTrace(System.err);
+                      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+                        tnfe.printStackTrace(System.err);
+                      }
                   }
               }
               if (upALine) --row;

@@ -27,6 +27,7 @@ public class Tour extends GenericEntity {
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
     addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
     addAttribute(getHotelPickupTimeColumnName(), "Hotel pick-up time", true, true, Timestamp.class);
+    addAttribute(getTotalSeatsColumnName(), "Total seats", true, true, Integer.class);
 
   }
   public String getEntityName() {
@@ -58,10 +59,18 @@ public class Tour extends GenericEntity {
     return (Timestamp) getColumnValue(getHotelPickupTimeColumnName());
   }
 
+  public int getTotalSeats() {
+    return getIntColumnValue(getTotalSeatsColumnName());
+  }
+
+  public void setTotalSeats(int totalSeats) {
+    setColumn(getTotalSeatsColumnName(), totalSeats);
+  }
 
   public static String getTripTableName() {return "TB_TOUR";}
   public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
   public static String getHotelPickupTimeColumnName() {return "HOTEL_PICKUP_TIME";}
-//  public static String getColumnName() {return "";}
+  public static String getTotalSeatsColumnName() {return "TOTAL_SEATS";}
+  //  public static String getColumnName() {return "";}
 
 }

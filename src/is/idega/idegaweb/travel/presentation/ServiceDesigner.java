@@ -144,6 +144,9 @@ public class ServiceDesigner extends TravelManager {
         hotelPickupNo.setOnClick("this.form."+hotelPickupTime.getHourName()+".disabled=true");
         hotelPickupNo.setOnClick("this.form."+hotelPickupTime.getMinuteName()+".disabled=true");
 
+      TextInput numberOfSeats = new TextInput("number_of_seats");
+        numberOfSeats.setAsIntegers("TEMP _ Must be numbers");
+
 
       ++row;
       Text nameText = (Text) theBoldText.clone();
@@ -329,6 +332,13 @@ public class ServiceDesigner extends TravelManager {
 
 
       ++row;
+
+      Text nOSText = (Text) theBoldText.clone();
+        nOSText.setText("TEMP-Number of seats");
+      table.add(nOSText,1,row);
+      table.add(numberOfSeats,2,row);
+
+      ++row;
       table.mergeCells(1,row,2,row);
       table.setAlignment(1,row,"right");
       SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),ServiceAction,"create");
@@ -367,6 +377,8 @@ public class ServiceDesigner extends TravelManager {
       String hotelPickupAddress = modinfo.getParameter("hotel_pickup_address");
       String hotelPickupTime = modinfo.getParameter("hotel_pickup_time");
 
+      String numberOfSeats = modinfo.getParameter("number_of_seats");
+
       boolean yearly = false;
       if (activeYearly != null) {
         if (activeYearly.equals("Y")) yearly = true;
@@ -378,6 +390,11 @@ public class ServiceDesigner extends TravelManager {
         if (!imageId.equals("-1")) {
           iImageId = new Integer(imageId);
         }
+      }
+
+      Integer iNumberOfSeats = null;
+      if (numberOfSeats != null) {
+        iNumberOfSeats = new Integer(numberOfSeats);
       }
 
       idegaTimestamp activeFromStamp = null;
@@ -431,7 +448,7 @@ public class ServiceDesigner extends TravelManager {
       try {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
           tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-          tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
+          tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays, iNumberOfSeats);
         add("TEMP - Service smíðuð");
       }catch (Exception e) {
         e.printStackTrace(System.err);

@@ -27,6 +27,7 @@ public class SmallCalendar extends JModuleObject{
   private String bodyColor = "#184693";
   private String inactiveCellColor = bodyColor;
   private String backgroundColor = "#6785b7";
+  private String todayColor = headerColor;
 
   private int width = 135;
 
@@ -113,8 +114,8 @@ public class SmallCalendar extends JModuleObject{
       t.setFontColor(textColor);
       t.setFontSize(1);
       T.setAlignment(xpos,ypos,"center");
-      if(n == today.getDay() && shadow )
-        T.setColor(xpos,ypos,headerColor);
+      if ((n == today.getDay() && shadow) && (!todayColor.equals("")))
+        T.setColor(xpos,ypos,todayColor);
 
       if (this.daysAreLinks) {
           theLink = new Link(t);
@@ -243,6 +244,16 @@ public class SmallCalendar extends JModuleObject{
         this.showNameOfDays = show;
     }
 
+    public void setColorToday(String color) {
+      this.todayColor = color;
+    }
+
+    public void useColorToday(boolean useColorToday) {
+      if (!useColorToday) {
+          this.todayColor = "";
+      }
+    }
+
     public void setDayColor(int year, int month, int day, String color) {
         boolean perform = false;
         if (stamp != null) {
@@ -254,27 +265,9 @@ public class SmallCalendar extends JModuleObject{
         }
 
         if (perform) {
+            int[] xy = this.getXYPos(year, month, day);
 
-            int startingX = 1;
-            int startingY = 1;
-            if (showNameOfDays) {
-                ++startingY;
-            }
-
-            int daynr = cal.getDayOfWeek(year,month,1);
-
-            int x = ((daynr-1) + day ) % 7;
-            int y = (((daynr-1) + day ) / 7) +1;
-                if (x == 0) {
-                    x=7;
-                    --y;
-                }
-
-            x += (startingX -1);
-            y += (startingY -1);
-
-
-            T.setColor(x,y,color);
+            T.setColor(xy[0],xy[1],color);
 
         }
     }
@@ -283,27 +276,43 @@ public class SmallCalendar extends JModuleObject{
         this.setDayColor(stamp.getYear() ,stamp.getMonth(),stamp.getDate() ,color);
     }
 
+
     public void setDayOfWeekColor(int dayOfWeek, String color) {
+
         int startingY = 1;
         if (showNameOfDays) {
             ++startingY;
         }
-        for (int i = startingY; i <= this.getMaxYPos(); i++) {
+        int[] lastDay = getMaxPos();
+        int maxX = lastDay[0];
+        int maxY = lastDay[1];
+
+        if (maxX < dayOfWeek) --maxY;
+
+
+        for (int i = startingY; i <= maxY; i++) {
           T.setColor(dayOfWeek,i,color);
         }
 
     }
 
-
-    private int getMaxYPos() {
+    /**
+     * returns the x and y pos of the last day of the month
+     */
+    private int[] getMaxPos() {
         int day = cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear());
-        int daynr = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth() ,1);
 
+        return this.getXYPos(stamp.getYear(), stamp.getMonth() ,day);
+    }
+
+    private int[] getXYPos(int year, int month, int day) {
         int startingX = 1;
         int startingY = 1;
         if (showNameOfDays) {
             ++startingY;
         }
+
+        int daynr = cal.getDayOfWeek(year,month,1);
 
         int x = ((daynr-1) + day ) % 7;
         int y = (((daynr-1) + day ) / 7) +1;
@@ -315,8 +324,7 @@ public class SmallCalendar extends JModuleObject{
         x += (startingX -1);
         y += (startingY -1);
 
-
-        return y;
+        int[] returner = {x,y};
+        return returner;
     }
-
 }
