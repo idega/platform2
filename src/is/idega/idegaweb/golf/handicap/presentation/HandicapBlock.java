@@ -23,6 +23,9 @@ public class HandicapBlock extends GolfBlock {
 		Strokes strokes = getHandicapBusiness(iwc).getStrokes(new Integer(1), new Integer(1));
 		add("Strokes: "+strokes.getStrokes());
 		add("<br>Points: "+strokes.getPoints());
+		
+		getHandicapBusiness(iwc).getScorecards();
+		add("<br>Number of strokes: "+getHandicapBusiness(iwc).getStrokesCountByScorecard(new Integer(1)));
 	}
 	
 	/* (non-Javadoc)

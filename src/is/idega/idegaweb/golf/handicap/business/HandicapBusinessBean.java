@@ -21,6 +21,7 @@ import javax.ejb.FinderException;
 
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 
 /**
@@ -54,8 +55,21 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 		return getScorecardHome().findAllByUser(userID);
 	}
 
+	public Collection getScorecards() throws FinderException {
+		return getScorecardHome().findAll();
+	}
+
 	public Collection getStrokesByScorecard(Object scorecardID) throws FinderException {
 		return getStrokesHome().findAllByScorecard(scorecardID);
+	}
+	
+	public int getStrokesCountByScorecard(Object scorecardID) {
+		try {
+			return getStrokesHome().getCount(scorecardID);
+		}
+		catch (IDOException e) {
+			return -1;
+		}
 	}
 	
 	public Strokes getStrokes(Object scorecardID, Object holeID) throws FinderException {
