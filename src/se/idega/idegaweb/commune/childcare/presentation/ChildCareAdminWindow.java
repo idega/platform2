@@ -801,9 +801,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		Table dropdownTable = new Table();
 		int dropRow = 1;
 		
-//		DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
+		schoolClasses.addEmptyElement(localize("child_care.choose_schooltype","Choose here"), localize("child_care.choose_schoolgroup","Choose here"));
+		
+		//DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
 		//DropdownMenu schoolTypes = schoolClasses.getPrimaryDropdown();
-		schoolClasses.getPrimaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schooltype","Choose here"));
+		//schoolClasses.getPrimaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schooltype","Choose here"));
 		schoolClasses.getPrimaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
 		
 		dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
@@ -812,7 +814,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		//DropdownMenu groups = getGroups(-1, -1)
 		//DropdownMenu groups = schoolClasses.getSecondaryDropdown();
-		schoolClasses.getSecondaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schoolgroup","Choose here"));
+		//schoolClasses.getSecondaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schoolgroup","Choose here"));
 		schoolClasses.getSecondaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
 		
 		dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
