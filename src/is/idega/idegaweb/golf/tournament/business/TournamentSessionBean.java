@@ -65,6 +65,7 @@ public class TournamentSessionBean extends IBOSessionBean implements TournamentS
 	
 	public void setTournamentID(int tournamentID) {
 		this.tournamentID = tournamentID;
+		setTournament(null);
 	}
 	
 	public void setStartDate(Date startDate) {
