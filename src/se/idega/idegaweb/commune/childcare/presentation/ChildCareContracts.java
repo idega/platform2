@@ -141,7 +141,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate());
 			
 			if (students != null){
-				ChildCareContract contract;
+				ChildCareContract contract=null;
 				ChildCareApplication application;
 				IWTimestamp created;
 				IWTimestamp validFrom;
@@ -163,10 +163,13 @@ public class ChildCareContracts extends ChildCareBlock {
 					//registered = new IWTimestamp(student.getRegisterDate());
 					
 					
-					contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
-					if (contract == null)
-						contract = getBusiness().getLatestContract(((Integer)child.getPrimaryKey()).intValue());
+					//contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
 					
+					application = getBusiness().getApplicationForChildAndProvider(((Integer)child.getPrimaryKey()).intValue(), getSession().getChildCareID());
+					//if (contract == null)
+					//	contract = getBusiness().getLatestContract(((Integer)child.getPrimaryKey()).intValue());
+					if (application != null)
+						contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 
 					if (useStyleNames()) {
 						if (row % 2 == 0) {
@@ -185,9 +188,9 @@ public class ChildCareContracts extends ChildCareBlock {
 							table.setRowColor(row, getZebraColor2());
 					}
 					
-					if (contract != null) {
+					if (contract != null && application != null) {
 						//student = contract.getSchoolClassMember();
-						application = contract.getApplication();
+						//application = contract.getApplication();
 						//hasComments = true;
 						
 						created = new IWTimestamp(contract.getCreatedDate());
