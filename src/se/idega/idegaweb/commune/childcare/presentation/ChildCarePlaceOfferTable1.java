@@ -212,14 +212,10 @@ class ChildCarePlaceOfferTable1 extends Table {
 			RadioButton rb1 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.YES);
 			RadioButton rb2 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO_NEW_DATE);
 			RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
+			rb3.setMustBeSelected(this._page.localize("child_care.must_select_offer_option", "You must select an offer option."));
 
-			if (disableAccept) {
+			if (disableAccept)
 				rb1.setDisabled(true);
-				rb2.setSelected();
-			}
-			else {
-				rb1.setSelected();
-			}
 
 			DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
 			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
