@@ -23,7 +23,7 @@ import java.lang.StringBuffer;
 
 public class ApplicationFinder {
 
-  public static List ListOfSubject(){
+  public static List listOfSubject(){
     try{
       return EntityFinder.findAll(new ApplicationSubject());
     }
