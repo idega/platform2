@@ -15,7 +15,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.IFrame;
-import com.idega.presentation.ui.TreeViewer;
 
 /**
  * This class does something very clever.....
@@ -61,8 +60,10 @@ public class HelpTree extends Block {
 		f.setScrolling(IFrame.SCROLLING_YES);
 
 		HelpNode node = loadTree(iwc);		
-		TreeViewer tree = TreeViewer.getTreeViewerInstance(node,iwc);
+		HelpTreeViewer tree = (HelpTreeViewer)HelpTreeViewer.getTreeViewerInstance(node,iwc);
 		tree.setDefaultOpenLevel(1);
+		tree.setWrap(true);
+		tree.setMaxNodeNameLength(20);
 		Link link = new Link();
 		link.setURL("#");
 		link.setNoTextObject(true);

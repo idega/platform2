@@ -9,7 +9,6 @@
 package com.idega.block.help.presentation;
 
 import com.idega.presentation.IWContext;
-//import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Window;
 
 /**
@@ -29,7 +28,5 @@ public class HelpTreeWindow extends Window {
 	
 	public void main(IWContext iwc) {
 		add(new HelpTree());
-		
-		//Link l = new Link();
 	}
 }
