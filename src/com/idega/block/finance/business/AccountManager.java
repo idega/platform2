@@ -34,12 +34,12 @@ public class AccountManager {
     return A;
   }
 
-  public  static Account makeNewAccount(int iMemberId, String sName,String sExtra, int iCashierId){
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId){
     Account A = new Account();
     A.setBalance(0);
     A.setCreationDate(idegaTimestamp.getTimestampRightNow() );
     A.setLastUpdated(idegaTimestamp.getTimestampRightNow()) ;
-//    A.setMemberId(iMemberId);
+    A.setUserId(iUserId);
     A.setName(sName) ;
     A.setExtraInfo(sExtra);
     A.setCashierId(iCashierId);
