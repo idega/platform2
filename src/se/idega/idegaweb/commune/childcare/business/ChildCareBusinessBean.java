@@ -2110,7 +2110,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
                    
 				}
 				addContractToArchive(-1,oldArchiveID,true, application,contractID, validFrom.getDate(), employmentTypeID,invoiceReceiverId,user,createNewStudent,schoolTypeId,schoolClassId, oldStudent);
-				
+				application.store();
 			
 			}
 			transaction.commit();
