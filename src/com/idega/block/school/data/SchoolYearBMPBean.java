@@ -102,7 +102,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
 	
   public Collection ejbFindAllSchoolYears()throws javax.ejb.FinderException {
     IDOQuery sql = idoQuery();
-    sql.appendSelectAllFrom(getEntityName()).appendOrderBy(AGE);
+    sql.appendSelectAllFrom(getEntityName()).appendOrderBy(NAME);
     return super.idoFindPKsBySQL(sql.toString());
   }
   
