@@ -80,6 +80,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	protected static final String SMALL_TEXT_STYLE = "SmallTextStyle";
 	protected static final String HEADING_STYLE = "HeadingStyle";
 	protected static final String INFORMATION_STYLE = "InformationStyle";
+	protected static final String TABLE_TEXT_STYLE = "TableTextStyle";
 
 	protected static final String LIGHT_ROW_STYLE = "LightRowStyle";
 	protected static final String DARK_ROW_STYLE = "DarkRowStyle";
@@ -248,11 +249,11 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
 
 					int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
-					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), TEXT_STYLE);
+					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), TABLE_TEXT_STYLE);
 
 					ForumData newestThread = forumBusiness.getNewestThreads(topic);
 					if (newestThread != null) {
-						lastUpdatedText = getThreadDate(iwc, newestThread);
+						lastUpdatedText = getThreadDate(iwc, newestThread, TABLE_TEXT_STYLE);
 					}
 					else
 						lastUpdatedText = null;
@@ -353,7 +354,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 				table.add(getUser(thread), 1, row);
 				table.add(formatText("," + Text.NON_BREAKING_SPACE), 1, row);
-				table.add(getThreadDate(iwc, thread), 1, row);
+				table.add(getThreadDate(iwc, thread, TEXT_STYLE), 1, row);
 				table.add(Text.getBreak(), 1, row);
 				table.add(getThreadLink(thread, TOPIC_LINK_STYLE), 1, row);
 				if (_showResponses) {
@@ -457,12 +458,12 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				String name = user.getName();
 				if (user.getDisplayName() != null && user.getDisplayName().length() > 0)
 					name = user.getDisplayName();
-				Link link = getStyleLink(name, THREAD_LINK_STYLE);
+				Link link = getStyleLink(name, LINK_STYLE);
 				link.setURL("mailto:" + mail.getEmailAddress());
 				return link;
 			}
 			else if (user != null) {
-				Text userText = formatText(user.getName(), TEXT_STYLE);
+				Text userText = formatText(user.getName(), INFORMATION_STYLE);
 				return userText;
 			}
 		}
@@ -479,15 +480,15 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return text;
 	}
 
-	protected Text getThreadDate(IWContext iwc, ForumData thread) {
+	protected Text getThreadDate(IWContext iwc, ForumData thread, String style) {
 		IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
-		return getFormattedDate(stamp, iwc);
+		return getFormattedDate(stamp, iwc, style);
 	}
 	
-	protected Text getFormattedDate(IWTimestamp stamp, IWContext iwc) {
+	protected Text getFormattedDate(IWTimestamp stamp, IWContext iwc, String style) {
 		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 		Date date = new Date(stamp.getTimestamp().getTime());
-		return formatText(format.format(date));
+		return formatText(format.format(date), style);
 	}
 
 	private ForumTree getForumTree(ForumData[] threads) {
@@ -512,14 +513,14 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		tree.setExtraColumnWidth(2, _replyWidth);
 		tree.setExtraColumnWidth(3, _dateWidth);
 		tree.setIconDimensions("15", "12");
-		tree.setTreeHeading(1, formatText(_iwrb.getLocalizedString("thread", "Thread"), HEADING_STYLE));
-		tree.setExtraColumnHeading(1, formatText(_iwrb.getLocalizedString("author", "Author"), HEADING_STYLE));
-		tree.setExtraColumnHeading(2, formatText(_iwrb.getLocalizedString("replies", "Replies"), HEADING_STYLE));
-		tree.setExtraColumnHeading(3, formatText(_iwrb.getLocalizedString("date", "Date"), HEADING_STYLE));
+		tree.setTreeHeading(1, formatText(_iwrb.getLocalizedString("thread", "Thread"), HEADER_STYLE));
+		tree.setExtraColumnHeading(1, formatText(_iwrb.getLocalizedString("author", "Author"), HEADER_STYLE));
+		tree.setExtraColumnHeading(2, formatText(_iwrb.getLocalizedString("replies", "Replies"), HEADER_STYLE));
+		tree.setExtraColumnHeading(3, formatText(_iwrb.getLocalizedString("date", "Date"), HEADER_STYLE));
 		tree.setExtraColumnHorizontalAlignment(2, "center");
 		tree.setToShowHeaderRow(true);
 		tree.setTreePadding(2);
-		tree.setTextStyleName(getStyleName(TEXT_STYLE));
+		tree.setTextStyleName(getStyleName(TABLE_TEXT_STYLE));
 		tree.setLinkStyleName(THREAD_LINK_STYLE);
 		tree.setLinkPage(getThreadPage());
 		tree.setObjectInstanceID(_objectID);
@@ -555,7 +556,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
 		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 		Date date = new Date(stamp.getTimestamp().getTime());
-		Text dateText = formatText(format.format(date));
+		Text dateText = formatText(format.format(date), INFORMATION_STYLE);
 
 		table.add(image, 1, 1);
 		table.add(headline, 1, 1);
@@ -838,6 +839,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		map.put(SMALL_TEXT_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000;");
 		map.put(HEADING_STYLE, "font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold");
 		map.put(INFORMATION_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #999999;");
+		map.put(TABLE_TEXT_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #999999;");
 
 		map.put(LINK_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: none;");
 		map.put(LINK_STYLE+":hover", "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: underline;");
