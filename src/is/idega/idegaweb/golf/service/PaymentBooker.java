@@ -9,8 +9,6 @@ import is.idega.idegaweb.golf.templates.*;
 import is.idega.idegaweb.golf.*;
 import com.idega.util.*;
 import com.idega.io.FileSaver;
-import java.math.*;
-import com.idega.jmodule.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat.*;
 import java.sql.*;
