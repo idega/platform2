@@ -171,6 +171,7 @@ public class UserEditor extends Block {
 	private int postalnameInputLength = 30;
 	private int phoneInputLength = 30;
 	private boolean allowPersonalIdEdit = true;
+	private boolean warnIfPostalExists = false;
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
@@ -1093,9 +1094,10 @@ public class UserEditor extends Block {
 							}
 							catch (FinderException e2) {
 							}
-							if (postalExists
+							if (warnIfPostalExists && postalExists
 								&& (isNewValue(iwc, prm_mainaddress_postal_code)
 									|| isNewValue(iwc, prm_mainaddress_postal_name))) {
+								
 								String mainPostalExists =
 									iwrb.getLocalizedString(
 										"mbe.warning.zip_code_and_city_already_exist",
@@ -1190,7 +1192,7 @@ public class UserEditor extends Block {
 							}
 							catch (FinderException e2) {
 							}
-							if (postalExists
+							if (warnIfPostalExists && postalExists
 								&& (isNewValue(iwc, prm_coaddress_postal_code)
 									|| isNewValue(iwc, prm_coaddress_postal_name))) {
 								String mainPostalExists =
@@ -1875,6 +1877,16 @@ public class UserEditor extends Block {
 	 */
 	public void setPhoneInputLength(int phoneInputLength) {
 		this.phoneInputLength = phoneInputLength;
+	}
+	
+	public void setWarnIfPostalExists(boolean flag){
+		warnIfPostalExists = flag;
+	}
+	
+	public boolean isWarnIfPostalExists(){
+		return warnIfPostalExists;
+	}
+	}
 	}
 
 }
