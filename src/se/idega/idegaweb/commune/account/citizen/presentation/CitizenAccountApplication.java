@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/04/06 12:36:54 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/06 13:32:31 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.69 $
+ * @version $Revision: 1.70 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -738,7 +738,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 	
 	private TextInput getSingleInput(IWContext iwc, final String paramId, final int maxLength, boolean notEmpty) {
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(paramId));
-		textInput.setLength(maxLength);
+		textInput.setLength (maxLength);
+		textInput.setMaxlength (maxLength);
+		textInput.setSize (maxLength);
 		if (notEmpty) {
 			final String fieldCanNotBeEmpty = localize(ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY, ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT);
 			String name = localize(paramId, paramId);
