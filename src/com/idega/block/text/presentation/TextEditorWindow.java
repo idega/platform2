@@ -92,7 +92,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
   public TextEditorWindow(){
     super();
     setWidth(570);
-    setHeight(430);
+    setHeight(550);
     setResizable(true);
     setUnMerged();
   }

@@ -173,18 +173,25 @@ public class TextFormatter {
    //Töflugerð lokið
 
     //Búa til tengla
-    Vector linkVector = createTextLink(textBody);
-    for (int a = 0; a < linkVector.size(); a++) {
-      String link = linkVector.elementAt(a).toString();
-      int comma = link.indexOf(",");
-      link = "<a href=\"" + link.substring(comma + 1, link.length()) + "\" target=\"_blank\">" + link.substring(0, comma) + "</a>";
-      textBody = TextSoap.findAndReplace(textBody, "Link(" + linkVector.elementAt(a).toString() + ")", link);
-    }
 
-    //Almenn hreinsun
-    textBody = TextSoap.findAndReplace(textBody,"*","<li>");
-    textBody = TextSoap.findAndReplace(textBody, "\r\n", "<br>");
-    textBody = TextSoap.findAndReplace(textBody, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+
+      Vector linkVector = createTextLink(textBody);
+      for (int a = 0; a < linkVector.size(); a++) {
+        String link = linkVector.elementAt(a).toString();
+        int comma = link.indexOf(",");
+        link = "<a href=\"" + link.substring(comma + 1, link.length()) + "\" target=\"_blank\">" + link.substring(0, comma) + "</a>";
+        textBody = TextSoap.findAndReplace(textBody, "Link(" + linkVector.elementAt(a).toString() + ")", link);
+      }
+
+      //Almenn hreinsun
+      textBody = TextSoap.findAndReplace(textBody,"*","<li>");
+
+      if( textBody.indexOf("<")==-1 ){
+        textBody = TextSoap.findAndReplace(textBody, "\r\n", "<br>");
+      }
+
+      textBody = TextSoap.findAndReplace(textBody, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+
 
     return textBody;
   }
