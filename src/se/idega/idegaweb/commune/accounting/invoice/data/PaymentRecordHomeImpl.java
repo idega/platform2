@@ -41,6 +41,13 @@ public PaymentRecord findByPostingStrings(java.lang.String p0,java.lang.String p
 	return this.findByPrimaryKey(pk);
 }
 
+public PaymentRecord findByPostingStringsAndRuleSpecType(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndRuleSpecType(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public PaymentRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PaymentRecord) super.findByPrimaryKeyIDO(pk);
  }

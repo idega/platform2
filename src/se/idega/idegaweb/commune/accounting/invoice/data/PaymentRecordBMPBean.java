@@ -214,15 +214,34 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	
 	/**
 	 * Finds a payment record for the given posting strings
-	 * @param paymentHeader
+	 * @param ownPostingString
+	 * @param doublePostingString 
 	 * @param ruleSpecType
 	 * @return
 	 * @throws FinderException if none was found
 	 */
 	public Integer ejbFindByPostingStrings(String ownPostingString,String doublePostingString) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
 		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
+		return (Integer)idoFindOnePKByQuery(sql);
+	}
+	
+	/**
+	 * Finds a payment record for the given posting strings and the rule specification type
+	 * @param ownPostingString
+	 * @param doublePostingString 
+	 * @param ruleSpecType
+	 * @return
+	 * @throws FinderException if none was found
+	 */
+	public Integer ejbFindByPostingStringsAndRuleSpecType(String ownPostingString,String doublePostingString,String ruleSpecType) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
+		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
+		sql.appendAndEqualsQuoted(COLUMN_RULE_SPEC_TYPE,ruleSpecType);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
