@@ -32,7 +32,6 @@ import is.idega.idegaweb.campus.block.application.business.CampusApplicationFind
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.block.request.data.Request;
-import is.idega.idegaweb.campus.block.request.data.RequestType;
 import is.idega.idegaweb.campus.block.request.presentation.RequestView;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.AccountManager;
@@ -326,15 +325,13 @@ public static final String darkRed = CampusColors.DARKRED;
 
     List requests = RequestFinder.getRequests(_userID);
     Request request = null;
-    RequestType requestType = null;
     RequestHolder holder = null;
 
     if ( requests != null ) {
       for ( int a = 1; a < requests.size(); a++ ) {
         holder = (RequestHolder) requests.get(a);
         request = holder.getRequest();
-        requestType = holder.getRequestType();
-        table.add(formatText(requestType.getName()),1,row);
+//        table.add(formatText(requestType.getName()),1,row);
         table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
         table.add(formatText(request.getStatus()),3,row);
         row++;

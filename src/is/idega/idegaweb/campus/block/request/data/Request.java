@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.3 2002/01/14 11:28:57 palli Exp $
+ * $Id: Request.java,v 1.4 2002/01/14 11:37:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package is.idega.idegaweb.campus.block.request.data;
 
 import com.idega.data.GenericEntity;
 import com.idega.core.user.data.User;
-import is.idega.idegaweb.campus.block.request.data.RequestType;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 

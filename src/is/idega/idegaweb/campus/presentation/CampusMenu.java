@@ -177,11 +177,11 @@ public class CampusMenu extends Block implements Campus{
 
     row++;
     /** @todo move away */
-    Link Requests = new Link(iwrb.getLocalizedString("requests","Beiðnir"));
+/*    Link Requests = new Link(iwrb.getLocalizedString("requests","Beiðnir"));
     Requests.addParameter(strAction,NOACT);
     Requests.addParameter(getParameter(REQUESTS));
     LinkTable.add(Requests,1,row);
-    LinkTable.setAlignment(1,row,"center");
+    LinkTable.setAlignment(1,row,"center");*/
     add( LinkTable);
   }
 
