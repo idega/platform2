@@ -5,23 +5,21 @@
 package com.idega.block.dataquery.business;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.SQLException;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.block.dataquery.data.xml.*;
+import com.idega.block.dataquery.data.UserQuery;
+import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.media.business.MediaBusiness;
-import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
-import com.idega.util.xml.XMLData;
+import com.idega.data.IDOStoreException;
+import com.idega.presentation.IWContext;
+
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: </p>
@@ -30,29 +28,29 @@ import com.idega.util.xml.XMLData;
  * @author aron 
  * @version 1.0
  */
-public class QuerySessionBean extends IBOSessionBean implements QuerySession {
+public class QuerySessionBean extends IBOSessionBean implements QuerySession   {
+	
+	
 	private QueryHelper helper = null;
-	private int xmlFileID = -1;
+	private int userQueryID = -1;
+	
 	public QueryService getQueryService() throws RemoteException {
-		return (QueryService) this.getServiceInstance(QueryService.class);
+		return (QueryService) getServiceInstance(QueryService.class);
 	}
 	public void createNewQuery() throws RemoteException {
 		helper = getQueryService().getQueryHelper();
 	}
-	public void createQuery(int XMLFileID) throws RemoteException {
-		helper = getQueryService().getQueryHelper(XMLFileID);
-		this.xmlFileID = XMLFileID;
+	public void createQuery(int userQueryID, IWContext iwc) throws RemoteException, FinderException {
+		helper = getQueryService().getQueryHelper(userQueryID, iwc);
+		this.userQueryID = userQueryID;
 	}
-	public QueryHelper getQueryHelper() {
+	public QueryHelper getQueryHelper(IWContext iwc) throws RemoteException, FinderException {
 		if (helper == null) {
-			try {
-				if (xmlFileID > 0)
-					createQuery(xmlFileID);
-				else
-					createNewQuery();
+			if (userQueryID > 0) {
+				createQuery(userQueryID, iwc);
 			}
-			catch (RemoteException e) {
-				e.printStackTrace();
+			else {
+				createNewQuery();
 			}
 		}
 		return helper;
@@ -60,53 +58,24 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 	/**
 	 * @param i
 	 */
-	public void setXmlFileID(int i){
-		xmlFileID = i;
+	public void setUserQueryID(int i){
+		userQueryID = i;
 	}
-	public ICFile storeQuery(String name,int folderID, boolean isPrivate)  throws IOException {
-		XMLData data = XMLData.getInstanceWithoutExistingFile();
-		if(xmlFileID>0){
-			data.setXmlFileId(xmlFileID);
-		}
-		// name must be stored within the document because it is the identifier when using the query as input for
-		// another query
-		helper.setName(name);
-		data.setDocument(helper.createDocument());
-		data.setName(name);
-		ICFile query =  data.store();
-		User currentUser = getUserContext().getCurrentUser();
-		UserBusiness userBusiness = getUserBusiness();
-		// TODO: thi solve problem with group types
-		String[] groupTypes = 
-			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
-		Group group = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), getUserContext());
-		if (group == null) {
-			List groupType = new ArrayList();
-			groupType.add("general");
-			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType, getUserContext());
-		}
-		String suffix  = (isPrivate) ? "_private" : "_public";
-		String groupName = group.getPrimaryKey().toString();
-		if(folderID>0 && query !=null) {
-			String folderName = new StringBuffer(groupName).append(suffix).toString();
-			ICFile subFolder = getFile(folderName);
-			if (subFolder == null) {
-				try {
-					subFolder = MediaBusiness.createSubFolder(folderID, folderName);
-				}
-				catch (Exception ex)	{
-					//TODO: thi solve this exception problem in a right way
-					throw new IOException("Subfolder couldn't be created");
-				}
-			}
-			int subFolderInt = Integer.parseInt(subFolder.getPrimaryKey().toString());
-			MediaBusiness.moveMedia(((Integer)query.getPrimaryKey()).intValue(), subFolderInt);
-		}			
-		// add id to current id and render the document from it
-		createQuery(((Integer)query.getPrimaryKey()).intValue());
-		return query;
 	
+	public UserQuery storeQuery(String name,boolean isPrivate, boolean overwriteQuery)  throws IDOStoreException, RemoteException, IOException, CreateException, SQLException, FinderException {
+		UserQuery userQuery = getQueryService().storeOrUpdateQuery(name, helper, isPrivate, overwriteQuery,  getUserContext());
+		// add id to current id and render the document from it
+		//createQuery(((Integer)query.getPrimaryKey()).intValue());
+		// temporary
+		int fileId = ((Integer) userQuery.getSource().getPrimaryKey()).intValue();
+		MediaBusiness.moveMedia(fileId, getFile("query").getNodeID());
+		return userQuery;
 	}
+	
+			
+	
+
+	
 	
 	private ICFile getFile(String name)	{
   	try {
@@ -132,30 +101,5 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 		}
 	}
 	
-// unused method	
-//  private ICFile getNewXMLFile()  {
-//    try {
-//      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-//      ICFile xmlFile = (ICFile) home.create();
-//      return xmlFile;
-//    }
-//    // FinderException, RemoteException
-//    catch (Exception ex)  {
-//      throw new RuntimeException("[XMLData]: Message was: " + ex.getMessage());
-//    }
-//    
-//  }
-	
-	
-	
-	public UserBusiness getUserBusiness()	{
-		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
-		}
-		catch (RemoteException ex)	{
-      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
-		}
-	}
 	
 }

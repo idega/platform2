@@ -7,7 +7,9 @@
 package com.idega.block.dataquery.business;
 
 
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,40 +21,78 @@ import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.QueryResult;
+import com.idega.block.dataquery.data.QuerySequence;
+import com.idega.block.dataquery.data.QuerySequenceHome;
+import com.idega.block.dataquery.data.UserQuery;
+import com.idega.block.dataquery.data.UserQueryHome;
 import com.idega.block.dataquery.data.sql.SQLQuery;
-import com.idega.block.dataquery.data.xml.*;
+import com.idega.block.dataquery.data.xml.QueryEntityPart;
+import com.idega.block.dataquery.data.xml.QueryFieldPart;
+import com.idega.block.dataquery.data.xml.QueryHelper;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
-import com.idega.core.data.IWTreeNode;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.EntityAttribute;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
+import com.idega.util.StringHandler;
 import com.idega.util.xml.XMLData;
-import com.idega.util.xml.XMLFile;
 
 /**
  * @author aron
+ * @author thomas
  */
-public class QueryServiceBean extends IBOServiceBean   implements QueryService {
+public class QueryServiceBean extends IBOServiceBean implements QueryService  {
+	
+	private static final String COUNTER_TOKEN = "_"; 
+	private static final String DEFAULT_QUERY_NAME = "my query";
 
-	public QueryHelper getQueryHelper(XMLFile xmlFile){
-		XMLData data = XMLData.getInstanceForFile(xmlFile);
-		return new QueryHelper(data.getDocument());
+	
+	private UserQueryHome userQueryHome;
+	private QuerySequenceHome querySequenceHome;
+
+	public QueryHelper getQueryHelper(UserQuery userQuery, IWContext iwc ) throws NumberFormatException, RemoteException, FinderException{
+		XMLData data = XMLData.getInstanceForFile(userQuery.getSource());
+		return new QueryHelper(data, userQuery, iwc);
 	}
 	
-	public QueryHelper getQueryHelper(int xmlFileID){
-		XMLData data = XMLData.getInstanceForFile(xmlFileID);
-		return new QueryHelper(data.getDocument());
+	public QueryHelper getQueryHelper(int userQueryID, IWContext  iwc) throws NumberFormatException, RemoteException, FinderException{
+		UserQuery userQuery = getUserQueryHome().findByPrimaryKey(new Integer(userQueryID));
+		return getQueryHelper(userQuery, iwc);
 	}
+	
+	public QueryHelper getQueryHelperByNameAndPathToQuerySequence(String name, String path, IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
+		String id = StringHandler.substringEnclosedBy(path, "(",")");
+		QuerySequence querySequence;
+		if (id == null) {
+			querySequence = getQuerySequenceHome().findByPrimaryKey(new Integer(id));
+		}
+		else {
+			querySequence = getQuerySequenceHome().findByName(name);
+		}
+		UserQuery userQuery = querySequence.getRealQuery();
+		return getQueryHelper(userQuery, iwc);
+	}
+		
 	
 	public QueryHelper getQueryHelper(){
 		return new QueryHelper();
@@ -178,10 +218,6 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 			return entity.getAttributes();
 	}
 	
-	private GenericEntity getEntity(Class entityClass){
-			return (GenericEntity) GenericEntity.getStaticInstanceIDO(entityClass);
-		}
-		
 	public QueryEntityPart getEntityTree(QueryHelper helper,int level){
 		if(helper.hasSourceEntity()){		
 			QueryEntityPart source = helper.getSourceEntity();
@@ -296,10 +332,6 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 	}
 
 	
-	private IWTreeNode getTreeNode(QueryEntityPart entityPart){
-		return new IWTreeNode(entityPart.getName(),entityPart.encode().hashCode(),entityPart);
-	}
-	
 	public Collection getListOfFieldParts(IWResourceBundle iwrb,QueryEntityPart entityPart, boolean expertMode){
 		Vector list = new Vector();
 		Iterator iter = getEntityAttributes(entityPart).iterator();
@@ -317,20 +349,22 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 	}
 	
 	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName, String path, EntityAttribute attribute){
-		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
+		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName(), null, null);
 	}
 	
 	
-	public QueryResult generateQueryResult(Integer queryID, IWContext iwc) throws QueryGenerationException{
-		
+	public QueryResult generateQueryResult(Integer userQueryID, IWContext iwc) throws QueryGenerationException{	
 		try {
-			QueryHelper queryHelper = getQueryHelper(queryID.intValue());
+			QueryHelper queryHelper = getQueryHelper(userQueryID.intValue(),iwc);
 			QueryToSQLBridge bridge = getQueryToSQLBridge();
 			SQLQuery query = bridge.createQuerySQL(queryHelper, iwc);
 			System.out.println("QueryServece#generateQueryResult - SQL: ");
 			//System.out.println(sqlStatement);
 			QueryResult queryResult = bridge.executeQueries(query);
 			return queryResult;
+		}
+		catch (FinderException finderEx) {
+			throw new QueryGenerationException(finderEx.getMessage());
 		}
 		catch (RemoteException e) {
 			throw new QueryGenerationException(e.getMessage());
@@ -340,6 +374,222 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 	public QueryToSQLBridge getQueryToSQLBridge() throws RemoteException {
 		return (QueryToSQLBridge)getServiceInstance(QueryToSQLBridge.class);
 	  }
+	
+	/**
+	 *  queryFile might be null.
+	 */ 
+	public UserQuery storeOrUpdateQuery(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) 
+			throws IDOStoreException, IOException, CreateException, SQLException, FinderException {
+		Group group = getTopGroupForCurrentUser(iwuc);
+		name = modifyNameIfNameAlreadyExists(name, group);
+		// get user query, get xml data
+		XMLData data = null;
+		UserQuery userQuery = queryHelper.getUserQuery();
+		if (userQuery !=null  && overwriteQuery) {
+			// case: query is modified and should be overwritten
+			data = XMLData.getInstanceForFile(userQuery.getSource());
+			// update user query and data
+			// store old name before updating
+			String oldName = userQuery.getName();
+			updateQueryData(name, userQuery, data, queryHelper, group, isPrivate);
+			// do we have to create a new query sequence?
+			if (!oldName.equals(name)) {
+				createQuerySequence(name, userQuery, queryHelper);
+			}
+		}
+		else {
+			// case: brand new query
+			userQuery = getUserQueryHome().create();
+			// store to be sure that the primary key is set !
+			data = XMLData.getInstanceWithoutExistingFile();
+			// update user query and data
+			updateQueryData(name, userQuery, data, queryHelper, group, isPrivate);
+			createQuerySequence(name, userQuery, queryHelper);
+		}
+		return userQuery;
+	}
+	
+	
+	private Group getTopGroupForCurrentUser(IWUserContext iwuc) throws RemoteException {
+		User currentUser = iwuc.getCurrentUser();
+		UserBusiness userBusiness = getUserBusiness();
+		// TODO: thi solve problem with group types
+		String[] groupTypes = 
+			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+		Group group = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwuc);
+		if (group == null) {
+			List groupType = new ArrayList();
+			groupType.add("general");
+			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType, iwuc);
+		}
+		return group;
+	}
 
+	
+	
+	
+	public UserQuery storeQuery(String name, ICFile file, boolean isPrivate, IWUserContext iwuc) throws CreateException, FinderException, RemoteException {
+		Group group = getTopGroupForCurrentUser(iwuc);
+		name = modifyNameIfNameAlreadyExists(name, group);
+		UserQuery userQuery = getUserQueryHome().create();
+		userQuery.setName(name);
+		userQuery.setOwnership(group);
+		userQuery.setSource(file);
+		userQuery.setOwnership(group);
+		if (isPrivate) {
+			userQuery.setPermission(QueryConstants.PERMISSION_PRIVATE_QUERY);
+		}
+		else {
+			userQuery.setPermission(QueryConstants.PERMISSION_PUBLIC_QUERY);
+		}
+		userQuery.store();
+		QuerySequence querySequence = getQuerySequenceHome().create();
+		// be sure that user query was stored before ((otherwise there is a problem with non existing primary key)
+		querySequence.setRealQuery(userQuery);
+		querySequence.setName(name);
+		// first store (otherwise there is a problem with non existing primary key)
+		querySequence.store();
+		userQuery.setRoot(querySequence);
+		userQuery.store();
+		return userQuery;
+	}
+
+		
+		
+	
+	private String modifyNameIfNameAlreadyExists(String name, Group group) throws FinderException {
+		if (name == null || name.length() ==0) {
+			name = DEFAULT_QUERY_NAME;
+		}
+		Collection coll = getUserQueriesByGroup(group);
+		Iterator iterator = coll.iterator();
+		while (iterator.hasNext()) {
+			UserQuery userQuery = (UserQuery) iterator.next();
+			String alreadyExistingName = userQuery.getName();
+			if (alreadyExistingName.equals(name)) {
+				return StringHandler.addOrIncreaseCounter(name, COUNTER_TOKEN);
+			}
+		}
+		return name;
+	}
+
+	
+	private void updateQueryData(String name, UserQuery userQuery, XMLData data, QueryHelper queryHelper, Group owner, boolean isPrivate) throws IOException {
+		// name within the query
+		queryHelper.setName(name);
+		// name of the file 
+		data.setName(name);
+		// name of the user query
+		userQuery.setName(name);
+		data.setDocument(queryHelper.createDocument());
+		ICFile modifiedQuery =  data.store();
+		// connect file with query again or the first time
+		userQuery.setSource(modifiedQuery);
+		userQuery.setOwnership(owner);
+		if (isPrivate) {
+			userQuery.setPermission(QueryConstants.PERMISSION_PRIVATE_QUERY);
+		}
+		else {
+			userQuery.setPermission(QueryConstants.PERMISSION_PUBLIC_QUERY);
+		}
+		userQuery.store();
+	}
+
+	private Collection getUserQueriesByGroup(Group group) throws FinderException {
+  	 UserQueryHome userQueryHome = getUserQueryHome();
+  	 Collection privateUserQueries = userQueryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PRIVATE_QUERY);
+  	 Collection publicUserQueries = userQueryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PUBLIC_QUERY);
+  	 privateUserQueries.addAll(publicUserQueries);
+  	 return privateUserQueries;
+  }
+		
+
+	private QuerySequence createQuerySequence(String name, UserQuery userQuery, QueryHelper queryHelper) throws CreateException, SQLException {
+			QuerySequence querySequence = getQuerySequenceHome().create();
+			// be sure that user query was stored before ((otherwise there is a problem with non existing primary key)
+			querySequence.setRealQuery(userQuery);
+			querySequence.setName(name);
+			// first store (otherwise there is a problem with non existing primary key)
+			querySequence.store();
+			// add previous query
+			List previousQueries = queryHelper.previousQueries();
+			Iterator iterator = previousQueries.iterator();
+			while (iterator.hasNext()) {
+				QueryHelper previousQuery = (QueryHelper) iterator.next();
+				UserQuery previousUserQuery = previousQuery.getUserQuery();
+				QuerySequence previousRoot = previousUserQuery.getRoot();
+				querySequence.addChild(previousRoot);
+			}
+			querySequence.store();
+			// first store (otherwise there is a problem with non existing primary key)
+			userQuery.setRoot(querySequence);
+			userQuery.store();
+			return querySequence;
+	}
+
+	public UserBusiness getUserBusiness()	{
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+		}
+	}	
+	
+	
+	
+		
+  public QuerySequenceHome getQuerySequenceHome(){
+    if(querySequenceHome==null){
+      try{
+        querySequenceHome = (QuerySequenceHome)IDOLookup.getHome(QuerySequence.class);
+      }
+      catch(RemoteException rme){
+        throw new RuntimeException(rme.getMessage());
+      }
+    }
+    return querySequenceHome;
+  }
+		
+  private UserQueryHome getUserQueryHome(){
+    if(userQueryHome==null){
+      try{
+        userQueryHome = (UserQueryHome)IDOLookup.getHome(UserQuery.class);
+      }
+      catch(RemoteException rme){
+        throw new RuntimeException(rme.getMessage());
+      }
+    }
+    return userQueryHome;
+  }
+		
+  public void removeUserQuery(Integer userQueryId, User user) {
+  	UserTransaction transaction = getSessionContext().getUserTransaction();
+  	try {
+			transaction.begin();
+	  	UserQuery userQuery = getUserQueryHome().findByPrimaryKey(userQueryId);
+	  	userQuery.setDeleted(true);
+	  	userQuery.setDeletedBy(user);
+	  	userQuery.setDeletedWhen(IWTimestamp.getTimestampRightNow());
+	  	userQuery.store();
+	  	transaction.commit();
+  	}
+		catch (Exception e) {
+			logError("[QueryService] Could not mark UserQuery as deleted");
+			log(e);
+			if (transaction != null) {
+				try {
+					transaction.rollback();
+				}
+				catch (SystemException se) {
+					logError("[QueryService] Could not rollback");
+					log(se);
+				}
+			}
+		}
+  }
+	
+		
 }
 
