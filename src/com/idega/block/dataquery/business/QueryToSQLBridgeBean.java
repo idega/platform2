@@ -6,15 +6,23 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import com.idega.block.dataquery.data.QueryLog;
+import com.idega.block.dataquery.data.QueryLogHome;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.util.database.ConnectionBroker;
 
@@ -53,12 +61,17 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 	 */
   public QueryResult executeQueries(SQLQuery sqlQuery, int numberOfRowsLimit, List executedSQLStatements) {
   	// we are not using transactions because some databases don't support transactions and rollbacks
+  	String transactionID = Long.toString(System.currentTimeMillis());
   	QueryResult queryResult = null;
   	List postStatements = new ArrayList();
 		Connection connection = ConnectionBroker.getConnection();
   	try {
-  		queryResult = executeSQL(sqlQuery, numberOfRowsLimit, connection, postStatements, executedSQLStatements);
+  		queryResult = executeSQL(sqlQuery, numberOfRowsLimit, connection, postStatements, executedSQLStatements, transactionID);
   	}
+  	catch (CreateException sqlEx) {
+		logError("[QueryToSQLBridge] Entries for query log could not be created");
+		log(sqlEx);
+	}
   	catch (SQLException sqlEx) {
 			logError("[QueryToSQLBridge] Statements could not be executed");
 			log(sqlEx);
@@ -78,6 +91,21 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 		  			// go further to the next post statement
 		  		}
 		  	}
+		  	try {
+		  		removeFromQueryLog(transactionID, connection);
+		  	}
+		  	catch (EJBException ex) {
+	  			logError("[QueryToSQLBridge] Problems with QueryLog.");
+	  			log(ex);
+		  	}
+			catch (RemoveException ex) {
+	  			logError("[QueryToSQLBridge] Problems with QueryLog.");
+	  			log(ex);
+			}
+			catch (FinderException ex) {
+	  			logError("[QueryToSQLBridge] Problems with QueryLog.");
+	  			log(ex);
+			}
   		}
   		// do not catch any exceptions but try to close the connection if an exception has been thrown
   		finally {
@@ -100,7 +128,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 		}
   }
  
-	private QueryResult executeSQL(SQLQuery sqlQuery, int numberOfRowsLimit, Connection connection, List postStatements, List executedSQLStatements) throws SQLException	{
+	private QueryResult executeSQL(SQLQuery sqlQuery, int numberOfRowsLimit, Connection connection, List postStatements, List executedSQLStatements, String transactionID) throws SQLException, CreateException	{
   	// go back to the very first query
   	SQLQuery currentQuery = sqlQuery;
   	while (currentQuery.hasPreviousQuery())	{
@@ -109,7 +137,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
   	do {
   		if (currentQuery.hasNextQuery())	{
    			// mark the generated table
-  			String postStatement = executePreQuery(connection, currentQuery, executedSQLStatements);
+  			String postStatement = executePreQuery(connection, currentQuery, executedSQLStatements, transactionID);
   			postStatements.add(postStatement);
   			currentQuery = currentQuery.nextQuery();
   		}
@@ -122,7 +150,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
   			
  		
   
-	private String executePreQuery(Connection connection, SQLQuery sqlQuery, List executedSQLStatements)	throws SQLException {
+	private String executePreQuery(Connection connection, SQLQuery sqlQuery, List executedSQLStatements, String transactionID)	throws SQLException, CreateException {
 		String postStatement = null;
 		String viewTableName = null;
 		Statement statement = connection.createStatement();
@@ -154,8 +182,14 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 				postStatement = sqlQuery.getPostStatement();
 			}
 			// execute statement
+			addToQueryLog(postStatement, transactionID);
 			statement.execute(sqlStatement);
 			executedSQLStatements.add(sqlStatement);
+		}
+		catch (CreateException crEx) {
+			logError("[QueryToSQLBridge] An entry for the query log could not be created.");
+			log(crEx);
+			throw crEx;
 		}
 		catch (SQLException ex) {
 			logError("[QueryToSQLBridge] sql statement could not be executed.");
@@ -248,7 +282,6 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 	    }
 	    return queryResult;
   }		
-
   
   private void setDisplayName(QueryResultField field, int index, List displayNames)  {
     if (displayNames == null || index > displayNames.size())  {
@@ -260,5 +293,72 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
       return;
     }
     field.setValue(QueryResultField.DISPLAY, display);
+  }
+  
+  private void addToQueryLog(String statement, String transactionID) throws CreateException {
+  	QueryLogHome queryLogHome = getQueryLogHome();
+  	QueryLog queryLog = queryLogHome.create();
+  	queryLog.setStatement(statement);
+  	queryLog.setTransactionID(transactionID);
+  	queryLog.store();
+  }
+  
+  private void removeFromQueryLog(String transactionID, Connection connection) throws EJBException, FinderException, RemoveException {
+  	QueryLogHome queryLogHome = getQueryLogHome();
+  	Collection queryLogs = queryLogHome.findAll();
+  	Iterator iterator = queryLogs.iterator();
+  	while (iterator.hasNext()) {
+  		QueryLog queryLog = (QueryLog) iterator.next();
+  		String queryLogTransactionID = queryLog.getTransactionID();
+  		if (transactionID.equals(queryLogTransactionID)) {
+  			queryLog.remove();
+  		}
+  		else {
+  			// some logs found that don't bleong to this transaction
+  			// how old are these entries?
+  			long transactionTime = Long.parseLong(queryLogTransactionID);
+  	    	long currentTime = System.currentTimeMillis();
+  	    	// older than 10 minutes are being deleted
+	    	if (currentTime - transactionTime > 600000)	{
+	    		executeStatement(queryLog, connection);
+	    	}
+  		}
+  	}
+  }
+  	
+  private void executeStatement(QueryLog queryLog, Connection connection) {
+  	String logStatement = queryLog.getStatement();
+  	Statement statement;
+	try {
+		statement = connection.createStatement();
+		try {
+			statement.execute(logStatement);
+		}
+		catch (SQLException e) {
+			// ignore, sometimes the statement is causing errors, e.g. dropping a view that already was dropped
+		}
+	  	queryLog.remove();
+	}
+	catch (SQLException e) {
+		logError("[QueryToSQLBridge] Could not create statement");
+		log(e);
+	}
+	catch (EJBException e) {
+		logError("[QueryToSQLBridge] Could not remove query log");
+		log(e);
+	}
+	catch (RemoveException e) {
+		logError("[QueryToSQLBridge] Could not remove query log");
+		log(e);
+	}
+  }
+  
+  private QueryLogHome getQueryLogHome() {
+	try {
+		return (QueryLogHome) IDOLookup.getHome(QueryLog.class);
+	}
+	catch (IDOLookupException e) {
+		throw new RuntimeException("[QueryToSQLBridge] Could not look up QueryLogHome");
+	}
   }
 }
