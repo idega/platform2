@@ -56,6 +56,8 @@ public class MyMessages extends EHealthBlock {
 	IWContext _iwc = null;
 	
 	public String name = null;
+	public String fname = null;
+	public String lname = null;
 
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
@@ -63,14 +65,18 @@ public class MyMessages extends EHealthBlock {
 		
 		if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
-			
-			name = user.getFirstName() + " " + user.getLastName();
+			fname = user.getFirstName();
+			if (fname == null)
+				fname = "";
+			lname = user.getLastName();
+			if (lname == null)
+				lname = "";
+			name = fname + " " + lname;
 		}
 		else 
 			name = "-";
+		
 		add(getAppointmentHistoryForm());
-		
-		
 	}
 	
 	
