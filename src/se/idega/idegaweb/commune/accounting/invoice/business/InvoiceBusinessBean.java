@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/10 12:33:55 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/11 08:51:01 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.101 $
+ * @version $Revision: 1.102 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -896,8 +896,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	public PaymentRecord createVatPaymentRecord
 		(final PaymentRecord previousPaymentRecord,
 		 final PostingDetail postingDetail, final float months, final School school,
-		 final SchoolType schoolType, final SchoolYear schoolYear) 
-		throws CreateException, IDOLookupException {
+		 final SchoolType schoolType, final SchoolYear schoolYear) {
 		throw new UnsupportedOperationException ();
 		/*
 		Regulation vatRuleRegulation = previousPaymentRecord.getVATRuleRegulation();
