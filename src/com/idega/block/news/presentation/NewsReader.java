@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.131 2004/06/06 17:21:06 laddi Exp $
+ * $Id: NewsReader.java,v 1.132 2004/06/06 20:33:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -256,7 +256,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 				if (sNewsId != null) {
 					int id = Integer.parseInt(sNewsId);
 					NewsHelper nh = NewsFinder.getNewsHelper(id);
-					T.add(getNewsTable(nh, locale, true, false, iwc), 1, 1);
+					T.add(getNewsTable(nh, locale, true, false, iwc, true), 1, 1);
 				}
 				else if (info) {
 					T.add(getCategoryList(locale, iwc), 1, 1);
@@ -487,7 +487,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 					T.add(t, sObjectAlign);
 					objectsBetween.remove(I);
 				}
-				T.add(getNewsTable(newsHelper, locale, false, collection, iwc), useDividedTable, "left");
+				T.add(getNewsTable(newsHelper, locale, false, collection, iwc, (i + 1) == len), useDividedTable, "left");
 			}
 			// news collection
 			if (showNewsCollectionButton) {
@@ -567,7 +567,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	}
 
 	// Make a table around each news
-	private PresentationObject getNewsTable(NewsHelper newsHelper, Locale locale, boolean showAll, boolean collection, IWContext iwc) {
+	private PresentationObject getNewsTable(NewsHelper newsHelper, Locale locale, boolean showAll, boolean collection, IWContext iwc, boolean isLastNews) {
 
 		Table T = new Table();
 		T.setCellpadding(0);
@@ -713,8 +713,10 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 			if (hasEdit || hasEditExisting || (hasAdd && (ownerId == iwc.getUserId()))) {
 				T.add(getNewsAdminPart(news, iwc), 1, row);
 			}
-			row++;
-			T.setHeight(row++, String.valueOf(iSpaceBetweenNews));
+			if (!isLastNews) {
+				row++;
+				T.setHeight(row++, String.valueOf(iSpaceBetweenNews));
+			}
 		}
 		//////////// SINGLE LINE VIEW ///////////////
 		// if single line view
@@ -764,6 +766,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 			int ownerId = newsHelper.getContentHelper().getContent().getUserId();
 			if (hasEdit || hasEditExisting || (hasAdd && (ownerId == iwc.getUserId()))) {
 				T.add(getNewsAdminPart(news, iwc), 4, 1);
+			}
+			if (iSpaceBetweenNews > 0 && !isLastNews) {
+				T.setHeight(2, iSpaceBetweenNews);
 			}
 		}
 		//T.setBorder(1);
