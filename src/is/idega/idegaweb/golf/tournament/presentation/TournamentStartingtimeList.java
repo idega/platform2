@@ -229,7 +229,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			table.setRowStyleClass(row, getHeaderRowClass());
 
 			java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
-			java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
+			java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("###.0");
 			Field field = tournament.getField();
 			List members;
 			CheckBox delete;

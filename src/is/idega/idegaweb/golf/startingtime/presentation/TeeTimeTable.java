@@ -56,6 +56,8 @@ public class TeeTimeTable extends GolfBlock {
 	
 	private ICPage _teeTimeSearchPage = null;
 	private ICPage _teeTimesPage = null;
+	
+	private String _blockWidth = Table.HUNDRED_PERCENT;
 
 	public void main(IWContext modinfo) throws Exception {
 		getParentPage().setTitle(localize("start.teetimes", "Tee Times"));
@@ -115,10 +117,10 @@ public class TeeTimeTable extends GolfBlock {
 				IWTimestamp currentDay = new IWTimestamp((String) modinfo.getSessionAttribute("date"));
 
 				if (isAdmin() || (isClubAdmin() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (isClubWorker() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id")))) {
-					add(getConfigLinks(modinfo, "admin"));
+					//add(getConfigLinks(modinfo, "admin"));
 					add(User(modinfo, funcDate));
 				} else {
-					add(getConfigLinks(modinfo, "others"));
+					//add(getConfigLinks(modinfo, "others"));
 					add(User(modinfo, funcDate));
 				}
 			} else {
@@ -155,43 +157,22 @@ public class TeeTimeTable extends GolfBlock {
 	public Table User(IWContext modinfo, IWCalendar funcDate) throws SQLException, IOException {
 		IWTimestamp stamp = new IWTimestamp(funcDate.getCalendar());
 
-		Form myForm = new Form();
-		myForm.setMethod("get");
 		GolfField myField = null;
 		GolfField Today = new GolfField();
 		TableInfo myTableInfo = new TableInfo();
 		Table mainTable = new Table(1, 3);
-		Table innerMain = new Table(1, 3);
 		Table RTTop = new Table(2, 1);
-
 		RTTop.setCellpadding(0);
 		RTTop.setCellspacing(0);
-		RTTop.setWidth("675");
-		RTTop.setBackgroundImage(getBundle().getSharedImage("greenback.gif", "greenback.gif"));
-		RTTop.setAlignment("center");
-		RTTop.setHeight("45");
-		RTTop.setRowVerticalAlignment(1, "top");
-		RTTop.setRowAlignment(1, "center");
-		RTTop.setWidth(1, "" + (675 / 2));
+		//RTTop.setBorder(1);
 
-		mainTable.setAlignment("center");
+
 		mainTable.setCellspacing(0);
 		mainTable.setCellpadding(0);
-		mainTable.setColor("#CDDFD1");
-		mainTable.setAlignment("center");
-		mainTable.setWidth("720");
-		mainTable.setHeight(1, "58");
-		mainTable.setVerticalAlignment(1, 1, "bottom");
-
-		innerMain.setCellspacing(0);
-		innerMain.setCellpadding(0);
-		innerMain.setColor("#6e9173");
-		innerMain.setAlignment("center");
-		innerMain.setWidth("675");
-		innerMain.add(Text.emptyString(), 1, 1);
-		innerMain.setHeight(1, "10");
-		innerMain.add(Text.emptyString(), 1, 3);
-		innerMain.setHeight(3, "10");
+		mainTable.setCellpadding(1,1,15);
+		mainTable.setRowAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+		mainTable.setWidth(_blockWidth);
+		//mainTable.setBorder(1);
 
 		String union_id = modinfo.getSessionAttribute("union_id").toString();
 
@@ -238,9 +219,9 @@ public class TeeTimeTable extends GolfBlock {
 
 			}
 
-			innerMain.add(draw_table(myTableInfo, tournamentGroups, modinfo), 1, 2);
+			mainTable.add(draw_table(myTableInfo, tournamentGroups, modinfo), 1, 2);
 
-			RTTop.add(TimeAndPlace(modinfo, funcDate, Today), 1, 1);
+			RTTop.add(TimeAndPlace(modinfo, funcDate, Today), 2, 1);
 
 			IWTimestamp opent = new IWTimestamp(1, 1, 1, 7, 59, 59);
 			opent.setAsTime();
@@ -249,11 +230,7 @@ public class TeeTimeTable extends GolfBlock {
 
 			if ((isAdmin() || (isClubAdmin() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (isClubWorker() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))))) {
 				RTTop.add(entry_part(modinfo, funcDate, myTableInfo, true, tournamentGroups), 2, 1);
-			}
-			//	    else if (isUser() &&
-			// mySession.getAttribute("member_main_union_id").equals(mySession.getAttribute("union_id"))
-			// &&
-			else if ((isUser(modinfo) && myField.nonMemberRegistration()) || (isMemberOfUnion(modinfo, modinfo.getSessionAttribute("union_id").toString()) && myField.publicRegistration())) {
+			} else if ((isUser(modinfo) && myField.nonMemberRegistration()) || (isMemberOfUnion(modinfo, modinfo.getSessionAttribute("union_id").toString()) && myField.publicRegistration())) {
 				/** @todo implement for all unions */
 				if (modinfo.getSessionAttribute("union_id").equals("100")) {
 					if (now.isLaterThan(opent)) {
@@ -265,7 +242,6 @@ public class TeeTimeTable extends GolfBlock {
 			}
 
 			mainTable.add(RTTop, 1, 1);
-			mainTable.add(innerMain, 1, 2);
 		} else {
 
 			mainTable = new Table();
@@ -303,194 +279,107 @@ public class TeeTimeTable extends GolfBlock {
 		int tafla = 0;
 		String time;
 
-		Table myTable = new Table(3, end * 2 - 1);
-		myTable.setAlignment("left");
+		Table myTable = new Table(2, end+1);
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
+		//myTable.setBorder(1);
+		myTable.setRowStyleClass(1,getHeaderRowClass());
+		myTable.add(getSmallHeader(getResourceBundle().getLocalizedString("start.time", "Time")),1,1);
+		myTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
+		myTable.setRowVerticalAlignment(1,Table.VERTICAL_ALIGN_BOTTOM);
 
-		myTable.setWidth("643");
-		myTable.setWidth(1, "52");
-		myTable.setWidth(2, "295");
-		myTable.setWidth(3, "296");
-		myTable.setColumnVerticalAlignment(1, "baseline");
-		myTable.setAlignment("center");
-
-		Text one = getSmallText("1.");
-		Text two = getSmallText("2.");
-		Text three = getSmallText("3.");
-		Text four = getSmallText("4.");
-
-		one.setFontColor("white");
-		two.setFontColor("white");
-		three.setFontColor("white");
-		four.setFontColor("white");
-
-		one.setFontSize("1");
-		two.setFontSize("1");
-		three.setFontSize("1");
-		four.setFontSize("1");
-
-		one.setFontStyle("Arial");
-		two.setFontStyle("Arial");
-		three.setFontStyle("Arial");
-		four.setFontStyle("Arial");
-
-		one.setBold();
-		two.setBold();
-		three.setBold();
-		four.setBold();
+		myTable.setWidth(_blockWidth);
+		myTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_CENTER);
+		myTable.setColumnWidth(1, "200");
 
 		Table[] group1 = new Table[end];
-		Table[] group2 = new Table[end];
 
-		Table group1Template = new Table(4, 2);
-		Table group2Template = new Table(4, 2);
-		group1Template.setWidth(1, "8");
-		group1Template.setWidth(2, "200");
-		group1Template.setWidth(3, "40");
-		group1Template.setWidth(4, "50");
-
-		group2Template.setWidth(1, "8");
-		group2Template.setWidth(2, "200");
-		group2Template.setWidth(3, "40");
-		group2Template.setWidth(4, "50");
-
-		group1Template.setWidth("295");
-		group2Template.setWidth("295");
-
-		group1Template.setHeight(1, "15");
-		group1Template.setHeight(2, "15");
-
-		group2Template.setHeight(1, "15");
-		group2Template.setHeight(2, "15");
-
-		group1Template.setColumnAlignment(3, "center");
-		group1Template.setColumnAlignment(4, "center");
-		group2Template.setColumnAlignment(3, "center");
-		group2Template.setColumnAlignment(4, "center");
-
-		group1Template.setCellpadding(0);
-		group1Template.setCellspacing(4);
-
-		group2Template.setCellpadding(0);
-		group2Template.setCellspacing(4);
-
-		group1Template.setRowVerticalAlignment(1, "middle");
-		group1Template.setRowVerticalAlignment(2, "middle");
-
-		group2Template.setRowVerticalAlignment(1, "middle");
-		group2Template.setRowVerticalAlignment(2, "middle");
-
-		group1Template.add(one, 1, 1);
-		group1Template.add(two, 1, 2);
-		group2Template.add(three, 1, 1);
-		group2Template.add(four, 1, 2);
+		Table group1Template = new Table(3, 4);
+		//group1Template.setBorder(1);
+		
+		group1Template.setWidth(Table.HUNDRED_PERCENT);
+		//group1Template.setRowWidth(1,"100%");
+		group1Template.setColumnWidth(2,"100");
+		group1Template.setColumnWidth(3,"100");
+		group1Template.setCellspacing(0);
+		group1Template.setCellpaddingRight(2,1,30);
+		group1Template.setCellpaddingRight(2,2,30);
+		group1Template.setCellpaddingRight(2,3,30);
+		group1Template.setCellpaddingRight(2,4,30);
+		group1Template.setColumnAlignment(2,Table.HORIZONTAL_ALIGN_RIGHT);
+		group1Template.setColumnAlignment(3,Table.HORIZONTAL_ALIGN_CENTER);
+		
+		
+		Table headerTable = (Table) group1Template.clone();
+		headerTable.setRows(1);
+		headerTable.add(getText(Text.NON_BREAKING_SPACE),1,1);
+		headerTable.add(getSmallHeader(getResourceBundle().getLocalizedString("start.name", "Name")),1,1);
+		headerTable.add(getSmallHeader(getResourceBundle().getLocalizedString("start.club", "Club")),3,1);
+		headerTable.add(getSmallHeader(getResourceBundle().getLocalizedString("start.handicap", "Handicap")),2,1);
+		myTable.add(headerTable,2,1);
+		
+		
+		group1Template.add(getText(Text.NON_BREAKING_SPACE),1,1);
+		group1Template.add(getText(Text.NON_BREAKING_SPACE),1,2);
+		group1Template.add(getText(Text.NON_BREAKING_SPACE),1,3);
+		group1Template.add(getText(Text.NON_BREAKING_SPACE),1,4);
+		
+		group1Template.setRowStyleClass(1,getLightRowClass());
+		group1Template.setRowStyleClass(2,getDarkRowClass());
+		group1Template.setRowStyleClass(3,getLightRowClass());
+		group1Template.setRowStyleClass(4,getDarkRowClass());
+		
+		
 
 		Table roundGroup1Template = (Table) group1Template.clone();
-		Table roundGroup2Template = (Table) group2Template.clone();
 
-		for (int j = 1; j < 3; j++) {
-			for (int k = 2; k < 5; k++) {
-				group1Template.setColor(k, j, "#FFFFFF");
-				group2Template.setColor(k, j, "#FFFFFF");
-				group1Template.add(Text.emptyString(), k, j);
-				group2Template.add(Text.emptyString(), k, j);
-
-				roundGroup1Template.setColor(k, j, "#CEDFCF");
-				roundGroup2Template.setColor(k, j, "#CEDFCF");
-				roundGroup1Template.add(Text.emptyString(), k, j);
-				roundGroup2Template.add(Text.emptyString(), k, j);
-			}
-		}
+		
 
 		Text templateText = getSmallText("");
-		templateText.setFontSize(1);
 
-		//	 stilling á töflum byrjar
 		int teljari = 0;
 
-		for (int i = 1; i < end * 2; i += 2) {
+		for (int i = 1; i <= end; i++) {
 			String TournamentName = getTournamentName(tournamentGroups, first_group + teljari++);
 			if (TournamentName == null) {
 				group1[tafla] = (Table) group1Template.clone();
-				group2[tafla] = (Table) group2Template.clone();
+
 			} else {
 				Text tName = (Text) templateText.clone();
 				tName.setText(TournamentName);
 				group1[tafla] = (Table) roundGroup1Template.clone();
-				group2[tafla] = (Table) roundGroup2Template.clone();
-
-				group1[tafla].add(tName, 2, 1);
-				group1[tafla].add(tName, 2, 2);
-				group2[tafla].add(tName, 2, 1);
-				group2[tafla].add(tName, 2, 2);
+				group1[tafla].add(tName, 1, 1);
+				group1[tafla].add(tName, 1, 2);
+				group1[tafla].add(tName, 1, 3);
+				group1[tafla].add(tName, 1, 4);
 			}
-			myTable.add(group1[tafla], 2, i);
-			myTable.add(group2[tafla], 3, i);
+			myTable.add(group1[tafla], 2, i+1);
 			tafla++;
 		} // stilling á töflum endar
 		teljari = 0;
 
-		//	 setur inn tímamyndir
-		Image line = getResourceBundle().getImage("line.gif");
-		Text myText = Text.emptyString();
-		myTable.setColumnAlignment(1, "center");
-		myTable.setColumnVerticalAlignment(1, "middle");
+
 
 		Text tTime = getText("");
-		java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
-		tTime.setFontStyle("letter-spacing:0px;font-family:Arial,Helvetica,sans-serif;background-color:#FFFFFF;font-size:18px;color:#2C4E3B;border-width:1px;font-weight:bold;border-style:solid;");
+		DecimalFormat extraZero = new DecimalFormat("00");
+//		tTime.setFontStyle("letter-spacing:0px;font-family:Arial,Helvetica,sans-serif;background-color:#FFFFFF;font-size:18px;color:#2C4E3B;border-width:1px;font-weight:bold;border-style:solid;");
 		Text timeText;
 
-		for (int i = 1; i <= end * 2; i += 2) {
-
+		for (int i = 1; i <= end; i++) {
 			if (pic_min >= 60) {
 				pic_min -= 60;
 				pic_hour++;
 			}
-
-			if (pic_min < 10 && pic_hour < 10)
-				time = "0" + pic_hour + ":0" + pic_min;
-			else if (pic_min < 10)
-				time = "" + pic_hour + ":0" + pic_min;
-			else if (pic_hour < 10)
-				time = "0" + pic_hour + ":" + pic_min;
-			else
-				time = "" + pic_hour + ":" + pic_min;
-
-			//myTable.add(new
-			// Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+
-			// time,
-			// time , 50, 36 ), 1, i);
-
 			timeText = (Text) tTime.clone();
-			timeText.setText(time);
-			myTable.add(timeText, 1, i);
-
-			//			myTable.add(new
-			// Flash("http://jgenerator.sidan.is/time.swt?time="+
-			// time, time , 50, 36 ), 1, i);
-
-			//	 		## Bætir við hvítri línu milli allra holla en ekki undir það
-			// síðasta
-			if (i != end * 2 - 1) {
-				myTable.setBackgroundImage(1, i + 1, line);
-				myTable.setBackgroundImage(2, i + 1, line);
-				myTable.setBackgroundImage(3, i + 1, line);
-				myTable.add(myText, 1, i + 1);
-				myTable.add(myText, 2, i + 1);
-				myTable.add(myText, 3, i + 1);
-				myTable.setHeight(i + 1, "4"); // #$%"#%&"$#%&"#%"#$#$ virkar
-											   // ekki
-				// ??????????
-			}
-
+			timeText.setText(extraZero.format(pic_hour)+":"+extraZero.format(pic_min));
+			myTable.add(timeText, 1, i+1);
+			myTable.setStyleClass(1, i+1, getBigRowClass());
 			pic_min += interval;
 		}
+		
+		
 
-		//		klukku myndir komnar inn
-
-		//	 skráir að lokum færslur í töfluna á viðeigandi stöðum
+		
 		int row, row2, count, first_gr;
 		float handic;
 		int last_group = first_group + end;
@@ -504,7 +393,7 @@ public class TeeTimeTable extends GolfBlock {
 		row = -1;
 		row2 = -2;
 
-		DecimalFormat hadycapFormat = new DecimalFormat("###.0");
+		DecimalFormat handicapFormat = new DecimalFormat("###.0");
 		for (int i = 0; i < start.length; i++) {
 			int groupNumber = start[i].getGroupNum();
 			if (!isTournamentGroup(tournamentGroups, groupNumber)) {
@@ -527,7 +416,7 @@ public class TeeTimeTable extends GolfBlock {
 				else if (handic == 100)
 					handicap = "-";
 				else
-					handicap = hadycapFormat.format((double) handic);
+					handicap = handicapFormat.format((double) handic);
 
 				// Not visible on the net...
 				/*
@@ -546,24 +435,24 @@ public class TeeTimeTable extends GolfBlock {
 
 				switch (count) {
 					case 1:
-						group1[row - 1].add(tempName, 2, 1);
-						group1[row - 1].add(tempHandicap, 3, 1);
-						group1[row - 1].add(tempClub, 4, 1);
+						group1[row - 1].add(tempName, 1, 1);
+						group1[row - 1].add(tempHandicap, 2, 1);
+						group1[row - 1].add(tempClub, 3, 1);
 						break;
 					case 2:
-						group1[row - 1].add(tempName, 2, 2);
-						group1[row - 1].add(tempHandicap, 3, 2);
-						group1[row - 1].add(tempClub, 4, 2);
+						group1[row - 1].add(tempName, 1, 2);
+						group1[row - 1].add(tempHandicap, 2, 2);
+						group1[row - 1].add(tempClub, 3, 2);
 						break;
 					case 3:
-						group2[row - 1].add(tempName, 2, 1);
-						group2[row - 1].add(tempHandicap, 3, 1);
-						group2[row - 1].add(tempClub, 4, 1);
+						group1[row - 1].add(tempName, 1, 3);
+						group1[row - 1].add(tempHandicap, 2, 3);
+						group1[row - 1].add(tempClub, 3, 3);
 						break;
 					case 4:
-						group2[row - 1].add(tempName, 2, 2);
-						group2[row - 1].add(tempHandicap, 3, 2);
-						group2[row - 1].add(tempClub, 4, 2);
+						group1[row - 1].add(tempName, 1, 4);
+						group1[row - 1].add(tempHandicap, 2, 4);
+						group1[row - 1].add(tempClub, 3, 4);
 						break;
 				}
 			}
@@ -844,7 +733,6 @@ public class TeeTimeTable extends GolfBlock {
 		frame.add(Text.emptyString(), 5, 1);
 
 		if (access_type.equals("admin")) {
-			//frame.add(Change(),2,1);
 			frame.add(ConfigFieldLink(modinfo), 3, 1);
 
 			int field_id = Integer.parseInt(modinfo.getSessionAttribute("field_id").toString());
@@ -863,20 +751,13 @@ public class TeeTimeTable extends GolfBlock {
 		if (day_time.equals("0")) {
 			frame.add(Fhd(modinfo, true), 4, 1);
 			frame.add(Ehd(modinfo, false), 5, 1);
-			//frame.add(Sd(false),6,1);
 		}
 
 		if (day_time.equals("1")) {
 			frame.add(Fhd(modinfo, false), 4, 1);
 			frame.add(Ehd(modinfo, true), 5, 1);
-			//frame.add(Sd(false),6,1);
 		}
 
-		if (day_time.equals("2")) {
-			frame.add(Fhd(modinfo, false), 4, 1);
-			frame.add(Ehd(modinfo, false), 5, 1);
-			//frame.add(Sd(true),6,1);
-		}
 
 		return frame;
 	}
@@ -953,25 +834,16 @@ public class TeeTimeTable extends GolfBlock {
 
 	public Form TimeAndPlace(IWContext modinfo, IWCalendar dateFunc, GolfField Today) throws SQLException, IOException {
 
-		Table firstTable = new Table(3, 2);
+		Table firstTable = new Table(2, 1);
 		Form day_field = new Form();
 		day_field.setMethod("get");
-
-		firstTable.add(Text.emptyString(), 1, 1);
-		firstTable.add(Text.emptyString(), 3, 1);
-		firstTable.add(Text.emptyString(), 2, 1);
-		firstTable.setHeight(1, "6");
-
 		firstTable.setCellpadding(0);
 		firstTable.setCellspacing(0);
-		//			firstTable.setBorder(1);
+		firstTable.setCellpaddingLeft(2,1,10);
+		firstTable.setCellpaddingLeft(1,1,10);
 
-		firstTable.setWidth(1, "85");
-		firstTable.setWidth(2, "20");
-		firstTable.setWidth(3, "85");
-
-		firstTable.add(insertDropdown("hvar", modinfo), 1, 2);
-		firstTable.add(insertDropdown("day", dateFunc, Today, modinfo), 3, 2);
+		firstTable.add(insertDropdown("hvar", modinfo), 2, 1);
+		firstTable.add(insertDropdown("day", dateFunc, Today, modinfo), 1, 1);
 
 		day_field.add(firstTable);
 
