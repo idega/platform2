@@ -82,7 +82,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   private static final String serviceDayHashtableSessionName = "serviceDayHashtable";
 
   protected Timeframe timeframe; // Thread unsafe ?
-	protected Hashtable maxDaysMap = new Hashtable();
+  protected static Hashtable maxDaysMap = new Hashtable();
 
   public TravelStockroomBusinessBean() {
   }
