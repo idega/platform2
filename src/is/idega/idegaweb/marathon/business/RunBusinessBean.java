@@ -45,6 +45,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -237,6 +238,15 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		else {
 			return null;
 		}
+	}
+	
+	public int getAgeFromPersonalID(String personalID) {
+		IWTimestamp dateOfBirth = getBirthDateFromSSN(personalID);
+		if (dateOfBirth != null) {
+			Age age = new Age(dateOfBirth.getDate());
+			return age.getYears();
+		}
+		return -1;
 	}
 
 	/**
