@@ -66,19 +66,16 @@ public class BuildingFinder {
     return types;
   }
 
-  public static RoomSubType[] findRoomSubTypesInBuilding(int iBuildingId){
-    RoomSubType[] rt = new RoomSubType[0];
-    StringBuffer sql = new StringBuffer("select distinct room_sub_type_id,room_type_id,room_sub_type.name,room_sub_type.info, ");
-    sql.append("room_sub_type.image_id,room_sub_type.floorplan_id,room_sub_type.room_count,room_sub_type.area,");
-    sql.append("room_sub_type.kitchen,room_sub_type.bathroom,room_sub_type.storage,");
-    sql.append("room_sub_type.balcony,study,room_sub_type.loft,room_sub_type.rent ");
-    sql.append("from room_sub_type,room,floor ");
-    sql.append("where room_sub_type_id = room.sub_type_id ");
-    sql.append("and room.floor_id = floor.floor_id ");
-    sql.append("and floor.building_id = ");
+  public static ApartmentType[] findApartmentTypesInBuilding(int iBuildingId){
+    ApartmentType[] rt = new ApartmentType[0];
+    StringBuffer sql = new StringBuffer("select distinct apartment_type.* ");
+    sql.append("from apartment_type at,apartment a,floor f ");
+    sql.append("where at.apartment_type_id = a.apartment_type_id ");
+    sql.append("and a.floor_id = f.floor_id ");
+    sql.append("and f.building_id = ");
     sql.append(iBuildingId);
     try{
-    rt= (RoomSubType[])(new RoomSubType()).findAll(sql.toString());
+    rt= (ApartmentType[])(new ApartmentType()).findAll(sql.toString());
     }
     catch(SQLException ex){}
     return rt;

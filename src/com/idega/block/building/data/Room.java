@@ -24,13 +24,13 @@ public class Room extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("info","Upplýsingar",true,true,"java.lang.String");
-    addAttribute("floor_id","Hæð",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Floor");
-    addAttribute("sub_type_id","Undirgerð",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.RoomSubType");
-    addAttribute("rentable","Leigjanleg",true,true,"java.lang.Boolean");
-    addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
-    super.setMaxLength("info",5000);
+    addAttribute("name","Name",true,true,"java.lang.String");
+    addAttribute("info","Info",true,true,"java.lang.String");
+    addAttribute("floor_id","Floor",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Floor");
+    addAttribute("Apartment_type_id","Apartmenttype",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.ApartmentType");
+    addAttribute("rentable","Rentable",true,true,"java.lang.Boolean");
+    addAttribute("ic_image_id","Photo",true,true,"java.lang.Integer");
+    super.setMaxLength("info",4000);
   }
   public String getEntityName() {
     return "room";

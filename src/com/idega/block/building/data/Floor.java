@@ -23,45 +23,50 @@ public class Floor extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("info","Upplýsingar",true,true,"java.lang.String");
-    addAttribute("building_id","Bygging",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Building");
-    addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
-    super.setMaxLength("info",5000);
+    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
+    addAttribute(getBuildingIdColumnName(),"Building",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Building");
+    addAttribute(getImageIdColumnName(),"Plan",true,true,"java.lang.Integer","many-to-one","com.idega.data.Image");
+    super.setMaxLength(getInfoColumnName(),4000);
   }
 
   public String getEntityName() {
     return "floor";
   }
+  public String getNameColumnName(){return "name";}
+  public String getInfoColumnName(){return "info";}
+  public String getBuildingIdColumnName(){return "building_id";}
+  public String getImageIdColumnName(){return "ic_image_id";}
+
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getNameColumnName());
   }
   public void setName(String name){
-    setColumn("name",name);
+    setColumn(getNameColumnName(),name);
   }
   public String getInfo(){
-    return getStringColumnValue("info");
+    return getStringColumnValue(getInfoColumnName());
   }
   public void setInfo(String info){
-    setColumn("info",info);
+    setColumn(getInfoColumnName(),info);
   }
   public int getBuildingId(){
-    return getIntColumnValue("building_id");
+    return getIntColumnValue(getBuildingIdColumnName());
   }
   public void setBuildingId(int building_id){
-    setColumn("building_id",building_id);
+    setColumn(getBuildingIdColumnName(),building_id);
   }
   public void setBuildingId(Integer building_id){
-    setColumn("building_id",building_id);
+    setColumn(getBuildingIdColumnName(),building_id);
   }
   public int getImageId(){
-    return getIntColumnValue("image_id");
+    return getIntColumnValue(getImageIdColumnName());
   }
   public void setImageId(int image_id){
-    setColumn("image_id",image_id);
+    setColumn(getImageIdColumnName(),image_id);
   }
   public void setImageId(Integer image_id){
-    setColumn("image_id",image_id);
+    setColumn(getImageIdColumnName(),image_id);
   }
 
 }
