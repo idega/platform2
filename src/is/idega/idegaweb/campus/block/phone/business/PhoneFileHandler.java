@@ -215,10 +215,16 @@ public class PhoneFileHandler {
 										for (int i = 0; i < listsize; i++) {
 											ap = (AccountPhone) accountList.get(i);
 											from = ap.getValidFrom().getTime();
-											to = ap.getValidTo().getTime();
-											deliverTime = ap.getDeliverTime()!=null?ap.getDeliverTime().getTime():from;
-											returnTime = ap.getReturnTime()!=null?ap.getReturnTime().getTime():to;
-											if(deliverTime <= phonetime && phonetime <= returnTime){
+											IWTimestamp iwstamp = new IWTimestamp(ap.getValidTo().getTime());
+											iwstamp.setHour(23);
+											iwstamp.setMinute(59);
+											iwstamp.setSecond(59);
+											iwstamp.setMilliSecond(999);
+											to = iwstamp.getTime().getTime();
+//											deliverTime = ap.getDeliverTime()!=null?ap.getDeliverTime().getTime():from;
+//											returnTime = ap.getReturnTime()!=null?ap.getReturnTime().getTime():to;
+											
+											if(from <= phonetime && phonetime <= to){
 												
 											//System.err.println("YES Contract "+ap.getAccountId().toString()+"\t del:"+df.format( new Date(deliverTime))+" ret:"+df.format(new Date(returnTime))+" phoned:"+new Timestamp(phonetime).toString()+" number:"+number);
 											//if( phonetime >= from && phonetime <= to){
