@@ -38,8 +38,9 @@ import javax.ejb.FinderException;
 //import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 //import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
+import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountListFile;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceStrings;
 import se.idega.idegaweb.commune.accounting.invoice.business.PaymentSummary;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
@@ -62,125 +63,17 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/19 13:44:31 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/20 10:33:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.80 $
+ * @version $Revision: 1.81 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
  * @see se.idega.idegaweb.commune.accounting.presentation.AccountingBlock
  */
-public class PaymentRecordMaintenance extends AccountingBlock {
-	public static final String PREFIX = "cacc_payrec_";
-	
-	private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
-	private static final String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
-	private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
-	private static final String ADJUSTMENT_SIGNATURE_DEFAULT = "Just.sign";
-	private static final String ADJUSTMENT_SIGNATURE_KEY = PREFIX + "adjustment_signature";
-	private static final String AMOUNT_DEFAULT = "Belopp";
-	private static final String AMOUNT_KEY = PREFIX + "amount";
-	private static final String CANCEL_DEFAULT = "Avbryt";
-	private static final String CANCEL_KEY = PREFIX + "cancel";
-	private static final String CHECK_AMOUNT_DEFAULT = "Checkbelopp";
-	private static final String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
-	private static final String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
-	private static final String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
-	private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
-	private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
-	private static final String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
-	private static final String DATE_ADJUSTED_DEFAULT = "Justeringsdag";
-	private static final String DATE_ADJUSTED_KEY = PREFIX + "date_adjusted";
-	private static final String DATE_CREATED_DEFAULT = "Skapandedag";
-	private static final String DATE_CREATED_KEY = PREFIX + "date_created";
-	private static final String DAYS_DEFAULT = "Days";
-	private static final String DAYS_KEY = PREFIX + "days";
-	private static final String DELETE_ROW_DEFAULT = "Ta bort post";
-	private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
-	private static final String DETAILED_PAYMENT_RECORDS_DEFAULT = "Detaljutbetalningsrader";
-	private static final String DETAILED_PAYMENT_RECORDS_KEY = PREFIX + "detailed_payment_records";
-	private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
-	private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
-	private static final String EDIT_PAYMENT_RECORD_DEFAULT = "Ändra utbetalningspost";
-	private static final String EDIT_PAYMENT_RECORD_KEY = PREFIX + "edit_payment_record";
-	private static final String END_PERIOD_KEY = PREFIX + "end_period";
-	private static final String HEADER_KEY = PREFIX + "end_period";
-	private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
-	private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
-	private static final String MANAGEMENT_TYPE_DEFAULT = "Bolagsform";
-	private static final String MANAGEMENT_TYPE_KEY = PREFIX + "management_type";
-	private static final String NAME_DEFAULT = "Namn";
-	private static final String NAME_KEY = PREFIX + "name";
-	private static final String NEW_DEFAULT = "Ny";
-	private static final String NEW_KEY = PREFIX + "new";
-	private static final String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
-	private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
-	private static final String NUMBER_OF_PLACEMENTS_DEFAULT = "Placeringar";
-	private static final String NUMBER_OF_PLACEMENTS_KEY = PREFIX + "number_of_placements";
-	private static final String OWN_POSTING_DEFAULT = "Egen kontering";
-	private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
-	private static final String PAYMENT_HEADER_DEFAULT = "Utbetalning";
-	private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
-	private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
-	private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
-	private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
-	private static final String PIECE_AMOUNT_DEFAULT = "Styckepris";
-	private static final String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
-	private static final String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
-	private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
-	private static final String PROVIDER_CONFIRM_DEFAULT = "Anordnarattest";
-	private static final String PROVIDER_CONFIRM_KEY = PREFIX + "provider_confirm";
-	private static final String PROVIDER_DEFAULT = "Anordnare";
-	private static final String PROVIDER_KEY = PREFIX + "provider";
-	private static final String LAST_PROVIDER_KEY = PREFIX + "last_provider";
-	private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
-	private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
-	//private static final String REMOVE_DEFAULT = "Ta bort";
-	//private static final String REMOVE_KEY = PREFIX + "remove";
-	private static final String SAVE_EDITS_DEFAULT = "Spara ändringar";
-	private static final String SAVE_EDITS_KEY = PREFIX + "save_edits";
-	private static final String SCHOOL_CLASS_DEFAULT = "Grupp";
-	private static final String SCHOOL_CLASS_KEY = PREFIX + "school_class";
-	private static final String SCHOOL_TYPE_DEFAULT = "Verksamhet";
-	private static final String SCHOOL_TYPE_KEY = PREFIX + "school_type";
-	private static final String SCHOOL_YEAR_DEFAULT = "Skolår";
-	private static final String SCHOOL_YEAR_KEY = PREFIX + "school_year";
-	private static final String SEARCH_DEFAULT = "Sök";
-	private static final String SEARCH_KEY = PREFIX + "search";
-	private static final String SIGNATURE_DEFAULT = "Signatur";
-	private static final String SIGNATURE_KEY = PREFIX + "signature";
-	private static final String SSN_DEFAULT = "Personnummer";
-	private static final String SSN_KEY = PREFIX + "ssn";
-	private static final String START_PERIOD_KEY = PREFIX + "start_period";
-	private static final String STATUS_DEFAULT = "Status";
-	private static final String STATUS_KEY = PREFIX + "status";
-	private static final String TRANSACTION_DATE_DEFAULT = "Bokföringsdag";
-	private static final String TRANSACTION_DATE_KEY = PREFIX + "transaction_date";
-	private static final String VAT_AMOUNT_DEFAULT = "Momsbelopp";
-	private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
-	private static final String VAT_RULE_DEFAULT = "Momstyp";
-	private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
-	public static final String NOTE_DEFAULT = "Anmärkning";
-	public static final String NOTE_KEY = PREFIX + "note";
-	public static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
-	public static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
-	public static final String PERIOD_DEFAULT = "Period";
-	public static final String PERIOD_KEY = PREFIX + "period";
-	public static final String PLACEMENT_DEFAULT = "Placering";
-	public static final String PLACEMENT_KEY = PREFIX + "placement";
-	public static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
-	public static final String TOTAL_AMOUNT_INDIVIDUALS_DEFAULT = "Totalt antal individer";
-	public static final String TOTAL_AMOUNT_INDIVIDUALS_KEY = PREFIX + "total_amount_individuals";
-	public static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
-	public static final String TOTAL_AMOUNT_PLACEMENTS_DEFAULT = "Totalt antal placeringar";
-	public static final String TOTAL_AMOUNT_PLACEMENTS_KEY = PREFIX + "total_amount_placements";
-	public static final String TOTAL_AMOUNT_VAT_DEFAULT = "Totalbelopp, moms";
-	public static final String TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT = "Totalbelopp, exklusive moms";
-	public static final String TOTAL_AMOUNT_VAT_EXCLUDED_KEY = PREFIX + "total_amount_vat_excluded";
-	public static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
-	
+public class PaymentRecordMaintenance extends AccountingBlock implements InvoiceStrings {
 	private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
@@ -252,18 +145,20 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private void generateCheckAmountListPdf (final IWContext context)
 		throws RemoteException, FinderException {
-			final String schoolCategory = getSession().getOperationalField ();
-			final Integer providerId = getProviderIdParameter (context);
-			final Date startPeriod
-					= getPeriodParameter (context, START_PERIOD_KEY);
-			final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-			final int docId = new CheckAmountListFile (getResourceBundle (), schoolCategory, providerId, startPeriod, endPeriod, getInvoiceBusiness (context), getPostingBusiness (context)).getFileId ();
-
+		final String schoolCategory = getSession().getOperationalField ();
+		final Integer providerId = getProviderIdParameter (context);
+		final Date startPeriod
+				= getPeriodParameter (context, START_PERIOD_KEY);
+		final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
+		final CheckAmountBusiness business = getCheckAmountBusiness (context);
+		final int fileId = business.createInternalCheckAmountList
+				(schoolCategory, providerId, startPeriod, endPeriod);
+		
 		// create link		
 		final Link viewLink
 				= new Link("Öppna checkbeloppslista i Acrobat Reader");
-		viewLink.setFile (docId);
-		viewLink.setTarget ("letter_window_" + docId);
+		viewLink.setFile (fileId);
+		viewLink.setTarget ("letter_window_" + fileId);
 
 		final Table htmlTable = createTable (1);
 		htmlTable.add (viewLink, 1, 1);
@@ -1657,9 +1552,15 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				(context, PostingBusiness.class);	
 	}
 	
-	InvoiceBusiness getInvoiceBusiness
+	private InvoiceBusiness getInvoiceBusiness
 		(final IWContext context) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance
 				(context, InvoiceBusiness.class);	
+	}
+	
+	private CheckAmountBusiness getCheckAmountBusiness
+		(final IWContext context) throws RemoteException {
+		return (CheckAmountBusiness) IBOLookup.getServiceInstance
+				(context, CheckAmountBusiness.class);	
 	}
 }
