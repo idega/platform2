@@ -147,7 +147,10 @@ public class CalendarView extends Block{
 			toStamp.setMinutes(0);
 			toStamp.setNanos(0);			
 			List listOfEntries = (List) getCalBusiness(iwc).getEntriesBetweenTimestamps(fromStamp,toStamp);
-			User user = iwc.getCurrentUser();
+			User user = null;
+			if(iwc.isLoggedOn()) {
+				user = iwc.getCurrentUser();
+			}
 			//the inner for-loop goes through the list of entries and prints them out as a link
 			//the link opens the view for the entry
 			for(int j=0; j<listOfEntries.size(); j++) {
@@ -158,11 +161,14 @@ public class CalendarView extends Block{
 				//get a collection of groups the current user may view
 				
 				Collection viewGroups = null;
-				try {
-					viewGroups = getUserBusiness(iwc).getUserGroups(user);
-				}catch(Exception e) {
-					e.printStackTrace();
+				if(user != null) {
+					try {
+						viewGroups = getUserBusiness(iwc).getUserGroups(user);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
+				
 				if(entry.getLedgerID() != -1) {
 					ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
 					groupIDInLedger = ledger.getGroupID();					
@@ -170,18 +176,20 @@ public class CalendarView extends Block{
 				else {
 					groupIDInLedger = -1;
 				}
-				
-				Iterator viewGroupsIter = viewGroups.iterator();
-				//goes through the groups the user may view and prints out the entry if 
-				//the group connected to the entry is the same as the group the user may view
-				while(viewGroupsIter.hasNext()) {
-					Group group =(Group) viewGroupsIter.next();
-					Integer groupID = (Integer) group.getPrimaryKey();
-					if(entry.getGroupID() == groupID.intValue()  
-							|| groupIDInLedger == groupID.intValue()) {
-						isInGroup = true;
+				if(viewGroups != null) {
+					Iterator viewGroupsIter = viewGroups.iterator();
+					//goes through the groups the user may view and prints out the entry if 
+					//the group connected to the entry is the same as the group the user may view
+					while(viewGroupsIter.hasNext()) {
+						Group group =(Group) viewGroupsIter.next();
+						Integer groupID = (Integer) group.getPrimaryKey();
+						if(entry.getGroupID() == groupID.intValue()  
+								|| groupIDInLedger == groupID.intValue()) {
+							isInGroup = true;
+						}
 					}
 				}
+
 				if(isInGroup || iwc.isSuperAdmin() || getViewGroupID() == entry.getGroupID()) {
 					Timestamp fStamp = entry.getDate();
 					Timestamp tStamp = entry.getEndDate();
@@ -332,7 +340,10 @@ public class CalendarView extends Block{
 					toStamp.setMinutes(0);
 					toStamp.setNanos(0);			
 					List listOfEntries = (List) getCalBusiness(iwc).getEntriesBetweenTimestamps(fromStamp,toStamp);	
-					User user = iwc.getCurrentUser();
+					User user = null;
+					if(iwc.isLoggedOn()) {
+						user = iwc.getCurrentUser();
+					}
 					for(int h=0; h<listOfEntries.size(); h++) {
 						
 						CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
@@ -340,11 +351,14 @@ public class CalendarView extends Block{
 						CalendarLedger ledger = null;
 						boolean isInGroup = false;
 						int groupIDInLedger;
-						try {
-							viewGroups = getUserBusiness(iwc).getUserGroups(user);
-						}catch(Exception e) {
-							e.printStackTrace();
+						if(user != null) {
+							try {
+								viewGroups = getUserBusiness(iwc).getUserGroups(user);
+							}catch(Exception e) {
+								e.printStackTrace();
+							}
 						}
+						
 						if(entry.getLedgerID() != -1) {
 							ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
 							groupIDInLedger = ledger.getGroupID();					
@@ -352,18 +366,20 @@ public class CalendarView extends Block{
 						else {
 							groupIDInLedger = 1;
 						}
-						
-						Iterator viewGroupsIter = viewGroups.iterator();
-						//goes through the groups the user may view and prints out the entry if 
-						//the group connected to the entry is the same as the group the user may view
-						while(viewGroupsIter.hasNext()) {
-							Group group =(Group) viewGroupsIter.next();
-							Integer groupID = (Integer) group.getPrimaryKey();
-							if(entry.getGroupID() == groupID.intValue() 
-									|| groupIDInLedger == groupID.intValue()) {
-								isInGroup = true;
+						if(viewGroups != null) {
+							Iterator viewGroupsIter = viewGroups.iterator();
+							//goes through the groups the user may view and prints out the entry if 
+							//the group connected to the entry is the same as the group the user may view
+							while(viewGroupsIter.hasNext()) {
+								Group group =(Group) viewGroupsIter.next();
+								Integer groupID = (Integer) group.getPrimaryKey();
+								if(entry.getGroupID() == groupID.intValue() 
+										|| groupIDInLedger == groupID.intValue()) {
+									isInGroup = true;
+								}
 							}
 						}
+						
 						if(isInGroup || iwc.isSuperAdmin() || getViewGroupID() == entry.getGroupID()) {
 							Timestamp fStamp = entry.getDate();
 							Timestamp ttStamp = entry.getEndDate();
@@ -496,20 +512,26 @@ public class CalendarView extends Block{
 			toStamp.setMinutes(59);
 			toStamp.setNanos(0);
 			List listOfEntries = (List) getCalBusiness(iwc).getEntriesBetweenTimestamps(fromStamp,toStamp);
-			User user = iwc.getCurrentUser();
+			User user = null;
+			if(iwc.isLoggedOn()) {
+				user = iwc.getCurrentUser();
+			}
 			for(int h=0; h<listOfEntries.size(); h++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
 				CalendarLedger ledger = null;
 				int groupIDInLedger = 0;
 				boolean isInGroup = false;
 				Collection viewGroups = null;
-
-				try {
-					viewGroups = getUserBusiness(iwc).getUserGroups(user);
-					
-				}catch(Exception e) {
-					e.printStackTrace();
+				
+				if(user != null) {
+					try {
+						viewGroups = getUserBusiness(iwc).getUserGroups(user);
+						
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
+				
 				
 				if(entry.getLedgerID() != -1) {
 					ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
@@ -521,18 +543,21 @@ public class CalendarView extends Block{
 				else {
 					groupIDInLedger = 1;
 				}
-				Iterator viewGroupsIter = viewGroups.iterator();
-				//goes through the groups the user may view and prints out the entry if 
-				//the group connected to the entry is the same as the group the user may view
-				while(viewGroupsIter.hasNext()) {
-					Group group =(Group) viewGroupsIter.next();
-					Integer groupID = (Integer) group.getPrimaryKey();
-					
-					if(entry.getGroupID() == groupID.intValue() 
-							|| groupIDInLedger == groupID.intValue()){
-						isInGroup = true;
+				if(viewGroups != null) {
+					Iterator viewGroupsIter = viewGroups.iterator();
+					//goes through the groups the user may view and prints out the entry if 
+					//the group connected to the entry is the same as the group the user may view
+					while(viewGroupsIter.hasNext()) {
+						Group group =(Group) viewGroupsIter.next();
+						Integer groupID = (Integer) group.getPrimaryKey();
+						
+						if(entry.getGroupID() == groupID.intValue() 
+								|| groupIDInLedger == groupID.intValue()){
+							isInGroup = true;
+						}
 					}
 				}
+				
 				if(isInGroup || iwc.isSuperAdmin() || getViewGroupID() == entry.getGroupID()) {
 					Timestamp startDate = entry.getDate();
 					int hours = startDate.getHours();
