@@ -50,6 +50,7 @@ private String tableAlignment = "top";
 private String textWidth = "100%";
 private String textStyle = "";
 private String headlineStyle = "";
+private String spaceBetweenHeadlineAndBody = null;
 private boolean displayHeadline=true;
 private boolean enableDelete=true;
 private boolean reverse = false;
@@ -87,7 +88,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     TxText txText = null;
     LocalizedText locText = null;
     ContentHelper ch = null;
-    Table T = new Table(1,2);
+    Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
     T.setBorder(0);
@@ -119,7 +120,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     if(txText != null){
       iTextId = txText.getID();
       ch = ContentFinder.getContentHelper(txText.getContentId(),iLocaleId);
-			if(ch!=null)
+      if(ch!=null)
       locText = ch.getLocalizedText();
       //locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
       hasId = true;
@@ -132,23 +133,20 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     if(isAdmin){
       T.add(getAdminPart(iTextId,enableDelete,newobjinst,newWithAttribute,hasId),1,2);
     }
-    else
-      T.mergeCells(1,1,1,2);
+
+    T.setBorder(1);
 
     add(T);
   }
 
   public PresentationObject getTextTable(TxText txText,LocalizedText locText,ContentHelper contentHelper) throws IOException,SQLException {
-    Table T = new Table(2,2);
-
-    T.setCellpadding(3);
-    T.setCellspacing(3);
+    Table T = new Table();
+    T.setCellpadding(0);
+    T.setCellspacing(0);
     T.setBorder(0);
-    T.mergeCells(1,1,2,1);
-    T.mergeCells(1,2,2,2);
-
-    if( headlineBgColor != null ) T.setRowColor(1,headlineBgColor);
-    if( textBgColor != null ) T.setRowColor(2,textBgColor);
+    int headerRow = 1;
+    int bodyRow = 2;
+    int row = 1;
 
     T.setWidth("100%");
     String sHeadline = locText.getHeadline()!= null ? locText.getHeadline():"";
@@ -168,13 +166,18 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       textBody = TextFormatter.textCrazy(textBody);
     }
 
-    textBody = TextFormatter.formatText(textBody,tableTextSize,tableWidth);
+    textBody = TextFormatter.formatText(textBody,tableTextSize,"100%");
 
     Text body = new Text(textBody);
     body.setFontSize(textSize);
     body.setFontColor(textColor);
     body.setAttribute("class","bodytext");
     body.setFontStyle(textStyle);
+
+    if(spaceBetweenHeadlineAndBody !=null){
+      T.setHeight(spaceBetweenHeadlineAndBody);
+      bodyRow = 3;
+    }
 
     Image bodyImage;
 
@@ -183,7 +186,6 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     List files = contentHelper.getFiles();
     if(files!=null){
       try{
-      Table imageTable = new Table(1, 2);
       ICFile imagefile = (ICFile)files.get(0);
       int imid = imagefile.getID();
       String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
@@ -192,43 +194,31 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       Image textImage = new Image(imid);
       if(att != null)
         textImage.setAttributes(getAttributeMap(att));
-      T.add(textImage,1,2);
+      T.add(textImage,1,bodyRow);
       }
       catch(SQLException ex){
         ex.printStackTrace();
       }
     }
-    //if ( text.getIncludeImage().equals("Y") ) {
-      //bodyImage = new Image(text.getImageId());
-    /* image dót
-    if ( txText.getIncludeImage() ) {
-      bodyImage = new Image(txText.getImageId());
-      bodyImage.setAttribute("align","right");
-      bodyImage.setAttribute("vspace","6");
-      bodyImage.setAttribute("hspace","6");
-
-      if ( displayHeadline ) {
-        T.add(bodyImage,1,2);
-      }
-      else {
-        T.add(bodyImage,1,1);
-      }
-    }
-    */
-
     ////////////////////////////////////////////
     if ( displayHeadline ) {
       if ( headline.getText() != null ) {
         Anchor headlineAnchor = new Anchor(headline,headline.getText());
         headlineAnchor.setFontColor(headlineColor);
-        T.add(headlineAnchor ,1,1);
-        T.add(body,1,2);
+        T.add(headlineAnchor ,1,headerRow);
+        T.add(body,1,bodyRow);
       }
     }
     else {
-      T.mergeCells(1,1,1,2);
-      T.add(body,1,1);
+      bodyRow = 1;
+      T.add(body,1,bodyRow);
     }
+
+    if( headlineBgColor != null )
+      T.setRowColor(headerRow,headlineBgColor);
+    if( textBgColor != null )
+      T.setRowColor(bodyRow,textBgColor);
+
 
     return T;
   }
@@ -340,6 +330,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     this.textWidth=textWidth;
   }
 
+  public void setSpaceAfterHeadlin(String space){
+    spaceBetweenHeadlineAndBody = space;
+  }
+
   public void setReverse() {
     this.reverse=true;
   }
@@ -384,6 +378,7 @@ public synchronized Object clone() {
       obj.viewall = this.viewall;
       obj.newobjinst = this.newobjinst;
       obj.newWithAttribute = this.newWithAttribute;
+      obj.spaceBetweenHeadlineAndBody = this.spaceBetweenHeadlineAndBody;
 
     }
     catch(Exception ex) {
