@@ -89,16 +89,16 @@ public class MessengerApplet extends Applet implements Runnable{
 
 
 
-      Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
+      /*Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
       msg.setRecipientName("TEST");
 
       MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
-      listener.addMessageDialog(dialog);
+      listener.addMessageDialog(dialog);*/
 
       SingleLineItem test = new SingleLineItem(this);
-      test.setWindowToOpen(dialog);
+      //test.setWindowToOpen(dialog);
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
       test.setSize(16,100);
@@ -155,9 +155,9 @@ public class MessengerApplet extends Applet implements Runnable{
         MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
 
         if( messageDialog == null ) { //create a new dialog
-          Image logo = null;
+          ImageLabel logo = null;
           try {
-            logo = getImage(new URL(hostURL+resourceURL),"idegalogo.gif");
+            logo = new ImageLabel(getImage(new URL(hostURL+resourceURL),"idegalogo.gif"));
           }
           catch (MalformedURLException ex) {
             ex.printStackTrace(System.err);
@@ -171,9 +171,9 @@ public class MessengerApplet extends Applet implements Runnable{
           messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
           dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
-
           messageDialog.setVisible(true);
           listener.addMessageDialog(messageDialog);
+
         }
         else {
           messageDialog.setVisible(true);
