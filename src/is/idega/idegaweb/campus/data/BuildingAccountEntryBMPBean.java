@@ -1,5 +1,5 @@
 /*
- * $Id: BuildingAccountEntryBMPBean.java,v 1.2 2002/07/07 17:11:24 aron Exp $
+ * $Id: BuildingAccountEntryBMPBean.java,v 1.3 2002/07/07 18:50:02 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -71,7 +71,7 @@ group by b.bu_building_id,b.name,k.fin_acc_key_id, k.name,k.info
   public void initializeAttributes() {
     addAttribute(getColumnBuildingId(),"Building id",true,true,Integer.class);
     addAttribute(getColumnBuildingName(),"Building id",true,true,String.class);
-    addAttribute(getColumnKeyName(),"Key id",true,true,String.class);
+    addAttribute(getColumnKeyId(),"Key id",true,true,String.class);
     addAttribute(getColumnKeyName(),"Key name",true,true,String.class);
     addAttribute(getColumnKeyInfo(),"Key info",true,true,String.class);
     addAttribute(getColumnTotal(),"Total",true,true,Float.class);
