@@ -62,10 +62,22 @@ public abstract class AbstractServiceOverview extends TravelManager implements S
   }
 
   protected Text getTimeframeText(Timeframe timeframe, IWContext iwc) {
-    IWTimestamp from = new IWTimestamp(timeframe.getFrom());
-    IWTimestamp to = new IWTimestamp(timeframe.getTo());
+//    IWTimestamp from = new IWTimestamp(timeframe.getFrom());
+//    IWTimestamp to = new IWTimestamp(timeframe.getTo());
+    IWCalendar cal = new IWCalendar(new IWTimestamp(timeframe.getFrom()));
+		String txt1 = cal.getLocaleDate();
+    cal = new IWCalendar(new IWTimestamp(timeframe.getTo()));
+		String txt2 = cal.getLocaleDate();
+		
+	  try {
+	    if (timeframe.getIfYearly() ){
+	      txt1 = txt1.substring(0, txt1.length() -4);
+	      txt2 = txt2.substring(0, txt2.length() -4);
+	    }
+	  }catch (ArrayIndexOutOfBoundsException ai) {}
+
     Text text = new Text();
-      text.setText(from.getLocaleDate(iwc)+ " - " + to.getLocaleDate(iwc) );
+      text.setText(txt1+ " - " + txt2 );
     return text;
   }
 

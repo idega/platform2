@@ -320,6 +320,7 @@ public DropdownMenu getVisibilityDropdown() {
               pCat.setSupplierId(supplier.getID());
               pCat.setExtraInfo("");
               pCat.setVisibility(visibility);
+              pCat.isNetbookingCategory(false);
               if (this.miscellaneousServices) {
                 pCat.setCountAsPerson(false);
               }else {

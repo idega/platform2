@@ -113,7 +113,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
 		cat.setVisibility(visibility);
 
-//    cat.isNetbookingCategory(isNetbooking);
+//		/** backwards compatability */
+//    cat.isNetbookingCategory(false);
     cat.setSupplierId(supplierId);
     cat.setCountAsPerson(true);
 

@@ -136,6 +136,7 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
 		int vis = this.getIntColumnValue(getColumnNameVisibility());	
 		if (vis < 1) {
 			try {
+				isNetbookingCategory(false);
 				if (isNetbookingCategory()) {
 					setVisibility(PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC);
 					update();

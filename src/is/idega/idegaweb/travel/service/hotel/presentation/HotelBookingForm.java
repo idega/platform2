@@ -70,7 +70,7 @@ public class HotelBookingForm extends BookingForm {
   }
 
   public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
-    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp, false, false);
+    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp, false, true);
   }
 
 
