@@ -14,6 +14,18 @@ public final class IWMemberConstants {
 	
 	public static final String META_DATA_CLUB_LEAGUE_CONNECTION = "CLUBINFO_CONN";
 	public static final String META_DATA_DIVISION_LEAGUE_CONNECTION ="CLUBDIV_CONN";
+	public static final String META_DATA_CLUB_USING_SYSTEM = "CLUBINFO_SYSTEM";
+	public static final String META_DATA_CLUB_OPERATION = "CLUBINFO_OPERATION";
+	public static final String META_DATA_CLUB_STATUS = "CLUBINFO_STATUS";
+	public static final String META_DATA_CLUB_MAKE = "CLUBINFO_MAKE";
+	public static final String META_DATA_CLUB_MEMBER = "CLUBINFO_MEMBER";
+	public static final String META_DATA_CLUB_TYPE = "CLUBINFO_TYPE";
+	public static final String META_DATA_CLUB_FOUNDED = "CLUBINFO_FOUNDED";
+	public static final String META_DATA_CLUB_NAME = "CLUBINFO_NAME";
+	public static final String META_DATA_CLUB_SHORT_NAME = "CLUBINFO_SHORT";
+	public static final String META_DATA_CLUB_ABRV = "CLUBINFO_ABRV";
+	public static final String META_DATA_CLUB_SSN = "CLUBINFO_SSN";
+	public static final String META_DATA_CLUB_NUMBER = "CLUBINFO_NUMBER";
 	
 	public static final String META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX = "CLUB_MEMB_NR_";//suffix with club id (group)
 	
