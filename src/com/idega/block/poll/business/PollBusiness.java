@@ -222,6 +222,7 @@ public static final String _PARAMETER_CLOSE = "close";
 
       Cookie cookie = new Cookie(URI+"_idega_poll_"+Integer.toString(pollQuestionID),"vote");
       cookie.setMaxAge(394200000);
+      cookie.setComment("A cookie that checks whether a specific user has already cast a vote for a specific poll");
       iwc.addCookies(cookie);
     }
 	}
@@ -234,6 +235,7 @@ public static final String _PARAMETER_CLOSE = "close";
     if (cookies != null) {
       if (cookies.length > 0) {
         for (int i = 0 ; i < cookies.length ; i++) {
+          System.out.println(cookies[i]);
           if ( cookies[i].getName().equals(URI+"_idega_poll_"+Integer.toString(pollQuestionID)) ) {
             returner = false;
             continue;
@@ -620,7 +622,6 @@ public static final String _PARAMETER_CLOSE = "close";
   }
 
   public static PollQuestion getPollByDate(PollEntity poll, idegaTimestamp date) {
-    System.out.println("Is here!");
     try {
       boolean isActive = false;
       List polls = getPollQuestions(poll);
@@ -632,7 +633,6 @@ public static final String _PARAMETER_CLOSE = "close";
 
           if ( before != null ) {
             if ( date.isLaterThan(before) ) {
-              System.out.println("Date is later than before");
               isActive = true;
             }
             else {
@@ -641,7 +641,6 @@ public static final String _PARAMETER_CLOSE = "close";
           }
           if ( after != null ) {
             if ( after.isLaterThan(date) && isActive ) {
-              System.out.println("After is later than date");
               isActive = true;
             }
             else {
