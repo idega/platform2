@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractTagBMPBean.java,v 1.5 2003/06/11 15:45:54 roar Exp $
+ * $Id: ContractTagBMPBean.java,v 1.6 2003/07/01 15:01:00 roar Exp $
 
  *
 
@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import com.idega.data.IDOQuery;
 
 
 
@@ -185,6 +187,14 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 		return super.idoFindPKsByQuery(
 			idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), catID));
 	}
+	
+	public Collection ejbFindAllByNameAndCategory(String name, int categoryId) throws javax.ejb.FinderException{
+		 IDOQuery sql = idoQuery();
+		 sql.appendSelectAllFrom(this); //.append("c , proc_case p");
+		 sql.appendWhereEquals(getColumnNameName(), "'" + name + "'");
+		 sql.appendAndEquals(getColumnNameCategoryId(), categoryId);
+		 return (Collection) super.idoFindPKsBySQL(sql.toString());  
+	}	
 
 
 }
