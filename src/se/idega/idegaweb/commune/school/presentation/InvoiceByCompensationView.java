@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
 /**
@@ -19,15 +19,15 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/10/21 10:46:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/21 13:22:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
  */
-public class InvoiceByCompensationView extends CommuneBlock {
+public class InvoiceByCompensationView extends AccountingBlock {
     private static final String PREFIX = "CompByInv_";
 
     private static final String BACK_DEFAULT = "Tillbaka";
@@ -52,6 +52,12 @@ public class InvoiceByCompensationView extends CommuneBlock {
     private static final String MEMBERID_KEY = PREFIX + "memberId";
     private static final String NAME_DEFAULT = "Namn";
     private static final String NAME_KEY = PREFIX + "name";
+	private final static String OPERATIONAL_FIELD_KEY
+        = PREFIX + "operational_field";
+	private final static String OPERATIONAL_FIELD_SELECTOR_HEADER_KEY
+        = PREFIX + "operational_field_selector_header";
+	private final static String OPERATIONAL_FIELD_SELECTOR_HEADER_DEFAULT
+        = "Välj huvudverksamhet";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String SAVE_DEFAULT = "Spara";
@@ -69,17 +75,18 @@ public class InvoiceByCompensationView extends CommuneBlock {
     private static final String ACTION_SAVE_KEY = PREFIX + "actionSave";
     private static final String ACTION_SHOWUSER_KEY = PREFIX + "actionShowUser";
 
+
     private static final SimpleDateFormat dateFormatter
         = new SimpleDateFormat ("yyyy-MM-dd");
     private static final SimpleDateFormat shortDateFormatter
         = new SimpleDateFormat ("yyyyMMdd");
 
 	/**
-	 * Main is the event handler of InvoiceByCompensationForm.
+	 * Init is the event handler of InvoiceByCompensationForm.
 	 *
 	 * @param context session data like user info etc.
 	 */
-	public void main(final IWContext context) {
+	public void init (final IWContext context) {
 		setResourceBundle (getResourceBundle(context));
 
 		try {
@@ -266,7 +273,7 @@ public class InvoiceByCompensationView extends CommuneBlock {
         form.add (mainTable);
         form.maintainParameter (MEMBERID_KEY);
         final Table formTable = new Table ();
-        formTable.add (form);
+        formTable.add (form, 1, 1);
         add (createMainTable (formTable));
     }
 
@@ -329,7 +336,8 @@ public class InvoiceByCompensationView extends CommuneBlock {
 	 * @param content the page unique content
      * @return Table to add to output
 	 */
-    private Table createMainTable (final PresentationObject content) {
+    private Table createMainTable (final PresentationObject content)
+        throws RemoteException {
         final Table mainTable = new Table();
         mainTable.setCellpadding (getCellpadding ());
         mainTable.setCellspacing (getCellspacing ());
@@ -346,7 +354,10 @@ public class InvoiceByCompensationView extends CommuneBlock {
         innerTable.add (getSmallHeader (localize (MAINACTIVITY_KEY,
                                                   MAINACTIVITY_DEFAULT) + ":"),
                         1, 1);
-        innerTable.add (new Text (localize (SCHOOL_KEY, SCHOOL_DEFAULT)), 2, 1);
+        String operationalField = getSession ().getOperationalField();
+        operationalField = operationalField == null ? "" : operationalField;
+        innerTable.add (getOperationalFieldDropdownMenu
+                        (OPERATIONAL_FIELD_KEY, operationalField), 2, 1);
         mainTable.add (innerTable, 1, 2);
         mainTable.add (content, 1, 3);
         return mainTable;
@@ -371,6 +382,32 @@ public class InvoiceByCompensationView extends CommuneBlock {
         return school.getName ();
     }
 
+
+	/*
+	 * Returns a DropdownMenu for operational fields. 
+	 */
+	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(OPERATIONAL_FIELD_SELECTOR_HEADER_KEY, OPERATIONAL_FIELD_SELECTOR_HEADER_DEFAULT));
+		try {
+			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					SchoolCategory sc = (SchoolCategory) iter.next();
+					String id = sc.getPrimaryKey().toString();
+					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
+				}
+				if (operationalField != null) {
+					menu.setSelectedElement(operationalField);
+				}
+			}		
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		return menu;	
+	}
+	
     private static Date getDateFromString (final String rawInput) {
         final StringBuffer digitOnlyInput = new StringBuffer();
         for (int i = 0; i < rawInput.length(); i++) {
