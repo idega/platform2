@@ -29,6 +29,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -78,11 +79,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/24 08:14:10 $ by $Author: laddi $
+ * Last modified: $Date: 2004/03/17 15:46:53 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.106 $
+ * @version $Revision: 1.107 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1374,6 +1375,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			final User verifiedCentralAdmin
 					= (User) context.getSessionAttribute (sessionKey);
 			final User user = context.getCurrentUser ();
+
 			if (null != verifiedCentralAdmin && user.equals ((IDOEntity)verifiedCentralAdmin)) {
 				// certificate were cached
 				return true;
@@ -1384,8 +1386,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 					= getCommuneUserBusiness ().getRootAdministratorGroupID ();
 			final GroupHome home =	(GroupHome) IDOLookup.getHome (Group.class);
 			final Group communeGroup = home.findByPrimaryKey (new Integer (groupId));
-			if (user != null && communeGroup != null
-					&& (user.hasRelationTo (communeGroup)
+			final Collection usersGroups = getUserBusiness ().getUserGroups
+					(((Integer) user.getPrimaryKey ()).intValue ());
+			if (usersGroups != null && communeGroup != null
+					&& (usersGroups.contains (communeGroup)
 							|| user.getPrimaryKey ().equals (new Integer (1)))) {
 				// user is allaowed, cache certificate and return true
 				context.setSessionAttribute (sessionKey, user);
@@ -1701,6 +1705,11 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		createPaymentPage = page;
 	}
 
+	private UserBusiness getUserBusiness () throws RemoteException {
+		return (UserBusiness) IBOLookup.getServiceInstance
+				(getIWApplicationContext (), UserBusiness.class);	
+	}
+	
 	private SchoolUserBusiness getSchoolUserBusiness () throws RemoteException {
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance
 				(getIWApplicationContext (), SchoolUserBusiness.class);	
