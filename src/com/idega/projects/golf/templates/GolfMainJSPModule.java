@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.9 2001/05/15 15:40:53 gimmi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.10 2001/05/22 19:10:10 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,8 @@ import com.idega.util.*;
 import java.sql.*;
 import com.idega.projects.golf.entity.*;
 import java.io.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  * @author
@@ -40,18 +42,20 @@ public class GolfMainJSPModule extends MainSideJSPModule {
   protected final int SIDEWIDTH = 720;
   protected final int LEFTWIDTH = 163;
   protected final int RIGHTWIDTH = 148;
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
   public void initializePage() {
     super.initializePage();
+    ModuleInfo modinfo = getModuleInfo();
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
 
-    setLinkColor("black");
+    //setLinkColor("black");
+    setLinkColor(iwb.getProperty("link_color"));
     setVlinkColor("black");
     setHoverColor("#8ab490");
-
-    setMarginWidth(0);
-    setMarginHeight(0);
-    setLeftMargin(0);
-    setTopMargin(0);
 
     try {
      User();
@@ -821,5 +825,10 @@ public class GolfMainJSPModule extends MainSideJSPModule {
 
   public void setUnionID(ModuleInfo modinfo, String union_id){
     modinfo.setSessionAttribute("golf_union_id", union_id);
+  }
+
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 }
