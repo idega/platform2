@@ -105,7 +105,8 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		setTitle(getResourceBundle(iwc).getLocalizedString(WINDOW_NAME,"Update League Template Window"));
+		iwrb.getLocalizedString(WINDOW_NAME,"Update League Template Window");
+		addTitle(iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"), TITLE_STYLECLASS);
 
 		init(iwc);
 		if (group != null) {
