@@ -55,6 +55,10 @@ private String gender;
 
   public void main(ModuleInfo modinfo) throws SQLException {
 
+    if ( gender.equalsIgnoreCase("b") ) {
+      gender = "m' and gender = 'f";
+    }
+
     tournament = new Tournament(tournament_id);
     type = tournament.getTournamentType();
     tournamentRounds = (TournamentRound[]) (new TournamentRound()).findAllByColumnOrdered("tournament_id",tournament_id+"","round_number");
