@@ -84,6 +84,7 @@ public class ClientManager implements PacketManager{
           else if( key.equalsIgnoreCase(LOG_OUT) ){
             sessionId = (String) prop.getValue();
             clients.remove(sessionId);
+            version++;
             System.out.println("ClientManager:logging off user "+prop.getValue());
           }
 
