@@ -95,6 +95,7 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 		addAttribute(DATE_OF_BIRTH, "Faedingardagur", true, true, String.class, 6);
 		
 		addIndex(SSN);
+		setUnique(SSN, true);
 	}
 
 	public void setSymbol(String symbol) {
