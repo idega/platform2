@@ -96,7 +96,7 @@ public class ErrorLogger {
 	 * @param e
 	 */	
 	public void append(Exception e){
-		message.add("Stacktrace:");
+		message.add("Stacktrace:"+e.getMessage());
 		StackTraceElement[] stackTraceElement = e.getStackTrace();
 		for(int i=0; i<stackTraceElement.length;i++){
 			message.add(stackTraceElement[i].toString());
