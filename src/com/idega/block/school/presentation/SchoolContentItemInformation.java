@@ -38,7 +38,10 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 		
 		setAttributes(table);*/
 		
-		return getText(lText.getBody());		
+		if (lText != null) {
+			return getText(lText.getBody());		
+		}
+		return null;
 	}
 	
 	/*private void setAttributes(Table table) {
