@@ -69,6 +69,15 @@ public SchoolYear findByYearName(java.lang.String p0)throws javax.ejb.FinderExce
 	return this.findByPrimaryKey(pk);
 }
 
+public SchoolYear findPreviousSchoolYearFromAge(SchoolYear p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolYearBMPBean)entity).ejbFindPreviousSchoolYearFromAge(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+
+
  public SchoolYear findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (SchoolYear) super.findByPrimaryKeyIDO(pk);
  }

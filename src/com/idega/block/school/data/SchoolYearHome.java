@@ -13,5 +13,5 @@ public interface SchoolYearHome extends com.idega.data.IDOHome
  public java.util.Collection findBySchoolCategory(java.lang.String p0)throws javax.ejb.FinderException;
  public SchoolYear findByYearName(com.idega.block.school.data.SchoolType p0,java.lang.String p1)throws javax.ejb.FinderException;
  public SchoolYear findByYearName(java.lang.String p0)throws javax.ejb.FinderException;
-
+ public SchoolYear findPreviousSchoolYearFromAge(SchoolYear p0)throws javax.ejb.FinderException;
 }

@@ -1,5 +1,7 @@
 package com.idega.block.school.data;
 
+import javax.ejb.FinderException;
+
 
 public interface SchoolYear extends com.idega.data.IDOEntity
 {
@@ -15,4 +17,5 @@ public interface SchoolYear extends com.idega.data.IDOEntity
  public void setSchoolYearAge(int p0);
  public void setSchoolYearInfo(java.lang.String p0);
  public void setSchoolYearName(java.lang.String p0);
+ public SchoolYear getPreviousSchoolYearFromAge()throws FinderException;
 }

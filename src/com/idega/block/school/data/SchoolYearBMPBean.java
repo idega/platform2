@@ -87,6 +87,15 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
 		setColumn(SCHOOL_TYPE, id);
 	}
 	
+	/**
+	 * Gets the previous schoolYear from the age of this schoolYear-1
+	 * @return
+	 * @throws FinderException If no SchoolYear is found
+	 */
+	public SchoolYear getPreviousSchoolYearFromAge() throws FinderException{
+		return ((SchoolYearHome)this.getEJBLocalHome()).findPreviousSchoolYearFromAge(this);
+	}
+	
 	public Collection getSchoolYears(SchoolType schoolType) throws FinderException {
 		return this.idoFindAllIDsByColumnBySQL(SCHOOL_TYPE, schoolType.getPrimaryKey().toString());
 	}
@@ -139,6 +148,30 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
   	query.appendSelect().append("y.*").appendFrom().append(getEntityName()).append(" y, sch_school_type t ");
   	query.appendWhereEquals("y."+this.SCHOOL_TYPE, "t.sch_school_type_id").appendAndEqualsQuoted("t.school_category", schoolCategory);
   	return idoFindPKsByQuery(query);
+  }
+  
+  /**
+   * Finds the year (the first found) from the schoolYearAge of year-1.<br>
+   * Tries to first find the hear by the same SchoolType as parameter year
+   * , if no are found it finds by all schoolTypes.<br>
+   * @param year the year to find previous year for
+   * @return
+   * @throws FinderException
+   */
+  public Integer ejbFindPreviousSchoolYearFromAge(SchoolYear year)throws FinderException{
+  	
+	int previousYearAge = year.getSchoolYearAge()-1;
+	
+	Collection coll = this.ejbFindAllByAge(year.getSchoolType(),previousYearAge);
+	if(coll.isEmpty()){
+		coll = this.ejbFindAllByAge(previousYearAge);
+	}
+	if(!coll.isEmpty()){
+		return (Integer)coll.iterator().next();
+	}
+	else{
+		throw new IDOFinderException("SchoolYear: No Previous SchoolYears found");
+	}
   }
 
 }
