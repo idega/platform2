@@ -626,37 +626,39 @@ public class SchoolContentEditor extends IWAdminWindow{
 				//User currentUser = iwc.getCurrentUser();
 				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
 
-				if (!school_name.equals("")) {
+				//if (!school_name.equals("")) { 
+				// changed all if cases below so that it saves the changes if the user emptied the field
+				if (school_name != null) {
 					_school.setSchoolName(school_name);	
 				}
-				if (!street.equals("")) {
+				if (street != null) {
 					_school.setSchoolAddress(street);	
 				}
-				if (visitAddress != null && !visitAddress.equals("")) {
+				if (visitAddress != null) {
 					_school.setSchoolVisitAddress(visitAddress);	
 				}				
-				if (!postalCode.equals("")) {
+				if (postalCode != null) {
 					_school.setSchoolZipCode(postalCode);
 				}
-				if (!zipArea.equals("")) {
+				if (zipArea != null) {
 					_school.setSchoolZipArea(zipArea);	
 				}
-				if (!phone.equals("")) {
+				if (phone != null) {
 					_school.setSchoolPhone(phone);
 				}
-				if (!fax.equals("")) {
+				if (fax != null) {
 					_school.setSchoolFax(fax);
 				}
-				if (email != null && !email.equals("")) {
+				if (email != null) {
 					_school.setSchoolEmail(email);
 				}
-				if (!webPage.equals("")) {
+				if (webPage != null) {
 					_school.setSchoolWebPage(webPage);	
 				}
-				if (!activity.equals("")) {
+				if (activity != null) {
 					_school.setActivity(activity);	
 				}
-				if (!openHours.equals("")) {
+				if (openHours != null) {
 					_school.setOpenHours(openHours);	
 				}
 				if (manType != null && !manType.equals("-1")) {
@@ -667,7 +669,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 					}
 				}
 						
-				if (!mapUrl.equals("")) {
+				if (mapUrl != null) {
 					_school.setMapUrl(mapUrl);	
 				}
 				
