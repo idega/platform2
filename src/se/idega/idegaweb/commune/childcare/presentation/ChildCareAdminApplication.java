@@ -378,9 +378,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			boolean isAfterSchoolApplication = getBusiness().isAfterSchoolApplication(application);
 			if (!isAfterSchoolApplication)
 				numberInQueue = getBusiness().getNumberInQueueByStatus(application);
+			
 			char status = application.getApplicationStatus();
 
-			if (status == getBusiness().getStatusSentIn()) {
+			boolean hasSchoolPlacement = getBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), application.getProviderId(), getBusiness().getSchoolBusiness().getCategoryElementarySchool());
+			boolean instantContract = isAfterSchoolApplication && hasSchoolPlacement && (status == getBusiness().getStatusSentIn());
+
+			if (status == getBusiness().getStatusSentIn() && !instantContract) {
 				int column = 3;
 				if (numberInQueue == 1 || hasPriority) {
 					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
@@ -448,10 +452,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					table.add(removeFromQueue, column, 1);
 				}
 			}
-			else if (status == getBusiness().getStatusParentsAccept()) {
+			else if (status == getBusiness().getStatusParentsAccept() || instantContract) {
 				GenericButton createContract = null;
 				GenericButton disabledCreateContract = null;
-				
+								
 				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
 					createContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					/*createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_BANKID_CONTRACT);
