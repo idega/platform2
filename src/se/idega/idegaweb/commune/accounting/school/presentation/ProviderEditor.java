@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.2 2003/09/17 16:27:27 anders Exp $
+ * $Id: ProviderEditor.java,v 1.3 2003/09/18 15:38:37 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -54,10 +54,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/17 16:27:27 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/18 15:38:37 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -201,9 +201,8 @@ public class ProviderEditor extends AccountingBlock {
 	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Providers");
-//		app.setSearchPanel(getSearchPanel());
+		app.setSearchPanel(getButtonPanel());
 		app.setMainPanel(getProviderList(iwc));
-		app.setButtonPanel(getButtonPanel());
 		add(app);
 	}
 
@@ -212,7 +211,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "-1", 
-				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", null, true));
+				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", "", null, true));
 	}
 
 	/*
@@ -271,6 +270,8 @@ public class ProviderEditor extends AccountingBlock {
 					provider.getPostgiro(),
 					provider.getBankgiro(),
 					provider.getStatisticsType(),
+					provider.getOwnPosting(),
+					provider.getDoublePosting(),
 					null,
 					false));
 		} catch (RemoteException e) {
@@ -283,8 +284,12 @@ public class ProviderEditor extends AccountingBlock {
 	 */
 	private void handleSaveAction(IWContext iwc) {
 		String errorMessage = null;
+		PostingBlock p = new PostingBlock(null, null);
+		p.generateStrings(iwc);
+		String ownPosting = p.getOwnPosting();
+		String doublePosting = p.getDoublePosting();
 
-		try {
+		try {			
 			ProviderBusiness pb = getProviderBusiness(iwc);
 			pb.saveProvider(
 					getParameter(iwc, PARAMETER_SCHOOL_ID),
@@ -310,8 +315,8 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_POSTGIRO),
 					getParameter(iwc, PARAMETER_BANKGIRO),
 					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
-					"", // getParameter(iwc, PARAMETER_OWN_POSTING),
-					""); // getParameter(iwc, PARAMETER_DOUBLE_POSTING))
+					ownPosting, 
+					doublePosting); 
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -345,6 +350,8 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_POSTGIRO),
 					getParameter(iwc, PARAMETER_BANKGIRO),
 					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
+					ownPosting,
+					doublePosting,
 					errorMessage,
 					!iwc.isParameterSet(PARAMETER_EDIT)));
 		} else {
@@ -491,6 +498,8 @@ public class ProviderEditor extends AccountingBlock {
 			String postgiro,
 			String bankgiro,
 			String statisticsType,
+			String ownPosting,
+			String doublePosting,
 			String errorMessage,
 			boolean isNew) {
 				
@@ -604,6 +613,9 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getTextInput(PARAMETER_BANKGIRO, bankgiro, 100), 2, row++);
 		table.add(getCheckBoxTable(PARAMETER_PAYMENT_BY_INVOICE, paymentByInvoice, KEY_PAYMENT_BY_INVOICE, "Payment by invoice"), 2, row++);
 		table.add(getCheckBoxTable(PARAMETER_CENTRALIZED_ADMINISTRATION, centralizedAdministration, KEY_CENTRALIZED_ADMINISTRATION, "Centralized administration"), 2, row++);
+
+		row += 2;
+		table.add(new PostingBlock(ownPosting, doublePosting), 2, row);
 		
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
