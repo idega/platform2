@@ -185,7 +185,7 @@ public class AdditionalBooking extends TravelWindow {
         try {
             ++row;
             category = pPrices[i].getPriceCategory();
-            int price = (int) tsb.getPrice(service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+            int price = (int) tsb.getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
             pPriceCatNameText = (Text) text.clone();
               pPriceCatNameText.setText(category.getName());
 

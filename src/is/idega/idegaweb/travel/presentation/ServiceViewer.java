@@ -465,7 +465,7 @@ public class ServiceViewer extends Window {
     if (cutOff) {
       prices = ProductPrice.getProductPrices(product.getID(), timeframes[0].getID(), depAddresses[0].getID(), true);
       if (prices.length > 0) {
-        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(TravelStockroomBusiness.getPrice(prices[0].getID(), service.getID(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
       }
     }else {
       Currency currency;
@@ -500,11 +500,11 @@ public class ServiceViewer extends Window {
               nameOfCategory = getText(prices[j].getPriceCategory().getName());
                 nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               try {
-                priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
                 currencyText = getBoldText(currency.getCurrencyAbbreviation());
                 pTable.add(currencyText,5,pRow);
               }catch (ProductPriceException p) {
-                priceText.setText("T - rangt upp sett");
+                priceText.setText("Rangt upp sett");
               }
 
               pTable.add(nameOfCategory,3,pRow);

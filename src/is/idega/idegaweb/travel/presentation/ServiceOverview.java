@@ -235,11 +235,11 @@ public class ServiceOverview extends TravelManager {
           try {
             product = (Product) products.get(i);
             contentTable = getProductInfoTable(iwc,iwrb,product);
-            /*
-            ServiceViewer sv = new ServiceViewer();
+
+            /*ServiceViewer sv = new ServiceViewer();
               sv.setService(new Service(product.getID()));
-            table.add(sv);
-            */
+            table.add(sv);*/
+
 
             ++row;
             table.mergeCells(1,row,5,row);
@@ -604,7 +604,7 @@ public class ServiceOverview extends TravelManager {
               priceText = (Text) theBoldText.clone();
                 priceText.setFontColor(super.BLACK);
               try {
-                priceText.setText(df.format(tsb.getPrice(-1,service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
               }catch (ProductPriceException p) {

@@ -278,7 +278,7 @@ public class TourBookingForm extends TravelManager {
               try {
                   ++row;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) tsb.getPrice(_service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+                  int price = (int) tsb.getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -297,7 +297,7 @@ public class TourBookingForm extends TravelManager {
                         if (entries[j].getProductPriceId() == pPrices[i].getID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * tsb.getPrice(_productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow()));
+                          currentSum = (int) (currentCount * tsb.getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow()));
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -767,7 +767,7 @@ public class TourBookingForm extends TravelManager {
                         if (entries[j].getProductPriceId() == pPrices[i].getID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * tsb.getPrice( _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow()));
+                          currentSum = (int) (currentCount * tsb.getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow()));
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -882,7 +882,7 @@ public class TourBookingForm extends TravelManager {
             table.setAlignment(3,row,"right");
             table.setAlignment(4,row,"right");
 
-
+            /*
             if (super.user != null) {
               ++row;
               table.mergeCells(1,row,6,row);
@@ -906,7 +906,7 @@ public class TourBookingForm extends TravelManager {
               table.setAlignment(1,row, "right");
               table.add(tUser, 1, row);
               table.add(usersDrop, 2 ,row);
-            }
+            }*/
             ++row;
             table.mergeCells(1,row,6,row);
             table.add(hr,1,row);

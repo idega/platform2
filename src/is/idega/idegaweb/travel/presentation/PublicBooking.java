@@ -344,7 +344,7 @@ public class PublicBooking extends Block  {
             nameOfCategory = getText(prices[j].getPriceCategory().getName());
               nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
             try {
-              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
               currencyText = getBoldText(currency.getCurrencyAbbreviation());
               pTable.add(currencyText,5,pRow);
             }catch (ProductPriceException p) {
@@ -666,8 +666,8 @@ public class PublicBooking extends Block  {
       }
       catch(com.idega.block.tpos.business.TPosException e) {
         System.out.println("TPOS errormessage = " + e.getErrorMessage());
-        //System.out.println("number = " + e.getErrorNumber());
-        //System.out.println("display = " + e.getDisplayError());
+        System.out.println("number = " + e.getErrorNumber());
+        System.out.println("display = " + e.getDisplayError());
         //display.setText(e.getDisplayError());
         display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
       }

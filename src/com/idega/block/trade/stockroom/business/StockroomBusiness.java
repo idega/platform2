@@ -75,13 +75,10 @@ public class StockroomBusiness /* implements SupplyManager */ {
        }
   }
 
-  public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
-    return getPrice(-1, productId, priceCategoryId, currencyId, time);
-  }
-
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
+
 
     try {
         PriceCategory cat = new PriceCategory(priceCategoryId);
@@ -112,7 +109,6 @@ public class StockroomBusiness /* implements SupplyManager */ {
           if(result != null && result.size() > 0){
             return ((ProductPrice)result.get(0)).getPrice();
           }else{
-            System.err.println("Er her 2");
             throw new ProductPriceException();
           }
         }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
@@ -136,7 +132,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             disc = ((ProductPrice)result.get(0)).getPrice();
           }
 
-          float pr = StockroomBusiness.getPrice(productPriceId, productId,cat.getParentId(),currencyId,time);
+          float pr = StockroomBusiness.getPrice(-1, productId,cat.getParentId(),currencyId,time);
           return pr*((100-disc) /100);
         }else{
           throw new ProductPriceException();
