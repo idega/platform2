@@ -342,17 +342,12 @@ public class IFSFileCreationThread extends Thread {
 			catch (FinderException e2) {
 				e2.printStackTrace();
 			}				
-			catch(Exception e) {
-				e.printStackTrace();
-			}
+
 			try {		
 				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"), true);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
-			}
-			catch(Exception e) {
-				e.printStackTrace();
 			}
 			
 			Iterator it = rec.iterator();
