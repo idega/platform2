@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.3 2003/09/18 15:38:37 anders Exp $
+ * $Id: ProviderEditor.java,v 1.4 2003/09/22 08:47:40 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -54,10 +54,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/18 15:38:37 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/22 08:47:40 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -211,7 +211,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "-1", 
-				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", "", null, true));
+				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
 	}
 
 	/*
@@ -611,10 +611,11 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getTextInput(PARAMETER_POSTGIRO, postgiro, 100), 2, row++);
 		table.add(getSmallHeader(localize(KEY_BANKGIRO, "Bankgiro")), 1, row);
 		table.add(getTextInput(PARAMETER_BANKGIRO, bankgiro, 100), 2, row++);
+		row++;
 		table.add(getCheckBoxTable(PARAMETER_PAYMENT_BY_INVOICE, paymentByInvoice, KEY_PAYMENT_BY_INVOICE, "Payment by invoice"), 2, row++);
 		table.add(getCheckBoxTable(PARAMETER_CENTRALIZED_ADMINISTRATION, centralizedAdministration, KEY_CENTRALIZED_ADMINISTRATION, "Centralized administration"), 2, row++);
 
-		row += 2;
+		row++;
 		table.add(new PostingBlock(ownPosting, doublePosting), 2, row);
 		
 		Table mainPanel = new Table();
