@@ -1,5 +1,5 @@
 /*
- * $Id: EmploymentTypeBMPBean.java,v 1.1 2003/10/27 16:15:37 palli Exp $
+ * $Id: EmploymentTypeBMPBean.java,v 1.1 2004/10/07 13:46:02 thomas Exp $
  *
  * Copyright (C) 2003 Idega software. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  * 
  */
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.accounting.childcare.data;
 
 import java.util.Collection;
 
