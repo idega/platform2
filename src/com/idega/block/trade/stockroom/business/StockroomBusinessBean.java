@@ -110,7 +110,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
        return prPrice;
   }
 
-  public  float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
+  public  float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException, RemoteException {
     return getPrice(productPriceId, productId, priceCategoryId, currencyId, time, -1, -1);
   }
 
@@ -139,11 +139,11 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return null;
   }
 
-  public float getPrice(int productPriceId, int productId, int priceCategoryId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
+  public float getPrice(int productPriceId, int productId, int priceCategoryId, Timestamp time, int timeframeId, int addressId) throws SQLException, RemoteException {
     return getPrice(productPriceId, productId, priceCategoryId, -1, time, timeframeId, addressId);
   }
 
-  public float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
+  public float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException, RemoteException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
 
@@ -264,7 +264,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   /**
    * returns 0.0 if pricecategory is not of type com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT
    */
-  public float getDiscount(int productId, int priceCategoryId, Timestamp time) throws SQLException{
+  public float getDiscount(int productId, int priceCategoryId, Timestamp time) throws RemoteException, SQLException{
     PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
     if(cat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
       ProductPrice ppr = ((ProductPrice)com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class));
@@ -295,45 +295,53 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   }
 	
   public int createPriceCategory(int supplierId, String name, String description, String extraInfo, String key)throws SQLException {
-    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
-    cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
-
-    cat.setName(name);
-
-    if(description != null){
-      cat.setDescription(description);
-    }
-
-    if(extraInfo != null){
-      cat.setExtraInfo(extraInfo);
-    }
-    
-    if (key != null) {
-    	cat.setKey(key);
-    }
-
-    cat.insert();
-
-    return cat.getID();
+  		try {
+  			PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHome(PriceCategory.class)).create();
+	    cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
+	
+	    cat.setName(name);
+	
+	    if(description != null){
+	      cat.setDescription(description);
+	    }
+	
+	    if(extraInfo != null){
+	      cat.setExtraInfo(extraInfo);
+	    }
+	    
+	    if (key != null) {
+	    	cat.setKey(key);
+	    }
+	
+	    cat.insert();
+	
+	    return cat.getID();
+		} catch (Exception e) {
+			throw new SQLException(e.getMessage());
+		}
   }
 
 
   public void createPriceDiscountCategory(int parentId, int supplierId, String name, String description, String extraInfo) throws SQLException{
-    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
-    cat.setParentId(parentId);
-    cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT);
-
-    cat.setName(name);
-
-    if(description != null){
-      cat.setDescription(description);
-    }
-
-    if(extraInfo != null){
-      cat.setExtraInfo(extraInfo);
-    }
-
-    cat.insert();
+  		try {
+	    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHome(PriceCategory.class)).create();
+	    cat.setParentId(parentId);
+	    cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT);
+	
+	    cat.setName(name);
+	
+	    if(description != null){
+	      cat.setDescription(description);
+	    }
+	
+	    if(extraInfo != null){
+	      cat.setExtraInfo(extraInfo);
+	    }
+	
+	    cat.insert();
+  		} catch (Exception e) {
+  			throw new SQLException(e.getMessage());
+  		}
 
   }
 

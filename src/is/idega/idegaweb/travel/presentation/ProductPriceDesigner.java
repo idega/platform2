@@ -378,7 +378,7 @@ public class ProductPriceDesigner extends TravelWindow {
     return table;
   }
 
-	private int insertMiscellaneousProductCategories(Table table, int row,	PriceCategory[] misc, int tFrameId, int addressId) {
+	private int insertMiscellaneousProductCategories(Table table, int row,	PriceCategory[] misc, int tFrameId, int addressId) throws RemoteException {
 		Text catName;
 
 		if (misc.length > 0) {
@@ -405,7 +405,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		return row;
 	}
 	
-	private int insertSpecialPriceCategories(Table table, int row, PriceCategory[] specials, int tFrameId, int addressId) {
+	private int insertSpecialPriceCategories(Table table, int row, PriceCategory[] specials, int tFrameId, int addressId) throws RemoteException{
 		Text catName;
 
 		if (specials.length > 0) {
@@ -505,7 +505,7 @@ public class ProductPriceDesigner extends TravelWindow {
 
   }
 
-  private void insertCategoryIntoTable(Table table, int row, PriceCategory pCat, ProductPrice[] prices) throws SQLException{
+  private void insertCategoryIntoTable(Table table, int row, PriceCategory pCat, ProductPrice[] prices) throws SQLException, RemoteException{
     Text categoryName = getText(pCat.getName());
     Text infoText = getText(pCat.getName());
     TextInput priceDiscount = new TextInput(PARAMETER_PRICE_DISCOUNT);

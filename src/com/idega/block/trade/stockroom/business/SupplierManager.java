@@ -130,7 +130,7 @@ public class SupplierManager {
         }
       }
 
-      PriceCategory pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
+      PriceCategory pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHome(PriceCategory.class)).create();
         pCategory.setSupplierId(supp.getID());
         pCategory.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
         pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);

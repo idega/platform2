@@ -8,7 +8,6 @@ import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayBMPBean;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.data.ServiceDayPK;
-
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -19,11 +18,9 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.business.CurrencyHolder;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
@@ -32,6 +29,7 @@ import com.idega.block.trade.stockroom.business.StockroomBusiness;
 import com.idega.block.trade.stockroom.business.StockroomBusinessBean;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
+import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Reseller;
@@ -47,6 +45,7 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
@@ -373,11 +372,19 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   public PriceCategory[] getMiscellaneousServices(int supplierId) {
     PriceCategory[] returner = {};
     try {
-      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y",com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameCountAsPerson(), "N" );
+    		PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
+    		Collection coll = pcHome.findBySupplierAndCountAsPerson(supplierId, false);
+    		if (coll != null && !coll.isEmpty()) {
+    			returner = (PriceCategory[]) coll.toArray(new PriceCategory[]{});
+    		}
+      //returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y",com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameCountAsPerson(), "N" );
 //      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y");
-    }catch (SQLException sql) {
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
     }
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
     return returner;
   }
 
