@@ -431,13 +431,20 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 			Date from = parseDate(iwc.getParameter(PAR_FROM));
 			Date to = parseDate(iwc.getParameter(PAR_TO));
-			//Setting date to last day in month.
-			IWTimestamp lastDay = new IWTimestamp(to);
-			lastDay.addMonths(1);
-			lastDay.addDays(-1);
+			if (from == null || to == null){
+				errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
+			} else if (to.before(from)){
+				errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
+			} else {			
 			
-			entry.setFrom(from);
-			entry.setTo(lastDay.getDate());
+				//Setting date to last day in month.
+				IWTimestamp lastDay = new IWTimestamp(to);
+				lastDay.addMonths(1);
+				lastDay.addDays(-1);
+				
+				entry.setFrom(from);
+				entry.setTo(lastDay.getDate());
+			}
 			
 			String note = iwc.getParameter(PAR_REMARK);
 			if (note == null || note.length() == 0){
@@ -471,11 +478,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 						
 	//			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
 	//			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
-			if (from == null || to == null){
-				errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
-			} else if (to.before(from)){
-				errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
-			} 
+
 			if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
 				errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
 			} 
@@ -844,6 +847,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
 		if (errorMessages.get(ERROR_DATE_FORMAT) != null){
+			table.mergeCells(1, row, 10, row);
 			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_FORMAT)), 1, row++);			
 		}
 		table.add(getLocalizedLabel(KEY_PERIODE, "Periode:"), 1, row);
