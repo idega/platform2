@@ -84,7 +84,7 @@ public class WorkReportSelector extends ClubSelector {
 				year = Integer.parseInt(iwc.getParameter(PARAM_WORK_YEAR));
 				
 				
-				workReportId = reportBiz.getOrCreateWorkReportIdForClubIdByYear(getClubId(),year);
+				workReportId = reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),year);
 			}
 			else{
 				

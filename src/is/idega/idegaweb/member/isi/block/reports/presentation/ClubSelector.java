@@ -121,8 +121,9 @@ public class ClubSelector extends Block {
 		//sets this step as bold, if another class calls it this will be overridden
 		setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
-		if(iwc.isParameterSet(PARAM_CLUB_ID)){
-			clubId = Integer.parseInt(iwc.getParameter(PARAM_CLUB_ID));
+		if(iwc.isParameterSet(PARAM_CLUB_ID) || getClubId()!=-1 ){
+			if( clubId == -1 ) clubId = Integer.parseInt(iwc.getParameter(PARAM_CLUB_ID));
+			
 			if( iwc.isParameterSet(PARAM_REGION_UNION_ID) ){
 				regionalUnionId = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_ID));
 			}

@@ -16,6 +16,7 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 /**
  * This window is used to work with a clubs work reports.
@@ -71,9 +72,8 @@ public class WorkReportWindow extends IWAdminWindow {
 		memBiz = getMemberUserBusiness(iwc);
 		
 		//sets the type of user making or viewing the reports. union staff, regional union staff, league staff, federation staff or club staff
-		setUserType(iwc);
-		
-		
+		//and then gets the primary key of the correct group
+		Integer groupId = setUserTypeAndReturnGroupId(iwc);
 		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
 		String action = iwc.getParameter(ACTION);
@@ -88,57 +88,66 @@ public class WorkReportWindow extends IWAdminWindow {
 		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
 		
+		//add left menu of links
 		table.add(getMenuTable(iwc),1,1);
 		
-	
-			
 		add(table);
 		
+		//add the main content
 		if(action!=null){
+			WorkReportSelector selector = null;
 			
 			//depending on the user type set the currect stuff
 			
-			if( action.equals(ACTION_WORK_ON_REPORT) ){
+			/*if( action.equals(ACTION_WORK_ON_REPORT) ){
 				table.add(new WorkReportSelector(),2,1);	
-			}
-			else if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
-				table.add(new WorkReportMemberEditor(),2,1);	
+			}*/
+			if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
+				selector = new WorkReportMemberEditor();
 			}
 			else if( action.equals(ACTION_EDIT_ACCOUNT) ){
-				table.add(new WorkReportSelector(),2,1);	
+				selector = new WorkReportSelector();
 			}
 			else if( action.equals(ACTION_EDIT_BOARD) ){
-				table.add(new WorkReportBoardMemberEditor(),2,1);	
+				selector = new WorkReportBoardMemberEditor();	
 			}
       else if (action.equals(ACTION_EDIT_DIVISION_BOARD)) {
-        table.add(new WorkReportDivisionBoardEditor(), 2,1);
+				selector = new WorkReportDivisionBoardEditor();
       }
 			else if( action.equals(ACTION_SEND_REPORT) ){
-				table.add(new WorkReportSelector(),2,1);	
+				selector = new WorkReportSelector();	
 			}
 			else if( action.equals(ACTION_IMPORT_MEMBERS) ){
-				table.add(new WorkReportMemberImporter(),2,1);
+				selector = new WorkReportMemberImporter();
 			}
 			else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
-				table.add(new WorkReportAccountImporter(),2,1);
+				selector = new WorkReportAccountImporter();
 			}
 			else if( action.equals(ACTION_IMPORT_BOARD) ){
-				table.add(new WorkReportBoardImporter(),2,1);
+				selector = new WorkReportBoardImporter();
 			}
 			else if( action.equals(ACTION_REPORT_OVERVIEW) ){
-				table.add(new WorkReportSelector(),2,1);	
+				selector = new WorkReportSelector();	
 			}
 			else if( action.equals(ACTION_CLOSE_REPORT) ){
-				table.add(new WorkReportSelector(),2,1);	
+				selector = new WorkReportSelector();	
 			}
 			else if( action.equals(ACTION_STATISTICS) ){
-				table.add(new WorkReportSelector(),2,1);	
+				selector = new WorkReportSelector();	
 			}
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
-				table.add(new WorkReportZipper(),2,1);	
+				table.add(new WorkReportZipper(),2,1);	//not a selector
 			}
 			
-
+			if( selector!=null){
+				if(groupId!=null){
+					if( WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(getUserType()) ){
+						selector.setRegionalUnionId(groupId.intValue());
+					}
+					selector.setClubId(groupId.intValue());
+				}
+				table.add(selector,2,1);
+			}
 			
 			
 			
@@ -146,46 +155,55 @@ public class WorkReportWindow extends IWAdminWindow {
 	}
 	
 		
+
+
 	//searches the current users top nodes to figure out who he is. 
-	//TODO Eiki CHANGE TO ROLES
-	private void setUserType(IWContext iwc) {
+	//TODO Eiki CHANGE TO ROLES and optimize?
+	private Integer setUserTypeAndReturnGroupId(IWContext iwc) {
 		User user = iwc.getCurrentUser();
 		
 		try {
-			List club = getMemberUserBusiness(iwc).getClubListForUserFromTopNodes(user,iwc);//should only be one
-			if( !club.isEmpty() ){
-				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
-				return;
+			List union = getMemberUserBusiness(iwc).getUnionListForUserFromTopNodes(user,iwc);//should only be one
+			if( !union.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_UNION;
+				return null;
 			}
 			
 			List federation = getMemberUserBusiness(iwc).getFederationListForUserFromTopNodes(user,iwc);//should only be one
 			if( !federation.isEmpty() ){
 				userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
-				return;
+				return null;
 			}
+			
+			
+			List club = getMemberUserBusiness(iwc).getClubListForUserFromTopNodes(user,iwc);//should only be one
+			if( !club.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
+				return ((Integer)((Group)club.iterator().next()).getPrimaryKey());
+			}
+			
+		
 			
 			List regional = getMemberUserBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user,iwc);//should only be one
 			if( !regional.isEmpty() ){
 				userType = WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION;
-				return;
+				return ((Integer)((Group)regional.iterator().next()).getPrimaryKey());
 			}
 			
-			List union = getMemberUserBusiness(iwc).getUnionListForUserFromTopNodes(user,iwc);//should only be one
-			if( !union.isEmpty() ){
-				userType = WorkReportConstants.WR_USER_TYPE_UNION;
-				return;
-			}
+
 			
 			List leagues = getMemberUserBusiness(iwc).getLeaguesListForUserFromTopNodes(user,iwc); //should only be one
 			if( !leagues.isEmpty() ){
 				userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
-				return;
+				return ((Integer)((Group)leagues.iterator().next()).getPrimaryKey());
 			}
 		
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
 			
 	}
 	

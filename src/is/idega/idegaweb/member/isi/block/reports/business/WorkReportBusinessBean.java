@@ -104,27 +104,27 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * @param yearStamp
 	 * @return The id of the WorkReport for this club and year.
 	 */
-	public int getOrCreateWorkReportIdForClubIdByYear(int clubId, int year ) throws RemoteException{
+	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year ) throws RemoteException{
 		WorkReport report = null;
 		
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
 		
 		try {
-			report = getWorkReportHome().findWorkReportByClubIdAndYearOfReport(clubId,year);
+			report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId,year);
 		}
 		catch (FinderException e) {
-			System.out.println("[WorkReportBusinessBean] No report for clubId : "+clubId+" adn year : "+year+" creating a new one.");
+			System.out.println("[WorkReportBusinessBean] No report for groupId : "+groupId+" adn year : "+year+" creating a new one.");
 			try {
 				Group club;
 				try {
-					club = this.getGroupBusiness().getGroupByGroupID(clubId);
+					club = this.getGroupBusiness().getGroupByGroupID(groupId);//could be club,regional union or league
 					report = getWorkReportHome().create();
-					report.setClubId(clubId);
+					report.setGroupId(groupId);
 					report.setYearOfReport(year);
 					//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
-					report.setClubName( (club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME)!=null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName() );
-					report.setClubNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-					report.setClubShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+					report.setGroupName( (club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME)!=null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName() );
+					report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+					report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
 					report.store();
 				}
 				catch (FinderException e2) {
@@ -1237,7 +1237,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       return true;
     }
     // get the corresponding club 
-    int clubId = workReport.getClubId().intValue();
+    int clubId = workReport.getGroupId().intValue();
     // get group business
     GroupBusiness groupBusiness;
     try {

@@ -18,10 +18,12 @@ import com.idega.user.data.Group;
  */
 public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String ENTITY_NAME = "ISI_WORK_REPORT";
-	protected final static String COLUMN_NAME_CLUB_ID = "CLUB_ID";
-	protected final static String COLUMN_NAME_CLUB_NAME = "CLUB_NAME";
-	protected final static String COLUMN_NAME_CLUB_SHORT_NAME = "CLUB_SHORT_NAME";
-	protected final static String COLUMN_NAME_CLUB_NUMBER = "CLUB_NUMBER";
+	protected final static String COLUMN_NAME_GROUP_ID = "GROUP_ID";//Could be a club,league or a regional union
+	protected final static String COLUMN_NAME_REGIONAL_UNION_GROUP_ID = "REG_UNI_GR_ID";//a connection for a club
+	
+	protected final static String COLUMN_NAME_GROUP_NAME = "GROUP_NAME";
+	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "GROUP_SHORT_NAME";
+	protected final static String COLUMN_NAME_GROUP_NUMBER = "GROUP_NUMBER";
 	protected final static String COLUMN_NAME_WORK_REPORT_YEAR = "YEAR_OF_REPORT";
 	protected final static String COLUMN_NAME_MEMBERS_DONE = "MEMB_DONE";
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";
@@ -40,13 +42,15 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_NAME_CLUB_ID, "Group id of club",true,true,Integer.class,"many-to-one",Group.class);
+		addAttribute(COLUMN_NAME_GROUP_ID, "Group id of club/league/regional union",true,true,Integer.class,"many-to-one",Group.class);
+		addAttribute(COLUMN_NAME_REGIONAL_UNION_GROUP_ID, "Regional union group id",true,true,Integer.class,"many-to-one",Group.class);
+		
 		addAttribute(COLUMN_NAME_MEMBER_FILE_ID, "Members-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_ACCOUNT_FILE_ID, "Account-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_BOARD_FILE_ID, "Board-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
-		addAttribute(COLUMN_NAME_CLUB_NAME, "Club name",true,true,String.class);
-		addAttribute(COLUMN_NAME_CLUB_SHORT_NAME, "Club short name",true,true,String.class,30);
-		addAttribute(COLUMN_NAME_CLUB_NUMBER, "Club number",true,true,String.class);
+		addAttribute(COLUMN_NAME_GROUP_NAME, "Group name",true,true,String.class);
+		addAttribute(COLUMN_NAME_GROUP_SHORT_NAME, "Group short name",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_GROUP_NUMBER, "Group number",true,true,String.class);
 		addAttribute(COLUMN_NAME_WORK_REPORT_YEAR,"The year this report is valid for",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_MEMBERS_DONE, "Is the members-part of the work report finished", true, true, Boolean.class);
 		addAttribute(COLUMN_NAME_ACCOUNT_DONE, "Is the account-part of the work report finished", true, true, Boolean.class);		
@@ -65,16 +69,28 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return ENTITY_NAME;
 	}
 	
-	public Integer getClubId(){
-		return getIntegerColumnValue(COLUMN_NAME_CLUB_ID);
+	public Integer getGroupId(){
+		return getIntegerColumnValue(COLUMN_NAME_GROUP_ID);
 	}
 	
-	public void setClubId(int clubId){
-		setColumn(COLUMN_NAME_CLUB_ID,clubId);
+	public void setGroupId(int groupId){
+		setColumn(COLUMN_NAME_GROUP_ID,groupId);
 	}
 	
-	public void setClubId(Integer clubId){
-		setColumn(COLUMN_NAME_CLUB_ID,clubId);
+	public void setGroupId(Integer groupId){
+		setColumn(COLUMN_NAME_GROUP_ID,groupId);
+	}
+	
+	public Integer getRegionalUnionGroupId(){
+		return getIntegerColumnValue(COLUMN_NAME_REGIONAL_UNION_GROUP_ID);
+	}
+	
+	public void setRegionalUnionGroupId(int groupId){
+		setColumn(COLUMN_NAME_REGIONAL_UNION_GROUP_ID,groupId);
+	}
+	
+	public void setRegionalUnionGroupId(Integer groupId){
+		setColumn(COLUMN_NAME_REGIONAL_UNION_GROUP_ID,groupId);
 	}
 	
 	public Integer getMemberFileId(){
@@ -102,17 +118,17 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	}
 		
 	
-	public String getClubName(){
-		return getStringColumnValue(COLUMN_NAME_CLUB_NAME);
+	public String getGroupName(){
+		return getStringColumnValue(COLUMN_NAME_GROUP_NAME);
 	}
 	
 
-	public void setClubShortName(String name){
-		setColumn(COLUMN_NAME_CLUB_SHORT_NAME,name);
+	public void setGroupShortName(String name){
+		setColumn(COLUMN_NAME_GROUP_SHORT_NAME,name);
 	}
 	
-	public String getClubShortName(){
-		return getStringColumnValue(COLUMN_NAME_CLUB_SHORT_NAME);
+	public String getGroupShortName(){
+		return getStringColumnValue(COLUMN_NAME_GROUP_SHORT_NAME);
 	}
 	
 	public void setStatus(String status){
@@ -123,17 +139,17 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return getStringColumnValue(COLUMN_NAME_STATUS);
 	}
 
-	public void setClubName(String name){
-		setColumn(COLUMN_NAME_CLUB_NAME,name);
+	public void setGroupName(String name){
+		setColumn(COLUMN_NAME_GROUP_NAME,name);
 	}
 	
-	public String getClubNumber(){
-		return getStringColumnValue(COLUMN_NAME_CLUB_NUMBER);
+	public String getGroupNumber(){
+		return getStringColumnValue(COLUMN_NAME_GROUP_NUMBER);
 	}
 	
 
-	public void setClubNumber(String number){
-		setColumn(COLUMN_NAME_CLUB_NUMBER,number);
+	public void setGroupNumber(String number){
+		setColumn(COLUMN_NAME_GROUP_NUMBER,number);
 	}
 	
 	public Integer getYearOfReport(){
@@ -188,10 +204,10 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
     return getBooleanColumnValue(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, false);
   }
 	
-	public Integer ejbFindWorkReportByClubIdAndYearOfReport(int clubId, int yearOfReport) throws FinderException{
+	public Integer ejbFindWorkReportByGroupIdAndYearOfReport(int groupId, int yearOfReport) throws FinderException{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getEntityName());
-		sql.appendWhereEquals(COLUMN_NAME_CLUB_ID,clubId);
+		sql.appendWhereEquals(COLUMN_NAME_GROUP_ID,groupId);
 		sql.appendAndEquals(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport);
 		
 		return (Integer) this.idoFindOnePKByQuery(sql);
