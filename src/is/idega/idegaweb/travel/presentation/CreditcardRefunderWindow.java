@@ -60,7 +60,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
     }
   }
 
-  private Text getText(String content) {
+  protected Text getText(String content) {
     Text text = new Text(content);
       text.setStyle(TravelManager.theBoldTextStyle);
       text.setBold();

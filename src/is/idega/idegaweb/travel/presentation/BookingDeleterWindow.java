@@ -74,7 +74,7 @@ public class BookingDeleterWindow extends TravelWindow {
     }
   }
 
-  private Text getText(String content) {
+  protected Text getText(String content) {
     Text text = (Text) super.text.clone();
       text.setText(content);
     return text;

@@ -401,8 +401,8 @@ public class UserBookingReporter extends TravelManager implements Report{
     return text;
   }
 
-  protected Table getTable() {
-    Table table = super.getTable();
+  public static Table getTable() {
+    Table table = TravelManager.getTable();
       table.setCellpadding(2);
       table.setWidth("90%");
     return table;
