@@ -54,4 +54,12 @@ public class HotelPickupPlace extends GenericEntity{
       return (Address) getColumnValue(getAddressIDColumnName());
   }
 
+  public void setAddress(Address address) {
+      setColumn(getAddressIDColumnName(), address.getID());
+  }
+
+  public void setAddressId(int addressId) {
+      setColumn(getAddressIDColumnName(), addressId);
+  }
+
 }

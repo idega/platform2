@@ -71,7 +71,7 @@ public class ServiceDesigner extends TravelManager {
 
       Form form = new Form();
       Table table = new Table();
-        table.setBorder(1);
+//        table.setBorder(1);
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
@@ -93,6 +93,10 @@ public class ServiceDesigner extends TravelManager {
       DateInput active_to = new DateInput("active_to");
           stamp.addDays(92);
           active_to.setDate(stamp.getSQLDate());
+      BooleanInput active_yearly = new BooleanInput("active_yearly");
+        active_yearly.setSelected(false);
+
+
       CheckBox allDays = new CheckBox("all_days");
       CheckBox mondays = new CheckBox("mondays");
       CheckBox tuesdays = new CheckBox("tuesdays");
@@ -123,6 +127,7 @@ public class ServiceDesigner extends TravelManager {
       TimeInput arrival_time = new TimeInput("arrival_time");
           arrival_time.setHour(8);
           arrival_time.setMinute(0);
+
       RadioButton hotelPickupYes = new RadioButton("hotel_pickup","yes");
           hotelPickupYes.setSelected();
       RadioButton hotelPickupNo = new RadioButton("hotel_pickup","no");
@@ -174,16 +179,30 @@ public class ServiceDesigner extends TravelManager {
       ++row;
       Text timeframeText = (Text) theBoldText.clone();
         timeframeText.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
-      Text tfFromText = (Text) theBoldText.clone();
+      Text tfFromText = (Text) smallText.clone();
         tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
-      Text tfToText = (Text) theBoldText.clone();
+      Text tfToText = (Text) smallText.clone();
         tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
+      Text tfYearlyText = (Text) smallText.clone();
+        tfYearlyText.setText(iwrb.getLocalizedString("travel.yearly","yearly"));
+
+      Table activeTable = new Table(5,2);
+
+        activeTable.add(tfFromText,1,1);
+        activeTable.add(active_from,1,2);
+        activeTable.add(tfToText,3,1 );
+        activeTable.add(active_to,3,2);
+        activeTable.add(tfYearlyText,5,1 );
+        activeTable.add(active_yearly,5,2);
+
+        activeTable.setVerticalAlignment(1,1,"bottom");
+        activeTable.setVerticalAlignment(3,1,"bottom");
+        activeTable.setVerticalAlignment(5,1,"bottom");
+
 
       table.add(timeframeText,1,row );
-      table.add(tfFromText,2,row );
-      table.add(active_from,2,row);
-      table.add(tfToText,2,row );
-      table.add(active_to,2,row);
+      table.add(activeTable,2,row);
+
 
 
       ++row;
@@ -329,6 +348,7 @@ public class ServiceDesigner extends TravelManager {
       String imageId = modinfo.getParameter("design_image_id");
       String activeFrom = modinfo.getParameter("active_from");
       String activeTo = modinfo.getParameter("active_to");
+      String activeYearly = modinfo.getParameter("active_yearly");
 
       String allDays = modinfo.getParameter("all_days");
       String mondays = modinfo.getParameter("mondays");
@@ -341,38 +361,43 @@ public class ServiceDesigner extends TravelManager {
 
       String departureFrom = modinfo.getParameter("departure_from");
       String departureTime = modinfo.getParameter("departure_time");
-      String departureAt = modinfo.getParameter("arrival_at");
+      String arrivalAt = modinfo.getParameter("arrival_at");
       String arrivalTime = modinfo.getParameter("arrival_time");
       String hotelPickup = modinfo.getParameter("hotel_pickup");
       String hotelPickupAddress = modinfo.getParameter("hotel_pickup_address");
       String hotelPickupTime = modinfo.getParameter("hotel_pickup_time");
+
+      boolean yearly = false;
+      if (activeYearly != null) {
+        if (activeYearly.equals("Y")) yearly = true;
+      }
 
       Integer iImageId = null;
       if (imageId != null) {
         iImageId = new Integer(imageId);
       }
 
-      idegaTimestamp activeFromStamp;
+      idegaTimestamp activeFromStamp = null;
       if (activeFrom != null) {
         activeFromStamp = new idegaTimestamp(activeFrom);
       }
 
-      idegaTimestamp activeToStamp;
+      idegaTimestamp activeToStamp = null;
       if (activeTo != null) {
         activeToStamp = new idegaTimestamp(activeTo);
       }
 
-      idegaTimestamp departureStamp;
+      idegaTimestamp departureStamp = null;
       if (departureTime != null) {
         departureStamp = new idegaTimestamp("2001-01-01 "+departureTime);
       }
 
-      idegaTimestamp arrivalStamp;
+      idegaTimestamp arrivalStamp = null;
       if (arrivalTime != null) {
         arrivalStamp = new idegaTimestamp("2001-01-01 "+arrivalTime);
       }
 
-      idegaTimestamp hotelPickupTimeStamp;
+      idegaTimestamp hotelPickupTimeStamp = null;
       if (hotelPickupTime != null) {
         hotelPickupTimeStamp = new idegaTimestamp("2001-01-01 "+hotelPickupTime);
       }
@@ -400,10 +425,13 @@ public class ServiceDesigner extends TravelManager {
       int[] activeDays = new int[counter];
       System.arraycopy(tempDays,0,activeDays,0,counter);
 
-
-
-      TravelStockroomBusiness tsb = new TravelStockroomBusiness();
-//        tsb.createTripService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
+      try {
+        TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+          tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
+          tsb.createTripService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
 
       add("<br>"+name);
       add("<br>"+description);

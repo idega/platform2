@@ -26,7 +26,7 @@ public class Service extends GenericEntity{
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Product.class);
     addAttribute(getArrivalTimeColumnName(), "Arrival time", true, true, Timestamp.class);
     addAttribute(getDepartureTimeColumnName(), "Departure time", true, true, Timestamp.class);
-    addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
+//    addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
 //    addAttribute(getHotelPickupPlaceIDColumnName(),"Hotel pick-up staður",true,true,Integer.class,"many_to_one",HotelPickupPlace.class);
 //    addAttribute(getAddressIDColumnName(),"Heimilisfang",true,true, Integer.class,"many-to-one",Address.class);
 
@@ -63,7 +63,7 @@ public class Service extends GenericEntity{
   public void setDepartureTime(Timestamp timestamp) {
     setColumn(getDepartureTimeColumnName(),timestamp);
   }
-
+/*
   public boolean getIsHotelPickup() {
     return getHotelPickup();
   }
@@ -79,7 +79,7 @@ public class Service extends GenericEntity{
   public void setHotelPickup(boolean pickup) {
     setColumn(getHotelPickupColumnName(),pickup);
   }
-
+*/
 /*
   public Supplier getSupplier() {
     return (Supplier) getColumnValue(getSupplierIDColumnName());
@@ -121,7 +121,7 @@ public class Service extends GenericEntity{
   public static String getServiceTableName(){return "TB_SERVICE";}
   public static String getArrivalTimeColumnName() {return "ARRIVAL_TIME";}
   public static String getDepartureTimeColumnName() {return "DEPARTURE_TIME";}
-  public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
+//  public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
 //  public static String getHotelPickupPlaceIDColumnName() {return "TB_HOTEL_PICKUP_PLACE_ID";}
 //  public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
 
