@@ -38,7 +38,7 @@ import com.idega.util.IWTimestamp;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CommuneForum extends Forum {
-	private boolean _addICObjectID;
+	private boolean _addICObjectID = true;
 
 	public CommuneForum() {
 		super();
