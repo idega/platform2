@@ -11,6 +11,7 @@ import com.idega.block.login.business.LoginBusiness;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Title:        IW Trade
@@ -149,11 +150,13 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
   public static int getUserSupplierId(User user) throws RuntimeException, SQLException{
     com.idega.core.data.GenericGroup gGroup = new GenericGroup();
-    GenericGroup[] gr = gGroup.getAllGroupsContainingUser(user);
+    List gr = gGroup.getAllGroupsContainingUser(user);
     if(gr != null){
-      for (int i = 0; i < gr.length; i++) {
-        if(gr[i].getGroupType().equals(((SupplierStaffGroup)SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
-          GenericEntity[] supp = ((Supplier)Supplier.getStaticInstance(Supplier.class)).findAllByColumn(Supplier.getColumnNameGroupID(),gr[i].getID());
+      Iterator iter = gr.iterator();
+      while (iter.hasNext()) {
+        GenericGroup item = (GenericGroup)iter.next();
+        if(item.getGroupType().equals(((SupplierStaffGroup)SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
+          GenericEntity[] supp = ((Supplier)Supplier.getStaticInstance(Supplier.class)).findAllByColumn(Supplier.getColumnNameGroupID(),item.getID());
           if(supp != null && supp.length > 0){
             return supp[0].getID();
           }
@@ -200,13 +203,16 @@ public class StockroomBusiness /* implements SupplyManager */ {
       }
     }
   }
+
   public static int getUserResellerId(User user) throws RuntimeException, SQLException{
     com.idega.core.data.GenericGroup gGroup = new GenericGroup();
-    GenericGroup[] gr = gGroup.getAllGroupsContainingUser(user);
+    List gr = gGroup.getAllGroupsContainingUser(user);
     if(gr != null){
-      for (int i = 0; i < gr.length; i++) {
-        if(gr[i].getGroupType().equals(((ResellerStaffGroup)ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
-          GenericEntity[] reseller = ((Reseller)Reseller.getStaticInstance(Reseller.class)).findAllByColumn(Reseller.getColumnNameGroupID(),gr[i].getID());
+      Iterator iter = gr.iterator();
+      while (iter.hasNext()) {
+        GenericGroup item = (GenericGroup)iter.next();
+        if(item.getGroupType().equals(((ResellerStaffGroup)ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
+          GenericEntity[] reseller = ((Reseller)Reseller.getStaticInstance(Reseller.class)).findAllByColumn(Reseller.getColumnNameGroupID(),item.getID());
           if(reseller != null && reseller.length > 0){
             return reseller[0].getID();
           }

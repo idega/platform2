@@ -101,6 +101,10 @@ public DropdownMenu(List entityList, String Name){
   setName(Name);
 }
 
+public void removeElements(){
+  theElements.clear();
+}
+
 
 public void addMenuElementFirst(String value,String DisplayString){
 	theElements.add(0,new MenuElement(DisplayString,value));

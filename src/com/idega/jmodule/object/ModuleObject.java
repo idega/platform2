@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.23 2001/09/25 13:33:16 palli Exp $
+ * $Id: ModuleObject.java,v 1.24 2001/09/28 10:34:50 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -542,6 +542,11 @@ public class ModuleObject extends Object implements Cloneable {
 
   public void addIWLinkListener(IWLinkListener l,ModuleInfo modinfo) {
     //System.err.println(this.getClass().getName() + " : listener added of type -> " + l.getClass().getName());
+    /**
+     * temp
+     */
+    getEventListenerList().remove(IWLinkListener.class,l);
+
     getEventListenerList().add(IWLinkListener.class,l);
   }
 

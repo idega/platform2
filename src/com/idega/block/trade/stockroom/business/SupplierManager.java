@@ -51,7 +51,7 @@ public class SupplierManager {
     supp.insert();
 
     UserBusiness uBus = new UserBusiness();
-    User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow());
+    User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow(),null);
     LoginDBHandler.createLogin(user.getID(), userName, password);
 
     sGroup.addTo(user);
@@ -90,10 +90,6 @@ public class SupplierManager {
     pCategory.insert();
 
     return supp;
-  }
-
-  public static void deleteThisFunction() {
-
   }
 
   public static void invalidateSupplier(Supplier supplier) throws SQLException {

@@ -252,26 +252,16 @@ private List usersInNoGroup;
       groupsTable.setWidth("100%");
   }
 
-  private void getGroups() {
-    try {
-      allGroups = UserGroupBusiness.getAllGroups();
-      if ( !isAdmin && allGroups != null ) {
-        allGroups.remove(AccessControl.getAdministratorGroup());
-      }
-    }
-    catch (Exception e) {
-      System.out.println("AllGroups is null");
-      allGroups = null;
+
+  private void getGroups() throws SQLException  {
+    allGroups = UserGroupBusiness.getAllGroups();
+    if ( !isAdmin && allGroups != null ) {
+      allGroups.remove(AccessControl.getPermissionGroupAdministrator());
     }
   }
 
-  private void getUsersInNoGroups() {
-    try {
-      usersInNoGroup = UserBusiness.getUsersInNoGroup();
-    }
-    catch (Exception e) {
-      allGroups = null;
-    }
+  private void getUsersInNoGroups() throws SQLException {
+    usersInNoGroup = UserBusiness.getUsersInNoGroup();
   }
 
   private void deleteUser(ModuleInfo modinfo) throws SQLException {

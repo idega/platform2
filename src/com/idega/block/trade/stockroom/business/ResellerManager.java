@@ -56,7 +56,7 @@ public class ResellerManager {
     reseller.insert();
 
     UserBusiness uBus = new UserBusiness();
-    User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow());
+    User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow(),null);
     LoginDBHandler.createLogin(user.getID(), userName, password);
 
     sGroup.addTo(user);
