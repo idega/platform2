@@ -179,21 +179,15 @@ public class BoxFinder {
   /**@todo make some sence into this crap**/
   public static BoxEntity getObjectInstanceFromID(int ICObjectInstanceID){
     try {
-     ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
-     List L = EntityFinder.findRelated(ICObjInst,BoxEntity.getStaticInstance(BoxEntity.class));
-     if(L!= null){
-       return (BoxEntity) L.get(0);
-     }
-     else
-       return null;
+      ICObjectBusiness icob = ICObjectBusiness.getInstance();
+      ICObjectInstance ICObjInst = icob.getICObjectInstance(ICObjectInstanceID);
+      return (BoxEntity)icob.getRelatedEntity(ICObjInst,BoxEntity.class);
     }
-    catch (SQLException ex) {
-     ex.printStackTrace();
-     return null;
+    catch (com.idega.data.IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
     }
-
   }
-
 
   public static int getRelatedEntityId(ICObjectInstance eObjectInstance){
     ICObjectBusiness bis = ICObjectBusiness.getInstance();

@@ -128,22 +128,16 @@ public class BannerFinder {
 
   // BEGIN COPY PASTE CRAP
 
-  /**@todo make some sence into this crap**/
   public static BannerEntity getObjectInstanceFromID(int ICObjectInstanceID){
     try {
-     ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
-     List L = EntityFinder.findRelated(ICObjInst,BannerEntity.getStaticInstance(BannerEntity.class));
-     if(L!= null){
-       return (BannerEntity) L.get(0);
-     }
-     else
-       return null;
+      ICObjectBusiness icob = ICObjectBusiness.getInstance();
+      ICObjectInstance ICObjInst = icob.getICObjectInstance(ICObjectInstanceID);
+      return (BannerEntity)icob.getRelatedEntity(ICObjInst,BannerEntity.class);
     }
-    catch (SQLException ex) {
-     ex.printStackTrace();
-     return null;
+    catch (com.idega.data.IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
     }
-
   }
 
 
