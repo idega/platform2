@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.2 2005/02/07 13:57:42 laddi Exp $
+ * $Id: HandicapReportBean.java,v 1.3 2005/02/07 14:20:44 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,17 +37,17 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/02/07 13:57:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 14:20:44 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	
 	private final static String PREFIX = "handicap_report.";
-	private static final String FIELD_CLUB = "club";
+	private static final String FIELD_CLUB = "golf_club";
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_PERSONAL_ID = "personal_id";
 	private static final String FIELD_HANDICAP = "handicap";
@@ -111,11 +111,16 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 					continue;
 				}
 				
-				IWTimestamp dateOfBirth = new IWTimestamp(member.getDateOfBirth());
-				if (yearFrom != null && dateOfBirth.getYear() < yearFrom.intValue()) {
-					continue;
+				if (member.getDateOfBirth() != null) {
+					IWTimestamp dateOfBirth = new IWTimestamp(member.getDateOfBirth());
+					if (yearFrom != null && dateOfBirth.getYear() < yearFrom.intValue()) {
+						continue;
+					}
+					if (yearTo != null && dateOfBirth.getYear() > yearTo.intValue()) {
+						continue;
+					}
 				}
-				if (yearTo != null && dateOfBirth.getYear() > yearTo.intValue()) {
+				else if (yearFrom != null || yearTo != null) {
 					continue;
 				}
 				

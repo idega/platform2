@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapHandler.java,v 1.3 2005/02/07 13:58:13 laddi Exp $
+ * $Id: HandicapHandler.java,v 1.4 2005/02/07 14:20:44 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.presentation.ui.TextInput;
 
 
 /**
- * Last modified: $Date: 2005/02/07 13:58:13 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 14:20:44 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class HandicapHandler extends TextInput implements InputHandler {
 
@@ -70,7 +70,10 @@ public class HandicapHandler extends TextInput implements InputHandler {
 	 */
 	public Object getResultingObject(String[] value, IWContext iwc) throws Exception {
 		if (value != null && value.length > 0) {
-			return new Float(value[0].toString());
+			if (value[0].length() > 0) {
+				return new Float(value[0].toString());
+			}
+			return null;
 		}
 		else
 			return null;
