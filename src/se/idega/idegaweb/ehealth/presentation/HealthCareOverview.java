@@ -291,7 +291,7 @@ public class HealthCareOverview extends EHealthBlock {
 		layerInfo.setVisibility("visible");
 		layerInfo.setPositionType("relative");
 		layerInfo.setHeight("16");
-		layerInfo.setWidth("190");
+		layerInfo.setWidth("250");
 		
 		layerInfo.setID("lay" + i + "_1");
 		//layerInfo.setMarkupAttribute("class", "ehealth_div_top");
@@ -412,7 +412,7 @@ public class HealthCareOverview extends EHealthBlock {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
 		layer.setPositionType("relative");
-		layer.setHeight(20);
+		//layer.setHeight(20);
 		layer.setStyleClass("ehealth_row_div");
 		
 		Image corners = getBundle(_iwc).getImage("thirdLevel.gif");
