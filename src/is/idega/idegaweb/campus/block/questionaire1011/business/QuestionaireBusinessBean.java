@@ -49,7 +49,8 @@ public class QuestionaireBusinessBean extends IBOServiceBean implements Question
 			questionaire.setAnswer7(a7);
 			questionaire.setAnswer8(a8);
 			questionaire.setAnswer9(a9);
-			questionaire.setUser(user);
+			if (user != null)
+				questionaire.setUser(user);
 			
 			questionaire.store();
 			return true;
