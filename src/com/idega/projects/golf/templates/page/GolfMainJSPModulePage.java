@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.2 2001/05/23 16:21:30 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.3 2001/05/23 16:49:31 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -128,10 +128,7 @@ public class GolfMainJSPModulePage extends MainPage {
     table.setRightHeader(false);
     table.setHeadlineAlign("left");
     table.setWidth(148);
-
-    String textChat = iwrb.getLocalizedString("Chat");
-    if (textChat == null) textChat = "Chat";
-    table.setHeaderText(textChat);
+    table.setHeaderText(iwrb.getLocalizedString("Chat","Chat"));
 
     ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
 
@@ -184,7 +181,7 @@ public class GolfMainJSPModulePage extends MainPage {
     table.setHeadlineColor("#FFFFFF");
     table.setHeadlineLeft();
     table.setWidth(148);
-    table.setHeaderText("Áhugaverðir tenglar");
+    table.setHeaderText(iwrb.getLocalizedString("links","Links"));
 
     Table myTable = new Table(1,2);
     myTable.setAlignment(1,1,"center");
@@ -212,7 +209,7 @@ public class GolfMainJSPModulePage extends MainPage {
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
     headerTable.setBorderColor("#8ab490");
-    headerTable.setHeaderText("Klúbbafréttir");
+    headerTable.setHeaderText(iwrb.getLocalizedString("clubNews","Club news"));
     headerTable.setHeadlineSize(1);
     headerTable.setRightHeader(false);
     headerTable.setHeadlineAlign("left");
@@ -343,7 +340,7 @@ public class GolfMainJSPModulePage extends MainPage {
             table.setHeadlineColor("#FFFFFF");
             table.setHeadlineLeft();
             table.setWidth(148);
-            table.setHeaderText("GSÍ er aðili að");
+            table.setHeaderText(iwrb.getLocalizedString("arePartOf","We are part of"));
 
 
 
@@ -393,7 +390,7 @@ public class GolfMainJSPModulePage extends MainPage {
             pollTable.setHeadlineColor("#FFFFFF");
             pollTable.setHeadlineLeft();
             pollTable.setWidth(148);
-            pollTable.setHeaderText("Spurning dagsins");
+            pollTable.setHeaderText(iwrb.getLocalizedString("questionOfTheDay","Question of the day"));
 
         pollTable.add(poll);
 
