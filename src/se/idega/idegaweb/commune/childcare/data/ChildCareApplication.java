@@ -24,6 +24,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public boolean getHasExtraContractOther();
  public boolean getHasPriority();
  public boolean getHasQueuePriority();
+ public java.sql.Date getLastReplyDate();
  public java.lang.String getMessage();
  public int getMethod();
  public java.sql.Date getOfferValidUntil();
@@ -35,7 +36,6 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public java.sql.Date getQueueDate();
  public int getQueueOrder();
  public java.sql.Date getRejectionDate();
- public void initializeAttributes();
  public boolean isAcceptedByParent();
  public boolean isActive();
  public boolean isCancelledOrRejectedByParent();
@@ -48,8 +48,8 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setChoiceNumber(int p0);
  public void setContractFileId(int p0);
  public void setContractFileId(java.lang.Integer p0);
- public void setContractId(int p0);
  public void setContractId(java.lang.Integer p0);
+ public void setContractId(int p0);
  public void setExtraContractMessage(java.lang.String p0);
  public void setExtraContractMessageOther(java.lang.String p0);
  public void setFromDate(java.sql.Date p0);
@@ -58,6 +58,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setHasExtraContractOther(boolean p0);
  public void setHasPriority(boolean p0);
  public void setHasQueuePriority(boolean p0);
+ public void setLastReplyDate(java.sql.Date p0);
  public void setMessage(java.lang.String p0);
  public void setMethod(int p0);
  public void setOfferValidUntil(java.sql.Date p0);

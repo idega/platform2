@@ -58,6 +58,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String HAS_DATE_SET = "has_date_set";
 	protected final static String HAS_QUEUE_PRIORITY = "has_queue_priority";
 	protected final static String PRESCHOOL = "preschool";
+	protected final static String LAST_REPLY_DATE = "last_reply_date";
+	
 
 	protected final static String EXTRA_CONTRACT = "extra_contract";
 	protected final static String EXTRA_CONTRACT_MESSAGE = "extra_contract_message";
@@ -111,6 +113,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(HAS_DATE_SET,"",true,true,java.lang.Boolean.class);
 		addAttribute(HAS_QUEUE_PRIORITY,"",true,true,java.lang.Boolean.class);
 		addAttribute(PRESCHOOL,"",true,true,java.lang.String.class);		
+		addAttribute(LAST_REPLY_DATE,"",true,true,java.sql.Date.class);
 		
 		addAttribute(EXTRA_CONTRACT,"",true,true,java.lang.Boolean.class);
 		addAttribute(EXTRA_CONTRACT_MESSAGE,"",true,true,java.lang.String.class);
@@ -174,6 +177,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public Date getOfferValidUntil() {
 		return (Date)getColumnValue(OFFER_VALID_UNTIL);	
+	}
+	
+	public Date getLastReplyDate() {
+		return (Date)getColumnValue(LAST_REPLY_DATE);	
 	}
 	
 	public int getContractId() {
@@ -300,6 +307,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 	public void setOfferValidUntil(Date date) {
 		setColumn(OFFER_VALID_UNTIL,date);	
+	}
+
+	public void setLastReplyDate(Date date) {
+		setColumn(LAST_REPLY_DATE,date);	
 	}
 
 	public void setContractId(int id) {
@@ -688,6 +699,19 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return super.idoFindPKsByQuery(sql);
 	}
 	
+	public Collection ejbFindApplicationByChildAndInStatus(int childID, String[] caseStatus, String caseCode) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		}
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendOrderBy(CHOICE_NUMBER);
+		return super.idoFindPKsByQuery(sql);
+	}
+	
 	public Integer ejbFindActiveApplicationByChild(int childID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
@@ -731,6 +755,16 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals(QUEUE_DATE, date);
 		sql.appendOrderBy(QUEUE_ORDER);
 		return super.idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindApplicationsByProviderAndBeforeDate(int providerID, Date date, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().append("c."+QUEUE_DATE).appendLessThanSign().append(date);
+		return idoFindPKsByQuery(sql);
 	}
 	
 	public int ejbHomeGetNumberOfApplications(int providerID, String caseStatus) throws IDOException {
@@ -785,6 +819,19 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		}
+
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetNumberOfApplicationsForChildInStatus(int childID, String[] caseStatus, String caseCode) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		if (caseCode != null) {
 			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
 		}
