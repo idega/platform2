@@ -14,10 +14,10 @@ import com.idega.presentation.ui.Window;
 public class MessageViewerWindow extends Window {
 
 	public MessageViewerWindow() {
-		this.setWidth(450);
-		this.setHeight(300);
+		this.setWidth(350);
+		this.setHeight(250);
 		this.setScrollbar(true);
-		this.setResizable(false);	
+		this.setResizable(false);
 	}
 
 	/**

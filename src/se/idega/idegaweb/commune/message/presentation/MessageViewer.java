@@ -26,6 +26,7 @@ public class MessageViewer extends CommuneBlock {
   private int messageID = -1;
 
 	public void main(IWContext iwc) throws Exception {
+		getParentPage().setAllMargins(0);
 		setResourceBundle(getResourceBundle(iwc));
 		parse(iwc);
 		if (messageID != -1)
@@ -82,12 +83,9 @@ public class MessageViewer extends CommuneBlock {
 		Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID), iwc);
 		getMessageBusiness(iwc).markMessageAsRead(msg);
 
-		table.add(getSmallHeader(localize("message.from","From")),1,row);
-		table.add(getSmallText(""),2,row++);
-
 		IWTimestamp stamp = new IWTimestamp(msg.getCreated());
 		table.add(getSmallHeader(localize("message.date","Date")),1,row);
-		table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale())),2,row++);
+		table.add(getSmallText(stamp.getDateString("yyyy-MM-dd kk:mm")),2,row++);
 
 		table.add(getSmallHeader(localize("message.subject","Subject")),1,row);
 		table.add(getSmallText(msg.getSubject()),2,row++);
