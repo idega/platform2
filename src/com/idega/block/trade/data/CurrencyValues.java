@@ -1,6 +1,5 @@
 package com.idega.block.trade.data;
 
-import javax.ejb.*;
 
 public interface CurrencyValues extends com.idega.data.IDOLegacyEntity
 {

@@ -1,17 +1,13 @@
 package com.idega.block.school.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
-import com.idega.core.business.UserGroupBusiness;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -21,7 +17,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.data.Group;
 
 /**
  * @author gimmi

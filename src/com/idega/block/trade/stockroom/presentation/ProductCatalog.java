@@ -1,26 +1,39 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import javax.ejb.FinderException;
-import com.idega.data.*;
 import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import com.idega.block.presentation.CategoryWindow;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.localisation.business.*;
-import com.idega.core.data.*;
-import com.idega.block.category.business.CategoryBusiness;
-import com.idega.builder.data.IBPage;
-import com.idega.block.presentation.CategoryBlock;
-import com.idega.util.IWTimestamp;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
 
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Block;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
+import javax.ejb.FinderException;
+
+import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.presentation.CategoryWindow;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.ProductBusinessBean;
+import com.idega.block.trade.stockroom.business.ProductComparator;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.builder.data.IBPage;
+import com.idega.business.IBOLookup;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.data.ICCategory;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Anchor;
+import com.idega.presentation.text.AnchorLink;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Parameter;
 
 /**
  * Title:        idegaWeb TravelBooking

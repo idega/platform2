@@ -1,6 +1,5 @@
 package com.idega.block.trade.business;
 
-import java.util.*;
 import com.idega.util.IWTimestamp;
 
 public class CurrencyHolder {

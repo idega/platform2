@@ -1,11 +1,11 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.data.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
 import com.idega.core.data.Address;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 
 /**
  * Title:        IW Trade

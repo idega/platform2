@@ -1,6 +1,5 @@
 package com.idega.block.trade.stockroom.data;
 
-import javax.ejb.*;
 
 public interface PriceCategory extends com.idega.data.IDOLegacyEntity
 {

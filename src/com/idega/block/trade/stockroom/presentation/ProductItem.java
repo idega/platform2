@@ -1,20 +1,24 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import javax.ejb.FinderException;
-import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Locale;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.StockroomBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.business.IBOLookup;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.business.IBOLookup;
-import com.idega.block.media.presentation.ImageInserter;
-import com.idega.block.image.presentation.ImageViewer;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import java.sql.SQLException;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import java.util.Locale;
-import com.idega.block.trade.stockroom.data.*;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:        idegaWeb TravelBooking

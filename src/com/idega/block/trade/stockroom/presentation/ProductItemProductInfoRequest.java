@@ -3,7 +3,6 @@ package com.idega.block.trade.stockroom.presentation;
 import java.rmi.RemoteException;
 
 import javax.ejb.FinderException;
-import javax.mail.MessagingException;
 
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.presentation.IWContext;

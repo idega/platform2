@@ -1,8 +1,8 @@
 package com.idega.block.websearch.data;
 import java.io.IOException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexSearcher;
 import java.util.Hashtable;
+
+import org.apache.lucene.index.IndexReader;
 
 /**
  Keep a cache of open IndexReader's, so that an index does not have to opened

@@ -1,15 +1,16 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import javax.ejb.FinderException;
 import java.rmi.RemoteException;
-import java.text.NumberFormat;
-import java.util.Locale;
 import java.sql.SQLException;
+import java.text.NumberFormat;
+
+import javax.ejb.FinderException;
+
 import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.presentation.text.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.presentation.*;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001

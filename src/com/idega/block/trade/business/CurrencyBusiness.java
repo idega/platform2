@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;

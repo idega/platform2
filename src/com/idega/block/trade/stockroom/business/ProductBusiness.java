@@ -1,6 +1,5 @@
 package com.idega.block.trade.stockroom.business;
 
-import javax.ejb.*;
 
 public interface ProductBusiness extends com.idega.business.IBOService
 {

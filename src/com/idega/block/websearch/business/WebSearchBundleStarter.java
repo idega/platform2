@@ -9,9 +9,8 @@ package com.idega.block.websearch.business;
 * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  */
 
-import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWBundleStartable;
 import com.idega.util.FileUtil;
 
 public class WebSearchBundleStarter implements IWBundleStartable {

@@ -1,15 +1,23 @@
 package com.idega.block.email.presentation;
 
-import com.idega.block.email.business.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.idega.block.email.business.EmailAccount;
+import com.idega.block.email.business.EmailLetter;
+import com.idega.block.email.business.EmailTopic;
+import com.idega.block.email.business.MailBusiness;
+import com.idega.block.email.business.MailFinder;
+import com.idega.block.email.business.MailProtocol;
 import com.idega.block.email.data.MailAccount;
 import com.idega.block.email.data.MailAccountHome;
 import com.idega.block.email.data.MailLetter;
 import com.idega.block.email.data.MailLetterHome;
 import com.idega.core.business.CategoryFinder;
+import com.idega.core.business.EmailDataView;
 import com.idega.core.data.ICCategory;
 import com.idega.data.IDOLookup;
-import com.idega.core.business.EmailDataView;
-import com.idega.core.business.Category;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -23,15 +31,10 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.text.TextFormat;
-import java.util.Collection;
-import java.util.Iterator;
-
-import java.util.Map;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:

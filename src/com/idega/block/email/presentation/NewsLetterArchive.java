@@ -1,20 +1,25 @@
 package com.idega.block.email.presentation;
 
-import com.idega.block.email.business.*;
-import com.idega.block.presentation.CategoryBlock;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.text.TextSoap;
-import com.idega.presentation.text.*;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
 import java.text.DateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
+
+import com.idega.block.email.business.EmailLetter;
+import com.idega.block.email.business.EmailTopic;
+import com.idega.block.email.business.MailFinder;
+import com.idega.block.presentation.CategoryBlock;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.util.text.TextSoap;
 
 
 /**

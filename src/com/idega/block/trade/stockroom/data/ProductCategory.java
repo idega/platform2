@@ -1,8 +1,8 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.data.IDORemoveRelationshipException;
 import java.util.List;
-import javax.ejb.*;
+
+import com.idega.data.IDORemoveRelationshipException;
 
 public interface ProductCategory extends com.idega.core.data.ICCategory
 {

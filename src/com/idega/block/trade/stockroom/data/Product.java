@@ -1,6 +1,5 @@
 package com.idega.block.trade.stockroom.data;
 
-import javax.ejb.*;
 
 public interface Product extends com.idega.data.IDOEntity
 {

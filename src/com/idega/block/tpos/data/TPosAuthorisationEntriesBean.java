@@ -1,6 +1,5 @@
 package com.idega.block.tpos.data;
 
-import javax.ejb.*;
 
 public interface TPosAuthorisationEntriesBean extends com.idega.data.IDOLegacyEntity,com.idega.block.tpos.data.TPosAuthorisationEntries
 {

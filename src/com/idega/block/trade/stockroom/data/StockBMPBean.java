@@ -1,6 +1,5 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.data.*;
 
 
 /**

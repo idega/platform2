@@ -1,6 +1,5 @@
 package com.idega.block.tpos.data;
 
-import javax.ejb.*;
 
 public interface TPosMerchant extends com.idega.data.IDOEntity
 {

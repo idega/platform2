@@ -1,13 +1,15 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.idegaweb.*;
+
+import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:

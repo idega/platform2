@@ -1,11 +1,15 @@
 package com.idega.block.email.presentation;
 
-import com.idega.block.email.business.*;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.block.email.business.EmailTopic;
+import com.idega.block.email.business.MailBusiness;
+import com.idega.block.email.business.MailFinder;
 import com.idega.block.presentation.CategoryBlock;
 import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -14,12 +18,9 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /**240
  *  Title: Description: Copyright: Copyright (c) 2001 Company:

@@ -1,21 +1,27 @@
 package com.idega.block.school.presentation;
 
-import com.idega.presentation.Block;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.data.SchoolYearPlaces;
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Table;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.text.TextFormat;
-import com.idega.block.school.data.*;
-import com.idega.block.school.business.*;
-import java.util.Collection;
-import java.util.*;
-import com.idega.business.IBOLookup;
 /**
  * <p>Title: </p>
  * <p>Description: </p>

@@ -1,6 +1,5 @@
 package com.idega.block.trade.stockroom.data;
 
-import javax.ejb.*;
 
 public interface Supplier extends com.idega.data.IDOLegacyEntity
 {

@@ -1,26 +1,40 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
 import javax.ejb.FinderException;
-import com.idega.idegaweb.IWApplicationContext;
+
+import com.idega.block.text.business.TextFinder;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.presentation.ProductCatalog;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.block.trade.stockroom.presentation.ProductCatalog;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.block.text.data.*;
-import com.idega.core.data.*;
+import com.idega.core.data.Address;
+import com.idega.core.data.ICCategory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
-import com.idega.block.text.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.data.*;
-import java.sql.SQLException;
-import java.util.*;
-import com.idega.util.*;
-
-import com.idega.block.trade.stockroom.data.*;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOException;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
 /**
  * @todo losa við service;
  */

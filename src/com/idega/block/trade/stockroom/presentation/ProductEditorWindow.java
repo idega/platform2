@@ -1,31 +1,40 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import javax.ejb.FinderException;
-import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import com.idega.block.category.business.CategoryFinder;
-import com.idega.block.image.presentation.*;
-import com.idega.block.trade.business.CurrencyHolder;
-import java.util.*;
-import com.idega.block.text.business.TextFormatter;
-import com.idega.util.text.TextSoap;
-import com.idega.core.localisation.presentation.ICLocalePresentation;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.block.trade.business.CurrencyBusiness;
-import com.idega.util.IWTimestamp;
-import java.sql.SQLException;
-import com.idega.block.media.presentation.ImageInserter;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.idegaweb.*;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.texteditor.TextEditor;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
-/** @todo Henda við tækifæri... */
-import com.idega.block.trade.stockroom.data.*;
+import javax.ejb.FinderException;
+
+import com.idega.block.image.presentation.ImageAttributeSetter;
+import com.idega.block.media.presentation.ImageInserter;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.ProductEditorBusiness;
+import com.idega.block.trade.stockroom.business.StockroomBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.business.IBOLookup;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.texteditor.TextEditor;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:        idegaWeb TravelBooking

@@ -1,14 +1,14 @@
 package com.idega.block.websearch.business;
 
-import org.jdom.input.SAXBuilder;
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import com.idega.block.websearch.data.*;
+import org.jdom.input.SAXBuilder;
+
+import com.idega.block.websearch.data.WebSearchIndex;
 
 /**
  * <p><code>WebSearchManager</code> Manages WebSearchIndexes.

@@ -1,19 +1,21 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import javax.ejb.FinderException;
-import com.idega.business.IBOLookup;
 import java.rmi.RemoteException;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.core.data.ICCategory;
-import com.idega.presentation.text.*;
-import com.idega.block.text.business.TextFormatter;
 import java.sql.SQLException;
-import com.idega.util.IWTimestamp;
-import com.idega.block.trade.stockroom.data.Product;
-import java.util.Collections;
-import com.idega.block.trade.stockroom.business.*;
 import java.util.List;
-import com.idega.presentation.*;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.text.business.TextFormatter;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.core.data.ICCategory;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.AnchorLink;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 /**
  *  Title: idegaWeb ProductCatalog Description: Copyright: Copyright (c) 2002

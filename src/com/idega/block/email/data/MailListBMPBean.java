@@ -2,12 +2,7 @@ package com.idega.block.email.data;
 
 
 
-import com.idega.block.email.business.EmailList;
-
-import com.idega.data.IDOLegacyEntity;
-
 import java.sql.SQLException;
-
 import java.sql.Timestamp;
 
 

@@ -1,7 +1,7 @@
 package com.idega.block.trade.data;
 
-import com.idega.data.*;
-import java.sql.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 
 /**

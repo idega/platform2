@@ -1,10 +1,9 @@
 
 package com.idega.block.trade.business;
 
-import com.idega.util.IsCollator;
-import java.util.*;
 import java.util.Comparator;
-import com.idega.block.trade.business.CurrencyHolder;
+
+import com.idega.util.IsCollator;
 
 
 /**

@@ -1,17 +1,26 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.block.tpos.data.TPosMerchantHome;
-import com.idega.block.tpos.data.TPosMerchant;
-import javax.ejb.*;
 import java.rmi.RemoteException;
-import java.sql.*;
-import java.util.*;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.core.data.*;
-import com.idega.data.*;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.block.tpos.data.TPosMerchant;
+import com.idega.block.tpos.data.TPosMerchantHome;
 import com.idega.block.trade.stockroom.business.SupplierManager;
-import com.idega.block.employment.data.EmployeeGroup;
 import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.data.Address;
+import com.idega.core.data.Email;
+import com.idega.core.data.Phone;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 
 /**
  * Title:        IW Trade

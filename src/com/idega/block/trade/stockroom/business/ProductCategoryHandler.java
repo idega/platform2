@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCategoryHandler.java,v 1.2 2002/04/06 19:07:37 tryggvil Exp $
+ *  $Id: ProductCategoryHandler.java,v 1.3 2003/04/03 08:52:05 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,14 +8,13 @@
  *
  */
 package com.idega.block.trade.stockroom.business;
-import com.idega.block.trade.stockroom.data.ProductCategory;
-import com.idega.core.business.CategoryFinder;
-import com.idega.block.trade.stockroom.presentation.*;
 import java.util.List;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
+
 import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.business.CategoryFinder;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  *@author     <a href="tryggvi@idega.is">Tryggvi Larusson</a>

@@ -11,8 +11,9 @@ package com.idega.block.trade.business;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import com.idega.data.EntityFinder;
-import com.idega.block.trade.data.*;
+
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.data.CurrencyValues;
 
 public class CurrencyFinder {
 

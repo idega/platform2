@@ -1,14 +1,14 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.block.trade.business.CurrencyBusiness;
-import com.idega.block.trade.data.Currency;
-import javax.ejb.FinderException;
-import javax.ejb.CreateException;
 import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Collection;
 import java.sql.SQLException;
-import com.idega.data.*;
+
+import javax.ejb.CreateException;
+
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
 
 
 /**

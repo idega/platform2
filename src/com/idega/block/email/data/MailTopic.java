@@ -1,7 +1,5 @@
 package com.idega.block.email.data;
 
-import javax.ejb.*;
-
 import com.idega.block.email.business.EmailTopic;
 import com.idega.data.CategoryEntity;
 import com.idega.data.IDOEntity;

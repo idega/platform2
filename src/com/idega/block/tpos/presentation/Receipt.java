@@ -1,16 +1,20 @@
 package com.idega.block.tpos.presentation;
 
-import java.util.List;
 import java.sql.SQLException;
-import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.idegaweb.*;
-import com.idega.core.data.Phone;
+import java.util.List;
+
 import com.idega.block.tpos.business.TPosClient;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.core.data.Phone;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.HorizontalRule;
+import com.idega.presentation.text.Text;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:        idegaWeb

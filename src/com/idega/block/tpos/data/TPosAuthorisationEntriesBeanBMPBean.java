@@ -1,6 +1,6 @@
 /*
 
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.2 2003/03/18 21:15:15 gimmi Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.3 2003/04/03 08:52:06 laddi Exp $
 
  *
 
@@ -20,8 +20,6 @@ package com.idega.block.tpos.data;
 
 
 
-
-import com.idega.data.IDOLegacyEntity;
 
 import java.sql.SQLException;
 import java.util.Collection;
