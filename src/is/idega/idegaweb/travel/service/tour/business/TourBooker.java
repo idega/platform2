@@ -65,10 +65,13 @@ public class TourBooker extends Booker {
         }
       }
 
-      if (update)
-      booking.update();
-      else
-      booking.insert();
+
+      if (update) {
+        booking.update();
+      } else {
+        booking.insert();
+      }
+
 
       return bookingId;
     }catch (SQLException s) {

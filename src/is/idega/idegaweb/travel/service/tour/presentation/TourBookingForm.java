@@ -1234,6 +1234,7 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
+
     if (tooMany) {
       return this.errorTooMany;
     }else {
@@ -1243,6 +1244,7 @@ public class TourBookingForm extends TravelManager {
         return 0;
       }
     }
+
 
   }
 

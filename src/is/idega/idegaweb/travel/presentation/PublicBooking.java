@@ -371,7 +371,7 @@ public class PublicBooking extends Block  {
             nameOfCategory = getText(prices[j].getPriceCategory().getName());
               nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
             try {
-              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
+              priceText = getBoldText(Integer.toString( (int) TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
               currencyText = getBoldText(currency.getCurrencyAbbreviation());
               pTable.add(currencyText,5,pRow);
             }catch (ProductPriceException p) {
@@ -395,7 +395,7 @@ public class PublicBooking extends Block  {
 
       table.add(pTable,2,3);
 
-      Link currCh = new Link(iwrb.getLocalizedImageButton("travel.other_currencies","Other_currencies"));
+      Link currCh = new Link(iwrb.getLocalizedImageButton("travel.currency_calculator","Currency calculator"));
         currCh.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
       table.add(currCh, 2, 3);
 
@@ -921,7 +921,7 @@ public class PublicBooking extends Block  {
         table.setAlignment(1,2,"right");
         table.setAlignment(1,3,"right");
       }else {
-        add(display);
+        table.add(display);
         if (gBooking == null) {
           debug("gBooking == null");
         }

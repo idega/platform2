@@ -684,7 +684,7 @@ public class Booker {
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), new idegaTimestamp(booking.getBookingDate()));
         if (betw != numberOfDays) {
-          list = list.subList(index+1, list.size()+1);
+          list = list.subList(index+1, list.size()-1);
           cont = false;
         }
 
