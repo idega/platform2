@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: Menu.java,v 1.2 2001/06/13 12:45:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -129,12 +129,12 @@ public class Menu extends JModuleObject{
   private String getUrl(int act){
     String url = "";
       switch (act) {
-      case ACT1:  url = "/info.jsp";            break;
-      case ACT2:  url = "/regulations.jsp";     break;
-      case ACT3:  url = "/apply.jsp";           break;
-      case ACT4:  url = "/apartments.jsp";      break;
-      case ACT5:  url = "/links.jsp";           break;
-      case ACT6:  url = "/english.jsp";         break;
+      case ACT1:  url = "/main/info.jsp";            break;
+      case ACT2:  url = "/main/regulations.jsp";     break;
+      case ACT3:  url = "/main/apply.jsp";           break;
+      case ACT4:  url = "/main/apartments.jsp";      break;
+      case ACT5:  url = "/main/links.jsp";           break;
+      case ACT6:  url = "/main/english.jsp";         break;
       case ACT7:  url = "/index2.jsp";          break;
       default: url =  "/index2.jsp";            break;
     }
