@@ -17,10 +17,8 @@ package se.idega.idegaweb.commune.account.citizen.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -48,33 +46,30 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/05/25 11:16:57 $ by $Author: tryggvil $
+ * Last modified: $Date: 2005/03/20 14:41:50 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
 	private final static int ACTION_VIEW_FORM = 0;
 	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
 
-	final static String NO_DEFAULT = "No";
-	final static String NO_KEY = "caa_no";
-
-	final static String EMAIL_DEFAULT = "Email";
-	final static String EMAIL_KEY = "scaa_email";
-	final static String PHONE_HOME_KEY = "scaa_phone_home";
-	final static String PHONE_HOME_DEFAULT = "Phone";
-	final static String PHONE_CELL_KEY = "scaa_cell_phone";
-	final static String PHONE_CELL_DEFAULT = "Cell phone";
-	final static String CITIZEN_ACCOUNT_INFO_KEY = "scaa_account_info";
-	final static String CITIZEN_ACCOUNT_INFO_DEFAULT = "If you don't have an email addrss your login info will be sent to you by snail mail.";
-	final static String MANDATORY_FIELD_EXPL_KEY = "scaa_mandatory_field_expl";
-	final static String MANDATORY_FIELD_EXPL_DEFAULT = "Fields marked with a star (*) are mandatory";
-	final static String PERSONAL_ID_CELL_CONNECTION_KEY = "scaa_personal_id_cell_connection";
-	final static String PERSONAL_ID_CELL_CONNECTION_DEFAULT = "You must enter the personal id that is registered on your mobile phone";
+	private final static String EMAIL_DEFAULT = "Email";
+	private final static String EMAIL_KEY = "scaa_email";
+	private final static String EMAIL_KEY_REPEAT = "scaa_email_repeat";
+	private final static String EMAIL_REPEAT_DEFAULT = "Email again";
+	private final static String PHONE_HOME_KEY = "scaa_phone_home";
+	private final static String PHONE_HOME_DEFAULT = "Phone";
+	private final static String PHONE_CELL_KEY = "scaa_cell_phone";
+	private final static String PHONE_CELL_DEFAULT = "Cell phone";
+	private final static String CITIZEN_ACCOUNT_INFO_KEY = "scaa_account_info";
+	private final static String CITIZEN_ACCOUNT_INFO_DEFAULT = "If you don't have an email addrss your login info will be sent to you by snail mail.";
+	private final static String MANDATORY_FIELD_EXPL_KEY = "scaa_mandatory_field_expl";
+	private final static String MANDATORY_FIELD_EXPL_DEFAULT = "Fields marked with a star (*) are mandatory";
 	private final static String UNKNOWN_CITIZEN_KEY = "scaa_unknown_citizen";
 	private final static String UNKNOWN_CITIZEN_DEFAULT = "Something is wrong with your personal id. Please try again or contact the responsible";
 	private final static String YOU_MUST_BE_18_KEY = "scaa_youMustBe18";
@@ -82,8 +77,8 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 
 	private boolean _sendEmail = false;
 
-	final static String SSN_DEFAULT = "Personnummer";
-	final static String SSN_KEY = "caa_ssn";
+	private final static String SSN_DEFAULT = "Personnummer";
+	private 	final static String SSN_KEY = "caa_ssn";
 	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT = "Application is submitted.";
 	private final static String TEXT_APPLICATION_SUBMITTED_KEY = "scaa_app_submitted";
 
@@ -92,8 +87,6 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 
 	private final static String USER_ALLREADY_HAS_A_LOGIN_DEFAULT = "You already have an account";
 	private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "scaa_user_allready_has_a_login";
-	final static String YES_DEFAULT = "Yes";
-	final static String YES_KEY = "caa_yes";
 
 	private final static String SIMPLE_FORM_SUBMIT_KEY = "scaa_simpleSubmit";
 	private final static String SIMPLE_FORM_SUBMIT_DEFAULT = "Forward >>";
@@ -104,6 +97,10 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY = "scaa_field_can_not_be_empty";
 	private final static String ERROR_NO_INSERT_DEFAULT = "Application could not be stored";
 	private final static String ERROR_NO_INSERT_KEY = "scaa_unable_to_insert";
+	private final static String ERROR_EMAILS_DONT_MATCH = "scaa_emails_dont_match";
+	private final static String ERROR_EMAILS_DONT_MATCH_DEFAULT = "Emails don't match";
+	private final static String ERROR_NOT_VALID_PERSONAL_ID = "scaa_not_valid_personal_id";
+	private final static String ERROR_NOT_VALID_PERSONAL_ID_DEFAULT = "The personal ID is not valid";
 
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -149,17 +146,18 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void submitSimpleForm(final IWContext iwc) {
-		final Table table = createTable();
+		Table table = createTable();
 		int row = 1;
 		try {
-			final String ssn = iwc.getParameter(SSN_KEY);
+			String ssn = iwc.getParameter(SSN_KEY);
 			if (!isOver18(ssn)) { throw new Exception(localize(YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT)); }
-			final String email = iwc.getParameter(EMAIL_KEY).toString();
-			final String phoneHome = iwc.getParameter(PHONE_HOME_KEY).toString();
-			final String phoneWork = iwc.getParameter(PHONE_CELL_KEY).toString();
-			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-			final User user = business.getUserIcelandic(ssn);
-			final Collection logins = new ArrayList();
+			String email = iwc.getParameter(EMAIL_KEY).toString();
+			String emailRepeat = iwc.getParameter(EMAIL_KEY_REPEAT).toString();
+			String phoneHome = iwc.getParameter(PHONE_HOME_KEY).toString();
+			String phoneWork = iwc.getParameter(PHONE_CELL_KEY).toString();
+			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
+			User user = business.getUserIcelandic(ssn);
+			Collection logins = new ArrayList();
 			try {
 				logins.addAll(getLoginTableHome().findLoginsForUser(user));
 			}
@@ -174,7 +172,11 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 				table.add(text, 1, row++);
 				table.add(new Break(2), 1, row++);
 				table.add(getSimpleApplicationForm(iwc), 1, row++);
-
+			}
+			if (email != null && email.length() > 0) {
+				if (emailRepeat == null || !email.equals(emailRepeat)) {
+					throw new Exception(localize(ERROR_EMAILS_DONT_MATCH, ERROR_EMAILS_DONT_MATCH_DEFAULT));
+				}
 			}
 			else if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
 				// known user applied, but couldn't be submitted
@@ -219,17 +221,21 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, row);
 		table.add(getErrorText("*"), 1, row++);
 		TextInput ssnInput = getSingleInput(iwc, SSN_KEY, 25, true);
+		ssnInput.setAsPersonalID(iwc.getApplication().getDefaultLocale(), localize(ERROR_NOT_VALID_PERSONAL_ID, ERROR_NOT_VALID_PERSONAL_ID_DEFAULT));
 		table.add(ssnInput, 1, row++);
 
-		table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, row);
-		table.add(getErrorText("*"), 1, row++);
-		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 25, true), 1, row++);
+		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, row++);
+		table.add(getSingleInput(iwc, EMAIL_KEY, 25, 255, false), 1, row++);
+
+		table.add(getHeader(EMAIL_KEY_REPEAT, EMAIL_REPEAT_DEFAULT), 1, row++);
+		table.add(getSingleInput(iwc, EMAIL_KEY_REPEAT, 25, 255, false), 1, row++);
 
 		table.add(getHeader(PHONE_CELL_KEY, PHONE_CELL_DEFAULT), 1, row++);
 		table.add(getSingleInput(iwc, PHONE_CELL_KEY, 25, false), 1, row++);
 
-		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, row++);
-		table.add(getSingleInput(iwc, EMAIL_KEY, 25, 255, false), 1, row++);
+		table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, row);
+		table.add(getErrorText("*"), 1, row++);
+		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 25, true), 1, row++);
 
 		table.setHeight(row++, 18);
 		table.mergeCells(1, row, 3, row);
