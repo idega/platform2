@@ -24,7 +24,6 @@ import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
-import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 
@@ -110,22 +109,24 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 	private boolean bTestServer = false;
 	private CreditCardTransaction cct = null;
 	private static Logger logger;
+	private CreditCardMerchant ccMerchant = null;
 
 	public KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, CreditCardMerchant merchant) {
-		this(iwc, host, port, keystoreLocation, keystorePass, merchant.getLocation(), merchant.getUser(), merchant.getPassword(), merchant.getTerminalID(), merchant.getMerchantID());
-	}
-	
-	public KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, String site, String user, String password, String acceptorTerminalID, String acceptorIdentification) {
+		//this(iwc, host, port, keystoreLocation, keystorePass, merchant.getLocation(), merchant.getUser(), merchant.getPassword(), merchant.getTerminalID(), merchant.getMerchantID());
+	//}	
+	//private KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, String site, String user, String password, String acceptorTerminalID, String acceptorIdentification) {
 		HOST_NAME = host;
 		HOST_PORT = port;
 		strKeystore = keystoreLocation;
 		strKeystorePass = keystorePass;
 		
-		SITE = site;
-		USER = user;
-		PASSWORD = password;
-		ACCEPTOR_TERM_ID = acceptorTerminalID;
-		ACCEPTOR_IDENTIFICATION = acceptorIdentification;
+		
+		ccMerchant = merchant;
+		SITE = merchant.getLocation();
+		USER = merchant.getUser();
+		PASSWORD = merchant.getPassword();
+		ACCEPTOR_TERM_ID = merchant.getTerminalID();
+		ACCEPTOR_IDENTIFICATION = merchant.getMerchantID();
 		init(iwc);
 	}	
 
@@ -312,7 +313,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 		// stamp.addHours(-1); // Temp for gimmi to test
 		return stamp.getDateString("yyMMddHHmmss");
 	}
-	
+	/*
 	public static void main(String[] args) throws Exception 
   {
 			String host = "test.kortathjonustan.is";
@@ -352,7 +353,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 
 	}
 	
-	
+	*/
 	private Hashtable doRefund(int iAmountToRefund, Hashtable captureProperties) throws CreditCardAuthorizationException {
 		// TODO tjekka ef amountToRefund er sama og upphaflega refundi› ...
 		System.out.println(" ------ REFUND ------");
@@ -681,6 +682,13 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 		tmp.add(CreditCardBusiness.CARD_TYPE_JCB);
 		//tmp.add(CreditCardBusiness.CARD_TYPE_DANKORT); // Virkar víst bara í .dk
 		return tmp;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.creditcard.business.CreditCardClient#getCreditCardMerchant()
+	 */
+	public CreditCardMerchant getCreditCardMerchant() {
+		return ccMerchant;
 	}
 	
 }

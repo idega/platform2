@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.2 2004/04/23 00:12:58 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.3 2004/05/10 07:16:39 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -514,5 +514,12 @@ public class TPosClient implements CreditCardClient{
 		tmp.add(CreditCardBusiness.CARD_TYPE_MASTERCARD);
 		tmp.add(CreditCardBusiness.CARD_TYPE_AMERICAN_EXPRESS);
 		return tmp;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.creditcard.business.CreditCardClient#getCreditCardMerchant()
+	 */
+	public CreditCardMerchant getCreditCardMerchant() {
+		return _merchant;
 	} 
 }
