@@ -22,17 +22,17 @@ import com.idega.presentation.ui.InterfaceObject;
 public class CommuneBlock extends com.idega.presentation.Block {
 	public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
-	private final static String STYLENAME_TEXT = "Text";
-	private final static String STYLENAME_SMALL_TEXT = "SmallText";
-	private final static String STYLENAME_HEADER = "Header";
-	private final static String STYLENAME_SMALL_HEADER = "SmallHeader";
-	private final static String STYLENAME_LINK = "Link";
-	private final static String STYLENAME_LIST_HEADER = "ListHeader";
-	private final static String STYLENAME_LIST_TEXT = "ListText";
-	private final static String STYLENAME_LIST_LINK = "ListLink";
-	private final static String STYLENAME_ERROR_TEXT = "ErrorText";
-	private final static String STYLENAME_SMALL_ERROR_TEXT = "SmallErrorText";
-	private final static String STYLENAME_INTERFACE = "Interface";
+	public final static String STYLENAME_TEXT = "Text";
+	public final static String STYLENAME_SMALL_TEXT = "SmallText";
+	public final static String STYLENAME_HEADER = "Header";
+	public final static String STYLENAME_SMALL_HEADER = "SmallHeader";
+	public final static String STYLENAME_LINK = "Link";
+	public final static String STYLENAME_LIST_HEADER = "ListHeader";
+	public final static String STYLENAME_LIST_TEXT = "ListText";
+	public final static String STYLENAME_LIST_LINK = "ListLink";
+	public final static String STYLENAME_ERROR_TEXT = "ErrorText";
+	public final static String STYLENAME_SMALL_ERROR_TEXT = "SmallErrorText";
+	public final static String STYLENAME_INTERFACE = "Interface";
 
 	private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
 	private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
