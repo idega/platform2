@@ -1,5 +1,5 @@
 /*
- * $Id: Provider.java,v 1.7 2004/02/09 13:02:33 staffan Exp $
+ * $Id: Provider.java,v 1.8 2004/02/19 13:35:36 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.block.school.data.SchoolHome;
 /**
  * This class is a holder for a school bean and provider accounting information.
  * <p>
- * Last modified: $Date: 2004/02/09 13:02:33 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/19 13:35:36 $ by $Author: tryggvil $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Provider {
 
@@ -151,5 +151,9 @@ public class Provider {
 		} else {
 			return null;
 		}
+	}
+	
+	public String toString(){
+		return getSchool().getName();
 	}
 }
