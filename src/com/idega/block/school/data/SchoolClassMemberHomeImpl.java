@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.63 2004/12/07 20:39:18 laddi Exp $
- * Created on 7.12.2004
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.64 2005/01/04 13:52:24 laddi Exp $
+ * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2004/12/07 20:39:18 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.64 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -177,6 +177,13 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 	public int getNumberOfPlacings(int userID, int schoolClassID) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacings(userID, schoolClassID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public int getNumberOfPlacingsBySchoolCategory(User child, SchoolCategory schoolCategory) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsBySchoolCategory(child, schoolCategory);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}

@@ -1527,10 +1527,6 @@ public class SchoolUserEditor extends Block {
 				catch (RemoteException e2) {
 					e2.printStackTrace();
 				}
-				catch (RemoveException e2) {
-					e2.printStackTrace();
-				}
-
 			}
 
 			return true;

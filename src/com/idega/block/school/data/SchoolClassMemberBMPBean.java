@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/12/07 20:39:18 $ by $Author: laddi $
- * @version $Revision: 1.123 $
+ *         Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
+ * @version $Revision: 1.124 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -486,6 +486,24 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendSelectCountFrom(this).appendWhereEquals(MEMBER, userID).appendAndEquals(SCHOOLCLASS, schoolClassID);
 
 		return this.idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetNumberOfPlacingsBySchoolCategory(User child, SchoolCategory schoolCategory) throws IDOException {
+		Table table = new Table(this);
+		Table schoolType = new Table(SchoolType.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, schoolType);
+		}
+		catch (IDORelationshipException ire) {
+			throw new IDOException("Couldn't join tables sch_class_member and sch_school_type...");
+		}
+		query.addCriteria(new MatchCriteria(table, MEMBER, MatchCriteria.EQUALS, child));
+		query.addCriteria(new MatchCriteria(schoolType, "school_category", MatchCriteria.EQUALS, schoolCategory));
+
+		return this.idoGetNumberOfRecords(query);
 	}
 
 	public int ejbHomeGetNumberOfSubGroupPlacings(int userID, int schoolClassID) throws IDOException {

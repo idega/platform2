@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,6 +18,8 @@ import javax.transaction.UserTransaction;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
+import com.idega.block.school.data.SchoolClassMemberLog;
+import com.idega.block.school.data.SchoolClassMemberLogHome;
 import com.idega.block.school.data.SchoolSubArea;
 import com.idega.block.school.data.SchoolSubAreaHome;
 import com.idega.block.school.data.SchoolCategory;
@@ -2475,8 +2477,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return result;
 	}
 
-
-			
+	public SchoolClassMemberLogHome getSchoolClassMemberLogHome() {
+		try {
+			return (SchoolClassMemberLogHome) IDOLookup.getHome(SchoolClassMemberLog.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+	
 	public SchoolSubAreaHome getSchoolSubAreaHome() {
 		try {
 			return (SchoolSubAreaHome) IDOLookup.getHome(SchoolSubArea.class);
@@ -2484,6 +2493,55 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (IDOLookupException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
-	}	
+	}
+	
+	public void addToSchoolClassMemberLog(User user, Date endDate) throws IllegalArgumentException {
+		addToSchoolClassMemberLog(user, null, null, endDate);
+	}
 
+	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date endDate) throws IllegalArgumentException {
+		addToSchoolClassMemberLog(user, schoolClass, null, endDate);
+	}
+
+	public void addToSchoolClassMemberLog(int userID, int schoolClassID, Date startDate, Date endDate) throws IllegalArgumentException {
+		try {
+			addToSchoolClassMemberLog(getUserBusiness().getUser(userID), getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID)), startDate, endDate);
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+	}
+	
+	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date startDate, Date endDate) throws IllegalArgumentException {
+		if (startDate == null && endDate == null) {
+			throw new IllegalArgumentException("[SchoolClassMemberLog] Both start date and end date are null...");
+		}
+		
+		if (startDate == null) {
+			try {
+				SchoolClassMemberLog log = getSchoolClassMemberLogHome().findOpenLogByUserAndSchoolClass(user, schoolClass);
+				log.setEndDate(endDate);
+				log.store();
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+		}
+		else {
+			try {
+				SchoolClassMemberLog log = getSchoolClassMemberLogHome().create();
+				log.setUser(user);
+				log.setSchoolClass(schoolClass);
+				log.setStartDate(startDate);
+				log.setEndDate(endDate);
+				log.store();
+			}
+			catch (CreateException ce) {
+				log(ce);
+			}
+		}
+	}
 }
