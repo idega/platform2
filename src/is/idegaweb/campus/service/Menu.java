@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.9 2001/08/17 11:22:07 laddi Exp $
+ * $Id: Menu.java,v 1.10 2001/08/20 17:25:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,14 +93,6 @@ public class Menu extends JModuleObject{
 
     int row = 1;
 
-    Image menu1 = (iAct != ACT1?iwrb.getImage("/menu/info.gif","/menu/info_o.gif","Info",iWidth,iHeight):iwrb.getImage("/menu/info1.gif",iWidth,iHeight));
-    //Image menu1 = new Image(iAct != ACT1?"/pics/menu/info.gif":"/pics/menu/info1.gif","Upplýsingar",iWidth,iHeight));
-    Link link1 = new Link(menu1);
-    link1.setURL(getUrl(ACT1));
-    link1.addParameter(strAction,ACT1);
-    LinkTable.add(link1,1,row);
-    row++;
-
     Image menu2 = (iAct != ACT2?iwrb.getImage("/menu/office.gif","/menu/office_o.gif","Office",iWidth,iHeight):iwrb.getImage("/menu/office1.gif",iWidth,iHeight));
     //Image menu2 = new Image(iAct != ACT2?"/pics/menu/office.gif":"/pics/menu/office1.gif","Skrifstofa",iWidth,iHeight));
     Link link2 = new Link(menu2);
@@ -119,23 +111,7 @@ public class Menu extends JModuleObject{
       LinkTable.add(link2_1,1,row);
       row++;
     }
-    Image menu3 = (iAct != ACT3?iwrb.getImage("/menu/apply.gif","/menu/apply_o.gif","Apply",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
-    //Image menu3 = new Image(iAct != ACT3?"/pics/menu/apply.gif":"/pics/menu/apply1.gif","Umsókn",iWidth,iHeight));
-    Link link3 = new Link(menu3);
-    link3.setURL(getUrl(ACT3));
-    link3.addParameter(strAction,ACT3);
-    LinkTable.add(link3,1,row);
-    row++;
 
-    if ( iAct == ACT3 ) {
-      Image menu3_1 = iwrb.getImage("/menu/rules.gif",iWidth,iHeight);
-      //Image menu3_1 = new Image("/pics/menu/rules.gif","Úthlutunarreglur",iWidth,iHeight));
-      Link link3_1 = new Link(menu3_1);
-        link3_1.setURL(getUrl(ACT8));
-        link3_1.addParameter(TextControl.strAction,"3");
-      LinkTable.add(link3_1,1,row);
-      row++;
-    }
     Image menu4 = (iAct != ACT4?iwrb.getImage("/menu/apartment.gif","/menu/apartment_o.gif","Appartment",iWidth,iHeight):iwrb.getImage("/menu/apartment1.gif",iWidth,iHeight));
     //Image menu4 = new Image(iAct != ACT4?"/pics/menu/apartment.gif":"/pics/menu/apartment1.gif","Íbúðir");
     Link link4 = new Link(menu4);
@@ -167,6 +143,32 @@ public class Menu extends JModuleObject{
       LinkTable.add(link4_3,1,row);
       row++;
     }
+
+    Image menu3 = (iAct != ACT3?iwrb.getImage("/menu/apply.gif","/menu/apply_o.gif","Apply",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
+    //Image menu3 = new Image(iAct != ACT3?"/pics/menu/apply.gif":"/pics/menu/apply1.gif","Umsókn",iWidth,iHeight));
+    Link link3 = new Link(menu3);
+    link3.setURL(getUrl(ACT3));
+    link3.addParameter(strAction,ACT3);
+    LinkTable.add(link3,1,row);
+    row++;
+
+    if ( iAct == ACT3 ) {
+      Image menu3_1 = iwrb.getImage("/menu/rules.gif",iWidth,iHeight);
+      //Image menu3_1 = new Image("/pics/menu/rules.gif","Úthlutunarreglur",iWidth,iHeight));
+      Link link3_1 = new Link(menu3_1);
+        link3_1.setURL(getUrl(ACT8));
+        link3_1.addParameter(TextControl.strAction,"3");
+      LinkTable.add(link3_1,1,row);
+      row++;
+    }
+
+    Image menu1 = (iAct != ACT1?iwrb.getImage("/menu/info.gif","/menu/info_o.gif","Info",iWidth,iHeight):iwrb.getImage("/menu/info1.gif",iWidth,iHeight));
+    //Image menu1 = new Image(iAct != ACT1?"/pics/menu/info.gif":"/pics/menu/info1.gif","Upplýsingar",iWidth,iHeight));
+    Link link1 = new Link(menu1);
+    link1.setURL(getUrl(ACT1));
+    link1.addParameter(strAction,ACT1);
+    LinkTable.add(link1,1,row);
+    row++;
 
     Image menu5 = (iAct != ACT5?iwrb.getImage("/menu/links.gif","/menu/links_o.gif","Links",iWidth,iHeight):iwrb.getImage("/menu/links1.gif",iWidth,iHeight));
     //Image menu5 = new Image(iAct != ACT5?"/pics/menu/links.gif":"/pics/menu/links1.gif","Tenglar",iWidth,iHeight));
