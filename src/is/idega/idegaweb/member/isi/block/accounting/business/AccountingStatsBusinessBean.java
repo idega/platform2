@@ -629,39 +629,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			// don't forget to add the row to the collection
 			reportCollection.addAll(datas);
 		}
-		
-		Comparator dateComparator = new Comparator() {
-
-			public int compare(Object arg0, Object arg1) {
-				int comp = 0;
-				try {
-					String[] sta0 = ((String) arg0).trim().split(" ");
-					String[] sta1 = ((String) arg1).split(" ");
-					String month0 = sta0[1];
-					String month1 = sta1[1];
-					String year0 = sta0[2];
-					String year1 = sta1[2];
-					
-					comp = year0.compareTo(year1);
-					if(comp == 0) {
-						int i0 = monthList.indexOf(month0.substring(0, 3));
-						int i1 = monthList.indexOf(month1.substring(0, 3));
-						comp = i0 - i1;
-					}
-					if(comp == 0) {
-						int day0 = Integer.parseInt(sta0[0].substring(0, sta0[0].length()-1)); // substring to take the dot away
-						int day1 = Integer.parseInt(sta1[0].substring(0, sta1[0].length()-1));
-						comp = day0 - day1;
-					}
-				} catch(Exception e) {
-				}
-				return comp;
-			}
-			
-			private List monthList = Arrays.asList(new String[] {"jan", "feb", "mar", "apr", "ma\u00ED", "j\u00FAn", "j\u00FAl", "\u00E1g\u00FA", "sep", 
-																 "okt", "n\u00F3v", "des"});
-		};
-		
+		Comparator dateComparator = new DateComparator();
 		ReportableField[] sortFields = new ReportableField[] {divisionField, entryDateField, groupField, personalIDField };
 		Comparator[] comparators = new Comparator[] {null, dateComparator, null, null};
 		Comparator comparator = new FieldsComparator(sortFields, comparators);
@@ -676,7 +644,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	 */
 	public ReportableCollection getLatePaymentListByDivisionsGroupsAndDateIntervalFiltering(
 			Collection divisionsFilter,
-			Collection groupsFilter)
+			Collection groupsFilter,
+			String order)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -823,8 +792,23 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, paymentDateField };
-		Comparator comparator = new FieldsComparator(sortFields);
+		Comparator dateComparator = new DateComparator();
+		ReportableField[] sortFields = null;
+		Comparator[] comparators = null;
+		if (order.equals(IWMemberConstants.ORDER_BY_NAME)) {
+			sortFields = new ReportableField[] {divisionField, nameField, groupField, paymentDateField};
+			comparators = new Comparator[] {null, null, null, dateComparator};
+		}
+		else if (order.equals(IWMemberConstants.ORDER_BY_GROUP_NAME)) {
+			sortFields = new ReportableField[] {divisionField, groupField, nameField, paymentDateField};
+			comparators = new Comparator[] {null, null, null, dateComparator};
+		}
+		else if (order.equals(IWMemberConstants.ORDER_BY_ENTRY_DATE)) {
+			sortFields = new ReportableField[] {divisionField, paymentDateField, groupField, nameField};
+			comparators = new Comparator[] {null, dateComparator, null, null};
+		}
+
+		Comparator comparator = new FieldsComparator(sortFields, comparators);
 		Collections.sort(reportCollection, comparator);
 		
 		//finished return the collection
@@ -987,5 +971,38 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		else 
 			return club;
 	}
+	
+	class DateComparator implements Comparator {
 
+		public int compare(Object arg0, Object arg1) {
+			int comp = 0;
+			try {
+				String[] sta0 = ((String) arg0).trim().split(" ");
+				String[] sta1 = ((String) arg1).split(" ");
+				String month0 = sta0[1];
+				String month1 = sta1[1];
+				String year0 = sta0[2];
+				String year1 = sta1[2];
+				
+				comp = year0.compareTo(year1);
+				if(comp == 0) {
+					int i0 = monthList.indexOf(month0.substring(0, 3));
+					int i1 = monthList.indexOf(month1.substring(0, 3));
+					comp = i0 - i1;
+				}
+				if(comp == 0) {
+					int day0 = Integer.parseInt(sta0[0].substring(0, sta0[0].length()-1)); // substring to take the dot away
+					int day1 = Integer.parseInt(sta1[0].substring(0, sta1[0].length()-1));
+					comp = day0 - day1;
+				}
+			} 
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			return comp;
+		}
+	
+		private List monthList = Arrays.asList(new String[] {"jan", "feb", "mar", "apr", "ma\u00ED", "j\u00FAn", "j\u00FAl", "\u00E1g\u00FA", "sep", 
+			"okt", "n\u00F3v", "des"});
+	}
 }
