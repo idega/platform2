@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -34,6 +35,7 @@ import com.idega.user.presentation.UserPropertyWindow;
 public class CashierLedgerWindow extends CashierSubWindowTemplate{
 	public static String NEW_USER_IN_LEDGER = "user_new_in_ledger_";
 	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
+	private String bold = "bold";
 	
 	public CashierLedgerWindow() {
 		super();
@@ -98,20 +100,20 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 					}
 					Link aLink = null;
 					IWResourceBundle iwrb = getResourceBundle(iwc);
-					String displayText = text.toString();
+					String displayString = "";
 					if(ledgerGroup != null) {
 						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.in_group_text","in group") + ":");
-						displayText += " - " + t + " " + ledgerGroup.getName();
+						displayString += " - " + t + " " + ledgerGroup.getName();
 					}
 					if(clubNameField != null) {
 						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.club_name_text", "club name") + ":");
-						displayText += " - " + t + " " + clubNameField;
+						displayString += " - " + t + " " + clubNameField;
 					}
 					if(divisionNameField != null) {
 						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.division_name_text","division name") + ":");
-						displayText += " - " + t + " " + divisionNameField;
+						displayString += " - " + t + " " + divisionNameField;
 					}
-					aLink = new Link(displayText);
+					aLink = new Link(text);
 					if(!isInGroup) {
 						aLink.setStyleClass("errorMessage");
 					}
@@ -120,7 +122,12 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 					}
 					aLink.setWindowToOpen(UserPropertyWindow.class);
 					aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
-					return aLink;
+					Text displayText = new Text(displayString);
+					displayText.setStyleClass(bold);
+					Table te = new Table();
+					te.add(aLink,1,1);
+					te.add(displayText,1,1);
+					return te;
 					
 				}
 				else {
@@ -137,17 +144,25 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		Collection u = new ArrayList();
+		Iterator usersIter = (Iterator) users.iterator();
+		while(usersIter.hasNext()) {
+			User us = (User) usersIter.next();
+			if(us.getMetaData(NEW_USER_IN_LEDGER) != null && !us.getMetaData(NEW_USER_IN_LEDGER).equals("-1")) {
+				u.add(us);
+			}
+		}
 
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
 		EntityBrowser entityBrowser = new EntityBrowser();
 
-		entityBrowser.setEntities("havanna",users);
+		entityBrowser.setEntities("havanna",u);
 		entityBrowser.setDefaultNumberOfRows(Math.min(users.size(), 30));
 		entityBrowser.setWidth(Table.HUNDRED_PERCENT);
 		
 		String nameKey = User.class.getName() + ".FIRST_NAME:" + User.class.getName() + ".MIDDLE_NAME:" + User.class.getName() + ".LAST_NAME";
 		String ssnKey = User.class.getName() + ".PERSONAL_ID";
-		entityBrowser.setMandatoryColumn(1, "Delete");
+//		entityBrowser.setMandatoryColumn(1, "Delete");
 		
 		entityBrowser.setDefaultColumn(1, nameKey);
 		
