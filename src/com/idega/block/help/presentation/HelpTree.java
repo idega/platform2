@@ -94,9 +94,6 @@ public class HelpTree extends Block {
 		/**
 		 * @todo Read this from xml and remove the fucking hardcoding.
 		 */
-		
-//		System.out.println("country = " + iwc.getCurrentLocale().getLanguage());
-		
 		HelpNode top = null;
 		HelpNode child1 = null;
 		HelpNode child2 = null;
@@ -113,6 +110,11 @@ public class HelpTree extends Block {
 		HelpNode child13 = null;
 		HelpNode child14 = null;
 		HelpNode child15 = null;
+
+		HelpNode child16 = null;
+		HelpNode child17 = null;
+		HelpNode child18 = null;
+
 
 		HelpNode citizen = null;
 		HelpNode schoolChoice = null;
@@ -179,65 +181,89 @@ public class HelpTree extends Block {
 			child13 = new HelpNode(14,"se.idega.idegaweb.commune","Till nacka.se");
 			child14 = new HelpNode(15,"se.idega.idegaweb.commune","Mina meddelanden");
 			child15 = new HelpNode(16,"se.idega.idegaweb.commune","Mina ärenden");
+			
+			child16 = new HelpNode(21,"se.idega.idegaweb.commune","Updatera dina köalternativ - för dig som står i barnomsorgskö");
+			child17 = new HelpNode(22,"se.idega.idegaweb.commune","Updatera dina köalternativ - för dig som har en barnomsorgsplats");
+			child18 = new HelpNode(23,"se.idega.idegaweb.commune","Barnomsorg & Utbildning");
 
-			citizen = new HelpNode(17,"se.idega.idegaweb.commune","Medborgarkonto");
-			schoolChoice = new HelpNode(18,"se.idega.idegaweb.commune","Skolval");
-			other = new HelpNode(19,"se.idega.idegaweb.commune","Övrig");
+			citizenTop.addChild(child1);
+			citizenTop.addChild(child2);
+			citizenTop.addChild(child3);
+			citizenTop.addChild(child4);
+			citizenTop.addChild(child16);
+			citizenTop.addChild(child17);
+			citizenTop.addChild(child6);
+			citizenTop.addChild(child7);
+			citizenTop.addChild(child8);
+			citizenTop.addChild(child9);
+			citizenTop.addChild(child10);
+			citizenTop.addChild(child18);
+			citizenTop.addChild(child12);
+			citizenTop.addChild(child13);
+			
+			child3.addChild(child14);
+			child3.addChild(child15);
 
-			citizen.addChild(child1);
-			citizen.addChild(child2);
-			citizen.addChild(child3);
-			citizen.addChild(child14);
-			citizen.addChild(child15);
-			citizen.addChild(child4);
-			
-			schoolChoice.addChild(child5);
-			schoolChoice.addChild(child6);
-			schoolChoice.addChild(child7);
-			schoolChoice.addChild(child8);
-			schoolChoice.addChild(child9);
-			
-			other.addChild(child10);
-			other.addChild(child11);
-			other.addChild(child12);
-			other.addChild(child13);
+//			citizen = new HelpNode(17,"se.idega.idegaweb.commune","Medborgarkonto");
+//			schoolChoice = new HelpNode(18,"se.idega.idegaweb.commune","Skolval");
+//			other = new HelpNode(19,"se.idega.idegaweb.commune","Övrig");
 
-			citizenTop.addChild(citizen);
-			citizenTop.addChild(schoolChoice);
-			citizenTop.addChild(other);
+//			citizen.addChild(child1);
+//			citizen.addChild(child2);
+//			citizen.addChild(child3);
+//			citizen.addChild(child14);
+//			citizen.addChild(child15);
+//			citizen.addChild(child4);
+//			
+//			schoolChoice.addChild(child5);
+//			schoolChoice.addChild(child6);
+//			schoolChoice.addChild(child7);
+//			schoolChoice.addChild(child8);
+//			schoolChoice.addChild(child9);
+//			
+//			other.addChild(child10);
+//			other.addChild(child11);
+//			other.addChild(child12);
+//			other.addChild(child13);
+//
+//			citizenTop.addChild(citizen);
+//			citizenTop.addChild(schoolChoice);
+//			citizenTop.addChild(other);
 			
-			top = new HelpNode(20,"se.idega.idegaweb.commune","Hjälp");
-			top.addChild(citizenTop);
+			return citizenTop;
 			
-			HelpNode adminTop = new HelpNode(21,"se.idega.idegaweb.commune","Hjälp - Anordnare");
-			HelpNode adminMyPage = new HelpNode(22,"se.idega.idegaweb.commune","Min sida");
-			HelpNode adminSchoolGroup = new HelpNode(23,"se.idega.idegaweb.commune","Administrera skolgruppe");
-			HelpNode adminSchoolChoice = new HelpNode(24,"se.idega.idegaweb.commune","Administrera skolval");
-			HelpNode adminStudents = new HelpNode(25,"se.idega.idegaweb.commune","Elevöversikt");
-			HelpNode adminLeasureTime = new HelpNode(26,"se.idega.idegaweb.commune","Fritidslista");
+//			top = new HelpNode(20,"se.idega.idegaweb.commune","Hjälp");
+//			top.addChild(citizenTop);
 			
-			adminTop.addChild(adminMyPage);
-			adminTop.addChild(adminSchoolGroup);
-			adminTop.addChild(adminSchoolChoice);
-			adminTop.addChild(adminStudents);
-			adminTop.addChild(adminLeasureTime);
-			
-			top.addChild(adminTop);
-
-			HelpNode bunTop = new HelpNode(27,"se.idega.idegaweb.commune","Hjälp - BUN-administratör");
-			HelpNode bunMyPage = new HelpNode(28,"se.idega.idegaweb.commune","Min sida");
-			HelpNode bunChecks = new HelpNode(29,"se.idega.idegaweb.commune","Checkhantering");
-			HelpNode bunCitizen = new HelpNode(30,"se.idega.idegaweb.commune","Medborgarkonto");
-			HelpNode bunStatistics = new HelpNode(31,"se.idega.idegaweb.commune","Statistik skolval");
-			HelpNode bunReminder = new HelpNode(32,"se.idega.idegaweb.commune","Påminnelse skolval");
-			
-			bunTop.addChild(bunMyPage);
-			bunTop.addChild(bunChecks);
-			bunTop.addChild(bunCitizen);
-			bunTop.addChild(bunStatistics);
-			bunTop.addChild(bunReminder);
-
-			top.addChild(bunTop);
+//			HelpNode adminTop = new HelpNode(21,"se.idega.idegaweb.commune","Hjälp - Anordnare");
+//			HelpNode adminMyPage = new HelpNode(22,"se.idega.idegaweb.commune","Min sida");
+//			HelpNode adminSchoolGroup = new HelpNode(23,"se.idega.idegaweb.commune","Administrera skolgruppe");
+//			HelpNode adminSchoolChoice = new HelpNode(24,"se.idega.idegaweb.commune","Administrera skolval");
+//			HelpNode adminStudents = new HelpNode(25,"se.idega.idegaweb.commune","Elevöversikt");
+//			HelpNode adminLeasureTime = new HelpNode(26,"se.idega.idegaweb.commune","Fritidslista");
+//			
+//			adminTop.addChild(adminMyPage);
+//			adminTop.addChild(adminSchoolGroup);
+//			adminTop.addChild(adminSchoolChoice);
+//			adminTop.addChild(adminStudents);
+//			adminTop.addChild(adminLeasureTime);
+//			
+//			top.addChild(adminTop);
+//
+//			HelpNode bunTop = new HelpNode(27,"se.idega.idegaweb.commune","Hjälp - BUN-administratör");
+//			HelpNode bunMyPage = new HelpNode(28,"se.idega.idegaweb.commune","Min sida");
+//			HelpNode bunChecks = new HelpNode(29,"se.idega.idegaweb.commune","Checkhantering");
+//			HelpNode bunCitizen = new HelpNode(30,"se.idega.idegaweb.commune","Medborgarkonto");
+//			HelpNode bunStatistics = new HelpNode(31,"se.idega.idegaweb.commune","Statistik skolval");
+//			HelpNode bunReminder = new HelpNode(32,"se.idega.idegaweb.commune","Påminnelse skolval");
+//			
+//			bunTop.addChild(bunMyPage);
+//			bunTop.addChild(bunChecks);
+//			bunTop.addChild(bunCitizen);
+//			bunTop.addChild(bunStatistics);
+//			bunTop.addChild(bunReminder);
+//
+//			top.addChild(bunTop);
 		}
 		
 		return top;			
