@@ -258,7 +258,9 @@ public class SupplierManager {
     try {
       SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
       List users = UserBusiness.getUsersInGroup(sGroup);
-      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      if (users != null) {
+        java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      }
       return users;
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);

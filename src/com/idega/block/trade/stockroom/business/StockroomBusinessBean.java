@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
+import java.rmi.RemoteException;
 import com.idega.business.IBOServiceBean;
 import java.sql.Timestamp;
 import com.idega.block.trade.stockroom.data.*;

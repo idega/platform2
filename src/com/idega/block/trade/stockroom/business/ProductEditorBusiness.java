@@ -138,22 +138,23 @@ public class ProductEditorBusiness extends IBOServiceBean{
   }
 
   public SelectionBox getCategorySelectionBox(Product product, String name, int productCatalogObjectInstanceId) {
-      SelectionBox catSel = new SelectionBox(name);
-      List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
-      if (product != null) {
-		try {
-		  cats = ProductBusiness.getProductCategories(product);
-		}catch (IDOFinderException ido) {
-		  ido.printStackTrace(System.err);
-		}
+    SelectionBox catSel = new SelectionBox(name);
+    List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
+    if (product != null) {
+      try {
+        cats = ProductBusiness.getProductCategories(product);
+      }catch (IDOFinderException ido) {
+        ido.printStackTrace(System.err);
       }
+    }
 
-  	Category icCat;
-	  if (cats != null) {
-	  	catSel.addMenuElements(cats);
-	  	if ( product != null )
-		  	catSel.setAllSelected(true);
-	  }
+    Category icCat;
+    if (cats != null) {
+      catSel.addMenuElements(cats);
+//      if ( product != null ) { Gimmi 17.08.02
+        catSel.setAllSelected(true);
+//      }
+    }
 
     return catSel;
   }
@@ -168,7 +169,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 		  ido.printStackTrace(System.err);
 		}
 	  }
-	
+
 	  Category icCat;
 	  if (cats != null ) {
 	  	catSel.addMenuElements(cats);

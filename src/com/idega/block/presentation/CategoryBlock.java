@@ -26,6 +26,7 @@ public abstract class CategoryBlock extends Block{
   private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
+  private boolean orderManually = false;
 
   /**
    *  Returns the first Category bound to this instance
@@ -65,6 +66,13 @@ public abstract class CategoryBlock extends Block{
   }
 
   /**
+   * Turns Manual ordering fidus on/off
+   */
+  public void setOrderManually(boolean orderManually) {
+    this.orderManually = orderManually;
+  }
+
+  /**
    *  Returns a collection of ICCategory objects bound to this instance
    *  specified by default type
    */
@@ -75,6 +83,7 @@ public abstract class CategoryBlock extends Block{
 
   /**
    *  Returns a collection of ICCategory objects bound to this instance
+   *  @returns Collection
    */
   public Collection getCategories(){
     return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
@@ -119,8 +128,13 @@ public abstract class CategoryBlock extends Block{
     L.addParameter(CategoryWindow.prmCategoryId,getCategoryId());
     L.addParameter(CategoryWindow.prmObjInstId,getICObjectInstanceID());
     L.addParameter(CategoryWindow.prmCategoryType,type);
-    if(getMultible())
+    if(getMultible()) {
       L.addParameter(CategoryWindow.prmMulti,"true");
+    }
+    if (orderManually) {
+      L.addParameter(CategoryWindow.prmOrder, "true");
+    }
+
     L.setWindowToOpen(CategoryWindow.class);
     return L;
   }
@@ -142,6 +156,11 @@ public abstract class CategoryBlock extends Block{
    *  Defines if multiple categories can bound to this instance
    */
   public abstract boolean getMultible();
+
+  /**
+   * Defines if ordering is allowed
+   public abstract boolean getAllowOrdering();
+  */
 
   /**
    *  Removes all categories bound to this instance

@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.presentation.CategoryWindow;
 import com.idega.data.IDOFinderException;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.localisation.business.*;
@@ -29,6 +30,7 @@ import com.idega.block.trade.stockroom.data.*;
  */
 
 public class ProductCatalog extends CategoryBlock{
+  private String prmClrCache = "prmClCh";
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
@@ -87,7 +89,7 @@ public class ProductCatalog extends CategoryBlock{
   private AbstractProductCatalogLayout layout = null;
 
   public ProductCatalog() {
-    super.setCacheable(CACHE_KEY, 999999999);
+//    super.setCacheable(CACHE_KEY, 999999999);
     super.setAutoCreate(false);
   }
 
@@ -100,15 +102,19 @@ public class ProductCatalog extends CategoryBlock{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-
+  private void clearCache(IWContext iwc) {
+    iwc.getApplication().getIWCacheManager().invalidateCache(getCacheState(iwc,     super.getCachePrefixString(iwc)));
+  }
 
   private void init(IWContext iwc) {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
     this.iwc = iwc;
 
-
     setAutoCreate(false);
+    if (iwc.isParameterSet(prmClrCache)) {
+      clearCache(iwc);
+    }
 
     this._currentLocale = iwc.getCurrentLocale();
     this._currentLocaleId = ICLocaleBusiness.getLocaleId(_currentLocale);
@@ -150,6 +156,7 @@ public class ProductCatalog extends CategoryBlock{
 	createLink.setImage(iCreate);
 	createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
       Link detachLink = getCategoryLink(com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT);
+        detachLink.addParameter(CategoryWindow.prmObjInstId, getICObjectInstanceID());
 	detachLink.setImage(iDetach);
 
       if (hasEditPermission()) {
@@ -187,6 +194,11 @@ public class ProductCatalog extends CategoryBlock{
       PresentationObject po = layout.getCatalog(this, iwc, productCategories);
 
       table.add(po);
+      if (hasEditPermission()) {
+        Link clearCache = new Link(iwrb.getLocalizedImageButton("clear_cache","Clear cache"));
+          clearCache.addParameter(prmClrCache, "true");
+        table.add(clearCache, 1, 2);
+      }
 
       add(table);
     }catch (IllegalAccessException iae) {

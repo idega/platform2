@@ -194,8 +194,8 @@ public class ProductEditorWindow extends IWAdminWindow {
       name.setSize(67);
       //description.setWidth(70);
       //description.setHeight(15);
-      teaser.setWidth(70);
-      teaser.setHeight(4);
+      teaser.setWidth("70");
+      teaser.setHeight("4");
 
     if (_product != null) {
       number.setContent(_product.getNumber());
