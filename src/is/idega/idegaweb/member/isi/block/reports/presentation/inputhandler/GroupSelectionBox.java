@@ -109,7 +109,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 						addMenuElement(id, name);
 						if(size==1){//might this cause problems? add as an option to the interface if it does.
 							setSelectedElement(id);
-							setDisabled(true);//cannot change it
+						//	setDisabled(true);//cannot change it
 						}
 						
 					}
