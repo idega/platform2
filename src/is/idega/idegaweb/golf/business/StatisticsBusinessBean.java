@@ -37,9 +37,7 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 		try {			
 			int totalCount = getHome().getCountByTeeId(teeIDs);
 			int fairwayCount = getHome().getNumberOnFairwayByTeeID(teeIDs);
-			if (totalCount > 0) {
-				fairwayPercent = ((double) fairwayCount / (double) totalCount);
-			}
+			fairwayPercent = ((double) fairwayCount / (double) totalCount);
 			return fairwayPercent;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -52,9 +50,7 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 		try {
 			int totalCount = getHome().getCountByTeeId(teeIDs);
 			int greenCount = getHome().getNumberOnGreenByTeeID(teeIDs);
-			if (totalCount > 0) {
-				greenPercent = ((double) greenCount / (double) totalCount);
-			}
+			greenPercent = ((double) greenCount / (double) totalCount);
 			return greenPercent;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -254,10 +250,16 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 	}
 	
 	public String getPercentText(double number) {
+		if (Double.isNaN(number)) {
+			number = 0.0;
+		}
 		return nf.format(number);
 	}
 	
 	public String getDecimalText(double number) {
+		if (Double.isNaN(number)) {
+			number = 0.0;
+		}
 		return iif.format(number);
 	}
 	
