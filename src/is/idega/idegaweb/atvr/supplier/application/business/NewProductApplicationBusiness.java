@@ -3,6 +3,7 @@ package is.idega.idegaweb.atvr.supplier.application.business;
 
 public interface NewProductApplicationBusiness extends com.idega.business.IBOService
 {
+ public boolean checkForNewReports(java.lang.String p0) throws java.rmi.RemoteException;
  public void confirmApplications(java.lang.String[] p0) throws java.rmi.RemoteException;
  public java.util.Collection getAllApplications() throws java.rmi.RemoteException;
  public java.util.Collection getAllConfirmedApplications() throws java.rmi.RemoteException;

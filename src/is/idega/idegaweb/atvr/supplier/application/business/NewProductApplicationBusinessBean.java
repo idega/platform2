@@ -170,4 +170,9 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 
 		return false;
 	}
+	
+	public boolean checkForNewReports(String path) {
+		
+		return true;
+	}
 }

@@ -29,8 +29,9 @@ import com.idega.util.IWTimestamp;
  */
 public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionListener {
 	public static final String TIMER_THREAD_NAME = "atvr_reports";
+	public static final String REPORTS_PATH_PROPERTY_KEY = "npaa_report_location";
 
-	private GroupBusiness _groupBiz;
+	private NewProductApplicationBusiness _appBiz;
 	private IWBundle _bundle;
 	private EventTimer _timer;
 
@@ -40,7 +41,7 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 	public void start(IWBundle bundle) {
 		_bundle = bundle;
 		_timer = new EventTimer(EventTimer.THREAD_SLEEP_1_HOUR, TIMER_THREAD_NAME);
-//		_timer = new EventTimer(EventTimer.THREAD_SLEEP_10_SECONDS, TIMER_THREAD_NAME);
+		//		_timer = new EventTimer(EventTimer.THREAD_SLEEP_10_SECONDS, TIMER_THREAD_NAME);
 		_timer.addActionListener(this);
 		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
 		// -- Fix for working properly on Interebase with entity-auto-create-on.
@@ -52,6 +53,14 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 		try {
 			if (event.getActionCommand().equalsIgnoreCase(TIMER_THREAD_NAME)) {
 				System.out.println("[ATVR Reports Daemon - " + IWTimestamp.RightNow().toString() + " ] - Checking for reports from Navision");
+				String path = _bundle.getProperty(REPORTS_PATH_PROPERTY_KEY);
+				if (path != null && !path.equals("")) {
+					if (!getNewProductApplicationBusiness(_bundle.getApplication().getIWApplicationContext()).checkForNewReports(path))
+						System.out.println("[ATVR Reports Daemon - Unable To Read Reports]");
+				}
+				else {
+					System.out.println("[ATVR Reports Daemon - No Path To Reports Set]");
+				}
 			}
 		}
 		catch (Exception x) {
@@ -69,15 +78,15 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 		}
 	}
 
-	//	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
-	//		if (groupBiz == null) {
-	//			try {
-	//				groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
-	//			}
-	//			catch (java.rmi.RemoteException rme) {
-	//				throw new RuntimeException(rme.getMessage());
-	//			}
-	//		}
-	//		return groupBiz;
-	//	}
+	public NewProductApplicationBusiness getNewProductApplicationBusiness(IWApplicationContext iwc) {
+		if (_appBiz == null) {
+			try {
+				_appBiz = (NewProductApplicationBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, NewProductApplicationBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return _appBiz;
+	}
 }
