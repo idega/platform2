@@ -176,11 +176,11 @@ public class StaffFinder {
 
       List allUsers = EntityFinder.findAll(com.idega.core.user.data.UserBMPBean.getStaticInstance());
 
-      if ( allUsers != null ) {
+      /*if ( allUsers != null ) {
 
         allUsers.remove(iwc.getAccessController().getAdministratorUser());
 
-      }
+      }*/
 
       return allUsers;
 
@@ -301,7 +301,6 @@ public class StaffFinder {
 
 
   public static StaffLocalized getLocalizedStaff(StaffEntity entity, int iLocaleID){
-
     try {
 
       List list = null;
@@ -321,15 +320,11 @@ public class StaffFinder {
 
 
       if ( list != null ) {
-        if(list.size() == 1){
-          return (StaffLocalized) list.get(0);
-        } else {
-          Iterator iter = list.iterator();
-          while (iter.hasNext()) {
-            StaffLocalized item = (StaffLocalized) iter.next();
-            if ( item.getLocaleId() == iLocaleID ) {
-              return item;
-            }
+        Iterator iter = list.iterator();
+        while (iter.hasNext()) {
+          StaffLocalized item = (StaffLocalized) iter.next();
+          if ( item.getLocaleId() == iLocaleID ) {
+            return item;
           }
         }
       }
