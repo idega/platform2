@@ -310,7 +310,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		DateInput date;
 		HiddenInput choice;
 		
-		IWTimestamp earliestDate = new IWTimestamp(1, 6, 2003);
+		//IWTimestamp earliestDate = new IWTimestamp(1, 6, 2003);
 		
 		for (int a = 0; a < choices.length; a++) {
 			queue = (ChildCareQueue) choiceMap.get(choices[a]);
@@ -320,7 +320,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			date = new DateInput(PARAMETER_DATE+"_"+(a+1));
 			date.setDate(queue.getStartDate());
 			date.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
-			date.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003."));
+			//date.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003."));
 			choice = new HiddenInput(PARAMETER_QUEUE, choices[a]);
 			
 			table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
@@ -466,7 +466,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		Date[] queueDates = new Date[choice.length];
 		boolean[] hasPriority = new boolean[choice.length];
 		
-		IWTimestamp startDate = new IWTimestamp(1, 6, 2003);
+		/*IWTimestamp startDate = new IWTimestamp(1, 6, 2003);
 		boolean isEarlier = false;
 		for (int a = 0; a < choice.length; a++) {
 			String date = iwc.getParameter(PARAMETER_DATE+"_"+(a+1));
@@ -484,8 +484,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getSmallErrorText(localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003.")), 1, 1);
 			table.add(back, 1, 3);
 			add(table);
-		}
-		else {
+		}*/
+		//else {
 			Collection choices = null;
 			try {
 				choices = getBusiness().getQueueChoices(_childID);
@@ -529,7 +529,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getSmallHeader(localize("child_care.queue_update_completed","Queue update completed.")), 1, 1);
 			table.add(new UserHomeLink(), 1, 3);
 			add(table);
-		}
+		//}
 	}
 	
 	private void exportAll() {
