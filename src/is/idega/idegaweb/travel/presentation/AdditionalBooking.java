@@ -160,7 +160,7 @@ public class AdditionalBooking extends TravelWindow {
         }
 
         //bookingId = Booker.Book(service.getID(), -1, "", name, "", "", "", "", stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING,"");
-        bookingId = Booker.Book(service.getID(),-1,"",name,"","","","","",stamp,iMany,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING,"");
+        bookingId = Booker.Book(service.getID(),-1,"","",name,"","","","",stamp,iMany,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING,"");
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {
