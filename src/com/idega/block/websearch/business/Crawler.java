@@ -4,6 +4,8 @@ package com.idega.block.websearch.business;
 
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.lucene.analysis.StopAnalyzer;
 import org.apache.lucene.document.DateField;
@@ -43,7 +45,7 @@ public final class Crawler {
     private String indexPath; // search index path
     private boolean created; // if search index has been created
     private String cookie;
-    
+    private Collection ignoreParameters;
     // reporting
     private int reporting; // reporting level
 
@@ -98,6 +100,11 @@ public final class Crawler {
             e.printStackTrace();
         };
     }
+    
+    public void addIgnoreParameters(Collection parameters) {
+    	ignoreParameters = parameters;
+    }
+    
     public void crawl() {
         try {
             
@@ -340,7 +347,10 @@ public final class Crawler {
         }
     }
     public boolean inScope(String url) {
-        
+        if (containsIgnoreParameter(url)) {
+        	return false;
+        }
+    	
         for (int i = 0; i < scopeURL.length; i++) {
             if (url.startsWith(scopeURL[i])) {
                 // in scope
@@ -351,6 +361,20 @@ public final class Crawler {
         return false;
         
     }
+    
+    public boolean containsIgnoreParameter(String url) {
+    		if (ignoreParameters != null) {
+    			Iterator iter = ignoreParameters.iterator();
+				while (iter.hasNext()) {
+					String parameter = (String) iter.next();
+					if (url.indexOf(parameter) != -1) {
+						return true;
+					}
+				}
+    		}
+    		return false;
+    }
+    
     public String parseHREF(String url, String urlLowCase) {
         
         // Looks for incomplete URL and completes them

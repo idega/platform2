@@ -9,6 +9,7 @@ package com.idega.block.websearch.presentation;
 * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  */
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,6 +81,8 @@ public class WebSearcher extends Block {
 	private String inputStyle;
 	private String inputWidth;
 	private int spaceBetween = 3;
+	
+	private Collection ignoreParameters;
 
 	public WebSearcher() {
 	}
@@ -151,7 +154,7 @@ public class WebSearcher extends Block {
 		else { //no report
 			crawler = new Crawler(index);
 		}
-
+		crawler.addIgnoreParameters(ignoreParameters);
 		crawler.crawl();
 		addBreak();
 		add(iwrb.getLocalizedString("done", "Done!"));
@@ -492,5 +495,12 @@ public class WebSearcher extends Block {
 	 */
 	public void setSpaceBetween(int spaceBetween) {
 		this.spaceBetween = spaceBetween;
+	}
+	
+	public void setParameterToIgnore(String parameter) {
+		if (ignoreParameters == null) {
+			ignoreParameters = new ArrayList();
+		}
+		ignoreParameters.add(parameter);
 	}
 }
