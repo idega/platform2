@@ -126,9 +126,11 @@ public class GroupInfo extends Block {
 		if(_showAddress) {
 			String address = null;
 			try {
-				address = _biz.getGroupAddress(iwc, group).getName();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				Address addr = _biz.getGroupAddress(iwc, group);
+				if(addr!=null) {
+					address = addr.getName();
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
