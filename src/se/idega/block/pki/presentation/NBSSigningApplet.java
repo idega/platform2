@@ -12,7 +12,7 @@ import java.util.Vector;
 
 import se.nexus.nbs.sdk.NBSMessageHttp;
 
-import com.idega.core.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Applet;
 import com.idega.presentation.IWContext;

@@ -1,7 +1,7 @@
 package com.idega.block.text.presentation;
 
 import com.idega.block.text.data.TxText;
-import com.idega.core.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
@@ -22,7 +23,6 @@ import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.ICPermission;
-import com.idega.core.builder.business.BuilderConstants;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.data.GenericGroup;

@@ -1,6 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.core.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
