@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.9 2005/02/15 14:02:29 anna Exp $
+ * $Id: MeetingReportCertifier.java,v 1.10 2005/03/10 09:10:47 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
@@ -42,17 +42,28 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 	public void present(IWContext iwc) {
 		try {
 			String action = iwc.getParameter(PARAMETER_ACTION);
-		
+			MeetingFee fee = getMeetingFee(iwc);
+			
 			if(action == null) {
-				add(getCertifyingForm(iwc));
+				User owner = fee.getOwner();
+				if (owner.equals(iwc.getCurrentUser())) {
+					add(ownerView(iwc, fee));
+				}
+				else {
+					add(getCertifyingForm(iwc, fee));
+				}
 			}	
 			else if(action.equals(ACTION_REJECT)) {
-				getBusiness(iwc).rejectApplication(getMeetingFee(iwc), iwc.getCurrentUser());
+				getBusiness(iwc).rejectApplication(fee, iwc.getCurrentUser());
 				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_rejected", "Application has been rejected."));
 			}
 			else if(action.equals(ACTION_NEXT)) {
-				getBusiness(iwc).acceptApplication(getMeetingFee(iwc), iwc.getCurrentUser());
+				getBusiness(iwc).acceptApplication(fee, iwc.getCurrentUser());
 				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_accepted", "Application has been accepted."));
+			}
+			else if(action.equals(ACTION_CLOSE)) {
+				getBusiness(iwc).closeApplication(fee, iwc.getCurrentUser());
+				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_closed", "Application has been closed."));
 			}
 		}
 		catch (RemoteException re) {
@@ -60,8 +71,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		}
 	}
 	
-	private Form getCertifyingForm(IWContext iwc) {
-		MeetingFee fee = getMeetingFee(iwc);
+	private Form getCertifyingForm(IWContext iwc, MeetingFee fee) {
 		Form form = new Form();
 		try {
 			form.add(getCertifyingTable(iwc, fee));
@@ -77,10 +87,23 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		form.maintainParameter(PARAMETER_MEETING_FEE_ID);
 		
 		return form;
-    
 	}
 	
-	
+	private Form ownerView(IWContext iwc, MeetingFee fee) {
+		Form form = new Form();
+		try {
+			form.add(getCertifyingTable(iwc, fee));
+		}
+		catch(RemoteException re) {
+			log(re);
+		}
+    
+		form.add(new Break());
+		form.add(getCloseButton());
+		form.maintainParameter(PARAMETER_MEETING_FEE_ID);
+		
+		return form;
+	}
 	
 	private Table getCertifyingTable(IWContext iwc, MeetingFee meetingFee) throws RemoteException{
 		Table table = new Table();
@@ -93,8 +116,6 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		String conGroupName = conGroup.getName();
 		User speaker = getBusiness(iwc).getSupervisor(conGroup);
 		String speakerName = speaker.getName();
-		//User owner = meetingFee.getOwner();
-		//String ownerName = owner.getName();
 		String location = meetingFee.getInCommune() ? getResourceBundle().getLocalizedString("meeting.fee.in_commune", "In commune") : getResourceBundle().getLocalizedString("meeting.fee.outside_of_commune", "Outside of commune");
 		IWTimestamp meetingDate = new IWTimestamp(meetingFee.getMeetingDate());
 		String comment = meetingFee.getComment();

@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.14 2005/02/23 16:08:42 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.15 2005/03/10 09:10:47 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,12 +14,10 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import se.agura.AguraConstants;
 import se.agura.applications.business.ApplicationsBusinessBean;
 import se.agura.applications.meeting.fee.data.MeetingFee;
@@ -28,7 +26,6 @@ import se.agura.applications.meeting.fee.data.MeetingFeeFormulaHome;
 import se.agura.applications.meeting.fee.data.MeetingFeeHome;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfoHome;
-
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.business.IBORuntimeException;
@@ -47,7 +44,7 @@ import com.idega.util.text.Name;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -247,6 +244,10 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			return parentGroup;
 		}
 		return null;
+	}
+
+	public void closeApplication(MeetingFee fee, User performer) {
+		changeCaseStatus(fee, getCaseStatusInactive().getStatus(), performer);
 	}
 
 	public void acceptApplication(MeetingFee meetingFee, User performer) {

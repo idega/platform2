@@ -1,8 +1,8 @@
 /*
- * $Id: MeetingFeeBusiness.java,v 1.4 2004/12/13 14:35:10 anna Exp $
- * Created on 13.12.2004
+ * $Id: MeetingFeeBusiness.java,v 1.5 2005/03/10 09:10:47 laddi Exp $
+ * Created on 10.3.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -23,10 +23,13 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: 13.12.2004 14:42:52 by: anna
+ * <p>
+ * TODO laddi Describe Type MeetingFeeBusiness
+ * </p>
+ *  Last modified: $Date: 2005/03/10 09:10:47 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.4 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.5 $
  */
 public interface MeetingFeeBusiness extends ApplicationsBusiness {
 
@@ -96,6 +99,11 @@ public interface MeetingFeeBusiness extends ApplicationsBusiness {
 			MeetingFeeFormula formula) throws CreateException, java.rmi.RemoteException;
 
 	/**
+	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#closeApplication
+	 */
+	public void closeApplication(MeetingFee fee, User performer) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#acceptApplication
 	 */
 	public void acceptApplication(MeetingFee meetingFee, User performer) throws java.rmi.RemoteException;
@@ -104,4 +112,9 @@ public interface MeetingFeeBusiness extends ApplicationsBusiness {
 	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#rejectApplication
 	 */
 	public void rejectApplication(MeetingFee meetingFee, User performer) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#canDeleteCase
+	 */
+	public boolean canDeleteCase(Case theCase) throws java.rmi.RemoteException;
 }

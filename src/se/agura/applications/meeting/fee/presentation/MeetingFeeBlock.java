@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.8 2005/01/24 13:15:24 anna Exp $
+ * $Id: MeetingFeeBlock.java,v 1.9 2005/03/10 09:10:47 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -43,7 +43,7 @@ import com.idega.user.data.User;
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
@@ -68,6 +68,7 @@ public abstract class MeetingFeeBlock extends Block {
 	protected static final String ACTION_BACK = "back";
 	protected static final String ACTION_SAVE_FINALLY = "save_finally";
 	protected static final String ACTION_CANCEL = "cancel";
+	protected static final String ACTION_CLOSE = "close";
 	
 	private String iTextStyleClass;
 	private String iHeaderStyleClass;
@@ -283,6 +284,14 @@ public abstract class MeetingFeeBlock extends Block {
 		saveButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.save.tooltip","Saves the application"));
 		saveButton.setSubmitConfirm(getResourceBundle().getLocalizedString("meeting.fee.save.popup","Are you sure you want to save the application now?"));
 		return saveButton;
+	}
+
+	protected SubmitButton getCloseButton() {
+		SubmitButton closeButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.close_application", "Close"), PARAMETER_ACTION, ACTION_CLOSE));
+		closeButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.close.tooltip","Puts the application to a closed status"));
+		closeButton.setSubmitConfirm(getResourceBundle().getLocalizedString("meeting.fee.close.popup","Are you sure you want to finally close the application?"));
+
+		return closeButton;
 	}
 
 	public GenericButton getEditButton(ICPage page) {
