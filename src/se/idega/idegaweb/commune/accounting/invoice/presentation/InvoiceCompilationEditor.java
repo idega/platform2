@@ -65,10 +65,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/24 16:09:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/25 10:33:03 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.52 $
+ * @version $Revision: 1.53 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -130,6 +130,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
     private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
     private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "";
+    private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
+    private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
     private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
     private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
     private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
@@ -193,8 +195,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
-    private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
-    private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
     private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
@@ -1021,8 +1021,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null == user) return "";
         final String firstName = user.getFirstName ();
         final String lastName = user.getLastName ();
-        return (firstName != null ? firstName.charAt (0) : ' ') + ""
-                + (lastName != null ? lastName.charAt (0) : ' ');
+        return (firstName != null ? firstName + " " : "")
+                + (lastName != null ? lastName : "");
     }
 
     private User getUser (final IWContext context, final Integer id) {

@@ -41,17 +41,18 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/24 16:09:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/25 10:33:03 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -84,9 +85,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String DETAILED_PAYMENT_RECORDS_KEY = PREFIX + "detailed_payment_records";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
-    private static final String EDIT_ROW_DEFAULT = "Ändra post";
-    private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
+    private static final String EDIT_PAYMENT_RECORD_DEFAULT = "Ändra utbetalningspost";
+    private static final String EDIT_PAYMENT_RECORD_KEY = PREFIX + "edit_payment_record";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
+    private static final String GO_BACK_DEFAULT = "Tillbaka";
+    private static final String GO_BACK_KEY = PREFIX + "go_back";
     private static final String HEADER_KEY = PREFIX + "end_period";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
@@ -108,6 +111,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
     private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
     private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
+    private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
+    private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
     private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
@@ -121,6 +126,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
+    private static final String SAVE_EDITS_DEFAULT = "Spara ändringar";
+    private static final String SAVE_EDITS_KEY = PREFIX + "save_edits";
     private static final String SCHOOL_CLASS_DEFAULT = "Grupp";
     private static final String SCHOOL_CLASS_KEY = PREFIX + "school_class";
     private static final String SCHOOL_TYPE_DEFAULT = "Verksamhet";
@@ -153,14 +160,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
 
-
     private static final String ACTION_KEY = PREFIX + "action_key";
     private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
             ACTION_SHOW_RECORD_DETAILS = 1,
             ACTION_SHOW_EDIT_RECORD_FORM = 2,
-            ACTION_SHOW_RECORD = 3;
-    
+            ACTION_SHOW_RECORD = 3,
+            ACTION_SAVE_RECORD = 4;
+
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
     private static final SimpleDateFormat dateFormatter
@@ -199,6 +206,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                     showRecord (context);
                     break;
                     
+                case ACTION_SAVE_RECORD:
+                    saveRecord (context);
+                    break;
+                    
                 default:
                     showPayment (context);
 					break;					
@@ -209,9 +220,130 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		}
 	}
     
+    private void saveRecord (final IWContext context)
+        throws RemoteException, FinderException {
+        // get updated values
+        final User currentUser = context.getCurrentUser ();
+        final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
+        final Integer placementCount
+                = getIntegerParameter (context, NUMBER_OF_PLACEMENTS_KEY);
+        final Integer pieceAmount = getIntegerParameter (context,
+                                                         PIECE_AMOUNT_KEY);
+        final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
+
+        final Date period = getPeriodParameter (context, PERIOD_KEY);
+        final String doublePosting = getPostingString (context,
+                                                       DOUBLE_POSTING_KEY);
+        final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
+        final String paymentText = context.getParameter (PAYMENT_TEXT_KEY);
+        final String note = context.getParameter (NOTE_KEY);
+        final String regulationSpecType
+                = context.getParameter (REGULATION_SPEC_TYPE_KEY);
+        final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
+        final PaymentRecord record = getPaymentRecord (context);
+
+        // set updated values
+        if (null != amount) record.setTotalAmount (amount.floatValue ());
+        if (null != placementCount) record.setPlacements
+                                            (placementCount.intValue ());
+        if (null != pieceAmount) record.setPieceAmount
+                                         (pieceAmount.floatValue ());
+        if (null != vatAmount) record.setTotalAmountVAT
+                                       (vatAmount.floatValue ());
+        record.setChangedBy (getSignature (currentUser));
+        record.setDateChanged (new java.sql.Date (System.currentTimeMillis ()));
+        if (null != period) record.setPeriod (period);
+        if (null != doublePosting) record.setDoublePosting (doublePosting);
+        if (null != ownPosting) record.setOwnPosting (ownPosting);
+        if (null != paymentText) record.setPaymentText (paymentText);
+        if (null != note) record.setNotes (note);
+        record.setRuleSpecType (regulationSpecType);
+        record.setVATType (vatRule.intValue ());
+
+        // store updated record
+        record.store ();
+
+        //render
+        final String [][] parameters =
+                {{ACTION_KEY, ACTION_SHOW_PAYMENT + "" },
+                 { PAYMENT_HEADER_KEY, record.getPaymentHeader () + ""}};
+        final Table table = getConfirmTable
+                (PAYMENT_RECORD_UPDATED_KEY,
+                 PAYMENT_RECORD_UPDATED_DEFAULT, parameters);
+        add (createMainTable (EDIT_PAYMENT_RECORD_KEY,
+                              EDIT_PAYMENT_RECORD_DEFAULT, table));        
+    }
+
     private void showEditRecordForm (final IWContext context)
         throws RemoteException, FinderException {
-        renderRecordDetailsOrForm (context, new java.util.HashMap ());
+        final PaymentRecord record = getPaymentRecord (context);
+        final java.util.Map map = new java.util.HashMap ();
+        map.put (ADJUSTED_SIGNATURE_KEY,
+                 getSmallSignature (record.getChangedBy ()));
+        addSmallText (map, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
+        addStyledInput (map, AMOUNT_KEY, record.getTotalAmount ());
+        map.put (CREATED_SIGNATURE_KEY,
+                 getSmallSignature (record.getCreatedBy ()));
+        addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
+        addSmallText (map, DATE_CREATED_KEY, record.getDateCreated ());
+        addStyledInput (map, NOTE_KEY, record.getNotes ());
+        addStyledInput (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
+        map.put (PERIOD_KEY, getStyledInput (PERIOD_KEY, getFormattedPeriod
+                                             (record.getPeriod ())));
+        addStyledInput (map, PIECE_AMOUNT_KEY, record.getPieceAmount ());
+        addStyledInput (map, NUMBER_OF_PLACEMENTS_KEY, record.getPlacements ());
+        addSmallText (map, STATUS_KEY, record.getStatus () + "");
+        addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
+        addStyledInput (map, VAT_AMOUNT_KEY, record.getTotalAmountVAT ());
+
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
+                (business.getAllRegulationSpecTypes ());
+        map.put (REGULATION_SPEC_TYPE_KEY, regulationSpecTypeDropdown);
+        final String regulationSpecType = record.getRuleSpecType ();
+        if (null != regulationSpecType) {
+            regulationSpecTypeDropdown.setSelectedElement (regulationSpecType);
+        }
+        final PresentationObject ownPostingForm = getPostingParameterForm
+                (context, OWN_POSTING_KEY, record.getOwnPosting ());
+        map.put (OWN_POSTING_KEY, ownPostingForm);
+        final PresentationObject doublePostingForm = getPostingParameterForm
+                (context, DOUBLE_POSTING_KEY, record.getDoublePosting ());
+        map.put (DOUBLE_POSTING_KEY, doublePostingForm);
+        final DropdownMenu vatRuleDropdown = getLocalizedDropdown
+                (business.getAllVatRules ());
+        map.put (VAT_RULE_KEY, vatRuleDropdown);
+        final int vatRuleId = record.getVATType ();
+        if (0 < vatRuleId) {
+            vatRuleDropdown.setSelectedElement (vatRuleId + "");
+        }
+        try {
+            final PaymentHeader header = getPaymentHeader (context);
+            final School school = header.getSchool ();
+            final SchoolManagementType managementType
+                    = school.getManagementType ();
+            //--verksamhet
+            //--skolår/timmar
+            //--grupp
+            addSmallText (map, PROVIDER_KEY, school.getName ());
+            addSmallText (map, MANAGEMENT_TYPE_KEY,
+                          localize (managementType.getLocalizedKey (),
+                                    managementType.getName ()));
+        } catch (Exception e) {
+            logWarning ("Missing school properties i payment record "
+                        + record.getPrimaryKey ());
+            log (e);
+        }
+
+        map.put (HEADER_KEY,
+                 getSmallHeader (localize (EDIT_PAYMENT_RECORD_KEY,
+                                           EDIT_PAYMENT_RECORD_DEFAULT)));
+        map.put (ACTION_KEY, getSubmitButton (ACTION_SAVE_RECORD,
+                                              SAVE_EDITS_KEY,
+                                              SAVE_EDITS_DEFAULT));
+
+        renderRecordDetailsOrForm (context, map);
     }
     
     private void showRecord (final IWContext context) 
@@ -282,6 +414,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 .getServiceInstance (context, InvoiceBusiness.class);
         final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
                 .getServiceInstance (context, SchoolBusiness.class);
+
         // get home objects
         final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
         final SchoolCategoryHome categoryHome
@@ -814,6 +947,83 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                               outerTable));
     }
 
+	private String getPostingString (final IWContext context,
+                                     final String postingKey)
+        throws RemoteException {
+        final PostingBusiness business = (PostingBusiness)
+                IBOLookup.getServiceInstance (context, PostingBusiness.class);
+        final StringBuffer result = new StringBuffer ();
+        final PostingField [] fields = getCurrentPostingFields (context);
+        for (int i = 0; i < fields.length; i++) {
+            final PostingField field = fields [i];
+            final String key = postingKey + (i + 1);
+            final String parameter = context.isParameterSet (key)
+                    ? context.getParameter (key) : "";
+            final String value =  parameter.length () > field.getLen ()
+                    ? parameter.substring (0, field.getLen ())
+                    : business.pad (parameter, field);
+            result.append (value);
+        }
+        return result.toString ();
+	}
+
+	private ListTable getPostingParameterForm
+        (final IWContext context, final String key, final String value)
+        throws RemoteException {
+        final String postingString = value != null && !value.equals (null + "")
+                ? value : "";
+        final PostingField [] fields = getCurrentPostingFields (context);
+		final ListTable postingInputs = new ListTable (this, fields.length);
+        int offset = 0;
+        for (int i = 0; i < fields.length; i++) {
+            final PostingField field = fields [i];
+            final int j = i + 1;
+            final int endPosition = min (offset + field.getLen (),
+                                         postingString.length ());
+            postingInputs.setHeader (field.getFieldTitle (), j);
+            final String subString
+                    = postingString.substring (offset, endPosition).trim ();
+            final TextInput textInput
+                    = getTextInput (key + j, subString, 80, field.getLen());
+            postingInputs.add (getStyledInterface (textInput));
+            offset = endPosition;
+        }       
+		return postingInputs;
+	}
+
+    private String getSignature (final User user) {
+        if (null == user) return "";
+        final String firstName = user.getFirstName ();
+        final String lastName = user.getLastName ();
+        return (firstName != null ? firstName + " " : "")
+                + (lastName != null ? lastName : "");
+    }
+
+    private Table getConfirmTable (final String key, final String defaultString,
+                                   final String [][] parameters) {
+        final Table table = createTable (1);
+        int row = 1;
+        table.setHeight (row++, 24);
+        table.add (new Text (localize (key, defaultString)), 1, row++);
+        table.setHeight (row++, 12);
+        final String goBackText = localize (GO_BACK_KEY, GO_BACK_DEFAULT);
+        final Link link = createSmallLink (goBackText, parameters);
+        table.add (link, 1, row++);
+        return table;
+    }
+    
+	/**
+	 * Returns a styled table with content placed properly
+	 *
+	 * @param content the page unique content
+     * @return Table to add to output
+	 */
+    private Table createMainTable
+                (final String headerKey, final String headerDefault,
+                 final PresentationObject content) throws RemoteException {
+        return createMainTable (localize (headerKey, headerDefault), content);
+    }
+
     private void addPresentation
         (final Table table, final java.util.Map map, final String key,
          final int col, final int row) {
@@ -832,7 +1042,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     }
 
     private Image getEditIcon () {
-        return getEditIcon (localize (EDIT_ROW_KEY, EDIT_ROW_DEFAULT));
+        return getEditIcon (localize (EDIT_PAYMENT_RECORD_KEY,
+                                      EDIT_PAYMENT_RECORD_DEFAULT));
     }
 
     private Image getDeleteIcon () {
@@ -887,6 +1098,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallHeader (table, col, row, key, defaultString, "");
     }
 
+    private SubmitButton getSubmitButton (final int action, final String key,
+                                          final String defaultName) {
+        return (SubmitButton) getButton (new SubmitButton
+                                         (localize (key, defaultName),
+                                          ACTION_KEY, action + ""));
+    }
+
     private void setIconColumnWidth (final Table table) {
         final int columnCount = table.getColumns ();
         table.setColumnWidth (columnCount - 1, getEditIcon ().getWidth ());
@@ -938,6 +1156,31 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         mainTable.add (getSmallHeader (header), 1, row++);
         mainTable.add (content, 1, row++);
         return mainTable;
+    }
+
+    private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
+        final DropdownMenu dropdown = (DropdownMenu)
+                getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
+        for (int i = 0; i < rules.length; i++) {
+            final VATRule rule = rules [i];
+            final String ruleName = rule.getVATRule ();
+            dropdown.addMenuElement (rule.getPrimaryKey () + "",
+                                     localize (ruleName, ruleName));
+        }
+        return dropdown;
+    }
+
+    private DropdownMenu getLocalizedDropdown
+        (final RegulationSpecType [] types) {
+        final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu (REGULATION_SPEC_TYPE_KEY));
+        for (int i = 0; i < types.length; i++) {
+            final RegulationSpecType type = types [i];
+            final String regSpecType = type.getRegSpecType ();
+            dropdown.addMenuElement (regSpecType, localize (regSpecType,
+                                                            regSpecType));
+        }
+        return dropdown;
     }
 
     private void addPeriodForm (final Table table, final int row) {
@@ -1094,6 +1337,18 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final PostingField [] array = new PostingField [0];
         return fields != null ? (PostingField []) fields.toArray (array)
                 : array;
+    }
+
+    private void addStyledInput (final java.util.Map map, final String key,
+                                 final String value) {
+        final TextInput input = getStyledInput
+                (key, null != value && !value.equals (null + "") ? value : "");
+        map.put (key, input);
+    }
+
+    private void addStyledInput (final java.util.Map map, final String key,
+                                 final float number) {
+        addStyledInput (map, key, ((long) number) + "");
     }
 
     private void addSmallText (final java.util.Map map, final String key,
