@@ -626,10 +626,11 @@ public class PublicBooking extends Block  {
         success = true;
       }
       catch(com.idega.block.tpos.business.TPosException e) {
-        //System.out.println("message = " + e.getErrorMessage());
+        System.out.println("TPOS errormessage = " + e.getErrorMessage());
         //System.out.println("number = " + e.getErrorNumber());
         //System.out.println("display = " + e.getDisplayError());
-        display.setText(e.getDisplayError());
+        //display.setText(e.getDisplayError());
+        display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
       }
       catch (Exception e) {
         e.printStackTrace(System.err);

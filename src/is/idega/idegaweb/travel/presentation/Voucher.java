@@ -59,14 +59,16 @@ public class Voucher extends TravelManager {
     }
   }
 
-  private int getVoucherNumber() {
-    return _booking.getID() + voucherNumberChanger;
-  }
-
   private Text getBigText(String content) {
     Text text = (Text) super.theBigBoldText.clone();
       text.setFontColor(BLACK);
       text.setText(content);
+    return text;
+  }
+
+  private Text getBoldText(String content) {
+    Text text = getText(content);
+      text.setBold();
     return text;
   }
 
@@ -84,10 +86,8 @@ public class Voucher extends TravelManager {
     return text;
   }
 
-  private Text getBoldText(String content) {
-    Text text = getText(content);
-      text.setBold();
-    return text;
+  private int getVoucherNumber() {
+    return _booking.getID() + voucherNumberChanger;
   }
 
   public Table getVoucher() {
@@ -123,8 +123,12 @@ public class Voucher extends TravelManager {
         table.add(leftHeader,1,1);
         table.setAlignment(1,1,"left");
 
-        Text voucherText = getBigText(_iwrb.getLocalizedString("travel.voucher","Voucher"));
-        table.add(voucherText,2,1);
+        Table centerHeader = new Table();
+          centerHeader.add(getBigText(_iwrb.getLocalizedString("travel.voucher","Voucher")),1,1);
+          centerHeader.add(getText(_supplier.getName()),1,2);
+          centerHeader.setAlignment(1,1,"center");
+          centerHeader.setAlignment(1,2,"center");
+        table.add(centerHeader,2,1);
         table.setAlignment(2,1,"center");
 
         Table rightHeader = new Table();
