@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -134,6 +135,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   private Map accountKeyNameAccountKeyMap = new HashMap();
   private Map accountKeyNumberAccountKeyMap = new HashMap();
+  private Map accountKeyPrimaryKeyAccountKeyMap = new HashMap();
   
   private Map specialFieldAccountKeyIdsPlus = new HashMap();
 
@@ -151,8 +153,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       //sets this step as bold, if another class calls it this will be overwritten 
       setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-      initializeLeagueData(workReportBusiness, iwc);
       initializeAccountKeyData(workReportBusiness, iwc);
+      initializeLeagueData(workReportBusiness, iwc);
       String action = parseAction(iwc);
       Form form = new Form();
       PresentationObject pres = getContent(iwc, resourceBundle, form, action);
@@ -245,7 +247,40 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       Integer accountKey = new Integer(record.getAccountKeyId());
       leagueKeyMatrix.put(groupId, accountKey, record);
     }
-    // validate 
+    // validate parent child relations among the records
+    Iterator leagueIterator = leagueKeyMatrix.firstKeySet().iterator();
+    while (leagueIterator.hasNext()) {
+      Map parentKeySum = new HashMap();
+      Integer groupId = (Integer)  leagueIterator.next();
+      Map accountKeyRecordMap = (Map) leagueKeyMatrix.get(groupId);
+      Iterator entryIterator = accountKeyRecordMap.entrySet().iterator();
+      while (entryIterator.hasNext())  {
+        Map.Entry entry = (Map.Entry) entryIterator.next();
+        Integer accountKeyId = (Integer) entry.getKey();
+        WorkReportAccountKey accountKey = (WorkReportAccountKey) accountKeyPrimaryKeyAccountKeyMap.get(accountKeyId);
+        String parentKeyNumber = accountKey.getParentKeyNumber();
+        // look up the parent account key
+        if (parentKeyNumber != null) {
+          Float parentFloat = (Float) parentKeySum.get(parentKeyNumber);
+          if (parentFloat == null)  {
+            parentFloat = new Float(0);
+          }
+          WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
+          float result = parentFloat.floatValue() + record.getAmount();
+          parentKeySum.put(parentKeyNumber, new Float(result));
+        }
+      }   
+      // store the new value of the parent records
+      Iterator parentSumIterator = parentKeySum.entrySet().iterator();
+      while (parentSumIterator.hasNext()) {
+        Map.Entry entry = (Map.Entry) parentSumIterator.next();
+        String parentKeyNumber = (String) entry.getKey();
+        Float result = (Float) entry.getValue();
+        WorkReportAccountKey parent = (WorkReportAccountKey) accountKeyNumberAccountKeyMap.get(parentKeyNumber);
+        Integer primaryKeyOfParent = (Integer) parent.getPrimaryKey();
+        createOrUpdateRecord(workReportBusiness, groupId, primaryKeyOfParent, result);
+      }
+    }
   }
   
   private void initializeAccountKeyData(WorkReportBusiness workReportBusiness, IWContext iwc)  {
@@ -431,6 +466,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       fieldList.add(name);
       accountKeyNameAccountKeyMap.put(name, key);
       accountKeyNumberAccountKeyMap.put(keyNumber, key);
+      accountKeyPrimaryKeyAccountKeyMap.put(primaryKey, key);
       // do not add the values of the children
       if (key.getParentKeyNumber() == null) {
         plus.add(primaryKey);
@@ -678,7 +714,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private NumberFormat getCurrencyNumberFormat(IWContext iwc) {
     if (currencyNumberFormat == null) {
       Locale locale = iwc.getCurrentLocale();
-      currencyNumberFormat = NumberFormat.getCurrencyInstance(locale);
+      // special case: If we are in Iceland do not show the currency
+      currencyNumberFormat = (locale.getCountry().equals("IS")) ? NumberFormat.getNumberInstance(locale) : NumberFormat.getCurrencyInstance(locale);
       // !!!!!!
       // do not show any digits after the decimal point
       // !!!!!!
