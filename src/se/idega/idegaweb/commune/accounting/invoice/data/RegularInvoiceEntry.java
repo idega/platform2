@@ -1,67 +1,47 @@
-/*
- * Created on 24.9.2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.sql.Date;
 
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-
-import com.idega.block.school.data.School;
-import com.idega.user.data.User;
-
-/**
- * @author Roar
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
-	Date getFrom();
-	Date getTo();
-	String getPlacing();
-	User getUser();
-	RegulationSpecType getRegSpecType();
-	int getRegSpecTypeId();
-	School getSchool(); 
-	int getSchoolId();
-	String getSchoolCategoryId();	
-	String getOwnPosting();
-	String getDoublePosting();
-	float getAmount();
-	float getVAT();
-	VATRule getVatRule();
-	int getVatRuleId();	
-	String getNote();
-	Date getCreatedDate();
-	String getCreatedName();
-	Date getEditDate();
-	String getEditName();
-	
-	void setFrom(Date from);
-	void setTo(Date to);	
-	void setPlacing(String plascint);
-	void setUser(User user);
-	void setRegSpecType(RegulationSpecType regType);
-	void setRegSpecTypeId(int regTypeId);
-	void setSchoolId(int schoolId);
-	void setSchoolCategoryId(String s);	
-	void setAmount(float amount);
-	void setVAT(float vat);
-	void setVatRule(VATRule vatRule);
-	void setVatRuleId(int vatRuleId);	
-	void setNote(String note);	
-	void setOwnPosting(String ownPosting);
-	void setDoublePosting(String doublePosting);
-	void setCreatedDate(Date date);
-	void setCreatedSign(String name);
-	void setEditDate(Date date);
-	void setEditSign(String name);
-	
-	void delete()throws java.sql.SQLException;
+public interface RegularInvoiceEntry extends com.idega.data.IDOEntity
+{
+ public float getAmount();
+ public java.sql.Date getCreatedDate();
+ public java.lang.String getCreatedName();
+ public java.lang.String getDoublePosting();
+ public java.sql.Date getEditDate();
+ public java.lang.String getEditName();
+ public java.sql.Date getFrom();
+ public java.lang.String getNote();
+ public java.lang.String getOwnPosting();
+ public java.lang.String getPlacing();
+ public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType getRegSpecType();
+ public int getRegSpecTypeId();
+ public com.idega.block.school.data.School getSchool();
+ public java.lang.String getSchoolCategoryId();
+ public int getSchoolId();
+ public java.sql.Date getTo();
+ public com.idega.user.data.User getUser();
+ public float getVAT();
+ public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule();
+ public int getVatRuleId();
+ public void setAmount(float p0);
+ public void setCreatedDate(java.sql.Date p0);
+ public void setCreatedSign(java.lang.String p0);
+ public void setDoublePosting(java.lang.String p0);
+ public void setEditDate(java.sql.Date p0);
+ public void setEditSign(java.lang.String p0);
+ public void setFrom(java.sql.Date p0);
+ public void setNote(java.lang.String p0);
+ public void setOwnPosting(java.lang.String p0);
+ public void setPlacing(java.lang.String p0);
+ public void setRegSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType p0);
+ public void setRegSpecTypeId(int p0);
+ public void setSchoolCategoryId(java.lang.String p0);
+ public void setSchoolId(int p0);
+ public void setTo(java.sql.Date p0);
+ public void setUser(com.idega.user.data.User p0);
+ public void setVAT(float p0);
+ public void setVatRule(se.idega.idegaweb.commune.accounting.regulations.data.VATRule p0);
+ public void setVatRuleId(int p0);
+ void delete()throws java.sql.SQLException;
 
 }

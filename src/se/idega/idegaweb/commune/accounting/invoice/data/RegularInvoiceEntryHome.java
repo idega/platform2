@@ -1,27 +1,11 @@
-/*
- * Created on 1.10.2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.util.Collection;
-import java.sql.Date;
 
-import javax.ejb.FinderException;
-
-/**
- * @author Roar
- *
- */
-public interface RegularInvoiceEntryHome extends com.idega.data.IDOHome{
-	RegularInvoiceEntry create() throws javax.ejb.CreateException;
-		
-	Collection findRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws FinderException;
-
-//	Collection findRegularInvoicesForPeriode(Date from, Date to);
-	
-	RegularInvoiceEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+public interface RegularInvoiceEntryHome extends com.idega.data.IDOHome
+{
+ public RegularInvoiceEntry create() throws javax.ejb.CreateException;
+ public RegularInvoiceEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+ public java.util.Collection findRegularInvoicesForPeriodeAbdCategory(java.sql.Date p0,java.lang.String p1,int p2)throws javax.ejb.FinderException;
+ public java.util.Collection findRegularInvoicesForPeriodeUserAndCategory(java.sql.Date p0,java.sql.Date p1,int p2,java.lang.String p3)throws javax.ejb.FinderException;
 
 }
