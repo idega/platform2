@@ -78,6 +78,7 @@ private static String prmPubFrom = "nwep_publishfrom";
 private static String prmPubTo = "nwep_publishto";
 private static String prmMoveToCat = "nwep_movtocat";
 public static final  String imageAttributeKey = "newsimage";
+private String sNewsId = null;
 
 
 
@@ -149,7 +150,7 @@ private IWResourceBundle iwrb;
       // end of LocaleHandling
 
       // Text initialization
-      String sNewsId = null,sAttribute = null;
+      String sAttribute = null;
       String sLocTextId = iwc.getParameter(prmLocalizedTextId);
       sAttribute = iwc.getParameter(prmAttribute);
 
@@ -332,7 +333,8 @@ private IWResourceBundle iwrb;
 
       //System.err.println(pubFrom.toSQLString());
       //System.err.println(pubTo.toString());
-      NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,"",sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
+      NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,"",sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
+			sNewsId = String.valueOf(news.getID());
     }
   }
 

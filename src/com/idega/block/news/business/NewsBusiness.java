@@ -158,7 +158,7 @@ public class NewsBusiness{
     }
   }
 
-  public static boolean saveNews(int iNwNewsId,int iLocalizedTextId,int iCategoryId,
+  public static NwNews saveNews(int iNwNewsId,int iLocalizedTextId,int iCategoryId,
             String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
             int iLocaleId ,int iUserId,int InstanceId,
             Timestamp tsPubFrom,Timestamp tsPubTo,List listOfFiles){
@@ -166,7 +166,7 @@ public class NewsBusiness{
 
     try {
       boolean update = false;
-      NwNews eNwNews = new NwNews();
+		  NwNews eNwNews = new NwNews();
       if(iNwNewsId > 0){
         eNwNews = new NwNews(iNwNewsId);
         update = true;
@@ -185,13 +185,13 @@ public class NewsBusiness{
         eNwNews.update();
         else
           eNwNews.insert();
-        return true;
+        return eNwNews;
       }
     }
     catch (SQLException ex) {
       ex.printStackTrace();
     }
-    return false;
+    return null;
   }
     /*
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
