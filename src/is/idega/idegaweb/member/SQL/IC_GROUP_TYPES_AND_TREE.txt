@@ -22,6 +22,8 @@ insert into ic_group_type(group_type,description,is_visible) values('iwme_club_t
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_staff','An employee of a club','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_committee','An member of a club committee','Y')
 
+insert into ic_group_type_tree values ('iwme_club_division','iwme_club')
+
 insert into ic_group_type(group_type,description,is_visible) values('alias','An alias to another group','Y')
 
 //special group types collections
@@ -58,6 +60,9 @@ insert into ic_group_type_tree values ('iwme_club_player','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_trainer','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_staff','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_committee','iwme_club')
+
+
+insert into ic_group_type_tree values ('iwme_','iwme_club_division')
 
 
 

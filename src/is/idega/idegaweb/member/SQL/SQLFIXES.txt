@@ -1,0 +1,3 @@
+//change all iwme_club_member to general groups
+update ic_group set GROUP_TYPE = 'general' , NAME='Almennir h—par',DESCRIPTION='' where GROUP_TYPE = 'iwme_club_member'
+update ic_group set GROUP_TYPE = 'general' , NAME='T’mabundnir h—par',DESCRIPTION='' where GROUP_TYPE = 'iwme_club_player'
