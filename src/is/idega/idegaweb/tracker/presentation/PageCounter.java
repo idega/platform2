@@ -20,12 +20,12 @@ import is.idega.idegaweb.tracker.data.*;
  */
 
 public class PageCounter extends Block {
-  private boolean cph = true;//show current page hits
-  private boolean cps = false;//show current page sessions
-  private boolean tph = false;//show total page hits
-  private boolean tps = false;//show total page session
-  private boolean srf = false;//show referers
-  private boolean sag = false;//show user agents
+  private boolean showCurrentPH = true;//show current page hits
+  private boolean showCurrentPS = false;//show current page sessions
+  private boolean showTotalPH = false;//show total page hits
+  private boolean showTotalPS = false;//show total page session
+  private boolean showReferers = false;//show referers
+  private boolean showUserAgents = false;//show user agents
   private boolean update = true;//update the stats(true) or just showing stats(false)
   private Map ipFilter = new HashMap();/**clone**/
 
@@ -37,28 +37,28 @@ public class PageCounter extends Block {
       TrackerBusiness.runThroughTheStatsMachine(iwc);
     }
 
-    if(cph){
+    if(showCurrentPH){
       Text hits = new Text("Current page hits: "+TrackerBusiness.getCurrentPageHits(iwc));
       hits.setBold(true);
       add(hits);
       addBreak();
     }
 
-    if(cps){
+    if(showCurrentPS){
       Text hits2 = new Text("Current page sessions: "+TrackerBusiness.getCurrentPageSessions(iwc));
       hits2.setBold(true);
       add(hits2);
       addBreak();
     }
 
-    if(tph){
+    if(showTotalPS){
       Text hits4 = new Text("Total website sessions: "+TrackerBusiness.getTotalSessions());
       hits4.setBold(true);
       add(hits4);
       addBreak();
     }
 
-    if(tps){
+    if(showTotalPH){
       Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalHits());
       hits3.setBold(true);
       add(hits3);
@@ -66,8 +66,7 @@ public class PageCounter extends Block {
 
 
 
-    if(srf){
-
+    if(showReferers){
       //referers
       Table refs = new Table();
       int y = 1;
@@ -85,11 +84,11 @@ public class PageCounter extends Block {
       }
 
      add(refs);
+     addBreak();
     }
 
-    addBreak();
 
-    if(sag){
+    if(showUserAgents){
       //agents
       Table agents = new Table();
       int y2 = 1;
@@ -106,26 +105,25 @@ public class PageCounter extends Block {
       }
 
       add(agents);
-
-      }
+    }
 
   }
 
 
   public void setShowCurrentPageHits(boolean show){
-    this.cph = show;
+    showCurrentPH = show;
   }
 
   public void setShowCurrentPageSessions(boolean show){
-    this.cps = show;
+    showCurrentPS = show;
   }
 
   public void setShowTotalHits(boolean show){
-    this.tph = show;
+    showTotalPH = show;
   }
 
   public void setShowTotalSessions(boolean show){
-    this.tps = show;
+    showTotalPS = show;
   }
 
   public void setUpdateStats(boolean update){
@@ -133,11 +131,11 @@ public class PageCounter extends Block {
   }
 
   public void setShowReferers(boolean show){
-    this.srf = show;
+    showReferers = show;
   }
 
   public void setShowAgents(boolean show){
-    this.sag = show;
+    showUserAgents = show;
   }
 
   public void setIpFilterNumber(String ipNumber){
