@@ -22,6 +22,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public com.idega.data.IDOPrimaryKey getItemID();
  public java.lang.String getItemName();
  public java.lang.Double getItemPrice();
+ public is.idega.idegaweb.member.isi.block.accounting.data.PaymentType getPaymentType();
+ public int getPaymentTypeID();
  public is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff getTariff();
  public int getTariffID();
  public is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType getTariffType();
@@ -44,6 +46,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public void setInfo(java.lang.String p0);
  public void setInsertedByUser(com.idega.user.data.User p0);
  public void setInsertedByUserID(int p0);
+ public void setPaymentType(is.idega.idegaweb.member.isi.block.accounting.data.PaymentType p0);
+ public void setPaymentTypeID(int p0);
  public void setStatusCreated();
  public void setStatusReady();
  public void setStatusSent();

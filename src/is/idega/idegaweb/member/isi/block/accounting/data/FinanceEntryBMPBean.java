@@ -43,6 +43,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_INSERTED_BY = "inserted_by";
 	protected final static String COLUMN_AMOUNT_EQUALIZED = "eq_amount";
 	protected final static String COLUMN_OPEN = "entry_open";
+	protected final static String COLUMN_PAYMENT_TYPE_ID = "payment_type_id";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";
@@ -84,6 +85,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addManyToOneRelationship(COLUMN_INSERTED_BY, User.class);
 		addAttribute(COLUMN_AMOUNT_EQUALIZED, "Amount equalized", true, true, Double.class);
 		addAttribute(COLUMN_OPEN, "Open", true, true, Boolean.class);
+		addManyToOneRelationship(COLUMN_PAYMENT_TYPE_ID, PaymentType.class);
 		
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -113,6 +115,22 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	
 	public void setTypePayment() {
 		setColumn(COLUMN_TYPE, TYPE_PAYMENT);
+	}
+	
+	public void setPaymentTypeID(int payment_type_id) {
+	    setColumn(COLUMN_PAYMENT_TYPE_ID, payment_type_id);
+	}
+	
+	public void setPaymentType(PaymentType type) {
+	    setColumn(COLUMN_PAYMENT_TYPE_ID, type);
+	}
+	
+	public int getPaymentTypeID() {
+	    return getIntColumnValue(COLUMN_PAYMENT_TYPE_ID);
+	}
+	
+	public PaymentType getPaymentType() {
+	    return (PaymentType) getColumnValue(COLUMN_PAYMENT_TYPE_ID);
 	}
 	
 	public String getTypeLocalizationKey() {
@@ -302,6 +320,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	public void setEntryOpen(boolean open) {
 		setColumn(COLUMN_OPEN, open);
 	}
+	
 	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
 		IDOQuery sql = idoQuery();

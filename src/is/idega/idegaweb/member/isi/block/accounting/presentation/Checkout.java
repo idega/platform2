@@ -7,12 +7,16 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
+import java.rmi.RemoteException;
+
+import com.idega.block.basket.business.BasketBusiness;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
+import com.idega.user.business.UserBusiness;
 
 /**
  * @author palli
@@ -73,5 +77,24 @@ public class Checkout extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
 		add(f);*/
+	}
+	
+	// service method
+	private UserBusiness getUserBusiness(IWContext iwc) {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+		}
+		catch (RemoteException ex) {
+			throw new RuntimeException(ex.getMessage());
+		}
+	}
+	
+	//session business
+	private BasketBusiness getBasketBusiness(IWContext iwc) {
+	    try {
+            return (BasketBusiness) IBOLookup.getSessionInstance(iwc, BasketBusiness.class);
+        } catch (IBOLookupException e) {
+			throw new RuntimeException(e.getMessage());
+        }
 	}
 }
