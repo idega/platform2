@@ -61,7 +61,7 @@ public class PDFTest {
 			Font tagFont = new Font(Font.HELVETICA);
 			tagFont.setSize(12);
 			Font textFont = new Font(Font.HELVETICA);
-			textFont.setSize(12);
+			textFont.setSize(10);
 
 			HeaderFooter footer = new HeaderFooter(new Phrase("idegaWeb Commune", textFont), true);
 			footer.setBorder(0);
@@ -100,21 +100,21 @@ public class PDFTest {
 					
 					BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 					PdfContentByte cb = writer.getDirectContent();
-					PdfTemplate template = cb.createTemplate(100f, 60f);
-					template.rectangle(0f, 0f, 100f, 60f);
+					PdfTemplate template = cb.createTemplate(124f, 54f);
+					template.rectangle(0f, 0f, 124f, 54f);
 					template.moveTo(0f, 0f);
-					template.lineTo(100f, 60f);
-					template.moveTo(100f, 0f);
-					template.lineTo(0f, 60f);
+					template.lineTo(124f, 54f);
+					template.moveTo(124f, 0f);
+					template.lineTo(0f, 54f);
 					template.stroke();
 					template.beginText();
 					template.setFontAndSize(bf, 11f);
-					template.setTextMatrix(5f, 45f);
+					template.setTextMatrix(5f, 40f);
 					template.showText("Nacka komun");
 					template.endText();
 					template.beginText();
 					template.setFontAndSize(bf, 11f);
-					template.setTextMatrix(5f, 30f);
+					template.setTextMatrix(5f, 25f);
 					template.showText("131 81 NACKA");
 					template.endText();
 					
@@ -138,14 +138,12 @@ public class PDFTest {
 					Phrase newlines = new Phrase("\n\n\n\n\n\n",textFont);
 
 					ColumnText ct = new ColumnText(cb);
-					ct.setSimpleColumn(getPointsFromMM((30f+50f)), 755f, getPointsFromMM((100f+70f)), 815f, 15, Element.ALIGN_LEFT);
-					ct.addText(Ph0);
-					//ct.addText(P2);
+					ct.setSimpleColumn(Ph0,getPointsFromMM((30f+50f)), 755f, getPointsFromMM((100f+70f)), 820f, 15, Element.ALIGN_LEFT);
 					ct.go();
 					
 					cb.addImage(image, 148f, 0, 0, 60f, getPointsFromMM((130f)),755f);
 					
-					cb.addTemplate(template, getPointsFromMM(30f), 755f);
+					cb.addTemplate(template, getPointsFromMM(30f), 761f);
 					//outerDocument.add(headerTable);
 					outerDocument.add(newlines);
 					outerDocument.add(P1);
