@@ -185,8 +185,6 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#sendMessageToParents
      */
-    public void sendMessageToParents(ChildCareApplication application,
-            String subject, String body) throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getQueueChoices
@@ -385,30 +383,13 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
     public Collection getUnsignedApplicationsByProvider(User provider)
             throws java.rmi.RemoteException;
 
-    /**
-     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isAfterSchoolApplication
-     */
-    public boolean isAfterSchoolApplication(Case application)
-            throws java.rmi.RemoteException;
-
+ 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isAfterSchoolApplication
      */
     public boolean isAfterSchoolApplication(int applicationID)
             throws java.rmi.RemoteException;
 
-    /**
-     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#rejectApplication
-     */
-    public boolean rejectApplication(ChildCareApplication application,
-            String subject, String message, User user)
-            throws java.rmi.RemoteException;
-
-    /**
-     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#rejectApplication
-     */
-    public boolean rejectApplication(int applicationId, String subject,
-            String body, User user) throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#placeApplication
@@ -776,11 +757,6 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
     public ChildCareApplication getApplicationByPrimaryKey(String key)
             throws java.rmi.RemoteException;
 
-    /**
-     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getApplication
-     */
-    public ChildCareApplication getApplication(int applicationID)
-            throws java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#redeemApplication
@@ -1358,5 +1334,24 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
     public PlacementHelper getPlacementHelper(
             Integer applicationID) throws java.rmi.RemoteException;
 
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getApplication
+     */
+ 	public ChildCareApplication getApplication(int applicationID) throws RemoteException;
 
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#sendMessageToParents
+     */
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body) throws RemoteException;
+ 	
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isAfterSchoolApplication
+     */
+	public boolean isAfterSchoolApplication(Case application) throws RemoteException;
+	
+	
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#rejectApplication
+     */
+	public boolean rejectApplication(int applicationId, String subject, String body, User user)  throws RemoteException;
 }

@@ -5,8 +5,6 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 
-import is.idega.block.family.business.NoCustodianFound;
-
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -28,14 +26,12 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.childcare.check.data.Check;
 import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
@@ -55,9 +51,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -127,6 +121,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String STATUS_NOT_PROCESSED = String.valueOf(ChildCareConstants.STATUS_SENT_IN);
 	private final static String[] STATUS_IN_QUEUE = { String.valueOf(ChildCareConstants.STATUS_SENT_IN), String.valueOf(ChildCareConstants.STATUS_PRIORITY), String.valueOf(ChildCareConstants.STATUS_ACCEPTED), String.valueOf(ChildCareConstants.STATUS_PARENTS_ACCEPT), String.valueOf(ChildCareConstants.STATUS_CONTRACT)};
     private static final String PLACEMENT_HELPER = "PlacementHelper";
+    
+	private SchoolChoiceBusiness schoolChoiceBusiness = null;
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -562,45 +558,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		sendMessageToProvider(application, subject, message, null);
 	}
 
-	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
-		sendMessageToParents(application, subject, body, false);
-	}
 
-	private void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
-		sendMessageToParents(application, subject, body, body, alwaysSendLetter);
-	}
-
-	private void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter) {
-		try {
-			User child = application.getChild();
-			//Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : ""};
-			Object[] arguments = { child.getName(), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : ""};
-
-			User appParent = application.getOwner();
-			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-				Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
-				message.setParentCase(application);
-				message.store();
-			}
-
-			try {
-				Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
-				Iterator iter = parents.iterator();
-				while (iter.hasNext()) {
-					User parent = (User) iter.next();
-					if (!getUserBusiness().haveSameAddress(parent, appParent)) {
-						getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
-					}
-				}
-			}
-			catch (NoCustodianFound ncf) {
-				ncf.printStackTrace();
-			}
-		}
-		catch (RemoteException re) {
-			re.printStackTrace();
-		}
-	}
 
 	public Collection getQueueChoices(int childID) {
 		try {
@@ -822,7 +780,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setLastReplyDate(lastReplyDate.getDate());
 					changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
 
-					sendMessageToParents(application, subject, body, letterBody, true);
+					getSchoolChoiceBusiness().sendMessageToParents(application, subject, body, letterBody, true); 
 				}
 			}
 
@@ -882,7 +840,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setApplicationStatus(getStatusTimedOut());
 				changeCaseStatus(application, getCaseStatusInactive().getStatus(), performer);
 
-				sendMessageToParents(application, subject, body, true);
+				getSchoolChoiceBusiness().sendMessageToParents(application, subject, body, true);
 				sendMessageToProvider(application, subject, providerBody);
 			}
 
@@ -1075,12 +1033,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean isAfterSchoolApplication(Case application) {
-		if (application.getCode().equals(ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY)) return true;
-		return false;
-	}
 
-	public boolean isAfterSchoolApplication(int applicationID) {
+
+	public boolean isAfterSchoolApplication(int applicationID) throws RemoteException {
 		try {
 			return isAfterSchoolApplication(getChildCareApplication(applicationID));
 		}
@@ -1089,67 +1044,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean rejectApplication(ChildCareApplication application, String subject, String message, User user) {
-		UserTransaction t = getSessionContext().getUserTransaction();
-		try {
-			t.begin();
-			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
-			IWTimestamp now = new IWTimestamp();
-			application.setRejectionDate(now.getDate());
-			application.setApplicationStatus(getStatusDenied());
-			caseBiz.changeCaseStatus(application, getCaseStatusDenied().getStatus(), user);
-			sendMessageToParents(application, subject, message);
-
-			if (isAfterSchoolApplication(application)) {
-				Iterator iter = application.getChildrenIterator();
-				if (iter != null) {
-					while (iter.hasNext()) {
-						Case element = (Case) iter.next();
-						if (isAfterSchoolApplication(element) && element.getCaseStatus().equals(getCaseStatusInactive())) {
-							application = getApplication(((Integer) element.getPrimaryKey()).intValue());
-							application.setApplicationStatus(getStatusSentIn());
-							caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
-
-							subject = this.getLocalizedString("after_school.application_received_subject", "After school care application received.");
-							message = this.getLocalizedString("after_school.application_received_body", "We have received you application for {0}, {2}, to {1}.");
-							sendMessageToParents(application, subject, message);
-						}
-					}
-				}
-			}
-
-			t.commit();
-
-			return true;
-		}
-		catch (Exception e) {
-			try {
-				t.rollback();
-			}
-			catch (SystemException ex) {
-				ex.printStackTrace();
-			}
-			e.printStackTrace();
-		}
-
-		return false;
-	}
-
-	public boolean rejectApplication(int applicationId, String subject, String body, User user) {
-		try {
-			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
-			return rejectApplication(appl, subject, body, user);
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-
-		return false;
-	}
 
 	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, int schoolTypeID, int employmentTypeID, User user, Locale locale) {
 		UserTransaction t = super.getSessionContext().getUserTransaction();
@@ -1839,11 +1733,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean removeFromQueue(ChildCareApplication application, User user) {
+	public boolean removeFromQueue(ChildCareApplication application, User user) throws RemoteException {
 		return removeFromQueue(application, user, null);
 	}
 
-	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) {
+	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) throws RemoteException {
 		if (providerIDs != null) {
 			for (int i = 0; i < providerIDs.length; i++) {
 				if (application.getProviderId() == providerIDs[i]) { return false; }
@@ -2134,8 +2028,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
      * @param hasBankId
      * @param defaultContractCreatedBody
      * @param defaultContractChangedBody
+	 * @throws RemoteException
      */
-    private void createMessagesForParentsOnContractCreation( ChildCareApplication application, Locale locale, boolean hasBankId) {
+    private void createMessagesForParentsOnContractCreation( ChildCareApplication application, Locale locale, boolean hasBankId) throws RemoteException {
         String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
         String defaultContractCreatedBody = hasBankId ? "Your child care contract for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
         	String subject = getLocalizedString("child_care.contract_created_subject", "A child care contract has been created", locale);
@@ -2143,7 +2038,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         	sendMessageToParents(application, subject, body);
     }
     
-    private void createMessagesForParentsOnContractCareTimeAlter(ChildCareApplication application, Locale locale,  boolean hasBankId) {
+    private void createMessagesForParentsOnContractCareTimeAlter(ChildCareApplication application, Locale locale,  boolean hasBankId) throws RemoteException {
         String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
         String defaultContractChangedBody = hasBankId ? "Your child care contract with altered care time for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
         String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
@@ -2450,14 +2345,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return null;
 	}
 
-	public ChildCareApplication getApplication(int applicationID) {
-		try {
-			return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
-		}
-		catch (FinderException e) {
-			return null;
-		}
-	}
+
 
 	private ChildCareApplication getChildCareApplication(int applicationID) throws FinderException {
 		return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
@@ -2966,12 +2854,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public SchoolChoiceBusiness getSchoolChoiceBusiness() {
-		try {
-			return (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
+		if (schoolChoiceBusiness == null) {
+			try {
+				schoolChoiceBusiness = (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
+			}
+			catch (RemoteException e) {
+				throw new IBORuntimeException(e.getMessage());
+			}
 		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
+		return schoolChoiceBusiness;
 	}
 
 	public AfterSchoolBusiness getAfterSchoolBusiness() {
@@ -4236,5 +4127,26 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			return true;
 	 	}
-	
+	 	
+		public void sendMessageToParents(ChildCareApplication application, String subject, String body) throws RemoteException {
+			getSchoolChoiceBusiness().sendMessageToParents(application, subject, body);
+		}
+		
+		public boolean isAfterSchoolApplication(Case application) throws RemoteException {
+			return getSchoolChoiceBusiness().isAfterSchoolApplication(application);
+		}
+		
+		public boolean rejectApplication(int applicationId, String subject, String body, User user)  throws RemoteException {
+			return getSchoolChoiceBusiness().rejectApplication(applicationId, subject, body, user);
+		}
+		
+	 	public ChildCareApplication getApplication(int applicationID) {
+			try {
+				return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			}
+			catch (FinderException e) {
+				return null;
+			}
+		}
+
 }
