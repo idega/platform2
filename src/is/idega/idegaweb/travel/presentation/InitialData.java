@@ -47,9 +47,10 @@ public class InitialData extends TravelManager {
   private static String parameterSupplierId = "supplier_id";
 
   private static String supplierView = "supplierView";
-  private static String parameteViewSupplierInfo = "supplierViewInfo";
-  private static String parameteViewHotelPickup = "parameteViewHotelPickup";
-  private static String parameteViewPriceCategories = "parameteViewPriceCategories";
+  private static String parameterViewSupplierInfo = "supplierViewInfo";
+  private static String parameterViewHotelPickup = "parameteViewHotelPickup";
+  private static String parameterViewPriceCategories = "parameteViewPriceCategories";
+  private static String parameterCreditCardRefund = "parameterCreditcardRefund";
 
   private String parameterResellerId = "contractResellerId";
   private String parameterUpdateReseller = "contractUpdateReseller";
@@ -103,9 +104,10 @@ public class InitialData extends TravelManager {
       form.add(table);
 
       DropdownMenu menu = new DropdownMenu(this.supplierView);
-        menu.addMenuElement(this.parameteViewSupplierInfo,iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
-        menu.addMenuElement(this.parameteViewHotelPickup,iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
-        menu.addMenuElement(this.parameteViewPriceCategories,iwrb.getLocalizedString("travel.price_categories","Price categories"));
+        menu.addMenuElement(this.parameterViewSupplierInfo, iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
+        menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
+        menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
+        menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
       menu.setToSubmit();
 
       String selected = iwc.getParameter(this.supplierView);
@@ -127,11 +129,11 @@ public class InitialData extends TravelManager {
 
             add(getSupplierDropdownForm(iwc));
             String selected = iwc.getParameter(this.supplierView);
-            if (selected == null)  selected = this.parameteViewSupplierInfo;
+            if (selected == null)  selected = this.parameterViewSupplierInfo;
             Form form = null;
-            if (selected.equals(this.parameteViewSupplierInfo)) {
+            if (selected.equals(this.parameterViewSupplierInfo)) {
               form = getSupplierCreation(supplier.getID());
-            }else if (selected.equals(this.parameteViewHotelPickup)) {
+            }else if (selected.equals(this.parameterViewHotelPickup)) {
               try {
                 HotelPickupPlaceDesigner.handleInsert(iwc,supplier);
                 HotelPickupPlaceDesigner hppd = new HotelPickupPlaceDesigner(iwc);
@@ -140,7 +142,7 @@ public class InitialData extends TravelManager {
                 e.printStackTrace(System.err);
                 form = new Form();
               }
-            }else if (selected.equals(this.parameteViewPriceCategories)) {
+            }else if (selected.equals(this.parameterViewPriceCategories)) {
               try {
                 PriceCategoryDesigner pcd = new PriceCategoryDesigner(iwc);
                   pcd.handleInsert(iwc);
@@ -149,7 +151,15 @@ public class InitialData extends TravelManager {
                 e.printStackTrace(System.err);
                 form = new Form();
               }
-            }else {form = new Form();}
+            }else if (selected.equals(this.parameterCreditCardRefund)) {
+              try {
+                form = CreditcardRefunder.creditcardRefunderForm(iwc, iwrb);
+              }catch (Exception e) {
+                e.printStackTrace(System.err);
+                form = new Form();
+              }
+            }else {form = new Form();
+            }
 
 
             form.maintainParameter(this.supplierView);

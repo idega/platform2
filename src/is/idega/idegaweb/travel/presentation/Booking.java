@@ -91,7 +91,9 @@ public class Booking extends TravelManager {
           displayForm(iwc);
         }else if (action.equals(parameterRespondInquery)) {
           inqueryResponse(iwc);
-        }else{
+        }else if (action.equals(this.parameterUpdateBooking)){
+          this.updateBooking(iwc);
+        }else {
           handleInsert(iwc, true);
         }
 
@@ -816,8 +818,19 @@ public class Booking extends TravelManager {
         booking = new GeneralBooking(bookingId);
         this.stamp = new idegaTimestamp(booking.getBookingDate());
         displayForm(iwc);
+    }else {
+      displayForm(iwc, getErrorUpdateBookingTable());
     }
   }
 
+
+  private Table getErrorUpdateBookingTable() {
+    Table table = new Table();
+      Text text = (Text) theBoldText.clone();
+        text.setFontColor(super.WHITE);
+        text.setText(iwrb.getLocalizedString("travel.cannot_edit_booking","Cannot edit booking"));
+      table.add(text);
+    return table;
+  }
 
 }
