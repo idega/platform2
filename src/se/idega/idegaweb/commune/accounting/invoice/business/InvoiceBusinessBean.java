@@ -7,6 +7,8 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
@@ -18,8 +20,12 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 
 /**
@@ -35,8 +41,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * Spawns a new thread and starts the execution of the posting calculation and then returns
 	 * @param month
 	 */
-	public void startPostingBatch(Date month, IWContext iwc){
-		new InvoiceChildcareThread(month, iwc).start();
+	public void startPostingBatch(Date month, String schoolCategory, IWContext iwc) throws IDOLookupException, FinderException, SchoolCategoryNotFoundException{
+		//TODO (JJ) select correct thread to start
+		SchoolCategoryHome sch =(SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+		if(sch.findChildcareCategory().getCategory().equals(schoolCategory)) {
+			new InvoiceChildcareThread(month, iwc).start();
+		} else if(sch.findElementarySchoolCategory().getCategory().equals(schoolCategory)){
+			new PaymentThreadElementarySchool(month, iwc).start();
+		} else if(sch.findHighSchoolCategory().getCategory().equals(schoolCategory)){
+			new PaymentThreadHighSchool(month, iwc).start();
+		} else {
+			System.out.println("Error: couldn't find any Schoolcategory for billing named "+schoolCategory);
+			throw new SchoolCategoryNotFoundException("Couldn't find any Schoolcategory for billing named "+schoolCategory);
+		}
 	}
 	
 	/**
@@ -45,7 +62,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * 
 	 * @param month
 	 */
-	public void removePreliminaryInvoice(Date month) throws RemoveException{
+	public void removePreliminaryInvoice(Date month, String category) throws RemoveException{
 		//Remove invoices
 		PaymentRecord paymentRecord;
 		Iterator headerIter;
@@ -54,7 +71,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		InvoiceRecord invoiceRrecord;
 		
 		try {
-			headerIter = getInvoiceHeaderHome().findByMonth(month).iterator();
+			SchoolCategory schoolCategory =((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByLocalizedKey(category);
+			headerIter = getInvoiceHeaderHome().findByMonthAndSchoolCategory(month, schoolCategory).iterator();
 			while(headerIter.hasNext()){
 				header = (InvoiceHeader)headerIter.next();
 				if(header.getStatus() == ConstantStatus.PRELIMINARY);{
@@ -88,6 +106,31 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			e.printStackTrace();
 			throw new RemoveException("Could not remove the records.");
 		}
+	}
+	
+	
+	public BatchRun getBatchRunByCategory(String category) throws IDOLookupException, FinderException{
+		SchoolCategory schoolCategory =((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
+		BatchRun batchRun =((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(schoolCategory);
+		return batchRun;
+	}
+	
+	public int getNoProviders(BatchRun batchRun) throws RemoteException, FinderException, IDOException{
+		Date period = batchRun.getPeriod();
+		int schoolCategoryID = batchRun.getSchoolCategoryID();
+		return getPaymentHeaderHome().getProviderCountForSchoolCategoryAndPeriod(schoolCategoryID,period);
+	}
+
+	public int getNoPlacements(BatchRun batchRun) throws RemoteException, FinderException, IDOException{
+		Date period = batchRun.getPeriod();
+		int schoolCategoryID = batchRun.getSchoolCategoryID();
+		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod(schoolCategoryID,period);
+	}
+
+	public int getTotAmountWithoutVAT(BatchRun batchRun) throws RemoteException, FinderException, IDOException{
+		Date period = batchRun.getPeriod();
+		int schoolCategoryID = batchRun.getSchoolCategoryID();
+		return getPaymentRecordHome().getTotAmountForSchoolCategoryAndPeriod(schoolCategoryID,period);
 	}
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException

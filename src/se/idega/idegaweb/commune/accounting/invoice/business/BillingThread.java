@@ -5,11 +5,28 @@ import java.sql.Date;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.*;
-import se.idega.idegaweb.commune.accounting.posting.business.*;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
@@ -20,7 +37,8 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
-import com.idega.block.school.data.*;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -46,7 +64,7 @@ public abstract class BillingThread extends Thread{
 	protected SchoolCategory category = null;
 	protected ExportDataMapping categoryPosting = null;
 	protected School school;
-
+	protected BatchRun batchRunLogger=null;
 	
 	public BillingThread(Date month, IWContext iwc){
 		startPeriod = new IWTimestamp(month);
@@ -243,6 +261,7 @@ public abstract class BillingThread extends Thread{
 	protected void createNewErrorMessage(String related, String desc){
 		try {
 			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
+			error.setBatchRunID(batchRunLogger);
 			error.setRelated(related);
 			error.setDescription(desc);
 			error.setOrder(errorOrder);
@@ -251,6 +270,37 @@ public abstract class BillingThread extends Thread{
 			System.out.println("Exception so complicated that it wasn't even possible to create an error message in the log!");
 			e.printStackTrace();
 		}
+	}
+	
+	protected void createBatchRunLogger(SchoolCategory category) throws IDOLookupException, CreateException{
+		//First delete all old logging for this category
+		try {
+			batchRunLogger = ((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(category);
+			Iterator errorIter = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).findByBatchRun(batchRunLogger).iterator();
+			while (errorIter.hasNext()) {
+				BatchRunError error = (BatchRunError) errorIter.next();
+				try {
+					error.remove();
+				} catch (EJBException e) {
+					//If it cant be removed, it is just left... Not much to do about it.
+					e.printStackTrace();
+				} catch (RemoveException e) {
+					//If it cant be removed, it is just left... Not much to do about it.
+					e.printStackTrace();
+				}
+			}
+		} catch (FinderException e1) {
+			//Excepiton OK We just create it instead
+			batchRunLogger = (BatchRun) IDOLookup.create(BatchRun.class);
+			batchRunLogger.setSchoolCategoryID(category);
+		}
+		batchRunLogger.setPeriod(startPeriod.getDate());
+		batchRunLogger.setStart(currentDate);
+		batchRunLogger.setEnd(null);
+	}
+	
+	protected void finalizeBatchRunLogger(){
+		batchRunLogger.setEnd(new Date(System.currentTimeMillis()));
 	}
 
 	protected RegulationsBusiness getRegulationsBusiness() throws RemoteException {

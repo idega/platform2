@@ -25,6 +25,8 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool{
 			category = getSchoolCategoryHome().findHighSchoolCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
+			
+			createBatchRunLogger(category);
 			//Create all the billing info derrived from the contracts
 			contracts();
 			//Create all the billing info derrived from the regular payments
