@@ -15,6 +15,7 @@ import com.idega.block.building.data.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  * Title: BuildingViewer
@@ -27,10 +28,13 @@ import com.idega.jmodule.object.interfaceobject.*;
 
 public class BuildingViewer extends JModuleObject{
 
+private static final String IW_RESOURCE_BUNDLE = "com.idega.block.building";
+public static final String PARAMETER_STRING = "complex_id";
 private int building_id = 0;
-private String nameStyle;
-private String addressStyle;
-private String infoStyle;
+private String nameStyle = "font-family:verdana; font-size: 11pt; font-weight: bold; color: #27324B;";
+private String addressStyle = "font-family:verdana; font-size: 10pt; font-weight: bold; color: #9FA9B3;";
+private String infoStyle= "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
+protected IWResourceBundle iwrb_;
 
 public BuildingViewer(){
 }
@@ -41,7 +45,19 @@ public BuildingViewer(int building_id){
 
 
   public void main(ModuleInfo modinfo) throws Exception {
-    add(""+building_id);
+    if ( iwrb_ == null ) {
+      iwrb_ = getResourceBundle(modinfo);
+    }
+
+    if ( modinfo.getParameter(PARAMETER_STRING) != null ) {
+      try {
+        building_id = Integer.parseInt(modinfo.getParameter(PARAMETER_STRING));
+      }
+      catch (NumberFormatException e) {
+        building_id = 0;
+      }
+    }
+
     if ( building_id == 0 ) {
       getAllBuildings(modinfo);
     }
@@ -60,74 +76,50 @@ public BuildingViewer(int building_id){
 
   private void getAllBuildings(ModuleInfo modinfo) throws SQLException {
 
-    Building[] building = (Building[]) (new Building()).findAllOrdered("name");
+    Complex[] complex = (Complex[]) (new Complex()).findAllOrdered(Complex.getNameColumnName());
 
-    Table campusTable = new Table(1,building.length);
+    Table campusTable = new Table(1,complex.length);
 
-    for ( int a = 0; a < building.length; a++ ) {
+    for ( int a = 0; a < complex.length; a++ ) {
+      int iComplexId = complex[a].getID();
+      Table complexTable = new Table(3,4);
+        complexTable.mergeCells(2,1,2,4);
+        complexTable.mergeCells(3,2,3,3);
+        complexTable.setVerticalAlignment(3,2,"top");
+        complexTable.setVerticalAlignment(1,2,"bottom");
+        complexTable.setWidth("100%");
+        complexTable.setWidth(2,1,"20");
+        complexTable.setBorder(0);
 
-      //Address address = new Address(building[a].getAddressId());
-      String address = building[a].getStreet();
-
-      Table buildingTable = new Table(3,4);
-        buildingTable.mergeCells(2,1,2,4);
-        buildingTable.mergeCells(3,2,3,3);
-        buildingTable.setVerticalAlignment(3,2,"top");
-        buildingTable.setWidth("100%");
-        buildingTable.setWidth(2,1,"20");
-
-      Text buildingName = new Text(building[a].getName());
-        if ( nameStyle != null ) {
-          buildingName.setFontStyle(nameStyle);
-        }
-        else {
-          buildingName.setBold();
-          buildingName.setFontSize(3);
-        }
-
-        Text buildingAddress = new Text(address);
-
-        if ( addressStyle != null ) {
-          buildingAddress.setFontStyle(addressStyle);
-        }
-        else {
-          buildingAddress.setBold();
-          buildingAddress.setFontSize(3);
-        }
-
-      String infoText = building[a].getInfo();
+      String infoText = complex[a].getInfo();
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
-      Text buildingText = new Text(infoText);
-        if ( infoStyle != null ) {
-          buildingText.setFontStyle(infoStyle);
-        }
 
-      Image buildingImage = new Image(building[a].getImageId());
+      List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
+      if(L!=null){
+       Image buildingImage = new Image(((Building)L.get(0)).getImageId());
+       complexTable.add(buildingImage,3,2);
+      }
 
-      Image moreImage = new Image("/pics/meira.gif");
-      Link buildingLink = new Link(moreImage,modinfo.getRequestURI());
-        buildingLink.addParameter("building_id",building[a].getID());
+      Image moreImage = iwrb_.getImage("/building/more.gif");
 
-      buildingTable.add(buildingName,1,1);
-      buildingTable.add(buildingAddress,1,2);
-      buildingTable.add(buildingText,1,3);
-      buildingTable.add(buildingLink,1,4);
-      buildingTable.add(buildingImage,3,2);
+      Link complexLink = new Link(moreImage,modinfo.getRequestURI());
+        complexLink.addParameter(PARAMETER_STRING,iComplexId);
 
-      Text divideText = new Text("<br>.........<br><br>");
-        if ( infoStyle != null ) {
-          divideText.setFontStyle(infoStyle);
-        }
+      complexTable.add(getNameText(complex[a].getName()),1,1);
+      complexTable.add(getInfoText(infoText),1,2);
+      complexTable.add(complexLink,1,3);
 
-      campusTable.add(buildingTable,1,a+1);
-      if ( a+1 < building.length ) {
-        campusTable.add(divideText,1,a+1);
+      String divideText = "<br>.........<br><br>";
+
+      campusTable.add(complexTable,1,a+1);
+      if ( a+1 < complex.length ) {
+        campusTable.add(getInfoText(divideText),1,a+1);
       }
     }
 
-    if ( building.length == 0 ) {
-      add("Engar byggingar í grunni...");
+    if ( complex.length == 0 ) {
+      add(iwrb_.getLocalizedString("no_buildings","No buildings in database"));
     }
 
     else {
@@ -136,70 +128,73 @@ public BuildingViewer(int building_id){
 
   }
 
+   private Text getInfoText(String text){
+      text = formatText(text);
+      Text T = new Text(text);
+      T.setFontStyle(infoStyle);
+      return T;
+    }
+
+    private Text getAddressText(String text){
+      Text T = new Text(text);
+      T.setFontStyle(addressStyle);
+      return T;
+    }
+
+    private Text getNameText(String text){
+      Text T = new Text(text);
+      T.setFontStyle(nameStyle);
+      return T;
+    }
+
   private void getSingleBuilding(ModuleInfo modinfo) throws SQLException {
 
-    Building building = new Building(building_id);
-    ApartmentType[] rooms = BuildingFinder.findApartmentTypesInBuilding(building_id);
+    Complex complex = new Complex(building_id);
+    ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(building_id);
 
-    Table buildingTable = new Table(1,rooms.length+1);
-      buildingTable.setWidth("100%");
+    Table complexTable = new Table(1,types.length+1);
+      complexTable.setWidth("100%");
 
-    Text buildingName = new Text(building.getName());
-      if ( nameStyle != null ) {
-        buildingName.setFontStyle(nameStyle);
-      }
-      else {
-        buildingName.setBold();
-        buildingName.setFontSize(3);
-      }
+    complexTable.add(getNameText(complex.getName()),1,1);
+    for ( int a = 0; a < types.length; a++ ) {
 
-    buildingTable.add(buildingName,1,1);
-    add("lengd "+rooms.length);
-    for ( int a = 0; a < rooms.length; a++ ) {
+      Table typesTable = new Table(2,3);
+        typesTable.setVerticalAlignment(2,2,"top");
+        typesTable.setVerticalAlignment(1,2,"top");
+        typesTable.setWidth("100%");
 
-      Table roomsTable = new Table(3,3);
-        buildingTable.mergeCells(2,1,2,3);
-        roomsTable.setVerticalAlignment(3,2,"top");
-        roomsTable.setWidth("100%");
-        roomsTable.setWidth(2,1,"20");
+      String typeName = formatText(types[a].getName()+" "+types[a].getArea()+"m2");
 
-      Text roomName = new Text(rooms[a].getName()+" "+rooms[a].getArea()+"m<sup>2</sup>");
-        if ( addressStyle != null ) {
-          roomName.setFontStyle(addressStyle);
-        }
+      String typeText = types[a].getInfo();
+        typeText = TextSoap.findAndReplace(typeText,"\n","<br>");
 
-      String roomText = rooms[a].getInfo();
-        roomText = TextSoap.findAndReplace(roomText,"\n","<br>");
+      String divideText = ("<br>.........<br><br>");
 
-      Text roomInfo = new Text(roomText);
-        if ( infoStyle != null ) {
-          roomInfo.setFontStyle(infoStyle);
-        }
+      Image typeImage = new Image(types[a].getImageId());
+        typeImage.setHorizontalSpacing(6);
 
-      Text divideText = new Text("<br>.........<br><br>");
-        if ( infoStyle != null ) {
-          divideText.setFontStyle(infoStyle);
-        }
+      Window typeWindow = new Window("Herbergi",ApartmentTypeViewer.class,Page.class);
+        typeWindow.setWidth(400);
+        typeWindow.setHeight(550);
+        typeWindow.setScrollbar(false);
+      Image moreImage = iwrb_.getImage("/building/more.gif");
+      Image backImage = iwrb_.getImage("/building/back.gif");
+      Link typeLink = new Link(moreImage,typeWindow);
+        typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING,types[a].getID());
 
-      Image roomImage = new Image(rooms[a].getImageId());
+      BackButton BB = new BackButton( backImage);
+      typesTable.add(getAddressText(typeName),1,1);
+      typesTable.add(getInfoText(typeText),1,2);
+      typesTable.add(typeLink,1,3);
+      typesTable.add(BB,1,3);
+      typesTable.add(typeImage,2,2);
 
-      Window roomWindow = new Window("Herbergi",400,550,"/building/roomtypes.jsp");
-        roomWindow.setScrollbar(false);
-      Image moreImage = new Image("/pics/meira.gif");
-      Link roomLink = new Link(moreImage,roomWindow);
-        roomLink.addParameter("room_sub_type_id",rooms[a].getID());
-
-      roomsTable.add(roomName,1,1);
-      roomsTable.add(roomInfo,1,2);
-      roomsTable.add(roomLink,1,3);
-      roomsTable.add(roomImage,3,2);
-
-      buildingTable.add(roomsTable,1,a+2);
-      if ( a+1 < rooms.length ) {
-        buildingTable.add(divideText,1,a+2);
+      complexTable.add(typesTable,1,a+2);
+      if ( a+1 < types.length ) {
+        complexTable.add(getInfoText(divideText),1,a+2);
       }
     }
-    add(buildingTable);
+    add(complexTable);
   }
 
   public void setNameStyle(String nameStyle) {
@@ -214,4 +209,12 @@ public BuildingViewer(int building_id){
     this.infoStyle=infoStyle;
   }
 
+  public String formatText(String text) {
+    text = TextSoap.findAndReplace(text,"m2","m<sup>2</sup>");
+    return text;
+  }
+
+  public String getBundleIdentifier() {
+    return(IW_RESOURCE_BUNDLE);
+  }
 }

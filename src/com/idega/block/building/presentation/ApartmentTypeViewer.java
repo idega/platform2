@@ -6,6 +6,7 @@ import javax.servlet.jsp.*;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
+import java.text.*;
 import com.idega.util.*;
 import com.idega.util.text.TextSoap;
 import com.idega.data.*;
@@ -15,6 +16,8 @@ import com.idega.block.building.data.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 /**
  * Title: BuildingViewer
@@ -27,9 +30,16 @@ import com.idega.jmodule.object.interfaceobject.*;
 
 public class ApartmentTypeViewer extends JModuleObject{
 
+private static final String IW_RESOURCE_BUNDLE = "com.idega.block.building";
+public static final String PARAMETER_STRING = "type_id";
 private int apartmenttypeid = 0;
-private String style;
-private String infoStyle;
+private String style = "font-family:verdana; font-size: 11pt; font-weight: bold; color: #FFFFFF;";
+private String infoStyle =  "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
+protected IWResourceBundle iwrb_;
+protected IWBundle iwb_;
+
+public ApartmentTypeViewer(){
+}
 
 public ApartmentTypeViewer(int apartmenttypeid){
     this.apartmenttypeid=apartmenttypeid;
@@ -37,9 +47,31 @@ public ApartmentTypeViewer(int apartmenttypeid){
 
 
     public void main(ModuleInfo modinfo) throws Exception {
+      if ( iwrb_ == null ) {
+        iwrb_ = getResourceBundle(modinfo);
+      }
 
-       getApartmentType(modinfo);
+      if ( iwb_ == null ) {
+        iwb_ = getBundle(modinfo);
+      }
 
+      if ( modinfo.getParameter(PARAMETER_STRING) != null ) {
+        try {
+          apartmenttypeid = Integer.parseInt(modinfo.getParameter(PARAMETER_STRING));
+        }
+        catch (NumberFormatException e) {
+          apartmenttypeid = 0;
+        }
+      }
+      this.getParentPage().setTitle("Appartment Viewer");
+      this.getParentPage().setAllMargins(0);
+
+      if ( iwrb_ != null && iwb_ != null ) {
+        getApartmentType(modinfo);
+      }
+      else {
+        add(getBoldText("No bundle available"));
+      }
     }
 
     public void setDefaultValues() {
@@ -80,107 +112,183 @@ public ApartmentTypeViewer(int apartmenttypeid){
         }
 
       topTable.add(roomName,1,1);
-      topTable.add(new Image("/pics/room/topright.gif","",153,40),2,1);
+      topTable.add(iwrb_.getImage("/room/topright.gif","",153,40),2,1);
 
       roomTable.add(topTable,1,1);
-      roomTable.add(getApartmentTable(room),1,3);
+      roomTable.add(getApartmentTable(room, modinfo),1,3);
       roomTable.add(getAllApartmentTypes(room),1,4);
-      roomTable.add(new Image("/pics/room/bottom.gif","",400,66),1,5);
+      roomTable.add(iwrb_.getImage("/room/bottom.gif","",400,66),1,5);
 
       add(roomTable);
 
     }
 
-    private Table getApartmentTable(ApartmentType room) throws SQLException {
+    private Table getApartmentTable(ApartmentType room, ModuleInfo modinfo) throws SQLException {
 
-       Table roomTable = new Table(3,3);
-        roomTable.mergeCells(1,1,1,3);
-        roomTable.mergeCells(2,1,2,3);
+       Table roomTable = new Table(2,2);
+        roomTable.mergeCells(1,1,1,2);
         roomTable.setWidth("100%");
-        roomTable.setWidth(2,"20");
+        roomTable.setHeight("100%");
+        roomTable.setHeight(2,2,"100%");
+        roomTable.setWidth(1,"212");
         roomTable.setAlignment(1,1,"center");
+        roomTable.setColumnVerticalAlignment(1,"top");
+        roomTable.setColumnVerticalAlignment(2,"top");
+        roomTable.setBorder(0);
 
-
-       Image floorPlan = new Image(room.getFloorPlanId());
+      try{
+      int pid = room.getFloorPlanId();
+      Image floorPlan = iwb_.getImage("/shared/room/nopic.gif");
+        if(pid > 0)
+         floorPlan = new Image(pid);
+       //floorPlan.setMaxImageWidth(200);
+       floorPlan.setHorizontalSpacing(6);
        roomTable.add(floorPlan,1,1);
 
-        String roomText = room.getInfo();
-          if ( roomText != null ) {
-            roomText = TextSoap.findAndReplace(roomText,"\n","<br>");
-          }
-
-       Text infoText = new Text(roomText);
-        if ( infoStyle != null ) {
-          infoText.setFontStyle(infoStyle);
+      String roomText = room.getInfo();
+        if ( roomText != null ) {
+          roomText = TextSoap.findAndReplace(roomText,"\n","<br>");
         }
-       roomTable.add(infoText,3,1);
-
-       Text rent = new Text("Leiga: ");
-        if ( infoStyle != null ) {
-          rent.setFontStyle(infoStyle+"font-weight: bold;");
+        if ( roomText.length() == 0 ) {
+          roomText = iwrb_.getLocalizedString("no_information","No information available");
         }
-
-       Text rentPrice = new Text(String.valueOf(room.getRent()));
-        if ( infoStyle != null ) {
-          rentPrice.setFontStyle(infoStyle);
+        else {
+          roomTable.add(getBoldText(iwrb_.getLocalizedString("information","Information")),2,1);
+          roomTable.add(Text.getBreak(),2,1);
         }
+      roomTable.add(getInfoText(roomText),2,1);
+      roomTable.add(Text.getBreak(),2,1);
+      roomTable.add(Text.getBreak(),2,1);
 
-       roomTable.add(rent,3,2);
-       roomTable.add(rentPrice,3,2);
+      roomTable.add(getBoldText(iwrb_.getLocalizedString("size","Size (sqm)")+": "),2,1);
+      String areaString = TextSoap.singleDecimalFormat((double)room.getArea());
+        if ( areaString.length() > 0 ) {
+          areaString += " m<sup>2</sup>";
+        }
+        else {
+          areaString = "?? m<sup>2</sup>";
+        }
+      roomTable.add(getInfoText(areaString),2,1);
+      roomTable.add(Text.getBreak(),2,1);
 
-       Table linksTable = new Table(2,4);
+      roomTable.add(getBoldText(iwrb_.getLocalizedString("number_of_rooms","Number of rooms")+": "),2,1);
+      roomTable.add(getInfoText(""+room.getRoomCount()),2,1);
+      roomTable.add(Text.getBreak(),2,1);
+
+      Table Inventory = new Table();
+        Inventory.setCellpadding(0);
+        Inventory.setCellspacing(3);
+        Inventory.setWidth("100%");
+        Inventory.setWidth(1,"50%");
+        Inventory.setWidth(2,"50%");
+
+      Image included = iwb_.getImage("/shared/room/x.gif",iwrb_.getLocalizedString("in_apartment","Available in apartment"),9,9);
+        included.setAlignment("middle");
+        included.setHorizontalSpacing(4);
+      Image notIncluded = iwb_.getImage("/shared/room/x1.gif",iwrb_.getLocalizedString("not_in_apartment","Not available in apartment"),9,9);
+        notIncluded.setAlignment("middle");
+        notIncluded.setHorizontalSpacing(4);
+
+      int a = 1;
+
+      Inventory.add(room.getKitchen()?included:notIncluded,1,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("kitchen","Kitchen")),1,a);
+
+      Inventory.add(room.getStorage()?included:notIncluded,2,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("storage","Storage")),2,a++);
+
+      Inventory.add(room.getBathRoom()?included:notIncluded,1,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("bathroom","Bathroom")),1,a);
+
+      Inventory.add(room.getBalcony()?included:notIncluded,2,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("balcony","Balcony")),2,a++);
+
+      Inventory.add(room.getStudy()?included:notIncluded,1,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("study","Study")),1,a);
+
+      Inventory.add(room.getLoft()?included:notIncluded,2,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("loft","Loft")),2,a++);
+
+      Inventory.add(room.getFurniture()?included:notIncluded,1,a);
+      Inventory.add(getBoldText(iwrb_.getLocalizedString("furniture","Furniture")),1,a++);
+
+      roomTable.add(Inventory,2,1);
+      roomTable.add(Text.getBreak(),2,1);
+
+      if(room.getRent() > 0){
+        roomTable.add(getBoldText(iwrb_.getLocalizedString("rent","Rent")+": "),2,1);
+        NumberFormat format = DecimalFormat.getCurrencyInstance(modinfo.getApplication().getSettings().getDefaultLocale());
+        String rentString = format.format((long)room.getRent());
+        roomTable.add(getInfoText(rentString),2,1);
+      }
+
+       Table linksTable = new Table(2,3);
         linksTable.setWidth("100%");
         linksTable.mergeCells(1,1,2,1);
-        linksTable.mergeCells(1,4,2,4);
+        linksTable.mergeCells(1,3,2,3);
         linksTable.setCellpadding(0);
         linksTable.setCellspacing(0);
         linksTable.addText("",1,1);
-        linksTable.addText("",1,4);
+        linksTable.addText("",1,3);
         linksTable.setHeight(1,"3");
-        linksTable.setHeight(4,"3");
-        linksTable.setBackgroundImage(1,1,new Image("/pics/room/line.gif"));
-        linksTable.setBackgroundImage(1,4,new Image("/pics/room/line.gif"));
+        linksTable.setHeight(3,"3");
+        linksTable.setBackgroundImage(1,1,iwb_.getImage("/shared/room/line.gif"));
+        linksTable.setBackgroundImage(1,3,iwb_.getImage("/shared/room/line.gif"));
 
-        Link applyLink = new Link(new Image("/pics/room/saekjaum.gif"),"");
-        PrintButton print = new PrintButton(new Image("/pics/room/prentaut.gif"));
-        CloseButton close = new CloseButton(new Image("/pics/room/loka.gif"));
+        Link applyLink = new Link(iwrb_.getImage("/room/apply.gif"),"");
+        PrintButton print = new PrintButton(iwrb_.getImage("/room/print.gif"));
+        CloseButton close = new CloseButton(iwrb_.getImage("/room/close.gif"));
 
-      linksTable.add(applyLink,1,2);
+      //linksTable.add(applyLink,1,2);
       linksTable.add(print,2,2);
-      linksTable.add(close,1,3);
+      linksTable.add(close,1,2);
 
-      roomTable.add(linksTable,3,3);
-
+      roomTable.add(linksTable,2,2);
+      }
+      catch (Exception e){
+        e.printStackTrace(System.err);
+      }
       return roomTable;
+    }
+
+    private Text getInfoText(String text){
+      Text T = new Text(text);
+      T.setFontStyle(infoStyle);
+      return T;
+    }
+
+    private Text getBoldText(String text){
+      Text T = new Text(text);
+      T.setFontStyle(infoStyle+"font-weight: bold;");
+      return T;
     }
 
     private Form getAllApartmentTypes(ApartmentType type) throws SQLException {
 
-      int building_id = 1;
-      Apartment[] apartment = (Apartment[]) (new Apartment()).findAllByColumn(Apartment.getApartmentTypeColumnName(),type.getID());
-        if ( apartment.length > 0 ) {
-          Floor floor = new Floor(apartment[0].getFloorId());
-          building_id = floor.getBuildingId();
-          Building building = new Building(building_id);
-        }
-
-      ApartmentType[] types = BuildingFinder.findApartmentTypesInBuilding(building_id);
+      int id = BuildingFinder.getComplexIdFromTypeId(type.getID());
+      ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(id);
 
       Form roomForm = new Form();
 
+      Text appartmentText = getBoldText(iwrb_.getLocalizedString("other_apartments","Other apartments in building")+": ");
+
       Table formTable = new Table(1,1);
+        formTable.setCellpadding(0);
+        formTable.setCellspacing(0);
         formTable.setWidth("90%");
         formTable.setAlignment("center");
         formTable.setAlignment(1,1,"right");
 
-      DropdownMenu roomTypes = new DropdownMenu("room_sub_type_id");
+      DropdownMenu roomTypes = new DropdownMenu("type_id");
         roomTypes.setToSubmit();
         roomTypes.keepStatusOnAction();
         for ( int a = 0; a < types.length; a++ ) {
-         roomTypes.addMenuElement(types[a].getID()+"",types[a].getName());
+         roomTypes.addMenuElement(types[a].getID(),types[a].getName());
         }
-        roomTypes.setSelectedElement(type.getID()+"");
+        roomTypes.setSelectedElement(String.valueOf(type.getID()));
+        roomTypes.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
+      formTable.add(appartmentText,1,1);
       formTable.add(roomTypes,1,1);
       roomForm.add(formTable);
 
@@ -194,6 +302,10 @@ public ApartmentTypeViewer(int apartmenttypeid){
 
     public void setInfoStyle(String infoStyle) {
       this.infoStyle=infoStyle;
+    }
+
+    public String getBundleIdentifier() {
+      return(IW_RESOURCE_BUNDLE);
     }
 
 }

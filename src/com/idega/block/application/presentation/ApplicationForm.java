@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.8 2001/08/21 18:18:41 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.9 2001/08/21 22:44:17 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.interfaceobject.Form;
 import com.idega.jmodule.object.interfaceobject.TextInput;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
+import com.idega.jmodule.object.interfaceobject.BackButton;
 import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
@@ -101,8 +102,8 @@ public class ApplicationForm extends ModuleObjectContainer {
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
     subject.setStyle("formstyle");
-    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
-    ok.setStyle("idega");
+    BackButton back = new BackButton(iwrb_.getImage("back.gif"));
+    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")));
 
     form.add(heading);
     form.add(Text.getBreak());
@@ -112,6 +113,7 @@ public class ApplicationForm extends ModuleObjectContainer {
     t.add(text1,1,1);
     t.add(required,1,1);
     t.add(subject,2,1);
+    t.add(back,2,3);
     t.add(ok,2,3);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
@@ -126,8 +128,8 @@ public class ApplicationForm extends ModuleObjectContainer {
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
     Table t = new Table(2,10);
-    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
-    ok.setStyle("idega");
+    BackButton back = new BackButton(iwrb_.getImage("back.gif"));
+    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")));
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
@@ -224,7 +226,8 @@ public class ApplicationForm extends ModuleObjectContainer {
     t.add(text8,1,8);
     t.add(required,1,8);
     t.add(input8,2,8);
-    t.add(ok,2,10);
+    //t.add(back,1,10);
+    t.add(ok,1,10);
 
     form.add(heading);
     form.add(Text.getBreak());

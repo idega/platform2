@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.14 2001/08/21 13:53:39 laddi Exp $
+ * $Id: CampusApplicationForm.java,v 1.15 2001/08/21 22:44:00 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,8 @@ import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.textObject.Link;
+import com.idega.jmodule.object.interfaceobject.Window;
 import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.Form;
 import com.idega.jmodule.object.interfaceobject.TextInput;
@@ -25,21 +27,23 @@ import com.idega.jmodule.object.interfaceobject.TextArea;
 import com.idega.jmodule.object.interfaceobject.DateInput;
 import com.idega.jmodule.object.interfaceobject.CheckBox;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
+import com.idega.jmodule.object.interfaceobject.BackButton;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
+import com.idega.jmodule.object.Page;
 import com.idega.idegaweb.IWBundle;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.CypherText;
 import is.idegaweb.campus.application.CampusApplicationFinder;
 import is.idegaweb.campus.application.CampusApplicationFormHelper;
+import com.idega.block.building.presentation.ApartmentTypeViewer;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.idegaweb.IWResourceBundle;
-
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -52,10 +56,11 @@ public class CampusApplicationForm extends ApplicationForm {
   private final int statusCampusInfo_ = 3;
   private final int statusAppliedFor_ = 4;
   private final int statusSelectingApartmentTypes_ = 99;
+  private final int numberOfStages = 3;
 
-  private int pic1 = -1;
-  private int pic2 = -1;
-  private int pic3 = -1;
+  private int apartment1 = -1;
+  private int apartment2 = -1;
+  private int apartment3 = -1;
 
   private static final String IW_RESOURCE_BUNDLE = "is.idegaweb.campus";
 
@@ -76,17 +81,24 @@ public class CampusApplicationForm extends ApplicationForm {
       status = statusEnteringPage_;
     }
     else {
-      status = Integer.parseInt(statusString);
+      try {
+        status = Integer.parseInt(statusString);
+      }
+      catch (NumberFormatException e) {
+      }
     }
 
     if (status == statusEnteringPage_) {
+      addStage(1);
       doGeneralInformation(modinfo);
     }
     else if (status == statusGeneralInfo_) {
+      addStage(2);
       CampusApplicationFormHelper.saveApplicantInformation(modinfo);
       doCampusInformation(modinfo);
     }
     else if (status == statusCampusInfo_) {
+      addStage(3);
       CampusApplicationFormHelper.saveSubject(modinfo);
       CampusApplicationFormHelper.saveCampusInformation(modinfo);
       doSelectAppliedFor(modinfo);
@@ -99,78 +111,13 @@ public class CampusApplicationForm extends ApplicationForm {
         doError();
     }
     else if (status == statusSelectingApartmentTypes_) {
-      Vector pics = CampusApplicationFormHelper.checkAparmentTypesSelected(modinfo);
-      pic1 = -1;
-      pic2 = -1;
-      pic3 = -1;
-      Iterator it = pics.iterator();
-      while (it.hasNext()) {
-        Integer pic = (Integer)it.next();
-      }
-
+      addStage(3);
+      checkAparmentTypesSelected(modinfo);
       doSelectAppliedFor(modinfo);
     }
   }
 
   /*
-   *
-   */
-  protected void doSelectSubject(ModuleInfo modinfo) {
-    List subjects = ApplicationFinder.listOfNonExpiredSubjects();
-    List categories = BuildingFinder.listOfApartmentCategory();
-    Text textTemplate = new Text();
-
-    Form form = new Form();
-    Table t = new Table(2,4);
-      t.setWidth(1,"250");
-      t.setCellpadding(5);
-
-    Text heading = (Text)textTemplate.clone();
-    heading.setStyle("headlinetext");
-    heading.setText(iwrb_.getLocalizedString("applicationSubject","Veldu tegund umsóknar"));
-    Text text1 = (Text)textTemplate.clone();
-    text1.setStyle("bodytext");
-    text1.setText(iwrb_.getLocalizedString("applicationSubject","Umsókn um"));
-    text1.setBold();
-    Text text2 = (Text)textTemplate.clone();
-    text2.setStyle("bodytext");
-    text2.setText(iwrb_.getLocalizedString("apartmentType","Tegund íbúðar"));
-    text2.setBold();
-    Text required = (Text)textTemplate.clone();
-    required.setText(" * ");
-    required.setBold();
-    required.setStyle("required");
-    Text info = (Text)textTemplate.clone();
-    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
-    info.setStyle("subtext");
-
-    DropdownMenu subject = new DropdownMenu(subjects,"subject");
-    subject.setStyle("formstyle");
-    DropdownMenu aprtCat = new DropdownMenu(categories,"aprtCat");
-    aprtCat.setStyle("formstyle");
-    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
-    ok.setStyle("idega");
-
-    form.add(heading);
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    form.add(t);
-
-    t.add(text1,1,1);
-    t.add(required,1,1);
-    t.add(subject,2,1);
-    t.add(text2,1,2);
-    t.add(required,1,2);
-    t.add(aprtCat,2,2);
-    t.add(ok,2,4);
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    form.add(info);
-    form.add(new HiddenInput("status",Integer.toString(statusSubject_)));
-    add(form);
-  }
-
   /*
    *
    */
@@ -191,6 +138,7 @@ public class CampusApplicationForm extends ApplicationForm {
     aprtType2.setStyle("formstyle");
     DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
     aprtType3.setStyle("formstyle");
+    aprtType.addDisabledMenuElement("-1","");
     aprtType2.addMenuElement("-1","");
     aprtType3.addMenuElement("-1","");
 
@@ -204,7 +152,7 @@ public class CampusApplicationForm extends ApplicationForm {
        * @todo Fjarlægja þetta úr þessum klasa og setja yfir í helperinn. Hann skilar
        * síðan bara myndinni eða null.
        */
-      if (i == 0) {
+      /*if (i == 0) {
         if (pic1 == -1) {
           try {
             int type = ApartmentTypeComplexHelper.getPartKey(eAprtType.getKey(),1);
@@ -215,7 +163,7 @@ public class CampusApplicationForm extends ApplicationForm {
             e.printStackTrace();
           }
         }
-      }
+      }*/
     }
 
     Text textTemplate = new Text();
@@ -223,6 +171,7 @@ public class CampusApplicationForm extends ApplicationForm {
     Form form = new Form();
     Table t = new Table(3,5);
       t.setWidth(1,"250");
+      t.setWidth("100%");
       t.setCellpadding(5);
 
     Text heading = (Text)textTemplate.clone();
@@ -246,8 +195,9 @@ public class CampusApplicationForm extends ApplicationForm {
     info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
 
-    SubmitButton ok = new SubmitButton(iwrb_.getLocalizedString("ok","áfram"),"status",Integer.toString(statusAppliedFor_));
-    ok.setStyle("idega");
+    Image back = iwrb_.getImage("back.gif");
+      back.setAttribute("onClick","history.go(-1)");
+    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")),"status",Integer.toString(id));
 
     form.add(heading);
     form.add(Text.getBreak());
@@ -258,41 +208,74 @@ public class CampusApplicationForm extends ApplicationForm {
     t.add(required,1,1);
     t.add(aprtType,2,1);
 
-    if (pic1 > -1) {
+    Window window = new Window("Apartment Viewer",ApartmentTypeViewer.class,Page.class);
+      window.setWidth(400);
+      window.setHeight(550);
+      window.setScrollbar(false);
+
+    Image apartmentImage = new Image("/pics/list.gif",iwrb_.getLocalizedString("get_apartment","Click for information about apartment"));
+      apartmentImage.setAlignment("absmiddle");
+      apartmentImage.setHorizontalSpacing(4);
+    Link apartmentLink = new Link(apartmentImage,window);
+    Text apartmentText = new Text(iwrb_.getLocalizedString("see_apartment","view"));
+      apartmentText.setFontStyle("font-family:arial; font-size:9px; color:#000000");
+    Link apartmentLink2 = new Link(apartmentText,window);
+
+    if (apartment1 > -1) {
       try {
-        Image floorPlan1 = new Image(pic1);
-        t.add(floorPlan1,3,1);
+        Link link1 = (Link) apartmentLink.clone();
+          link1.addParameter(ApartmentTypeViewer.PARAMETER_STRING,apartment1);
+        Link link12 = (Link) apartmentLink2.clone();
+          link12.addParameter(ApartmentTypeViewer.PARAMETER_STRING,apartment1);
+        t.add(link1,3,1);
+        t.add(link12,3,1);
+        //Image floorPlan1 = new Image(apartment1);
+        //t.add(floorPlan1,3,1);
       }
-      catch(SQLException e) {
+      catch(Exception e) {
         e.printStackTrace();
       }
     }
 
     t.add(text2,1,2);
     t.add(aprtType2,2,2);
-    if (pic2 > -1) {
+    if (apartment2 > -1) {
       try {
-        Image floorPlan2 = new Image(pic2);
-        t.add(floorPlan2,3,2);
+        Link link2 = (Link) apartmentLink.clone();
+          link2.addParameter(ApartmentTypeViewer.PARAMETER_STRING,apartment2);
+        Link link22 = (Link) apartmentLink2.clone();
+          link22.addParameter(ApartmentTypeViewer.PARAMETER_STRING,apartment2);
+        t.add(link2,3,2);
+        t.add(link22,3,2);
+        //Image floorPlan2 = new Image(apartment2);
+        //t.add(floorPlan2,3,2);
       }
-      catch(SQLException e) {
+      catch(Exception e) {
         e.printStackTrace();
       }
     }
 
     t.add(text3,1,3);
     t.add(aprtType3,2,3);
-    if (pic3 > -1) {
+    if (apartment3 > -1) {
       try {
-        Image floorPlan3 = new Image(pic3);
-        t.add(floorPlan3,3,3);
+        Link link3 = (Link) apartmentLink.clone();
+          link3.addParameter(ApartmentTypeViewer.PARAMETER_STRING,apartment3);
+        Link link32 = (Link) apartmentLink2.clone();
+          link32.addParameter(ApartmentTypeViewer.PARAMETER_STRING,apartment3);
+        t.add(link3,3,3);
+        t.add(link32,3,3);
+        //Image floorPlan3 = new Image(apartment3);
+        //t.add(floorPlan3,3,3);
       }
-      catch(SQLException e) {
+      catch(Exception e) {
         e.printStackTrace();
       }
     }
 
-    t.add(ok,2,5);
+    t.add(back,1,5);
+    t.add("&nbsp;",1,5);
+    t.add(ok,1,5);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(Text.getBreak());
@@ -309,6 +292,14 @@ public class CampusApplicationForm extends ApplicationForm {
     add(form);
   }
 
+  protected void addStage(int stage) {
+    Text stageText = new Text(iwrb_.getLocalizedString("stage","Stage")+" "+Integer.toString(stage)+" "+iwrb_.getLocalizedString("of","of")+" "+Integer.toString(numberOfStages));
+      stageText.setFontStyle("font-family:Verdana, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: bold; color: #932a2b;");
+
+    add(stageText);
+    add(Text.getBreak());
+  }
+
   /*
    *
    */
@@ -320,7 +311,6 @@ public class CampusApplicationForm extends ApplicationForm {
     Form form = new Form();
     Table t = new Table(2,2);
       t.setWidth(1,"220");
-      t.setCellpadding(5);
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
@@ -345,8 +335,9 @@ public class CampusApplicationForm extends ApplicationForm {
     subject.setStyle("formstyle");
     DropdownMenu aprtCat = new DropdownMenu(categories,"aprtCat");
     aprtCat.setStyle("formstyle");
-    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
-    ok.setStyle("idega");
+    Image back = iwrb_.getImage("back.gif");
+      back.setAttribute("onClick","history.go(-1)");
+    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")));
 
     form.add(heading);
     form.add(Text.getBreak());
@@ -552,7 +543,6 @@ public class CampusApplicationForm extends ApplicationForm {
       t2.setWidth(1,"220");
       t2.setColumnVerticalAlignment(1,"top");
       t2.setColumnVerticalAlignment(2,"top");
-      t2.setCellpadding(5);
 
     form.add(heading2);
     form.add(Text.getBreak());
@@ -561,12 +551,10 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(text1,1,1);
     t2.add(required,1,1);
     t2.add(studyBeginMo,2,1);
-    t2.add("/",2,1);
     t2.add(studyBeginYr,2,1);
     t2.add(text2,1,2);
     t2.add(required,1,2);
     t2.add(studyEndMo,2,2);
-    t2.add("/",2,2);
     t2.add(studyEndYr,2,2);
     t2.add(text3,1,3);
     t2.add(required,1,3);
@@ -588,11 +576,9 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(input7,2,9);
     t2.add(text10,1,10);
     t2.add(spouseStudyBeginMo,2,10);
-    t2.add("/",2,10);
     t2.add(spouseStudyBeginYr,2,10);
     t2.add(text11,1,11);
     t2.add(spouseStudyEndMo,2,11);
-    t2.add("/",2,11);
     t2.add(spouseStudyEndYr,2,11);
     t2.add(text12,1,12);
     t2.add(occSelect,2,12);
@@ -617,7 +603,9 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(input11,2,20);
     t2.add(text21,1,21);
     t2.add(input13,2,21);
-    t2.add(ok,2,23);
+    t2.add(back,1,23);
+    t2.add("&nbsp;",1,23);
+    t2.add(ok,1,23);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(info);
@@ -643,18 +631,18 @@ public class CampusApplicationForm extends ApplicationForm {
     try {
       int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
       ApartmentType room = new ApartmentType(type);
-      pic1 = room.getFloorPlanId();
+      apartment1 = room.getID();
 
       if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
         type = ApartmentTypeComplexHelper.getPartKey(key2,1);
         room = new ApartmentType(type);
-        pic2 = room.getFloorPlanId();
+        apartment2 = room.getID();
       }
 
       if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
         type = ApartmentTypeComplexHelper.getPartKey(key3,1);
         room = new ApartmentType(type);
-        pic3 = room.getFloorPlanId();
+        apartment3 = room.getID();
       }
     }
     catch(SQLException e) {
