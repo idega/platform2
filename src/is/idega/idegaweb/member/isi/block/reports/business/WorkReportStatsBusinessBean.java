@@ -192,7 +192,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			}
 			
 			String cName = report.getGroupName();
-			String regUniAbbr = report.getRegionalUnionAbbreviation();
+			String regUniIdentifier = this.getRegionalUnionIdentifier(report);
 			
 			try {
 				Collection leagues = report.getLeagues();
@@ -208,18 +208,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					//					add the data to the correct fields/columns
 					
 					data.addData(clubName, cName);
-					
-					if(regUniAbbr==null){
-						regUniAbbr = report.getRegionalUnionNumber();
-					}
-					if(regUniAbbr==null){
-						regUniAbbr = report.getRegionalUnionName();
-					}
-					if(regUniAbbr==null){
-						regUniAbbr = report.getRegionalUnionGroupId().toString();
-					}
-					
-					data.addData(regionalUnionAbbreviation, regUniAbbr );
+					data.addData(regionalUnionAbbreviation, regUniIdentifier );
 					//					get the stats
 					//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
 					
@@ -1201,8 +1190,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//get last years report for comparison
 
 			String cName = report.getGroupName();
-			String regUniAbbr = report.getRegionalUnionAbbreviation();
-
+			String regUniIdentifier = getRegionalUnionIdentifier(report);
+			
 			try {
 				Collection leagues = report.getLeagues();
 				Iterator iterator = leagues.iterator();
@@ -1214,18 +1203,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					//					add the data to the correct fields/columns
 		
 					regData.addData(clubName, cName);
-		
-					if(regUniAbbr==null){
-						regUniAbbr = report.getRegionalUnionNumber();
-					}
-					if(regUniAbbr==null){
-						regUniAbbr = report.getRegionalUnionName();
-					}
-					if(regUniAbbr==null){
-						regUniAbbr = report.getRegionalUnionGroupId().toString();
-					}
-		
-					regData.addData(regionalUnionAbbreviation, regUniAbbr );
+					regData.addData(regionalUnionAbbreviation, regUniIdentifier );
 		
 		
 					int womenMembersUnder = getWorkReportBusiness().getCountOfFemaleMembersOfYoungerAgeAndByWorkReport(age, report);
@@ -1849,7 +1827,7 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 	String leagueText=league.toString();
 	
 	if("".equals(leagueText)){
-		leagueText = (league.getName()!=null)? league.getName() : "";
+		leagueText = (league.getName()!=null)? league.getName() : "No League name!";
 	}
 	return leagueText;
 }
@@ -1862,7 +1840,7 @@ private String getRegionalUnionIdentifier(WorkReport report) {
 	//.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
 	String regText = ruBuf.toString();
 	if("".equals(regText)){
-		regText = (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "";
+		regText = (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "No Reg.Un.name!";
 	}
 	return regText;
 }
