@@ -134,8 +134,28 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
       */
   }
 
-  public Collection ejbFindResellerDays(Reseller reseller, Service service) throws RemoteException, FinderException{
-    return this.idoFindPKsBySQL("select * from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getPrimaryKey().toString());
+	public boolean ejbHomeRemoveResellerDays(Reseller reseller, Service service) throws Exception {
+		String sql = "delete from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getID();
+		return SimpleQuerier.execute(sql);	
+	}
+
+  public int[] ejbHomeGetResellerDays(Reseller reseller, Service service) throws RemoteException, FinderException{
+//    return this.idoFindPKsBySQL("select * from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getPrimaryKey().toString());
+//		System.out.println("[ResellerDayBMPBean] Service : "+service.getName(1)+", id = "+service.getID());
+		//String sql = "select * from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getID();
+		String sql2 = "select "+getColumnNameDayOfWeek()+" from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getID();
+		System.out.println("[ResellerDayBMPBean] Depprad fall... kannski : ejbHomeGetResellerDays");
+		//return this.idoFindPKsBySQL(sql);
+		try {
+			String[] sRepps = SimpleQuerier.executeStringQuery(sql2); 
+			int[] repps = new int[sRepps.length];
+			for ( int i = 0 ; i < sRepps.length ; i++ ) {
+				repps[i] = Integer.parseInt(sRepps[i]);	
+			}
+			return repps;
+		}catch(Exception e) {
+			throw new FinderException(e.getMessage());	
+		}
   }
 
 

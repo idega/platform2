@@ -13,21 +13,28 @@ public class ResellerDayHomeImpl extends com.idega.data.IDOFactory implements Re
  }
 
 
-public java.util.Collection findResellerDays(com.idega.block.trade.stockroom.data.Reseller p0,is.idega.idegaweb.travel.data.Service p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ResellerDayBMPBean)entity).ejbFindResellerDays(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
  public ResellerDay findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ResellerDay) super.findByPrimaryKeyIDO(pk);
  }
 
 
+public int[] getResellerDays(com.idega.block.trade.stockroom.data.Reseller p0,is.idega.idegaweb.travel.data.Service p1)throws java.rmi.RemoteException,javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int[] theReturn = ((ResellerDayBMPBean)entity).ejbHomeGetResellerDays(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public boolean getIfDay(int p0,int p1,int p2){
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	boolean theReturn = ((ResellerDayBMPBean)entity).ejbHomeGetIfDay(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public boolean removeResellerDays(com.idega.block.trade.stockroom.data.Reseller p0,is.idega.idegaweb.travel.data.Service p1)throws java.lang.Exception{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	boolean theReturn = ((ResellerDayBMPBean)entity).ejbHomeRemoveResellerDays(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
