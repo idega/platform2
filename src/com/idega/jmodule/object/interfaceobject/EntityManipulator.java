@@ -67,7 +67,7 @@ public ModuleObject getComponent(String columnName,int rowIndex){
 
 	ModuleObject theReturn = null;
 
-	if (getEntity()[rowIndex-1].getRelationShipClassName(columnName).equals("one-to-very-many")){
+	if (getEntity()[rowIndex-1].getRelationShipType(columnName).equals("one-to-very-many")){
 
 		Window window = new Window();
 
@@ -92,7 +92,7 @@ public ModuleObject getComponent(String columnName,int rowIndex){
           String storageClassName = getEntity()[rowIndex-1].getStorageClassName(columnName);
 
 		if (storageClassName.equals("java.lang.Integer")){
-			if(getEntity()[rowIndex-1].getRelationShipClassName(columnName).equals("")){
+			if(getEntity()[rowIndex-1].getRelationShipClass(columnName)==null){
 				if( ! getEntity()[rowIndex-1].isNull(columnName)){
 					IntegerInput tempInput = new IntegerInput(columnName,getEntity()[rowIndex-1].getIntColumnValue(columnName));
 					tempInput.setSize(10);
@@ -107,7 +107,7 @@ public ModuleObject getComponent(String columnName,int rowIndex){
 			else{
                               DropdownMenu tempInput=null;
                               try{
-                                  GenericEntity entity = (GenericEntity)Class.forName(getEntity()[rowIndex-1].getRelationShipClassName(columnName)).newInstance();
+                                  GenericEntity entity = (GenericEntity)getEntity()[rowIndex-1].getRelationShipClass(columnName).newInstance();
                                   List list = getColumnValueRange(columnName);
                                   if(list==null){
                                     tempInput = new DropdownMenu(entity.findAll());
