@@ -216,9 +216,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID);
 		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID);
 
-		Text topicText = getStyleText(_iwrb.getLocalizedString("topics", "Topics"), HEADING_STYLE);
-		Text threadsText = getStyleText(_iwrb.getLocalizedString("threads", "Threads"), HEADING_STYLE);
-		Text updatedText = getStyleText(_iwrb.getLocalizedString("last_updated", "Last updated"), HEADING_STYLE);
+		Text topicText = getStyleText(_iwrb.getLocalizedString("topics", "Topics"), HEADER_STYLE);
+		Text threadsText = getStyleText(_iwrb.getLocalizedString("threads", "Threads"), HEADER_STYLE);
+		Text updatedText = getStyleText(_iwrb.getLocalizedString("last_updated", "Last updated"), HEADER_STYLE);
 
 		table.setWidth(2, "60");
 		table.setWidth(3, "90");
@@ -521,7 +521,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		tree.setToShowHeaderRow(true);
 		tree.setTreePadding(2);
 		tree.setTextStyleName(getStyleName(TABLE_TEXT_STYLE));
-		tree.setLinkStyleName(THREAD_LINK_STYLE);
+		tree.setLinkStyleName(getStyleName(THREAD_LINK_STYLE));
 		tree.setLinkPage(getThreadPage());
 		tree.setObjectInstanceID(_objectID);
 		tree.setThreadImage(_threadImage);
