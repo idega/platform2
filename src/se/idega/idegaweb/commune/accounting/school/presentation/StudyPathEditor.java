@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.7 2003/10/06 09:32:25 anders Exp $
+ * $Id: StudyPathEditor.java,v 1.8 2003/10/09 08:23:05 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 /** 
  * This idegaWeb block that handles study paths for schools.
  * <p>
- * Last modified: $Date: 2003/10/06 09:32:25 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/09 08:23:05 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -259,7 +259,7 @@ public class StudyPathEditor extends AccountingBlock {
 			studyPaths = spb.findAllStudyPaths();
 		} catch (RemoteException e) {
 			Table t = new Table();
-			t.add(new ExceptionWrapper(e));
+			t.add(new ExceptionWrapper(e), 1, 1);
 			return t;
 		}
 
@@ -297,7 +297,7 @@ public class StudyPathEditor extends AccountingBlock {
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
-		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
+		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"), 1, 1);
 	
 		mainPanel.add(list, 1, 1);
 		
