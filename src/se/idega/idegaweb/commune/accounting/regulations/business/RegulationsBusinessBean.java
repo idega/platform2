@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.60 2003/11/07 05:08:13 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.61 2003/11/07 14:15:48 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1516,7 +1516,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			}
 
 
-			Collection reg = home.findRegulations(period, period, conditionType, flowID, condTypeID, -1);
+			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, -1);
+//			Collection reg = home.findRegulations(period, period, conditionType, flowID, condTypeID, -1);
 			if (reg != null && !reg.isEmpty()) {
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
@@ -1545,18 +1546,18 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param contract
 	 * @return PostingDetail
 	 */
-	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract) {
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation) {
 
 		PostingDetail postingDetail = new PostingDetail();
 
 		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
-		System.out.println(totalSum + " " + contract);
+		System.out.println(totalSum + " " + contract + " " + regulation);
 
 		//Insert code here to create postingDetail
 
 		//Just for testing, please remove when done with the real code
 		postingDetail.setAmount(100f);
-		postingDetail.setRuleSpecType("TestRule"); //??? String
+		postingDetail.setRuleSpecType("cacc_reg_spec_type.check"); //??? String
 		postingDetail.setTerm("Testing (JJ)");
 		postingDetail.setVat(32.0f);
 		postingDetail.setVatRegulationID(1);

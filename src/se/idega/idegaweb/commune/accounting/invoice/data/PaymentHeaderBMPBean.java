@@ -156,15 +156,15 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		IWTimestamp end = new IWTimestamp(start);
 		end.addMonths(1);
 		
-		Integer managementType = (Integer)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
+		String managementType = (String)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
 		
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this+" ph, "+SchoolBMPBean.SCHOOL+" s");
+		sql.appendSelectAllFrom(ENTITY_NAME+" ph, "+SchoolBMPBean.SCHOOL+" s");
 		sql.appendWhere("ph."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append("ph."+COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
-		sql.appendAndEquals("ph."+COLUMN_SCHOOL_CATEGORY_ID, schoolCategory.getPrimaryKey());
+		sql.appendAndEqualsQuoted("ph."+COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
 		sql.appendAndEquals("ph."+COLUMN_SCHOOL_ID,"s.sch_school_id");
-		sql.appendAndEquals("s.management_type",managementType);
+		sql.appendAndEqualsQuoted("s.management_type",managementType);
 		return idoFindPKsBySQL(sql.toString());
 	}
 

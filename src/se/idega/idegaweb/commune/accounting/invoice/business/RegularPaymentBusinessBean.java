@@ -6,8 +6,9 @@
  */
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import java.util.Collection;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -34,7 +35,7 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 	}
 	public Collection findRegularPaymentsForPeriode(Date from, Date to){
 		
-		return null;
+		return new ArrayList();
 	}
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness#findRegularPaymentsForPeriodeAndSchool(java.sql.Date, java.sql.Date, com.idega.block.school.data.School)
