@@ -23,7 +23,8 @@ import com.idega.presentation.awt.SingleLineItem;
  * @version 1.0
  */
 
-public class MessengerApplet extends Applet implements Runnable, ActionListener{
+//public class MessengerApplet extends Applet implements Runnable, ActionListener{
+public class MessengerApplet extends Applet implements ActionListener{
   private boolean runThread = false;
   private boolean isfirstRun = true;
   private static String FRAME_NAME= "IdegaWeb Messenger";
@@ -446,13 +447,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   /**Start the applet*/
   public void start() {
-    runThread = true;
+/*    runThread = true;
 
     if ( t == null ){
       t = new Thread(this);
       t.start();
     }
-
+*/
     if(cycler==null){
      cycler = new MessageListener(this,checkTimer);
     }
