@@ -369,6 +369,17 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	/**
+	 * Returns a PDF icon with the tooltip specified.
+	 * @param toolTip	The tooltip to display on mouse over.
+	 * @return Image	The PDF icon.
+	 */
+	protected Image getPDFIcon(String toolTip) {
+		Image pdfImage = iwb.getImage("shared/pdf-small.gif", 12, 12);
+		pdfImage.setToolTip(toolTip);
+		return pdfImage;
+	}
+
+	/**
 	 * Returns the default various icon with the tooltip specified.  May be used for various
 	 * purposes (handle, go, whatever...)
 	 * @param toolTip	The tooltip to display on mouse over.
