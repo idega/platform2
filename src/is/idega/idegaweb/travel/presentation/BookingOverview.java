@@ -767,14 +767,22 @@ public class BookingOverview extends TravelManager {
           List addresses = ProductBusiness.getDepartureAddresses(product, true);
           TravelAddress trAddress;
           int addressesSize = addresses.size();
+          int tempRow;
+          int tempTotal;
+          int tempBookings;
+          int trAddrBookings = 0;
           for (int g = 0; g < addressesSize; g++) {
             ++row;
+            tempRow = row;
+            tempTotal = 0;
             trAddress = (TravelAddress) addresses.get(g);
             table.mergeCells(1, row, 2, row);
             table.add(getHeaderText(trAddress.getName()), 1, row);
             table.setRowColor(row, super.backgroundColor);
 
 
+//            int tempBookingTest = getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(product.getID(), currentStamp, null, -1, new int[]{}, getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress) );
+//            table.add(getHeaderText(Integer.toString(tempBookingTest)), 6, row);
 
             // ------------------ BOOKINGS ------------------------
             Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),is.idega.idegaweb.travel.presentation.Booking.class);
@@ -805,10 +813,15 @@ public class BookingOverview extends TravelManager {
                 if ( bNumbers[0] != 0 ) {
                   Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
                 }
+
+                tempBookings = bookings[i].getTotalCount();
+                tempTotal += tempBookings;
+                trAddrBookings += tempBookings;
+
                 Temail = (Text) super.theSmallBoldText.clone();
                   Temail.setText(bookings[i].getEmail());
                 Tbooked = (Text) super.theSmallBoldText.clone();
-                  Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
+                  Tbooked.setText(Integer.toString(tempBookings));
 
                 Tname.setFontColor(super.BLACK);
                 Temail.setFontColor(super.BLACK);
@@ -852,6 +865,16 @@ public class BookingOverview extends TravelManager {
                 table.add(link, 9, row);
 
             }
+            table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
+            Link daLink = LinkGenerator.getLink(iwc, product.getID(), is.idega.idegaweb.travel.presentation.Booking.class);
+              daLink.addParameter(TourBookingForm.parameterDepartureAddressId, trAddress.getID());
+              daLink.setPresentationObject(iwrb.getImage("buttons/book.gif"));
+            table.add(daLink, 8, tempRow);
+//            if (trAddress.getRefillStock()) {
+//              table.add(getHeaderText(Integer.toString(trAddrBookings)), 7, tempRow);
+//              trAddrBookings = 0;
+//            }
+
           }
 
         ++row;

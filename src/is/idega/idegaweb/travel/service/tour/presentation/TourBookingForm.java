@@ -133,9 +133,12 @@ public class TourBookingForm extends TravelManager {
 
 
       ProductPrice[] pPrices = {};
-      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
+      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, addressId);
+//      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
         pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
+      }else{
+        debug("tFrame == null");
       }
 
       if (pPrices.length > 0) {

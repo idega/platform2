@@ -568,13 +568,28 @@ public class ProductBusiness {
     return products;
   }
 
-
+  /**
+   * @deprecated
+   */
   public static Timeframe getTimeframe(Product product, idegaTimestamp stamp) {
+    return getTimeframe(product, stamp, -1);
+  }
+
+  public static Timeframe getTimeframe(Product product, idegaTimestamp stamp, int travelAddressId) {
     Timeframe returner = null;
     try {
       Timeframe[] frames = product.getTimeframes();
+      ProductPrice[] pPrices;
       for (int i = 0; i < frames.length; i++) {
 	returner = frames[i];
+        if (travelAddressId != -1) {
+          pPrices = ProductPriceBMPBean.getProductPrices(product.getID(), frames[i].getID(), travelAddressId, false);
+//          System.err.println("getting prices : length = "+pPrices.length);
+          if (pPrices.length == 0) {
+            continue;
+          }
+        }
+
 	if (stamp.isInTimeframe( new idegaTimestamp(returner.getFrom()) , new idegaTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
 	  return returner;
 	}
