@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.11 2001/06/08 10:19:59 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.12 2001/06/22 09:41:38 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -106,7 +106,7 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.setVerticalAlignment(1,9,"top");
     leftTable.setVerticalAlignment(1,10,"top");
     leftTable.setVerticalAlignment(1,11,"top");
-    leftTable.setHeight("100%");
+    //leftTable.setHeight("100%");
     leftTable.setColumnAlignment(1, "left");
     leftTable.setWidth("" + LEFTWIDTH);
     leftTable.setCellpadding(0);
