@@ -328,12 +328,12 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     if ( orderBy != -1 ) {
       try {
         Collection coll = this.idoGetRelatedEntities(Timeframe.class);
-        TimeframeHome tHome = (TimeframeHome) IDOLookup.getHome(Timeframe.class);
+        //TimeframeHome tHome = (TimeframeHome) IDOLookup.getHome(Timeframe.class);
         List tFrames = new Vector();
         Iterator iter = coll.iterator();
         while (iter.hasNext()) {
-          Timeframe item = tHome.findByPrimaryKey(iter.next());
-          tFrames.add(item);
+          //Timeframe item = tHome.findByPrimaryKey(iter.next());
+          tFrames.add(iter.next());
         }
         TimeframeComparator comparator = new TimeframeComparator( TimeframeComparator.FROMDATE );
         Collections.sort( tFrames, comparator );
