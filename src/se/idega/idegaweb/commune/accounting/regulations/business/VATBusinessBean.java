@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.19 2004/01/11 16:51:58 tryggvil Exp $
+ * $Id: VATBusinessBean.java,v 1.20 2004/01/11 22:46:15 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -22,7 +22,6 @@ import com.idega.util.IWTimestamp;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.block.school.data.SchoolManagementTypeBMPBean;
 import com.idega.business.IBOLookupException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
@@ -34,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 /**
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/01/11 16:51:58 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/11 22:46:15 $ by $Author: tryggvil $
  * 
  * @author Anders Lindman
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness {
 
@@ -521,7 +520,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * Gets if the given school should be using VAT (Momsersättning). This is
 	 * only applicable to privately run schools.
 	 */
-	public boolean isSchoolApplicableForVAT(School school) {
+	public boolean isSchoolVATEligible(School school) {
 		/*String manType = (String) school.getManagementType().getPrimaryKey();
 		if (manType.equals(SchoolManagementTypeBMPBean.TYPE_PRIVATE)
 			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_COMPANY)

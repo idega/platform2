@@ -256,7 +256,7 @@ public abstract class BillingThread extends Thread{
 					paymentRecord.setDateCreated(currentDate);
 					paymentRecord.setCreatedBy(BATCH_TEXT);
 					paymentRecord.setPlacements(0);
-					//paymentRecord.setPieceAmount(0);
+					paymentRecord.setPieceAmount(0);
 					paymentRecord.setTotalAmount(newTotalVATAmount);
 					paymentRecord.setTotalAmountVAT(vatAmount);
 					paymentRecord.setRuleSpecType(ruleSpecType);

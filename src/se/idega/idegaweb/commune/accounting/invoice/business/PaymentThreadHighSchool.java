@@ -77,7 +77,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		BatchRunSemaphore.releaseHighRunSemaphore();
 	}
 
-	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException {
+	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions,SchoolClassMember placement) throws RegulationException {
 		PostingDetail detail = null;
 		
 		try {
@@ -92,7 +92,8 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 				RegSpecConstant.CHECK, //The ruleSpecType shall be Check
 				cond, //The conditions that need to fulfilled
 				0, //Sent in to be used for "Specialutrakning"
-				null); //Sent in to be used for "Specialutrakning"
+				null, //Contract not used here
+				placement); //Sent in to be used for e.g. VAT calculations
 		}
 		catch (Exception e) {
 			detail = null;
@@ -111,7 +112,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 					RegSpecConstant.CHECK, //The ruleSpecType shall be Check
 					cond, //The conditions that need to fulfilled
 					0, //Sent in to be used for "Specialutrakning"
-					null); //Sent in to be used for "Specialutrakning"
+					null, null); //Sent in to be used for "Specialutrakning"
 			}
 			catch (Exception e) {
 				detail = null;
@@ -132,7 +133,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 					RegSpecConstant.CHECK, //The ruleSpecType shall be Check
 					cond, //The conditions that need to fulfilled
 					0, //Sent in to be used for "Specialutrakning"
-					null); //Sent in to be used for "Specialutrakning"
+					null, null); //Sent in to be used for "Specialutrakning"
 			}
 			catch(Exception e) {
 				e.printStackTrace();

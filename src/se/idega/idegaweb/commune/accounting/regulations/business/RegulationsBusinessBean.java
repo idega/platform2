@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.113 2004/01/11 12:18:25 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.114 2004/01/11 22:46:15 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1539,7 +1539,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 *          The contract archive
 	 * @return postingDetail
 	 */
-	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, String conditionType, String regSpecType, Collection condition, float totalSum, ChildCareContract contract) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
+	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, String conditionType, String regSpecType, Collection condition, float totalSum, ChildCareContract contract, com.idega.block.school.data.SchoolClassMember placement) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
 
 		PostingDetail postingDetail = null;
 
@@ -1601,7 +1601,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (match.size() == 1) {
 					Regulation res = (Regulation) match.get(0);
 					try {
-						postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum, null);
+						postingDetail = getPostingDetailFromRegulation(res, condition, contract, placement, period, totalSum, null);
 					}
 					catch (BruttoIncomeException e) {
 					}
@@ -1658,7 +1658,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			if (type.equals(RegSpecialCalculationConstant.SUBVENTION)) {
 				PostingDetail d = null;
 				try {
-					d = getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType((String) reg.getOperation().getPrimaryKey(), reg.getPaymentFlowType().getLocalizationKey(), period, RuleTypeConstant.FORMULA, RegSpecConstant.CHECKTAXA, conditions, total_sum, contract);
+					d = getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType((String) reg.getOperation().getPrimaryKey(), reg.getPaymentFlowType().getLocalizationKey(), period, RuleTypeConstant.FORMULA, RegSpecConstant.CHECKTAXA, conditions, total_sum, contract, null);
 				}
 				catch (EJBException e) {
 					e.printStackTrace();
@@ -1827,12 +1827,18 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				SchoolClassMember plac = contract.getSchoolClassMember();
 				SchoolClass sclass = plac.getSchoolClass();
 				school = sclass.getSchool();
+				if(school==null){
+					getLogger().severe("school is null for contract with id="+contract.getPrimaryKey()+" possible error in database");
+				}
 			}
 			else if (placement != null) {
 				SchoolClass sclass = placement.getSchoolClass();
 				school = sclass.getSchool();
+				if(school==null){
+					getLogger().severe("school is null for SchoolClassMember with id="+placement.getPrimaryKey()+" possible error in database");
+				}
 			}
-			if (vatRuleRegulation != null && vatBusiness.isSchoolApplicableForVAT(school)) {
+			if (vatRuleRegulation != null && vatBusiness.isSchoolVATEligible(school)) {
 				VATRegulation vatRegulation = vatBusiness.getVATRegulationFromRegulation(reg);
 				ret.setVATPercent(vatRegulation.getVATPercent());
 				ret.setVATRegulation(vatRegulation);

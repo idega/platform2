@@ -12,6 +12,6 @@ public interface VATBusiness extends com.idega.business.IBOService
  public float getVATPercentForRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0)throws se.idega.idegaweb.commune.accounting.regulations.business.VATException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation getVATRegulation(int p0)throws se.idega.idegaweb.commune.accounting.regulations.business.VATException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation getVATRegulationFromRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0)throws se.idega.idegaweb.commune.accounting.regulations.business.VATException, java.rmi.RemoteException;
- public boolean isSchoolApplicableForVAT(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
+ public boolean isSchoolVATEligible(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public void saveVATRegulation(int p0,java.sql.Date p1,java.sql.Date p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9)throws se.idega.idegaweb.commune.accounting.regulations.business.VATException, java.rmi.RemoteException;
 }

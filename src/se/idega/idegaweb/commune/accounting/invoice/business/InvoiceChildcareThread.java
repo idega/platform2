@@ -317,7 +317,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
 						conditions,						//The conditions that need to fulfilled
 						totalSum,						//Sent in to be used for "Specialutrakning"
-						contract);						//Sent in to be used for "Specialutrakning"
+						contract, null);						//Sent in to be used for "Specialutrakning"
 
 					if(postingDetail == null){
 						throw new RegulationException("reg_exp_no_results","No regulations found.");

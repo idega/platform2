@@ -68,11 +68,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/11 20:40:19 $ by $Author: palli $
+ * Last modified: $Date: 2004/01/11 22:46:15 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.96 $
+ * @version $Revision: 1.97 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -266,7 +266,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 	
-	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions,SchoolClassMember placement) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		return regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), /*The ID that selects barnomsorg in the regulation */ 
 				PaymentFlowConstant.OUT, //The payment flow is out
 				calculationDate, //Current date to select the correct date range
@@ -274,7 +274,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				RegSpecConstant.CHECK, //The ruleSpecType shall be Check
 				conditions, //The conditions that need to fulfilled
 				0, //Sent in to be used for "Specialutrakning"
-				null); //Sent in to be used for "Specialutrakning"
+				null, //Contract not used here
+				placement); //Sent in to be used for e.g. VAT
 	}
 	
 	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
@@ -298,7 +299,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + calculationDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
 			//Get the check
 			currentProvider = provider;
-			PostingDetail postingDetail = getCheck(regBus, conditions); 
+			PostingDetail postingDetail = getCheck(regBus, conditions,schoolClassMember); 
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
