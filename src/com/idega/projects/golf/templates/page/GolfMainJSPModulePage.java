@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.26 2001/08/08 14:50:38 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.27 2001/08/08 15:27:24 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +118,6 @@ public class GolfMainJSPModulePage extends MainPage {
     // uncomment this and change for different tournaments
    // leftTable.add(getHoleView(),1,1);
 
-    leftTable.addBreak(1,1);
     leftTable.addBreak(1,1);
     leftTable.add(Languages(),1,2);
     leftTable.add(Sponsors(), 1,3);
