@@ -31,7 +31,7 @@ public class GolfLoginEmailer extends Block{
 
 
 private final static String ACTION_PARAMETER="lo_em_action";
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.projects.golf.login";
+private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf.block.login";
 
 protected IWResourceBundle iwrb;
 protected IWBundle iwb;

@@ -4,33 +4,29 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
+import javax.ejb.FinderException;
+
 import com.idega.presentation.Image;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import is.idega.idegaweb.golf.GolfField;
+import is.idega.idegaweb.golf.SqlTime;
 import is.idega.idegaweb.golf.TableInfo;
 import is.idega.idegaweb.golf.entity.Field;
-import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.entity.Tournament;
-import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
@@ -43,633 +39,699 @@ import com.idega.util.IWTimestamp;
  */
 public class StartingTime extends GolfBlock {
 
-	TeeTimeBusiness service = new TeeTimeBusiness();
+	private TeeTimeBusiness service = new TeeTimeBusiness();
+	private String COLOR1 = "#FFFFFF"; //  #336661
+	private String COLOR2 = "#6E9173"; //  #CDDFD1
+	private String COLOR3 = "#ADC9B0"; //  #ADC9B0
+	private String COLOR4 = "#CDDFD1"; //  #6E9173
+	private String COLOR5 = "#336661";
+	private String COLOR6 = "#FFFFFF";
+	private String COLOR7 = "#336661";
+	
+	static final String 	PRM_ACTION = "GO_ST_ACTON";
+	static final int ACTION_NO_ACTION = 0;
+	static final int  ACTION_GO_TO_TIMETABLE = 1;
+	int _action = ACTION_NO_ACTION;
+	static final String PRM_MODE = "GO_ST_MODE";
+	static final int MODE_MENU = 0;
+	static final int MODE_TIMETABLE = 1;
+	int _mode = MODE_MENU;
 
-	public void main(IWContext modinfo) throws Exception {
-		getParentPage().setTitle("Rástímaskráning");
-		IWCalendar funcDate = new IWCalendar();
-		IWTimestamp stamp = new IWTimestamp();
-
-		IWTimestamp noon = new IWTimestamp(1, 2, 1, 14, 0, 0);
-		noon.setAsTime();
+	
+	public void processActionAndModeParameters(IWContext iwc) throws Exception {
+		
+		String mode = iwc.getParameter(PRM_MODE);
+		if(mode!=null) {
+			try {
+				_mode = Integer.parseInt(mode);
+			} catch(NumberFormatException e) {
+				_mode=MODE_MENU;
+				System.err.println("[Warning]: "+this.getClassName()+": unsupported mode parameter value "+mode);
+			}
+		} else {
+			_mode = MODE_MENU;
+		}
+	
+		
+		String action = iwc.getParameter(PRM_ACTION);
+		if(action!=null) {
+			try {
+				_action = Integer.parseInt(action);
+			} catch(NumberFormatException e) {
+				_action=ACTION_NO_ACTION;
+				System.err.println("[Warning]: "+this.getClassName()+": unsupported action parameter value "+action);
+			}
+		} else {
+			_action = ACTION_NO_ACTION;
+		}
+	}
+		
+	public void main(IWContext iwc) throws Exception {
+		processActionAndModeParameters(iwc);
+		
+		switch (_action) {
+			case ACTION_GO_TO_TIMETABLE :
+				_mode = MODE_TIMETABLE;
+				break;
+			default : // _action = ACTION_NO_ACTION;
+				break;
+		}
+		
+		switch (_mode) {
+		case MODE_TIMETABLE:
+			this.add(new StartingTimeTable());
+			break;
+	
+		default: // _mode = MODE_MENU;
+			mainStartingTimeSearch(iwc);
+			break;
+		}
+		
+	}
+	
+	public void mainStartingTimeSearch(IWContext modinfo) throws Exception {
+		IWTimestamp funcDate = new IWTimestamp();
 
 		try {
-			boolean clubField = false;
+			removeUnionIdSessionAttribute(modinfo);
 
-			if (modinfo.getSessionAttribute("when") == null && modinfo.getParameter("hvenaer") == null) {
-				IWTimestamp now = IWTimestamp.RightNow();
-				now.setAsTime();
-				//if(now.isLaterThan(afternoon)){
-				//modinfo.setSessionAttribute("when","2");
-				//}else
-				if (now.isLaterThan(noon)) {
-					modinfo.setSessionAttribute("when", "1");
-				}
-				else {
-					modinfo.setSessionAttribute("when", "0");
-				}
-			}
-			else if (modinfo.getParameter("hvenaer") != null) {
+			if (modinfo.getSessionAttribute("side_num") == null && modinfo.getParameter("side") == null)
+				modinfo.setSessionAttribute("side_num", "0");
+			else if (modinfo.getParameter("side") != null)
+				modinfo.setSessionAttribute("side_num", modinfo.getParameter("side"));
+
+			if (modinfo.getSessionAttribute("when") == null && modinfo.getParameter("hvenaer") == null)
+				modinfo.setSessionAttribute("when", "0");
+			else if (modinfo.getParameter("hvenaer") != null)
 				modinfo.setSessionAttribute("when", modinfo.getParameter("hvenaer"));
-			}
 
-			if ((modinfo.getSessionAttribute("union_id") == null || (!(modinfo.getSessionAttribute("union_id").equals(modinfo.getParameter("club"))) && modinfo.getParameter("club") != null)) && modinfo.getParameter("search") == null)
-				clubField = true;
-
-			if (modinfo.getSessionAttribute("union_id") == null && modinfo.getParameter("club") == null)
-				modinfo.setSessionAttribute("union_id", "1"); //  Exception
-			else if (modinfo.getParameter("club") != null)
-				modinfo.setSessionAttribute("union_id", modinfo.getParameter("club"));
-
-			if ((clubField && modinfo.getParameter("hvar") == null) || (modinfo.getSessionAttribute("field_id") == null && modinfo.getParameter("hvar") == null))
-				modinfo.setSessionAttribute("field_id", "" + service.getFirstField((String) modinfo.getSessionAttribute("union_id")));
+			if (modinfo.getSessionAttribute("field_id") == null && modinfo.getParameter("hvar") == null)
+				modinfo.setSessionAttribute("field_id", "1");
 			else if (modinfo.getParameter("hvar") != null)
 				modinfo.setSessionAttribute("field_id", modinfo.getParameter("hvar"));
 
-			if (modinfo.getSessionAttribute("date") == null && modinfo.getParameter("day") == null)
+			if (modinfo.getSessionAttribute("date") == null && modinfo.getRequest().getParameter("day") == null)
 				modinfo.setSessionAttribute("date", new IWTimestamp().toSQLDateString());
-			else if (modinfo.getParameter("day") != null)
-				modinfo.setSessionAttribute("date", modinfo.getParameter("day"));
+			else if (modinfo.getRequest().getParameter("day") != null)
+				modinfo.setSessionAttribute("date", modinfo.getRequest().getParameter("day"));
 
-			if (modinfo.getSessionAttribute("member_id") == null && getMember() == null)
-				modinfo.setSessionAttribute("member_id", "1"); // Exception
-			else if (getMember() != null)
-				modinfo.setSessionAttribute("member_id", "" + getMember().getID());
+			modinfo.setDefaultFontSize("2");
 
-			if (modinfo.getSessionAttribute("member_main_union_id") == null && getMember() == null)
-				modinfo.setSessionAttribute("member_main_union_id", "1"); // Exception
-			else if (getMember() != null)
-				modinfo.setSessionAttribute("member_main_union_id", "" + getMember().getMainUnionID());
-
-			String field_id2 = (String) modinfo.getSessionAttribute("field_id");
-
-			if (field_id2 != null && !field_id2.equals("-1")) {
-
-				modinfo.setSessionAttribute("golf_union_id", (String) modinfo.getSessionAttribute("union_id"));
-
-				modinfo.setDefaultFontSize("2");
-
-				IWTimestamp currentDay = new IWTimestamp((String) modinfo.getSessionAttribute("date"));
-
-				if (isAdmin() || (isClubAdmin() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (isClubWorker() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id")))) {
-					add(getConfigLinks(modinfo, "admin"));
-					add(User(modinfo, funcDate));
-				}
-				else if (isUser(modinfo)) {//|| isDeveloper() // isUser er overwritað fall
-														// sem kannar hvort getMember() skili null þ.e. ef
-														// skráður inn, fellur ekki að skilyriði eitt, þá
-														// User
-					add(getConfigLinks(modinfo, "others")); // þangað til að klúbbar vilja leifa
-																				 // almenna skráningu þá þarf
-																				 // væntanlega nýtt tékk og nýjan dálk
-																				 // í töflu
-					add(User(modinfo, funcDate));
-				}
-				else {
-					add(getConfigLinks(modinfo, "others"));
-					add(User(modinfo, funcDate));
-				}
-			}
-			else {
-				add(new Text("Session expired"));
-			}
-
-		}
-		catch (SQLException E) {
-			System.out.print("SQLException: " + E.getMessage());
-			System.out.print("SQLState:     " + E.getSQLState());
-			System.out.print("VendorError:  " + E.getErrorCode());
 		}
 		catch (Exception E) {
 			E.printStackTrace();
 		}
-		finally {
-		}
-	}
 
-	public Table getConfigLinks(IWContext modinfo, String AccessType) {
-		Table temp;
-		String When = ((String) modinfo.getSessionAttribute("when"));
-		/*
-		 * if (getServletContext().getAttribute(AccessType+"-" + When ) != null)
-		 * temp = (Table)getServletContext().getAttribute(AccessType+"-" + When );
-		 * else{ temp = TableConfig(
-		 * ((String)getModuleInfo().getSession().getAttribute("when")), AccessType );
-		 * getServletContext().setAttribute(AccessType + "-" + When, temp); }
-		 * return temp;
-		 */
-		return TableConfig(modinfo, ((String) modinfo.getSessionAttribute("when")), AccessType);
-	}
-
-	//	 overwrites isUser from template
-	public boolean isUser(IWContext modinfo) {
-		return (getMember() != null);
-	}
-
-	public Table User(IWContext modinfo, IWCalendar funcDate) throws SQLException, IOException {
-		IWTimestamp stamp = new IWTimestamp(funcDate.getCalendar());
-		
 		Form myForm = new Form();
-		myForm.setMethod("get");
-		GolfField myField = null;
+		GolfField myField = new GolfField();
 		GolfField Today = new GolfField();
 		TableInfo myTableInfo = new TableInfo();
-		Table mainTable = new Table(1, 3);
-		Table innerMain = new Table(1, 3);
-		Table RTTop = new Table(2, 1);
+		Page myPage = new Page(getResourceBundle().getLocalizedString("start.search.register_tee_times", "Register tee times"));
 
-		RTTop.setCellpadding(0);
-		RTTop.setCellspacing(0);
-		RTTop.setWidth("675");
-		RTTop.setBackgroundImage(getResourceBundle().getImage("greenback.gif"));
-		RTTop.setAlignment("center");
-		RTTop.setHeight("45");
-		RTTop.setRowVerticalAlignment(1, "top");
-		RTTop.setRowAlignment(1, "center");
-		RTTop.setWidth(1, "" + (675 / 2));
+		myPage.setMarginWidth(5);
+		myPage.setMarginHeight(5);
+		myPage.setLeftMargin(5);
+		myPage.setTopMargin(5);
+		myPage.setAlinkColor(COLOR1);
+		myPage.setVlinkColor(COLOR1);
 
-		mainTable.setAlignment("center");
-		mainTable.setCellspacing(0);
-		mainTable.setCellpadding(0);
-		mainTable.setColor("#CDDFD1");
-		mainTable.setAlignment("center");
-		mainTable.setWidth("720");
-		mainTable.setHeight(1, "58");
-		mainTable.setVerticalAlignment(1, 1, "bottom");
+		Table myTable = new Table(1, 1);
+		myTable.setCellpadding(0);
+		myTable.setCellspacing(0);
+		myTable.setVerticalAlignment("top");
+		myTable.setAlignment("center");
 
-		innerMain.setCellspacing(0);
-		innerMain.setCellpadding(0);
-		innerMain.setColor("#6e9173");
-		innerMain.setAlignment("center");
-		innerMain.setWidth("675");
-		innerMain.add(Text.emptyString(), 1, 1);
-		innerMain.setHeight(1, "10");
-		innerMain.add(Text.emptyString(), 1, 3);
-		innerMain.setHeight(3, "10");
+		Vector Groups = new Vector();
 
-		String union_id = modinfo.getSessionAttribute("union_id").toString();
-
-		myField = get_field_info(modinfo, Integer.parseInt(modinfo.getSessionAttribute("field_id").toString()), modinfo.getSessionAttribute("date").toString(), union_id);
-		Today = get_field_info(modinfo, Integer.parseInt(modinfo.getSessionAttribute("field_id").toString()), stamp.toSQLDateString(), union_id);
-
-		if (myField != null && Today != null) {
-			myTableInfo = get_table_info(myField, Integer.parseInt(modinfo.getSessionAttribute("when").toString()));
-
-			int interval = myTableInfo.get_interval();
-			IWTimestamp currentDay = new IWTimestamp((String) modinfo.getSessionAttribute("date"));
-			Vector tournamentGroups = new Vector(0);
-			int tournamentGroupsIndex = 0;
-			List TournamentRounds = EntityFinder.findAll((TournamentRound) IDOLookup.instanciateEntity(TournamentRound.class), "select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '" + currentDay.toSQLDateString() + " 00:00' and tournament_round.round_date <= '" + currentDay.toSQLDateString() + " 23:59' and tournament.field_id = " + modinfo.getSessionAttribute("field_id"));
-
-			if (TournamentRounds != null) {
-				for (int i = 0; i < TournamentRounds.size(); i++) {
-					TournamentRound tempRound = (TournamentRound) TournamentRounds.get(i);
-
-					IWTimestamp begin = new IWTimestamp(tempRound.getRoundDate());
-					begin.setAsTime();
-					IWTimestamp End_ = new IWTimestamp(tempRound.getRoundEndDate());
-					End_.setAsTime();
-					/**
-					 *  					 *
-					 */
-					End_.addMinutes(myTableInfo.get_interval());
-					IWTimestamp begintime = new IWTimestamp(0, 1, 0, myField.get_open_hour(), myField.get_open_min(), 0);
-					begintime.setAsTime();
-
-					int firstGroup = IWTimestamp.getMinutesBetween(begintime, begin) / interval;
-					int groupCount = IWTimestamp.getMinutesBetween(begin, End_) / interval;
-					int[] tempBeginGroupAndEnd = new int[2];
-
-					tempBeginGroupAndEnd[0] = firstGroup + 1;
-					tempBeginGroupAndEnd[1] = firstGroup + groupCount;
-
-					String tournamentName = tempRound.getTournament().getName();
-
-					tournamentGroups.add(tournamentGroupsIndex++, tournamentName);
-					tournamentGroups.add(tournamentGroupsIndex++, tempBeginGroupAndEnd);
-
-				}
-
+		if ((String) modinfo.getParameter("results") == null) {
+			boolean search = ((String) modinfo.getParameter("state") != null && ((String) modinfo.getParameter("state")).equals("search"));
+			Table startTable = new Table(1, 2);
+			startTable.setHeight(1, "15");
+			startTable.setCellpadding(0);
+			startTable.setCellspacing(0);
+			startTable.add(getEntryLink(modinfo, !search), 1, 1);
+			startTable.add(getSearchLink(modinfo, search), 1, 1);
+			startTable.add(Text.emptyString(), 1, 1);
+			if (search) {
+				startTable.add(search_entry(modinfo, funcDate), 1, 2);
 			}
-
-			innerMain.add(draw_table(myTableInfo, tournamentGroups, modinfo), 1, 2);
-
-			RTTop.add(TimeAndPlace(modinfo, funcDate, Today), 1, 1);
-
-			IWTimestamp opent = new IWTimestamp(1, 1, 1, 7, 59, 59);
-			opent.setAsTime();
-			IWTimestamp now = IWTimestamp.RightNow();
-			now.setAsTime();
-
-			if ((isAdmin() || (isClubAdmin() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (isClubWorker() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))))) {
-				RTTop.add(entry_part(modinfo, funcDate, myTableInfo, true, tournamentGroups), 2, 1);
+			else {
+				startTable.add(enter_club(modinfo), 1, 2);
 			}
-			//	    else if (isUser() &&
-			// mySession.getAttribute("member_main_union_id").equals(mySession.getAttribute("union_id"))
-			// &&
-			else if ((isUser(modinfo) && myField.nonMemberRegistration()) || (isMemberOfUnion(modinfo, modinfo.getSessionAttribute("union_id").toString()) && myField.publicRegistration())) {
-				/** @todo implement for all unions */
-				if (modinfo.getSessionAttribute("union_id").equals("100")) {
-					if (now.isLaterThan(opent)) {
-						RTTop.add(entry_part(modinfo, funcDate, myTableInfo, false, tournamentGroups), 2, 1);
+			myTable.add(startTable, 1, 1);
+
+			//setVerticalAlignment("top");
+			add(myTable);
+		}
+		else {
+			boolean search = ((String) modinfo.getParameter("state") != null && ((String) modinfo.getParameter("state")).equals("search"));
+			Table startTable = new Table(1, 2);
+			startTable.setHeight(1, "15");
+			startTable.setCellpadding(0);
+			startTable.setCellspacing(0);
+			startTable.add(getEntryLink(modinfo, !search), 1, 1);
+			startTable.add(getSearchLink(modinfo, search), 1, 1);
+			startTable.add(Text.emptyString(), 1, 1);
+			if (search) {
+				startTable.add(search_entry(modinfo, funcDate), 1, 2);
+			}
+			else {
+				startTable.add(enter_club(modinfo), 1, 2);
+			}
+			myTable.add(startTable, 1, 1);
+
+			//setVerticalAlignment("top");
+			add(myTable);
+		}
+
+		if ((String) modinfo.getParameter("results") != null) {
+			if (modinfo.getParameterValues("fields") != null && modinfo.getParameter("fjoldi") != null && !modinfo.getParameter("fjoldi").equals("")) {
+				if (numericString(modinfo.getParameter("fjoldi"))) {
+					String[] myParameters = modinfo.getParameterValues("fields");
+					int fields;
+					for (int i = 0; i < myParameters.length; i++) {
+						fields = Integer.parseInt(myParameters[i]);
+						myField = get_field_info(fields, modinfo.getParameter("date").toString());
+						Today = get_field_info(fields, funcDate.toSQLDateString());
+						try {
+							Groups = search(funcDate, modinfo, myField, Today, Integer.parseInt(modinfo.getParameter("fjoldi").toString()), modinfo.getParameter("date").toString(), modinfo.getParameter("ftime").toString(), modinfo.getParameter("ltime").toString(), 0, 36);
+							myTable.add(Results(modinfo, Groups, myField, modinfo.getParameter("date").toString(), 8), 1, 1);
+						}
+						catch (Exception E) {
+							if (E.getMessage().equals("Error1")) {
+								Table Error1 = new Table(1, 1);
+								Error1.setWidth("381");
+								Error1.setHeight(1, "21");
+								//Error1.setBorder(1);
+								Error1.setColumnAlignment(1, "center");
+								Error1.addText(getResourceBundle().getLocalizedString("start.search.error1", "_"), 1, 1);
+								Error1.setRowColor(1, COLOR2);
+								myTable.add(Error1, 1, 1);
+								break;
+							}
+							if (E.getMessage().equals("Error2")) {
+								Table Error2 = new Table(1, 1);
+								Error2.setWidth("381");
+								Error2.setHeight(1, "21");
+								//Error2.setBorder(1);
+								Error2.setColumnAlignment(1, "center");
+								Error2.addText(getResourceBundle().getLocalizedString("start.search.error2", "_"), 1, 1);
+								Error2.setRowColor(1, COLOR2);
+								myTable.add(Error2, 1, 1);
+								break;
+							}
+							if (E.getMessage().equals("Error3")) {
+								Table Error3 = new Table(1, 3);
+								Error3.setRowColor(1, COLOR2);
+								Error3.setRowColor(2, COLOR3);
+								Error3.setWidth("381");
+								Error3.setHeight(1, "30");
+								Error3.setHeight(2, "25");
+								Error3.setCellspacing(0);
+								//Error3.setBorder(1);
+								Error3.setColumnAlignment(1, "center");
+								Error3.addText(get_field_name(myField.get_field_id()), 1, 1);
+								Error3.addText(getResourceBundle().getLocalizedString("start.search.error3", "_"), 1, 2);
+								myTable.add(Error3, 1, 1);
+							}
+						}
 					}
 				}
 				else {
-					RTTop.add(entry_part(modinfo, funcDate, myTableInfo, false, tournamentGroups), 2, 1);
+					Table Error = new Table(1, 1);
+					Error.setWidth("381");
+					Error.setHeight(1, "21");
+					Error.setRowColor(1, COLOR2);
+					Error.setColumnAlignment(1, "center");
+					Error.addText(getResourceBundle().getLocalizedString("start.search.error4", "_"), 1, 1);
+					myTable.add(Error, 1, 1);
 				}
 			}
-
-			mainTable.add(RTTop, 1, 1);
-			mainTable.add(innerMain, 1, 2);
+			else {
+				Table Error = new Table(1, 1);
+				Error.setWidth("381");
+				Error.setHeight(1, "21");
+				Error.setRowColor(1, COLOR2);
+				Error.setColumnAlignment(1, "center");
+				Error.addText(getResourceBundle().getLocalizedString("start.search.error5", "_"), 1, 1);
+				myTable.add(Error, 1, 1);
+			}
 		}
-		else {
-
-			mainTable = new Table();
-			mainTable.add(new Text("Session expired"));
-
-		}
-		return mainTable;
-
 	}
 
-	public boolean isMemberOfUnion(IWContext modinfo, String union) {
-		try {
-			if (union == null)
-				return false;
+	public Link getSearchLink(IWContext modinfo, boolean inUse) {
+		Link myLink;
+		if (inUse)
+			myLink = new Link(getResourceBundle().getImage("tabs/search.gif"));
+		else
+			myLink = new Link(getResourceBundle().getImage("tabs/search1.gif"));
 
-			if (getMember() == null)
-				return false;
+		myLink.addParameter("state", "search");
 
-			int union_id = new Integer(union).intValue();
-			Union unionentry = (Union) IDOLookup.createLegacy(Union.class);
-			unionentry.setID(union_id);
-
-			return getMember().isMemberInUnion(unionentry);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return false;
+		return myLink;
 	}
 
-	public Table draw_table(TableInfo myTableInfo, Vector tournamentGroups, IWContext modinfo) throws SQLException, IOException {
-		int end = myTableInfo.get_row_num();
-		int interval = myTableInfo.get_interval();
-		int pic_min = myTableInfo.get_first_pic_min();
-		int pic_hour = myTableInfo.get_first_pic_hour();
-		int first_group = myTableInfo.get_first_group();
-		int tafla = 0;
-		String time;
+	public Link getEntryLink(IWContext modinfo, boolean inUse) {
+		Link myLink;
+		if (inUse)
+			myLink = new Link(getResourceBundle().getImage("tabs/teetimes.gif"));
+		else
+			myLink = new Link(getResourceBundle().getImage("tabs/teetimes1.gif"));
 
-		Table myTable = new Table(3, end * 2 - 1);
-		myTable.setAlignment("left");
+		return myLink;
+	}
+
+	public Form enter_club(IWContext modinfo) throws IOException, SQLException {
+		Form myForm = new Form();
+		//myForm.setAction("/start/start.jsp");
+		myForm.addParameter(PRM_ACTION,ACTION_GO_TO_TIMETABLE);
+
+		Table myTable = new Table(3, 4);
+		myTable.setAlignment("center");
+		myTable.setColor(COLOR4);
+		myTable.setWidth("381");
+		//		myTable.setBorder(1);
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
 
-		myTable.setWidth("643");
-		myTable.setWidth(1, "52");
-		myTable.setWidth(2, "295");
-		myTable.setWidth(3, "296");
-		myTable.setColumnVerticalAlignment(1, "baseline");
+		Text myText = new Text(" ");
+		myText.setFontSize(1);
+		myTable.add(myText, 1, 1);
+		myTable.add(myText, 2, 1);
+		myTable.add(myText, 3, 1);
+		myTable.setHeight(1, "10");
+
+		myTable.add(myText, 1, 4);
+		myTable.add(myText, 2, 4);
+		myTable.add(myText, 3, 4);
+		myTable.setHeight(4, "30");
+
+		myTable.setWidth(1, "15");
+		myTable.setWidth(2, "183");
+		myTable.setAlignment(3, 3, "center");
+
+		Text klubbur = new Text(getResourceBundle().getLocalizedString("start.search.club", "Club"));
+		klubbur.setFontColor(COLOR7);
+		klubbur.setFontSize("2");
+		klubbur.setFontStyle("Arial");
+		klubbur.setBold();
+
+		myTable.setVerticalAlignment(3, 3, "bottom");
+
+		myTable.add(klubbur, 2, 2);
+		myTable.add(insertClubSelectionBox("club", modinfo, 6), 2, 3);
+		
+		SubmitButton sNext = new SubmitButton(getResourceBundle().getImage("buttons/continue.gif"), "  çfram  ");
+		
+		myTable.add(sNext, 3, 3);
+
+		myForm.add(myTable);
+
+		return myForm;
+	}
+
+	public Form search_entry(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException {
+
+		Form myForm = new Form();
+		//		myForm.setMethod("Get");
+		myForm.add(new HiddenInput("state", "search"));
+
+		Table myTable = new Table(2, 5);
 		myTable.setAlignment("center");
+		myTable.setColor(COLOR4);
+		myTable.setWidth("381");
+		//		myTable.setBorder(1);
+		myTable.setCellspacing(0);
+		myTable.setCellpadding(0);
+		myTable.setWidth(1, "15");
 
-		Text one = new Text("1.");
-		Text two = new Text("2.");
-		Text three = new Text("3.");
-		Text four = new Text("4.");
+		//		myTable.setColumnAlignment(1, "center");
+		//		myTable.setColumnAlignment(1, "center");
 
-		one.setFontColor("white");
-		two.setFontColor("white");
-		three.setFontColor("white");
-		four.setFontColor("white");
+		Table mergeTable = new Table(4, 2);
+		mergeTable.setAlignment("left");
+		//		mergeTable.setBorder(1);
+		mergeTable.setCellspacing(5);
+		mergeTable.setCellpadding(0);
+		mergeTable.setWidth(1, "60");
+		mergeTable.setWidth(2, "80");
+		mergeTable.setWidth(3, "80");
+		//mergeTable.setWidth(4, "110");
 
-		one.setFontSize("1");
-		two.setFontSize("1");
-		three.setFontSize("1");
-		four.setFontSize("1");
+		Table SelectSubmit = new Table(2, 2);
+		SelectSubmit.setAlignment("left");
+		//		SelectSubmit.setBorder(1);
+		SelectSubmit.setCellspacing(0);
+		SelectSubmit.setCellpadding(0);
+		SelectSubmit.setWidth(1, "183");
+		SelectSubmit.setWidth(2, "183");
+		SelectSubmit.setAlignment(2, 2, "center");
 
-		one.setFontStyle("Arial");
-		two.setFontStyle("Arial");
-		three.setFontStyle("Arial");
-		four.setFontStyle("Arial");
+		Text myText = new Text(" ");
+		myText.setFontSize(1);
+		myTable.add(myText, 1, 1);
+		myTable.add(myText, 2, 1);
+		myTable.setHeight(1, "10");
 
-		one.setBold();
-		two.setBold();
-		three.setBold();
-		four.setBold();
+		myTable.add(myText, 1, 3);
+		myTable.add(myText, 2, 3);
+		myTable.setHeight(3, "10");
 
-		Table[] group1 = new Table[end];
-		Table[] group2 = new Table[end];
+		myTable.add(myText, 1, 5);
+		myTable.add(myText, 2, 5);
+		myTable.setHeight(5, "10");
 
-		Table group1Template = new Table(4, 2);
-		Table group2Template = new Table(4, 2);
-		group1Template.setWidth(1, "8");
-		group1Template.setWidth(2, "200");
-		group1Template.setWidth(3, "40");
-		group1Template.setWidth(4, "50");
+		//		myTable.setRowAlignment (1, "center");
+		//		myTable.setRowAlignment (2, "center");
+		//		myTable.setRowAlignment (3, "center");
+		//		myTable.setRowAlignment (4, "center");
 
-		group2Template.setWidth(1, "8");
-		group2Template.setWidth(2, "200");
-		group2Template.setWidth(3, "40");
-		group2Template.setWidth(4, "50");
+		//		myTable.mergeCells( 1, 2, 3, 2 );
+		//		myTable.mergeCells( 1, 3, 3, 3 );
 
-		group1Template.setWidth("295");
-		group2Template.setWidth("295");
+		Text vollur = new Text(getResourceBundle().getLocalizedString("start.search.course", "Course"));
+		Text fjoldi = new Text(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"));
+		Text fKL = new Text(getResourceBundle().getLocalizedString("start.search.from", "From"));
+		Text tKL = new Text(getResourceBundle().getLocalizedString("start.search.to", "To"));
+		Text dags = new Text(getResourceBundle().getLocalizedString("start.search.date", "Date"));
 
-		group1Template.setHeight(1, "15");
-		group1Template.setHeight(2, "15");
+		vollur.setFontColor(COLOR7);
+		fjoldi.setFontColor(COLOR7);
+		fKL.setFontColor(COLOR7);
+		tKL.setFontColor(COLOR7);
+		dags.setFontColor(COLOR7);
 
-		group2Template.setHeight(1, "15");
-		group2Template.setHeight(2, "15");
+		vollur.setFontSize("2");
+		fjoldi.setFontSize("2");
+		fKL.setFontSize("2");
+		tKL.setFontSize("2");
+		dags.setFontSize("2");
 
-		group1Template.setColumnAlignment(3, "center");
-		group1Template.setColumnAlignment(4, "center");
-		group2Template.setColumnAlignment(3, "center");
-		group2Template.setColumnAlignment(4, "center");
+		vollur.setFontStyle("Arial");
+		fjoldi.setFontStyle("Arial");
+		fKL.setFontStyle("Arial");
+		tKL.setFontStyle("Arial");
+		dags.setFontStyle("Arial");
 
-		group1Template.setCellpadding(0);
-		group1Template.setCellspacing(4);
+		vollur.setBold();
+		fjoldi.setBold();
+		fKL.setBold();
+		tKL.setBold();
+		dags.setBold();
 
-		group2Template.setCellpadding(0);
-		group2Template.setCellspacing(4);
+		SelectSubmit.setVerticalAlignment(2, 2, "bottom");
 
-		group1Template.setRowVerticalAlignment(1, "middle");
-		group1Template.setRowVerticalAlignment(2, "middle");
+		myTable.setAlignment(2, 3, "left");
+		//		myTable.setAlignment( 2, 3, "center" );
 
-		group2Template.setRowVerticalAlignment(1, "middle");
-		group2Template.setRowVerticalAlignment(2, "middle");
+		SelectSubmit.add(vollur, 1, 1);
+		//		System.out.println(" insertSelectionBox ....");
+		SelectSubmit.add(insertSelectionBox("fields", modinfo, 6), 1, 2);
 
-		group1Template.add(one, 1, 1);
-		group1Template.add(two, 1, 2);
-		group2Template.add(three, 1, 1);
-		group2Template.add(four, 1, 2);
+		mergeTable.add(fjoldi, 1, 1);
 
-		Table roundGroup1Template = (Table) group1Template.clone();
-		Table roundGroup2Template = (Table) group2Template.clone();
+		mergeTable.add(insertEditBox("fjoldi", 2), 1, 2);
+		mergeTable.add(fKL, 2, 1); //	insertTimeDrowdown( String dropdownName,
+		// String auto, int firstHour, int lastHour
+		// int interval);
+		mergeTable.add(insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30), 2, 2);
+		//		mergeTable.add(insertDrowdown( "ftime" , "08:00", 30 ), 2, 2);
+		mergeTable.add(tKL, 3, 1);
+		mergeTable.add(insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30), 3, 2);
+		//		mergeTable.add(insertDrowdown( "ltime", "22:00", 30 , true ), 3, 2);
 
-		for (int j = 1; j < 3; j++) {
-			for (int k = 2; k < 5; k++) {
-				group1Template.setColor(k, j, "#FFFFFF");
-				group2Template.setColor(k, j, "#FFFFFF");
-				group1Template.add(Text.emptyString(), k, j);
-				group2Template.add(Text.emptyString(), k, j);
+		myTable.add(SelectSubmit, 2, 2);
+		myTable.add(mergeTable, 2, 4);
 
-				roundGroup1Template.setColor(k, j, "#CEDFCF");
-				roundGroup2Template.setColor(k, j, "#CEDFCF");
-				roundGroup1Template.add(Text.emptyString(), k, j);
-				roundGroup2Template.add(Text.emptyString(), k, j);
-			}
+		mergeTable.add(dags, 4, 1);
+
+		mergeTable.add(insertDropdown("date", dateFunc, getMax_days_shown(), modinfo), 4, 2);
+
+		SelectSubmit.add(new SubmitButton(getResourceBundle().getImage("buttons/search.gif"), "  Leita  "), 2, 2);
+		insertHiddenInput("results", "1", myForm);
+
+		myForm.add(myTable);
+
+		return myForm;
+	}
+
+	public boolean check_time(int begin_hour, int begin_min, int end_hour, int end_min) {
+		return (begin_hour < end_hour || (begin_hour == end_hour && begin_min < end_min)) && begin_hour >= 0 && begin_hour <= 24 && end_hour >= 0 && end_hour <= 24 && begin_min >= 0 && begin_min < 60 && end_min >= 0 && end_min < 60;
+	}
+
+	public Table Results(IWContext modinfo, Vector Groups, GolfField info, String date1, int resultCol) throws SQLException, IOException, FinderException {
+
+		Table myTable = new Table(1, 2);
+		myTable.setRowColor(1, COLOR2);
+		myTable.setCellspacing(0);
+		myTable.setCellpadding(0);
+		myTable.setHeight(1, "30");
+		myTable.setRowAlignment(1, "center");
+
+		Vector myVector = new Vector();
+		Vector boolVector = new Vector();
+
+		myVector = (Vector) Groups.elementAt(0);
+		boolVector = (Vector) Groups.elementAt(1);
+
+		int count = 0;
+
+		for (int i = 0; i < boolVector.size(); i++) {
+			if (((Boolean) boolVector.elementAt(i)).booleanValue())
+				count++;
 		}
 
-		Text templateText = new Text("");
-		templateText.setFontSize(1);
+		Link myLink = new Link(get_field_name(info.get_field_id()));//, "/start/start.jsp");
+		myLink.addParameter(PRM_ACTION,ACTION_GO_TO_TIMETABLE);
+		myLink.addParameter("hvar", "" + info.get_field_id());
+		myLink.addParameter("search", "1");
+		myLink.addParameter("club", "" + getFieldUnion(info.get_field_id()));
+		myLink.addParameter("day", date1);
 
-		//	 stilling á töflum byrjar
-		int teljari = 0;
+		myTable.add(myLink, 1, 1);
+		//		myTable.addText("" + getFieldUnion(info.get_field_id(), Conn), 1, 1);
 
-		for (int i = 1; i < end * 2; i += 2) {
-			String TournamentName = getTournamentName(tournamentGroups, first_group + teljari++);
-			if (TournamentName == null) {
-				group1[tafla] = (Table) group1Template.clone();
-				group2[tafla] = (Table) group2Template.clone();
-			}
-			else {
-				Text tName = (Text) templateText.clone();
-				tName.setText(TournamentName);
-				group1[tafla] = (Table) roundGroup1Template.clone();
-				group2[tafla] = (Table) roundGroup2Template.clone();
+		Text smallText = new Text("");
+		smallText.setFontSize(1);
 
-				group1[tafla].add(tName, 2, 1);
-				group1[tafla].add(tName, 2, 2);
-				group2[tafla].add(tName, 2, 1);
-				group2[tafla].add(tName, 2, 2);
-			}
-			myTable.add(group1[tafla], 2, i);
-			myTable.add(group2[tafla], 3, i);
-			tafla++;
-		} // stilling á töflum endar
-		teljari = 0;
-
-		//	 setur inn tímamyndir
-		Image line = getResourceBundle().getImage("line.gif");
-		Text myText = Text.emptyString();
-		myTable.setColumnAlignment(1, "center");
-		myTable.setColumnVerticalAlignment(1, "middle");
-
-		Text tTime = new Text();
-		java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
-		tTime.setFontStyle("letter-spacing:0px;font-family:Arial,Helvetica,sans-serif;background-color:#FFFFFF;font-size:18px;color:#2C4E3B;border-width:1px;font-weight:bold;border-style:solid;");
-		Text timeText;
-
-		for (int i = 1; i <= end * 2; i += 2) {
-
-			if (pic_min >= 60) {
-				pic_min -= 60;
-				pic_hour++;
-			}
-
-			if (pic_min < 10 && pic_hour < 10)
-				time = "0" + pic_hour + ":0" + pic_min;
-			else if (pic_min < 10)
-				time = "" + pic_hour + ":0" + pic_min;
-			else if (pic_hour < 10)
-				time = "0" + pic_hour + ":" + pic_min;
-			else
-				time = "" + pic_hour + ":" + pic_min;
-
-			//myTable.add(new
-			// Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+ time,
-			// time , 50, 36 ), 1, i);
-
-			timeText = (Text) tTime.clone();
-			timeText.setText(time);
-			myTable.add(timeText, 1, i);
-
-			//			myTable.add(new Flash("http://jgenerator.sidan.is/time.swt?time="+
-			// time, time , 50, 36 ), 1, i);
-
-			//	 		## Bætir við hvítri línu milli allra holla en ekki undir það síðasta
-			if (i != end * 2 - 1) {
-				myTable.setBackgroundImage(1, i + 1, line);
-				myTable.setBackgroundImage(2, i + 1, line);
-				myTable.setBackgroundImage(3, i + 1, line);
-				myTable.add(myText, 1, i + 1);
-				myTable.add(myText, 2, i + 1);
-				myTable.add(myText, 3, i + 1);
-				myTable.setHeight(i + 1, "4"); // #$%"#%&"$#%&"#%"#$#$ virkar ekki
-																			 // ??????????
-			}
-
-			pic_min += interval;
+		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
+			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
+			myTable.add(smallText, 1, 1);
+		}
+		else if (count != 0) {
+			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
+			myTable.add(smallText, 1, 1);
+		}
+		else {
+			Table zero = new Table(1, 2);
+			zero.setCellspacing(0);
+			zero.setRowAlignment(1, "center");
+			zero.setHeight(1, "21");
+			zero.setWidth("381");
+			zero.addText(getResourceBundle().getLocalizedString("start.search.no_tee_times", "_"), 1, 1);
+			zero.setRowColor(1, COLOR3);
+			myTable.add(zero, 1, 2);
+			//					myTable.setRows(2);
 		}
 
-		//		klukku myndir komnar inn
+		boolean first = true;
 
-		//	 skráir að lokum færslur í töfluna á viðeigandi stöðum
-		int row, row2, count, first_gr;
-		float handyc;
-		int last_group = first_group + end;
-		int field = myTableInfo.get_field_id();
-		first_gr = first_group + 1;
-		String name, club, handycap;
+		Link[] Times = new Link[count];
+		int links = 0;
+		int hour = 0;
+		int rows = 0;
+		int width = 381; //        Breidd töflunnar sem sýnir niðurstöður
 
-		TeeTime[] start = service.getTableEntries(modinfo.getSessionAttribute("date").toString(), first_group, last_group, field);
+		if (count != 0) {
+			Table resultTable = new Table(resultCol, 1);
+			resultTable.setCellspacing(0);
+			resultTable.setCellpadding(0);
 
-		count = 1;
-		row = -1;
-		row2 = -2;
+			for (int i = 1; i <= resultCol; i++) {
+				resultTable.setWidth(i, "" + width / resultCol);
+			}
 
-		DecimalFormat hadycapFormat = new DecimalFormat("###.0");
-		for (int i = 0; i < start.length; i++) {
-			int groupNumber = start[i].getGroupNum();
-			if (!isTournamentGroup(tournamentGroups, groupNumber)) {
+			resultTable.setWidth("" + width);
 
-				row = (groupNumber - first_group + 1);
+			for (int i = 0; i < boolVector.size(); i++) {
+				if (((Boolean) boolVector.elementAt(i)).booleanValue()) {
+					//				if (!first)
+					//					myTable.addText(", ", 1, 2);
 
-				if (row == row2)
-					count++;
-				else
-					count = 1;
+					hour = getHours(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info) + ":00");
 
-				row2 = row;
+					Times[links] = new Link(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info));//, "/start/start.jsp");
 
-				handyc = start[i].getHandicap();
-				name = start[i].getPlayerName();
-				club = start[i].getClubName();
+					if (hour < 13)
+						Times[links].addParameter("hvenaer", "0");
+					else if (hour < 17)
+						Times[links].addParameter("hvenaer", "1");
+					else
+						Times[links].addParameter("hvenaer", "2");
 
-				if (handyc < 1)
-					handycap = "-";
-				else if (handyc == 100)
-					handycap = "-";
-				else
-					handycap = hadycapFormat.format((double) handyc);
+					Times[links].addParameter(PRM_ACTION,ACTION_GO_TO_TIMETABLE);
+					Times[links].addParameter("hvar", "" + info.get_field_id());
+					Times[links].addParameter("search", "1");
+					Times[links].addParameter("club", "" + getFieldUnion(info.get_field_id()));
+					Times[links].addParameter("day", date1);
 
-				// Not visible on the net...
-				/*
-				 * try { Member member = start[i].getMember(); UnionMemberInfo uni =
-				 * member.getUnionMemberInfo(member.getMainUnionID()); if (
-				 * !uni.getVisible() ) "; } catch (Exception e) { name =
-				 * start[i].getPlayerName();
-				 */
+					Times[links].setFontColor(COLOR5);
 
-				Text tempHandycap = (Text) templateText.clone();
-				tempHandycap.setText(handycap);
-				Text tempName = (Text) templateText.clone();
-				tempName.setText("&nbsp;" + name);
-				Text tempClub = (Text) templateText.clone();
-				tempClub.setText(club);
+					if (links % resultCol == 0) {
+						rows++;
+						resultTable.setRows(rows);
+						resultTable.setHeight(rows, "25");
+					}
 
-				switch (count) {
-					case 1 :
-						group1[row - 1].add(tempName, 2, 1);
-						group1[row - 1].add(tempHandycap, 3, 1);
-						group1[row - 1].add(tempClub, 4, 1);
-						break;
-					case 2 :
-						group1[row - 1].add(tempName, 2, 2);
-						group1[row - 1].add(tempHandycap, 3, 2);
-						group1[row - 1].add(tempClub, 4, 2);
-						break;
-					case 3 :
-						group2[row - 1].add(tempName, 2, 1);
-						group2[row - 1].add(tempHandycap, 3, 1);
-						group2[row - 1].add(tempClub, 4, 1);
-						break;
-					case 4 :
-						group2[row - 1].add(tempName, 2, 2);
-						group2[row - 1].add(tempHandycap, 3, 2);
-						group2[row - 1].add(tempClub, 4, 2);
-						break;
+					resultTable.add(Times[links], links % resultCol + 1, rows);
+					links++;
+					//				myTable.addText(
+					// TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString())
+					// , info) ,
+					// 1, 2);
+					//				first = false;
 				}
 			}
+
+			for (int i = 1; i <= resultCol; i++) {
+				resultTable.setColumnAlignment(i, "center");
+			}
+
+			resultTable.setHorizontalZebraColored(COLOR4, COLOR3);
+
+			resultTable.setRows(++rows);
+			resultTable.setHeight(rows, "25");
+			resultTable.setRowColor(rows, COLOR6);
+
+			myTable.add(resultTable, 1, 2);
 		}
-		// færslur komnar inn
 
 		return myTable;
 	}
 
-	public boolean isTournamentGroup(Vector rounds, int groupNumber) {
+	public Vector search(IWTimestamp funcDate, IWContext modinfo, GolfField info, GolfField today, int fjoldi, String date, String firstTime, String lastTime, int firstHandicap, int LastHandicap) throws SQLException, IOException, Exception {
 
-		for (int c = 0; c < rounds.size(); c += 2) {
-			int[] temp = (int[]) rounds.get(c + 1);
-			if (groupNumber >= temp[0] && groupNumber <= temp[1]) {
-				return true;
+		boolean is_allowed = false;
+
+		for (int i = 0; i < today.get_days_shown(); i++) {
+			if (getNextDaysRS(funcDate, funcDate.toSQLDateString(), i).equals(date)) {
+				is_allowed = true;
 			}
 		}
-		return false;
-	}
+		if (!is_allowed)
+			throw new Exception("Error3");
 
-	public String getTournamentName(Vector rounds, int groupNumber) {
+		int numOfGroup = fjoldi / 4;
+		if (fjoldi % 4 > 0)
+			numOfGroup++;
 
-		for (int c = 0; c < rounds.size(); c += 2) {
-			int[] temp = (int[]) rounds.get(c + 1);
-			if (groupNumber >= temp[0] && groupNumber <= temp[1]) {
-				return (String) rounds.get(c);
-			}
+		Vector frameGroups = new Vector();
+		Vector Groups = new Vector();
+		Vector boolGroups = new Vector();
+		frameGroups.add(0, Groups);
+		frameGroups.add(1, boolGroups);
+
+		int gr = num_of_groups(firstTime, lastTime, info.get_interval());
+		int firstgr = num_of_groups(info.get_open_hour(), info.get_open_min(), firstTime, info.get_interval()) + 1;
+		int lastgr = firstgr + gr;
+
+		int j = firstgr;
+		for (int i = 0; i <= gr; i++) {
+			Groups.add(i, new Integer(j++));
+			boolGroups.add(i, new Boolean(true));
 		}
-		return null;
+
+		TeeTime[] result = service.getTableEntries(date, firstgr, (lastgr + numOfGroup), info.get_field_id());
+
+		Vector RSvector = new Vector();
+		Vector group_num = new Vector();
+		Vector name = new Vector();
+		Vector handycap = new Vector();
+		Vector club = new Vector();
+
+		RSvector.add(0, group_num);
+		RSvector.add(1, name);
+		RSvector.add(2, handycap);
+		RSvector.add(3, club);
+
+		int k = 0;
+		for (int i = 0; i < result.length; i++) {
+			group_num.add(k, "" + result[i].getGroupNum());
+			name.add(k, result[i].getName());
+			handycap.add(k, "" + result[i].getHandicap());
+			club.add(k, result[i].getClubName());
+
+			k++;
+		}
+		group_num.add(k, "-1"); // sett inn þar sem group_num má ekki vera af
+		// lengd 0 er aldrei farið í seinni for-loopuna
+		// og ekki passað upp á að allir komist fyrir
+		// lokun.
+
+		int count = 0;
+		int p = 0;
+		int m = 0;
+
+		for (m = firstgr; m <= lastgr; m++) {
+			for (int n = 0; n < group_num.size(); n++) {
+				if (Integer.parseInt(group_num.elementAt(n).toString()) >= m && Integer.parseInt(group_num.elementAt(n).toString()) < (m + numOfGroup)) {
+					count++;
+				}
+				//				out.print( "<br>" +count + " > " + (numOfGroup * 4 - fjoldi) + " ||
+				// ( " + (m
+				// + numOfGroup) + " > " + getLastGroup(info)+1 + " && " + count + " >
+				// " +
+				// (-(m-getLastGroup(info))*4 - fjoldi ) + " )" );
+				if (count > (numOfGroup * 4 - fjoldi) || (((m + numOfGroup) > getLastGroup(info) + 1) && (count > (-(m - getLastGroup(info)) * 4 - fjoldi)))) {
+					boolGroups.set(p, new Boolean(false));
+					count = 0;
+				}
+			}
+			count = 0;
+			p++;
+		}
+
+		for (int i = 0; i < Groups.size(); i++) {
+			if (Integer.parseInt(Groups.elementAt(i).toString()) < 1 || Integer.parseInt(Groups.elementAt(i).toString()) > getLastGroup(info))
+				boolGroups.set(i, new Boolean(false));
+		}
+
+		return frameGroups;
+
 	}
 
-	public GolfField get_field_info(IWContext modinfo, int field, String date, String union_id) throws SQLException, IOException {
+	public int num_of_groups(String firstTime, String lastTime, int interval) throws Exception {
+
+		SqlTime mySqlTime = new SqlTime(firstTime);
+		int firsthour = mySqlTime.get_hour();
+		int firstmin = mySqlTime.get_min();
+		mySqlTime.set_sqltime(lastTime);
+		int lasthour = mySqlTime.get_hour();
+		int lastmin = mySqlTime.get_min();
+
+		if (!check_time(firsthour, firstmin, lasthour, lastmin))
+			throw new Exception("Error1");
+
+		int time = (lasthour - firsthour) * 60 + (lastmin - firstmin);
+
+		return time / interval;
+	}
+
+	public int num_of_groups(int firsthour, int firstmin, String lastTime, int interval) {
+
+		SqlTime mySqlTime = new SqlTime(lastTime);
+		int lasthour = mySqlTime.get_hour();
+		int lastmin = mySqlTime.get_min();
+
+		int time = (lasthour - firsthour) * 60 + (lastmin - firstmin);
+
+		return time / interval;
+	}
+
+	public GolfField get_field_info(int field, String date) throws SQLException, IOException {
 		StartingtimeFieldConfig FieldConfig = service.getFieldConfig(field, date);
-		if (FieldConfig == null)
-			return null;
-
-		GolfField field_info = null;
-		if (isAdmin() || isClubAdmin() || isClubWorker() || isMemberOfUnion(modinfo, union_id))
-			field_info = new GolfField(new IWTimestamp(FieldConfig.getOpenTime()).toSQLTimeString(), new IWTimestamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShown(), FieldConfig.publicRegistration());
-		else
-			field_info = new GolfField(new IWTimestamp(FieldConfig.getOpenTime()).toSQLTimeString(), new IWTimestamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShownNonMember(), FieldConfig.publicRegistration());
-
-		field_info.setNonMemberRegistration(FieldConfig.getNonMemberRegistration());
-
+		GolfField field_info = new GolfField(new IWTimestamp(FieldConfig.getOpenTime()).toSQLTimeString(), new IWTimestamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShown(), FieldConfig.publicRegistration());
 		return field_info;
-	}
-
-	public TableInfo get_table_info(GolfField field, int daytime) {
-
-		int col = 10;
-
-		int row, first_pic_hour, first_pic_min, interval, time;
-		int time1, time2, time3;
-		int first_group;
-
-		interval = field.get_interval();
-
-		switch (daytime) {
-			case 0 :
-				time = (14 - field.get_open_hour()) * 60 - field.get_open_min();
-				row = (time / interval);
-				first_group = 1;
-				first_pic_hour = field.get_open_hour();
-				first_pic_min = field.get_open_min();
-				break;
-			/*
-			 * case 1: 60; row = (time / interval); 60-field.get_open_min()) /
-			 * interval)+1; first_pic_hour = 13; first_pic_min = 0;
-			 */
-			case 1 :
-				time = (field.get_close_hour() - 14) * 60 + field.get_close_min();
-				row = (time / interval);
-				first_group = (((14 - field.get_open_hour()) * 60 - field.get_open_min()) / interval) + 1;
-				first_pic_hour = 14;
-				first_pic_min = 0;
-				break;
-			default :
-				time = 0;
-				row = 0;
-				first_pic_hour = 0;
-				first_pic_min = 0;
-				first_group = 0;
-				interval = 0;
-
-		}
-
-		TableInfo info = new TableInfo(col, row, first_pic_hour, first_pic_min, first_group, interval, daytime, field.get_field_id(), field.get_date(), field.get_days_shown());
-
-		return info;
-
 	}
 
 	public SubmitButton insertButton(String btnName, String Method, String Action, Form theForm) {
@@ -708,24 +770,29 @@ public class StartingTime extends GolfBlock {
 		return myObject;
 	}
 
-	public DropdownMenu insertDropdown(String dropdownName, IWContext modinfo) throws IOException {
-		PrintWriter out = modinfo.getResponse().getWriter();
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
-		try {
-			Field[] field = service.getFields((String) modinfo.getSession().getAttribute("union_id"));
-
-			for (int i = 0; i < field.length; i++) {
-				myDropdown.addMenuElement(field[i].getID(), field[i].getName());
-			}
-			myDropdown.keepStatusOnAction();
-			myDropdown.setToSubmit();
-			myDropdown.setSelectedElement(modinfo.getSession().getAttribute("field_id").toString());
-
+	public SelectionBox insertSelectionBox(String SelectionBoxName, IWContext modinfo, int height) throws IOException, SQLException {
+		SelectionBox mySelectionBox = new SelectionBox(SelectionBoxName);
+		mySelectionBox.setHeight(height);
+		Field[] field = service.getStartingEntryField();
+		for (int i = 0; i < field.length; i++) {
+			mySelectionBox.addElement("" + field[i].getID(), field[i].getName());
 		}
-		catch (SQLException E) {
-			E.printStackTrace();
+		mySelectionBox.keepStatusOnAction();
+		return mySelectionBox;
+	}
+
+	public DropdownMenu insertClubSelectionBox(String SelectionBoxName, IWContext modinfo, int height) throws IOException, SQLException {
+		DropdownMenu mySelectionBox = new DropdownMenu(SelectionBoxName);
+		mySelectionBox.setMarkupAttribute("size", Integer.toString(height));
+
+		Union[] union = service.getStartingEntryUnion();
+		for (int i = 0; i < union.length; i++) {
+			mySelectionBox.addMenuElement("" + union[i].getID(), union[i].getName());
 		}
-		return myDropdown;
+		if (union.length > 0)
+			mySelectionBox.setSelectedElement(Integer.toString(union[0].getID()));
+		mySelectionBox.keepStatusOnAction();
+		return mySelectionBox;
 	}
 
 	public DropdownMenu insertDropdown(String dropdownName, int countFrom, int countTo) {
@@ -740,50 +807,18 @@ public class StartingTime extends GolfBlock {
 		return myDropdown;
 	}
 
-	public DropdownMenu insertDropdown(String dropdownName, IWCalendar funcDate, GolfField today, IWContext modinfo) {
-
-		IWTimestamp stamp = new IWTimestamp();
-		IWTimestamp stampNow = new IWTimestamp();
-		int GKGAfter = 10;
+	public DropdownMenu insertDropdown(String dropdownName, IWTimestamp funcDate, GolfField today, IWContext modinfo) {
+		//String funcyDate = funcDate.getDateStamp();
+		String funcyDateRS = funcDate.toSQLDateString();
 
 		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
 
 		//		myDropdown.addMenuElement(funcyDateRS, getNextDays(funcDate,
-		// funcyDateRS, 0));
+		// funcyDateRS,
+		// 0));
 
-		int daysShown = 0;
-		if (isClubAdmin() || isClubWorker() || isAdmin()) {
-			if (isClubWorker() && today.get_field_id() == 33) {
-				daysShown = today.get_days_shown();
-			}
-			else {
-				daysShown = 240;
-				stamp.addDays(-30);
-			}
-		}
-		else {
-			daysShown = today.get_days_shown();
-		}
-
-		boolean addElement = true;
-		for (int i = 0; i < daysShown; i++) {
-			// Skítamix dauðans hér!!!
-			if (today.get_field_id() == 33) {
-				if (i > 0 && !isAdmin()) {
-					if (stampNow.getHour() >= GKGAfter)
-						addElement = true;
-					else
-						addElement = false;
-					//add(" + AddElement: "+addElement);
-				}
-				else {
-					addElement = true;
-				}
-			}
-			if (addElement) {
-				myDropdown.addMenuElement(stamp.toSQLDateString(), stamp.getLocaleDate(modinfo.getCurrentLocale()));
-				stamp.addDays(1);
-			}
+		for (int i = 0; i < today.get_days_shown(); i++) {
+			myDropdown.addMenuElement(getNextDaysRS(funcDate, funcyDateRS, i), getNextDays(funcDate, funcyDateRS, i));
 		}
 
 		myDropdown.keepStatusOnAction();
@@ -793,7 +828,28 @@ public class StartingTime extends GolfBlock {
 		return myDropdown;
 	}
 
-	public DropdownMenu insertDrowdown(String dropdownName, TableInfo myTableInfo, IWContext modinfo, Vector torunamentRounds) throws SQLException, IOException {
+	public DropdownMenu insertDropdown(String dropdownName, IWTimestamp funcDate, int days_shown, IWContext modinfo) {
+		//String funcyDate = funcDate.getDateStamp();
+		String funcyDateRS = funcDate.toSQLDateString();
+
+		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+
+		//		myDropdown.addMenuElement(funcyDateRS, getNextDays(funcDate,
+		// funcyDateRS,
+		// 0));
+
+		for (int i = 0; i < days_shown; i++) {
+			myDropdown.addMenuElement(getNextDaysRS(funcDate, funcyDateRS, i), getNextDays(funcDate, funcyDateRS, i));
+		}
+
+		myDropdown.keepStatusOnAction();
+		//		myDropdown.setToSubmit();
+		//		myDropdown.setSelectedElement(modinfo.getSession().getAttribute("date").toString());
+
+		return myDropdown;
+	}
+
+	public DropdownMenu insertDrowdown(String dropdownName, TableInfo myTableInfo, IWContext modinfo) throws SQLException, IOException {
 		//		PrintWriter out = modinfo.getResponse().getWriter();
 
 		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
@@ -821,9 +877,7 @@ public class StartingTime extends GolfBlock {
 			val = (first_group + i) - 1;
 			TimeVal = Integer.toString(val);
 
-			if (!isTournamentGroup(torunamentRounds, val)) {
-				myDropdown.addMenuElement(TimeVal, Time);
-			}
+			myDropdown.addMenuElement(TimeVal, Time);
 
 			pic_min += interval;
 		}
@@ -831,257 +885,305 @@ public class StartingTime extends GolfBlock {
 		return myDropdown;
 	}
 
+	/*
+	 * public String getTime( int end, GolfField myGolfField) { int interval =
+	 * myGolfField.get_interval(); int openMin = myGolfField.get_open_min(); int
+	 * openHour = myGolfField.get_open_hour(); String Time = ""; for(int i = 1; i <=
+	 * end; i ++){ if (openMin >= 60){ openMin -= 60; openHour++; } if (openMin <
+	 * 10) Time = openHour + ":0" + openMin; else Time = openHour + ":" +
+	 * openMin; openMin += interval; } return Time; }
+	 */
+
+	public DropdownMenu insertDrowdown(String dropdownName, String auto, int bil) {
+
+		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+
+		String time;
+		String TimeVal;
+
+		int pic_hour;
+
+		for (int i = 0; i <= 23; i++) {
+			pic_hour = i;
+
+			if (pic_hour != 24) {
+				for (int pic_min = 0; pic_min < 60; pic_min += bil) {
+					if (pic_min < 10 && pic_hour < 10)
+						time = "0" + pic_hour + ":0" + pic_min;
+					else if (pic_min < 10)
+						time = "" + pic_hour + ":0" + pic_min;
+					else if (pic_hour < 10)
+						time = "0" + pic_hour + ":" + pic_min;
+					else
+						time = "" + pic_hour + ":" + pic_min;
+
+					TimeVal = time + ":00";
+
+					myDropdown.addMenuElement(TimeVal, time);
+				}
+			}
+			else {
+				myDropdown.addMenuElement("24:00:00", "00:00");
+				continue;
+			}
+		}
+
+		//myDropdown.setSelectedElement(auto + ":00");
+		myDropdown.keepStatusOnAction();
+
+		return myDropdown;
+	}
+
+	public DropdownMenu insertDrowdown(String dropdownName, String auto, int bil, boolean ltime) {
+
+		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+
+		String time;
+		String TimeVal;
+		boolean first = true;
+		int pic_hour;
+
+		for (int i = 0; i <= 24; i++) {
+			pic_hour = i;
+
+			if (pic_hour != 24) {
+				for (int pic_min = 0; pic_min < 60; pic_min += bil) {
+					if (!first) {
+						if (pic_min < 10 && pic_hour < 10)
+							time = "0" + pic_hour + ":0" + pic_min;
+						else if (pic_min < 10)
+							time = "" + pic_hour + ":0" + pic_min;
+						else if (pic_hour < 10)
+							time = "0" + pic_hour + ":" + pic_min;
+						else
+							time = "" + pic_hour + ":" + pic_min;
+
+						TimeVal = time + ":00";
+
+						myDropdown.addMenuElement(TimeVal, time);
+
+					}
+					first = false;
+				}
+			}
+			else {
+				myDropdown.addMenuElement("24:00:00", "00:00");
+				continue;
+			}
+
+		}
+
+		//myDropdown.setSelectedElement(auto + ":00");
+		myDropdown.keepStatusOnAction();
+
+		return myDropdown;
+	}
+
+	public DropdownMenu insertTimeDrowdown(String dropdownName, String auto, int firstHour, int lastHour, int interval) {
+
+		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+
+		String time;
+		String TimeVal;
+		//		boolean first = true;
+		int pic_hour;
+		if (lastHour != 24)
+			lastHour++;
+
+		for (int i = firstHour; i <= lastHour; i++) {
+			pic_hour = i;
+			if (pic_hour != 24) {
+				for (int pic_min = 0; pic_min < 60; pic_min += interval) {
+					if (pic_min < 10 && pic_hour < 10)
+						time = "0" + pic_hour + ":0" + pic_min;
+					else if (pic_min < 10)
+						time = "" + pic_hour + ":0" + pic_min;
+					else if (pic_hour < 10)
+						time = "0" + pic_hour + ":" + pic_min;
+					else
+						time = "" + pic_hour + ":" + pic_min;
+
+					TimeVal = time + ":00";
+
+					myDropdown.addMenuElement(TimeVal, time);
+
+					if (i == lastHour)
+						break;
+
+				}
+			}
+			else {
+				myDropdown.addMenuElement("24:00:00", "00:00");
+				continue;
+			}
+		}
+
+		//myDropdown.setSelectedElement(auto + ":00");
+		myDropdown.keepStatusOnAction();
+
+		return myDropdown;
+	}
+
 	public TextInput insertEditBox(String name) {
 		TextInput myInput = new TextInput(name);
+
+		myInput.keepStatusOnAction();
+
 		return myInput;
 	}
 
 	public TextInput insertEditBox(String name, int size) {
 		TextInput myInput = new TextInput(name);
 		myInput.setSize(size);
+
+		myInput.keepStatusOnAction();
+
 		return myInput;
 	}
 
-	public Table TableConfig(IWContext modinfo, String day_time, String access_type) {
-		Table frame = new Table(5, 1);
+	public String getNextDaysRS(IWTimestamp funcDate, String date, int days) {
+		IWCalendar calendar = new IWCalendar(funcDate);
+		int day, month, year;
+		StringTokenizer Timetoken = new StringTokenizer(date, "-");
 
-		frame.setCellspacing(0);
-		frame.setCellpadding(0);
+		year = Integer.parseInt(Timetoken.nextToken());
+		month = Integer.parseInt(Timetoken.nextToken());
+		day = Integer.parseInt(Timetoken.nextToken()) + days;
 
-		int buttonWidth = 77;
-		int tableWidth = 720;
-
-		frame.setHeight("15");
-		frame.setWidth(1, "" + (tableWidth - 4 * buttonWidth));
-		frame.setWidth(2, "" + buttonWidth);
-		frame.setWidth(3, "" + buttonWidth);
-		frame.setWidth(4, "" + buttonWidth);
-		frame.setWidth(5, "" + buttonWidth);
-
-		frame.add(Text.emptyString(), 1, 1);
-		frame.add(Text.emptyString(), 2, 1);
-		frame.add(Text.emptyString(), 3, 1);
-		frame.add(Text.emptyString(), 4, 1);
-		frame.add(Text.emptyString(), 5, 1);
-
-		if (access_type.equals("admin")) {
-			//frame.add(Change(),2,1);
-			frame.add(ConfigFieldLink(modinfo), 3, 1);
-
-			int field_id = Integer.parseInt(modinfo.getSessionAttribute("field_id").toString());
-			String sDate = (String) modinfo.getSessionAttribute("date");
-			IWTimestamp stamp = IWTimestamp.RightNow();
-			if (sDate != null) {
-				stamp = new IWTimestamp(sDate);
-			}
-			Link reportLink = is.idega.idegaweb.golf.startingtime.presentation.StartingtimeReportWindow.getLink(stamp, field_id, getResourceBundle().getImage("/tabs/lists1.gif"));
-			frame.add(reportLink, 2, 1);
-			frame.setAlignment(2, 1, "right");
+		if (day > calendar.getLengthOfMonth(month, year)) {
+			day -= (calendar.getLengthOfMonth(month, year));
+			month++;
 		}
-		else if (access_type.equals("user")) {
-			frame.add(Change(modinfo), 3, 1);
+		if (month > 12) {
+			year++;
+			month -= 12;
 		}
+		String d, m;
 
-		if (day_time.equals("0")) {
-			frame.add(Fhd(modinfo, true), 4, 1);
-			frame.add(Ehd(modinfo, false), 5, 1);
-			//frame.add(Sd(false),6,1);
-		}
-
-		if (day_time.equals("1")) {
-			frame.add(Fhd(modinfo, false), 4, 1);
-			frame.add(Ehd(modinfo, true), 5, 1);
-			//frame.add(Sd(false),6,1);
-		}
-
-		if (day_time.equals("2")) {
-			frame.add(Fhd(modinfo, false), 4, 1);
-			frame.add(Ehd(modinfo, false), 5, 1);
-			//frame.add(Sd(true),6,1);
-		}
-
-		return frame;
-	}
-
-	public Link Fhd(IWContext modinfo, boolean inUse) {
-		Link myLink;
-		if (inUse)
-			myLink = new Link(getResourceBundle().getImage("tabs/morning.gif"));
+		if (day < 10)
+			d = "0" + day;
 		else
-			myLink = new Link(getResourceBundle().getImage("tabs/morning1.gif"));
+			d = "" + day;
 
-		myLink.addParameter("hvenaer", "0");
-
-		return myLink;
-	}
-
-	public Link Ehd(IWContext modinfo, boolean inUse) {
-		Link myLink;
-		if (inUse)
-			myLink = new Link(getResourceBundle().getImage("tabs/afternoon.gif"));
+		if (month < 10)
+			m = "0" + month;
 		else
-			myLink = new Link(getResourceBundle().getImage("tabs/afternoon1.gif"));
+			m = "" + month;
 
-		myLink.addParameter("hvenaer", "1");
+		return year + "-" + m + "-" + d;
 
-		return myLink;
 	}
 
-	public Link Sd(IWContext modinfo, boolean inUse) {
-		Link myLink;
-		if (inUse)
-			myLink = new Link(getResourceBundle().getImage("tabs/evening.gif"));
+	public String getNextDays(IWTimestamp funcDate, String date, int days) {
+		IWCalendar calendar = new IWCalendar(funcDate);
+		int day, month, year;
+		StringTokenizer Timetoken = new StringTokenizer(date, "-");
+
+		year = Integer.parseInt(Timetoken.nextToken());
+		month = Integer.parseInt(Timetoken.nextToken());
+		day = Integer.parseInt(Timetoken.nextToken()) + days;
+
+		if (day > calendar.getLengthOfMonth(month, year)) {
+			day -= calendar.getLengthOfMonth(month, year);
+			month++;
+		}
+		if (month > 12) {
+			year++;
+			month -= 12;
+		}
+
+		String mon = calendar.getMonthName(month);
+
+		if (day < 10)
+			return day + ".&nbsp;&nbsp;" + mon.toLowerCase() + " " + year;
 		else
-			myLink = new Link(getResourceBundle().getImage("tabs/evening1.gif"));
-
-		myLink.addParameter("hvenaer", "2");
-
-		return myLink;
+			return day + ". " + mon.toLowerCase() + " " + year;
 	}
 
-	public Link ConfigFieldLink(IWContext modinfo) {
-		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), new Window("Gluggi", 520, 470, "admin.jsp?"));
-
-		return myLink;
+	public String get_field_name(int field_id) throws SQLException, IOException, FinderException {
+		return service.getFieldName(field_id);
 	}
 
-	public Link Change(IWContext modinfo) {
-		Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), new Window("Gluggi", 800, 600, "admbreyting.jsp?"));
-
-		return myLink;
+	public String getFirstOpentime() throws SQLException, IOException {
+		String time = "08:00:00";
+		if (service.getFirstOpentime() != null)
+			time = service.getFirstOpentime().toSQLTimeString();
+		return time;
 	}
 
-	public Form TimeAndPlace(IWContext modinfo, IWCalendar dateFunc, GolfField Today) throws SQLException, IOException {
-
-		Table firstTable = new Table(3, 2);
-		Form day_field = new Form();
-		day_field.setMethod("get");
-
-		firstTable.add(Text.emptyString(), 1, 1);
-		firstTable.add(Text.emptyString(), 3, 1);
-		firstTable.add(Text.emptyString(), 2, 1);
-		firstTable.setHeight(1, "6");
-
-		firstTable.setCellpadding(0);
-		firstTable.setCellspacing(0);
-		//			firstTable.setBorder(1);
-
-		firstTable.setWidth(1, "85");
-		firstTable.setWidth(2, "20");
-		firstTable.setWidth(3, "85");
-
-		firstTable.add(insertDropdown("hvar", modinfo), 1, 2);
-		firstTable.add(insertDropdown("day", dateFunc, Today, modinfo), 3, 2);
-
-		day_field.add(firstTable);
-
-		return day_field;
-
+	public int getMax_days_shown() throws SQLException, IOException {
+		return service.getMax_days_shown();
 	}
 
-	public Table entry_part(IWContext modinfo, IWCalendar dateFunc, TableInfo myTableInfo, boolean admin, Vector tournamentRounds) throws SQLException, IOException {
+	public String getLastClosetime() throws SQLException, IOException {
+		String time = "23:00:00";
+		if (service.getLastClosetime() != null)
+			time = service.getLastClosetime().toSQLTimeString();
+		return time;
+	}
 
-		Window theWindow = null;
-		Form mainForm = null;
-		boolean plainUser = true;
-		if (admin) {
-			theWindow = new Window("Gluggi", 600, 600, "registeradmin.jsp");
-			theWindow.setResizable(true);
-			mainForm = new Form(theWindow);
-			mainForm.setMethod("get");
-			mainForm.setAction("registeradmin.jsp");
-			plainUser = false;
-		}
-		else {
-			theWindow = new Window("Gluggi", 400, 340, "register.jsp");
-			mainForm = new Form(theWindow);
-			mainForm.setMethod("get");
-			mainForm.setAction("register.jsp");
-			plainUser = true;
+	public int getFieldUnion(int field_id) throws SQLException, IOException, FinderException {
+		return service.get_field_union(field_id);
+	}
+
+	//	/#### Skilar Klukkustundinni úr streng á forminu 'klst:min:sec'
+	// \(08:00:00)\
+	// ####///
+	public int getHours(String Hours) {
+		SqlTime mySqlTime = new SqlTime(Hours);
+		return mySqlTime.get_hour();
+	}
+
+	//	/######## Skilar númeri á því holli sem er síðast fyrir lokun
+	// #####////////
+	public int getLastGroup(GolfField myGolfField) {
+
+		int interval = myGolfField.get_interval();
+
+		int Hours = myGolfField.get_close_hour() - myGolfField.get_open_hour();
+		int Min = myGolfField.get_close_min() - myGolfField.get_open_min();
+
+		return (Hours * 60 + Min) / interval;
+	}
+
+	//	/#### Skilar tíma m.v. völl og númer á holli ####///
+	public String TimeVsGroupnum(int group, GolfField myGolfField) {
+
+		int interval = myGolfField.get_interval();
+		int openHour = myGolfField.get_open_hour();
+		int openMin = myGolfField.get_open_min();
+
+		int Hour = openHour + ((group - 1) * interval) / 60;
+		int Min = openMin + ((group - 1) * interval) % 60;
+
+		if (Min >= 60) {
+			Min -= 60;
+			Hour++;
 		}
 
-		mainForm.add(new HiddenInput("daytime", (String) modinfo.getSessionAttribute("when")));
+		String time;
 
-		Window updateWindow = new Window("Gluggi", 800, 600, "admbreyting.jsp");
+		if (Min < 10 && Hour < 10)
+			time = "0" + Hour + ":0" + Min;
+		else if (Min < 10)
+			time = "" + Hour + ":0" + Min;
+		else if (Hour < 10)
+			time = "0" + Hour + ":" + Min;
+		else
+			time = "" + Hour + ":" + Min;
 
-		Table fTable = new Table(2, 2);
-		Table entry = new Table(7, 1);
-
-		fTable.add(Text.emptyString(), 1, 1);
-		fTable.add(Text.emptyString(), 2, 1);
-		fTable.setHeight(1, "6");
-
-		entry.setColumnAlignment(1, "right");
-		entry.setColumnAlignment(2, "right");
-		entry.setColumnAlignment(3, "right");
-		entry.setColumnAlignment(4, "right");
-		entry.setColumnAlignment(6, "right");
-		entry.setColumnAlignment(7, "right");
-		entry.setVerticalAlignment(6, 1, "middle");
-
-		fTable.setRowVerticalAlignment(1, "middle");
-		entry.setRowVerticalAlignment(1, "middle");
-
-		fTable.setCellspacing(0);
-		fTable.setCellpadding(0);
-		entry.setCellspacing(0);
-		entry.setCellpadding(0);
-
-		entry.setWidth(1, "80");
-		entry.setWidth(2, "40");
-		entry.setWidth(3, "40");
-		entry.setWidth(4, "65");
-		entry.setWidth(5, "20");
-		entry.setWidth(6, "50");
-		entry.setWidth(7, "20");
-
-		fTable.add(mainForm, 1, 2);
-
-		if (plainUser) {
-			Text fjoldi = new Text(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"));
-			Text timi = new Text(getResourceBundle().getLocalizedString("start.time", "Time"));
-
-			fjoldi.setFontColor("white");
-			timi.setFontColor("white");
-
-			fjoldi.setFontSize("2");
-			timi.setFontSize("2");
-
-			fjoldi.setFontStyle("Arial");
-			timi.setFontStyle("Arial");
-
-			fjoldi.setBold();
-			timi.setBold();
-
-			entry.add(fjoldi, 1, 1);
-			entry.add(timi, 3, 1);
-
-			entry.add(insertDropdown("skraMarga", 1, 4), 2, 1);
-			entry.add(insertDrowdown("line", myTableInfo, modinfo, tournamentRounds), 4, 1);
-		}
-		entry.add(insertButton(getResourceBundle().getImage("buttons/reserve.gif"), "Taka frá"), 6, 1); // 80,19
-		entry.setVerticalAlignment(6, 1, "middle");
-		insertHiddenInput("mode", "1", mainForm);
-
-		mainForm.add(entry);
-		return fTable;
+		return time;
 	}
 
-	public Table lineUpTournamentDay(IWContext modinfo, List Tournaments) {
-		Text dayReserved = new Text("Dagur frátekinn fyrir mót");
-		dayReserved.setFontSize(4);
-		Table AlignmentTable = new Table();
-		AlignmentTable.setBorder(0);
-		AlignmentTable.add(Text.getBreak());
-		AlignmentTable.add(dayReserved);
-		for (int i = 0; i < Tournaments.size(); i++) {
-			AlignmentTable.add("<p>" + ((Tournament) Tournaments.get(i)).getName());
-		}
-		AlignmentTable.setAlignment("center");
-		AlignmentTable.add(Text.getBreak());
-		AlignmentTable.add(Text.getBreak());
-		AlignmentTable.add(new Text("Hafið samband við klúbb vegna skráninga í dag.<br>Rástíma má sjá í mótaskrá"));
+	public boolean numericString(String myString) {
 
-		return AlignmentTable;
+		boolean isTrue = true;
+
+		for (int i = 0; i < myString.length(); i++) {
+			if (!(myString.charAt(i) == '0' || myString.charAt(i) == '1' || myString.charAt(i) == '2' || myString.charAt(i) == '3' || myString.charAt(i) == '4' || myString.charAt(i) == '5' || myString.charAt(i) == '6' || myString.charAt(i) == '7' || myString.charAt(i) == '8' || myString.charAt(i) == '9'))
+				isTrue = false;
+		}
+
+		return isTrue;
 	}
 }

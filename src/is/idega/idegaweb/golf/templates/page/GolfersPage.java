@@ -24,7 +24,7 @@ import com.idega.presentation.text.Text;
 
 public class GolfersPage extends Page {
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
   protected boolean isAdmin, isTopPictureSet;
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;

@@ -24,7 +24,7 @@ public class TournamentStartingtimeWindow extends Window{
 	public final static String PARAMETER_TOURNAMENT_ROUND_ID = "tsw_ptri";
 	public final static String PARAMETER_TOURNAMENT_ID = "tsw_pti";
 
-	public final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";	
+	public final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";	
 	private IWResourceBundle iwrb;
 	private Tournament tournament;
 	private TournamentRound tournamentRound;

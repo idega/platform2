@@ -33,7 +33,7 @@ public class MiscellenousBox extends Block {
 
 
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
 
 

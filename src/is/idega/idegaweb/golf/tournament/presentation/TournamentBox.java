@@ -22,7 +22,7 @@ private String mainColor;
 private Image headerImage;
 private boolean goneThrough_main=false;
 
-private final String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+private final String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 private IWBundle iwb;
 private IWResourceBundle iwrb;
 

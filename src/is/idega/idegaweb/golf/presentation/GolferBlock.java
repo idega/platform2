@@ -23,7 +23,7 @@ import is.idega.idegaweb.golf.entity.GolferPageData;
 
 public class GolferBlock extends Block {
 
-  protected final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  protected final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   protected int member_id ;

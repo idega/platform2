@@ -37,7 +37,7 @@ import com.idega.presentation.ui.Window;
 
 public class TournamentResultsDetailed extends Block {
 
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.idegaweb.golf";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 

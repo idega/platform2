@@ -44,7 +44,7 @@ public class MemberLogin extends Editor{
   String CloseImageUrl = "/pics/formtakks/close.gif";
   String errorMsg = "";
 
-	private final static String IW_BUNDLE_IDENTIFIER="com.idega.projects.golf.login";
+	private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf.block.login";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 

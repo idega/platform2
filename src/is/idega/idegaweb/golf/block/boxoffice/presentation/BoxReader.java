@@ -93,7 +93,7 @@ private Subject[] subject;
 private	Table myTable;
 private int width = 3;
 private	Subject subject2;
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
+private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf.block.boxoffice";
 protected IWResourceBundle iwrb;
 protected IWBundle iwb;
 

@@ -23,7 +23,7 @@ import com.idega.util.IWTimestamp;
 
 public class ForumBox extends Block {
 
-  protected final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  protected final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 

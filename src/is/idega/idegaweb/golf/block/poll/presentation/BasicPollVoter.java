@@ -56,7 +56,7 @@ public class BasicPollVoter extends Block {
 	private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 	private String styleAttribute = "";
 
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.poll";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf.block.poll";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 

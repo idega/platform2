@@ -5,6 +5,7 @@ import is.idega.idegaweb.golf.block.news.data.NewsCategoryAttributes;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -27,7 +28,7 @@ import com.idega.util.IWTimestamp;
 
 public class ClubNewsBox extends Block {
 
-  protected final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  protected final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
@@ -123,7 +124,7 @@ public class ClubNewsBox extends Block {
         unionText.setFontSize(1);
         unionText.setFontColor("#666666");
 
-        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttributes.class)).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
+        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) ((IDOLegacyEntity)IDOLookup.instanciateEntity(NewsCategoryAttributes.class)).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
 
         int union_id = 0;
 

@@ -90,7 +90,7 @@ public class GolferFriendsSigningSheet extends Block {
   public final String adressAreaName = "adressAreaName";
   public final String billingAdressAreaName = "billingAdressAreaName";
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
   public int headlineTextReaderId;
   public TextReader headlineText;

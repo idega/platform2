@@ -50,7 +50,7 @@ private String headlineColor = "#000000";
 private String headlineBgColor = "#FFFFFF";
 private boolean isGolf = false;
 private int unionID = 1;
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
+private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf.block.boxoffice";
 protected IWResourceBundle iwrb;
 protected IWBundle iwb;
 

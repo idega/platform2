@@ -46,7 +46,7 @@ public class GolferPage extends Page {
 	public String sideMenuAttributeName = "sideMenuAttributeName";
 
 	private Table Maintable, innerLeftTable, innerMainTable, tempSideMenuTable, topBannerTable;
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.idegaweb.golf";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	protected boolean isAdmin, isTopPictureSet;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;

@@ -31,7 +31,7 @@ import com.idega.util.text.TextSoap;
  */
 public class StartingtimeReport extends Block {
 
-	public final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+	public final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 	public static final String PARAMETER_DATE = "sr_prm_d";
 	public static final String PARAMETER_FIELD_ID = "sr_prm_f";
 	public static final String PARAMETER_VIEW = "sr_prm_v";

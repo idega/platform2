@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
  */
 public class TournamentLists extends TournamentBlock{
 
-	private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+	private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
 	private String PARAMETER_UNION_ID = "tl_pui";
 	private String PARAMETER_YEAR = "tl_y";

@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.10 2004/04/07 21:52:53 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.11 2004/04/13 13:00:31 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ public class GolfMainJSPModulePage extends MainPage {
 	protected final int SIDEWIDTH = 720;
 	protected final int LEFTWIDTH = 163;
 	protected final int RIGHTWIDTH = 148;
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.idegaweb.golf";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 

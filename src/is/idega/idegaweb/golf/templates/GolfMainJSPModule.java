@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.6 2004/04/01 20:11:21 laddi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.7 2004/04/13 13:00:31 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,7 +25,7 @@ import com.idega.presentation.PresentationObject;
  */
 public class GolfMainJSPModule extends MainSideJSPModule {
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
   public void initializePage() {
     this.setPage(new GolfMainJSPModulePage());

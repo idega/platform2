@@ -52,7 +52,7 @@ public static String ADMIN_VIEW_REGISTER_MEMBER = "registerMembers";
 public static String ADMIN_VIEW_PRINTING = "outPrints";
 public static String ADMIN_VIEW_LISTS = "lists";
 
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
   public GolfTournamentAdminDialog(){
 		myTable = new Table(2,4);

@@ -128,7 +128,7 @@ public class HoleView extends GolfBlock {
 	  add(ta);
 	}
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;

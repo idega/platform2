@@ -20,7 +20,7 @@ import com.idega.util.database.ConnectionBroker;
  */
 public abstract class GolfBlock extends Block {
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
   
   private IWResourceBundle _iwrb;
   private IWBundle _iwb;

@@ -36,7 +36,7 @@ import com.idega.util.text.TextSoap;
 
 public class NewsReader extends Block {
 
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf.block.news";
 	private boolean isAdmin = false;
 	private boolean askForPermission = true;
 	private boolean showNewsCollectionButton = true;

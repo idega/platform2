@@ -6,7 +6,7 @@ package is.idega.idegaweb.golf.block.news.data;
 import java.sql.*;
 import com.idega.data.*;
 
-public class NewsCategoryAttributesBMPBean extends GenericEntity{
+public class NewsCategoryAttributesBMPBean extends GenericEntity implements NewsCategoryAttributes {
 
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());

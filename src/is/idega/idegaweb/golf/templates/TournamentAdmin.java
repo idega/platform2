@@ -22,7 +22,7 @@ import com.idega.presentation.IWContext;
 */
 public abstract class TournamentAdmin extends JmoduleWindowModule{
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
 	public void _main(IWContext modinfo)throws Exception{
 	  super._main(modinfo);

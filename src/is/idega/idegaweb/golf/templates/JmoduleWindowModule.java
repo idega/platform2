@@ -24,7 +24,7 @@ public String URI = null;
 public String header_color ="#F2BC00";
 public String color = "#F2BCFF";
 
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 
 private MenuBar Menu;
 public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
