@@ -150,7 +150,7 @@ public class BoxFinder {
 
   public static BoxLink[] getLinksInBox(BoxEntity box,BoxCategory boxCategory) {
     try {
-      BoxLink[] links = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumnOrdered(box.getColumnNameBoxID(),Integer.toString(box.getID()),boxCategory.getColumnNameBoxCategoryID(),Integer.toString(boxCategory.getID()),BoxLink.getColumnNameCreationDate()+" desc","=","=");
+      BoxLink[] links = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumnOrdered(BoxEntity.getColumnNameBoxID(),Integer.toString(box.getID()),BoxCategory.getColumnNameBoxCategoryID(),Integer.toString(boxCategory.getID()),BoxLink.getColumnNameCreationDate()+" desc","=","=");
       if ( links != null ) {
         return links;
       }
@@ -163,7 +163,7 @@ public class BoxFinder {
 
   public static BoxLink[] getLinksInCategory(BoxCategory boxCategory) {
     try {
-      BoxLink[] links = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumnOrdered(boxCategory.getColumnNameBoxCategoryID(),Integer.toString(boxCategory.getID()),BoxLink.getColumnNameCreationDate()+" desc","=");
+      BoxLink[] links = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumnOrdered(BoxCategory.getColumnNameBoxCategoryID(),Integer.toString(boxCategory.getID()),BoxLink.getColumnNameCreationDate()+" desc","=");
       if ( links != null ) {
         return links;
       }

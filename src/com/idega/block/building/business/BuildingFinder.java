@@ -342,7 +342,7 @@ public class BuildingFinder {
     Apartment A = new Apartment();
     List L = null;
     try{
-     L = EntityFinder.findAllByColumnOrdered(A,A.getIDColumnName(),String.valueOf(id),A.getNameColumnName());
+     L = EntityFinder.findAllByColumnOrdered(A,A.getIDColumnName(),String.valueOf(id),Apartment.getNameColumnName());
     }
     catch(SQLException sql){}
     return L;
@@ -374,7 +374,7 @@ public class BuildingFinder {
     Apartment A = new Apartment();
     List L = null;
     try {
-      L = EntityFinder.findAllByColumnOrdered(A,A.getNameColumnName(),searchname,A.getFloorIdColumnName());
+      L = EntityFinder.findAllByColumnOrdered(A,Apartment.getNameColumnName(),searchname,Apartment.getFloorIdColumnName());
     }
     catch (SQLException ex) {
 
@@ -460,7 +460,7 @@ public class BuildingFinder {
      Building B = new Building();
     List L = null;
     try {
-      L = EntityFinder.findAllByColumn(B,B.getComplexIdColumnName(),id);
+      L = EntityFinder.findAllByColumn(B,Building.getComplexIdColumnName(),id);
     }
     catch (SQLException ex) {
 
