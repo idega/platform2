@@ -8,7 +8,7 @@ package se.idega.idegaweb.commune.accounting.regulations.data;
  */
 public class PostingDetail {
 	private String term;
-	private int amount;
+	private float amount;
 	
 	public PostingDetail(){
 	}
@@ -18,7 +18,7 @@ public class PostingDetail {
 		amount = a;
 	}
 	
-	public int getAmount() {
+	public float getAmount() {
 		return amount;
 	}
 
@@ -26,7 +26,7 @@ public class PostingDetail {
 		return term;
 	}
 
-	public void setAmount(int i) {
+	public void setAmount(float i) {
 		amount = i;
 	}
 
