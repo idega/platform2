@@ -206,7 +206,7 @@ public class WebSearcher extends Block {
 			
 			Table results = new Table();
 			results.setWidth(Table.HUNDRED_PERCENT);
-			results.setHeight(Table.HUNDRED_PERCENT);
+			//results.setHeight(Table.HUNDRED_PERCENT);
 			results.setCellpaddingAndCellspacing(0);
 			
 			int row = 1;
@@ -340,7 +340,7 @@ public class WebSearcher extends Block {
 			info.add(next,1,1);
 		}
 		
-		text3.setText(iwrb.getLocalizedString("of","of")+" <b>"+hits.getTotalHits()+"</b>"+".");
+		text3.setText(" "+iwrb.getLocalizedString("of","of")+" <b>"+hits.getTotalHits()+"</b>"+".");
 		info.add(text3,1,1);
 
 		return info;
