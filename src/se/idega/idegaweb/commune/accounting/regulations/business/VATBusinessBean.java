@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.22 2004/02/06 13:56:47 tryggvil Exp $
+ * $Id: VATBusinessBean.java,v 1.23 2004/02/06 14:29:07 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -29,15 +29,14 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 /**
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/02/06 13:56:47 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/02/06 14:29:07 $ by $Author: staffan $
  * 
  * @author Anders Lindman
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness {
 

@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/02/03 13:31:34 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/06 14:29:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.126 $
+ * @version $Revision: 1.127 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -174,14 +174,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final String NOTE_KEY = PREFIX + "note";
 	private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades för denna vårdnadshavare eller barn";
 	private static final String NO_COMPILATION_FOUND_KEY = PREFIX + "no_compilation_found";
+	private static final String NO_PAYMENT_POSTINGS_FOUND_DEFAULT = "Ingen kontering för utbetalningen hittades";
+	private static final String NO_PAYMENT_POSTINGS_FOUND_KEY = PREFIX + "no_payment_postings_found";
 	private static final String NO_RELATED_PLACEMENT_FOUND_FOR_DEFAULT = "Ingen relaterad placering hittades för";
 	private static final String NO_RELATED_PLACEMENT_FOUND_FOR_KEY = PREFIX + "no_related_placement_found_for";
 	private static final String NO_RULE_FOUND_STARTING_WITH_DEFAULT = "Ingen regel börjar med";
 	private static final String NO_RULE_FOUND_STARTING_WITH_KEY = PREFIX + "no_rule_found_starting_with";
-	private static final String NUMBER_OF_DEFAULT = "Antal";
-	private static final String NUMBER_OF_KEY = PREFIX + "number_of";
 	private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
 	private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
+	private static final String NUMBER_OF_DEFAULT = "Antal";
+	private static final String NUMBER_OF_KEY = PREFIX + "number_of";
 	private static final String ORDER_ID_KEY = PREFIX + "order_id";
 	private static final String OWN_PAYMENT_POSTING_KEY = PREFIX + "own_payment_posting";
 	private static final String OWN_POSTING_DEFAULT = "Egen kontering";
@@ -1044,8 +1046,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final StringBuffer invoiceText2 = new StringBuffer ();
 		fillInvoiceTextBuffers(invoiceText1, invoiceText2, header, provider,
 													 placement, regulationName, regSpecType);
-		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput (INVOICE_TEXT_KEY,invoiceText1 + ""));
-		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput (INVOICE_TEXT2_KEY,invoiceText2 + ""));
+		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
+								(INVOICE_TEXT_KEY,invoiceText1 + ""));
+		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput
+								(INVOICE_TEXT2_KEY,invoiceText2 + ""));
 		inputs.put (PIECE_AMOUNT_KEY, new HiddenInput
 								(PIECE_AMOUNT_KEY, regulation.getAmount () + ""));
 		inputs.put (ORDER_ID_KEY, new HiddenInput
@@ -1067,6 +1071,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			inputs.put (DOUBLE_PAYMENT_POSTING_KEY, new HiddenInput
 									(DOUBLE_PAYMENT_POSTING_KEY, paymentPostings [1]));
 		} catch (PostingException e) {
+			inputs.put (NO_PAYMENT_POSTINGS_FOUND_KEY, getRedText
+									(localize (NO_PAYMENT_POSTINGS_FOUND_KEY,
+														 NO_PAYMENT_POSTINGS_FOUND_DEFAULT)));
 			e.printStackTrace ();
 		}
 		final String regSpecTypeName = regSpecType.getRegSpecType ();
@@ -1435,6 +1442,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.mergeCells (col, row, table.getColumns (), row);
 		addPresentation (table, presentationObjects, VAT_RULE_KEY, col++, row);
 		col = 1; row++;
+		if (presentationObjects.containsKey (NO_PAYMENT_POSTINGS_FOUND_KEY)) {
+			table.mergeCells (col, row, table.getColumns (), row);
+			addPresentation (table, presentationObjects,
+											 NO_PAYMENT_POSTINGS_FOUND_KEY, 1, row);
+			col = 1; row++;
+		}
 		addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
 										":");
 		col = 1; row++;
