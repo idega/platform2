@@ -431,6 +431,10 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public Collection findRelatedSchoolYears() throws com.idega.data.IDORelationshipException {
 		return super.idoGetRelatedEntities(SchoolYear.class);
 	}
+	
+	public Collection findRelatedSchoolYearsSortedByName() throws IDOException {
+		return this.idoGetRelatedEntitiesOrderedByColumn(SchoolYear.class, SchoolYearBMPBean.NAME);
+	}
 
 	public Collection ejbFindAllByAreaAndType(int area, int type) throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select s.* ");

@@ -137,16 +137,16 @@ public School findBySchoolName(java.lang.String p0)throws javax.ejb.FinderExcept
  }
 
 
-public int getNumberOfRelations(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolYear p1)throws com.idega.data.IDOException{
+public int getNumberOfFreetimeTypes(int p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((SchoolBMPBean)entity).ejbHomeGetNumberOfRelations(p0,p1);
+	int theReturn = ((SchoolBMPBean)entity).ejbHomeGetNumberOfFreetimeTypes(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
 
-public int getNumberOfFreetimeTypes(int p0)throws com.idega.data.IDOException{
+public int getNumberOfRelations(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolYear p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((SchoolBMPBean)entity).ejbHomeGetNumberOfFreetimeTypes(p0);
+	int theReturn = ((SchoolBMPBean)entity).ejbHomeGetNumberOfRelations(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }

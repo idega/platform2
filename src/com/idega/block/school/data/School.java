@@ -12,6 +12,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void addSchoolYearsRemoveOther(int[] p0);
  public java.util.Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
+ public java.util.Collection findRelatedSchoolYearsSortedByName()throws com.idega.data.IDOException;
  public java.lang.String getActivity();
  public int getAssistantHeadmasterGroupId();
  public boolean getCentralizedAdministration();
