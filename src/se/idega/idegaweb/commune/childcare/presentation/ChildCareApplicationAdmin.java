@@ -316,8 +316,6 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			if (id != null) {
 				String rejectSubject = localize(EMAIL_USER_REJECT_SUBJECT,"Child care application");
 				String rejectMessage = localize(EMAIL_USER_REJECT_MESSAGE,"You have received a new childcare application");
-				String receiveSubject = localize(EMAIL_USER_SUBJECT,"Child care application");
-				String receiveMessage = localize(EMAIL_USER_MESSAGE,"You have received a new childcare application");
 
 				return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),rejectSubject,rejectMessage,iwc.getCurrentUser());
 			}
