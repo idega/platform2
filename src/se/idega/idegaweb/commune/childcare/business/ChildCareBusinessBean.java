@@ -1086,6 +1086,42 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
 			application.setApplicationStatus(getStatusReady());
 			application.store();
+			try {
+				IWTimestamp stamp = new IWTimestamp();
+				User child = application.getChild();
+				SchoolClassMember member = null;
+				Collection siblings = getUserBusiness().getMemberFamilyLogic().getSiblingsFor(application.getChild());
+				Iterator iter = siblings.iterator();
+				while (iter.hasNext()) {
+					User sibling = (User) iter.next();
+					if (((Integer) child.getPrimaryKey()).intValue() != ((Integer) sibling.getPrimaryKey()).intValue()) {
+						try {
+							member = getLatestPlacement(((Integer) sibling.getPrimaryKey()).intValue(), application.getProviderId());
+						}
+						catch (FinderException e) {
+							member = null;
+						}
+						boolean queuePrio = false;
+						if (member != null) {
+							if (member.getRemovedDate() != null) {
+								IWTimestamp removed = new IWTimestamp(member.getRemovedDate());
+								if (removed.isLaterThan(stamp)) {
+									queuePrio = true;
+								}
+							} else {
+								queuePrio = true;
+							}
+						}
+						if (queuePrio) {
+							ChildCareApplication siblingApp = this.getApplicationForChildAndProvider(((Integer) sibling.getPrimaryKey()).intValue(), application.getProviderId());
+							if (siblingApp != null) {
+								siblingApp.setHasQueuePriority(true);
+								siblingApp.store();
+							}
+						}
+					}
+				}
+			} catch (Exception e) {}
 			t.commit();
 		}
 		catch (FinderException e) {
