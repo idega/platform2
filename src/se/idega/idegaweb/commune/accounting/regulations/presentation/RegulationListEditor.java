@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.12 2003/10/06 12:21:20 laddi Exp $
+ * $Id: RegulationListEditor.java,v 1.13 2003/10/07 09:56:01 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.12 2003/10/06 12:21:20 laddi Exp $
+ * $Id: RegulationListEditor.java,v 1.13 2003/10/07 09:56:01 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -620,7 +620,7 @@ public class RegulationListEditor extends AccountingBlock {
 		String emptyString = localize(KEY_CHOOSE_INTERVAL, "Välj intervall");
 		dropdown.addEmptyElement(localize(KEY_CHOOSE_CONDITION, "Välj Villkor"), emptyString);
 		try {
-			Collection conditions = getRegulationBusiness(iwc).findAllOperations();
+			Collection conditions = getRegulationBusiness(iwc).findAllConditionSelections();
 				
 			if (conditions != null) {
 				Iterator iter = conditions.iterator();
