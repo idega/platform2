@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.5 2003/09/22 12:06:58 anders Exp $
+ * $Id: ProviderEditor.java,v 1.6 2003/09/24 08:40:11 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -57,10 +57,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/22 12:06:58 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/24 08:40:11 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -744,7 +744,6 @@ public class ProviderEditor extends AccountingBlock {
 	private DropdownMenu getSchoolManagementTypeDropdownMenu(IWContext iwc, String parameter, String companyTypeId) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
 		menu.addMenuElement(0, localize(KEY_SCHOOL_MANAGEMENT_TYPE_SELECTOR_HEADER, "Choose school management type"));
-		int selectedId = companyTypeId.equals("") ? -1 : new Integer(companyTypeId).intValue();
 		Collection c = getSchoolManagementTypes(iwc);
 		if (c != null) {
 			Iterator iter = c.iterator();
@@ -754,8 +753,8 @@ public class ProviderEditor extends AccountingBlock {
 				String key = smt.getLocalizedKey();
 				menu.addMenuElement(id, localize(key, key));
 			}
-			if (selectedId > 0) {
-				menu.setSelectedElement(selectedId);
+			if (companyTypeId != null) {
+				menu.setSelectedElement(companyTypeId);
 			}
 		}		
 		return menu;	
