@@ -64,9 +64,15 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   public PresentationObject printViewer(ProductViewer productViewer, IWContext iwc) {
     Table table = new Table();
       table.setWidth(Table.HUNDRED_PERCENT);
+      table.setCellpadding(0);
+      table.setCellspacing(0);
 
     Text header = productViewer.getHeaderText(this._name);
-    Text description = productViewer.getText(this._description);
+    Text description = null;
+    if ( productViewer._showTeaser )
+      description = productViewer.getText(this._teaser);
+    else
+      description = productViewer.getText(this._description);
 
     int row = 1;
 
@@ -79,6 +85,9 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     else {
       if (productViewer._seperator != null) {
 	table.add(productViewer._seperator, 1, row++);
+      }
+      else {
+	table.setHeight(1,row++,productViewer._spaceBetween);
       }
     }
     if (_product != null) {
@@ -102,10 +111,20 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     }
     table.add(description, 1, row);
 
-    table.setVerticalAlignment(1,1, Table.VERTICAL_ALIGN_BOTTOM);
-    table.setVerticalAlignment(2,1, Table.VERTICAL_ALIGN_BOTTOM);
-    table.setVerticalAlignment(1,3, Table.VERTICAL_ALIGN_TOP);
-    table.setVerticalAlignment(2,3, Table.VERTICAL_ALIGN_TOP);
+    if ( productViewer._showProductLink ) {
+      table.setHeight(1,++row,productViewer._spaceBetween);
+
+      Link link = new Link();
+      if ( productViewer._productImage != null )
+	link.setPresentationObject(productViewer._productImage);
+      else
+	link.setText(this._name);
+
+      if ( productViewer._productPage != null )
+	link.setPage(productViewer._productPage);
+
+      table.add(link,1,++row);
+    }
 
     return table;
   }

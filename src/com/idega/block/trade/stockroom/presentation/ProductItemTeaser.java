@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.text.business.TextFormatter;
 import java.sql.SQLException;
 import com.idega.presentation.text.Text;
 import com.idega.block.trade.stockroom.data.Product;
@@ -36,7 +37,8 @@ public class ProductItemTeaser extends ProductItem {
   private void drawObject() {
     Text text = getText(defaultText);
     if ( _product != null ) {
-      text.setText(ProductBusiness.getProductTeaser(_product,_localeId));
+      String textString = TextFormatter.formatText(ProductBusiness.getProductTeaser(_product,_localeId),1,"100%");
+      text.setText(textString);
     }
     add(text);
   }

@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.builder.data.IBPage;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.business.*;
@@ -43,6 +44,11 @@ public class ProductViewer extends Block {
   String _imageWidth = null;
   String _textAlignment = Paragraph.HORIZONTAL_ALIGN_LEFT;
   String _imageAlignment = Paragraph.HORIZONTAL_ALIGN_RIGHT;
+  IBPage _productPage;
+  Image _productImage;
+  boolean _showProductLink = false;
+  boolean _showTeaser = false;
+  String _spaceBetween = "3";
 
   public ProductViewer() { }
 
@@ -207,6 +213,26 @@ public class ProductViewer extends Block {
 
   public void setShowRandomProduct(boolean showRandom) {
     this._showRandom = showRandom;
+  }
+
+  public void setProductPage(IBPage page) {
+    _productPage = page;
+  }
+
+  public void setProductImage(Image image) {
+    _productImage = image;
+  }
+
+  public void setShowProductLink(boolean showLink) {
+    _showProductLink = showLink;
+  }
+
+  public void setShowTeaser(boolean showTeaser) {
+    _showTeaser = showTeaser;
+  }
+
+  public void setSpaceBetweenTitleAndBody(String spaceBetween) {
+    _spaceBetween = spaceBetween;
   }
 }
 
