@@ -61,6 +61,7 @@ public class NewsLetter extends CategoryBlock {
   private String _inputStyle = "";
   private int _inputLength = 18;
   private boolean _submitBelow = false;
+  private boolean _submitBelowTopics = false;
   private String _spaceBetween = "2";
   private int archivePage = -1;
   private String archiveTarget = Link.TARGET_TOP_WINDOW;
@@ -143,6 +144,9 @@ public class NewsLetter extends CategoryBlock {
 
         if ( obj != null )
           T.add(obj,1,row);
+        
+        T.add(getButtonsBelowTable(iwc),1,row);
+        
         }
         else{
           T.add(iwrb.getLocalizedString("no_topic","Please create a topic"),1,row);
@@ -213,21 +217,25 @@ public class NewsLetter extends CategoryBlock {
 			else {
 				cancel = new SubmitButton(iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
 			}
+			
+			if(!_submitBelowTopics) {
+				if ( _submitBelow ) {
+					T.add(email, 1, 1);
+					T.setHeight(1, 2, _spaceBetween);
+					T.add(send, 1, 3);
+					if (_showCancelImage)
+						T.add(cancel, 1, 3);
+				}
+				else {
+					T.add(email, 1, 1);
+					T.setWidth(2, 1, _spaceBetween);
+					T.add(send, 3, 1);
+					if (_showCancelImage)
+						T.add(cancel, 3, 1);
+				}
+			}
 
-			if ( _submitBelow ) {
-				T.add(email, 1, 1);
-				T.setHeight(1, 2, _spaceBetween);
-				T.add(send, 1, 3);
-				if (_showCancelImage)
-					T.add(cancel, 1, 3);
-			}
-			else {
-				T.add(email, 1, 1);
-				T.setWidth(2, 1, _spaceBetween);
-				T.add(send, 3, 1);
-				if (_showCancelImage)
-					T.add(cancel, 3, 1);
-			}
+			
 			
 			return T;
 	}
@@ -287,6 +295,31 @@ public class NewsLetter extends CategoryBlock {
 
     return T;
   }
+  private PresentationObject getButtonsBelowTable(IWContext iwc) {
+  		Table T = new Table();
+  		T.setCellpadding(0);
+  		T.setCellspacing(0);
+  		SubmitButton send,cancel;
+  		if (submitImage != null) {
+			send = new SubmitButton(submitImage, "nl_send");
+		}
+		else {
+			send = new SubmitButton(iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
+		}
+		if (cancelImage != null) {
+			cancel = new SubmitButton(cancelImage, "nl_stop");
+		}
+		else {
+			cancel = new SubmitButton(iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
+		}
+  		
+		T.add(send,1,1);
+		if (_showCancelImage)
+			T.add(cancel, 2, 1);
+  		
+		return T;
+  	
+  }
   
   private Link getArchiveLink(){
   	Link L = new Link(iwrb.getLocalizedString("archive","Archive"));
@@ -295,6 +328,8 @@ public class NewsLetter extends CategoryBlock {
   	
   	return L;
   }
+  
+  
 
  
   private void processForm(IWContext iwc) {
@@ -437,6 +472,13 @@ public class NewsLetter extends CategoryBlock {
 	 */
 	public void setBgColor(String color) {
 	  _bgColor = color;
+	}
+	/**
+	 * Sets the submit (and cancel) buttons below the topics dropdown or checkboxes
+	 * @param submitBelowTopics
+	 */
+	public void setSubmitBelowTopics(boolean submitBelowTopics) {
+		_submitBelowTopics = submitBelowTopics;
 	}
 
 }
