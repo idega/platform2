@@ -375,8 +375,8 @@ public class ReportQueryOverview extends Block {
 		dropDownLayoutConverter.setOptionProvider(getLayoutOptionProvider());
 		dropDownLayoutConverter.setShowAlwaysDropDownMenu(true);
 		// edit query converter
-		String display = resourceBundle.getLocalizedString("ro_edit_query", "Edit query");
-		EditQueryConverter editQueryConverter = new EditQueryConverter(display);
+		//String display = resourceBundle.getLocalizedString("ro_edit_query", "Edit query");
+		//EditQueryConverter editQueryConverter = new EditQueryConverter(display);
 		// checkbox converter
 		ButtonConverter htmlConverter = new ButtonConverter(bundle.getImage("/shared/txt.gif"));
 		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
