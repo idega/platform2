@@ -70,11 +70,11 @@ public class GroupMemberList extends Block {
 		}
 		
 		Table table = new Table();
+		table.setCellspacing(0);
 		Iterator userIter; //group.getChildren();
 		try {
 			userIter = getGroupBusiness(iwc).getUsers(group).iterator();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -88,7 +88,7 @@ public class GroupMemberList extends Block {
 				int column = 1;
 				
 				String name = user.getName();
-				table.add(name, column, row);
+				table.add(name, column++, row);
 				nameAdded = true;
 				if(showStatus) {
 					String statusKey = null;
@@ -104,12 +104,12 @@ public class GroupMemberList extends Block {
 					if(statusKey!=null) {
 						String key = "usr_stat_" + statusKey;
 						String status = _iwrb.getLocalizedString(key, statusKey);
-						table.add(status, column, row);
+						table.add(status, column++, row);
 					}
 				}
 				if(showGroup) {
 					String groupNames = getGroupNamesForTrainer(user, division);
-					table.add(groupNames, column, row);
+					table.add(groupNames, column++, row);
 				}
 			} catch(Exception e) {
 				System.out.println("Exception lising user " + user.getName());
