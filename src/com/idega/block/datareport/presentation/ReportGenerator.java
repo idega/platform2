@@ -139,10 +139,10 @@ public class ReportGenerator extends Block {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 
-	private void parseQuery() throws XMLException, Exception {
+	private void parseQuery(IWContext iwc) throws XMLException, Exception {
 		if (_queryParser == null) {
 			Query query = ((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
-			_queryParser = new QueryHelper(query);
+			_queryParser = new QueryHelper(query, iwc);
 		}
 
 		_allFields = _queryParser.getListOfFields();
@@ -579,7 +579,7 @@ public class ReportGenerator extends Block {
 			if (_queryPK != null) {
 				String genState = iwc.getParameter(PRM_STATE);
 				if (genState == null || "".equals(genState)) {
-					parseQuery();
+					parseQuery(iwc);
 					lineUpElements(iwrb, iwc);
 					Form submForm = new Form();
 					submForm.maintainParameters(maintainParameterList);
@@ -587,7 +587,7 @@ public class ReportGenerator extends Block {
 					this.add(submForm);
 				}
 				else {
-					parseQuery();
+					parseQuery(iwc);
 					generateDataSource(iwc);
 					getLayoutFromICFileOrGenerate(iwc);
 					generateReport();
