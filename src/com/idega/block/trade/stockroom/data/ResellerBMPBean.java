@@ -1,13 +1,14 @@
 package com.idega.block.trade.stockroom.data;
 
+import javax.ejb.*;
+import java.util.*;
+import java.rmi.RemoteException;
 import com.idega.data.*;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.employment.data.EmployeeGroup;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 
-import java.util.List;
-import java.util.Vector;
 import java.sql.SQLException;
 
 /**
@@ -188,4 +189,28 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     }
     super.insert();
   }
+
+  public Settings getSettings() throws FinderException, RemoteException, CreateException {
+    Collection coll = this.idoGetRelatedEntities(Settings.class);
+
+    SettingsHome shome = (SettingsHome)IDOLookup.getHome(Settings.class);
+    if (coll.size() == 1) {
+      Iterator iter = coll.iterator();
+      return (Settings) iter.next();
+    }else if (coll.size() > 1) {
+      debug("Settings data wrong for Reseller "+getID());
+      Iterator iter = coll.iterator();
+      Settings set;
+      while (iter.hasNext()) {
+        set = (Settings) iter.next();
+        if (!iter.hasNext()) {
+          return set;
+        }
+      }
+      return null;
+    } else {
+      return shome.create(this);
+    }
+  }
+
 }

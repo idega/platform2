@@ -2,6 +2,8 @@ package com.idega.block.trade.stockroom.data;
 
 
 
+import javax.ejb.*;
+import java.rmi.RemoteException;
 import java.sql.*;
 
 import java.util.*;
@@ -366,6 +368,30 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 
   }
 
+
+  public Settings getSettings() throws FinderException, RemoteException, CreateException {
+    Collection coll = this.idoGetRelatedEntities(Settings.class);
+
+    SettingsHome shome = (SettingsHome)IDOLookup.getHome(Settings.class);
+    if (coll.size() == 1) {
+      Iterator iter = coll.iterator();
+      return (Settings) iter.next();
+    }else if (coll.size() > 1) {
+      /** @todo fixa vitlaus gogn... setja removeFrom thegar thad virkar */
+      debug("Settings data wrong for Supplier "+getID());
+      Iterator iter = coll.iterator();
+      Settings set;
+      while (iter.hasNext()) {
+        set = (Settings) iter.next();
+        if (!iter.hasNext()) {
+          return set;
+        }
+      }
+      return null;
+    } else {
+      return shome.create(this);
+    }
+  }
 
 
   /*

@@ -15,8 +15,9 @@ public interface Supplier extends com.idega.data.IDOLegacyEntity
  public boolean getIsValid();
  public java.util.List getMobilePhone()throws java.sql.SQLException;
  public java.lang.String getName();
- public java.util.List getPhones()throws java.sql.SQLException;
  public java.util.List getPhones(int p0)throws java.sql.SQLException;
+ public java.util.List getPhones()throws java.sql.SQLException;
+ public com.idega.block.trade.stockroom.data.Settings getSettings()throws javax.ejb.CreateException,java.rmi.RemoteException,javax.ejb.FinderException;
  public java.util.List getWorkPhone()throws java.sql.SQLException;
  public void setDefaultValues();
  public void setDescription(java.lang.String p0);

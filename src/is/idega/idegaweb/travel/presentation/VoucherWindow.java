@@ -53,9 +53,12 @@ public class VoucherWindow extends Window {
     String searchAction = iwc.getParameter(this.searchAction);
     boolean error = false;
 
+    Table table  = new Table();
+      table.setCellpaddingAndCellspacing(0);
+
     if (sBookingId != null) {
       Voucher voucher = new Voucher(iwc, Integer.parseInt(sBookingId));
-      add(voucher.getVoucher(iwc));
+      table.add(voucher.getVoucher(iwc));
     }else if (searchAction != null){
       if (searchAction.equals(searchMethodReferenceNumber)) {
         String refMethod = iwc.getParameter(this.parameterReferenceNumber);
@@ -63,7 +66,7 @@ public class VoucherWindow extends Window {
           GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getReferenceNumberColumnName(), refMethod);
           if (gBooking.length > 0) {
             Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-            add(voucher.getVoucher(iwc));
+            table.add(voucher.getVoucher(iwc));
           }else {
             error = true;
           }
@@ -76,7 +79,7 @@ public class VoucherWindow extends Window {
           GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
           if (gBooking.length > 0) {
             Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-            add(voucher.getVoucher(iwc));
+            table.add(voucher.getVoucher(iwc));
           }else {
             error = true;
           }
@@ -89,8 +92,14 @@ public class VoucherWindow extends Window {
     }
 
     if (error) {
-      add(iwrb.getLocalizedString("travel.voucher_not_found","Voucher not found"));
+      table.add(iwrb.getLocalizedString("travel.voucher_not_found","Voucher not found"));
+    }else {
+      table.add(Text.BREAK, 1, 2);
+      table.add(new PrintButton(iwrb.getImage("buttons/print.gif")), 1,2);
+      table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
     }
+
+    add(table);
   }
 
   public static Form getReferenceNumberForm(IWResourceBundle iwrb) {

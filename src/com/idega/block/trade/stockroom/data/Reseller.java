@@ -19,6 +19,7 @@ public interface Reseller extends com.idega.data.TreeableEntity
  public java.util.List getPhones()throws java.sql.SQLException;
  public java.util.List getPhones(int p0)throws java.sql.SQLException;
  public java.lang.String getReferenceNumber();
+ public com.idega.block.trade.stockroom.data.Settings getSettings()throws javax.ejb.CreateException,java.rmi.RemoteException,javax.ejb.FinderException;
  public void setDefaultValues();
  public void setDescription(java.lang.String p0);
  public void setGroupId(int p0);

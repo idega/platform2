@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.mail.MessagingException;
+import com.idega.core.data.Email;
+import com.idega.data.IDOLookup;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import com.idega.presentation.*;
@@ -430,14 +433,19 @@ public class PublicBooking extends Block  {
         ch.setProduct(product);
 
       boolean legalDay = false;
-      for (int i = 0; i < timeframes.length; i++) {
+      /*for (int i = 0; i < timeframes.length; i++) {
         if (stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframes[i].getFrom()), new idegaTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getIfYearly())) {
           legalDay = true;
           break;
         }
-      }
+      }*/
+
+      legalDay = TravelStockroomBusiness.getIfDay(iwc, product, stamp);
+
 
       Form form = new Form();
+
+      debug("legalDay : "+legalDay);
 
       if (legalDay) {
         String action = iwc.getParameter(this.sAction);
@@ -882,6 +890,56 @@ public class PublicBooking extends Block  {
       }
 
       if (success && gBooking != null) {
+        try {
+          Product prod = ((ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(gBooking.getServiceID());
+          Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
+          Settings settings = suppl.getSettings();
+          Email sEmail = suppl.getEmail();
+          String suppEmail = "";
+          if (sEmail != null) {
+            suppEmail = sEmail.getEmailAddress();
+          }
+          String bookEmail = gBooking.getEmail();
+
+          debug("Repps test");
+          if (settings.getIfDoubleConfirmation()) {
+            try {
+              debug("Trying double");
+              StringBuffer mailText = new StringBuffer();
+              mailText.append(iwrb.getLocalizedString("travel.double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name   ")).append(" : ").append(gBooking.getName());
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date   ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats  ")).append(" : ").append(gBooking.getTotalCount());
+
+              SendMail sm = new SendMail();
+                sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
+            }catch (MessagingException me) {
+              me.printStackTrace(System.err);
+            }
+          }
+
+          if (settings.getIfEmailAfterOnlineBooking()) {
+            try {
+              debug("Trying afteronline");
+              StringBuffer mailText = new StringBuffer();
+              mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name   ")).append(" : ").append(gBooking.getName());
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date   ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats  ")).append(" : ").append(gBooking.getTotalCount());
+
+              SendMail sm = new SendMail();
+                sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
+            }catch (MessagingException me) {
+              me.printStackTrace(System.err);
+            }
+          }
+
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
+
         table.add(getBoldTextWhite(gBooking.getName()));
         table.add(getBoldTextWhite(", "));
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));

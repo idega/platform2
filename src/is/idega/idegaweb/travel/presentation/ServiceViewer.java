@@ -1096,65 +1096,69 @@ public class ServiceViewer extends Window {
 
             prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
 
-            stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+            if (prices.length > 0) {
 
-            stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+              stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
 
-            if (timeframes[i].getIfYearly()) {
+              stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
 
-              try {
+              if (timeframes[i].getIfYearly()) {
 
-                stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+                try {
 
-                stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+                  stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
 
-              }catch (NumberFormatException n) {}
+                  stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
 
-            }
-
-            timeframeTextBold = getText("");
-
-              timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-
-            pTable.add(timeframeTextBold,2,pRow);
-
-
-
-            if (prices.length == 0) {
-
-              ++pRow;
-
-            }
-
-            for (int j = 0; j < prices.length; j++) {
-
-              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-
-              nameOfCategory = getText(prices[j].getPriceCategory().getName());
-
-                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-
-              try {
-
-                priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
-
-                currencyText = getBoldText(currency.getCurrencyAbbreviation());
-
-                pTable.add(currencyText,5,pRow);
-
-              }catch (ProductPriceException p) {
-
-                priceText.setText("Rangt upp sett");
+                }catch (NumberFormatException n) {}
 
               }
 
+              timeframeTextBold = getText("");
+
+                timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+
+              pTable.add(timeframeTextBold,2,pRow);
 
 
-              pTable.add(nameOfCategory,3,pRow);
 
-              pTable.add(priceText,4,pRow);
+              if (prices.length == 0) {
 
-              ++pRow;
+                ++pRow;
+
+              }
+
+              for (int j = 0; j < prices.length; j++) {
+
+                currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+
+                nameOfCategory = getText(prices[j].getPriceCategory().getName());
+
+                  nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+
+                try {
+
+                  priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+
+                  currencyText = getBoldText(currency.getCurrencyAbbreviation());
+
+                  pTable.add(currencyText,5,pRow);
+
+                }catch (ProductPriceException p) {
+
+                  priceText.setText("Rangt upp sett");
+
+                }
+
+
+
+                pTable.add(nameOfCategory,3,pRow);
+
+                pTable.add(priceText,4,pRow);
+
+                ++pRow;
+
+              }
 
             }
 

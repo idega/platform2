@@ -375,19 +375,19 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
-    return getIfDay(iwc, product, product.getTimeframes(), stamp);
+    return getIfDay(iwc, product, product.getTimeframes(), stamp, true, true);
   }
 
   public static boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException {
-    return getIfDay(iwc, product, timeframes, stamp, true);
+    return getIfDay(iwc, product, timeframes, stamp, true, false);
   }
 
-  public static boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, idegaTimestamp stamp, boolean includePast) throws ServiceNotFoundException, TimeframeNotFoundException {
+  public static boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, idegaTimestamp stamp, boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException {
       boolean isDay = false;
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
 
-      //System.err.println("Checking day : "+stamp.toSQLDateString());
+//      System.err.println("Checking day : "+stamp.toSQLDateString());
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
       //Object obj = serviceDayHash.get(key1, key2);
       Object obj = null;
@@ -405,22 +405,21 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             }
           }
 
-          //System.err.println("include past : "+includePast+" .... tooEarly : "+tooEarly);
           if (!tooEarly) {
             boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(iwc, product.getID(), dayOfWeek);
             if (isValidWeekDay) {
-              //System.err.println("repps 1");
-              if (isDayValid(timeframes, stamp)) {
-              //System.err.println("repps 2");
+//              System.err.println("repps 1");
+              if (isDayValid(timeframes, stamp, fixTimeframe)) {
+//              System.err.println("repps 2");
                 isDay = true;
                 serviceDayHash.put(key1, key2, new Boolean(true) );
               }
               else {
-              //System.err.println("repps 3");
+//              System.err.println("repps 3");
                 serviceDayHash.put(key1, key2, new Boolean(false) );
               }
             }else {
-              //System.err.println("repps 4");
+//              System.err.println("repps 4");
               serviceDayHash.put(key1, key2, new Boolean(false) );
             }
           }
@@ -446,11 +445,16 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   }
 
-  private static boolean isDayValid(Timeframe[] frames, idegaTimestamp stamp) {
-    return isDayValid(frames, null, stamp);
+  private static boolean isDayValid(Timeframe[] frames, idegaTimestamp stamp, boolean fixTimeframe) {
+    return isDayValid(frames, null, stamp, fixTimeframe);
   }
 
   private static boolean isDayValid(Timeframe[] frames, Contract contract, idegaTimestamp stamp) {
+    return isDayValid(frames, contract, stamp, false);
+  }
+
+  private static boolean isDayValid(Timeframe[] frames, Contract contract, idegaTimestamp stamp, boolean fixTimeframe) {
+
     boolean returner = false;
 
     try {
@@ -466,9 +470,16 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         boolean isYearly = false;
 
         for (int i = 0; i < frames.length; i++) {
-          //System.err.println("isDayValid.... : from : "+new idegaTimestamp(frames[i].getFrom()).toSQLDateString());
-          //System.err.println(".............. : to   : "+new idegaTimestamp(frames[i].getTo()).toSQLDateString());
-          //System.err.println(".............. : year : "+frames[i].getYearly());
+          if (fixTimeframe) {
+//            System.err.println("---------------------------------------------------------------------------------------------------------------");
+//            System.err.println("isDayValid.... : from : "+new idegaTimestamp(frames[i].getFrom()).toSQLDateString());
+//            System.err.println(".............. : to   : "+new idegaTimestamp(frames[i].getTo()).toSQLDateString());
+            fixTimeframe(frames[i], stamp);
+//            System.err.println(":::::::FIXING:::::: "+stamp.toSQLDateString());
+//            System.err.println("isDayValid.... : from : "+new idegaTimestamp(frames[i].getFrom()).toSQLDateString());
+//            System.err.println(".............. : to   : "+new idegaTimestamp(frames[i].getTo()).toSQLDateString());
+          }
+//          System.err.println(".............. : year : "+frames[i].getYearly());
           isYearly = frames[i].getIfYearly();
           returner = idegaTimestamp.isInTimeframe(new idegaTimestamp(frames[i].getFrom()), new idegaTimestamp(frames[i].getTo() ), stamp, isYearly);
           if (returner) break;
@@ -481,6 +492,80 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
 
     return returner;
+  }
+
+  public static Timeframe fixTimeframe(Timeframe frame, idegaTimestamp stamp) {
+    return fixTimeframe(frame, stamp, null);
+  }
+
+  public static Timeframe fixTimeframe(Timeframe frame, idegaTimestamp from, idegaTimestamp to) {
+    idegaTimestamp tFrom = new idegaTimestamp(frame.getFrom());
+    idegaTimestamp tTo = new idegaTimestamp(frame.getTo());
+
+    if (frame.getYearly()) {
+      int fromYear = tFrom.getYear();
+      int fromY = from.getYear();
+      int fromMonth = tFrom.getMonth();
+      int fromM = from.getMonth();
+
+      int toYear   = tTo.getYear();
+      int toMonth = tTo.getMonth();
+      int yearsBetween = 0;
+
+      int toY = 0;
+      int toM = 0;
+      if (to != null) {
+        toY = to.getYear();
+        toM = to.getMonth();
+      }else {
+        toY = fromY;
+        toM = fromM;
+      }
+
+      if (fromYear == toYear) { // If timeframe is in the same year...
+        tFrom.setYear(fromY);
+        tTo.setYear(toY);
+        //from.setYear(fromYear);
+      }else {
+          if (fromY <= fromYear) {
+            if (fromM < toMonth) {
+              tFrom.addYears(toY - toYear);
+              tTo.addYears(toY - toYear);
+              //System.err.println("Tepps : fromM ("+fromM+") < toMonth ("+toMonth+")");
+            }else if (fromM == toMonth) {
+              if (from.getDay() < tTo.getDay()) {
+                tFrom.addYears(toY - toYear);
+                tTo.addYears(toY - toYear);
+              }
+              //System.err.println("fromM ("+fromM+") >= toMonth ("+toMonth+")");
+            }
+          }else {
+            if (toM < fromMonth) {
+//              System.err.println("Sepps : toM ("+toM+") < fromMonth ("+fromMonth+")");
+              tFrom.addYears(toY - toYear);
+              tTo.addYears(toY - toYear);
+            }else {
+              if (to != null) {
+//                System.err.println("toDay : "+to.getDay());
+//                System.err.println("tFrom : "+tFrom.getDay());
+                if (to.getDay() > tFrom.getDay()) {
+                  tFrom.addYears(toY - toYear);
+                  tTo.addYears(toY - toYear);
+//                  System.err.println("craniton");
+                }
+              }
+//              System.err.println("Ranus : toM ("+toM+") >= fromMonth ("+fromMonth+")");
+            }
+//                  System.err.println("sraneson");
+          }
+      }
+      //System.err.println("yearsBetween : "+yearsBetween);
+    }
+
+    frame.setFrom(tFrom.getTimestamp());
+    frame.setTo(tTo.getTimestamp());
+
+    return frame;
   }
 
   public static HashtableDoubleKeyed getResellerDayHashtable(IWContext iwc) {

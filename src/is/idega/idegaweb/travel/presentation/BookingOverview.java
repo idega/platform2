@@ -401,7 +401,7 @@ public class BookingOverview extends TravelManager {
                   try {
                     prod = (Product) products.get(i);
                       if (supplier != null) {
-                        bContinue =TravelStockroomBusiness.getIfDay(iwc,prod,tempStamp);
+                        bContinue = TravelStockroomBusiness.getIfDay(iwc,prod,tempStamp);
                       }else if (reseller != null) {
                         bContinue = TravelStockroomBusiness.getIfDay(iwc,contract,product,tempStamp);
                       }

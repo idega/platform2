@@ -55,6 +55,7 @@ public class InitialData extends TravelManager {
   private static String parameterUsers = "parameterUsers";
   private static String  parameterVoucher = "paraneterVoucher";
   private String parameterResellerId = "contractResellerId";
+  private String parameterSettings = "parameterSettings";
   private String parameterUpdateReseller = "contractUpdateReseller";
   private String parameterSaveNewReseller = "contractSaveNewReseller";
 
@@ -109,6 +110,7 @@ public class InitialData extends TravelManager {
 
     if (supplier != null) {
         menu.addMenuElement(this.parameterViewSupplierInfo, iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
+        menu.addMenuElement(this.parameterSettings, iwrb.getLocalizedString("travel.settings","Settings"));
         menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
@@ -116,6 +118,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else if (reseller != null) {
         menu.addMenuElement(this.parameterViewResellerInfo, iwrb.getLocalizedString("travel.reseller_information","Reseller information"));
+        menu.addMenuElement(this.parameterSettings, iwrb.getLocalizedString("travel.settings","Settings"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else {
@@ -183,6 +186,14 @@ public class InitialData extends TravelManager {
               }
             }else if (selected.equals(this.parameterVoucher)) {
               form = VoucherWindow.getReferenceNumberForm(iwrb);
+            }else if (selected.equals(this.parameterSettings)) {
+              try {
+                SettingsEditor se = new SettingsEditor(iwc);
+                  se.handleInsert(iwc);
+                form = se.getSettingsFrom();
+              }catch (Exception e) {
+                e.printStackTrace(System.err);
+              }
             }else {form = new Form();
             }
 

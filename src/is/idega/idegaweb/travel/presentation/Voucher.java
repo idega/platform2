@@ -234,7 +234,7 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
-        table.add(getText(ProductBusiness.getProductName(_product, _localeId)),1,2);
+        table.add(getText(ProductBusiness.getProductNameWithNumber(_product, true, _localeId)),1,2);
         table.add(Text.BREAK,1,2);
         if (_bookings.size() > 0) {
           idegaTimestamp fromStamp = new idegaTimestamp(((Booking)_bookings.get(0)).getBookingDate());
