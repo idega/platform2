@@ -1,9 +1,13 @@
 package se.idega.idegaweb.commune.presentation;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+
 import com.idega.builder.data.IBPage;
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
@@ -16,6 +20,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.InterfaceObjectContainer;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.user.data.User;
 
 /**
  * Title:
@@ -410,5 +415,24 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
 	public String getWidth() {
 		return _width;
+	}
+	
+	public boolean isCommuneAdministrator(IWContext iwc) {
+		try {
+			if (isAdministrator(iwc))
+				return true;
+				
+			User user = iwc.getCurrentUser();
+			if (user != null)
+				return getUserBusiness(iwc).isRootCommuneAdministrator(user);
+			return false;
+		}
+		catch (Exception re) {
+			return false;
+		}
+	}
+	
+	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
 }
