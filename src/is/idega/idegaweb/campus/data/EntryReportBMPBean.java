@@ -110,17 +110,17 @@ public class EntryReportBMPBean implements EntryReport{
   public void ejbActivate(){}
 
   public static List findAllBySearch(int iBuildingId,int iAccountKey,Timestamp from,Timestamp to)throws SQLException{
-     System.err.println("finding entryreports");
      Connection conn= null;
     Statement Stmt= null;
     ResultSetMetaData metaData;
     Vector vector=null;
+    String sql = getFindSql(iBuildingId,iAccountKey,from,to);
 
     try{
       conn = ConnectionBroker.getConnection();
       Stmt = conn.createStatement();
-      String sql = getFindSql(iBuildingId,iAccountKey,from,to);
-      System.err.println(sql);
+
+      //System.err.println(sql);
       ResultSet RS = Stmt.executeQuery(sql);
       metaData = RS.getMetaData();
       int count = 1;
@@ -135,7 +135,7 @@ public class EntryReportBMPBean implements EntryReport{
             tempobj.setKeyName(RS.getString(4));
             tempobj.setKeyInfo(RS.getString(5));
             tempobj.setTotal(RS.getFloat(6));
-            tempobj.setNumber(RS.getInt(RS.getInt(7)));
+            tempobj.setNumber(RS.getInt(7));
 
         }
         if(vector==null){
@@ -145,6 +145,9 @@ public class EntryReportBMPBean implements EntryReport{
 
       }
       RS.close();
+    }
+    catch(SQLException ex){
+      throw new SQLException("SQL : "+sql);
     }
     finally{
       if(Stmt != null){
