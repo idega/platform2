@@ -370,9 +370,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				//productIsValid = bus.getIfDay(iwc, product, tmp);
 				tmp.addDays(1);
 			}
-			
+			return productIsValid;
 		}
-		return productIsValid;
+		return false;
 	}
 
 	public boolean isProductValid(Product product, IWTimestamp from, IWTimestamp to) throws Exception{
