@@ -3409,9 +3409,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			Integer ageTo, 
 			String strShowClubs) throws RemoteException {
 
-		boolean showClubs = strShowClubs!=null && strShowClubs.equalsIgnoreCase("true");
-		boolean showPlayers = strShowPlayers!=null && strShowPlayers.equalsIgnoreCase("true");
-		boolean showMembers = strShowMembers!=null && strShowMembers.equalsIgnoreCase("true");
+		boolean showClubs = strShowClubs!=null && strShowClubs.equals(YesNoDropDownMenu.YES);
+		boolean showPlayers = strShowPlayers!=null && strShowPlayers.equals(YesNoDropDownMenu.YES);
+		boolean showMembers = strShowMembers!=null && strShowMembers.equals(YesNoDropDownMenu.YES);
 		if(!showPlayers && !showMembers) {
 			showPlayers = showMembers = true;
 		}
