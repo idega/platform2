@@ -20,6 +20,9 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.KeyMapping;
+import se.idega.idegaweb.commune.accounting.regulations.data.KeyMappingBMPBean;
+import se.idega.idegaweb.commune.accounting.regulations.data.KeyMappingHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
 
@@ -43,32 +46,35 @@ public class InvoiceBusinessBean {
 		float months;
 		int days;
 		IWTimestamp time, startTime, endTime;
-
-		//**Flag all contracts as 'not processed'
-
-		
 		try {
-			archive = getChildCareContractArchiveHome().findByDateRange(startPeriod, endPeriod);
-		} catch (RemoteException e) {
-			// TODO (JJ) 
-			e.printStackTrace();
-		} catch (FinderException e) {
-			// TODO (JJ) create feedback that no contracts were found
-			e.printStackTrace();
-		}
-		Iterator archiveIter = archive.iterator();
-
-		//Loop through all contracts
-		while(archiveIter.hasNext())
-		{
-			contract = (ChildCareContractArchive)archiveIter.next();
-			
+			int childcare = getKeyMappingHome().findValueByCategoryAndKey(
+				KeyMappingBMPBean.CAT_ACTIVITY,KeyMappingBMPBean.KEY_CHILDCARE).getValue();
+			int check = getKeyMappingHome().findValueByCategoryAndKey(
+				KeyMappingBMPBean.CAT_REG_SPEC,KeyMappingBMPBean.KEY_CHECK).getValue();
+	
+			//**Flag all contracts as 'not processed'
+	
 			try {
-				//**Fetch invoice receiver
+				archive = getChildCareContractArchiveHome().findByDateRange(startPeriod, endPeriod);
+			} catch (RemoteException e) {
+				// TODO (JJ) 
+				e.printStackTrace();
+			} catch (FinderException e) {
+				// TODO (JJ) create feedback that no contracts were found
+				e.printStackTrace();
+			}
+			Iterator archiveIter = archive.iterator();
+	
+			//Loop through all contracts
+			while(archiveIter.hasNext())
+			{
+				contract = (ChildCareContractArchive)archiveIter.next();
+			
+				// **Fetch invoice receiver
 				custodian = contract.getApplication().getOwner();
 				//**Fetch the reference at the provider
 				provider = contract.getApplication().getProvider();
-				//**Create the invoice header
+				// **Create the invoice header
 				//TODO (JJ) This should not always be done! Sometimes the header might already be created...
 				InvoiceHeader invoiceHeader = getInvoiceHeaderHome().create();
 				//Fill in all the field available at this time
@@ -83,7 +89,7 @@ public class InvoiceBusinessBean {
 				invoiceHeader.setTotalAmountWithoutVAT(0);
 				invoiceHeader.setTotalVATAmount(0);
 
-				//**Calculate how big part of time period this contract is valid for
+				// **Calculate how big part of time period this contract is valid for
 //				if(contract.getValidFromDate().before(startPeriod) && (contract.getValidFromDate().after(endPeriod))){
 //					months = 1;
 //				} else {
@@ -105,13 +111,15 @@ public class InvoiceBusinessBean {
 					days = IWTimestamp.getDaysBetween(startTime, endTime);
 //				}
 
-/*
+
 				//Get all the rules for this contract
 				//TODO (JJ) This is a func that Thomas will provide.
 				PostingBusiness postingBusiness = getPostingBusinessHome().create();
-				postingBusiness.getPostingParameter(new Date(),);
-				Rule rule = (Rule)ruleIter.next();
-				//**Create the invoice record
+				
+/*				
+				PostingParameters rule = postingBusiness.getPostingParameter(new Date(), childcare, check, null, null);
+//				Rule rule = (Rule)ruleIter.next();
+				// **Create the invoice record
 				InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 				invoiceRecord.setAmount(rule.getAmount());
 				invoiceRecord.setInvoiceText(provider.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK);
@@ -127,18 +135,21 @@ public class InvoiceBusinessBean {
 				//TODO (JJ) This is a func that Thomas will provide.
 				Iterator ruleIter = rule.iterator();
 				while(ruleIter.hasNext()){
-					Rule rule = (Rule)ruleIter.next();
+//					Rule rule = (Rule)ruleIter.next();
 				}
-*/				
-			} catch (RemoteException e1) {
-				// TODO (JJ) Auto-generated catch block
-				e1.printStackTrace();
-			} catch (CreateException e) {
-				// TODO (JJ) Auto-generated catch block
-				e.printStackTrace();
-			}
-
+*/
 		
+			}
+				
+		} catch (RemoteException e1) {
+			// TODO (JJ) Auto-generated catch block
+			e1.printStackTrace();
+		} catch (CreateException e) {
+			// TODO (JJ) Auto-generated catch block
+			e.printStackTrace();
+		} catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -165,6 +176,10 @@ public class InvoiceBusinessBean {
 
 	public InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
 		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+	}
+
+	public KeyMappingHome getKeyMappingHome() throws RemoteException {
+		return (KeyMappingHome) IDOLookup.getHome(KeyMapping.class);
 	}
 
 	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
