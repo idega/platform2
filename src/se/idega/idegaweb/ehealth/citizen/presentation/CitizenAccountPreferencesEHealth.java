@@ -179,6 +179,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	private boolean noVerificationForBankLogins = true;
 
     private boolean removeEmailWhenEmpty = true;
+    private boolean showEmailSMS = true;
 		
 	public CitizenAccountPreferencesEHealth() {
 	}
@@ -460,33 +461,36 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		*/
 		row++;
 		table.setHeight(row, 12);
-	
-
-		row++;
-		table.mergeCells(1, row, 2, row);
-		table.add(tMessagesViaEmail, 1, row);
 		
-		row++;
-		table.mergeCells(1, row, 2, row);
-		Text chooseWay = getLocalizedText(KEY_CHOOSE_WAY, DEFAULT_CHOOSE_WAY);
-		Text email = getLocalizedText(KEY_EMAIL, DEFAULT_EMAIL);
-		Text sms = getLocalizedText(KEY_SMS, DEFAULT_SMS);
-		
-		table.add(chooseWay, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
-		table.add(email, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
-		table.add(cbMessagesViaEmail, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
-		table.add(sms, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
-		table.add(cbMessagesViaSMS, 1, row);
-		
-		cbMessagesViaSMS.setChecked(true);
-		cbMessagesViaEmail.setChecked(false);
+		if (showEmailSMS) {
+			row++;
+			table.mergeCells(1, row, 2, row);
+			table.add(tMessagesViaEmail, 1, row);
 			
-		row++;
-		table.setHeight(row, 12);
+			row++;
+			table.mergeCells(1, row, 2, row);
+			Text chooseWay = getLocalizedText(KEY_CHOOSE_WAY, DEFAULT_CHOOSE_WAY);
+			Text email = getLocalizedText(KEY_EMAIL, DEFAULT_EMAIL);
+			Text sms = getLocalizedText(KEY_SMS, DEFAULT_SMS);
+			
+			table.add(chooseWay, 1, row);
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(email, 1, row);
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(cbMessagesViaEmail, 1, row);
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(sms, 1, row);
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(cbMessagesViaSMS, 1, row);
+			
+			cbMessagesViaSMS.setChecked(true);
+			cbMessagesViaEmail.setChecked(false);
+			row++;
+			table.setHeight(row, 12);
+		}
+
+		
+		
 		
 		/*ICPage homepage = null;
 		try {
@@ -907,5 +911,9 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
     
     public void setToRemoveEmailWhenEmpty(boolean flag){
         this.removeEmailWhenEmpty = flag;
+    }
+    
+    public void setShowEmailSMS(boolean showEmail){
+    	this.showEmailSMS = showEmail;
     }
 }
