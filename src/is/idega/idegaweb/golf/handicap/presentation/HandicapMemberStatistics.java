@@ -90,8 +90,8 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setRows(3);
-		table.setColumns(6);
+		table.setRows(6);
+		table.setColumns(3);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		int row = 1;
@@ -126,7 +126,7 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.setRowStyleClass(row++, getLightRowClass());
 		
 		if (iShowInfo) {
-			table.setColumns(7);
+			table.setRows(7);
 			table.mergeCells(1, row, 3, row);
 			table.setCellpadding(1, row, 4);
 			table.add(getText(localize("handicap.hole_statistics_info", "The statistics shows information calculated from every scorecard entered in the database for the golfer.")), 1, row);
@@ -192,8 +192,8 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setRows(3);
-		table.setColumns(4);
+		table.setRows(4);
+		table.setColumns(3);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		int row = 1;
@@ -236,7 +236,7 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.setRowStyleClass(row++, getLightRowClass());
 		
 		if (iShowInfo) {
-			table.setColumns(5);
+			table.setRows(5);
 			table.mergeCells(1, row, 3, row);
 			table.setCellpadding(1, row, 4);
 			table.add(getText(localize("handicap.registered_statistics_info", "The statistics shows information entered manually by user.")), 1, row);
