@@ -115,7 +115,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
 //      }
 //      try {
 //        int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc,this.getICObjectInstanceID()));
+        iframe.setSrc(BuilderLogic.getInstance().getIFrameContentURL(iwc,this.getICObjectInstanceID()));
 /*      }
       catch (NumberFormatException ex) {
         //int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
@@ -291,7 +291,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
     public String getURl(IWContext iwc){
       if(url == null){
         if(targetInstanceId != 0){
-          url = BuilderLogic.getIFrameContentURL(iwc,targetInstanceId);
+          url = BuilderLogic.getInstance().getIFrameContentURL(iwc,targetInstanceId);
           try {
             parentPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
           }
