@@ -143,6 +143,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
 
 	private final static String PROPERTY_HAS_THREE_MONTHS_RULE = "use_three_months_rule";
+	
+	private final static String PROPERTY_USE_VACANCIES = "use_vacancies";
 
 	private final static String PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN = "send_joint_message_to_other_custodian_on_child_care_choice";
 
@@ -4570,7 +4572,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private String getSQL() {
 //		return "" + " select sch.sch_school_id,sch.school_name," + " pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS," + " pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY," + " count(c.child_id) " + " from comm_childcare c , proc_case p ,sch_school sch, comm_childcare_prognosis pr,sch_school_sch_school_type m,sch_school_type st,ic_commune comm" + " WHERE c.COMM_CHILDCARE_ID=p.proc_case_id " + " and c.provider_id = sch.sch_school_id" + " and sch.commune = comm.ic_commune_id" + " and pr.provider_id = sch.sch_school_id" + " and m.sch_school_id = sch.sch_school_id" + " and m.sch_school_type_id = st.sch_school_type_id" + " and comm.default_commune = 'Y'" + " and st.school_category = 'CHILD_CARE'" + " AND p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR')" + " group by sch.sch_school_id,sch.school_name," + " pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS," + " pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY";
-		return "select sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY, count(c.child_id) from comm_childcare c , proc_case p, sch_school_sch_school_type m,sch_school_type st,ic_commune comm, sch_school sch left join comm_childcare_prognosis pr on sch.sch_school_id=pr.provider_id WHERE c.COMM_CHILDCARE_ID=p.proc_case_id  and c.provider_id = sch.sch_school_id and sch.commune = comm.ic_commune_id and m.sch_school_id = sch.sch_school_id and m.sch_school_type_id = st.sch_school_type_id and comm.default_commune = 'Y' and st.school_category = 'CHILD_CARE' AND p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR') group by sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY order by sch.school_name";
+		return "select sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY, count(c.child_id), pr.VACANCIES from comm_childcare c , proc_case p, sch_school_sch_school_type m,sch_school_type st,ic_commune comm, sch_school sch left join comm_childcare_prognosis pr on sch.sch_school_id=pr.provider_id WHERE c.COMM_CHILDCARE_ID=p.proc_case_id  and c.provider_id = sch.sch_school_id and sch.commune = comm.ic_commune_id and m.sch_school_id = sch.sch_school_id and m.sch_school_type_id = st.sch_school_type_id and comm.default_commune = 'Y' and st.school_category = 'CHILD_CARE' AND p.case_status NOT IN ('DELE', 'TYST', 'UPPS', 'KLAR') group by sch.sch_school_id,sch.school_name, pr.comm_childcare_prognosis_id,pr.UPDATED_DATE,pr.THREE_MONTHS_PROGNOSIS,pr.ONE_YEAR_PROGNOSIS, pr.THREE_MONTHS_PRIORITY,pr.ONE_YEAR_PRIORITY,pr.PROVIDER_CAPACITY,pr.VACANCIES order by sch.school_name";
 	}
 
 	/**
@@ -4601,6 +4603,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				bean.setOneYearPriority(new Integer(RS.getInt(8)));
 				bean.setProviderCapacity(new Integer(RS.getInt(9)));
 				bean.setQueueTotal(new Integer(RS.getInt(10)));
+				bean.setVacancies(new Integer(RS.getInt(11)));
 				vector.add(bean);
 			}
 			RS.close();
@@ -4971,5 +4974,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public CareTime getCareTime(String careTime) throws FinderException {
 		return getCareTimeHome().findByPrimaryKey(careTime);
+	}
+	
+	public boolean getUseVacancies(){
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		boolean useVacancies = bundle.getBooleanProperty(PROPERTY_USE_VACANCIES, false);
+		
+		return useVacancies;
 	}
 }

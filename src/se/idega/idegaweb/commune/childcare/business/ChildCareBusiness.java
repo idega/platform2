@@ -1217,5 +1217,10 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCareTime
 	 */
 	public CareTime getCareTime(String careTime) throws FinderException, java.rmi.RemoteException;
+	
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getVacancies
+	 */
+	public boolean getUseVacancies();
 
 }
