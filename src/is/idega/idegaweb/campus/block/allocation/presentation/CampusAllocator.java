@@ -882,6 +882,9 @@ public class CampusAllocator extends Block implements Campus{
     String sMustFrom = iwc.getParameter("from");
     /** @todo  contract overlap */
     idegaTimestamp mustBeFrom = sMustFrom !=null ? new idegaTimestamp(sMustFrom):null;
+    mustBeFrom.setHour(0);
+    mustBeFrom.setMinute(0);
+    mustBeFrom.setSecond(0);
 
     if( sDateFrom!=null && sDateTo!=null){
       idegaTimestamp from = new idegaTimestamp(sDateFrom);
