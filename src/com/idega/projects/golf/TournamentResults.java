@@ -188,7 +188,7 @@ public class TournamentResults extends JModuleObject {
                 seeScores.addParameter("member_id",collector.getMemberId());
                 seeScores.addParameter("tournament_id",tournamentId_);
                 seeScores.addParameter("tournament_group_id",collector.getTournamentGroupId());
-        Link seeScoresMember = new Link(memberText);
+        Link seeScoresMember = new Link(memberText,"/tournament/handicap_skor.jsp");
                 seeScoresMember.addParameter("member_id",collector.getMemberId());
                 seeScoresMember.addParameter("tournament_id",tournamentId_);
                 seeScoresMember.addParameter("tournament_group_id",collector.getTournamentGroupId());
