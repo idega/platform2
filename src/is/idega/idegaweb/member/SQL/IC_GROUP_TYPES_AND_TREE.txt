@@ -1,7 +1,7 @@
 insert into ic_group_type(group_type,description,is_visible) values('iwme_federation','A collection of leagues (ISI)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_union','A collection of clubs and regional unions (UMFI)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_regional_union','A collection of clubs (IBR)','Y')
-insert into ic_group_type(group_type,description,is_visible) values('iwme_league  ','A collection of club divisions (KSI)','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_league','A collection of club divisions (KSI)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club','A sports club (VALUR)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division','A sports club divison (FOOTBALL)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_member','A sports club member active or inactive','Y')
