@@ -41,7 +41,7 @@ class ChildCareQueueTable extends Table {
 		Iterator i = choices.iterator();
 		int row = 2;
 		while (i.hasNext()) {
-			ChildCareQueue queueSelection = ((ChildCareQueue) i.next());
+			ChildCareQueue queueSelection = ((ComparableQueue) i.next()).getQueue();
 			queueSelection.getChoiceNumber();
 			String id = ((Integer) queueSelection.getPrimaryKey()).toString();
 			String name = queueSelection.getProviderName();
