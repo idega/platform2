@@ -35,8 +35,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
-//import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -48,7 +47,8 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-//import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
@@ -56,7 +56,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-//import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/11 08:51:01 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/11 10:29:05 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.102 $
+ * @version $Revision: 1.103 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -894,93 +894,78 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 	
 	public PaymentRecord createVatPaymentRecord
-		(final PaymentRecord previousPaymentRecord,
-		 final PostingDetail postingDetail, final float months, final School school,
-		 final SchoolType schoolType, final SchoolYear schoolYear) {
-		throw new UnsupportedOperationException ();
-		/*
-		Regulation vatRuleRegulation = previousPaymentRecord.getVATRuleRegulation();
+		(final PaymentRecord paymentRecord, final PostingDetail postingDetail,
+		 final School school, final SchoolType schoolType,
+		 final SchoolYear schoolYear, final PlacementTimes placementTimes,
+		 final char status, final String createdBySignature)
+	throws RemoteException, CreateException {
+
+		// get payment header
+		final SchoolCategory schoolCategory = schoolType.getCategory ();
+		final Date startDate = placementTimes.getFirstCheckDay ().getDate ();
+		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader
+				(school, schoolCategory, startDate, status);
+
+		// get vat regulation
+		final Regulation vatRuleRegulation = paymentRecord.getVATRuleRegulation();
 		if (null == vatRuleRegulation) return null;
-		
-		//Get the payment header
-		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader (school, schoolType.getCategory (), null /* correct this date, 'P');
-		PaymentRecord paymentRecord;
-		Provider provider = new Provider (school);
-		RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
-		String ruleSpecType = regSpecType.getRegSpecType ();
-		//String ruleSpecType = RegSpecConstant.MOMS;
-		//RegulationSpecType regSpecType;
-		String[] postingStrings=null;
-		//float amount = postingDetail.getAmount();
-		//float vatPercent = postingDetail.getVATPercent();
-		//float vatPercentage = vatPercent/100;
-		float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);				
-		
+		final RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
+
+		// get own and double postings
+		final int regSpecTypeId
+				= ((Number) regSpecType.getPrimaryKey ()).intValue ();
+		final Provider provider = new Provider (school);
+		final int schoolYearId = null == schoolYear ? -1
+				: ((Number) schoolYear.getPrimaryKey ()).intValue ();
+		String ownPosting = "";
+		String doublePosting = "";
 		try {
-			//regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
-			int regSpecTypeId= ((Number)regSpecType.getPrimaryKey()).intValue();
-			int schoolYearId = -1;
-			if(schoolYear!=null){
-				schoolYearId = ((Number)schoolYear.getPrimaryKey()).intValue();
-			}
-			postingStrings = getPostingBusiness().getPostingStrings(category,schoolType,regSpecTypeId,provider,startPeriod.getDate(),schoolYearId);
+			final String [] postings = getPostingBusiness ().getPostingStrings
+					(schoolCategory, schoolType, regSpecTypeId, provider, startDate,
+					 schoolYearId);
+			ownPosting = postings [0];
+			doublePosting = postings [1];
+		} catch (PostingException e) {
+			// no postings found
+			e.printStackTrace ();
 		}
-		catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (PostingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-		
-		String ownPosting = postingStrings[0];
-		String doublePosting = postingStrings[1];
-		
-		//Update or create the payment record
-		//String ruleText = postingDetail.getTerm();
-		//String ruleSpecType = postingDetail.getRuleSpecType();
-		
-		String paymentText = vatRuleRegulation.getName();
-		//float newamount=previousPaymentRecord.getTotalAmountVAT();
-		float vatAmount=0;
-		//float vatPercent=0;
-		
+
+		// count increase value for amount
+		final float newTotalVatAmount = AccountingUtil.roundAmount
+				(postingDetail.getVATAmount () * placementTimes.getMonths ());				
+		final String paymentText = vatRuleRegulation.getName ();
+
+		// find or create vat payment record
+		PaymentRecord vatPaymentRecord;
 		try {
-			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
-			paymentRecord = prechome.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(ownPosting,doublePosting,null,paymentText,month);
-			
-			//paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
-			
-			paymentRecord.setTotalAmount(AccountingUtil.roundAmount(paymentRecord.getTotalAmount()+newTotalVATAmount));
-			paymentRecord.setTotalAmountVAT(vatAmount);
-			paymentRecord.store();
+			vatPaymentRecord = getPaymentRecordHome ()
+					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth
+					(ownPosting, doublePosting, null, paymentText,
+					 new CalendarMonth (startDate));
+			vatPaymentRecord.setTotalAmount
+					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
+																			 + newTotalVatAmount));
+			vatPaymentRecord.store ();
 		} catch (FinderException e1) {
 			//It didn't exist, so we create it
-			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
-			//Set all the values for the payment record
-			paymentRecord.setPaymentHeaderId(((Integer)paymentHeader.getPrimaryKey()).intValue());
-			if(categoryPosting.getProviderAuthorization()){
-				paymentRecord.setStatus(ConstantStatus.BASE);
-			} else {
-				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
-			}
-			paymentRecord.setPeriod(startPeriod.getDate());
-			paymentRecord.setPaymentText(paymentText);
-			paymentRecord.setDateCreated(currentDate);
-			paymentRecord.setCreatedBy(BATCH_TEXT);
-			paymentRecord.setPlacements(0);
-			paymentRecord.setPieceAmount(0);
-			paymentRecord.setTotalAmount(newTotalVATAmount);
-			paymentRecord.setTotalAmountVAT(vatAmount);
-			paymentRecord.setRuleSpecType(ruleSpecType);
-			paymentRecord.setOwnPosting(ownPosting);
-			paymentRecord.setDoublePosting(doublePosting);
-			//paymentRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
-			//paymentRecord.setOrderId (postingDetail.getOrderID());
-			paymentRecord.store();
-			}
-			return paymentRecord;*/
+			vatPaymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
+			vatPaymentRecord.setPaymentHeader (paymentHeader);
+			vatPaymentRecord.setStatus (status);
+			vatPaymentRecord.setPeriod (startDate);
+			vatPaymentRecord.setPaymentText (paymentText);
+			vatPaymentRecord.setDateCreated (now ());
+			vatPaymentRecord.setCreatedBy (createdBySignature);
+			vatPaymentRecord.setPlacements (0);
+			vatPaymentRecord.setPieceAmount (0);
+			vatPaymentRecord.setTotalAmount (newTotalVatAmount);
+			vatPaymentRecord.setTotalAmountVAT (0);
+			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
+			vatPaymentRecord.setOwnPosting (ownPosting);
+			vatPaymentRecord.setDoublePosting (doublePosting);
+			vatPaymentRecord.setOrderId (postingDetail.getOrderID());
+			vatPaymentRecord.store();
+		}
+		return vatPaymentRecord;
 	}
 
 	public RegulationSpecType [] getAllRegulationSpecTypes ()
@@ -1056,6 +1041,15 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	protected RegulationsBusiness getRegulationsBusiness(){
 		try {
 			return (RegulationsBusiness)getServiceInstance(RegulationsBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	protected PostingBusiness getPostingBusiness(){
+		try {
+			return (PostingBusiness)getServiceInstance(PostingBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e);
