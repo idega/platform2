@@ -1,10 +1,14 @@
 package com.idega.block.cal;
 
+import com.idega.block.cal.presentation.AttendantChooser;
+import com.idega.block.cal.presentation.CalPropertyWindow;
 import com.idega.block.cal.presentation.CalendarWindowPlugin;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.app.ToolbarElement;
+import com.idega.user.presentation.GroupChooser;
+import com.idega.user.presentation.UserPropertyWindow;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -21,6 +25,8 @@ public class IWBundleStarter implements IWBundleStartable {
 		
 		ImplementorRepository repository = ImplementorRepository.getInstance();
 		// add implementor for the com.idega.user bundle
+		repository.addImplementor(CalPropertyWindow.class, UserPropertyWindow.class);
+		repository.addImplementor(AttendantChooser.class, GroupChooser.class);
 		repository.addImplementor(ToolbarElement.class, CalendarWindowPlugin.class);
 	}
 	
