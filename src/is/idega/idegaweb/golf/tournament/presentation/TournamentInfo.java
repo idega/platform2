@@ -51,88 +51,75 @@ public class TournamentInfo extends GolfBlock {
 		Union union = tournament.getUnion();
 		Field field = tournament.getField();
 
+		
 		Table table = new Table(2, 10);
-		table.setColor("#CEDFD0");
-		table.setCellpadding(5);
-		table.setCellspacing(1);
+		table.setWidth(getWidth());
+		table.setCellpadding(0);
+		table.setCellspacing(0);
 		table.mergeCells(1, 1, 2, 1);
 		table.mergeCells(1, 8, 2, 8);
 		table.mergeCells(1, 9, 2, 9);
-		table.setWidth("690");
 		table.setAlignment("center");
 		table.setAlignment(2, 10, "right");
-		table.setHorizontalZebraColored("#DCEFDE", "#EAFAEC");
-		table.setRowColor(1, "#2C4E3B");
-		table.setRowColor(8, "#2C4E3B");
-		table.setRowColor(7, "#CEDFD0");
-		table.setRowColor(10, "#CEDFD0");
 		table.setWidth(2, "90%");
+		table.setRowStyleClass(1,getHeaderRowClass());
+		table.setRowStyleClass(2,getLightRowClass());
+		table.setRowStyleClass(3,getDarkRowClass());
+		table.setRowStyleClass(4,getLightRowClass());
+		table.setRowStyleClass(5,getDarkRowClass());
+		table.setRowStyleClass(6,getLightRowClass());
+		table.setRowStyleClass(7,getDarkRowClass());
+		table.setRowStyleClass(8,getHeaderRowClass());
+		table.setRowStyleClass(9,getLightRowClass());
+		table.setRowStyleClass(10,getDarkRowClass());
 
-		Text name = new Text(tournament.getName());
-		name.setFontFace(Text.FONT_FACE_VERDANA);
-		name.setFontSize(Text.FONT_SIZE_10_HTML_2);
-		name.setFontColor("#FFFFFF");
-		name.setBold();
+
+		Text name = getSmallHeader(tournament.getName());
 		table.add(name, 1, 1);
 
 		int row = 1;
 
-		Text extraInfoText = new Text(iwrb.getLocalizedString("tournament.information", "Information"), true, false, false);
-		extraInfoText.setFontFace(Text.FONT_FACE_VERDANA);
-		extraInfoText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-		extraInfoText.setFontColor("#FFFFFF");
-		extraInfoText.setBold();
+		Text extraInfoText = getSmallHeader(iwrb.getLocalizedString("tournament.information", "Information"));
 		table.add(extraInfoText, 1, 8);
 
-		Text startDateText = new Text(iwrb.getLocalizedString("tournament.date", "Date"), true, false, false);
-		startDateText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text startDateText = getHeader(iwrb.getLocalizedString("tournament.date", "Date"));
 		table.add(startDateText, 1, 3);
 
-		Text RegDateText = new Text(iwrb.getLocalizedString("tournament.registration", "Registration"), true, false, false);
-		RegDateText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text RegDateText = getHeader(iwrb.getLocalizedString("tournament.registration", "Registration"));
 		table.add(RegDateText, 1, 6);
 
-		Text tournamentTypeText = new Text(iwrb.getLocalizedString("tournament.arrangement", "Arrangement"), true, false, false);
-		tournamentTypeText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text tournamentTypeText = getHeader(iwrb.getLocalizedString("tournament.arrangement", "Arrangement"));
 		table.add(tournamentTypeText, 1, 4);
 
-		Text unionNameText = new Text(iwrb.getLocalizedString("tournament.club", "Club"), true, false, false);
-		unionNameText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text unionNameText = getHeader(iwrb.getLocalizedString("tournament.club", "Club"));
 		table.add(unionNameText, 1, 2);
 
-		Text fieldNameText = new Text(iwrb.getLocalizedString("tournament.field", "Field"), true, false, false);
-		fieldNameText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text fieldNameText = getHeader(iwrb.getLocalizedString("tournament.field", "Field"));
 		table.add(fieldNameText, 1, 5);
 
 		IWTimestamp startStamp = new IWTimestamp(tournament.getStartTime());
-		Text startDate = new Text(startStamp.getLocaleDate(modinfo.getCurrentLocale()));
-		startDate.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text startDate = getText(startStamp.getLocaleDate(modinfo.getCurrentLocale()));
 		table.add(startDate, 2, 3);
 
 		IWTimestamp firstRegStamp = new IWTimestamp(tournament.getFirstRegistrationDate());
 		IWTimestamp lastRegStamp = new IWTimestamp(tournament.getLastRegistrationDate());
-		Text RegDate = new Text(firstRegStamp.getDate() + "/" + firstRegStamp.getMonth() + "/" + firstRegStamp.getYear() + " - " + lastRegStamp.getDate() + "/" + lastRegStamp.getMonth() + "/" + lastRegStamp.getYear());
-		RegDate.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text RegDate = getText(firstRegStamp.getDate() + "/" + firstRegStamp.getMonth() + "/" + firstRegStamp.getYear() + " - " + lastRegStamp.getDate() + "/" + lastRegStamp.getMonth() + "/" + lastRegStamp.getYear());
 		table.add(RegDate, 2, 6);
 
-		Text tournamentType = new Text(tournament.getTournamentType().getName());
-		tournamentType.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text tournamentType = getText(tournament.getTournamentType().getName());
 		table.add(tournamentType, 2, 4);
 
-		Text unionName = new Text(union.getName() + " (" + union.getAbbrevation() + ")");
-		unionName.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text unionName = getText(union.getName() + " (" + union.getAbbrevation() + ")");
 		table.add(unionName, 2, 2);
 
-		Text fieldName = new Text(field.getName());
-		fieldName.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		Text fieldName = getText(field.getName());
 		table.add(fieldName, 2, 5);
 
-		Text extraInfo = new Text("");
+		Text extraInfo = getText("");
 		if (tournament.getExtraText() != null) {
 			String theExtraInfo = TextSoap.formatText(tournament.getExtraText());
 			extraInfo.setText(theExtraInfo);
 		}
-		extraInfo.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
 		table.add(extraInfo, 1, 9);
 
@@ -154,7 +141,6 @@ public class TournamentInfo extends GolfBlock {
 			register.setWindowToOpen(RegistrationForMembersWindow.class);
 			register.addParameter("action", "open");
 			register.addParameter("tournament_id", Integer.toString(tournament.getID()));
-			register.setFontSize(1);
 			table.add(register, 2, 3);
 		}
 
