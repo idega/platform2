@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.12 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.13 2002/05/02 01:44:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -243,6 +243,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
           }
 
           if (wait != null) {
+            System.out.println("wait.getOrder() = " + wait.getOrder());
             appliedTable.add(new Text(wait.getOrder().toString()),2,pos);
             appliedTable.setAlignment(2,pos,"center");
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.7 2002/04/19 23:44:41 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.8 2002/05/02 01:44:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,6 @@ import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import com.idega.block.application.data.Applicant;
-//import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationFinder;
 import java.sql.SQLException;
@@ -35,62 +34,60 @@ import java.util.Hashtable;
  * @version 1.0
  */
 public abstract class CampusApplicationFinder {
-
-  public static List listOfApplicationInSubject(int subjectId){
+  public static List listOfApplicationInSubject(int subjectId) {
     try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome)com.idega.data.IDOLookup.getHomeLegacy(SpouseOccupation.class)).createLegacy()));
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome)com.idega.data.IDOLookup.getHomeLegacy(SpouseOccupation.class)).createLegacy());
     }
-    catch(SQLException e){
-      return(null);
+    catch(SQLException e) {
+      return null;
     }
   }
 
-  public static List listOfSpouseOccupations(){
+  public static List listOfSpouseOccupations() {
     try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome)com.idega.data.IDOLookup.getHomeLegacy(SpouseOccupation.class)).createLegacy()));
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome)com.idega.data.IDOLookup.getHomeLegacy(SpouseOccupation.class)).createLegacy());
     }
-    catch(SQLException e){
-      return(null);
+    catch(SQLException e) {
+      return null;
     }
   }
-  public static List listOfResidences(){
+  public static List listOfResidences() {
     try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.CurrentResidencyHome)com.idega.data.IDOLookup.getHomeLegacy(CurrentResidency.class)).createLegacy()));
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.CurrentResidencyHome)com.idega.data.IDOLookup.getHomeLegacy(CurrentResidency.class)).createLegacy());
     }
-    catch(SQLException e){
-      return(null);
+    catch(SQLException e) {
+      return null;
     }
   }
-  public static List listOfNewApplied(){
+  public static List listOfNewApplied() {
     try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy()));
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy());
     }
-    catch(SQLException e){
-      return(null);
+    catch(SQLException e) {
+      return null;
     }
   }
 
-  public static List listOfNewCampusApplication(){
+  public static List listOfNewCampusApplication() {
      try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy()));
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy());
     }
-    catch(SQLException e){
-      return(null);
+    catch(SQLException e) {
+      return null;
     }
   }
 
-  public static List listOfAppliedInApplication(int id){
+  public static List listOfAppliedInApplication(int id) {
     try {
       Applied A = ((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy();
-      return(EntityFinder.findAllByColumn(A,A.getApplicationIdColumnName(),id));
+      return EntityFinder.findAllByColumn(A,A.getApplicationIdColumnName(),id);
     }
-    catch(SQLException e){
-      return(null);
+    catch(SQLException e) {
+      return null;
     }
   }
 
-  public static List listOfNewApplicationHolders(){
-
+  public static List listOfNewApplicationHolders() {
     List A = listOfNewApplied();
     List B = listOfNewCampusApplication();
     List C = ApplicationFinder.listOfNewApplications();
@@ -99,8 +96,7 @@ public abstract class CampusApplicationFinder {
     return listOfCampusApplicationHolders(A,B,C,D);
   }
 
-  public static List listOfApplicationHoldersInSubject(int id,String status){
-
+  public static List listOfApplicationHoldersInSubject(int id, String status) {
     List A = listOfNewApplied();
     List B = listOfNewCampusApplication();
     List C = ApplicationFinder.listOfApplicationInSubject(id,status);
@@ -109,78 +105,83 @@ public abstract class CampusApplicationFinder {
     return listOfCampusApplicationHolders(A,B,C,D);
   }
 
-  public static List listOfCampusApplicationHolders(List lApplied,List lCamApp,List lApp,List lApplicant){
+  public static List listOfCampusApplicationHolders(List lApplied, List lCamApp, List lApp, List lApplicant) {
     List A = lApplied;
     List B = lCamApp;
     List C = lApp;
     List D = lApplicant;
 
     Vector V = null;
-    try{
-    int len;
-    if(B != null && C != null && D != null){
-      len = D.size();
-      Hashtable HD = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        Applicant applicant = (Applicant) D.get(i);
-        HD.put(new Integer(applicant.getID()),applicant);
-      }
-      len = C.size();
-      Hashtable HC = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        Application application = (Application) C.get(i);
-        HC.put(new Integer(application.getID()),application);
-      }
-      len =  B.size();
-      Hashtable HB = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        CampusApplication campusapplication = (CampusApplication) B.get(i);
-        HB.put(new Integer(campusapplication.getID()),campusapplication);
-      }
+    try {
+      java.util.Iterator it = null;
+      if (B != null && C != null && D != null) {
+        it = D.iterator();
+        Hashtable HD = new Hashtable(D.size());
+        while (it.hasNext())  {
+          Applicant applicant = (Applicant)it.next();
+          HD.put(new Integer(applicant.getID()),applicant);
+        }
 
-      if(A != null){
-        int iLen = A.size();
-        Application application;
-        Applicant applicant;
-        CampusApplication campusApplication;
-        Applied applied;
-        CampusApplicationHolder AH;
-        V = new Vector();
-        Vector vApplied = null;
-        int appliedAppId = -1;
+        it = C.iterator();
+        Hashtable HC = new Hashtable(C.size());
+        while (it.hasNext())  {
+          Application application = (Application)it.next();
+          HC.put(new Integer(application.getID()),application);
+        }
 
-        for (int i = 0; i < iLen; i++) {
-          applied =  (Applied)(A.get(i));
+        it =  B.iterator();
+        Hashtable HB = new Hashtable(B.size());
+        while (it.hasNext())  {
+          CampusApplication campusapplication = (CampusApplication)it.next();
+          HB.put(new Integer(campusapplication.getID()),campusapplication);
+        }
 
-          if(appliedAppId == applied.getApplicationId().intValue()){
-            if(vApplied != null)
+        if (A != null) {
+          it = A.iterator();
+          Application application;
+          Applicant applicant;
+          CampusApplication campusApplication;
+          Applied applied;
+          CampusApplicationHolder AH;
+          V = new Vector();
+          Vector vApplied = null;
+          int appliedAppId = -1;
+
+          while (it.hasNext()) {
+            applied = (Applied)it.next();
+
+            if (appliedAppId == applied.getApplicationId().intValue()) {
+              if (vApplied != null)
+                vApplied.add(applied);
+            }
+            else {
+              vApplied = new Vector();
               vApplied.add(applied);
-          }
-          else{
-            vApplied = new Vector();
-            vApplied.add(applied);
-            if(HB.containsKey(applied.getApplicationId()) ){
-              campusApplication = (CampusApplication) HB.get((applied.getApplicationId()));
-              if(HC.containsKey(campusApplication.getAppApplicationId()) ){
-                application = (Application) HC.get((campusApplication.getAppApplicationId()));
-                if(HD.containsKey(new Integer(application.getApplicantId()))){
-                  applicant = (Applicant)HD.get(new Integer(application.getApplicantId()));
-                  AH = new CampusApplicationHolder(application,applicant,campusApplication,vApplied);
-                  V.add(AH);
+              if (HB.containsKey(applied.getApplicationId())) {
+                campusApplication = (CampusApplication)HB.get((applied.getApplicationId()));
+                if (HC.containsKey(campusApplication.getAppApplicationId())) {
+                  application = (Application)HC.get((campusApplication.getAppApplicationId()));
+                  if (HD.containsKey(new Integer(application.getApplicantId()))) {
+                    applicant = (Applicant)HD.get(new Integer(application.getApplicantId()));
+                    AH = new CampusApplicationHolder(application,applicant,campusApplication,vApplied);
+                    V.add(AH);
+                  }
                 }
               }
             }
+            appliedAppId = (applied.getApplicationId()).intValue();
           }
-          appliedAppId = (applied.getApplicationId()).intValue();
         }
-
       }
     }
-    }catch(Exception ex){ex.printStackTrace();}
+    catch(Exception ex) {
+      ex.printStackTrace();
+    }
+
     return V;
   }
 
-  public static CampusApplicationHolder getApplicantInfo(int iApplicantId){
+  public static CampusApplicationHolder getApplicantInfo(int iApplicantId) {
     CampusApplicationHolder CAH = null;
     Applicant eApplicant = null;
 
@@ -195,9 +196,6 @@ public abstract class CampusApplicationFinder {
     return CAH;
   }
 
-  /**
-   *
-   */
   public static CampusApplicationHolder getCampusApplicationInfo(int campusApplicationId) {
     CampusApplicationHolder cah = null;
     CampusApplication ca = null;
@@ -213,9 +211,6 @@ public abstract class CampusApplicationFinder {
     return(cah);
   }
 
-  /**
-   *
-   */
   public static CampusApplicationHolder getCampusApplicationInfo(CampusApplication ca) {
     CampusApplicationHolder cah = null;
     List resultSet = null;
@@ -245,9 +240,6 @@ public abstract class CampusApplicationFinder {
     return(cah);
   }
 
-  /**
-   *
-   */
   public static CampusApplicationHolder getApplicantInfo(Applicant eApplicant) {
     CampusApplicationHolder cah = null;
     if (eApplicant != null) {
@@ -282,20 +274,17 @@ public abstract class CampusApplicationFinder {
     return(cah);
   }
 
-  /**
-   *
-   */
-  public static List listOfWaitinglist(int aprtTypeId,int cmplxId){
+  public static java.util.Collection listOfWaitinglist(int aprtTypeId, int cmplxId, String type) {
      try {
-      WaitingList WL = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
-      return(EntityFinder.findAllByColumnOrdered(WL,is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName(),String.valueOf(aprtTypeId),is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName(),String.valueOf(cmplxId),is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getPriorityColumnName()));
+      is.idega.idegaweb.campus.block.application.data.WaitingListHome WLHome = (is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class);
+      return WLHome.findByApartmentTypeAndComplex(aprtTypeId,cmplxId,type);
     }
-    catch(SQLException e){
+    catch(Exception e) {
       return(null);
     }
   }
 
-  public static List listOfEntityInWaitingList(IDOLegacyEntity returntype,int aprtTypeId,int cmplxId){
+  public static List listOfEntityInWaitingList(IDOLegacyEntity returntype,int aprtTypeId,int cmplxId) {
     List L = null;
     boolean bapplied = false;
     if(returntype instanceof Applied)
@@ -317,15 +306,15 @@ public abstract class CampusApplicationFinder {
     sql.append(" where ca.app_application_id = an.app_application_id ");
     sql.append(" and an.app_applicant_id = aa.app_applicant_id ");
     sql.append(" and aa.app_applicant_id = wl.app_applicant_id ");
-    if(bapplied){
+    if(bapplied) {
       sql.append(" and ad.bu_aprt_type_id =  wl.bu_apartment_type_id ");
       sql.append(" and ad.bu_complex_id = wl.bu_complex_id ");
     }
-    if(btype){
+    if(btype) {
       sql.append(" and wl.bu_apartment_type_id =  ");
       sql.append(aprtTypeId);
     }
-    if(bcmplx){
+    if(bcmplx) {
       sql.append(" and wl.bu_complex_id =  ");
       sql.append(cmplxId);
     }
@@ -339,7 +328,7 @@ public abstract class CampusApplicationFinder {
     return L;
   }
 
-  public static List listOfCampusApplicationHoldersInWaitinglist(int aprtTypeId,int cmplxId){
+  public static List listOfCampusApplicationHoldersInWaitinglist(int aprtTypeId,int cmplxId) {
     Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
     List lApplication = listOfEntityInWaitingList(A, aprtTypeId, cmplxId);
     List lApplicant = listOfEntityInWaitingList(((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy(), aprtTypeId, cmplxId);
@@ -350,14 +339,14 @@ public abstract class CampusApplicationFinder {
   }
 
 
- public static int countAppliedInTypeAndComplex(int typeId,int cmplxId,int order){
+ public static int countAppliedInTypeAndComplex(int typeId,int cmplxId,int order) {
     StringBuffer sql = new StringBuffer("select count(*) ");
     sql.append(" from cam_applied app ");
     sql.append(" where app.bu_aprt_type_id = ");
     sql.append(typeId);
     sql.append(" and app.bu_complex_id =");
     sql.append(cmplxId);
-    if(order > 0){
+    if(order > 0) {
       sql.append(" and app.ordered = ");
       sql.append(order);
     }
@@ -365,14 +354,14 @@ public abstract class CampusApplicationFinder {
     try{
       count = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy().getNumberOfRecords(sql.toString());
     }
-    catch(SQLException ex){}
+    catch(SQLException ex) {}
 
     if(count < 0)
       count = 0;
     return count;
   }
 
-  public static int countWaitingInTypeAndComplex(int typeId,int cmplxId,int order){
+  public static int countWaitingInTypeAndComplex(int typeId,int cmplxId,int order) {
     StringBuffer sql = new StringBuffer("select count(*  ) ");
     sql.append(" from cam_waiting_list wl ");
     sql.append(" where wl.bu_apartment_type_id = ");
@@ -384,12 +373,12 @@ public abstract class CampusApplicationFinder {
     try{
       count = ((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy().getNumberOfRecords(sql.toString());
     }
-    catch(SQLException ex){}
+    catch(SQLException ex) {}
     if(count < 0)
       count = 0;
     return count;
   }
-  public static int countWaitingWithTypeAndComplex(int typeId,int cmplxId,int order){
+  public static int countWaitingWithTypeAndComplex(int typeId,int cmplxId,int order) {
     StringBuffer sql = new StringBuffer("select count(distinct cam_waiting_list_id) ");
     sql.append(" from cam_waiting_list wl ,cam_applied ad ");
     sql.append(" where wl.bu_apartment_type_id = ad.bu_aprt_type_id ");
@@ -398,7 +387,7 @@ public abstract class CampusApplicationFinder {
     sql.append(typeId);
     sql.append(" and wl.bu_complex_id =  ");
     sql.append(cmplxId);
-     if(order > 0){
+     if(order > 0) {
       sql.append(" and ad.ordered = ");
       sql.append(order);
     }
@@ -408,7 +397,7 @@ public abstract class CampusApplicationFinder {
     try{
       count = ((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy().getNumberOfRecords(sql.toString());
     }
-    catch(SQLException ex){}
+    catch(SQLException ex) {}
     if(count < 0)
       count = 0;
     return count;
@@ -557,7 +546,7 @@ public abstract class CampusApplicationFinder {
     }
   }
 
-  public static String[] getApplicantEmail(int iApplicantId){
+  public static String[] getApplicantEmail(int iApplicantId) {
     /*
       select b.email from cam_application b,app_application a
       where b.app_application_id = a.app_application_id
@@ -578,4 +567,20 @@ public abstract class CampusApplicationFinder {
     return new String[0];
   }
 
+  public static Application getLastApprovedApplication(Applicant eApplicant) {
+    Application eApplication = null;
+    if (eApplicant != null) {
+      try {
+        eApplication =  ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
+        List l = EntityFinder.findAllByColumn(eApplication,com.idega.block.application.data.ApplicantBMPBean.getStatusColumnName(),"A",com.idega.block.application.data.ApplicationBMPBean.getApplicantIdColumnName(),eApplicant.getID());
+        if (l != null) {
+          eApplication = (Application)l.get(l.size()-1);
+        }
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }
+    return(eApplication);
+  }
 }

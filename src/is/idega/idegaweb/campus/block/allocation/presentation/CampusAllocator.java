@@ -117,10 +117,10 @@ public class CampusAllocator extends Block implements Campus{
         iwc.removeSessionAttribute("sess_type_id");
     }
 
-    if (iwc.getParameter("approveAll") != null) {
+/*    if (iwc.getParameter("approveAll") != null) {
       is.idega.idegaweb.campus.block.application.business.ApproveAllWithPriorityA tmp = new is.idega.idegaweb.campus.block.application.business.ApproveAllWithPriorityA();
       tmp.approveAll();
-    }
+    }*/
 
     if(iwc.getParameter("type_id")!=null){
       pTypeId = new Parameter("type_id",iwc.getParameter("type_id"));
@@ -145,9 +145,9 @@ public class CampusAllocator extends Block implements Campus{
 
     Table Frame = new Table();
     Frame.add(getHomeLink(),1,1);
-    Link tmp = new Link("Do not use");
+/*    Link tmp = new Link("Do not use");
     tmp.addParameter("approveAll","");
-    Frame.add(tmp,1,1);
+    Frame.add(tmp,1,1);*/
     int row = 2;
     if(isAdmin){
       if(iTypeId > 0 && iComplexId > 0){
@@ -162,7 +162,7 @@ public class CampusAllocator extends Block implements Campus{
         else if(iwc.getParameter("change")!=null){
           int iContractId = Integer.parseInt(iwc.getParameter("change"));
           int applicantId = Integer.parseInt(iwc.getParameter("applicant"));
-          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,row );
+          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId,iwc),1,row );
           Frame.add( getApartmentsForm(iTypeId,iComplexId,applicantId,iContractId),3,row );
           //Frame.add( getContractTable(iContractId),3,1 );
 
@@ -185,16 +185,16 @@ public class CampusAllocator extends Block implements Campus{
           Te.setFontSize(3);
           Te.setFontColor("#FF0000");
           Frame.add( Te,1,row++ );
-          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1,iwc),1,row );
         }
         // delete allocation
         else if(iwc.getParameter("delete_allocation")!=null){
           deleteAllocation(iwc);
-          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1,iwc),1,row );
         }
         // get Waitinglist for this type and complex
         else
-          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1,iwc),1,row );
 
       }
       // get type and complex list
@@ -350,7 +350,7 @@ public class CampusAllocator extends Block implements Campus{
     return L;
   }
 
-  private PresentationObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId){
+  private PresentationObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId,IWContext iwc){
     Image registerImage = iwb.getImage("/pen.gif",iwrb.getLocalizedString("sign","Sign"));
     DataTable Frame = new DataTable();
     Frame.addTitle(iwrb.getLocalizedString("applicants","Applicants"));
@@ -359,8 +359,9 @@ public class CampusAllocator extends Block implements Campus{
     int col = 1;
     boolean ifLong = ContractId < 0? true:false;
 
-    Frame.add(formatText(iwrb.getLocalizedString("priority","Pr")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("nr","Nr")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("priority","Pr")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("refnum","Ref. num")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("a","A")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("name","Name")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
@@ -373,28 +374,44 @@ public class CampusAllocator extends Block implements Campus{
       Frame.add(registerImage,col++,row);
       //Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
 
-    List L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
+    java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId,"A");
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
     boolean bcontracts = false;
     Contract C;
     if(HT !=null)
       bcontracts = true;
     if(L!=null){
-      int len = L.size();
+      java.util.Iterator it = L.iterator();
       row = 2;
       String TempColor = "#000000";
       int con_id = -1;
       boolean redColorSet = false;
-      for (int i = 0; i < len; i++) {
+      int numberOnList = 1;
+      while (it.hasNext()) {
         col = 1;
         con_id = -1;
-        WaitingList WL = (WaitingList)L.get(i);
-        try{
-
+        WaitingList WL = (WaitingList)it.next();
+        try {
           Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(WL.getApplicantId().intValue());
 
+          Frame.add(formatText(numberOnList),col++,row);
+          numberOnList++;
           Frame.add(formatText(WL.getPriorityLevel()),col++,row);
-          Frame.add(formatText(WL.getOrder().intValue()),col++,row);
+          Application app = CampusApplicationFinder.getLastApprovedApplication(A);
+          String cypher = null;
+          if (app != null && app.getID() != -1) {
+            com.idega.block.application.business.ReferenceNumberHandler h = new com.idega.block.application.business.ReferenceNumberHandler();
+            String key = h.getCypherKey(iwc);
+            com.idega.util.CypherText ct = new com.idega.util.CypherText();
+
+            String id = Integer.toString(app.getID());
+            while (id.length() < 6)
+              id = "0" + id;
+
+            cypher = ct.doCyper(id,key);
+          }
+          Frame.add(formatText(cypher),col++,row);
+//          Frame.add(formatText(WL.getOrder().intValue()),col++,row);
 
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){
             C = (Contract) HT.get(new Integer(A.getID()));

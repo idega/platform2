@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.6 2002/04/15 16:10:09 palli Exp $
+ * $Id: RequestAdminView.java,v 1.7 2002/05/02 01:44:57 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -23,18 +23,9 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 import com.idega.util.idegaTimestamp;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.Floor;
-import com.idega.block.building.data.Building;
-import com.idega.block.application.data.Applicant;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import java.util.List;
 
 import is.idega.idegaweb.campus.block.request.data.Request;
@@ -63,13 +54,6 @@ public class RequestAdminView extends Block {
   public void main(IWContext iwc) {
     _iwrb = getResourceBundle(iwc);
     String selected = iwc.getParameter(CAM_REQ_VIEW_SELECTED);
-
-    System.out.println("adding test to bundle " + _iwrb.getResourcesURL());
-    _iwrb.setLocalizedString("Test","test");
-    java.util.Enumeration e = _iwrb.getKeys();
-    while (e.hasMoreElements())
-      System.out.println("key = " + (String)e.nextElement());
-
 
     add(getRequests(selected));
   }
@@ -110,7 +94,6 @@ public class RequestAdminView extends Block {
 
     int row = 2;
 
-
     RadioGroup grp = new RadioGroup(CAM_REQ_VIEW_SELECTED);
     grp.addRadioButton(RequestFinder.REQUEST_STATUS_SENT,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_S")));
     grp.addRadioButton(RequestFinder.REQUEST_STATUS_RECEIVED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_R")));
@@ -147,44 +130,12 @@ public class RequestAdminView extends Block {
         Link details = new Link(linkText);
         Edit.setStyle(details);
         details.setWindowToOpen(RequestAdminViewDetails.class);
-        Contract contract = null;
-        Apartment apartment = null;
-        Floor floor = null;
-        Building building = null;
-        Applicant applicant = null;
         try {
-          contract = ContractFinder.findByUser(request.getUserId());
+          details.addParameter("request_id",((Integer)request.getPrimaryKey()).intValue());
         }
-        catch(Exception e) {
-          contract = null;
+        catch(java.rmi.RemoteException e) {
+          e.printStackTrace();
         }
-        if (contract != null) {
-          apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-          floor = BuildingCacher.getFloor(apartment.getFloorId());
-          building = BuildingCacher.getBuilding(floor.getBuildingId());
-          applicant = ContractFinder.getApplicant(contract);
-
-
-        }
-
-        CampusApplication campusApplication = null;
-        try {
-          campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
-        }
-        catch(Exception e) {
-          campusApplication = null;
-        }
-
-        if (building != null)
-          details.addParameter(RequestAdminViewDetails.REQUEST_STREET,building.getName());
-        if (apartment != null)
-          details.addParameter(RequestAdminViewDetails.REQUEST_APRT,apartment.getName());
-        if (applicant != null) {
-          details.addParameter(RequestAdminViewDetails.REQUEST_NAME,applicant.getFullName());
-          details.addParameter(RequestAdminViewDetails.REQUEST_TEL,applicant.getResidencePhone());
-        }
-        if (campusApplication != null)
-          details.addParameter(RequestAdminViewDetails.REQUEST_EMAIL,campusApplication.getEmail());
 
 //        details.addParameter("id",request.getpr);
 

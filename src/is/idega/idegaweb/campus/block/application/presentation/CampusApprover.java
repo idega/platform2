@@ -140,18 +140,16 @@ public class CampusApprover extends Block{
     return LinkTable;
   }
 
-  private void updateApplication(IWContext iwc,int id) {
-    //int id = Integer.parseInt(iwc.getParameter("application_id"));
-
+  private void updateApplication(IWContext iwc, int id) {
     String status = iwc.getParameter("status_drop");
-    try{
+    try {
       Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+      String oldStatus = A.getStatus();
       A.setStatus(status);
       A.update();
       Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
 
-      if(status.equals("A")) {
-        /**@todo setja inn aftur */
+      if (((oldStatus == null) || (!oldStatus.equals("A"))) && status.equals("A")) {
         MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
 
         CampusApplicationHome CAHome = null;
@@ -175,7 +173,8 @@ public class CampusApprover extends Block{
               WaitingList wl = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
               wl.setApartmentTypeId(applied.getApartmentTypeId());
               wl.setComplexId(applied.getComplexId().intValue());
-              wl.setType(new String("A"));
+//              wl.setType(new String("A"));
+              wl.setTypeApplication();
               wl.setApplicantId(Appli.getID());
               wl.setOrder(0);
               wl.setChoiceNumber(applied.getOrder());
@@ -193,9 +192,7 @@ public class CampusApprover extends Block{
               wl.update();
             }
           }
-
         }
-
       }
       if(status.equals("R"))
         MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.REJECTION);

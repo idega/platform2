@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.1 2002/04/15 16:10:09 palli Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.2 2002/05/02 01:44:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,6 +29,22 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
+import is.idega.idegaweb.campus.block.request.business.RequestFinder;
+import is.idega.idegaweb.campus.block.request.data.Request;
+import is.idega.idegaweb.campus.block.request.data.RequestHome;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.Building;
+import com.idega.block.application.data.Applicant;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import com.idega.data.IDOLookup;
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
+import java.sql.Timestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -36,27 +52,28 @@ import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
  */
 public class RequestAdminViewDetails extends Window {
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-  protected final static String REQUEST_SEND = "request_send";
+  protected final static String REQUESTADMIN_SEND = "requestadmin_send";
   protected final static String REQUEST_TYPE = "request_type";
   public final static String REQUEST_STREET = "request_street";
   public final static String REQUEST_APRT = "request_aprt";
   public final static String REQUEST_NAME = "request_name";
   public final static String REQUEST_TEL = "request_tel";
   public final static String REQUEST_EMAIL = "request_email";
-  protected final static String REQUEST_TABLE_TITLE = "request_table_title";
+  protected final static String REQUESTADMIN_TABLE_TITLE = "requestadmin_table_title";
 
   protected final static String REQUEST_DATE_OF_CRASH = "request_date_of_crash";
   protected final static String REQUEST_COMMENT = "request_comment";
   protected final static String REQUEST_TIME = "request_time";
   protected final static String REQUEST_DAYTIME = "request_daytime";
   protected final static String REQUEST_SPECIAL_TIME = "request_special_time";
+  protected final static String REQUEST_STATUS = "request_status";
 
   protected final static String REQUEST_NO_COMMENT = "request_no_comment";
   protected final static String REQUEST_NO_DATE_OF_CRASH = "request_no_date_of_crash";
   protected final static String REQUEST_NO_SPECIAL_TIME = "request_no_special_time";
 
-  protected final static String REQUEST_REPAIR = "request_repair";
-  protected final static String REQUEST_COMPUTER = "request_computer";
+  protected final static String REQUEST_REPAIR = "R";
+  protected final static String REQUEST_COMPUTER = "C";
 
   protected IWResourceBundle _iwrb;
   protected IWBundle _iwb;
@@ -78,7 +95,7 @@ public class RequestAdminViewDetails extends Window {
    *
    */
   public String getBundleIdentifier() {
-    return(IW_BUNDLE_IDENTIFIER);
+    return IW_BUNDLE_IDENTIFIER;
   }
 
   /**
@@ -90,7 +107,7 @@ public class RequestAdminViewDetails extends Window {
 
     if (_isAdmin || _isLoggedOn){
 
-      if (iwc.isParameterSet(REQUEST_SEND)) {
+      if (iwc.isParameterSet(REQUESTADMIN_SEND)) {
         boolean check = doSendRequest(iwc);
         if (check) {
           setParentToReload();
@@ -110,23 +127,28 @@ public class RequestAdminViewDetails extends Window {
    *
    */
   protected boolean doSendRequest(IWContext iwc) {
-    String comment = iwc.getParameter(REQUEST_COMMENT);
-    String dateOfFailureString = iwc.getParameter(REQUEST_DATE_OF_CRASH);
-    String type = iwc.getParameter(REQUEST_TYPE);
-    if (type.equals(REQUEST_COMPUTER))
-      type = RequestBusiness.REQUEST_COMPUTER;
-    else
-      type = RequestBusiness.REQUEST_REPAIR;
-    String special = iwc.getParameter(REQUEST_SPECIAL_TIME);
+    String status = iwc.getParameter(REQUEST_STATUS);
+    String id = iwc.getParameter("request_id");
 
-    System.out.println("DateOfFailureString = " + dateOfFailureString);
+    System.out.println("id = " + id);
+    System.out.println("status = " + status);
+    if (id != null) {
+      try {
+        Request request = ((RequestHome)IDOLookup.getHome(Request.class)).findByPrimaryKey(new Integer(id));
+        request.setStatus(status);
+        request.store();
+      }
+      catch(RemoteException e) {
+        e.printStackTrace();
+        return false;
+      }
+      catch(FinderException e) {
+        e.printStackTrace();
 
-    idegaTimestamp t = new idegaTimestamp();
-    t = idegaTimestamp.RightNow();
-
-    boolean insert = RequestBusiness.insertRequest(_eUser.getID(),comment,t.getTimestamp(),type,special);
-
-    return(insert);
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -136,28 +158,70 @@ public class RequestAdminViewDetails extends Window {
     Form form = new Form();
     add(form);
 
-    DropdownMenu mnu = new DropdownMenu(REQUEST_TYPE);
-    mnu.addMenuElement(REQUEST_COMPUTER,"Tölvuviðgerð");
-    mnu.addMenuElement(REQUEST_REPAIR,"Almenn viðgerð");
-    mnu.setToSubmit();
-    Edit.setStyle(mnu);
-    form.add(mnu);
+    Request request = null;
+    String street = null;
+    String aprt = null;
+    String name = null;
+    String telephone = null;
+    String email = null;
+    String type = null;
+    String id = iwc.getParameter("request_id");
+    if (id != null) {
+      try {
+        request = ((RequestHome)IDOLookup.getHome(Request.class)).findByPrimaryKey(new Integer(id));
+        type = request.getRequestType();
+      }
+      catch(RemoteException e) {
+        e.printStackTrace();
+      }
+      catch(FinderException e) {
+        e.printStackTrace();
+      }
+    }
 
-    String type = iwc.getParameter(REQUEST_TYPE);
-    if (type == null)
-      type = REQUEST_REPAIR;
-    mnu.setSelectedElement(type);
+    if (request != null) {
+      Contract contract = null;
+      Apartment apartment = null;
+      Floor floor = null;
+      Building building = null;
+      Applicant applicant = null;
+      try {
+        contract = ContractFinder.findByUser(request.getUserId());
+      }
+      catch(Exception e) {
+        contract = null;
+      }
+      if (contract != null) {
+        apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
+        floor = BuildingCacher.getFloor(apartment.getFloorId());
+        building = BuildingCacher.getBuilding(floor.getBuildingId());
+        applicant = ContractFinder.getApplicant(contract);
+      }
 
-    String street = iwc.getParameter(REQUEST_STREET);
-    String aprt = iwc.getParameter(REQUEST_APRT);
-    String name = iwc.getParameter(REQUEST_NAME);
-    String telephone = iwc.getParameter(REQUEST_TEL);
-    String email = iwc.getParameter(REQUEST_EMAIL);
+      CampusApplication campusApplication = null;
+      try {
+        campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
+      }
+      catch(Exception e) {
+        campusApplication = null;
+      }
+
+      if (building != null)
+        street = building.getName();
+      if (apartment != null)
+        aprt = apartment.getName();
+      if (applicant != null) {
+        name = applicant.getFullName();
+        telephone = applicant.getResidencePhone();
+      }
+      if (campusApplication != null)
+        email = campusApplication.getEmail();
+    }
 
     DataTable data = new DataTable();
     data.setWidth("100%");
-    data.addTitle(_iwrb.getLocalizedString(REQUEST_TABLE_TITLE,"Senda beiðni"));
-    data.addButton(new SubmitButton(REQUEST_SEND,"Senda beiðni"));
+    data.addTitle(_iwrb.getLocalizedString(REQUESTADMIN_TABLE_TITLE,"Skoða beiðni"));
+    data.addButton(new SubmitButton(REQUESTADMIN_SEND,"Uppfæra beiðni"));
     form.add(data);
 
     int row = 1;
@@ -178,57 +242,113 @@ public class RequestAdminViewDetails extends Window {
     row++;
 
     if (type.equals(REQUEST_REPAIR))
-      addRepair(data,row);
+      addRepair(data,row,request);
     else if (type.equals(REQUEST_COMPUTER))
-      addComputer(data,row);
+      addComputer(data,row,request);
 
-    form.add(new HiddenInput(REQUEST_STREET,street));
-    form.add(new HiddenInput(REQUEST_APRT,aprt));
-    form.add(new HiddenInput(REQUEST_NAME,name));
-    form.add(new HiddenInput(REQUEST_TEL,telephone));
-    form.add(new HiddenInput(REQUEST_EMAIL,email));
+    form.add(new HiddenInput("request_id",id));
   }
 
   /**
    *
    */
-  protected void addRepair(DataTable data, int row) {
+  protected void addRepair(DataTable data, int row, Request request) {
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
-    DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
-    dateOfCrash.setToCurrentDate();
-    Edit.setStyle(dateOfCrash);
-    data.add(dateOfCrash,2,row);
+    Timestamp dateFailure = null;
+    String comment = null;
+    String special = null;
+    String requestStatus = null;
+    try {
+      dateFailure = request.getDateFailure();
+      comment = request.getDescription();
+      special = request.getSpecialTime();
+      requestStatus = request.getStatus();
+    }
+    catch(RemoteException e) {
+      e.printStackTrace();
+    }
+    data.add(Edit.formatText(dateFailure.toString()),2,row);
     row++;
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    TextArea comment = new TextArea(REQUEST_COMMENT,"",60,5);
-    Edit.setStyle(comment);
-    data.add(comment,2,row);
+    data.add(Edit.formatText(comment),2,row);
     row++;
-    data.add(new RadioButton(REQUEST_TIME,REQUEST_DAYTIME),1,row);
+    RadioButton b1 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
+    b1.setDisabled(true);
+    if (special == null || special.equals(""))
+      b1.setSelected();
+    data.add(b1 ,1,row);
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
     row++;
-    data.add(new RadioButton(REQUEST_TIME,REQUEST_SPECIAL_TIME),1,row);
+    RadioButton b2 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
+    b2.setDisabled(true);
+    if (special != null && !special.equals(""))
+      b2.setSelected();
+    data.add(b2,1,row);
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
-    data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
+    if (special != null)
+      data.add(Edit.formatText(special),2,row);
+    row++;
+    DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
+
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT,_iwrb.getLocalizedString("REQUEST_STATUS_S"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED,_iwrb.getLocalizedString("REQUEST_STATUS_R"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,_iwrb.getLocalizedString("REQUEST_STATUS_P"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE,_iwrb.getLocalizedString("REQUEST_STATUS_D"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED,_iwrb.getLocalizedString("REQUEST_STATUS_X"));
+
+    Edit.setStyle(status);
+    if (requestStatus != null)
+      status.setSelectedElement(requestStatus);
+    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_STATUS,"Staða")),1,row);
+    data.add(status,2,row);
     row++;
   }
 
   /**
    *
    */
-  protected void addComputer(DataTable data, int row) {
+  protected void addComputer(DataTable data, int row, Request request) {
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
-    DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
-    Edit.setStyle(dateOfCrash);
-    data.add(dateOfCrash,2,row);
+    Timestamp dateFailure = null;
+    String comment = null;
+    String special = null;
+    String requestStatus = null;
+    try {
+      dateFailure = request.getDateFailure();
+      comment = request.getDescription();
+      special = request.getSpecialTime();
+      requestStatus = request.getStatus();
+    }
+    catch(RemoteException e) {
+      e.printStackTrace();
+    }
+    data.add(Edit.formatText(dateFailure.toString()),2,row);
     row++;
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_COMMENT,"Athugasemdir")),1,row);
-    TextArea comment = new TextArea(REQUEST_COMMENT,"",60,5);
-    Edit.setStyle(comment);
-    data.add(comment,2,row);
+    data.add(Edit.formatText(comment),2,row);
     row++;
+    RadioButton b2 = new RadioButton(REQUEST_TIME,REQUEST_DAYTIME);
+    b2.setDisabled(true);
+    if (special != null && !special.equals(""))
+      b2.setSelected();
+    data.add(b2,1,row);
     data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
-    data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
+    if (special != null)
+      data.add(Edit.formatText(special),2,row);
+    row++;
+    DropdownMenu status = new DropdownMenu(REQUEST_STATUS);
+
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_SENT,_iwrb.getLocalizedString("REQUEST_STATUS_S"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_RECEIVED,_iwrb.getLocalizedString("REQUEST_STATUS_R"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_IN_PROGRESS,_iwrb.getLocalizedString("REQUEST_STATUS_P"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_DONE,_iwrb.getLocalizedString("REQUEST_STATUS_D"));
+    status.addMenuElement(RequestFinder.REQUEST_STATUS_DENIED,_iwrb.getLocalizedString("REQUEST_STATUS_X"));
+
+    Edit.setStyle(status);
+    if (requestStatus != null)
+      status.setSelectedElement(requestStatus);
+    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_STATUS,"Staða")),1,row);
+    data.add(status,2,row);
     row++;
   }
 

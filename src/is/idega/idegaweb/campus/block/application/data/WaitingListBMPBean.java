@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.2 2002/04/19 23:44:41 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.3 2002/05/02 01:44:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package is.idega.idegaweb.campus.block.application.data;
 import com.idega.data.IDOLegacyEntity;
 import java.sql.Timestamp;
 import java.sql.SQLException;
+import java.util.Collection;
+import javax.ejb.FinderException;
 
 /**
  *
@@ -38,6 +40,9 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
   private final String PRIORITY_B = "B";
   private final String PRIORITY_C = "C";
   private final String PRIORITY_D = "D";
+
+  private final String TYPE_APPLICATION = "A";
+  private final String TYPE_TRANSFER = "T";
 
   public WaitingListBMPBean() {
     super();
@@ -140,8 +145,16 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
     return getIntegerColumnValue(APPLICANT_ID);
   }
 
-  public void setType(String type) {
+  private void setType(String type) {
     setColumn(TYPE,type);
+  }
+
+  public void setTypeApplication() {
+    setType(TYPE_APPLICATION);
+  }
+
+  public void setTypeTransfer() {
+    setType(TYPE_TRANSFER);
   }
 
   public String getType() {
@@ -242,4 +255,28 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
     return PRIORITY_LEVEL;
   }
 
+  public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId, String type) throws FinderException {
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(getTableName());
+    sql.append(" where ");
+    sql.append(getApartmentTypeIdColumnName());
+    sql.append(" = ");
+    sql.append(aprtId);
+    sql.append(" and ");
+    sql.append(getComplexIdColumnName());
+    sql.append(" = ");
+    sql.append(complexId);
+    if (type != null) {
+      sql.append(" and ");
+      sql.append(getTypeColumnName());
+      sql.append(" = ");
+      sql.append(type);
+    }
+    sql.append(" order by ");
+    sql.append(getPriorityColumnName());
+    sql.append(", ");
+    sql.append(getOrderColumnName());
+
+    return super.idoFindIDsBySQL(sql.toString());
+  }
 }

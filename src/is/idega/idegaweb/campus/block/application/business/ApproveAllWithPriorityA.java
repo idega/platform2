@@ -68,7 +68,7 @@ public class ApproveAllWithPriorityA {
       A.update();
       Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
 
-//      MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+      MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
 
       CampusApplicationHome CAHome = null;
       CampusApplication CA = null;
@@ -91,7 +91,8 @@ public class ApproveAllWithPriorityA {
             WaitingList wl = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
             wl.setApartmentTypeId(applied.getApartmentTypeId());
             wl.setComplexId(applied.getComplexId().intValue());
-            wl.setType(new String("A"));
+//            wl.setType(new String("A"));
+            wl.setTypeApplication();
             wl.setApplicantId(Appli.getID());
             wl.setOrder(0);
             wl.setChoiceNumber(applied.getOrder());
