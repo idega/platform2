@@ -180,7 +180,7 @@ public class ContractWriter
 	{
 		StringBuffer dbContractText = new StringBuffer(); //Stored in the database and used for signing
 		boolean bEntity = false;
-		int id = -1;
+		//int id = -1;
 		if (ids != null && ids.length > 0)
 		{
 			bEntity = true;
