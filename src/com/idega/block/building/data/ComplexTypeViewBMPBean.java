@@ -6,6 +6,7 @@ package com.idega.block.building.data;
 
 import java.util.Collection;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericView;
@@ -30,6 +31,13 @@ public class ComplexTypeViewBMPBean extends GenericView implements ComplexTypeVi
 	protected static final String V_COMPLEX_TYPES = "V_COMPLEX_TYPES";
 	
 	/* (non-Javadoc)
+	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
+	 */
+	public Class getPrimaryKeyClass() {
+		return ComplexTypeViewKey.class;
+	}
+	
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
@@ -39,6 +47,7 @@ public class ComplexTypeViewBMPBean extends GenericView implements ComplexTypeVi
 		addAttribute(TYPE_NAME, "Type name", true, true, java.lang.String.class);
 		addAttribute(COMPLEX_NAME, "Complex name", true, true, java.lang.String.class);
 		setAsPrimaryKey(BU_COMPLEX_ID,true);
+		setAsPrimaryKey(BU_APRT_TYPE_ID,true);
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -57,6 +66,15 @@ public class ComplexTypeViewBMPBean extends GenericView implements ComplexTypeVi
 	}
 	public Integer getComplexID() {
 		return getIntegerColumnValue(BU_COMPLEX_ID);
+	}
+	
+	public Object ejbFindByPrimaryKey(ComplexTypeViewKey primaryKey) throws FinderException {
+		return super.ejbFindByPrimaryKey(primaryKey);
+	}
+	
+	public Object ejbCreate(ComplexTypeViewKey primaryKey) throws CreateException {
+		setPrimaryKey(primaryKey);
+		return super.ejbCreate();
 	}
 	/*
 	 * (non-Javadoc)
@@ -84,7 +102,7 @@ public class ComplexTypeViewBMPBean extends GenericView implements ComplexTypeVi
 	}
 	
 	public Collection ejbFindAll()throws FinderException{
-		return idoFindAllIDsBySQL();
+		return idoFindPKsByQuery(super.idoQueryGetSelect());
 	}
 	
 	public Collection ejbFindByCategory(Integer categoryID)throws FinderException{

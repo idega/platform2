@@ -8,4 +8,5 @@ public interface ComplexTypeView extends com.idega.data.IDOEntity
  public java.lang.Integer getComplexID();
  public java.lang.String getComplexName();
  public java.lang.String getCreationSQL();
+ public java.lang.Class getPrimaryKeyClass();
 }
