@@ -247,7 +247,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 				deleteLink.addParameter(getProviderAsParameter());
 			}
 			else {
-				editLink.setToOpenAlert(localize("delete_group.can_not_delete_group", "The group can not be deleted as it contains students."));
+				deleteLink.setToOpenAlert(localize("delete_group.can_not_delete_group", "The group can not be deleted as it contains students."));
 			}
 			table.add(deleteLink, column++, row++);
 		}
