@@ -141,6 +141,7 @@ public class HandicapScore extends GolfWindow {
 			for (int a = 1; a <= rounds - 4; a++) {
 				statTable.add(getSmallHeader(String.valueOf(a)), a + 1, statRow);
 			}
+			statRow++;
 
 			for (int a = 1; a <= statTable.getRows(); a++) {
 				statTable.setRowAlignment(a, "center");
@@ -390,28 +391,28 @@ public class HandicapScore extends GolfWindow {
 					statTable.add(difference_text, b + 2, 3);
 
 					if (eagle_total != 0) {
-						statTable.add(eagle_text, b + 2, 5);
+						statTable.add(eagle_text, b + 2, 4);
 					}
 					if (birdie_total != 0) {
-						statTable.add(birdie_text, b + 2, 6);
+						statTable.add(birdie_text, b + 2, 5);
 					}
 					if (par_total != 0) {
-						statTable.add(par_text, b + 2, 7);
+						statTable.add(par_text, b + 2, 6);
 					}
 					if (bogey_total != 0) {
-						statTable.add(bogey_text, b + 2, 8);
+						statTable.add(bogey_text, b + 2, 7);
 					}
 					if (dbogey_total != 0) {
-						statTable.add(dbogey_text, b + 2, 9);
+						statTable.add(dbogey_text, b + 2, 8);
 					}
 					if (fairway != 0) {
-						statTable.add(fairway_text, b + 2, 11);
+						statTable.add(fairway_text, b + 2, 9);
 					}
 					if (greens != 0) {
-						statTable.add(greens_text, b + 2, 12);
+						statTable.add(greens_text, b + 2, 10);
 					}
 					if (putts != 0) {
-						statTable.add(putts_text, b + 2, 13);
+						statTable.add(putts_text, b + 2, 11);
 					}
 				}
 
@@ -447,28 +448,28 @@ public class HandicapScore extends GolfWindow {
 			statTable.add(all_difference_text, rounds - 2, 3);
 
 			if (all_eagle != 0) {
-				statTable.add(all_eagle_text, rounds - 2, 5);
+				statTable.add(all_eagle_text, rounds - 2, 4);
 			}
 			if (all_birdie != 0) {
-				statTable.add(all_birdie_text, rounds - 2, 6);
+				statTable.add(all_birdie_text, rounds - 2, 5);
 			}
 			if (all_par != 0) {
-				statTable.add(all_par_text, rounds - 2, 7);
+				statTable.add(all_par_text, rounds - 2, 6);
 			}
 			if (all_bogey != 0) {
-				statTable.add(all_bogey_text, rounds - 2, 8);
+				statTable.add(all_bogey_text, rounds - 2, 7);
 			}
 			if (all_dbogey != 0) {
-				statTable.add(all_dbogey_text, rounds - 2, 9);
+				statTable.add(all_dbogey_text, rounds - 2, 8);
 			}
 			if (all_fairway != 0) {
-				statTable.add(all_fairway_text, rounds - 2, 11);
+				statTable.add(all_fairway_text, rounds - 2, 9);
 			}
 			if (all_greens != 0) {
-				statTable.add(all_greens_text, rounds - 2, 12);
+				statTable.add(all_greens_text, rounds - 2, 10);
 			}
 			if (all_putts != 0) {
-				statTable.add(all_putts_text, rounds - 2, 13);
+				statTable.add(all_putts_text, rounds - 2, 11);
 			}
 
 			String out_differ = "";
