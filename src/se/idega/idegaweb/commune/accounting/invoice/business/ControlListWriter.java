@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.11 2004/05/24 20:10:41 laddi Exp $
+/* $Id: ControlListWriter.java,v 1.12 2004/10/01 12:21:43 laddi Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -50,7 +50,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.11 2004/05/24 20:10:41 laddi Exp $
+ * $Id: ControlListWriter.java,v 1.12 2004/10/01 12:21:43 laddi Exp $
  *
  * @author Kelly
  */
@@ -136,7 +136,7 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			style.setFont(font);
 	
 	
-			HSSFRow row = sheet.createRow((short)0);
+			HSSFRow row = sheet.createRow(0);
 			HSSFCell cell = row.createCell((short)0);
 			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_PROVIDER, "Provider"));
 			cell.setCellStyle(style);
@@ -159,7 +159,7 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 
 			// render header
 			Object[] header = (Object[]) iter.next();
-			row = sheet.createRow((short)cellRow);
+			row = sheet.createRow(cellRow);
 			row.createCell((short)0).setCellValue((String)(header[1]));
 			row.createCell((short)1).setCellValue((String)(header[2]));
 			row.createCell((short)2).setCellValue((String)(header[3]));
@@ -173,7 +173,7 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			int sum4 = 0;
 
 			while (iter.hasNext()) {
-				row = sheet.createRow((short)cellRow);
+				row = sheet.createRow(cellRow);
 				Object[] obj = (Object[]) iter.next();
 
 				row.createCell((short)0).setCellValue((String)(obj[1]));
@@ -196,14 +196,14 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 				cellRow++;
 			}
 
-			row = sheet.createRow((short)cellRow);
+			row = sheet.createRow(cellRow);
 			row.createCell((short)0).setCellValue(" ");
 			row.createCell((short)1).setCellValue(" ");
 			row.createCell((short)2).setCellValue(" ");
 			row.createCell((short)3).setCellValue(" ");
 			row.createCell((short)4).setCellValue(" ");
 
-			row = sheet.createRow((short)cellRow);
+			row = sheet.createRow(cellRow);
 			row.createCell((short)0).setCellValue((localize(ControlList.KEY_TALLY, "Total")));
 			row.createCell((short)1).setCellValue((""+sum1));
 			row.createCell((short)2).setCellValue((""+sum2));

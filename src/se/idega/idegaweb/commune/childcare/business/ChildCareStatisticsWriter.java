@@ -89,15 +89,15 @@ public class ChildCareStatisticsWriter {
 		
 				cellColumn = 0;
 				int cellRow = 0;
-				HSSFRow row = sheet.createRow((short)cellRow++);
+				HSSFRow row = sheet.createRow(cellRow++);
 				HSSFCell cell = row.createCell((short)0);
 				cell.setCellValue(iwrb.getLocalizedString("child_care.report", "Childcare report") + ": " + fromDate.getLocaleDateAndTime(locale, IWTimestamp.SHORT, IWTimestamp.SHORT) + " - " + toDate.getLocaleDateAndTime(locale, IWTimestamp.SHORT, IWTimestamp.SHORT));
 				cell.setCellStyle(style);
 				cell = row.createCell((short)1);
 				
-				row = sheet.createRow((short)cellRow++);
+				row = sheet.createRow(cellRow++);
 				
-				row = sheet.createRow((short)cellRow++);
+				row = sheet.createRow(cellRow++);
 				cell = row.createCell((short)cellColumn++);
 				cell.setCellValue(iwrb.getLocalizedString("child_care.provider","Provider"));
 				cell.setCellStyle(style);
@@ -148,7 +148,7 @@ public class ChildCareStatisticsWriter {
 				Iterator iter = collection.iterator();
 				while (iter.hasNext()) {
 					cellColumn = 0;
-					row = sheet.createRow((short)cellRow++);
+					row = sheet.createRow(cellRow++);
 					
 					caseLog = (CaseLog) iter.next();
 					application = getChildCareBusiness(iwc).getApplication(((Integer)caseLog.getCase().getPrimaryKey()).intValue());

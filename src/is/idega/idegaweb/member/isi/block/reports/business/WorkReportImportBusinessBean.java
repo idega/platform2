@@ -760,7 +760,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 					Iterator it = members.iterator();
 					while (it.hasNext()) {
 						WorkReportMember memb = (WorkReportMember) it.next();
-						HSSFRow row = memberSheet.createRow((short) rowNr++);
+						HSSFRow row = memberSheet.createRow(rowNr++);
 						HSSFCell name = row.createCell(COLUMN_MEMBER_NAME);
 						HSSFCell ssn = row.createCell(COLUMN_MEMBER_SSN);
 						HSSFCell address = row
@@ -820,7 +820,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 			int rowNr = 1;
 			while (it.hasNext()) {
 				Group league = (Group) it.next();
-				HSSFRow r = lookup.createRow((short) rowNr);
+				HSSFRow r = lookup.createRow(rowNr);
 				HSSFCell c = r.createCell((short) 0);
 				c.setCellValue(league.getShortName() + "-" + league.getName());
 				HSSFCell s = r.createCell((short) 1);

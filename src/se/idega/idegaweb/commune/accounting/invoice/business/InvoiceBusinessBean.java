@@ -75,11 +75,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/09/29 18:35:23 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/01 12:21:43 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.129 $
+ * @version $Revision: 1.130 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -1177,7 +1177,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
 		Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun, isTestRun);
 
-		HSSFRow row = sheet.createRow((short)0);
+		HSSFRow row = sheet.createRow(0);
 
 		row.createCell((short)0).setCellValue(iwrb.getLocalizedString("invbr.related_object","Related object"));
 		row.createCell((short)1).setCellValue(iwrb.getLocalizedString("invbr.suspected_error","Suspected error"));

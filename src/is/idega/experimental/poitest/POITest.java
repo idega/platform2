@@ -29,7 +29,7 @@ public class POITest {
     HSSFWorkbook wb = new HSSFWorkbook();
     HSSFSheet sheet = wb.createSheet("new sheet");
 
-    HSSFRow row = sheet.createRow((short)0);
+    HSSFRow row = sheet.createRow(0);
 		sheet.setRowSumsBelow(true);
     row.createCell((short)0).setCellValue("Virkur");
     row.createCell((short)1).setCellValue("Nafn");
@@ -37,28 +37,28 @@ public class POITest {
     row.createCell((short)3).setCellValue("Kennitala");
     row.createCell((short)4).setCellValue("Skuldar");
 
-    row = sheet.createRow((short)1);
+    row = sheet.createRow(1);
     row.createCell((short)0).setCellValue(true);
     row.createCell((short)1).setCellValue("Páll Helgason");
     row.createCell((short)2).setCellValue("Galtalind 13");
     row.createCell((short)3).setCellValue("0610703899");
     row.createCell((short)4).setCellValue(100);
 
-    row = sheet.createRow((short)2);
+    row = sheet.createRow(2);
     row.createCell((short)0).setCellValue(1.2);
     row.createCell((short)1).setCellValue("Þórhallur Helgason");
     row.createCell((short)2).setCellValue("Stafnasel 5");
     row.createCell((short)3).setCellValue("0202774919");
     row.createCell((short)4).setCellValue(200);
 
-    row = sheet.createRow((short)3);
+    row = sheet.createRow(3);
     row.createCell((short)0).setCellValue(false);
     row.createCell((short)1).setCellValue("Karitas Gunnarsdóttir");
     row.createCell((short)2).setCellValue("Galtalind 13");
     row.createCell((short)3).setCellValue("1409743589");
     row.createCell((short)4).setCellValue(300);
 
-    row = sheet.createRow((short)4);
+    row = sheet.createRow(4);
     HSSFCell cell = row.createCell((short)4);
 //    cell.setCellValue("=sum(E2:E4)");
    
