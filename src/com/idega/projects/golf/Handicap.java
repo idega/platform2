@@ -5,6 +5,7 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import com.idega.projects.golf.entity.*;
 import java.util.Vector;
+import com.idega.util.idegaTimestamp;
 
 public class Handicap {
 
@@ -198,9 +199,10 @@ private double grunn;
     int heildarpunktar = 0;
     int hole_handicap = 0;
     int hole_par = 0;
+    int numberOfStrokes = strokes.length;
 
     try {
-      for (int c = 0 ; c < strokes.length; c++ ) {
+      for (int c = 0 ; c < numberOfStrokes; c++ ) {
         hole_handicap = (int) strokes[c].getHoleHandicap();
         hole_par = strokes[c].getHolePar();
 
@@ -270,8 +272,10 @@ private double grunn;
     int totalPoints = 0;
 
     try {
-      Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumnOrdered("scorecard_id",scorecard_id+"","tee_id");
+      Stroke[] stroke = (Stroke[]) (new Stroke()).findAll("select stroke.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecard_id+" order by hole_number");
+      //Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumnOrdered("scorecard_id",scorecard_id+"","tee_id");
 
+      System.out.println("calculatePointsWithoutUpdate: "+new idegaTimestamp().getTimestampRightNow().toString());
       totalPoints = calculatePointsWithoutUpdate(stroke,leikHandicap);
     }
     catch(Exception e) {
