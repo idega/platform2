@@ -277,6 +277,10 @@ public Cookie[] getCookies() {
   return this.getRequest().getCookies();
 }
 
+public void addCookies(Cookie cookie) {
+  this.getResponse().addCookie(cookie);
+}
+
 public String getParameter(String parameterName){
   return getRequest().getParameter(parameterName);
 }

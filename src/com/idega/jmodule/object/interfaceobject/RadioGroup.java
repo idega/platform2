@@ -211,5 +211,9 @@ public void setBorder(int i){
   frameTable.setBorder(i);
 }
 
+public void setStyle(String style){
+  setAttribute("style",style);
+}
+
 } // end Class
 
