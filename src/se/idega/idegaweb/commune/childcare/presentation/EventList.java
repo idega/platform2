@@ -66,7 +66,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.6 2003/03/25 16:01:48 roar Exp $
+ * @version $Id: EventList.java,v 1.7 2003/03/26 12:15:01 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -92,9 +92,9 @@ public class EventList extends CommuneBlock {
   private final static String PARAM_PRINT_MSG = "prv_pr_msg";
   private final static String PARAM_LETTER_TYPE = "prv_let_tp";
   
-  private final static String PRM_STAMP_P_FROM = "prv_pfrm";;
+//  private final static String PRM_STAMP_P_FROM = "prv_pfrm";
   private final static String PRM_STAMP_U_FROM= "prv_ufrm";
-  private final static String PRM_STAMP_P_TO= "prv_pto";
+//  private final static String PRM_STAMP_P_TO= "prv_pto";
   private final static String PRM_STAMP_U_TO= "prv_uto";
   private final static String PRM_P_COUNT = "prv_pcnt";
   private final static String PRM_U_COUNT = "prv_ucnt";
@@ -108,6 +108,18 @@ public class EventList extends CommuneBlock {
   private final static String PRM_SSN = "prv_ssn";
   private final static String PRM_MSGID ="prv_msgid";
   
+  private final static String LOCALE_DATE_FROM = "eventlist.date_from";  
+  private final static String LOCALE_DATE_TO = "eventlist.date_to";  
+  private final static String LOCALE_SSN = "eventlist.ssn";  
+  private final static String LOCALE_MSGID = "eventlist.msgid";  
+  private final static String LOCALE_DATE_CREATED = "eventlist.created";  
+  private final static String LOCALE_EVENT = "eventlist.event";  
+  private final static String LOCALE_RECEIVER = "eventlist.receiver";  
+  private final static String LOCALE_LAST = "eventlist.last";  
+  private final static String LOCALE_NEXT = "eventlist.next";  
+  
+  
+  
   
   private boolean isBulkType = false;
   private boolean showTypesAsDropdown = false;
@@ -115,13 +127,22 @@ public class EventList extends CommuneBlock {
   private String currentType = "";
   private int msgID = -1;
   private int fileID = -1;
-  private IWTimestamp today = IWTimestamp.RightNow(), pFrom=null,pTo=null,uFrom=null,uTo=null;
+  private IWTimestamp 
+  	today = IWTimestamp.RightNow(), 
+  	//pFrom=null,
+  	//pTo=null,
+  	uFrom=null,
+  	uTo=null;
   private int defaultDays = 7;
   private int defaultShown = 25;
   private int cursor_p = 0;
   private int cursor_u = 0;
   private int count_p = 25;
   private int count_u = 25;
+  
+  private String searchSsn = ""; 
+  private String searchMsgId = "";
+    
 
   private Table mainTable = null;
 
@@ -139,6 +160,7 @@ public class EventList extends CommuneBlock {
 	try{
 	  initDates(iwc);
 	  initCursors(iwc);
+	  initSearch(iwc);
 	  int action = parseAction(iwc);
 	  switch(action){
 		case ACTION_VIEW_MESSAGE_OVERVIEW:
@@ -229,21 +251,31 @@ public class EventList extends CommuneBlock {
   }
   
   private void initDates(IWContext iwc)throws Exception{
-		pFrom = IWTimestamp.RightNow();
-		pFrom.addDays(-defaultDays);
-		pTo = IWTimestamp.RightNow();
+//		pFrom = IWTimestamp.RightNow();
+//		pFrom.addDays(-defaultDays);
+//		pTo = IWTimestamp.RightNow();
 		uFrom = IWTimestamp.RightNow();
 		uFrom.addDays(-defaultDays);
 		uTo = IWTimestamp.RightNow();
-		if(iwc.isParameterSet(PRM_STAMP_P_FROM))
-			pFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_FROM));
+//		if(iwc.isParameterSet(PRM_STAMP_P_FROM))
+//			pFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_FROM));
 		if(iwc.isParameterSet(PRM_STAMP_U_FROM))
 			uFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_FROM));
-		if(iwc.isParameterSet(PRM_STAMP_P_TO))
-			pTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_TO));
+//		if(iwc.isParameterSet(PRM_STAMP_P_TO))
+//			pTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_TO));
 		if(iwc.isParameterSet(PRM_STAMP_U_TO))
 			uTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_TO));
   		
+  }
+  
+  private void initSearch(IWContext iwc)throws Exception{
+	if(iwc.isParameterSet(PRM_SSN)){
+		searchSsn = iwc.getParameter(PRM_SSN);
+	}
+	if(iwc.isParameterSet(PRM_MSGID)){
+		String searchMsgId = iwc.getParameter(PRM_MSGID);
+	}  	
+  
   }
   
   private void initCursors(IWContext iwc)throws Exception{
@@ -312,15 +344,16 @@ public class EventList extends CommuneBlock {
 		
 		Table message = new Table(2, 7);
 		PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
-
-		addField(message, "Id", String.valueOf(msg.getNodeID()), row++);
-		addField(message, "Date", msg.getCreated().toString(), row++);
+	
+		
+		addField(message, localize(LOCALE_MSGID,"Message Id")+":", String.valueOf(msg.getNodeID()), row++);
+		addField(message, localize(LOCALE_DATE_CREATED,"Message created")+":", msg.getCreated().toString(), row++);
 //		addField(message, "From", msg.getSenderName(), row++);
-		addField(message, localize("printdoc.receiver","Receiver"), msg.getOwner().getName(), row++);
-		addField(message, "SSN", msg.getOwner().getPersonalID(), row++);
+		addField(message, localize(LOCALE_RECEIVER,"Receiver")+":", msg.getOwner().getName(), row++);
+		addField(message, localize(LOCALE_SSN,"SSN")+":", msg.getOwner().getPersonalID(), row++);
 //		addField(layout, "Type:", msg.getMessageType(), row++);
 //		addField(layout, "Type:", msg.msg.getLetterType(), row++);
-		addField(message, "Subject", msg.getSubject(), row++);
+		addField(message, localize(LOCALE_EVENT,"Event")+":", msg.getSubject(), row++);
 		message.add("", 1, row++);
 		//Body
 		message.mergeCells(1, row, 2, row);
@@ -407,76 +440,77 @@ RS*/
 				addMessagesList(iwc);
   }
   
-  private void addTypeMenu(IWContext iwc) throws Exception{
-  	 
-	 String[] types = getDocumentBusiness(iwc).getPrintMessageTypes();
-	 if(showTypesAsDropdown){
-		DropdownMenu drp = new DropdownMenu(PARAM_LETTER_TYPE);
-		for (int i = 0; i < types.length; i++) {
-			drp.addMenuElement(types[i],localize("printdoc.letter_type_"+types[i],types[i]));
-		}
-		drp.setToSubmit();
-		drp.setSelectedElement(currentType);
-		Form F = new Form();
-		F.add(drp);
-		F.add(new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString()));
-		F.add(new HiddenInput(PRM_STAMP_P_TO,pTo.toString()));
-		F.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
-		F.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
-		add(F);
-	 }  	 
-	 else{
-		 Table T = new Table();
-		 T.setCellpadding(2);
-		 int col = 1;
-		 for (int i = 0; i < types.length; i++) {
-			Link typeLink = new Link(getHeader(localize("printdoc.letter_type_"+types[i],types[i])));	
-			typeLink.addParameter(PARAM_LETTER_TYPE,types[i]);
-			typeLink.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
-			typeLink.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
-			typeLink.addParameter(PRM_STAMP_P_TO,pTo.toString());
-			typeLink.addParameter(PRM_STAMP_U_TO,uTo.toString());
-			T.add(typeLink,col++,1);
-		}
-		add(T);
-	 }
-  	
-  }
-  
-  private PresentationObject getPrintedDatesForm(IWContext iwc){
-  	
-	Table T = new Table();
-	DateInput from = new DateInput(PRM_STAMP_P_FROM);
-	from =(DateInput) getStyledInterface(from);
-	from.setYearRange(today.getYear()-5,today.getYear()+2);
-	DateInput to = new DateInput(PRM_STAMP_P_TO);
-	to = (DateInput)getStyledInterface(to);
-	to.setYearRange(today.getYear()-5,today.getYear()+2);
-  	
-	from.setDate(pFrom.getSQLDate());
-	to.setDate(pTo.getSQLDate());
-	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
-	search = (SubmitButton)getButton(search);
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from","From:")),1,1);
-	T.add(from,2,1);
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
-	T.add(to,4,1);
-	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
-	T.add(getCountDrop(PRM_P_COUNT,count_p),6,1);
-	T.add(search,7,1);
-	T.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
-	T.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
-	T.add(new HiddenInput(PRM_U_COUNT,String.valueOf(count_u)));
-	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
-	T.setTopLine(true);
-	T.setBottomLine(true);
-  	
-	return T;
-  
-  }
-  
+//  private void addTypeMenu(IWContext iwc) throws Exception{
+//  	 
+//	 String[] types = getDocumentBusiness(iwc).getPrintMessageTypes();
+//	 if(showTypesAsDropdown){
+//		DropdownMenu drp = new DropdownMenu(PARAM_LETTER_TYPE);
+//		for (int i = 0; i < types.length; i++) {
+//			drp.addMenuElement(types[i],localize("printdoc.letter_type_"+types[i],types[i]));
+//		}
+//		drp.setToSubmit();
+//		drp.setSelectedElement(currentType);
+//		Form F = new Form();
+//		F.add(drp);
+//		F.add(new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString()));
+//		F.add(new HiddenInput(PRM_STAMP_P_TO,pTo.toString()));
+//		F.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
+//		F.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
+//		add(F);
+//	 }  	 
+//	 else{
+//		 Table T = new Table();
+//		 T.setCellpadding(2);
+//		 int col = 1;
+//		 for (int i = 0; i < types.length; i++) {
+//			Link typeLink = new Link(getHeader(localize("printdoc.letter_type_"+types[i],types[i])));	
+//			typeLink.addParameter(PARAM_LETTER_TYPE,types[i]);
+//			typeLink.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
+//			typeLink.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
+//			typeLink.addParameter(PRM_STAMP_P_TO,pTo.toString());
+//			typeLink.addParameter(PRM_STAMP_U_TO,uTo.toString());
+//			T.add(typeLink,col++,1);
+//		}
+//		add(T);
+//	 }
+//  	
+//  }
+//  
+//  private PresentationObject getPrintedDatesForm(IWContext iwc){
+//  	
+//	Table T = new Table();
+//	DateInput from = new DateInput(PRM_STAMP_P_FROM);
+//	from =(DateInput) getStyledInterface(from);
+//	from.setYearRange(today.getYear()-5,today.getYear()+2);
+//	DateInput to = new DateInput(PRM_STAMP_P_TO);
+//	to = (DateInput)getStyledInterface(to);
+//	to.setYearRange(today.getYear()-5,today.getYear()+2);
+//  	
+//	from.setDate(pFrom.getSQLDate());
+//	to.setDate(pTo.getSQLDate());
+//	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
+//	search = (SubmitButton)getButton(search);
+//	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from","From:")),1,1);
+//	T.add(from,2,1);
+//	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
+//	T.add(to,4,1);
+//	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
+//	T.add(getCountDrop(PRM_P_COUNT,count_p),6,1);
+//	T.add(search,7,1);
+//	T.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
+//	T.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
+//	T.add(new HiddenInput(PRM_U_COUNT,String.valueOf(count_u)));
+//	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
+//	T.setTopLine(true);
+//	T.setBottomLine(true);
+//  	
+//	return T;
+//  
+//  }
+//  
   private DropdownMenu getCountDrop(String name,int selected){
 	DropdownMenu drp = new DropdownMenu(name);
+	drp.addMenuElement(String.valueOf(3)); //TODO: remove, only for test
 	drp.addMenuElement(String.valueOf(10));
 	drp.addMenuElement(String.valueOf(25));
 	drp.addMenuElement(String.valueOf(50));
@@ -487,40 +521,52 @@ RS*/
 	return drp;
   }
   
-   private PresentationObject getUnPrintedDatesForm(IWContext iwc){
-  	
-	Table T = new Table();
-	DateInput from = new DateInput(PRM_STAMP_U_FROM);
-	from =(DateInput) getStyledInterface(from);
-	from.setYearRange(today.getYear()-5,today.getYear()+2);
-	DateInput to = new DateInput(PRM_STAMP_U_TO);
-	to = (DateInput)getStyledInterface(to);
-	to.setYearRange(today.getYear()-5,today.getYear()+2);
-	from.setDate(uFrom.getSQLDate());
-	to.setDate(uTo.getSQLDate());
-	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
-	search = (SubmitButton)getButton(search);
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from","From:")),1,1);
-	T.add(from,2,1);
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
-	T.add(to,4,1);
-	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
-	T.add(getCountDrop(PRM_U_COUNT,count_u),6,1);
-	T.add(search,7,1);
-	T.add(new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString()));
-	T.add(new HiddenInput(PRM_STAMP_P_TO,pTo.toString()));
-	T.add(new HiddenInput(PRM_P_COUNT,String.valueOf(count_p)));
-	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
-	T.setTopLine(true);
-	T.setBottomLine(true);
-	T.setHeight(25);
-	return T;
-  
-  }
-  
+//   private PresentationObject getUnPrintedDatesForm(IWContext iwc){
+//  	
+//	Table T = new Table();
+//	DateInput from = new DateInput(PRM_STAMP_U_FROM);
+//	from =(DateInput) getStyledInterface(from);
+//	from.setYearRange(today.getYear()-5,today.getYear()+2);
+//	DateInput to = new DateInput(PRM_STAMP_U_TO);
+//	to = (DateInput)getStyledInterface(to);
+//	to.setYearRange(today.getYear()-5,today.getYear()+2);
+//	from.setDate(uFrom.getSQLDate());
+//	to.setDate(uTo.getSQLDate());
+//	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
+//	search = (SubmitButton)getButton(search);
+//	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from","From:")),1,1);
+//	T.add(from,2,1);
+//	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
+//	T.add(to,4,1);
+//	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
+//	T.add(getCountDrop(PRM_U_COUNT,count_u),6,1);
+//	T.add(search,7,1);
+//	T.add(new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString()));
+//	T.add(new HiddenInput(PRM_STAMP_P_TO,pTo.toString()));
+//	T.add(new HiddenInput(PRM_P_COUNT,String.valueOf(count_p)));
+//	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
+//	T.setTopLine(true);
+//	T.setBottomLine(true);
+//	T.setHeight(25);
+//	return T;
+//  
+//  }
+//  
   private PresentationObject getSearchForm(IWContext iwc){
   	
 	Table T = new Table();
+	
+	DateInput from = new DateInput(PRM_STAMP_U_FROM);
+	from =(DateInput) getStyledInterface(from);
+	from.setYearRange(today.getYear()-5,today.getYear()+2);
+	
+	DateInput to = new DateInput(PRM_STAMP_U_TO);
+	to = (DateInput)getStyledInterface(to);
+	to.setYearRange(today.getYear()-5,today.getYear()+2);
+	
+	from.setDate(uFrom.getSQLDate());
+	to.setDate(uTo.getSQLDate());
+	
 
 	TextInput msgid = new TextInput(PRM_MSGID);
 	msgid = (TextInput) getStyledInterface(msgid);
@@ -535,19 +581,35 @@ RS*/
 	}
 
 	
+	
 	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
 	search = (SubmitButton)getButton(search);
+	
+	
+	T.add(getHeader(getResourceBundle().getLocalizedString(LOCALE_DATE_FROM,"From")+":"),1,1);
+	T.mergeCells(2, 1, 8, 1);
+	T.add(from, 2, 1);
+	
+	T.add(getHeader(getResourceBundle().getLocalizedString(LOCALE_DATE_TO,"To")+":"),1,2);
+	T.mergeCells(2, 2, 8, 2);
+	T.add(to, 2, 2);
 
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.msgid","Message ID:")),1,1);
-	T.add(msgid,2,1);
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.ssn","SSN:")),4,1);
-	T.add(ssn,5,1);
+	T.add(getHeader(getResourceBundle().getLocalizedString(LOCALE_MSGID,"Message Id")+":"),1,3);
+	T.add(msgid,2,3);
+	T.add(getHeader(getResourceBundle().getLocalizedString(LOCALE_SSN,"SSN")+":"),4,3);
+	T.add(ssn,5,3);
 	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
-	T.add(getCountDrop(PRM_U_COUNT,count_u),7,1);
-	T.add(search,8,1);
-	T.setTopLine(true);
-	T.setBottomLine(true);
-	T.setHeight(25);
+	T.setWidth(6,3, 50);
+	T.add(getStyledInterface(getCountDrop(PRM_U_COUNT, count_u)), 7, 3);
+	T.add(search, 8, 3);
+	
+	T.setStyleAttribute("border-bottom: medium solid black");
+	T.setStyleAttribute("border-top: medium solid black");
+//	T.setName("searchtable");
+//	T.setTopLine(true);
+//	T.setLeftLine(true);
+//	T.setBottomLine(true);
+	T.setHeight(75);
 	return T;  	  
   }
   
@@ -574,14 +636,14 @@ RS*/
 	T.setAlignment(T.HORIZONTAL_ALIGN_RIGHT);
 	T.setCellpadding(2);
 	if(cursor>0){
-		Link prev  = new Link(localize("printdoc.last","last")+"  "+step);
+		Link prev  = new Link(localize(LOCALE_LAST,"last")+"  "+step);
 		prev.addParameter(PARAM_LETTER_TYPE,currentType);
 		prev.addParameter(cursorPrm,String.valueOf(cursor-step));
 		addDateParametersToLink(prev);
 		T.add(prev,1,1);
 	}
 	if(cursor<=(totalsize-step)){
-		Link next  = new Link(localize("printdoc.next","next")+"  "+step);
+		Link next  = new Link(localize(LOCALE_NEXT,"next")+"  "+step);
 		next.addParameter(PARAM_LETTER_TYPE,currentType);
 		next.addParameter(cursorPrm,String.valueOf(cursor+step));
 		addDateParametersToLink(next);
@@ -592,94 +654,96 @@ RS*/
   }
   
   private void addDateParametersToLink(Link link){
-		link.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
+//		link.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
 		link.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
-		link.addParameter(PRM_STAMP_P_TO,pTo.toString());
+//		link.addParameter(PRM_STAMP_P_TO,pTo.toString());
 		link.addParameter(PRM_STAMP_U_TO,uTo.toString());
 		link.addParameter(PRM_U_COUNT,count_u);
 		link.addParameter(PRM_P_COUNT,count_p);
+		link.addParameter(PRM_SSN, searchSsn);
+		link.addParameter(PRM_MSGID, searchMsgId);
   }
   
-  private void addDocumentsList(IWContext iwc)throws Exception{
-    Form uForm = new Form();
-	Form pForm = new Form();
-	Table  uT = new Table();
-	Table pT = new Table();
-	uForm.add(uT);
-	pForm.add(pT);
-	add(uForm);
-	add(pForm);
-	int urow = 1;
-	
-	
-	
-	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);
-  	
-	ColumnList unPrintedLetterDocs = new ColumnList(4);
-		
-		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
-		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
-		//messageList.setHeader(localize("printdoc.name","Name"),1);
-		//unPrintedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
-		//unPrintedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
-
-		unPrintedLetterDocs.add(localize("printdoc.unprinted","Unprinted"));
-		//messageList.add("-");
-		unPrintedLetterDocs.add(Integer.toString(getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType)));
-
-		
-		Link printLink = new Link(localize("printdoc.print","Print"));
-		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
-		printLink.addParameter(PARAM_LETTER_TYPE,currentType);
-		addDateParametersToLink(printLink);
-		unPrintedLetterDocs.add(printLink);
-		
-		Link viewUnprintedLink = new Link(localize("printdoc.name_list","Namelist"));
-		viewUnprintedLink.addParameter(PARAM_VIEW_UNPRINTED,"true");
-		viewUnprintedLink.addParameter(PARAM_LETTER_TYPE,currentType);
-		addDateParametersToLink(viewUnprintedLink);
-		unPrintedLetterDocs.add(viewUnprintedLink);
-		
-		uT.add(unPrintedLetterDocs,1,urow++);
-		uT.add(Text.getBreak(),1,urow++);
-	
-		ColumnList printedLetterDocs = new ColumnList(4);
-		
-		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType,pFrom,pTo);
-		
-		int prow = 1;
-	pT.add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"),1,prow++);
-	pT.add(getPrintedDatesForm(iwc),1,prow++);
-	pT.add(printedLetterDocs,1,prow++);
-	pT.add(getCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P,count_p),1,prow++);
-			
-			printedLetterDocs.setHeader("#",1);
-			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),2);
-			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),3);
-			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
-			
-			Iterator iter = printDocs.iterator();
-			int count = cursor_p+1;
-			int ccp = count_p+cursor_p;
-			if(cursor_p >0){
-				while(iter.hasNext() && cursor_p>0){
-					iter.next();
-					cursor_p--;
-				}
-			}
-			while (iter.hasNext() && count <= ccp) {
-				PrintDocuments doc = (PrintDocuments)iter.next();
-				printedLetterDocs.add(String.valueOf(count));
-				printedLetterDocs.add(doc.getCreated().toString());
-				//messageList.add("-");
-				printedLetterDocs.add(Integer.toString(doc.getNumberOfSubDocuments()));
-				int fileID = doc.getDocumentFileID();
-				Link viewLink = new Link(localize("printdoc.view","View"));
-				viewLink.setFile(fileID);
-				printedLetterDocs.add(viewLink);
-				count++;
-			}
-  }
+//  private void addDocumentsList(IWContext iwc)throws Exception{
+//    Form uForm = new Form();
+//	Form pForm = new Form();
+//	Table  uT = new Table();
+//	Table pT = new Table();
+//	uForm.add(uT);
+//	pForm.add(pT);
+//	add(uForm);
+//	add(pForm);
+//	int urow = 1;
+//	
+//	
+//	
+//	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);
+//  	
+//	ColumnList unPrintedLetterDocs = new ColumnList(4);
+//		
+//		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+//		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
+//		//messageList.setHeader(localize("printdoc.name","Name"),1);
+//		//unPrintedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+//		//unPrintedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
+//
+//		unPrintedLetterDocs.add(localize("printdoc.unprinted","Unprinted"));
+//		//messageList.add("-");
+//		unPrintedLetterDocs.add(Integer.toString(getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType)));
+//
+//		
+//		Link printLink = new Link(localize("printdoc.print","Print"));
+//		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
+//		printLink.addParameter(PARAM_LETTER_TYPE,currentType);
+//		addDateParametersToLink(printLink);
+//		unPrintedLetterDocs.add(printLink);
+//		
+//		Link viewUnprintedLink = new Link(localize("printdoc.name_list","Namelist"));
+//		viewUnprintedLink.addParameter(PARAM_VIEW_UNPRINTED,"true");
+//		viewUnprintedLink.addParameter(PARAM_LETTER_TYPE,currentType);
+//		addDateParametersToLink(viewUnprintedLink);
+//		unPrintedLetterDocs.add(viewUnprintedLink);
+//		
+//		uT.add(unPrintedLetterDocs,1,urow++);
+//		uT.add(Text.getBreak(),1,urow++);
+//	
+//		ColumnList printedLetterDocs = new ColumnList(4);
+//		
+//		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType,pFrom,pTo);
+//		
+//		int prow = 1;
+//	pT.add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"),1,prow++);
+//	pT.add(getPrintedDatesForm(iwc),1,prow++);
+//	pT.add(printedLetterDocs,1,prow++);
+//	pT.add(getCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P,count_p),1,prow++);
+//			
+//			printedLetterDocs.setHeader("#",1);
+//			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),2);
+//			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),3);
+//			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+//			
+//			Iterator iter = printDocs.iterator();
+//			int count = cursor_p+1;
+//			int ccp = count_p+cursor_p;
+//			if(cursor_p >0){
+//				while(iter.hasNext() && cursor_p>0){
+//					iter.next();
+//					cursor_p--;
+//				}
+//			}
+//			while (iter.hasNext() && count <= ccp) {
+//				PrintDocuments doc = (PrintDocuments)iter.next();
+//				printedLetterDocs.add(String.valueOf(count));
+//				printedLetterDocs.add(doc.getCreated().toString());
+//				//messageList.add("-");
+//				printedLetterDocs.add(Integer.toString(doc.getNumberOfSubDocuments()));
+//				int fileID = doc.getDocumentFileID();
+//				Link viewLink = new Link(localize("printdoc.view","View"));
+//				viewLink.setFile(fileID);
+//				printedLetterDocs.add(viewLink);
+//				count++;
+//			}
+//  }
   
 
 private void addMessagesList(IWContext iwc)throws Exception{
@@ -693,23 +757,20 @@ private void addMessagesList(IWContext iwc)throws Exception{
 	add(uForm);
     //add(pForm);
 	ColumnList unPrintedLetterDocs = new ColumnList(6);
-	String searchSsn = iwc.getParameter(PRM_SSN);
-	String searchMsgId = iwc.getParameter(PRM_MSGID);
-	
-	
-	
-	
+
   	
 	int urow = 1;
 	int childCareId = getChildCareSession(iwc).getChildCareID();
 //	uForm.add(new Text("ChildcareId:" + childCareId));
 	//Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
-	Collection unprintedLetters = getPrintedLetter(iwc).findLetterByChildcare(childCareId, searchSsn, searchMsgId);
-	
+	Collection unprintedLetters = getPrintedLetter(iwc).findLetterByChildcare(childCareId, searchSsn, searchMsgId, uFrom, uTo);
+
 	
 /*RS	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);  RS*/
 //	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
 	uT.add(getSearchForm(iwc), 1, urow++);
+	uT.setStyle(1, urow-1, "padding-bottom:15");
+	
 	uT.add(unPrintedLetterDocs,1,urow++);
 	uT.add(getPrintButton(),1,urow++);
 	uT.add(getCursorLinks(iwc,unprintedLetters.size(),cursor_u,PRM_CURSOR_U,count_u),1,urow++);
@@ -717,11 +778,11 @@ private void addMessagesList(IWContext iwc)throws Exception{
 
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
-		unPrintedLetterDocs.setHeader(localize("printdoc.event","Event"),1);
-		unPrintedLetterDocs.setHeader(localize("printdoc.msgid","Message ID:"),2);
-		unPrintedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),3);
-		unPrintedLetterDocs.setHeader(localize("printdoc.ssn","SSN"),4);
-		unPrintedLetterDocs.setHeader(localize("printdoc.created_date","Message created"),5);
+		unPrintedLetterDocs.setHeader(localize(LOCALE_EVENT,"Event"),1);
+		unPrintedLetterDocs.setHeader(localize(LOCALE_MSGID,"Message Id"),2);
+		unPrintedLetterDocs.setHeader(localize(LOCALE_RECEIVER,"Receiver"),3);
+		unPrintedLetterDocs.setHeader(localize(LOCALE_SSN,"SSN"),4);
+		unPrintedLetterDocs.setHeader(localize(LOCALE_DATE_CREATED,"Message created"),5);
 
 		//unPrintedLetterDocs.setHeader(localize("printdoc.file","File"),5);
 		CheckBox checkAll = new CheckBox("checkall");
@@ -838,37 +899,37 @@ RS*/
 		RS*/
   }
   
-  private void addUnPrintedNameList(IWContext iwc)throws Exception{
-	 ColumnList unPrintedNames = new ColumnList(3);
-	 unPrintedNames.setWidth(Table.HUNDRED_PERCENT);
-			unPrintedNames.setBackroundColor("#e0e0e0");
-			//messageList.setHeader(localize("printdoc.name","Name"),1);
-			unPrintedNames.setHeader(localize("printdoc.created_date","Message created"),1);
-			unPrintedNames.setHeader(localize("printdoc.receiver","Receiver"),2);
-			unPrintedNames.setHeader(localize("printdoc.address","Address"),3);
-	 Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType);
-	 Iterator iter = unprintedLetters.iterator();
-	 PrintMessage msg;
-	 User owner;
-	 UserBusiness ub = getUserBusiness(iwc);
-	 Address addr;
-	 String sAddr = "";
-	 while(iter.hasNext()){
-		msg = (PrintMessage) iter.next();
-		owner = msg.getOwner();
-		unPrintedNames.add(msg.getCreated().toString());
-		unPrintedNames.add(owner.getName());
-		try{
-			addr = ub.getUsersMainAddress(owner);
-			unPrintedNames.add(addr.getStreetAddress());
-		}
-		catch(Exception ex){
-			unPrintedNames.add(getErrorText(localize("printdoc.noaddress","No address")));
-		}
-	 }  	 
-	 addTypeMenu(iwc);
-	 add(unPrintedNames);
-  }
+//  private void addUnPrintedNameList(IWContext iwc)throws Exception{
+//	 ColumnList unPrintedNames = new ColumnList(3);
+//	 unPrintedNames.setWidth(Table.HUNDRED_PERCENT);
+//			unPrintedNames.setBackroundColor("#e0e0e0");
+//			//messageList.setHeader(localize("printdoc.name","Name"),1);
+//			unPrintedNames.setHeader(localize("printdoc.created_date","Message created"),1);
+//			unPrintedNames.setHeader(localize("printdoc.receiver","Receiver"),2);
+//			unPrintedNames.setHeader(localize("printdoc.address","Address"),3);
+//	 Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType);
+//	 Iterator iter = unprintedLetters.iterator();
+//	 PrintMessage msg;
+//	 User owner;
+//	 UserBusiness ub = getUserBusiness(iwc);
+//	 Address addr;
+//	 String sAddr = "";
+//	 while(iter.hasNext()){
+//		msg = (PrintMessage) iter.next();
+//		owner = msg.getOwner();
+//		unPrintedNames.add(msg.getCreated().toString());
+//		unPrintedNames.add(owner.getName());
+//		try{
+//			addr = ub.getUsersMainAddress(owner);
+//			unPrintedNames.add(addr.getStreetAddress());
+//		}
+//		catch(Exception ex){
+//			unPrintedNames.add(getErrorText(localize("printdoc.noaddress","No address")));
+//		}
+//	 }  	 
+//	 addTypeMenu(iwc);
+//	 add(unPrintedNames);
+//  }
 
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
 	return (MessageBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,MessageBusiness.class);
