@@ -784,7 +784,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		boolean[] groupIsFull = new boolean[maximumGroupNumber];
 		try {
 			boolean done = false;
-			Startingtime[] startingtimes = (Startingtime[]) ((Startingtime) IDOLookup.instanciateEntity(Startingtime.class)).findAll("SELECT * FROM STARTINGTIME s, TOURNAMENT_ROUND_STARTINGTIME trs WHERE trs.startingtime_id = s.startingtime_id AND trs.tournament_round_id = " + tourRound.getID() + " AND s.field_id=" + tournament.getFieldId()+"and s.tee_number="+teeNumber+" order_by s.grup_num");
+			Startingtime[] startingtimes = (Startingtime[]) ((Startingtime) IDOLookup.instanciateEntity(Startingtime.class)).findAll("SELECT * FROM STARTINGTIME s, TOURNAMENT_ROUND_STARTINGTIME trs WHERE trs.startingtime_id = s.startingtime_id AND trs.tournament_round_id = " + tourRound.getID() + " AND s.field_id=" + tournament.getFieldId()+"and s.tee_number="+teeNumber+" order by s.grup_num");
 			com.idega.util.IWTimestamp startStamp = new com.idega.util.IWTimestamp(tourRound.getRoundDate());
 			int maximumInGroup = tournament.getNumberInGroup();
 			

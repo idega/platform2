@@ -233,7 +233,9 @@ public class TeeTimeBusinessBean extends IBOServiceBean implements TeeTimeBusine
 	}
 
 	public synchronized IWTimestamp getFirstOpentime() throws SQLException {
-		return new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY open_time"))[0].getOpenTime());
+		IWTimestamp toReturn = new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY open_time"))[0].getOpenTime());
+		toReturn.setAsTime();
+		return toReturn;
 	}
 
 	public synchronized int getMaxDaysShown() throws SQLException {
@@ -241,7 +243,9 @@ public class TeeTimeBusinessBean extends IBOServiceBean implements TeeTimeBusine
 	}
 
 	public synchronized IWTimestamp getLastClosetime() throws SQLException {
-		return new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY close_time"))[0].getCloseTime());
+		IWTimestamp toReturn = new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY close_time"))[0].getCloseTime());
+		toReturn.setAsTime();
+		return toReturn;
 	}
 
 	public synchronized int getFieldUnion(int field_id) throws SQLException, FinderException {
