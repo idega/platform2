@@ -1385,6 +1385,10 @@ public class TourBookingForm extends BookingForm{
       iMany += current;
     }
 
+		if (iMany < 1) {
+			return errorTooFew;
+		}
+
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
 //    String manyDays = iwc.getParameter(this.parameterManyDays);
@@ -1516,20 +1520,10 @@ public class TourBookingForm extends BookingForm{
 
   /**
    * return bookingId, 0 if nothing is done,  -10 if inquiry is sent
-   */
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
     String inquiry = iwc.getParameter(this.parameterInquiry);
-    //debug("check  = "+check);
-    //debug("action = "+action);
-
-    /** @todo fatta af hverju thetta er herna og hvort megi henda thvi
-    if (this._booking == null) {
-      //debug("RANUS 0");
-      return 0;
-    }
-    */
 
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
@@ -1542,7 +1536,6 @@ public class TourBookingForm extends BookingForm{
             if (checkInt > 0) {
               int inqId = this.sendInquery(iwc, checkInt, true);
               int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
-              /** @todo senda email....grrrr */
               if (resp == 0) {
                 return this.inquirySent;
               }else {
@@ -1570,6 +1563,7 @@ public class TourBookingForm extends BookingForm{
       return 0;
     }
   }
+   */
 
 
   public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException {
@@ -1965,14 +1959,17 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 //	}
 	return price;
 }*/
-
-  public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
+	
+	public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
+		return getIsDayVisible(iwc, _stamp);
+	}
+	
+  public boolean getIsDayVisible(IWContext iwc, IWTimestamp stamp) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
     if (_reseller != null) {
-      return getTourBusiness(iwc).getIfDay(iwc, _contract, _product, _stamp);
+      return getTourBusiness(iwc).getIfDay(iwc, _contract, _product, stamp);
     }else {
-      return getTourBusiness(iwc).getIfDay(iwc, _product, _stamp, false);
+      return getTourBusiness(iwc).getIfDay(iwc, _product, stamp, false);
     }
-
   }
 
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {

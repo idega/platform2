@@ -69,7 +69,10 @@ public class HotelBookingForm extends BookingForm {
   }
 
   public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
-    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp, false, true);
+		return getIsDayVisible(iwc, _stamp);
+  }
+  public boolean getIsDayVisible(IWContext iwc, IWTimestamp stamp) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
+    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), stamp, false, true);
   }
 
 
@@ -1630,6 +1633,9 @@ public class HotelBookingForm extends BookingForm {
       iMany += current;
     }
 
+		if (iMany < 1) {
+			return errorTooFew;
+		}
 
     int serviceId = _service.getID();
     Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(_service.getPrimaryKey());

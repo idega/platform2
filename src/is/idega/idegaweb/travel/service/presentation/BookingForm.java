@@ -39,7 +39,11 @@ import is.idega.idegaweb.travel.presentation.*;
 
 public abstract class BookingForm extends TravelManager{
 
-  public static final int errorTooMany = -1;
+	protected static final int errorTooMany = -1;
+	protected List errorDays = new Vector();
+	protected static final int errorFieldsEmpty = -2;
+	protected List errorFields = new Vector();
+	protected static final int errorTooFew = -3;
   public static final int inquirySent = -10;
   public static String parameterDepartureAddressId = "depAddrId";
 
@@ -81,6 +85,16 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterFromDate = "bookingFromDate";
   public static String parameterManyDays = "bookingManyDays";
   protected String parameterOnlineBooking = "pr_onl_bking";
+
+	protected String PARAMETER_FIRST_NAME = "surname";
+	protected String PARAMETER_LAST_NAME = "lastname";
+	protected String PARAMETER_ADDRESS = "address";
+	protected String PARAMETER_AREA_CODE = "area_code";
+	protected final String PARAMETER_EMAIL = "e-mail";
+	protected final String PARAMETER_PHONE = "telephone_number";
+	protected final String PARAMETER_CITY = "city";
+	protected final String PARAMETER_COUNTRY = "country";
+	protected final String PARAMETER_COMMENT = "comment";
   
 	protected int pWidthLeft = 60;
 	protected int pWidthCenter = 60;
@@ -89,7 +103,6 @@ public abstract class BookingForm extends TravelManager{
 	protected boolean orderAddresses = false;
 
   protected boolean _useInquiryForm = false;
-  public List errorDays = new Vector();
 
 
   public BookingForm(IWContext iwc, Product product) throws Exception{
@@ -247,31 +260,31 @@ public abstract class BookingForm extends TravelManager{
           depAddr.setToSubmit();
           depAddr.setSelectedElement(Integer.toString(addressId));
 
-        TextInput surname = new TextInput("surname");
+        TextInput surname = new TextInput(PARAMETER_FIRST_NAME);
             surname.setSize(textInputSizeLg);
             surname.keepStatusOnAction();
-        TextInput lastname = new TextInput("lastname");
+        TextInput lastname = new TextInput(PARAMETER_LAST_NAME);
             lastname.setSize(textInputSizeLg);
             lastname.keepStatusOnAction();
-        TextInput address = new TextInput("address");
+        TextInput address = new TextInput(PARAMETER_ADDRESS);
             address.setSize(textInputSizeLg);
             address.keepStatusOnAction();
-        TextInput areaCode = new TextInput("area_code");
+        TextInput areaCode = new TextInput(PARAMETER_AREA_CODE);
             areaCode.setSize(textInputSizeSm);
             areaCode.keepStatusOnAction();
-        TextInput email = new TextInput("e-mail");
+        TextInput email = new TextInput(PARAMETER_EMAIL);
             email.setSize(textInputSizeMd);
             email.keepStatusOnAction();
-        TextInput telNumber = new TextInput("telephone_number");
+        TextInput telNumber = new TextInput(PARAMETER_PHONE);
             telNumber.setSize(textInputSizeMd);
             telNumber.keepStatusOnAction();
-        TextInput city = new TextInput("city");
+        TextInput city = new TextInput(PARAMETER_CITY);
             city.setSize(textInputSizeLg);
             city.keepStatusOnAction();
-        TextInput country = new TextInput("country");
+        TextInput country = new TextInput(PARAMETER_COUNTRY);
             country.setSize(textInputSizeMd);
             country.keepStatusOnAction();
-        TextArea comment = new TextArea("comment");
+        TextArea comment = new TextArea(PARAMETER_COMMENT);
 	          comment.setWidth("350");
 	          comment.setHeight("60");
             comment.keepStatusOnAction();
@@ -1339,39 +1352,31 @@ public abstract class BookingForm extends TravelManager{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
     String inquiry = iwc.getParameter(this.parameterInquiry);
-//    System.out.println("check  = "+check);
-//    System.out.println("action  = "+action);
-    //debug("action = "+action);
-
-    /** @todo fatta af hverju thetta er herna og hvort megi henda thvi
-    if (this._booking == null) {
-      //debug("RANUS 0");
-      return 0;
-    }
-    */
-  
-   
-//   if (check.equals(this.parameterSaveBooking)  ) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
-          if (inquiry == null) {
-            return checkBooking(iwc, true);
-          }else {
-            int checkInt = checkBooking(iwc, true, true);
-            ///// INquiry STUFF JAMMS
-            if (checkInt > 0) {
-              int inqId = this.sendInquery(iwc, checkInt, true);
-              int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
-              /** @todo senda email....grrrr */
-              if (resp == 0) {
-                return this.inquirySent;
-              }else {
-                throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
-              }
-            }else {
-              throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
-            }
-          }
+        	int fields = checkFormFields(iwc);
+        	if (fields != 0) {
+        		return fields;
+        	}else { 
+	          if (inquiry == null) {
+	            return checkBooking(iwc, true);
+	          }else {
+	            int checkInt = checkBooking(iwc, true, true);
+	            ///// INquiry STUFF JAMMS
+	            if (checkInt > 0) {
+	              int inqId = this.sendInquery(iwc, checkInt, true);
+	              int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
+	              /** @todo senda email....grrrr */
+	              if (resp == 0) {
+	                return this.inquirySent;
+	              }else {
+	                throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
+	              }
+	            }else {
+	              throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
+	            }
+	          }
+        	}
         }else if (action.equals(this.parameterBookAnyway)) {
           return saveBooking(iwc);
         }else if (action.equals(this.parameterSendInquery)) {
@@ -1390,6 +1395,31 @@ public abstract class BookingForm extends TravelManager{
 //      return 0;
 //    }
   }
+
+	protected int checkFormFields(IWContext iwc) {
+		int returner = 0;
+		
+		String fName = iwc.getParameter(PARAMETER_FIRST_NAME);
+		String lName = iwc.getParameter(PARAMETER_LAST_NAME);
+		String phone = iwc.getParameter(PARAMETER_PHONE);
+
+		if (fName == null || fName.equals("")) {
+			errorFields.add(PARAMETER_FIRST_NAME);
+			returner = errorFieldsEmpty;
+		}
+
+		if (lName == null || lName.equals("")) {
+			errorFields.add(PARAMETER_LAST_NAME);
+			returner = errorFieldsEmpty;
+		}
+
+		if (phone == null || phone.equals("")) {
+			errorFields.add(PARAMETER_PHONE);
+			returner = errorFieldsEmpty;
+		}
+
+		return returner;
+	}
 
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid) throws Exception {
@@ -1448,6 +1478,9 @@ public abstract class BookingForm extends TravelManager{
       iMany += current;
     }
 
+		if (iMany < 1) {
+			return errorTooFew;
+		}
 
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
@@ -2129,6 +2162,62 @@ public abstract class BookingForm extends TravelManager{
     return usersDrop;
   }
 
+  private Form getFieldErrorForm(IWContext iwc) {
+		Form form = getFormMaintainingAllParameters(iwc, false, true);
+		Table table = new Table();
+		table.setColor(super.WHITE);
+		form.add(table);
+		int row = 1;
+		
+		table.add(super.getHeaderText(iwrb.getLocalizedString("travel.form_not_completed","Bookingform not completed")), 1, row);
+		table.setRowColor(row, super.backgroundColor);
+
+		String temp;
+		for (int i = 0; i < errorFields.size(); i++) {
+		  try {
+				++row;
+				temp = (String) errorFields.get(i);
+				table.setRowColor(row, super.GRAY);
+				table.add(iwrb.getLocalizedString("travel.form_parameter_name_"+temp, temp), 1,row);
+		  }catch (NullPointerException npe) {
+				npe.printStackTrace(System.err);
+		  }
+		}
+
+	  String sBookingId = iwc.getParameter(this.parameterBookingId);
+
+		++row;
+/*
+	if (supplier != null) {
+	  table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many. Do you wish to book anyway ?"), 1, row);
+	  ++row;
+			  table.setRowColor(row, super.GRAY);
+	  table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
+	  table.add(Text.NON_BREAKING_SPACE, 1, row);
+	  table.add(new SubmitButton(iwrb.getLocalizedString("travel.book_anyway","Book anyway"),this.BookingAction, this.parameterBookAnyway), 1, row);
+	  if (sBookingId == null) {
+		  table.add(Text.NON_BREAKING_SPACE, 1, row);
+		  table.add(new SubmitButton(iwrb.getLocalizedString("travel.send_inquiry","Send inquiry"),this.BookingAction, this.parameterSendInquery), 1, row);
+	  }
+	}else if (_reseller != null) {
+	  if (sBookingId == null) {
+		  table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many. Do you wish to send an inquiry ?"), 1, row);
+				  ++row;
+				  table.setRowColor(row, super.GRAY);
+		  table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery), 1, row);
+		  table.add(new BackButton(iwrb.getImage("buttons/no.gif")), 1, row);
+	  }else {
+				  table.setRowColor(row, super.GRAY);
+				  table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
+	  }
+	}
+	*/	
+		table.setRowColor(row, super.GRAY);
+		table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
+		
+		return form;		
+  }
+
   private Form getTooManyForm(IWContext iwc) {
     Form form = getFormMaintainingAllParameters(iwc, false, true);
       Table table = new Table();
@@ -2483,10 +2572,16 @@ public abstract class BookingForm extends TravelManager{
     return table;
   }
 
+
   public Form getErrorForm(IWContext iwc, int error) {
     switch (error) {
       case errorTooMany :
         return getTooManyForm(iwc);
+      case errorFieldsEmpty :
+      	return getFieldErrorForm(iwc);
+      case errorTooFew :
+      	errorFields.add("too_few_people");
+      	return getFieldErrorForm(iwc);
       default:
         return null;
     }
@@ -2532,7 +2627,11 @@ public abstract class BookingForm extends TravelManager{
   }
 
   public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
-    return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
+    return getIsDayVisible(iwc, _stamp);
+  }
+  public boolean getIsDayVisible(IWContext iwc, IWTimestamp stamp) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
+    boolean repps = super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), stamp);
+    return repps;
   }
 /*
 	public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp, boolean includeAllDays)	throws RemoteException, SQLException {
