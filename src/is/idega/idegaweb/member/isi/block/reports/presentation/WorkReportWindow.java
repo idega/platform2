@@ -334,9 +334,9 @@ public class WorkReportWindow extends IWAdminWindow {
 				menu.add(statsList, 1, 12);
 			}
 			
-//			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
+			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
 				menu.add(createReports, 1, 13);
-//			}
+			}
 		}
 		
 		return menu;
