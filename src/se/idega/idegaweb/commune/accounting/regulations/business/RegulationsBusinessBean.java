@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.55 2003/11/03 16:20:04 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.56 2003/11/05 12:14:07 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,31 +21,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
-import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
-import se.idega.idegaweb.commune.accounting.regulations.data.ConditionHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.ConditionType;
-import se.idega.idegaweb.commune.accounting.regulations.data.ConditionTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.MainRuleHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType;
-import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType;
-import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
-import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.*;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 
@@ -410,7 +386,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		
 		r.toString(); // Added to remove compiler warning
 		c.toString(); // Added to remove compiler warning
-		return 0;	
+		return 1;	
 	}
 		 
 	/**
@@ -1166,6 +1142,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		System.out.println(operation+flow+period+conditionType+condition+regSpecType+totalSum+contract);
 
 		//Insert code here to create postingDetail
+		
+		//Just for testing, please remove when done with the real code
+		postingDetail.setAmount(100f);
+		postingDetail.setRuleSpecType("TestRule");//??? String
+		postingDetail.setTerm("Testing (JJ)");
+		postingDetail.setVat(32.0f);
+		postingDetail.setVatRegulationID(1);
 	
 		return postingDetail;
 	}
@@ -1184,12 +1167,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
 			String operation, String flow, Date period, String conditionType, Collection condition){
 	
-		ArrayList regulations = new ArrayList();
+		Collection regulations = new ArrayList();
 		
 		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
 		System.out.println(operation+flow+period+conditionType+condition);
 
-		//Insert code here to create regulations
+		try {
+			regulations = getRegulationHome().findRegulationsByPeriod(new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return regulations;
 	}
@@ -1210,6 +1197,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		System.out.println(totalSum+" "+contract);
 
 		//Insert code here to create postingDetail
+	
+		//Just for testing, please remove when done with the real code
+		postingDetail.setAmount(100f);
+		postingDetail.setRuleSpecType("TestRule");//??? String
+		postingDetail.setTerm("Testing (JJ)");
+		postingDetail.setVat(32.0f);
+		postingDetail.setVatRegulationID(1);
 	
 		return postingDetail;
 	}
