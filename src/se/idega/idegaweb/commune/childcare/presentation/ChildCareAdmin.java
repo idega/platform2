@@ -99,6 +99,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		int netOrder = -1;
 		boolean showComment = false;
 		boolean showPriority = false;
+		boolean showMessage = false;
 			
 		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
@@ -115,6 +116,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			IWCalendar placementDate;
 			Link link;
 			boolean hasOtherPlacing = false;
+			boolean hasMessage = false;
 				
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -129,7 +131,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 				else
 					netOrder = -1;
 				hasOtherPlacing = getBusiness().hasBeenPlacedWithOtherProvider(application.getChildId(), getSession().getChildCareID());
-						
+				hasMessage = application.getMessage() != null;		
+				
 				if (netOrder == 1 && row != 2) {
 					applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
 					applicationTable.setStyle(1, row, "padding", "0px");
@@ -159,6 +162,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 				if (getResponsePage() != null)
 					link.setPage(getResponsePage());
 	
+				if (hasMessage) {
+					showMessage = true;
+					applicationTable.add(getSmallErrorText("&Delta;"), column, row);
+				}
 				if (hasOtherPlacing) {
 					showComment = true;
 					applicationTable.add(getSmallErrorText("*"), column, row);
@@ -167,7 +174,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 					showPriority = true;
 					applicationTable.add(getSmallErrorText("+"), column, row);
 				}
-				if (showComment || showPriority)
+				if (showComment || showPriority || showMessage)
 					applicationTable.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
 					
 				applicationTable.add(link, column++, row);
@@ -190,18 +197,23 @@ public class ChildCareAdmin extends ChildCareBlock {
 			applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 			
-		if (showComment) {
+		if (showComment || showPriority || showMessage) {
 			applicationTable.setHeight(row++, 2);
-			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-			applicationTable.add(getSmallErrorText("* "), 1, row);
-			applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row++);
-		}
-		if (showPriority) {
-			if (!showComment)
-				applicationTable.setHeight(row++, 2);
-			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-			applicationTable.add(getSmallErrorText("+ "), 1, row);
-			applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row);
+			if (showMessage) {
+				applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+				applicationTable.add(getSmallErrorText("&Delta; "), 1, row);
+				applicationTable.add(getSmallText(localize("child_care.has_message_in_application","The application has a message attached")), 1, row++);
+			}
+			if (showComment) {
+				applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+				applicationTable.add(getSmallErrorText("* "), 1, row);
+				applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row++);
+			}
+			if (showPriority) {
+				applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+				applicationTable.add(getSmallErrorText("+ "), 1, row);
+				applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row++);
+			}
 		}
 		
 		return applicationTable;
