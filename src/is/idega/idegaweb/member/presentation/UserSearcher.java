@@ -6,6 +6,7 @@ package is.idega.idegaweb.member.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +122,10 @@ public class UserSearcher extends Block {
 	private Collection addedButtons = null;
 	private Collection otherClearIdentifiers = null;
 	private boolean constrainToUniqueSearch = true;
+	
+	private Collection monitoredSearchIdentifiers =  null;
+	private Map monitorMap = null;
+	
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
@@ -147,7 +152,7 @@ public class UserSearcher extends Block {
 			message = iwrb.getLocalizedString("usrch.service_available", "Search service not available");
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			message = iwrb.getLocalizedString("usrch.no_user_found", "No user found");
 		}
 		Table T = new Table();
@@ -177,13 +182,15 @@ public class UserSearcher extends Block {
 		if (processed)
 			return;
 		String searchIdentifier = constrainToUniqueSearch ? uniqueIdentifier : "";
+		
 		if (iwc.isParameterSet(PRM_USER_ID + uniqueIdentifier)) {
 			userID = Integer.valueOf(iwc.getParameter(PRM_USER_ID + uniqueIdentifier));
 		}
-		else if (iwc.isParameterSet(SEARCH_COMMITTED + searchIdentifier)) {
+		if (iwc.isParameterSet(SEARCH_COMMITTED + searchIdentifier)) {
 			processSearch(iwc);
 		}
-		if (userID != null) {
+		
+		if (userID != null && userID.intValue()>0) {
 			try {
 				UserHome home = (UserHome) IDOLookup.getHome(User.class);
 				user = home.findByPrimaryKey(userID);
@@ -192,8 +199,42 @@ public class UserSearcher extends Block {
 				throw new FinderException(e.getMessage());
 			}
 		}
+		digMonitors(iwc);
 		processed = true;
 	}
+	
+	private void digMonitors(IWContext iwc){
+		
+		if(monitoredSearchIdentifiers!=null && !monitoredSearchIdentifiers.isEmpty()){
+			monitorMap = new Hashtable();
+			for (Iterator iter = monitoredSearchIdentifiers.iterator(); iter.hasNext();) {
+				String identifier = (String) iter.next();
+				boolean addSearchPrm = false;
+				if(iwc.isParameterSet(SEARCH_FIRST_NAME+identifier)){
+					monitorMap.put(SEARCH_FIRST_NAME+identifier,iwc.getParameter(SEARCH_FIRST_NAME+identifier));
+					addSearchPrm = true;
+				}
+				if(iwc.isParameterSet(SEARCH_MIDDLE_NAME+identifier)){
+					monitorMap.put(SEARCH_MIDDLE_NAME+identifier,iwc.getParameter(SEARCH_MIDDLE_NAME+identifier));
+					addSearchPrm = true;
+				}
+				if(iwc.isParameterSet(SEARCH_LAST_NAME+identifier)){
+					monitorMap.put(SEARCH_LAST_NAME+identifier,iwc.getParameter(SEARCH_LAST_NAME+identifier));
+					addSearchPrm = true;
+				}
+				if(iwc.isParameterSet(SEARCH_PERSONAL_ID+identifier)){
+					monitorMap.put(SEARCH_PERSONAL_ID+identifier,iwc.getParameter(SEARCH_PERSONAL_ID+identifier));
+					addSearchPrm = true;
+				}
+				if(addSearchPrm){
+					monitorMap.put(SEARCH_COMMITTED + (constrainToUniqueSearch ? identifier : ""),"true");	
+				
+				}
+				
+			}
+		}
+	}
+	
 	private void processSearch(IWContext iwc) throws IDOLookupException, FinderException, RemoteException {
 		UserHome home = (UserHome) IDOLookup.getHome(User.class);
 		String first = iwc.getParameter(SEARCH_FIRST_NAME + uniqueIdentifier);
@@ -212,9 +253,12 @@ public class UserSearcher extends Block {
 		if ((pid != null && pid.length() > 0)
 			|| (first != null && first.length() > 0)
 			|| (middle != null && middle.length() > 0)
-			|| (last != null && last.length() > 0))
-			usersFound =
-				home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true);
+			|| (last != null && last.length() > 0)){
+			usersFound =home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true);
+		}
+		else{
+			user = null;
+		}
 		//System.out.println("users found " + usersFound.size());
 		if (user == null && usersFound != null) {
 			// if some users found
@@ -327,8 +371,9 @@ public class UserSearcher extends Block {
 				String clearAction = "";
 				for (Iterator iter = clearFields.iterator(); iter.hasNext();) {
 					String field = (String) iter.next();
-					clearAction += getClearActionPart(field, uniqueIdentifier);
+					clearAction += getClearActionPart(field, uniqueIdentifier,"''");
 				}
+				clearAction += getClearActionPart(PRM_USER_ID,uniqueIdentifier,"-1");
 				SubmitButton reset = new SubmitButton(iwrb.getLocalizedString("clear", "Clear"));
 				reset.setStyleClass(buttonStyleName);
 				reset.setOnClick(clearAction + "return false;");
@@ -339,10 +384,11 @@ public class UserSearcher extends Block {
 				String otherClearActions = "";
 				for (Iterator iter = otherClearIdentifiers.iterator(); iter.hasNext();) {
 					String identifier = (String) iter.next();
-					for (Iterator iter2 = clearFields.iterator(); iter.hasNext();) {
+					for (Iterator iter2 = clearFields.iterator(); iter2.hasNext();) {
 						String field = (String) iter2.next();
-						otherClearActions += getClearActionPart(field, identifier);
+						otherClearActions += getClearActionPart(field, identifier,"''");
 					}
+					otherClearActions +=getClearActionPart(PRM_USER_ID,identifier,"-1");
 				}
 			
 			SubmitButton resetmultiple = new SubmitButton(iwrb.getLocalizedString("clear_all", "Clear All"));
@@ -353,8 +399,8 @@ public class UserSearcher extends Block {
 	}
 	return searchTable;
 }
-private String getClearActionPart(String field, String identifier) {
-	return "this.form." + field + identifier + ".value ='' ;";
+private String getClearActionPart(String field, String identifier,String value) {
+	return "this.form." + field + identifier + ".value ="+value+" ;";
 }
 /**
 	 * Presentates the users found by search
@@ -410,6 +456,14 @@ private void addParameters(Link link) {
 		Parameter element = (Parameter) iter.next();
 		link.addParameter(element);
 	}
+	if(monitorMap!=null){
+		for (Iterator iter = monitorMap.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			link.addParameter((String)entry.getKey(),(String)entry.getValue());
+		}
+	}
+	
+	
 }
 /**
  * Flags the first name field in the user search
@@ -838,4 +892,11 @@ public boolean isShowMultipleResetButton() {
 public void setShowMultipleResetButton(boolean showMultipleResetButton) {
 	this.showMultipleResetButton = showMultipleResetButton;
 }
+
+public void addMonitoredSearchIdentifier(String identifier){
+	if(monitoredSearchIdentifiers==null)
+		monitoredSearchIdentifiers = new Vector();
+	monitoredSearchIdentifiers.add(identifier);
+}
+
 }
