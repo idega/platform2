@@ -108,7 +108,7 @@ public class TournamentResultsDetailed extends JModuleObject {
           myTable.mergeCells(1,row+2,22,row+2);
           myTable.addText("",1,row+2);
           myTable.setHeight(1,row+2,"5");
-          getMemberScore(r,row);
+          getMemberScore(r,row,a+1);
           row += 3;
         }
       }
@@ -116,8 +116,10 @@ public class TournamentResultsDetailed extends JModuleObject {
       for ( int a = 2; a <= myTable.getColumns(); a++ ) {
         myTable.setColumnAlignment(a,"center");
       }
-      myTable.setColumnAlignment(1,"right");
+      myTable.setColumnAlignment(1,"left");
       myTable.setAlignment(1,1,"center");
+      myTable.setAlignment(1,2,"right");
+      myTable.setAlignment(1,3,"right");
       myTable.setRowColor(1,"#2C4E3B");
       myTable.setRowColor(2,"#2C4E3B");
       myTable.setRowColor(3,"#DCEFDE");
@@ -133,7 +135,7 @@ public class TournamentResultsDetailed extends JModuleObject {
     }
   }
 
-  private void getMemberScore(ResultsCollector r, int row) {
+  private void getMemberScore(ResultsCollector r, int row, int position) {
     try {
       int column = 2;
       int strokeValue = 0;
@@ -163,9 +165,18 @@ public class TournamentResultsDetailed extends JModuleObject {
       myTable.setRowColor(row,"#EAFAEC");
       myTable.setRowColor(row+1,"#DCEFDE");
 
+      Text positionText = (Text) blackText.clone();
+        positionText.setText("&nbsp;"+Integer.toString(position)+".&nbsp;");
       Text member = (Text) blackText.clone();
-        member.setText("&nbsp;"+r.getName()+"&nbsp;");
-        myTable.add(member,1,row);
+        member.setText(r.getName());
+
+      Window scoreWindow = new Window(iwrb.getLocalizedString("tournament.scorecard","Scorecard"),650,650,"/tournament/handicap_skor.jsp");
+      Link seeScores = new Link(member,scoreWindow);
+        seeScores.addParameter("member_id",r.getMemberId());
+        seeScores.addParameter("tournament_id",tournamentId_);
+        seeScores.addParameter("tournament_group_id",r.getTournamentGroupId());
+        myTable.add(positionText,1,row);
+        myTable.add(seeScores,1,row);
 
       Vector strokes = r.getStrokes();
       Vector pars = r.getPar();
