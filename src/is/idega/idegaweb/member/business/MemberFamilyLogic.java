@@ -1,6 +1,8 @@
 package is.idega.idegaweb.member.business;
 
-import javax.ejb.*;
+import java.rmi.RemoteException;
+
+import javax.ejb.RemoveException;
 
 import com.idega.user.data.User;
 
@@ -12,6 +14,7 @@ public interface MemberFamilyLogic extends com.idega.business.IBOService
  public java.util.Collection getParentsFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoParentFound,java.rmi.RemoteException;
  public java.lang.String getParentRelationType() throws java.rmi.RemoteException;
  public java.lang.String getCustodianRelationType() throws java.rmi.RemoteException;
+ public void removeAsCustodianFor(User custodian,User child)throws RemoveException,RemoteException;
  
  public java.lang.String getSiblingRelationType() throws java.rmi.RemoteException;
  public java.util.Collection getSiblingsFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoSiblingFound,java.rmi.RemoteException;
