@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.13 2001/08/28 23:54:12 laddi Exp $
+ * $Id: Menu.java,v 1.14 2001/08/29 21:05:16 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -172,21 +172,6 @@ public class Menu extends JModuleObject{
     LinkTable.add(link5,1,row);
     row++;
 
-    Link link6 = new Link();
-    link6 = new Link(iAct != ACT6?iwrb.getImage("/menu/english.gif","/menu/english_o.gif","English",iWidth,iHeight):iwrb.getImage("/menu/english1.gif",iWidth,iHeight));
-    if(modinfo.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())){
-      link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.englishParameterString);
-    }
-    else{
-      link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.icelandicParameterString);
-    }
-    link6.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
-    //link6.setURL(getUrl(ACT6));
-    link6.maintainParameter("text_action",modinfo);
-    link6.maintainParameter("campus_action",modinfo);
-    LinkTable.add(link6,1,row);
-    row++;
-
     Image menu7 = iwrb.getImage("/menu/home.gif","/menu/home_o.gif","Home",iWidth,iHeight);
     Link link7 = new Link(menu7);
     link7.setURL(getUrl(ACT7));
@@ -195,6 +180,22 @@ public class Menu extends JModuleObject{
     row++;
 
     LinkTable.add(iwb.getImage("redtab.gif","",iWidth,iHeight),1,row);
+    row++;
+
+    Link link6 = new Link();
+    link6 = new Link(iwrb.getImage("/menu/language.gif",iwrb.getLocalizedString("language","English"),95,37));
+    if(modinfo.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())){
+      link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.englishParameterString);
+    }
+    else{
+      link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.icelandicParameterString);
+    }
+    link6.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
+    link6.maintainParameter("text_action",modinfo);
+    link6.maintainParameter("campus_action",modinfo);
+    LinkTable.add(link6,1,row);
+    LinkTable.setHeight(1,row,"51");
+    LinkTable.setAlignment(1,row,"center");
 
     Title = getT();
 
