@@ -26,6 +26,7 @@ public class SystemProperties extends GenericEntity {
     addAttribute(getColumnNameAdminEmail(),"Admin email",true,true,java.lang.String.class,1000);
     addAttribute(getColumnNameEmailHost(),"email host",true,true,java.lang.String.class,1000);
     addAttribute(getColumnNameDefaultGroup(),"default group",true,true,java.lang.Integer.class);
+    addAttribute(getColumnNameTermOfNotice(),"term of notice",true,true,java.lang.Integer.class);
   }
   public String getEntityName() {
     return getEntityTableName();
@@ -38,6 +39,7 @@ public class SystemProperties extends GenericEntity {
   public static String getColumnNameAdminEmail(){return "ADMIN_EMAIL";}
   public static String getColumnNameEmailHost(){return "EMAIL_HOST";}
   public static String getColumnNameDefaultGroup(){return "DEFAULT_GROUP";}
+  public static String getColumnNameTermOfNotice(){return "TERM_OF_NOTICE";}
 
   public void setContractYears(int years){
     setColumn(getColumnNameContractYears(),years);
@@ -74,6 +76,12 @@ public class SystemProperties extends GenericEntity {
   }
   public String getEmailHost(){
     return getStringColumnValue(getColumnNameEmailHost());
+  }
+  public void setTermOfNotice(long term){
+    setColumn(getColumnNameTermOfNotice(),(int)term);
+  }
+  public long getTermOfNotice(){
+    return (long) getIntColumnValue( getColumnNameTermOfNotice());
   }
   public void insert() throws java.sql.SQLException{
   }

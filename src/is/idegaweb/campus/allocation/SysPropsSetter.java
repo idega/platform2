@@ -17,6 +17,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import is.idegaweb.campus.entity.SystemProperties;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.idegaCalendar;
 import com.idega.data.EntityFinder;
 import java.sql.SQLException;
 import com.idega.idegaweb.IWBundle;
@@ -38,6 +39,9 @@ public class SysPropsSetter extends PresentationObjectContainer{
   protected IWBundle iwb;
   private static String propParameter = SystemProperties.getEntityTableName();
   private boolean isAdmin = false;
+  private static long day = 1;
+  private static long month = day*30;
+  private static long year = day*365;
 
   public SysPropsSetter() {
 
@@ -118,6 +122,10 @@ public class SysPropsSetter extends PresentationObjectContainer{
     Form myForm = new Form();
     DateInput DI = new DateInput("contract_date",true);
     DropdownMenu TI = intDrp("contract_years",10);
+    DropdownMenu term = termDrp("term",iwrb);
+    TextInput termOfNotice = new TextInput("term_of_notice");
+    termOfNotice.setAsIntegers();
+    termOfNotice.setLength(4);
     TextInput adminEmail = new TextInput("admin_email");
     TextInput emailHost = new TextInput("email_host");
     String[] filter2 = {com.idega.core.accesscontrol.data.PermissionGroup.getStaticPermissionGroupInstance().getGroupTypeValue()};
@@ -151,6 +159,28 @@ public class SysPropsSetter extends PresentationObjectContainer{
     }
     T.add(TI,3,row);
     row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("term_of_notice","Term of notice")),1,row);
+    if(SysProps.getTermOfNotice() >= 0){
+      long iTerm = SysProps.getTermOfNotice();
+      long i = iTerm/year;
+      String selected = "1";
+      if(i != 0){
+        iTerm = i;
+        selected = "2";
+      }
+      else if((i = iTerm/month) != 0 ){
+        iTerm = i;
+        selected = "1";
+      }
+      else{
+        selected = "0";
+      }
+      term.setSelectedElement(selected);
+      termOfNotice.setContent(String.valueOf(iTerm));
+    }
+    T.add(termOfNotice ,3,row);
+    T.add(term,3,row);
+    row++;
     T.add(Edit.formatText(iwrb.getLocalizedString("default_group","Default user group")),1,row);
     int groupId = SysProps.getDefaultGroup();
     if(groupId > 0){
@@ -175,6 +205,8 @@ public class SysPropsSetter extends PresentationObjectContainer{
     String adminEmail = iwc.getParameter("admin_email");
     String emailHost = iwc.getParameter("email_host");
     String defaultGroup = iwc.getParameter("def_group");
+    String termOfNotice = iwc.getParameter("term_of_notice");
+    String term = iwc.getParameter("term");
     SystemProperties SysProps = seekProperties();
     if(SysProps !=null){
       if(contractDate.length() == 10){
@@ -189,6 +221,22 @@ public class SysPropsSetter extends PresentationObjectContainer{
 
         SysProps.setContractYears(years);
 
+      }
+      if(!"".equals(termOfNotice )){
+        long iTerm = Long.parseLong(termOfNotice );
+        if(!"".equals(term )){
+          int i = Integer.parseInt(term);
+          switch (i) {
+            case 0:  iTerm *=day  ;       break;
+            case 1:  iTerm *=month ;      break;
+            case 2:  iTerm *=year  ;      break;
+          }
+
+        }
+        SysProps.setTermOfNotice(iTerm);
+      }
+      else{
+        SysProps.setTermOfNotice(0);
       }
       if(!"".equals(adminEmail)){
         SysProps.setAdminEmail(adminEmail);
@@ -207,6 +255,15 @@ public class SysPropsSetter extends PresentationObjectContainer{
 
     }
     return SysProps;
+  }
+
+  private DropdownMenu termDrp(String name,IWResourceBundle iwrb){
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("0",iwrb.getLocalizedString("day","Day"));
+    drp.addMenuElement("1",iwrb.getLocalizedString("month","Month"));
+    drp.addMenuElement("2",iwrb.getLocalizedString("year","Year"));
+    drp.setSelectedElement("0");
+    return drp;
   }
 
   private DropdownMenu intDrp(String name,int I){
