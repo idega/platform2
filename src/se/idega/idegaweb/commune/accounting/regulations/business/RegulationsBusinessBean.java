@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.114 2004/01/11 22:46:15 tryggvil Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.115 2004/01/12 08:51:15 laddi Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -324,7 +324,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 *          the interval index in the lists
 	 * @author kelly
 	 */
-	public void saveCondition(String regulation_id, String idx, String operation_id, String interval_id) throws RegulationException, RemoteException {
+	public void saveCondition(String regulation_id, String idx, String operation_id, String interval_id) {
 
 		ConditionHome home = null;
 		Condition c = null;
@@ -815,7 +815,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @return Condition
 	 * @author Kelly
 	 */
-	public Object findConditionByRegulationAndIndex(Integer regulationID, Integer index) throws FinderException {
+	public Object findConditionByRegulationAndIndex(Integer regulationID, Integer index) {
 		try {
 			ConditionHome home = getConditionHome();
 			return home.findAllConditionsByRegulationAndIndex(regulationID.intValue(), index.intValue());
@@ -1410,7 +1410,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @author Kelly
 	 *  
 	 */
-	public void deleteRegulation(int id) throws java.rmi.RemoteException {
+	public void deleteRegulation(int id) {
 		try {
 			Regulation r = findRegulation(id);
 			r.remove();

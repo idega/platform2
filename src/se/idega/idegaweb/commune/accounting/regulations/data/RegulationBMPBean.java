@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.28 2004/01/09 14:51:00 tryggvil Exp $
+ * $Id: RegulationBMPBean.java,v 1.29 2004/01/12 08:54:42 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.28 2004/01/09 14:51:00 tryggvil Exp $
+ * $Id: RegulationBMPBean.java,v 1.29 2004/01/12 08:54:42 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -514,7 +514,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 
 
 	//Find functions for C&P
-	public Collection ejbFindAllBy() throws FinderException {
+	public Collection ejbFindAllBy() {
 		return null;
 	}
 

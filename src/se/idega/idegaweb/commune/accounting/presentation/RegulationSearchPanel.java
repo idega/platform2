@@ -348,7 +348,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	 * @param iwc
 	 * @return
 	 */
-	private Table getSearchForm(IWContext iwc) throws PostingException{
+	private Table getSearchForm(IWContext iwc) {
 		
 		Collection providers = new ArrayList();		
 		try{
