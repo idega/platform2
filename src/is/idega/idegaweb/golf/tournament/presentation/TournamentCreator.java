@@ -687,7 +687,9 @@ public class TournamentCreator extends TournamentBlock {
 	            groupTable.add(iwrb.getLocalizedString("tournament.fee","Fee"),2,1);
 	            groupTable.add(iwrb.getLocalizedString("tournament.tee","Tee color"),3,1);
 
-	            TeeColor[] tee_colors = (TeeColor[]) ((TeeColor) IDOLookup.instanciateEntity(TeeColor.class)).findAllOrdered("TEE_COLOR_NAME");
+	            String sql = "select * from tee_color where tee_color_id in (select tee_color_id from tee where field_id = "+tournament.getFieldId()+") order by tee_color_name";
+	            TeeColor[] tee_colors = (TeeColor[]) ((TeeColor) IDOLookup.instanciateEntity(TeeColor.class)).findAll(sql);
+	            //TeeColor[] tee_colors = (TeeColor[]) ((TeeColor) IDOLookup.instanciateEntity(TeeColor.class)).findAllOrdered("TEE_COLOR_NAME");
 	            int tableRow = 1;
 	            TextInput feeText;
 	            DropdownMenu teeColorDrop;
