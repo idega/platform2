@@ -438,13 +438,19 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
       Float temp = (Float) getIWApplicationContext().getApplicationAttribute(applName);
       if (temp == null) {
-        BookingEntry[] entries = booking.getBookingEntries();
+      	BookingEntryHome beHome = (BookingEntryHome) IDOLookup.getHome(BookingEntry.class);
+      	Collection entries = beHome.getEntries(booking);
+        //BookingEntry[] entries = booking.getBookingEntries();
 
         float price;
         ProductPrice pPrice;
 
-        for (int i = 0; i < entries.length; i++) {
-          total += getBookingEntryPrice(entries[i], booking);
+				Iterator iter = entries.iterator();
+				BookingEntry bEntry;
+				while (iter.hasNext()) {
+        //for (int i = 0; i < entries.length; i++) {
+        	bEntry = beHome.findByPrimaryKey(iter.next()); 
+          total += getBookingEntryPrice(bEntry, booking);
         }
         getIWApplicationContext().setApplicationAttribute(applName, new Float(total));
       }else {
@@ -563,8 +569,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }*/
 
   public  List getMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException{
-    List list = getGeneralBookingHome().getMultibleBookings(booking);
-//    List list = new Vector();
+    Collection bookingColl = getGeneralBookingHome().getMultibleBookings(booking);
+    List list = new Vector();
     int numberOfDays = 1;
     Collection coll = getProductCategoryFactory().getProductCategory(booking.getService().getProduct());
     Iterator iter = coll.iterator();
@@ -581,11 +587,20 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
 
     }
+    
+		if (bookingColl == null) {
+			bookingColl = new Vector();
+		}
+		Iterator bookingIter = bookingColl.iterator();
+		while ( bookingIter.hasNext()) {
+			list.add( getGeneralBookingHome().findByPrimaryKey(bookingIter.next()) );
+		}
 
-    if (list.size() < 2) {
+    if (bookingColl.size() < 2) {
       return list;
     }else {
-      int myIndex = list.indexOf(booking);
+    	List temp = new Vector(bookingColl);
+      int myIndex = temp.indexOf(booking.getPrimaryKey());
       list = cleanList(list, booking, myIndex, numberOfDays);
       if (list.size() == 0) {
         list.add(booking);
