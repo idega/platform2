@@ -75,6 +75,7 @@ public class HotelBookingForm extends BookingForm {
 
 
   private Form getForm(IWContext iwc) throws RemoteException, FinderException {
+        	System.out.println("[HotelBookingForm] in here 1");
   	
     Form form = new Form();
     Table table = new Table();
@@ -94,6 +95,7 @@ public class HotelBookingForm extends BookingForm {
 //    table.setColumnAlignment(4,"left");
 
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
+        	System.out.println("[HotelBookingForm] in here 2");
     List addresses;
     try {
       addresses = _product.getDepartureAddresses(false);
@@ -110,6 +112,7 @@ public class HotelBookingForm extends BookingForm {
       addressId = ((TravelAddress) addresses.get(0)).getID();
     }
 
+        	System.out.println("[HotelBookingForm] in here 3");
 
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
@@ -123,9 +126,11 @@ public class HotelBookingForm extends BookingForm {
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, false);
       misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, false);
     }
+        	System.out.println("[HotelBookingForm] in here 4");
 
     if (prices.length > 0) {
 
+        	System.out.println("[HotelBookingForm] in here 5");
 
         int row = 1;
         int textInputSizeLg = 38;
@@ -175,6 +180,8 @@ public class HotelBookingForm extends BookingForm {
         Text commentText = (Text) theText.clone();
             commentText.setText(iwrb.getLocalizedString("travel.comment","Comment"));
 
+        	System.out.println("[HotelBookingForm] in here 6");
+
         DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
           depAddr.setToSubmit();
           depAddr.setSelectedElement(Integer.toString(addressId));
@@ -210,6 +217,7 @@ public class HotelBookingForm extends BookingForm {
 
         DropdownMenu usersDrop = null;
         DropdownMenu payType = getBooker(iwc).getPaymentTypeDropdown(iwrb, "payment_type");
+        	System.out.println("[HotelBookingForm] in here 7");
 
         ++row;
         table.add(surnameText,1,row);
@@ -251,6 +259,7 @@ public class HotelBookingForm extends BookingForm {
           table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addressId)));
         }
 
+        	System.out.println("[HotelBookingForm] in here 8");
 
 	      DropdownMenu pickupMenu = null;
 	      TextInput roomNumber = null;
@@ -281,8 +290,10 @@ public class HotelBookingForm extends BookingForm {
 	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
 	          table.add(roomNumber,2,row);
 	      }
+        	System.out.println("[HotelBookingForm] in here 9");
 	
         if (_booking == null) {
+        	System.out.println("[HotelBookingForm] in here 10?");
           ++row;
           table.add(fromText, 1, row);
           table.add(fromDate, 2, row);
@@ -296,7 +307,6 @@ public class HotelBookingForm extends BookingForm {
           table.add(manyDays, 2, row);
 //          manyDays.setOnBlur("this.form."+toDate.sety+".value=\"2002-11-23\"");
         }else {
-        	System.out.println("[HotelBookingForm] in here 1");
           table.add(new HiddenInput(parameterFromDate, new IWTimestamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
           GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
           GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
@@ -329,7 +339,6 @@ public class HotelBookingForm extends BookingForm {
         int currentSum = 0;
         int currentCount = 0;
         if (_booking != null) {
-        	System.out.println("[HotelBookingForm] in here 2");
           entries = getBooker(iwc).getBookingEntries(_booking);
         }
 
@@ -402,7 +411,6 @@ public class HotelBookingForm extends BookingForm {
                 }
 
                 if (_booking != null) {
-				        	System.out.println("[HotelBookingForm] in here for pCat = "+category.getName());
                   if (entries != null) {
                     for (int j = 0; j < entries.length; j++) {
                       if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
@@ -461,7 +469,6 @@ public class HotelBookingForm extends BookingForm {
         table.add(totalText,1,row);
 
         if (_booking != null) {
-        	System.out.println("[HotelBookingForm] in here 3");
           TotalPassTextInput.setContent(Integer.toString(totalCount));
           TotalTextInput.setContent(Integer.toString(totalSum));
         }
@@ -549,7 +556,6 @@ public class HotelBookingForm extends BookingForm {
 
 
         if (_booking != null) {
-        	System.out.println("[HotelBookingForm] in here 4");
           form.addParameter(this.parameterBookingId,_booking.getID());
           surname.setContent(_booking.getName());
           address.setContent(_booking.getAddress());
@@ -558,7 +564,6 @@ public class HotelBookingForm extends BookingForm {
           country.setContent(_booking.getCountry());
           email.setContent(_booking.getEmail());
           telNumber.setContent(_booking.getTelephoneNumber());
-        	System.out.println("[HotelBookingForm] in here 5");
 
           if (usersDrop != null) {
             usersDrop.setSelectedElement(Integer.toString(_booking.getUserId()));
@@ -567,8 +572,6 @@ public class HotelBookingForm extends BookingForm {
           if (_booking.getComment() != null) {
             comment.setContent(_booking.getComment());
           }
-        	System.out.println("[HotelBookingForm] in here 6");
-
 	        if (pickupMenu != null) {
 	          try {
 	            pickupMenu.setSelectedElement(Integer.toString(_booking.getPickupPlaceID()));
@@ -583,8 +586,6 @@ public class HotelBookingForm extends BookingForm {
         
         ++row;
         if (_booking != null) {
-        	System.out.println("[HotelBookingForm] in here 7");
-
           table.add(new SubmitButton(iwrb.getImage("buttons/update.gif"), this.sAction, this.parameterSaveBooking),2,row);
         }else {
           table.add(new SubmitButton(iwrb.getImage("buttons/book.gif"), this.sAction, this.parameterSaveBooking),2,row);
