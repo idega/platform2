@@ -19,7 +19,6 @@ import com.idega.util.idegaTimestamp;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.block.media.presentation.SimpleChooserWindow;
 import com.idega.block.media.presentation.ImageInserter;
 
 import java.util.List;
@@ -127,7 +126,6 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     _imageInsert.setImSessionImageName(_fieldNameFrontCoverId);
-    _imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
     _imageInsert.setImageHeight(100);
     _imageInsert.setHasUseBox(false);
 
