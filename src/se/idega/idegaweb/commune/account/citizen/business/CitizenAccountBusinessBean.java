@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.73 2004/09/29 08:16:48 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.74 2004/09/30 08:25:11 aron Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -71,13 +71,14 @@ import com.idega.user.data.UserHome;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
+import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2004/09/29 08:16:48 $ by $Author: laddi $
+ * Last modified: $Date: 2004/09/30 08:25:11 $ by $Author: aron $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.73 $
+ * @version $Revision: 1.74 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -732,10 +733,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	 */
 	protected User createCitizenForApplication(AccountApplication theCase) throws CreateException, RemoteException {
 		final CitizenAccount applicant = (CitizenAccount) theCase;
-		final String name = applicant.getApplicantName();
-		final int spaceIndex = name != null ? name.indexOf(" ") : -1;
-		final String firstName = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
-		final String lastName = spaceIndex != -1 ? name.substring(spaceIndex + 1, name.length()) : (name != null ? name : "");
+		
+		Name name = new Name(applicant.getApplicantName());
 		final String ssn = applicant.getSsn();
 		final GenderHome genderHome = (GenderHome) IDOLookup.getHome(Gender.class);
 		final PIDChecker pidChecker = PIDChecker.getInstance();
@@ -749,7 +748,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		final Date birthDate = pidChecker.getDateFromPersonalID(ssn);
 		final IWTimestamp timestamp = birthDate != null ? new IWTimestamp(birthDate.getTime()) : null;
 		final CommuneUserBusiness userBusiness = getUserBusiness();
-		final User user = userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
+		final User user = userBusiness.createOrUpdateCitizenByPersonalID(name.getFirstName(), name.getMiddleName(), name.getLastName(), ssn, gender, timestamp);
 
 		return user;
 	}
