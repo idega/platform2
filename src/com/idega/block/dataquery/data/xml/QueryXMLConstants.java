@@ -32,6 +32,7 @@ public final static String FUNCTION = "function";
 public final static String PROPERTIES = "properties";
 public final static String CONDITIONS	= "conditions";
 public final static String CONDITION = "condition";
+public final static String BOOLEAN_EXPRESSION = "booleanExpression";
 public final static String PATTERN = "pattern";
 public final static String TYPE = "type";
 public final static String FUNC_CONCAT = "concat";

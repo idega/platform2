@@ -13,6 +13,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
@@ -300,6 +301,9 @@ public class QuerySQL implements DynamicExpression {
    		}
     }
     // set conditions (where clause)
+    QueryBooleanExpressionPart booleanExpressionPart = queryHelper.getBooleanExpressionForConditions();
+    boolean booleanExpressionIsUsed = (booleanExpressionPart != null);
+    CriteriaExpression criteriaExpression = (booleanExpressionIsUsed) ? new CriteriaExpression(booleanExpressionPart) : null;
     Iterator conditionsIterator = conditions.iterator();
     while (conditionsIterator.hasNext())  {
       QueryConditionPart condition = (QueryConditionPart) conditionsIterator.next();
@@ -311,8 +315,16 @@ public class QuerySQL implements DynamicExpression {
       	//String fieldName = condition.getField();
       	String path = condition.getPath();
       	entitiesUsedByCriterion.add(path);
-        query.addWhereClause(criterion);
+      	if (! booleanExpressionIsUsed) {
+      		query.addWhereClause(criterion);
+      	}
+      	else {
+      		criteriaExpression.add(criterion);
+      	}      		
       }
+    }
+    if (booleanExpressionIsUsed)	{
+    	query.addWhereClause(criteriaExpression);
     }
     // set order conditions (order by)
     Iterator orderConditionsIterator = orderConditions.iterator();
@@ -356,6 +368,7 @@ public class QuerySQL implements DynamicExpression {
       	}
       }
     }
+    
     // iterate over inner and outer joins
     List addedTables = new ArrayList();
     Iterator inner = innerJoins.iterator();

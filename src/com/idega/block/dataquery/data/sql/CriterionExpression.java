@@ -22,9 +22,9 @@ public class CriterionExpression implements DynamicExpression {
   public static final char APOSTROPHE = '\'';
   private static final String INTEGER = Integer.class.getName(); 
   
-  private QueryConditionPart condition = null;
-  private QuerySQL querySQL = null;
+
   private Object identifier = null;
+  private String id = null;
 
   private String valueField = null;
   private String firstColumnClass = null;
@@ -48,13 +48,12 @@ public class CriterionExpression implements DynamicExpression {
   }
      
 	public CriterionExpression(QueryConditionPart condition, Object identifier, QuerySQL querySQL)	{
+		this.id = condition.getId();
 		this.identifier = identifier;
-		this.condition = condition;
-		this.querySQL = querySQL;
-		initialize();
+		initialize(condition, querySQL);
 	}	
   
-  protected void initialize()	{
+  protected void initialize(QueryConditionPart condition, QuerySQL querySQL)	{
   	String field = condition.getField();
   	String path = condition.getPath();
   	List fieldValueList = querySQL.getUniqueNameForField(path,field);
@@ -98,6 +97,10 @@ public class CriterionExpression implements DynamicExpression {
   
   public boolean isDynamic() {
   	return isDynamic;
+  }
+  
+  public String getId()	{
+  	return id;
   }
   
   public Map getIdentifierValueMap() {

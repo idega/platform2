@@ -21,6 +21,7 @@ import javax.ejb.RemoveException;
 
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
+import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
@@ -42,6 +43,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.AbstractTreeViewer;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -54,6 +56,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.StringHandler;
 //import com.idega.util.IWColor;
 
 /**
@@ -86,6 +89,7 @@ public class ReportQueryBuilder extends Block {
 	public static final String PARAM_SAVE = "save";
 	private static final String PARAM_ADD = "add";
 	private static final String PARAM_DROP = "drop";
+	private static final String PARAM_SET_EXPRESSION = "setExpression";
 	private static final String PARAM_DYNAMIC = "dynamic";
 	public static final String PARAM_QUIT = "quit";
 	private static final String PARAM_QUERY_AS_SOURCE = "source_query";
@@ -99,6 +103,7 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_COND_FIELD = "field";
 	private static final String PARAM_COND_ENTITY = "entity";
 	private static final String PARAM_COND_DESCRIPTION = "description";
+	private static final String PARAM_BOOLEAN_EXPRESSION = "booleanExpression";
 	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
 	public static final String PARAM_LAYOUT_FOLDER_ID ="qb_layoutId";
 	public static final String PARAM_QUERY_ID = "qb_qid";
@@ -247,13 +252,7 @@ public class ReportQueryBuilder extends Block {
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
 			catch (IOException e) {
-				e.printStackTrace();
-			}
-			catch (RemoveException e) {
 				e.printStackTrace();
 			}
 		}
@@ -261,7 +260,7 @@ public class ReportQueryBuilder extends Block {
 			add(iwrb.getLocalizedString("no_permission", "You don't have permission !!"));
 		}
 	}
-	private void processForm(IWContext iwc) throws ClassNotFoundException, RemoveException, IOException {
+	private void processForm(IWContext iwc) throws IOException {
 		//		destroy sessionbean and close window if set
 		if (iwc.isParameterSet(PARAM_QUIT)) {
 			//if(closeParentWindow)
@@ -285,6 +284,9 @@ public class ReportQueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_ORDER_FUNCTION))	{
 			processFunctionForOrder(iwc);
 		}
+		else if (iwc.isParameterSet(PARAM_SET_EXPRESSION)) {
+			processBooleanExpression(iwc);
+		}
 		else if (iwc.isParameterSet(PARAM_ADD)) {
 			
 			String field = iwc.getParameter(PARAM_COND_FIELD);
@@ -297,13 +299,15 @@ public class ReportQueryBuilder extends Block {
 				if(pattern ==null || "".equals(pattern)){
 					pattern = defaultDynamicPattern;
 				}
-				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, pattern, description);
+				int id = helper.getNextIdForCondition();
+				QueryConditionPart part = new QueryConditionPart(id, fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, pattern, description);
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 				helper.addCondition(part);
 				
 			}
-
+			// update boolean expression
+			processBooleanExpression(iwc);
 		}
 		else if (iwc.isParameterSet(PARAM_DROP)) {
 			String dropvalue = iwc.getParameter(PARAM_DROP);
@@ -312,10 +316,12 @@ public class ReportQueryBuilder extends Block {
 				List conditions = helper.getListOfConditions();
 				for (int i = 0; i < conditions.size(); i++) {
 					QueryConditionPart element = (QueryConditionPart) conditions.get(i);
-					if (element.encode().equals(dropvalue))
+					if (element.encode().equals(dropvalue)) {
 						conditions.remove(i);
+					}
 				}
-
+				// update boolean expression
+				processBooleanExpression(iwc);
 			}
 		}
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
@@ -365,7 +371,7 @@ public class ReportQueryBuilder extends Block {
 
 	}
 
-	private boolean processNextStep(IWContext iwc) throws ClassNotFoundException, RemoteException  {
+	private boolean processNextStep(IWContext iwc) throws RemoteException  {
 		int currentStep = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
 		//System.out.println("current processing step " + currentStep);
 		switch (currentStep) {
@@ -382,31 +388,30 @@ public class ReportQueryBuilder extends Block {
 		}
 		return false;
 	}
+	
 	private boolean processStep5(IWContext iwc) {
-		/*
-		helper.clearConditions();
-		String[] conditions = iwc.getParameterValues(PARAM_CONDITION);
-		String[] equators = iwc.getParameterValues(PARAM_COND_TYPE);
-		if (conditions != null && equators != null) {
-			List listOfFields = helper.getListOfFields();
-			if (listOfFields.size() == conditions.length) {
-				for (int i = 0; i < conditions.length; i++) {
-					if (conditions[i].length() > 0) {
-						QueryFieldPart fieldPart = (QueryFieldPart) listOfFields.get(i);
-						QueryConditionPart part =
-							new QueryConditionPart(fieldPart.getName(), equators[i], conditions[i]);
-						helper.addCondition(part);
-					}
-				}
-			}
-			else {
-				System.out.println("field count and condition count dont match !");
-				return false;
-			}
+		if (helper.hasConditions()) {
+			// has conditions, ask for the corresponding boolean expression
+			return processBooleanExpression(iwc);
 		}
-		*/
-		return helper.hasConditions() || this.allowEmptyConditions;
+		// has no conditions: is that allowed?
+		return this.allowEmptyConditions;
 	}
+	
+	private boolean processBooleanExpression(IWContext iwc) {
+		String booleanExpression = "";
+		if (iwc.isParameterSet(PARAM_BOOLEAN_EXPRESSION)) {
+			booleanExpression = iwc.getParameter(PARAM_BOOLEAN_EXPRESSION);
+		}
+		QueryBooleanExpressionPart booleanExpressionPart = helper.getBooleanExpressionForConditions();
+		if (booleanExpressionPart == null) {
+			booleanExpressionPart = new QueryBooleanExpressionPart();
+			helper.setBooleanExpressionForConditions(booleanExpressionPart);
+		}
+		booleanExpressionPart.updateConditions(helper.getListOfConditions(), booleanExpression);
+		return booleanExpressionPart.isBooleanExpressionValid();
+	}
+	
 	private boolean processStep3(IWContext iwc) {
 		helper.clearFields();
 		String[] fields = null;
@@ -637,7 +642,7 @@ public class ReportQueryBuilder extends Block {
 		step--;
 		//step = helper.getStep()-1;
 	}
-	public PresentationObject getStep(IWContext iwc) throws ClassNotFoundException, RemoteException {
+	public PresentationObject getStep(IWContext iwc) throws RemoteException {
 		switch (step) {
 			case 1 :
 				return getStep1(iwc);
@@ -678,7 +683,7 @@ public class ReportQueryBuilder extends Block {
 		Table T = new Table();
 		T.setBorder(tableBorder);
 		//T.setHeight(heightOfStepTable);
-		T.setWidth(T.HUNDRED_PERCENT);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setVerticalAlignment(Table.VERTICAL_ALIGN_TOP);
 		return T;
 	}
@@ -788,22 +793,6 @@ public class ReportQueryBuilder extends Block {
 					}
 	  		}
 	  		
-	  		
-	  		
-	  	
-				
-/// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++				
-//				
-//				rootNode = (ICTreeNode) getFile(getQueryFolderID());
-//				Iterator iterator = rootNode.getChildren();
-//				if (iterator == null) {
-//					iterator = new ArrayList(0).iterator();
-//				} 
-//				while (iterator.hasNext())	{
-//					ICTreeNode node = (ICTreeNode) iterator.next();
-//					String name = node.getNodeName();
-//  				int id = node.getNodeID();
-///					select.addMenuElement(Integer.toString(id), name);
 				table.add(select, 1, (row == 1) ? 1 : row - 1 );
 		}
 		if (hasTemplatePermission) {
@@ -816,13 +805,13 @@ public class ReportQueryBuilder extends Block {
 
 		return table;
 	}
-	public PresentationObject getStep2(IWContext iwc) throws ClassNotFoundException, RemoteException {
+	public PresentationObject getStep2(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		//table.add(getRelatedChoice(iwc),1,2);
 		IWTreeNode root = getQueryService(iwc).getEntityTree(helper, investigationLevel);
 		EntityChooserTree tree = new EntityChooserTree(root, iwc);
 
-		tree.setUI(tree._UI_WIN);
+		tree.setUI(AbstractTreeViewer._UI_WIN);
 		Link treeLink = new Link();
 		treeLink.addParameter(PARAM_STEP, step);
 		treeLink.addParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
@@ -909,16 +898,6 @@ public class ReportQueryBuilder extends Block {
 			entityPart = (QueryEntityPart) iterator.next();
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
-//		if(!fieldMap.isEmpty()){
-//			Iterator iter = fieldMap.values().iterator();
-//			while(iter.hasNext()){
-//				QueryFieldPart part = (QueryFieldPart) iter.next();
-//				String entity = iwrb.getLocalizedString(part.getEntity(), part.getEntity());
-//				String display =iwrb. getLocalizedString(part.getDisplay(), part.getDisplay());
-//				
-//				box.getRightBox().addElement(part.encode(), entity + " -> " + display); 
-//			}
-//		}
 		table.add(box, 2, row);
 		
 		row++;
@@ -996,24 +975,6 @@ public class ReportQueryBuilder extends Block {
 			entityPart = (QueryEntityPart) relatedEntitiesIterator.next();
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
-//		if(!fieldMap.isEmpty()){
-//			Iterator iter = fieldMap.values().iterator();
-//			while(iter.hasNext()){
-//				QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
-//				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
-//				buffer.append(' ');
-//				if (part.isAscendant()) {
-//					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
-//				}
-//				else {
-//					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
-//				}
-//				String entity = iwrb.getLocalizedString(part.getEntity(), part.getEntity());
-//				String display =iwrb. getLocalizedString(part.getDisplay(), part.getDisplay());
-//				
-//				box.getRightBox().addElement(part.encode(), buffer.toString()); 
-//			}
-//		}
 		table.add(box, 2, row);
 
 		row++;
@@ -1133,8 +1094,7 @@ public class ReportQueryBuilder extends Block {
 		String entityName,
 		List choiceFields,
 		Map fieldMap,
-		SelectionDoubleBox box)
-		throws RemoteException {
+		SelectionDoubleBox box) {
 		//System.out.println("filling box with fields from " + entityPart.getName());
 		Iterator iter = choiceFields.iterator();
 		while (iter.hasNext()) {
@@ -1152,14 +1112,10 @@ public class ReportQueryBuilder extends Block {
 	
 	private void fillFieldSelectionBox(
 		List choiceFields,
-		SelectionDoubleBox box)
-		throws RemoteException {
-		//System.out.println("filling box with fields from " + entityPart.getName());
+		SelectionDoubleBox box) {
 		Iterator iter = choiceFields.iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
-			//System.out.println(" " + part.getName());
-			//String enc = part.encode();
 			box.getRightBox().addElement(
 			part.encode(),
 			iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
@@ -1169,8 +1125,7 @@ public class ReportQueryBuilder extends Block {
 	
 	private void fillFieldSelectionBoxForOrder(
 		List choiceFields,
-		SelectionDoubleBox box)
-		throws RemoteException {
+		SelectionDoubleBox box) {
 		//System.out.println("filling box with fields from " + entityPart.getName());
 		Iterator iter = choiceFields.iterator();
 		while (iter.hasNext()) {
@@ -1187,45 +1142,6 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 
-//		// fills the right and the left list of the specified box depending on values set in fieldMap
-//	// values are retrieved from the specified choiceFields
-//	private void fillFieldSelectionBoxForOrder(
-//		String entityName,
-//		List choiceFields,
-//		Map fieldMap,
-//		SelectionDoubleBox box)
-//		throws RemoteException {
-//		//System.out.println("filling box with fields from " + entityPart.getName());
-//		Iterator iter = choiceFields.iterator();
-//		while (iter.hasNext()) {
-//			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
-//			//System.out.println(" " + part.getName());
-//			String enc = part.encode();
-//			if (fieldMap.containsKey(enc)) {
-////				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
-////				buffer.append(' ');
-////				if (part.isAscendant()) {
-////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
-////				}
-////				else {
-////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
-////				}
-////
-////				box.getRightBox().addElement(
-////					part.encode(),
-////					buffer.toString());
-////					fieldMap.remove(enc);
-//			}
-//			else {
-//				box.getLeftBox().addElement(
-//					part.encode(),
-//					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
-//			}
-//		}
-//	}
-
-
-
 	public PresentationObject getStep5(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
@@ -1240,8 +1156,9 @@ public class ReportQueryBuilder extends Block {
 		}
 
 		row++;
+		List conditions = null;
 		if (helper.hasConditions()) {
-			List conditions = helper.getListOfConditions();
+			conditions = helper.getListOfConditions();
 			Map mapOfFields = getMapOfFieldsByName();
 			for (Iterator iter = conditions.iterator(); iter.hasNext();) {
 				QueryConditionPart part = (QueryConditionPart) iter.next();
@@ -1279,7 +1196,6 @@ public class ReportQueryBuilder extends Block {
 		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
 		table.add(description, 6, row);
 		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 7, row);
-		//table.add(new TextInput()
 		if(hasTemplatePermission){
 		
 			CheckBox lock = new CheckBox(PARAM_LOCK);	
@@ -1287,7 +1203,22 @@ public class ReportQueryBuilder extends Block {
 			table.add(lock,8,row);
 			table.add(dynamic,9,row);
 		}
-
+		
+		// boolean expression
+		QueryBooleanExpressionPart booleanExpressionPart = helper.getBooleanExpressionForConditions();
+		String booleanExpression = "";
+		if (booleanExpressionPart != null) {
+			booleanExpression = (booleanExpressionPart.isSyntaxOfBooleanExpressionOkay()) ? 
+			booleanExpressionPart.getBooleanExpression() :
+			booleanExpressionPart.getBadSyntaxBooleanExpression();
+		}
+		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
+		textInput.setLength(50);
+		row++;
+		table.mergeCells(1, row, 6, row);
+		table.add(textInput, 1 , row); 
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),7 ,row);
+		
 		return table;
 	}
 
@@ -1331,8 +1262,8 @@ public class ReportQueryBuilder extends Block {
 	private Table getButtons(int currentStep) {
 		Table T = new Table(4, 1);
 		T.setWidth(getWidth());
-		T.setAlignment(1, 1, T.HORIZONTAL_ALIGN_RIGHT);
-		T.setAlignment(2, 1, T.HORIZONTAL_ALIGN_LEFT);
+		T.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		T.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		//T.setAlignment(T.HORIZONTAL_ALIGN_CENTER);
 		if (currentStep < 6) {
 			SubmitButton next =
@@ -1367,35 +1298,6 @@ public class ReportQueryBuilder extends Block {
 		return T;
 	}
 	
-// 	thomas:
-//  the method below isn't used 
-//	
-//	private PresentationObject getRelatedChoice(IWContext iwc) throws ClassNotFoundException, RemoteException {
-//		Table T = new Table();
-//		T.setWidth(T.HUNDRED_PERCENT);
-//		Collection coll = getQueryService(iwc).getRelatedQueryEntityParts(helper.getSourceEntity(), relationDepth);
-//		Iterator iter = coll.iterator();
-//		int row = 1;
-//		CheckBox checkAll = new CheckBox("checkall");
-//		checkAll.setToCheckOnClick(PARAM_RELATED, "this.checked");
-//		T.add(checkAll, 1, row);
-//		T.add(iwrb.getLocalizedString("entity_name", "Entity name"), 2, row++);
-//		Map entityMap = getEntityMap(helper.getListOfRelatedEntities());
-//		while (iter.hasNext()) {
-//			QueryEntityPart entityPart = (QueryEntityPart) iter.next();
-//			CheckBox checkBox = new CheckBox(PARAM_RELATED, entityPart.encode());
-//			checkBox.setChecked(entityMap.containsKey(entityPart.getName()));
-//			T.add(checkBox, 1, row);
-//			T.add(
-//				iwrb.getLocalizedString(entityPart.getName(), entityPart.getName())
-//					+ " "
-//					+ entityPart.getBeanClassName(),
-//				2,
-//				row);
-//			row++;
-//		}
-//		return T;
-//	}
 	public void main(IWContext iwc) throws Exception {
 		debugParameters(iwc);
 		iwb = getBundle(iwc);
@@ -1721,6 +1623,8 @@ public class ReportQueryBuilder extends Block {
       throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
 		}
 	}
+	
+		
 
 
 }

@@ -44,14 +44,15 @@ public class QueryConditionPart implements QueryPart {
 	public static final String TYPE_GT ="greater";
 	public static final String TYPE_GEQ = "greater-than-or-equals";
 	public static final String TYPE_LEQ = "less-than-or-equals";
+	public static final String PREFIX = "Cond";
 	private static final String[] TYPES = { TYPE_LIKE,TYPE_EQ,TYPE_NEQ,TYPE_LT,TYPE_GT,TYPE_GEQ,TYPE_LEQ};
 	
 	public static String[] getConditionTypes(){
 		return   TYPES;
 	}
 	
-	public QueryConditionPart(String entity,String path, String field, String type, String pattern, String description) {
-		this(null, entity, path, field, type, pattern, description);
+	public QueryConditionPart(int idNumber, String entity,String path, String field, String type, String pattern, String description) {
+		this(new StringBuffer(PREFIX).append(idNumber).toString(), entity, path, field, type, pattern, description);
 	}
 	
 	public QueryConditionPart(String id, String entity,String path, String field, String type, String pattern, String description){
@@ -139,6 +140,14 @@ public class QueryConditionPart implements QueryPart {
 		return idoField;
 	}
 
+	public String getId()	{
+		return id;
+	}
+	
+	public int getIdNumber()	{
+		return Integer.parseInt(id.substring(QueryConditionPart.PREFIX.length()));
+	}
+	
 	/**
 	 * @return
 	 */

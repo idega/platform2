@@ -40,6 +40,7 @@ public class QueryHelper {
 	private List listOfFields = new ArrayList();
 	private List listOfConditions = null;
 	private List orderConditions = null;
+	private QueryBooleanExpressionPart booleanExpression = null;
 	private int step = 0;
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false, fieldsLock = false;
@@ -129,7 +130,12 @@ public class QueryHelper {
 					XMLElement xmlField = (XMLElement) iter.next();
 					listOfFields.add(new QueryFieldPart(xmlField));
 				}
-
+				// boolean expression for conditions
+				XMLElement booleanExpressionXML = root.getChild(QueryXMLConstants.BOOLEAN_EXPRESSION);
+				if (booleanExpressionXML != null)	{
+					this.booleanExpression = new QueryBooleanExpressionPart(booleanExpressionXML);
+				}
+				
 				// CONDITION PART (STEP 4)
 				XMLElement conditions = root.getChild(QueryXMLConstants.CONDITIONS);
 				if (conditions != null && conditions.hasChildren()) {
@@ -174,20 +180,18 @@ public class QueryHelper {
 			doc = new XMLDocument(getUpdatedRootElement());
 		}
 		else {
-			updateRootElement();
+			initializeRootElement();
 		}
 		return doc;
 	}
 			
 	protected XMLElement getUpdatedRootElement()	{
-		if (root == null) {
-			root = new XMLElement(QueryXMLConstants.ROOT);
-		}
-		updateRootElement();
+		root = new XMLElement(QueryXMLConstants.ROOT);
+		initializeRootElement();
 		return root;
 	}
 		
-	private void updateRootElement() {
+	private void initializeRootElement() {
 		if (hasPreviousQuery())	{
 			XMLElement previousQueryRootElement = previousQuery().getUpdatedRootElement();
 			previousQueryRootElement = previousQueryRootElement.detach();
@@ -225,6 +229,11 @@ public class QueryHelper {
 				fields.addContent(((QueryPart) iter.next()).getQueryElement());
 			}
 			root.addContent(fields);
+			
+			// boolean expression for conditions
+			if (booleanExpression != null)	{
+				root.addContent(booleanExpression.getQueryElement());
+			}
 
 			//	CONDITION PART (STEP 4)
 			if (listOfConditions != null && !listOfConditions.isEmpty()) {
@@ -293,6 +302,26 @@ public class QueryHelper {
 	 */
 	public List getListOfConditions() {
 		return listOfConditions;
+	}
+	
+	public int getNextIdForCondition() {
+		if (listOfConditions == null) {
+			return 1;
+		}
+		int maxNumber = 0;
+		int idNumber;
+		Iterator iterator = listOfConditions.iterator();
+		while (iterator.hasNext()) {
+			QueryConditionPart part = (QueryConditionPart) iterator.next();
+			if ((idNumber = part.getIdNumber()) > maxNumber) {
+				maxNumber = idNumber;
+			}
+		}
+		return ++maxNumber;
+	}
+	
+	public QueryBooleanExpressionPart getBooleanExpressionForConditions()	{
+		return booleanExpression;
 	}
 
 	/**
@@ -494,6 +523,12 @@ public class QueryHelper {
 		this.previousQuery = queryHelper;
 	}
 
+	
+	public void setBooleanExpressionForConditions(QueryBooleanExpressionPart booleanExpression)	{
+		this.booleanExpression = booleanExpression;
+	}
+	
+	
 	/**
 	 * Adds a new condition to the condition part of the query
 	 * @param the new condition
