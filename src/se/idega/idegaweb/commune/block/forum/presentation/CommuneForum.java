@@ -38,6 +38,8 @@ import com.idega.util.IWTimestamp;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CommuneForum extends Forum {
+	private boolean _addICObjectID;
+
 	public CommuneForum() {
 		super();
 	}
@@ -93,7 +95,8 @@ public class CommuneForum extends Forum {
 					topicLink.setStyle(_topicName);
 					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+					if (_addICObjectID)
+						topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
 					if (getPage() != null)
 						topicLink.setPage(getPage());
 
@@ -244,4 +247,11 @@ public class CommuneForum extends Forum {
 	
 
 	
+	/**
+	 * @param b
+	 */
+	public void setAddICObjectID(boolean addICObjectID) {
+		_addICObjectID = addICObjectID;
+	}
+
 }
