@@ -264,32 +264,6 @@ private Table _myTable;
         tableRow++;
       }
 
-      Text school = new Text(_iwrb.getLocalizedString("user_school","School")+":");
-        school.setFontStyle(_headlineStyle);
-      Text schoolText = new Text("");
-        if ( staffInfo != null )
-          schoolText.setText(staffInfo.getSchool());
-        schoolText.setFontStyle(_textStyle);
-
-      if ( _showSchool ) {
-        textTable.add(school,column,tableRow);
-        textTable.add(schoolText,column+1,tableRow);
-        tableRow++;
-      }
-
-      Text education = new Text(_iwrb.getLocalizedString("user_education","Education")+":");
-        education.setFontStyle(_headlineStyle);
-      Text educationText = new Text("");
-        if ( staffInfo != null )
-          educationText.setText(staffInfo.getEducation());
-        educationText.setFontStyle(_textStyle);
-
-      if ( _showEducation ) {
-        textTable.add(education,column,tableRow);
-        textTable.add(educationText,column+1,tableRow);
-        tableRow++;
-      }
-
       Text area = new Text(_iwrb.getLocalizedString("user_area","Area")+":");
         area.setFontStyle(_headlineStyle);
       Text areaText = new Text("");
@@ -313,6 +287,32 @@ private Table _myTable;
       if ( _showBeganWork ) {
         textTable.add(beganWork,column,tableRow);
         textTable.add(beganWorkText,column+1,tableRow);
+        tableRow++;
+      }
+
+      Text education = new Text(_iwrb.getLocalizedString("user_education","Education")+":");
+        education.setFontStyle(_headlineStyle);
+      Text educationText = new Text("");
+        if ( staffInfo != null )
+          educationText.setText(staffInfo.getEducation());
+        educationText.setFontStyle(_textStyle);
+
+      if ( _showEducation ) {
+        textTable.add(education,column,tableRow);
+        textTable.add(educationText,column+1,tableRow);
+        tableRow++;
+      }
+
+      Text school = new Text(_iwrb.getLocalizedString("user_school","School")+":");
+        school.setFontStyle(_headlineStyle);
+      Text schoolText = new Text("");
+        if ( staffInfo != null )
+          schoolText.setText(staffInfo.getSchool());
+        schoolText.setFontStyle(_textStyle);
+
+      if ( _showSchool ) {
+        textTable.add(school,column,tableRow);
+        textTable.add(schoolText,column+1,tableRow);
         tableRow++;
       }
 
