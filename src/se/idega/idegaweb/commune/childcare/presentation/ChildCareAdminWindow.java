@@ -1,22 +1,30 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
+import javax.ejb.FinderException;
+
+import se.idega.block.pki.data.NBSSignedEntity;
+import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
+import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -25,6 +33,7 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -32,6 +41,10 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
+import com.idega.xml.XMLParser;
 
 /**
  * @author laddi
@@ -59,6 +72,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_CANCEL_MESSAGE = "cc_cancel_message";
 	public static final String PARAMETER_CANCEL_DATE = "cc_cancel_date";
 	public static final String PARAMETER_EARLIEST_DATE = "cc_earliest_date";
+	public static final String PARAMETER_CONTRACT_ID = "cc_contract_id";	
+	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";	
 	
 
 	//private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
@@ -80,7 +95,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_VIEW_PROVIDER_QUEUE = 15;
 	public static final int METHOD_END_CONTRACT = 16;
 	public static final int METHOD_NEW_CARE_TIME = 17;
-
+	public static final int METHOD_SIGN_CONTRACT = 18;
+	
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
 	public static final int ACTION_OFFER = 2;
@@ -117,6 +133,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
+		System.out.println("ChildCareAdminWindow");
 		parse(iwc);
 		switch (_action) {
 			case ACTION_CLOSE :
@@ -282,8 +299,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_NEW_CARE_TIME :
 				headerTable.add(getHeader(localize("child_care.new_care_time", "New care time")));			
 				contentTable.add(getNewCareTimeForm());	
-				break;					
-				
+				break;		
+			case METHOD_SIGN_CONTRACT :
+				headerTable.add(getHeader(localize("child_care.sign_contract", "Sign contract")));			
+				contentTable.add(getContractSignerForm(iwc));	
+				break;		
 							
 		}
 		
@@ -915,7 +935,195 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		return layoutTbl;
 	}	
+	
+	private Table getContractSignerForm(IWContext iwc) {
+	
+	//put in existing fields first
+		Contract contract = getContract(iwc);
+		contract.setText(mergeFields(iwc));
+		contract.store();		
 		
+	//create form for the rest of the fields
+		Table table = makeFillOutForm(iwc);
+		if (table == null){
+			return signContract(iwc);
+		} else {
+			return table;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param iwc
+	 * @return
+	 * 
+	 */
+	private String mergeFields(IWContext iwc) {
+		System.out.println("mergeFields()");
+		Contract contract = getContract(iwc);
+		String text = contract.getText();
+		StringBuffer merged = new StringBuffer();
+		
+		try {
+			XMLParser parser = new XMLParser();
+			XMLDocument document = parser.parse(new StringReader("<dummy>" + text + "</dummy>"));
+		
+			XMLElement root = document.getRootElement();
+			Iterator it = root.getContent().iterator();
+			while (it.hasNext()){
+				Object obj = it.next();
+				if (obj instanceof XMLElement) {
+					String name = ((XMLElement) obj).getName();
+					String value = iwc.getParameter(PARAMETER_TEXT_FIELD + name);
+					System.out.println("name: " + name + " value: " + value);
+					
+					merged.append(value != null ? value : "<"+name+"/>");
+				}
+//				else if (obj instanceof XMLCDATA) { ignore	}
+				else if (obj instanceof String) {
+					merged.append((String) obj);			
+				}
+			}	
+		}catch (XMLException ex){
+			ex.printStackTrace();
+			return text;
+		}
+		return merged.toString();
+	}
+		
+	
+	/**
+	 * 
+	 * @param iwc
+	 * @return null If no fields in text, Table with TextInput fields otherwise
+	 * @throws XMLException
+	 */
+	private Table makeFillOutForm(IWContext iwc) {
+		System.out.println("makeFillOutForm()");		
+		Table table = null;			
+
+		Contract contract = getContract(iwc);
+		String text = contract.getText();
+		
+		try {
+			XMLParser parser = new XMLParser();
+			XMLDocument document = parser.parse(new StringReader("<dummy>" + text + "</dummy>"));
+		
+			XMLElement root = document.getRootElement();
+			List fields = root.getChildren();
+			if (fields.size() != 0){
+				table = new Table();
+				table.setCellpadding(5);
+				table.setWidth(Table.HUNDRED_PERCENT);
+				table.setHeight(Table.HUNDRED_PERCENT);	
+								
+				int row = 1;
+				table.add(getSmallHeader(localize("ccconsign_formHeading", "Please, fill out the contract fields")), 1, row++);
+				Iterator i = fields.iterator();
+
+				while (i.hasNext()){
+					String field = ((XMLElement) i.next()).getName();
+					table.add(new Text(field + ":"), 1, row);
+					table.add(getStyledInterface(new TextInput(PARAMETER_TEXT_FIELD + field)), 2, row);
+					row ++;
+				}
+				table.add(new HiddenInput(PARAMETER_CONTRACT_ID, iwc.getParameter(PARAMETER_CONTRACT_ID)), 1, row);					
+				
+				SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT)));
+				table.add(submit, 1, row);
+				table.add(Text.getNonBrakingSpace(), 1, row);
+				table.add(close, 1, row);
+				table.setHeight(row, Table.HUNDRED_PERCENT);
+				table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+			}
+		}catch (XMLException ex){
+			ex.printStackTrace();
+		}
+		return table;
+	}
+	
+	private Table signContract(IWContext iwc){
+		System.out.println("signContract()");			
+		Contract contract = getContract(iwc);	
+		
+		if (iwc.getSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY) == null){
+			
+			iwc.setSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY, 
+				new NBSSignedEntity() {
+					private Contract _contract = null;
+						
+					public Object init(Contract contract){
+						_contract = contract;
+						return this;
+					}
+						
+					public void setXmlSignedData(String data) {
+						_contract.setXmlSignedData(data);
+					}
+		
+					public void setSignedBy(int userId) {
+						//_contract.setUserId(userId); //This shall already be set 
+					}
+		
+					public void setSignedDate(java.sql.Date time) {
+						_contract.setSignedDate(time);
+					}
+		
+					public void setSignedFlag(boolean flag) {
+						_contract.setSignedFlag(new Boolean(flag));												
+					}
+		
+					public void store() {
+						_contract.store();
+					}
+		
+					public String getText() {
+						return _contract.getText();
+					}
+				}
+				.init(contract)
+			);
+		}
+		
+
+					
+//		iwc.removeSessionAttribute(NBSSigningBlock.INIT_DONE);		
+//		add(new HiddenInput(ACTION, ""));
+	
+		Table table = new Table();
+		NBSSigningBlock nbsSigningBlock = new NBSSigningBlock();
+		nbsSigningBlock.setHiddenInput(PARAMETER_METHOD, ""+METHOD_SIGN_CONTRACT);
+		nbsSigningBlock.setHiddenInput("idegaweb_frame_class", iwc.getParameter("idegaweb_frame_class"));
+		table.add(nbsSigningBlock, 1, 1);
+		table.setHeight(1, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_BOTTOM);		
+		return table; 
+				
+//		iwc.forwardToIBPage(getParentPage(), getResponsePage());	
+	}
+		
+		
+	/**
+	 * 
+	 * @param iwc
+	 * @return the contract specified by the ChildCareContractSigner_CONTRACT_ID parameter, null if errors or no contract
+	 */
+	private Contract getContract(IWContext iwc) {
+		int contractId;
+		Contract contract = null;		
+		try {
+			contractId = Integer.parseInt(iwc.getParameter(PARAMETER_CONTRACT_ID));
+			contract = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHome(Contract.class))
+					.findByPrimaryKey(contractId);	
+		}catch(NumberFormatException ex){
+			ex.printStackTrace();			
+		} catch(FinderException ex){
+			ex.printStackTrace();
+		} catch(IDOLookupException ex){
+			ex.printStackTrace();
+		}
+		return contract;		
+	}		
 	
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_METHOD))
