@@ -120,7 +120,7 @@ public class Emailer extends CampusBlock {
 	 * @return    The bundle identifier value
 	 */
 	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
+		return "is.idega.idegaweb.campus";
 	}
 
 	/**
