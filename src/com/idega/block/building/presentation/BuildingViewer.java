@@ -36,6 +36,8 @@ private String addressStyle = "font-family:verdana; font-size: 10pt; font-weight
 private String infoStyle= "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 protected IWResourceBundle iwrb_;
 
+private int imageMaxSize = 165;
+
 public BuildingViewer(){
 }
 
@@ -102,6 +104,7 @@ public BuildingViewer(int building_id){
       List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
       if(L!=null){
        Image buildingImage = new Image(((Building)L.get(0)).getImageId());
+       buildingImage.setMaxImageWidth(imageMaxSize);
        complexTable.add(buildingImage,3,2);
       }
 
@@ -203,6 +206,7 @@ public BuildingViewer(int building_id){
       if ( types[a].getImageId() == -1 )
         typeImage = iwrb_.getImage("/building/default.jpg");
         typeImage.setHorizontalSpacing(6);
+        typeImage.setMaxImageWidth(imageMaxSize);
 
       /*Window typeWindow = new Window("Herbergi",ApartmentTypeViewer.class,Page.class);
         typeWindow.setWidth(400);
