@@ -16,15 +16,15 @@ public class GolfForums extends GrayForums {
 
   public GolfForums() throws Exception {
     super();
-    setMenuColor("#669966");
-    setItemColor("#99CC99");
+    setMenuColor("#6E9173");
+    setItemColor("#CEDFCF");
   }
 
 
   public GolfForums(String user_name, int user_id) throws Exception {
     super(user_name, user_id);
-    setMenuColor("#669966");
-    setItemColor("#99CC99");
+    setMenuColor("#6E9173");
+    setItemColor("#CEDFCF");
  }
 
 
