@@ -160,6 +160,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			move.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_OLD_GROUP, student.getSchoolClassId());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+			move.addParameter(ChildCareAdminWindow.PARAMETER_PLACEMENT_ID, student.getPrimaryKey().toString());
 			
 			if (row % 2 == 0)
 				table.setRowColor(row, getZebraColor1());
