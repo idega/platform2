@@ -1,5 +1,5 @@
 /*
- * $Id: ClubHandler.java,v 1.2 2005/02/07 13:23:09 laddi Exp $
+ * $Id: ClubHandler.java,v 1.3 2005/02/07 13:56:06 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.presentation.ui.DropdownMenu;
 
 
 /**
- * Last modified: $Date: 2005/02/07 13:23:09 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 13:56:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ClubHandler extends DropdownMenu implements InputHandler {
 
@@ -98,14 +98,19 @@ public class ClubHandler extends DropdownMenu implements InputHandler {
 	 * @see com.idega.business.InputHandler#getDisplayForResultingObject(java.lang.Object, com.idega.presentation.IWContext)
 	 */
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
-		if (value != null && value.toString().length() > 0) {
-			UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
-			try {
-				Union union = home.findByPrimaryKey(new Integer(value.toString()));
-				return union.getName();
+		if (value != null) {
+			if (value instanceof Union) {
+				return ((Union) value).getName();
 			}
-			catch (FinderException fe) {
-				return value.toString();
+			else {
+				UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
+				try {
+					Union union = home.findByPrimaryKey(new Integer(value.toString()));
+					return union.getName();
+				}
+				catch (FinderException fe) {
+					return value.toString();
+				}
 			}
 		}
 		else
@@ -120,7 +125,7 @@ public class ClubHandler extends DropdownMenu implements InputHandler {
 			UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
 			try {
 				Union union = home.findByPrimaryKey(new Integer(value.toString()));
-				return union.getName();
+				return union;
 			}
 			catch (FinderException fe) {
 				return null;
