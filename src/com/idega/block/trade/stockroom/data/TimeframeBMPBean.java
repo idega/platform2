@@ -2,7 +2,7 @@ package com.idega.block.trade.stockroom.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
+import java.util.Locale;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
@@ -16,7 +16,10 @@ import com.idega.util.LocaleUtil;
  */
 
 public class TimeframeBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Timeframe {
-
+	
+	private static Locale icelandicLocale = LocaleUtil.getIcelandicLocale();
+	private static Locale englishLocale = LocaleUtil.getLocale("en");
+	
   public TimeframeBMPBean(){
           super();
   }
@@ -42,8 +45,24 @@ public class TimeframeBMPBean extends com.idega.data.GenericEntity implements co
     return getTimeframeTableName();
   }
   public String getName(){
-    String stampTxt1 = new IWTimestamp(this.getFrom()).getLocaleDate(LocaleUtil.getIcelandicLocale());
-    String stampTxt2 = new IWTimestamp(this.getTo()).getLocaleDate(LocaleUtil.getIcelandicLocale());
+  	return getName(LocaleUtil.getIcelandicLocale());
+  }
+  
+  public String getName(Locale locale) {
+    String stampTxt1 = new IWTimestamp(this.getFrom()).getLocaleDate(locale);
+    String stampTxt2 = new IWTimestamp(this.getTo()).getLocaleDate(locale);
+	  try {
+	    if (getIfYearly() ){
+	    	if (locale.equals(icelandicLocale)) {
+		    	stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
+		    	stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -4);
+	    	}	else if (locale.equals(englishLocale)) {
+		    	stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -6);
+		    	stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -6);
+	    	}
+
+	    }
+	  }catch (ArrayIndexOutOfBoundsException ai) {}
     return stampTxt1+" - "+stampTxt2;
   }
 
