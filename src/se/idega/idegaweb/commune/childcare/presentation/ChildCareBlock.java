@@ -194,4 +194,21 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		
 		return (DropdownMenu) getStyledInterface(menu);	
 	}
+	
+	/**
+	 * Returns a <code>DropdownMenu</code> that uses the given <code>Collection</code> of entities as options where the
+	 * value is a localization key.
+	 * @param name The form name for the returned <code>DropdownMenu</code>
+	 * @param entities The entity beans to use as values.
+	 * @param methodName The name of the method from which the values are retrieved.
+	 * @param defaultValue The default value to set if method returns null
+	 * @return
+	 */
+	protected DropdownMenu getDropdownMenuLocalized(String name, Collection entities, String methodName, String defaultValue) {
+		SelectorUtility util = new SelectorUtility();
+		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), entities, methodName, getResourceBundle(), defaultValue);
+		
+		return (DropdownMenu) getStyledInterface(menu);
+	}
+		
 }
