@@ -1,5 +1,5 @@
 /*
- * $Id: AdminMenu.java,v 1.1 2004/09/07 11:23:41 laddi Exp $
+ * $Id: AdminMenu.java,v 1.2 2004/09/07 12:32:19 laddi Exp $
  * Created on 7.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,10 @@
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
 import com.idega.builder.app.IBApplication;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -17,14 +21,15 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.user.app.UserApplication;
+import com.idega.user.business.UserBusiness;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/09/07 11:23:41 $ by $Author: laddi $
+ *  Last modified: $Date: 2004/09/07 12:32:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdminMenu extends Block {
 
@@ -56,7 +61,7 @@ public class AdminMenu extends Block {
 		}
 		
 		UserApplication felix = new UserApplication();
-		if (iwc.hasViewPermission(felix)) {
+		if (getUserBusiness(iwc).hasTopNodes(iwc.getCurrentUser(), iwc)) {
 			Image felixIcon = iwb.getImage("/shared/felix.gif");
 			
 			Link link = new Link(felixIcon);
@@ -66,6 +71,15 @@ public class AdminMenu extends Block {
 		}
 		
 		add(table);
+	}
+	
+	public UserBusiness getUserBusiness(IWApplicationContext iwac) {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 
 	public String getBundleIdentifier() {
