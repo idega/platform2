@@ -1133,7 +1133,6 @@ public abstract class BookingForm extends TravelManager{
 					
 					Link printCCReceipt = new Link(getText(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
 					printCCReceipt.setWindowToOpen(ReceiptWindow.class);
-					table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,4);
 					table.add(printCCReceipt, 1, 4);
 				}
 			} catch (Exception e) {
