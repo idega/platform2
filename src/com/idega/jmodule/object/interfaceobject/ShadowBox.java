@@ -12,20 +12,20 @@ import java.util.*;
 
 public class ShadowBox extends ModuleObjectContainer {
 
-private String boxWidth;
-private String boxHeight;
-private String horizontalAlignment;
-private String verticalAlignment;
+private String boxWidth = "100";
+private String boxHeight = "100";
+private String horizontalAlignment = "left";
+private String verticalAlignment = "top";
 private Table myTable;
 
 public ShadowBox(){
 	myTable = new Table(3,3);
   setDefaultValues();
-  initialize();
 	super.add(myTable);
 }
 
 	public void main(ModuleInfo modinfo) {
+    initialize();
 	}
 
 	private void setDefaultValues() {
@@ -72,12 +72,24 @@ public ShadowBox(){
 		myTable.add(objectToAdd,2,2);
 	}
 
+	public void add(String stringToAdd){
+		myTable.add(stringToAdd,2,2);
+	}
+
 	public void setWidth(String boxWidth){
 		this.boxWidth=boxWidth;
 	}
 
+	public void setWidth(int boxWidth){
+		setWidth(Integer.toString(boxWidth));
+	}
+
 	public void setHeight(String boxHeight){
 		this.boxHeight=boxHeight;
+	}
+
+	public void setHeight(int boxHeight){
+		setHeight(Integer.toString(boxHeight));
 	}
 
 	public void setAlignment(String horizontalAlignment){
@@ -87,5 +99,20 @@ public ShadowBox(){
 	public void setVerticalAlignment(String verticalAlignment){
 		this.verticalAlignment=verticalAlignment;
 	}
+
+  public Object clone() {
+    ShadowBox obj = null;
+    try {
+      obj = (ShadowBox)super.clone();
+
+      if (this.myTable != null) {
+        obj.myTable=(Table)this.myTable.clone();
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
 
 }
