@@ -10,12 +10,26 @@ public class GroupApplicationHomeImpl extends com.idega.data.IDOFactory implemen
 
  public GroupApplication create() throws javax.ejb.CreateException{
   return (GroupApplication) super.createIDO();
- } 
+ }
 
 
 public java.util.Collection findAllApplicationsByStatusOrderedByCreationDate(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((GroupApplicationBMPBean)entity).ejbFindAllApplicationsByStatusOrderedByCreationDate(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllApplicationsByStatusAndApplicationGroupOrderedByCreationDate(java.lang.String p0,com.idega.user.data.Group p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((GroupApplicationBMPBean)entity).ejbFindAllApplicationsByStatusAndApplicationGroupOrderedByCreationDate(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllApplicationsByStatusAndApplicationGroup(java.lang.String p0,com.idega.user.data.Group p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((GroupApplicationBMPBean)entity).ejbFindAllApplicationsByStatusAndApplicationGroup(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
