@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.15 2001/08/08 14:56:27 aron Exp $
+ * $Id: DateInput.java,v 1.16 2001/08/16 00:50:06 bjarni Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ private DropdownMenu theMonth;
 private DropdownMenu theYear;
 private Parameter theWholeDate;
 private boolean setCheck = false;
+private boolean isShowDay = true;
 private int fromYear;
 private int toYear;
 private int selectedYear=-1;
@@ -60,11 +61,6 @@ public DateInput(String name){
   theYear = new DropdownMenu(name+"_year");
   theWholeDate = new Parameter(name,"");
 
-  super.add(theDay);
-  super.add(theMonth);
-  super.add(theYear);
-  super.add(theWholeDate);
-
   doSomeShit();
   //doSomeShit("Dagur", "Mánuður", "Ár");
 
@@ -77,11 +73,6 @@ public DateInput(String name, boolean inShort){
   theMonth = new DropdownMenu(name+"_month");
   theYear = new DropdownMenu(name+"_year");
   theWholeDate = new Parameter(name,"");
-
-  super.add(theDay);
-  super.add(theMonth);
-  super.add(theYear);
-  super.add(theWholeDate);
 
   this.inShort=inShort;
   //doSomeShit("D", "M", "Y");
@@ -338,6 +329,11 @@ public void setYearRange(int fromYear,int toYear){
   this.toYear=toYear;
 }
 
+public void setNoDayView(){
+  isShowDay = false;
+  this.setDay(1);
+}
+
 //public void main(ModuleInfo modinfo)throws Exception{
 
 
@@ -348,6 +344,13 @@ public void setYearRange(int fromYear,int toYear){
 
 //}
 public void main(ModuleInfo modinfo)throws Exception{
+  if (isShowDay) {
+    super.add(theDay);
+  }
+  super.add(theMonth);
+  super.add(theYear);
+  super.add(theWholeDate);
+
   addLocalized(modinfo);
 
 
