@@ -214,25 +214,25 @@ public class InvoiceChildcareThread extends BillingThread{
 						employment = employmentType.getLocalizationKey();
 						errorRelated.append("EmploymentType "+employment);
 					}
-					errorRelated.append("Category:"+category.getCategory()+"<br>"+
-						"PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"<br>"+
-						"currentDate:"+currentDate+"\n"+
-						"RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED+"<br>"+
-						"RegSpecConstant.CHECK:"+RegSpecConstant.CHECK+"<br>"+
-						"conditions:"+conditions.size()+"<br>"+
-						"totalSum:"+totalSum+"<br>"+
-						"contract:"+contract.getPrimaryKey()+"<br>");
-						postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-							category.getCategory(),		//The ID that selects barnomsorg in the regulation
-							PaymentFlowConstant.OUT, 	//The payment flow is out
-							currentDate,					//Current date to select the correct date range
-							RuleTypeConstant.DERIVED,	//The conditiontype
-							RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
-							conditions,						//The conditions that need to fulfilled
-							totalSum,						//Sent in to be used for "Specialutrakning"
-							contract);						//Sent in to be used for "Specialutrakning"
+					errorRelated.append("Category:"+category.getCategory());
+					errorRelated.append("PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT);
+					errorRelated.append("currentDate:"+currentDate);
+					errorRelated.append("RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED);
+					errorRelated.append("RegSpecConstant.CHECK:"+RegSpecConstant.CHECK);
+					errorRelated.append("conditions:"+conditions.size());
+					errorRelated.append("totalSum:"+totalSum);
+					errorRelated.append("contract:"+contract.getPrimaryKey());
+					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+						category.getCategory(),		//The ID that selects barnomsorg in the regulation
+						PaymentFlowConstant.OUT, 	//The payment flow is out
+						currentDate,					//Current date to select the correct date range
+						RuleTypeConstant.DERIVED,	//The conditiontype
+						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+						conditions,						//The conditions that need to fulfilled
+						totalSum,						//Sent in to be used for "Specialutrakning"
+						contract);						//Sent in to be used for "Specialutrakning"
 
-						if(postingDetail == null){
+					if(postingDetail == null){
 						throw new RegulationException("reg_exp_no_results","No regulations found.");
 					}
 					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
@@ -977,6 +977,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		invoiceRecord.setInvoiceText2(text2);
+		errorRelated.append("Created invoice for check '"+header+"','"+text2+"' "+postingDetail.getTerm(),1);
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
