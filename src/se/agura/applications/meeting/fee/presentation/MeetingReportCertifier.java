@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * $Id: MeetingReportCertifier.java,v 1.3 2004/12/13 14:35:10 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,7 +32,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
@@ -91,6 +91,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		String ownerName = owner.getName();
 		String location = meetingFee.getInCommune() ? getResourceBundle().getLocalizedString("meeting.fee.in_commune", "In commune") : getResourceBundle().getLocalizedString("meeting.fee.outside_of_commune", "Outside of commune");
 		IWTimestamp meetingDate = new IWTimestamp(meetingFee.getMeetingDate());
+		String comment = meetingFee.getComment();
 		
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.assignment_from","Assignment from")),1,row);
 		table.add(getText(conGroupName), 2, row++);
@@ -106,6 +107,10 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_date","Meeting date")), 1, row);
 		table.add(getText(meetingDate.getLocaleDate(iwc.getCurrentLocale())), 2, row++); 
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.comment","Comment")), 1, row);
+		table.add(comment, 2, row++);
 		table.setHeight(row++, 12);
 		
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants","Participants")),1,row++);

@@ -1,6 +1,6 @@
 /*
- * $Id: MeetingFeeBusinessHome.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
- * Created on 6.12.2004
+ * $Id: MeetingFeeBusinessHome.java,v 1.3 2004/12/13 14:35:10 anna Exp $
+ * Created on 13.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,20 +9,16 @@
  */
 package se.agura.applications.meeting.fee.business;
 
-
-
-
 import com.idega.business.IBOHome;
 
 
 /**
- * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
+ * Last modified: 13.12.2004 14:42:53 by: anna
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:anna@idega.com">anna</a>
+ * @version $Revision: 1.3 $
  */
 public interface MeetingFeeBusinessHome extends IBOHome {
 
 	public MeetingFeeBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
-
 }

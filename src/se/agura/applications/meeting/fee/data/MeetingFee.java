@@ -1,6 +1,6 @@
 /*
- * $Id: MeetingFee.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
- * Created on 6.12.2004
+ * $Id: MeetingFee.java,v 1.3 2004/12/13 14:35:10 anna Exp $
+ * Created on 13.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -10,17 +10,16 @@
 package se.agura.applications.meeting.fee.data;
 
 import java.sql.Date;
-
 import com.idega.block.process.data.Case;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
+ * Last modified: 13.12.2004 09:56:23 by: anna
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:anna@idega.com">anna</a>
+ * @version $Revision: 1.3 $
  */
 public interface MeetingFee extends Case {
 
@@ -70,6 +69,11 @@ public interface MeetingFee extends Case {
 	public int getCongregationGroupID();
 
 	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getComment
+	 */
+	public String getComment();
+
+	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getMeetingDate
 	 */
 	public Date getMeetingDate();
@@ -110,6 +114,11 @@ public interface MeetingFee extends Case {
 	public void setCongregationID(int congregationGroupID);
 
 	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setComment
+	 */
+	public void setComment(String comment);
+
+	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setMeetingDate
 	 */
 	public void setMeetingDate(Date meetingDate);
@@ -123,5 +132,4 @@ public interface MeetingFee extends Case {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setSignedBy
 	 */
 	public void setSignedBy(User signedBy);
-
 }

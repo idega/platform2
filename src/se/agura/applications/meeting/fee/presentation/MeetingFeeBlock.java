@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.4 2004/12/09 13:43:38 laddi Exp $
+ * $Id: MeetingFeeBlock.java,v 1.5 2004/12/13 14:35:10 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,14 +11,11 @@ package se.agura.applications.meeting.fee.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.agura.applications.meeting.fee.business.MeetingFeeBusiness;
 import se.agura.applications.meeting.fee.business.MeetingFeeConstants;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -45,7 +42,7 @@ import com.idega.user.data.User;
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
@@ -55,6 +52,7 @@ public abstract class MeetingFeeBlock extends Block {
 	protected static final String PARAMETER_MEETING_FEE_DATE = "me_meeting_fee_meeting_date";
 	protected static final String PARAMETER_MEETING_FEE_CONGREGATION = "me_meeting_fee_congregation";
 	protected static final String PARAMETER_MEETING_FEE_MEETING_LOCATION = "me_meeting_fee_meeting_location";
+	protected static final String PARAMETER_MEETING_FEE_COMMENT = "me.meeting_comment";
 	protected static final String PARAMETER_MEETING_FEE_PARTICIPANTS = "me_meeting_fee_participants";
 	protected static final String PARAMETER_ACTION = "me_action";
 	protected static final String PARAMETER_MEETING_FEE_ID = MeetingFeeConstants.PARAMETER_PRIMARY_KEY;
@@ -275,11 +273,15 @@ public abstract class MeetingFeeBlock extends Block {
 	
 	public SubmitButton getNextButton() {
 		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.next", "OK"), PARAMETER_ACTION, ACTION_NEXT));
+		nextButton.setToolTip("Proceeds to next step");
+		nextButton.setSubmitConfirm("Are you sure you want to proceed?");
 		return nextButton;
 	}
 	
 	public SubmitButton getSaveButton() {
 		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.save", "Save"), PARAMETER_ACTION, ACTION_SAVE));
+		saveButton.setToolTip("Saves the application");
+		saveButton.setSubmitConfirm("Are you sure you want to save the application now?");
 		return saveButton;
 	}
 
@@ -301,26 +303,34 @@ public abstract class MeetingFeeBlock extends Block {
 		if (parameter != null) {
 			editButton.addParameterToPage(parameter, value);
 		}
+		editButton.setToolTip("Allows you to make changes to the report.");
 		return editButton;
 	}
 
 	public SubmitButton getCalculateButton() {
 		SubmitButton calculateButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.calculate", "Calculate"), PARAMETER_ACTION, ACTION_NEXT));
+		calculateButton.setToolTip("Calculates the payment for this meeting.");
+		//calculateButton.setSubmitConfirm("Please insert new text!");
 		return calculateButton;
 	}
 	
 	public GenericButton getBackButton() {
 		GenericButton back = getButton(new GenericButton("back", getResourceBundle().getLocalizedString("meeting.fee.back", "Back")));
+		back.setToolTip("Please insert new text!");
 		return back;
 	} 
 	
 	public SubmitButton getRejectButton() {
 		SubmitButton rejectButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.reject", "Reject"), PARAMETER_ACTION, ACTION_REJECT));
+		rejectButton.setToolTip("Sends the report back to the assistent who wrote it.");
+		rejectButton.setSubmitConfirm("Are you sure you want to send this report back to the assistant?");
 		return rejectButton;
 	}
 	
 	public SubmitButton getSendButton() {
 		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.send", "OK"), PARAMETER_ACTION, ACTION_SEND));
+		sendButton.setToolTip("Signes the report.");
+		sendButton.setSubmitConfirm("Are you sure you want to sign this report?");
 		return sendButton;
 	}
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBMPBean.java,v 1.3 2004/12/09 13:43:38 laddi Exp $ Created on
+ * $Id: MeetingFeeBMPBean.java,v 1.4 2004/12/13 14:35:10 anna Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,7 +28,7 @@ import com.idega.user.data.User;
  * Last modified: 23.11.2004 09:44:45 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee {
 
@@ -51,6 +51,8 @@ public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee
 	public static final String COLUMN_SIGNED_BY = "signed_by";
 
 	public static final String GROUP_TYPE_MEETING = "meeting_group";
+	
+	public static final String COLUMN_COMMENT = "comment";
 
 	/*
 	 * (non-Javadoc)
@@ -119,6 +121,7 @@ public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee
 		addAttribute(COLUMN_MEETING_DATE, "Meeting date", Date.class);
 		addAttribute(COLUMN_SIGNED_DATE, "Signed date", Date.class);
 		addAttribute(COLUMN_IN_COMMUNE, "In/out of commune", Boolean.class);
+		addAttribute(COLUMN_COMMENT, "Comment", String.class);
 
 		addManyToOneRelationship(COLUMN_CONGREGATION_GROUP_ID, Group.class);
 		addManyToOneRelationship(COLUMN_PARTICIPANT_GROUP_ID, Group.class);
@@ -147,6 +150,10 @@ public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee
 
 	public int getCongregationGroupID() {
 		return getIntColumnValue(COLUMN_CONGREGATION_GROUP_ID);
+	}
+	
+	public String getComment() {
+		return getStringColumnValue(COLUMN_COMMENT);
 	}
 
 	public Date getMeetingDate() {
@@ -183,6 +190,10 @@ public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee
 	
 	public void setCongregationID(int congregationGroupID) {
 		setColumn(COLUMN_CONGREGATION_GROUP_ID, congregationGroupID);
+	}
+	
+	public void setComment(String comment) {
+		setColumn(COLUMN_COMMENT, comment);
 	}
 
 	public void setMeetingDate(Date meetingDate) {

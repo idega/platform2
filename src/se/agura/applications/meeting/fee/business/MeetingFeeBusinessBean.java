@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.4 2004/12/09 15:49:11 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.5 2004/12/13 14:35:10 anna Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -181,11 +181,11 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 		}
 	}
 	
-	public void storeApplication(User user, int parishID, int participantGroupID, Date meetingDate, boolean inCommune, String[] participants, String[] hours, String[] minutes, MeetingFeeFormula formula) throws CreateException {
-		storeApplication(null, user, parishID, participantGroupID, meetingDate, inCommune, participants, hours, minutes, formula);
+	public void storeApplication(User user, int parishID, String comment, int participantGroupID, Date meetingDate, boolean inCommune, String[] participants, String[] hours, String[] minutes, MeetingFeeFormula formula) throws CreateException {
+		storeApplication(null, user, parishID, comment, participantGroupID, meetingDate, inCommune, participants, hours, minutes, formula);
 	}
 	
-	public void storeApplication(Object primaryKey, User user, int parishID, int participantGroupID, Date meetingDate, boolean inCommune, String[] participants, String[] hours, String[] minutes, MeetingFeeFormula formula) throws CreateException {
+	public void storeApplication(Object primaryKey, User user, int parishID, String comment, int participantGroupID, Date meetingDate, boolean inCommune, String[] participants, String[] hours, String[] minutes, MeetingFeeFormula formula) throws CreateException {
 		MeetingFee application = null;
 		if (primaryKey != null) {
 			try {
@@ -219,6 +219,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 		}
 		application.setMeetingDate(meetingDate);
 		application.setInCommune(inCommune);
+		application.setComment(comment);
 		application.setParticipantGroupID(participantGroupID);
 		application.setCongregationID(parishID);
 		application.store();

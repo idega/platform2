@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.5 2004/12/09 14:12:15 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.6 2004/12/13 14:35:10 anna Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,11 +12,8 @@ package se.agura.applications.meeting.fee.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
-
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -27,6 +24,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.app.UserApplication;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -36,7 +34,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
@@ -67,6 +65,7 @@ public class MeetingReport extends MeetingFeeBlock {
 		boolean meetingPlace = new Boolean(iwc.getParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION)).booleanValue();
 		int parishID = Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_CONGREGATION));
 		int participantGroupID = Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_PARTICIPANTS));
+		String comment = iwc.getParameter(PARAMETER_MEETING_FEE_COMMENT);
 		
 		String[] participants = iwc.getParameterValues(PARAMETER_PARTICIPANT_USER_ID);
 		String[] hours = new String[participants.length];
@@ -80,7 +79,7 @@ public class MeetingReport extends MeetingFeeBlock {
 		MeetingFeeFormula formula = getMeetingFeeFormula(iwc);
 
 		try {
-			getBusiness(iwc).storeApplication(iwc.getCurrentUser(), parishID, participantGroupID, meetingDate.getDate(), meetingPlace, participants, hours, minutes, formula);
+			getBusiness(iwc).storeApplication(iwc.getCurrentUser(), parishID, comment, participantGroupID, meetingDate.getDate(), meetingPlace, participants, hours, minutes, formula);
 		}
 		catch (CreateException ce) {
 			log(ce);
@@ -114,6 +113,7 @@ public class MeetingReport extends MeetingFeeBlock {
 		form.maintainParameter(PARAMETER_MEETING_FEE_CONGREGATION);
 		form.maintainParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION);
 		form.maintainParameter(PARAMETER_MEETING_FEE_DATE);
+		form.maintainParameter(PARAMETER_MEETING_FEE_COMMENT);
 		form.maintainParameter(PARAMETER_MEETING_FEE_PARTICIPANTS);
 		return form;
 	}
@@ -129,6 +129,7 @@ public class MeetingReport extends MeetingFeeBlock {
 		RadioButton meetingPlaceIn = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.TRUE.toString()));
 		RadioButton meetingPlaceOut = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.FALSE.toString()));
 		DropdownMenu participantsMenu = getParticipantsMenu(iwc, iwc.getCurrentUser());
+		TextInput comment = new TextInput(PARAMETER_MEETING_FEE_COMMENT);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.congregation", "Congregation")), 1, row);
 		table.add(congregMenu, 2, row++);
@@ -150,6 +151,10 @@ public class MeetingReport extends MeetingFeeBlock {
 		DateInput meetingDateInput = (DateInput) getInput(new DateInput(PARAMETER_MEETING_FEE_DATE));
 		meetingDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("meeting.fee.date_not_empty", "This field may not be empty"));
 		table.add(meetingDateInput, 2, row++);
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.comment", "Comment")), 1, row);
+		table.add(comment, 2, row++);
 		table.setHeight(row++, 12);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants", "Participants")), 1, row++);

@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportEditor.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
+ * $Id: MeetingReportEditor.java,v 1.3 2004/12/13 14:35:10 anna Exp $ Created on
  * 2.12.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 2.12.2004 15:14:55 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MeetingReportEditor extends MeetingFeeBlock {
 
@@ -72,7 +72,8 @@ public class MeetingReportEditor extends MeetingFeeBlock {
 		boolean meetingPlace = new Boolean(iwc.getParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION)).booleanValue();
 		int parishID = Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_CONGREGATION));
 		int participantGroupID = Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_PARTICIPANTS));
-
+		String comment = iwc.getParameter(PARAMETER_MEETING_FEE_COMMENT);
+		
 		String[] participants = iwc.getParameterValues(PARAMETER_PARTICIPANT_USER_ID);
 		String[] hours = new String[participants.length];
 		String[] minutes = new String[participants.length];
@@ -85,7 +86,7 @@ public class MeetingReportEditor extends MeetingFeeBlock {
 		MeetingFeeFormula formula = getMeetingFeeFormula(iwc);
 
 		try {
-			getBusiness(iwc).storeApplication(fee.getPrimaryKey(), iwc.getCurrentUser(), parishID, participantGroupID, meetingDate.getDate(), meetingPlace, participants, hours, minutes, formula);
+			getBusiness(iwc).storeApplication(fee.getPrimaryKey(), iwc.getCurrentUser(), parishID, comment, participantGroupID, meetingDate.getDate(), meetingPlace, participants, hours, minutes, formula);
 		}
 		catch (CreateException ce) {
 			log(ce);
@@ -162,6 +163,8 @@ public class MeetingReportEditor extends MeetingFeeBlock {
 			maxHours = 6;
 		}
 
+		String comment = fee.getComment();
+		
 		Group participantsGroup = null;
 		if (iwc.isParameterSet(PARAMETER_MEETING_FEE_PARTICIPANTS)) {
 			try {
@@ -207,6 +210,10 @@ public class MeetingReportEditor extends MeetingFeeBlock {
 		meetingDateInput.setDate(fee.getMeetingDate());
 		meetingDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("meeting.fee.date_not_empty", "This field may not be empty"));
 		table.add(meetingDateInput, 2, row++);
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.comment","Comment")), 1, row);
+		table.add(comment, 2, row++);
 		table.setHeight(row++, 12);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants", "Participants")), 1, row);
