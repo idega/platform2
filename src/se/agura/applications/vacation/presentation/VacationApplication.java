@@ -567,7 +567,7 @@ public class VacationApplication extends VacationBlock {
 						else if (metaType.equals("com.idega.presentation.ui.RadioButton")) {
 							table.add(getText(getResourceBundle().getLocalizedString("vacation_type_metadata_boolean." + value, value)), 2, row);
 						}
-						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
+						else if (metaType.equals("com.idega.block.media.presentation.FileChooser") && value.length() > 0) {
 							Link link = getLink(getResourceBundle().getLocalizedString("vacation_request.attachment", "Attachment"));
 							link.setTarget(Link.TARGET_NEW_WINDOW);
 							link.setFile(Integer.parseInt(value));
