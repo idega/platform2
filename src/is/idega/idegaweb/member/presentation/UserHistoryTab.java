@@ -7,6 +7,8 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.IFrame;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
+import com.idega.user.data.UserStatus;
+import com.idega.user.data.UserStatusHome;
 import com.idega.user.presentation.UserGroupList;
 import com.idega.user.presentation.UserTab;
 
@@ -29,6 +31,8 @@ public class UserHistoryTab extends UserTab {
 	public static final String PARAMETER_USER_ID = "ic_user_id";
 	public static final String SESSIONADDRESS_USERGROUPS_HISTORY =
 		"ic_user_ic_group_history";
+	public static final String SESSIONADDRESS_USERGROUPS_STATUS =
+		"ic_user_ic_group_status";
 
 	protected Text memberof;
 
@@ -96,6 +100,7 @@ public class UserHistoryTab extends UserTab {
 
 	public void main(IWContext iwc) throws Exception {
 		Object obj = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUserId(),"GROUP_PARENT");
+		Object obj2 = ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(getUserId());
 		if (obj != null) {
 			iwc.setSessionAttribute(
 				UserHistoryTab.SESSIONADDRESS_USERGROUPS_HISTORY,
@@ -105,6 +110,16 @@ public class UserHistoryTab extends UserTab {
 			iwc.removeSessionAttribute(
 				UserHistoryTab.SESSIONADDRESS_USERGROUPS_HISTORY);
 		}
+		if (obj2 != null) {
+			iwc.setSessionAttribute(
+				UserHistoryTab.SESSIONADDRESS_USERGROUPS_STATUS,
+				obj2);
+		}
+		else {
+			iwc.removeSessionAttribute(
+				UserHistoryTab.SESSIONADDRESS_USERGROUPS_STATUS);
+		}
+		
 	}
 
 	public String getBundleIdentifier() {

@@ -8,9 +8,12 @@
  */
 package is.idega.idegaweb.member.presentation;
 
+import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
+
 import java.sql.SQLException;
 import java.util.Hashtable;
 
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -18,9 +21,9 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
+import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.Status;
-import com.idega.user.data.User;
 import com.idega.user.presentation.UserTab;
 
 /**
@@ -149,7 +152,6 @@ public class UserStatusTab extends UserTab {
 				}
 			}
 		}
-
 	}
 
 	/* (non-Javadoc)
@@ -197,6 +199,9 @@ public class UserStatusTab extends UserTab {
 		if (iwc != null) {
 			String inactive = iwc.getParameter(_inactiveFieldName);
 			String status = iwc.getParameter(_statusFieldName);
+			
+		System.out.println("Collect: status = " + status);
+		
 //			String parent1Status = iwc.getParameter(_parent1StatusFieldName);
 //			String parent2Status = iwc.getParameter(_parent2StatusFieldName);
 			String parent3Status = iwc.getParameter(_parent3StatusFieldName);
@@ -224,11 +229,19 @@ public class UserStatusTab extends UserTab {
 	 */
 	public boolean store(IWContext iwc) {
 		try {
-			
+			String status = (String)fieldValues.get(_statusFieldName);
+			System.out.println("Store: status = " + status);
+			if (status != null && !status.equals("")) {
+				int user_id = this.getUserId();
+				int group_id = this.getGroupID();
+				int status_id = Integer.parseInt(status);
+				
+				getUserStatusBusiness(iwc).setUserGroupStatus(user_id,group_id,status_id); 	
+			}
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 		}
-		
 		
 		return true;
 	}
@@ -237,14 +250,42 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#initFieldContents()
 	 */
 	public void initFieldContents() {
+		IWContext iwc = IWContext.getInstance();
 		fieldValues = new Hashtable();
 		fieldValues.put(_inactiveFieldName, Boolean.FALSE);
 		
-		fieldValues.put(_statusFieldName, "");
+		int status_id = -1;
+		try {
+			int user_id = getUserId();
+			int group_id = getGroupID();
+			status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
+		}
+		catch(Exception e) {
+			status_id = -1;
+		}
+		
+		if (status_id > 0)
+			fieldValues.put(_statusFieldName, Integer.toString(status_id));
+		else
+			fieldValues.put(_statusFieldName, "");
 //		fieldValues.put(_parent1StatusFieldName, Boolean.FALSE);
 //		fieldValues.put(_parent2StatusFieldName, Boolean.FALSE);
 		fieldValues.put(_parent3StatusFieldName, Boolean.FALSE);
 
 		updateFieldsDisplayStatus();
 	}
+	
+	public UserStatusBusiness getUserStatusBusiness(IWApplicationContext iwc){
+		UserStatusBusiness business = null;
+		if(business == null){
+			try{
+				business = (UserStatusBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserStatusBusiness.class);
+			}
+			catch(java.rmi.RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return business;
+	}
+	
 }
