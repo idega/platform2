@@ -241,7 +241,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
-		System.out.println(sql.toString());
+
 		return idoFindPKsByQuery(sql);
 	}
 

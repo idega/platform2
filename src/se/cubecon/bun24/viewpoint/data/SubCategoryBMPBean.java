@@ -13,10 +13,10 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 
 /**
- * Last modified: $Date: 2003/11/10 19:02:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/24 07:45:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -32,7 +32,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
     public void insertStartData () throws Exception {
         super.insertStartData ();
-        System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+        log ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
 
         final String [][] startData = {
             { "Anordnare", "Barnomsorg", "Myndighetsgruppen" },
@@ -103,10 +103,10 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
                subCategory.setTopCategoryId (topCategoryId.intValue ());
                subCategory.store ();
            } else {
-               System.err.println ("Couldn't store sub category ("
-                                   + subCategoryName + ", " + topCategoryName
-                                   + ", " + groupName + ") with ids (" +
-                                   topCategoryId + ", " + handlerGroupId + ")");
+               logWarning ("Couldn't store sub category ("
+                           + subCategoryName + ", " + topCategoryName
+                           + ", " + groupName + ") with ids (" +
+                           topCategoryId + ", " + handlerGroupId + ")");
            }
        }
     }

@@ -6,10 +6,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/11/10 18:57:57 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/24 07:45:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -43,13 +43,10 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
     }
 
     public String [] getCaseStatusKeys () {
-        System.out.println ("Invoking ViewpointBMPBean.getCaseStatusKeys ()");
         return CASE_STATUS_KEYS;
     }
 
     public String [] getCaseStatusDescriptions () {
-        System.out.println
-                ("Invoking ViewpointBMPBean.getCaseStatusDescriptions ()");
         return CASE_STATUS_DESCRIPTIONS;
     }
 

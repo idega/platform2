@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/07/01 18:35:15 $ by $Author: eiki $
+ * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -209,13 +209,13 @@ public class ViewpointForm extends CommuneBlock {
                 showTopCategoriesForm (context);
             }
         } catch (final Exception exception) {
-            System.err.println ("Exception caught in " + getClass ().getName ()
+            logWarning ("Exception caught in " + getClass ().getName ()
                                 + " " + (new Date ()).toString ());
-            System.err.println ("Parameters:");
+            logWarning ("Parameters:");
             final Enumeration enum = context.getParameterNames ();
             while (enum.hasMoreElements ()) {
                 final String key = (String) enum.nextElement ();
-                System.err.println ('\t' + key + "='"
+                logWarning ('\t' + key + "='"
                                     + context.getParameter (key) + "'");
             }
             exception.printStackTrace ();
@@ -848,7 +848,7 @@ public class ViewpointForm extends CommuneBlock {
         } catch (RemoteException dummy) {
             // nothing, since algorithm is in finally clause
         } catch(FinderException ex){
-        	System.err.println("Hittade inte anvandaren " + ssn +" Felaktigt personnummer");
+        	log ("Hittade inte anvandaren " + ssn + " Felaktigt personnummer");
         	throw ex;
         }
         

@@ -25,10 +25,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/11/18 10:41:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -111,16 +111,16 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
                 add (createMainTable (getUserSearchFormTable (context)));
             }
         } catch (final Exception exception) {
-            System.err.println ("Exception caught in " + getClass ().getName ()
-                                + " " + (new Date ()).toString ());
-            System.err.println ("Parameters:");
+            logWarning ("Exception caught in " + getClass ().getName ()
+                        + " " + (new Date ()).toString ());
+            logWarning ("Parameters:");
             final Enumeration enum = context.getParameterNames ();
             while (enum.hasMoreElements ()) {
                 final String key = (String) enum.nextElement ();
-                System.err.println ('\t' + key + "='"
+                logWarning ('\t' + key + "='"
                                     + context.getParameter (key) + "'");
             }
-            exception.printStackTrace ();
+            log (exception);
             add ("Det inträffade ett fel. Försök igen senare.");
 		}
 	}

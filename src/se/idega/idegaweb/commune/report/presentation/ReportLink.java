@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/10/03 01:53:10 $ by $Author: tryggvil $
+ * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -277,14 +277,14 @@ public class ReportLink extends CommuneBlock {
     /**
      * @return ICCategory if available for this objectInstanceId or else null
      */
-    private static ICCategory findCategory (final int objectInstanceId) {
+    private ICCategory findCategory (final int objectInstanceId) {
         ICCategory result = null;
         List categoryList = null;
         try {
             categoryList = ReportFinder.listOfEntityForObjectInstanceId
                     (objectInstanceId);
         } catch (final Exception e) {
-            System.err.println
+            logWarning
                     ("ReportFinder.listOfEntityForObjectInstanceId ("
                      + objectInstanceId + ") -> " + e.getMessage ());
         }

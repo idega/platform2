@@ -64,10 +64,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/21 15:53:53 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.49 $
+ * @version $Revision: 1.50 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1721,16 +1721,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void logUnexpectedException (final IWContext context,
                                          final Exception exception) {
-        System.err.println ("Exception caught in " + getClass ().getName ()
-                            + " " + (new java.util.Date ()));
-        System.err.println ("Parameters:");
+        logWarning ("Exception caught in " + getClass ().getName ()
+                    + " " + (new java.util.Date ()));
+        logWarning ("Parameters:");
         final java.util.Enumeration enum = context.getParameterNames ();
         while (enum.hasMoreElements ()) {
             final String key = (String) enum.nextElement ();
-            System.err.println ('\t' + key + "='"
-                                + context.getParameter (key) + "'");
+            logWarning ('\t' + key + "='"
+                        + context.getParameter (key) + "'");
         }
-        exception.printStackTrace ();
+        log (exception);
         add ("Det inträffade ett fel. Försök igen senare.");
     }
 

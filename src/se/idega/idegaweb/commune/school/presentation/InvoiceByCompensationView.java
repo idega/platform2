@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/11/05 14:46:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -95,16 +95,16 @@ public class InvoiceByCompensationView extends AccountingBlock {
                 showInvoiceByCompensationList (context);
             }
         } catch (final Exception exception) {
-            System.err.println ("Exception caught in " + getClass ().getName ()
+            logWarning ("Exception caught in " + getClass ().getName ()
                                 + " " + (new Date ()).toString ());
-            System.err.println ("Parameters:");
+            logWarning ("Parameters:");
             final Enumeration enum = context.getParameterNames ();
             while (enum.hasMoreElements ()) {
                 final String key = (String) enum.nextElement ();
-                System.err.println ('\t' + key + "='"
+                logWarning ('\t' + key + "='"
                                     + context.getParameter (key) + "'");
             }
-            exception.printStackTrace ();
+            log (exception);
             add ("Det inträffade ett fel. Försök igen senare.");
 		}
 	}

@@ -8,10 +8,10 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 
 /**
- * Last modified: $Date: 2003/11/10 18:59:32 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/24 07:45:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
 
@@ -26,7 +26,7 @@ public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
     public void insertStartData () throws Exception {
         super.insertStartData ();
         
-        System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+        log ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
 
         TopCategoryHome home
                 = (TopCategoryHome) IDOLookup.getHome(TopCategory.class);

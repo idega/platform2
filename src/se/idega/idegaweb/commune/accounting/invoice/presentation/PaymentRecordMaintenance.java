@@ -41,11 +41,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/21 15:53:53 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -943,16 +943,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private void logUnexpectedException (final IWContext context,
                                          final Exception exception) {
-        System.err.println ("Exception caught in " + getClass ().getName ()
+        logWarning ("Exception caught in " + getClass ().getName ()
                             + " " + (new java.util.Date ()));
-        System.err.println ("Parameters:");
+        logWarning ("Parameters:");
         final java.util.Enumeration enum = context.getParameterNames ();
         while (enum.hasMoreElements ()) {
             final String key = (String) enum.nextElement ();
-            System.err.println ('\t' + key + "='"
+            logWarning ('\t' + key + "='"
                                 + context.getParameter (key) + "'");
         }
-        exception.printStackTrace ();
+        log (exception);
         add ("Det inträffade ett fel. Försök igen senare.");
     }
 

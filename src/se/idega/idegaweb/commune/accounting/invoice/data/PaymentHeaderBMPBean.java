@@ -211,8 +211,6 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.appendAndEqualsQuoted("c.default_commune","Y");
 		sql.appendAndEqualsQuoted("s.management_type","COMMUNE");
 		
-		System.out.println(sql.toString());
-		
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -225,8 +223,6 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.appendAndEquals("s.commune", "c.ic_commune_id");
 		sql.appendAnd();
 		sql.append("((c.default_commune = 'N' or c.default_commune is null) or (not s.management_type = 'COMMUNE'))");
-		
-		System.out.println(sql.toString());
 		
 		return idoFindPKsBySQL(sql.toString());
 	}
