@@ -34,6 +34,7 @@ public class ProductComparator implements Comparator {
 //  public static final int DEPARTURETIME_NAME = 4;
   public static final int PRICE = 5;
   public static final int CREATION_DATE = 6;
+  public static final int SUPPLIER = 7; 
 
   private int localeId = -1;
   private int sortBy;
@@ -80,6 +81,7 @@ public class ProductComparator implements Comparator {
           break;
           case CREATION_DATE : result = dateSort(o1, o2);
           break;
+          case SUPPLIER : result = supplierSort(o1, o2);
         }
       }catch (RemoteException rme) {
         rme.printStackTrace(System.err);
@@ -96,6 +98,16 @@ public class ProductComparator implements Comparator {
     String two = p2.getProductName(localeId)!=null?p2.getProductName(localeId):"";
 
     return IsCollator.getIsCollator().compare(two,one);
+  }
+  
+  private int supplierSort(Object o1, Object o2) throws RemoteException {
+  		Product p1 = (Product) o1;
+    Product p2 = (Product) o2;
+
+    String one = p1.getSupplier().getName() != null ? p1.getSupplier().getName(): "";
+    String two = p2.getSupplier().getName() != null ? p2.getSupplier().getName(): "";
+    return IsCollator.getIsCollator().compare(two, one);
+  	
   }
 
   private int numberSort(Object o1, Object o2) throws RemoteException {
