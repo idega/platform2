@@ -193,7 +193,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 */
 	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year, boolean updateReport) throws RemoteException {
 		WorkReport report = null;
-
+		Group club = null;
+		
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
 
 		try {
@@ -202,46 +203,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		catch (FinderException e) {
 			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " ann year : " + year + " creating a new one.");
 			try {
-				Group club;
+
 				try {
 					club = this.getGroupBusiness().getGroupByGroupID(groupId); //could be club,regional union or league
 					report = getWorkReportHome().create();
-					report.setGroupId(groupId);
-					report.setYearOfReport(year);
-
-					//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
-					report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
-					report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-					report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
-					report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
-					report.setGroupType(club.getGroupType());
-
-					//tegund felags?
-					//IWMemberConstants.META_DATA_CLUB_TYPE
-
-					//status ovirkt?
-					//META_DATA_CLUB_STATUS
-					String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
-					if (IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE.equals(status)) {
-						report.setAsInactive();
-					}
-					else {
-						report.setAsActive();
-					}
-
-					try {
-						Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
-
-						report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
-						report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-						report.setRegionalUnionAbbreviation(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV));
-
-					}
-					catch (NoRegionalUnionFoundException e3) {
-						//no regional union, must be a league or a regional union itself
-					}
-
-					report.store();
 				}
 				catch (FinderException e2) {
 					e2.printStackTrace();
@@ -252,10 +217,53 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 
 		}
-
+		
+		//UPDATE ALWAYS UNLESS IS READ ONLY
 		if (report != null) {
-			createWorkReportData(((Integer)report.getPrimaryKey()).intValue());
-			return ((Integer)report.getPrimaryKey()).intValue();
+			report.setGroupId(groupId);
+			report.setYearOfReport(year);
+	
+			//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
+			report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
+			report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+			report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+			report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
+			report.setGroupType(club.getGroupType());
+	
+			//tegund felags?
+			//IWMemberConstants.META_DATA_CLUB_TYPE
+	
+			//status ovirkt?
+			//META_DATA_CLUB_STATUS
+			String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
+			if (IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE.equals(status)) {
+				report.setAsInactive();
+			}
+			else {
+				report.setAsActive();
+			}
+	
+			try {
+				Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
+	
+				report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
+				report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+				report.setRegionalUnionAbbreviation(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV));
+	
+			}
+			catch (NoRegionalUnionFoundException e3) {
+				//no regional union, must be a league or a regional union itself
+			}
+	
+			report.store();
+
+			int wrId = ((Integer)report.getPrimaryKey()).intValue();
+	
+			if(!isWorkReportReadOnly(wrId)) {
+				createWorkReportData(((Integer)report.getPrimaryKey()).intValue());
+			}
+			
+			return wrId;
 		}
 		else {
 			return -1;
