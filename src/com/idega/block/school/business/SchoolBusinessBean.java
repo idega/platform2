@@ -2697,6 +2697,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				SchoolClassMemberLog log = getSchoolClassMemberLogHome().create();
 				log.setUserPlacing(performer);
 				log.setSchoolClass(schoolClass);
+				log.setSchoolClassMember(member);
 				log.setStartDate(startDate);
 				log.setEndDate(endDate);
 				log.store();
