@@ -46,10 +46,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/07 11:03:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/07 15:32:08 $ by $Author: joakim $
  *
  * @author Joakim
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -148,14 +148,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-    /**
-     * Removes an invoice record and it's associated payments record if the
-     * rule spec type is check.
-     *
-     * @param invoiceRecord the record to remove
-     * @excpetion RemoteException if data layer fails
-     * @exception RemoveException if it wasn't possible to remove this record
-     */
+	/**
+	 * Removes an invoice record and it's associated payments record if the
+	 * rule spec type is check.
+	 *
+	 * @param invoiceRecord the record to remove
+	 * @excpetion RemoteException if data layer fails
+	 * @exception RemoveException if it wasn't possible to remove this record
+	 */
 	public void removeInvoiceRecord(InvoiceRecord invoiceRecord) throws RemoteException, RemoveException {
 		PaymentRecord paymentRecord;
 		String ruleSpecType = invoiceRecord.getRuleSpecType();
@@ -168,7 +168,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				paymentRecord.setTotalAmount(paymentRecord.getTotalAmount() - invoiceRecord.getAmount());
 				paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT() - invoiceRecord.getAmountVAT());
 			} catch (FinderException e1) {
-                e1.printStackTrace ();
+				e1.printStackTrace();
 			}
 		}
 		invoiceRecord.remove();
@@ -281,45 +281,52 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return getPaymentRecordHome().findByPaymentHeader(paymentHeader);
 	}
 
-    /**
-     * Creates and stores a new Invoice Header. Status will be set to
-     * preliminary.
-     *
-     * @param schoolCategoryKey string constant from SchoolCategoryBMPBean
-     * @param createdBy the user who was logged on and initiated this
-     * @param custodianId the invoice receiver's user id
-     * @param ownPosting egen kontering
-     * @param doublePosting motkontering
-     * @param period the month this occurs
-     * @return the new Invoice Header
-     * @exception CreateException if lower level fails
-     */
-    public InvoiceHeader createInvoiceHeader
-        (final String schoolCategoryKey, final User createdBy,
-         final int custodianId, final String ownPosting,
-         final String doublePosting, final Date period) throws CreateException {
-        try {
-            final InvoiceHeader header = getInvoiceHeaderHome ().create ();
-            header.setSchoolCategoryID (schoolCategoryKey);
-            if (null != createdBy) {
-                final String createdBySignature
-                        = createdBy.getFirstName ().charAt (0)
-                        + "" + createdBy.getLastName ().charAt (0);
-                header.setCreatedBy (createdBySignature);
-            }
-            header.setCustodianId (custodianId);
-            header.setDateCreated (new Date (new java.util.Date ().getTime()));
-            header.setDoublePosting (doublePosting);
-            header.setOwnPosting (ownPosting);
-            header.setPeriod (period);
-            header.setStatus (ConstantStatus.PRELIMINARY);
-            header.store ();
-            return header;
-        } catch (RemoteException e) {
-            e.printStackTrace ();
-            throw new CreateException (e.getMessage ());
-        }
-    }
+	/**
+	 * Creates and stores a new Invoice Header. Status will be set to
+	 * preliminary.
+	 *
+	 * @param schoolCategoryKey string constant from SchoolCategoryBMPBean
+	 * @param createdBy the user who was logged on and initiated this
+	 * @param custodianId the invoice receiver's user id
+	 * @param ownPosting egen kontering
+	 * @param doublePosting motkontering
+	 * @param period the month this occurs
+	 * @return the new Invoice Header
+	 * @exception CreateException if lower level fails
+	 */
+	public InvoiceHeader createInvoiceHeader(
+		final String schoolCategoryKey,
+		final User createdBy,
+		final int custodianId,
+		final String ownPosting,
+		final String doublePosting,
+		final Date period)
+		throws CreateException {
+		try {
+			final InvoiceHeader header = getInvoiceHeaderHome().create();
+			header.setSchoolCategoryID(schoolCategoryKey);
+			if (null != createdBy) {
+				final String createdBySignature =
+					createdBy.getFirstName().charAt(0) + "" + createdBy.getLastName().charAt(0);
+				header.setCreatedBy(createdBySignature);
+			}
+			header.setCustodianId(custodianId);
+			header.setDateCreated(new Date(new java.util.Date().getTime()));
+			header.setDoublePosting(doublePosting);
+			header.setOwnPosting(ownPosting);
+			header.setPeriod(period);
+			header.setStatus(ConstantStatus.PRELIMINARY);
+			header.store();
+			return header;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			throw new CreateException(e.getMessage());
+		}
+	}
+
+	protected SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
+		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+	}
 
     public InvoiceRecord createInvoiceRecord
         (final User createdBy, final Integer amount,
