@@ -15,4 +15,12 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,int p9,int[] p10)throws javax.ejb.CreateException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolHome getSchoolHome() throws java.rmi.RemoteException;
  public com.idega.block.school.data.School getSchool(java.lang.Object p0) throws java.rmi.RemoteException;
+public com.idega.block.school.data.School createSchool(
+		String name,
+		String address,
+		String zipcode,
+		String ziparea,
+		String phone,
+		int school_type)
+		throws CreateException,java.rmi.RemoteException;
 }

@@ -25,7 +25,7 @@ import com.idega.data.IDOCreateException;
  */
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 {
-	public SchoolHome getSchoolHome()throws java.rmi.RemoteException
+	public SchoolHome getSchoolHome() throws java.rmi.RemoteException
 	{
 		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
@@ -78,6 +78,22 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			ex.printStackTrace();
 			return new java.util.Vector();
 		}
+	}
+	public School createSchool(
+		String name,
+		String address,
+		String zipcode,
+		String ziparea,
+		String phone,
+		int school_type)
+		throws CreateException
+	{
+		/**
+		 * @todo figure out how to implement
+		 */
+		int area_id=-1;
+		int sch_types[] = { school_type };
+		return createSchool(name, null, address, zipcode, ziparea, phone, null, null, null, area_id, sch_types);
 	}
 	public School createSchool(
 		String name,
