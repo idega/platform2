@@ -36,10 +36,11 @@ public class CitizenChildren extends CommuneBlock {
 	private Text buttonLabel;
 	private Text ssnLabel;
 	private static final String prmChildId = "comm_child_id";
+  private static final String prmParentId = "comm_parent_id";
 	private static final String prmChildSSN = "comm_child_ssn";
 	private String prmSubmitName = "submit_cits_child";
 	private boolean showSSNSearchForm = true;
-	
+
 
 	public CitizenChildren() {
 		buttonLabel = getText("");
@@ -65,7 +66,7 @@ public class CitizenChildren extends CommuneBlock {
 				}
 				row++;
 			}
-			
+
 				T.add(getChildrenForm(iwc));
 			add(T);
 		}
@@ -75,6 +76,10 @@ public class CitizenChildren extends CommuneBlock {
 
 	public static String getChildIDParameterName() {
 		return prmChildId;
+	}
+
+  public static String getParentIDParameterName() {
+		return prmParentId;
 	}
 
 	public static String getChildSSNParameterName() {
@@ -110,11 +115,11 @@ public class CitizenChildren extends CommuneBlock {
 			}
 
 		}
-		
+
 		if(showSSNSearchForm){
 			TextInput inputSSN = new TextInput(prmChildSSN);
 			String label = buttonLabel.getLocalizedText(iwc);
-	
+
 			SubmitButton submit = new SubmitButton(label, prmSubmitName, "true");
 			T.add(inputSSN, 1, row);
 			row++;
@@ -156,7 +161,7 @@ public class CitizenChildren extends CommuneBlock {
 		}
 		return new Vector();
 	}
-	
+
 	public void setShowSSNSearchForm( boolean showForm){
 		this.showSSNSearchForm = showForm;
 	}
