@@ -40,13 +40,14 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.66 2004/06/21 08:51:44 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.67 2004/09/10 09:40:48 malin Exp $
  * @since 12.2.2003 
  */
 
 public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
-	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information for preschool" }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
+	//private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information for preschool" }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
+	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information for preschool" }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
 	private final static String[] SUBMIT_ANSWER = { "ccot_submit_answer", "Submit" };
 	
 	public final static int PAGE_1 = 1;
@@ -611,11 +612,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				layoutTbl.add(contractPopup, 3, row);
 			}
 		}
-		else {
+		/*else {
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallErrorText(localize(NO_PLACEMENT)), 1, row);
 			layoutTbl.mergeCells(1, row, 3, row);
-		}
+		}*/
 		return layoutTbl;
 	}
 
