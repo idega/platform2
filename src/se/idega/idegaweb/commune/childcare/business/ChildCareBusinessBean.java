@@ -1151,6 +1151,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				sendMessageToParents(application, subject, body);
 			}
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			application.setApplicationStatus(getStatusReady());
 			application.store();
 			t.commit();
 		}
