@@ -56,11 +56,11 @@ import com.idega.util.CalendarMonth;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/17 13:55:24 $ by $Author: tryggvil $
+ * Last modified: $Date: 2003/12/19 08:49:15 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.64 $
+ * @version $Revision: 1.65 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -446,8 +446,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
                                                   (checkStartPeriod);
             if (null != placementStartPeriod) record.setPeriodStartPlacement
                                                       (placementStartPeriod);
-            if (null != regSpecTypeId) record.setRegSpecTypeId
-                                               (regSpecTypeId.intValue ());
+            if (null != regSpecTypeId) {
+							record.setRegSpecTypeId (regSpecTypeId.intValue ());
+						}
             if (null != vatRule)  record.setVATType (vatRule.intValue ());
             if (null != providerId) record.setProviderId
                                             (providerId.intValue ());

@@ -193,11 +193,11 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	}
 	
 	public void setInvoiceReciverID(int invoiceReciverID) {
-		setColumn(COLUMN_CHILD_ID, invoiceReciverID);
+		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciverID);
 	}
 	
 	public void setInvoiceReciver(User invoiceReciver) {
-		setColumn(COLUMN_CHILD_ID, invoiceReciver);
+		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciver);
 	}
 	
 	public Collection ejbFindByChild(int childID) throws FinderException {
