@@ -68,7 +68,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_AMOUNT_VAT, "", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_NOTES, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.String.class, 255);
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
@@ -134,8 +134,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public int getOrderId() {
 		return getIntColumnValue(COLUMN_ORDER_ID);
 	}
-	public int getRuleSpecType() {
-		return getIntColumnValue(COLUMN_RULE_SPEC_TYPE);
+	public String getRuleSpecType() {
+		return getStringColumnValue(COLUMN_RULE_SPEC_TYPE);
 	}
 	public String getOwnPosting() {
 		return getStringColumnValue(COLUMN_OWN_POSTING);
@@ -214,8 +214,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setOrderId(int i) {
 		setColumn(COLUMN_ORDER_ID, i);
 	}
-	public void setRuleSpecType(int i) {
-		setColumn(COLUMN_RULE_SPEC_TYPE, i);
+	public void setRuleSpecType(String s) {
+		setColumn(COLUMN_RULE_SPEC_TYPE, s);
 	}
 	public void setOwnPosting(String s) {
 		setColumn(COLUMN_OWN_POSTING, s);

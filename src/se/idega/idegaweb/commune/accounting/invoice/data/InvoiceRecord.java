@@ -23,7 +23,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public java.sql.Date getPeriodStartCheck();
  public java.sql.Date getPeriodStartPlacement();
  public int getProviderId();
- public int getRuleSpecType();
+ public java.lang.String getRuleSpecType();
  public java.lang.String getRuleText();
  public int getVATType();
  public void initializeAttributes();
@@ -50,7 +50,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setPeriodStartPlacement(java.sql.Date p0);
  public void setProviderId(com.idega.block.school.data.School p0);
  public void setProviderId(int p0);
- public void setRuleSpecType(int p0);
+ public void setRuleSpecType(java.lang.String p0);
  public void setRuleText(java.lang.String p0);
  public void setVATType(int p0);
 }
