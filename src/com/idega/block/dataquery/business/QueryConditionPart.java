@@ -25,6 +25,19 @@ public class QueryConditionPart implements QueryPart {
 	private String type = null;
 	private String pattern = null;
 	
+	public static final String TYPE_LIKE = "like";
+	public static final String TYPE_EQ = "equal";
+	public static final String TYPE_NEQ = "not-equal";
+	public static final String TYPE_LT = "less";
+	public static final String TYPE_GT ="greater";
+	public static final String TYPE_GEQ = "greater-than-or-equals";
+	public static final String TYPE_LEQ = "less-than-or-equals";
+	private static final String[] TYPES = { TYPE_LIKE,TYPE_EQ,TYPE_NEQ,TYPE_LT,TYPE_GT,TYPE_GEQ,TYPE_LEQ};
+	
+	public static String[] getConditionTypes(){
+		return   TYPES;
+	}
+	
 	public QueryConditionPart(String field, String type, String pattern){
 		this.field = field;
 		this.type = type;

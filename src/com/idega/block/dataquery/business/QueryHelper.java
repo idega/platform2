@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.data.GenericEntity;
+import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -36,6 +37,7 @@ public class QueryHelper {
 	private List listOfFields = null;
 	private List listOfConditions = null;
 	private int step = 0;
+	private boolean isTemplate = false;
 	
 		
 	public QueryHelper(){
@@ -54,7 +56,8 @@ public class QueryHelper {
 	private void init(){
 		root = doc.getRootElement();
 		if(root!=null){
-		
+		XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
+		isTemplate = (template!=null && Boolean.getBoolean(template.getValue()));
 		XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 		if(source!=null){
 			// SOURCE ENTITY PART (STEP 1)
@@ -108,6 +111,10 @@ public class QueryHelper {
 		return root;
 	}
 	
+	private XMLElement getSourceEntityElement(){
+		return new XMLElement(QueryXMLConstants.SOURCE_ENTITY);
+	}
+	
 	private XMLElement getRelatedElement(){
 		return new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
 	}
@@ -118,9 +125,14 @@ public class QueryHelper {
 	public XMLDocument createDocument(){
 		if(doc == null)
 			doc = new XMLDocument(getRootElement());
+		if(isTemplate()){
+			root.setAttribute(QueryXMLConstants.TEMPLATE,Boolean.toString(isTemplate()));
+		}
 		//		SOURCE ENTITY PART (STEP 1)
 		if(sourceEntity!=null){
-			root.addContent(sourceEntity.getQueryElement());
+			XMLElement sourceElement = getSourceEntityElement();
+			sourceElement.addContent(sourceEntity.getQueryElement());
+			root.addContent(sourceElement);
 			//	RELATED PART ( STEP 2)
 			if(listOfRelatedEntities!=null && !listOfRelatedEntities.isEmpty()){
 				Iterator iter = listOfRelatedEntities.iterator();
@@ -154,62 +166,82 @@ public class QueryHelper {
 		return doc;
 	}
 	
+	/**
+	 * @return <CODE>true</CODE> if the query has a source entity
+	 */
 	public boolean hasSourceEntity(){
 		return sourceEntity!=null;
 	}
+	/**
+	 * @return <CODE>true</CODE> if the query has related entities
+	 */
 	public boolean hasRelatedEntities(){
 		return listOfRelatedEntities !=null && !listOfRelatedEntities.isEmpty();
 	}
+	/**
+	 * @return <CODE>true</CODE> if the query has fields
+	 */
 	public boolean hasFields(){
 		return listOfFields!=null && !listOfFields.isEmpty();
 	}
+	/**
+	 * 
+	 * @return <CODE>true</CODE> if the query has conditions
+	 */
 	public boolean hasConditions(){
 		return listOfConditions!=null && !listOfConditions.isEmpty();
 	}
 
 	/**
-	 * @return
+	 * Gets the document element of the query xml document
+	 * @return the document element
 	 */
 	public XMLDocument getDoc() {
 		return doc;
 	}
 
 	/**
-	 * @return
+	 * Gets the list of conditions of the query
+	 * @return the list of conditions
 	 */
 	public List getListOfConditions() {
 		return listOfConditions;
 	}
 
 	/**
-	 * @return
+	 *Gets the list of fields of the query
+	 * @return the list of fields
 	 */
 	public List getListOfFields() {
 		return listOfFields;
 	}
 
 	/**
-	 * @return
+	 * Gets the list of related entities of the query
+	 * @return the list of related entities
 	 */
 	public List getListOfRelatedEntities() {
 		return listOfRelatedEntities;
 	}
 
 	/**
-	 * @return
+	 * Gets the root element of the query xml
+	 * @return the root element
 	 */
 	public XMLElement getRoot() {
 		return root;
 	}
 
 	/**
-	 * @return
+	 * Gets the source entity of the query
+	 * @return the source entity part
 	 */
 	public QueryEntityPart getSourceEntity() {
 		return sourceEntity;
 	}
 
 	/**
+	 * Sets the document of the xml
 	 * @param document
 	 */
 	public void setDoc(XMLDocument document) {
@@ -217,6 +249,7 @@ public class QueryHelper {
 	}
 
 	/**
+	 * Sets the list of conditions of the query
 	 * @param list
 	 */
 	public void setListOfConditions(List list) {
@@ -225,6 +258,7 @@ public class QueryHelper {
 	}
 
 	/**
+	 * Sets the list of fields of the query
 	 * @param list
 	 */
 	public void setListOfFields(List list) {
@@ -233,6 +267,7 @@ public class QueryHelper {
 	}
 
 	/**
+	 * Sets the list of related entities of the query
 	 * @param list
 	 */
 	public void setListOfRelatedEntities(List list) {
@@ -241,6 +276,7 @@ public class QueryHelper {
 	}
 
 	/**
+	 * Sets the root element of the XML document
 	 * @param element
 	 */
 	public void setRoot(XMLElement element) {
@@ -248,7 +284,8 @@ public class QueryHelper {
 	}
 
 	/**
-	 * @param part
+	 * Sets the source entity part of the query
+	 * @param the  entity
 	 */
 	public void setSourceEntity(QueryEntityPart part) {
 		QueryEntityPart oldPart = sourceEntity;
@@ -261,6 +298,10 @@ public class QueryHelper {
 		checkStep();
 	}
 	
+	/**
+	 * Sets the source entity part of the query
+	 * @param the entity class
+	 */
 	public void setSourceEntity(Class entityClass) {
 		QueryEntityPart  entityPart = getQueryEntityPart(entityClass);
 		if(entityPart !=null){			
@@ -275,12 +316,20 @@ public class QueryHelper {
 		 return null;
 	}
 	
+	/**
+	 * Adds a new related entity to the related entity part of the query
+	 * @param new  entity class
+	 */
 	public void addRelatedEntity(Class entityClass){
 		QueryEntityPart  entityPart = getQueryEntityPart(entityClass);
 		if(entityPart !=null)
 			addRelatedEntity(entityPart);
 	}
 	
+	/**
+	 * Adds a new related entity to the related entity part of the query
+	 * @param the new entity
+	 */
 	public void addRelatedEntity(QueryEntityPart entity){
 		if(listOfRelatedEntities==null){
 			listOfRelatedEntities = new ArrayList();
@@ -289,6 +338,10 @@ public class QueryHelper {
 		checkStep();
 	}
 	
+	/**
+	 * Adds a new field to the field part of the query
+	 * @param the new field
+	 */
 	public void addField(QueryFieldPart field){
 		if(listOfFields==null){
 			listOfFields = new ArrayList();
@@ -297,6 +350,10 @@ public class QueryHelper {
 		checkStep();
 	}
 	
+	/**
+	 * Adds a new condition to the condition part of the query
+	 * @param the new condition
+	 */
 	public void addCondition(QueryConditionPart condition){
 		if(listOfConditions== null){
 			listOfConditions = new ArrayList();
@@ -305,24 +362,56 @@ public class QueryHelper {
 		checkStep();
 	}
 	
+	/**
+	 * Clears all part of the query
+	 */
+	public void clearAll(){
+		clearSourceEntity();
+		clearRelatedEntities();
+		clearFields();
+		clearConditions();
+	}
+	
+	/**
+	 *  Clears the source entity part of the query
+	 * 	and updates the current step.
+	 */
 	public void clearSourceEntity(){
 			sourceEntity = null;
 			checkStep();
 		}
 	
+	/**
+	 *  Clears the related entity part of the query
+	 * and updates the current step.
+	 */
 	public void clearRelatedEntities(){
 		listOfRelatedEntities = null;
 		checkStep();
 	}
+	
+	
+	/**
+	 *  Clears the field part of the query and updates the current step
+	 */
 	public void clearFields(){
 		listOfFields = null;
 		checkStep();
 	}
+	
+	/**
+	 * Clears the condition part of the query
+	 * and updates the current step.
+	 */
 	public void clearConditions(){
 		listOfConditions = null;
 		checkStep();
 	}
 	
+	/**
+	 * Gets the current step in the query building process
+	 * @return the current step 
+	 */
 	public int getStep(){
 		return step;		
 	}
@@ -343,6 +432,21 @@ public class QueryHelper {
 	
 	private GenericEntity getEntity(Class entityClass){
 		return (GenericEntity) GenericEntity.getStaticInstance(entityClass);
+	}
+
+	/**
+	 * @return <CODE>true</CODE> if the query is a template
+	 */
+	public boolean isTemplate() {
+		return isTemplate;
+	}
+
+	/**
+	 * Sets if the query should be a template for other queries.
+	 *
+	 */
+	public void setTemplate(boolean b) {
+		isTemplate = b;
 	}
 
 }
