@@ -292,11 +292,11 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				ex.printStackTrace();
 			}
 			
-
 //			When "huvudverksamhets flow are set to in and "regelspectyp" = check - we should not be able to save
  
 //			String pk = category.getPrimaryKey().toString();
 //			String cc = SchoolCategoryBMPBean.CATEGORY_CHILD_CARE;
+
 			if (category.getPrimaryKey().equals(SchoolCategoryBMPBean.CATEGORY_CHILD_CARE) && getValue(iwc, PAR_REG_SPEC_TYPE) != null && getValue(iwc, PAR_REG_SPEC_TYPE).length() != 0){
 			
 				try {
@@ -406,6 +406,14 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			pay.setPeriod(periode);
 			pay.setStatus('P');
 			pay.setCreatedBy (getSignature (iwc.getCurrentUser()));
+
+			try {
+				RegulationSpecType regSpecType = ((RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class)).findByPrimaryKey(getValue(iwc, PAR_REG_SPEC_TYPE));
+				pay.setRuleSpecType (regSpecType.getRegSpecType());
+			} catch (Exception e) {
+				logWarning("Couldn't set reg spec type for new manual payment record");
+				e.printStackTrace ();
+			}
 
 			int vatType = -1;
 			try{
@@ -636,9 +644,10 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 		Regulation reg = regSearchPanel.getRegulation(); 
 		if (reg != null && reg.getRegSpecType() != null){
-			table.add(new HiddenInput(PAR_REG_SPEC_TYPE, reg.getRegSpecType().getPrimaryKey().toString()));
-		}
-		
+			table.add(new HiddenInput(PAR_REG_SPEC_TYPE, reg.getRegSpecType().getPrimaryKey().toString()), 1, row);
+		} else if (iwc.isParameterSet (PAR_REG_SPEC_TYPE)) {
+			table.add(new HiddenInput(PAR_REG_SPEC_TYPE, iwc.getParameter (PAR_REG_SPEC_TYPE)), 1, row);
+		}		
 
 		String[] posting = new String[]{"",""};
 		String postingError = null;
