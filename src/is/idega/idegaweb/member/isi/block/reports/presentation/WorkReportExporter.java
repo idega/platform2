@@ -51,7 +51,7 @@ public class WorkReportExporter extends RegionalUnionAndYearSelector {
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 
-			Collection col = getWorkReportImportBusiness(iwc).exportToExcel(getRegionalUnionId(),getYear(),Integer.parseInt(templateId));
+			Collection col = getWorkReportImportBusiness(iwc).exportToExcel(getRegionalUnionId(),getYear(),Integer.parseInt(templateId),getBundle(iwc).getResourceBundle(iwc));
 			if (col != null && !col.isEmpty()) {
 				Iterator it = col.iterator();
 				while (it.hasNext()) {

@@ -65,6 +65,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.caching.Cache;
@@ -528,32 +529,25 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	 *  
 	 * @return A Collection of WorkReportExportFile data beans, one for each club in the union.
 	 */
-	public Collection exportToExcel(int regionalUnionId, int year, int templateId) throws WorkReportImportException {
-		System.out.println("reg = " + regionalUnionId);
-		System.out.println("year = " + year);
-		System.out.println("temp = " + templateId);
+	public Collection exportToExcel(int regionalUnionId, int year, int templateId, IWResourceBundle iwrb) throws WorkReportImportException {
 		Collection col = null;
 		WorkReportExportFile export = null;
 		try {
 			col = getWorkReportExportFileHome().findWorkReportExportFileByUnionIdAndYear(regionalUnionId, year);
 
 			if (col != null && !col.isEmpty()) {
-				System.out.println("Col not null from before");
 				return col;
 			}
 		}
 		catch (FinderException e) {
 		}
 
-		System.out.println("Creating new files");
 		try {
 			Group regUn = getGroupBusiness().getGroupByGroupID(regionalUnionId);
 			Collection clubs = getClubGroupsForRegionUnionGroup(regUn);
-			System.out.println("Got clubs");
 
 			Iterator it = clubs.iterator();
 			while (it.hasNext()) {
-				System.out.println("Going through groups");
 				Group club = (Group) it.next();
 
 				try {
@@ -564,13 +558,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					throw new WorkReportImportException("workreportimportexception.unable_to_create_excel_file");
 				}
 
-				System.out.println("Creating export file");
-
 				if (export != null) {
 					HSSFWorkbook workbook = getExcelWorkBookFromFileId(templateId);
 
 					String number = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
-					updateWorkbookWithLastYear(workbook, club, year, regUn, number);
+					updateWorkbookWithLastYear(workbook, club, year, regUn, number,iwrb);
 
 					StringBuffer fileName = new StringBuffer();
 					if (number != null && !"".equals(number)) {
@@ -581,8 +573,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					fileName.append("_");
 					fileName.append(Integer.toString(year));
 					fileName.append(".xls");
-
-					System.out.println("filename = " + fileName.toString());
 
 					try {
 						FileOutputStream out = new FileOutputStream(fileName.toString());
@@ -621,8 +611,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			throw new WorkReportImportException("workreportimportexception.unable_to_get_union");
 		}
 
-		System.out.println("Getting towards the end");
-
 		try {
 			col = getWorkReportExportFileHome().findWorkReportExportFileByUnionIdAndYear(regionalUnionId, year);
 			return col;
@@ -633,7 +621,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		}
 	}
 
-	private void updateWorkbookWithLastYear(HSSFWorkbook workbook, Group club, int year, Group regUn, String clubNumb) {
+	private void updateWorkbookWithLastYear(HSSFWorkbook workbook, Group club, int year, Group regUn, String clubNumb, IWResourceBundle iwrb) {
 		try {
 			WorkReport rep = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(((Integer) club.getPrimaryKey()).intValue(), year - 1);
 			if (rep != null) {
@@ -645,7 +633,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					Iterator it = members.iterator();
 					while (it.hasNext()) {
 						WorkReportMember memb = (WorkReportMember) it.next();
-						HSSFRow row = memberSheet.createRow((short)rowNr++);
+						HSSFRow row = memberSheet.createRow((short) rowNr++);
 						HSSFCell name = row.createCell(COLUMN_MEMBER_NAME);
 						HSSFCell ssn = row.createCell(COLUMN_MEMBER_SSN);
 						HSSFCell address = row.createCell(COLUMN_MEMBER_STREET_NAME);
@@ -659,10 +647,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						catch (SQLException e1) {
 							e1.printStackTrace();
 						}
-					}					
+					}
 				}
 			}
-			
+
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -673,72 +661,58 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			HSSFSheet board = workbook.getSheetAt(SHEET_BOARD_PART);
-			HSSFRow r = board.getRow((short)0);
-			HSSFCell c = r.getCell((short)2);
-			c.setCellValue(club.getName());
-			c = r.getCell((short)5);
-			String tmp = c.getStringCellValue();
-			c.setCellValue(tmp + " " + year);
-	
-			r = board.getRow((short)1);
-			c = r.getCell((short)2);
-			c.setCellValue(regUn.getAbbrevation());
-			if (clubNumb != null) { 
-				c = r.getCell((short)5);
-				c.setCellValue(clubNumb);
-			}
+			HSSFRow r1 = board.getRow((short) 0);
+			//club name
+			HSSFCell bClub = r1.getCell((short) 2);
+			bClub.setCellValue(club.getName());
 			
-			r = board.getRow((short)33);
-			c = r.getCell((short)2);
-			c.setCellValue(club.getName());
-			c = r.getCell((short)5);
-			tmp = c.getStringCellValue();
-			c.setCellValue(tmp + year);
-	
-			r = board.getRow((short)34);
-			c = r.getCell((short)2);
-			c.setCellValue(regUn.getAbbrevation());
-			if (clubNumb != null) { 
-				c = r.getCell((short)5);
-				c.setCellValue(clubNumb);
+			HSSFCell bYear = r1.getCell((short) 5);
+			String tmp = bYear.getStringCellValue();
+			bYear.setCellValue(tmp + " " + year);
+
+			HSSFRow r2 = board.getRow((short) 1);
+			HSSFCell bRegUn = r2.getCell((short) 2);
+			bRegUn.setCellValue(regUn.getShortName());
+			if (clubNumb != null) {
+				HSSFCell bClubNum = r2.getCell((short) 5);
+				bClubNum.setCellValue(clubNumb);
 			}
-			
+
 			HSSFSheet account = workbook.getSheetAt(SHEET_ACCOUNT_PART);
-			r = board.getRow((short)0);
-			c = r.getCell((short)2);
-			tmp = c.getStringCellValue();
-			c.setCellValue(tmp + " " + year);
-			c = r.getCell((short)9);
-			c.setCellValue(club.getName());
-							
-			r = board.getRow((short)30);
-			c = r.getCell((short)9);
-			c.setCellValue(club.getName());
-			
-			HSSFSheet memberSheet = workbook.getSheetAt(SHEET_MEMBER_PART);
-			r = memberSheet.getRow((short)0);
-			c = r.getCell((short)1);
-			c.setCellValue(club.getName());
-			
-			
+			HSSFRow r4 = account.getRow((short) 0);
+			HSSFCell aYear = r4.getCell((short) 2);
+			tmp = aYear.getStringCellValue();
+			aYear.setCellValue(tmp + " " + year);
+
 			HSSFSheet lookup = workbook.getSheetAt(SHEET_LOOKUP_PART);
-			//this.getGroupBusiness().
 			Collection leagues = getAllLeagueGroups();
+			String status[] = IWMemberConstants.STATUS;
+			int statusCount = status.length;
 			Iterator it = leagues.iterator();
 			int rowNr = 1;
 			while (it.hasNext()) {
-				Group league = (Group)it.next();
-				r = lookup.createRow((short)rowNr++);
-				c = r.createCell((short)0);
-				c.setCellValue(league.getAbbrevation()+"-"+league.getName());
+				Group league = (Group) it.next();
+				HSSFRow r = lookup.createRow((short) rowNr);
+				HSSFCell c = r.createCell((short) 0);
+				c.setCellValue(league.getShortName() + "-" + league.getName());
+				HSSFCell s = r.createCell((short)1);
+				if (rowNr <= statusCount) {
+					String statusString = iwrb.getLocalizedString(status[rowNr-1],status[rowNr-1]) + "-" + status[rowNr-1];
+					s.setCellValue(statusString);
+				}
+				else {
+					s.setCellValue("");
+				}
+				
+				rowNr++;
 			}
-			
+
 		}
-		catch(Exception e) {
-			
+		catch (Exception e) {
+
 		}
 	}
 
@@ -884,11 +858,35 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						/**
 						 * @TODO Palli is this ok?
 						 */
-						//						if (status != null && !"".equals(status.trim())) {
-						//							member.setStatus(status);
-						//						}
+						if (status != null && !"".equals(status.trim())) {
+							if (status.indexOf("-") != 0) {
+								status = status.substring(status.indexOf("-") + 1);
+								member.setStatus(status);
+							}
+						}
 
 						member.store();
+
+						WorkReportDivisionBoard board = null;
+						try {
+							board =
+								(WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(
+									workReportId,
+									((Integer) group.getPrimaryKey()).intValue());
+						}
+						catch (FinderException e) {
+							e.printStackTrace();
+							try {
+								board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
+								board.setWorkReportGroupID(((Integer) group.getPrimaryKey()).intValue());
+								board.setReportId(workReportId);
+								board.store();
+							}
+							catch (CreateException e1) {
+								e1.printStackTrace();
+								throw new WorkReportImportException("workreportimportexception.error_creating_division");
+							}
+						}
 					}
 				}
 				catch (EJBException e1) {

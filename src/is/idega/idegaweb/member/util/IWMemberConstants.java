@@ -82,5 +82,5 @@ public class IWMemberConstants {
 	public static final String MEMBER_STAND_IN = "stand_in";
 	public static final String MEMBER_CO_CHIEF = "co-chief";
 	
-  
+  public static final String[] STATUS = {"chairman","vice_chairman","cashier","secretary","board_member","extra_board","stand_in","co-chief"};
 }
