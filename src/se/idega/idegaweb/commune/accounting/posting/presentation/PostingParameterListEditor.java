@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.29 2003/10/10 07:42:45 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.30 2003/10/21 23:22:50 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.core.builder.data.ICPage;
 import com.idega.user.data.User;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DropdownMenu;
@@ -46,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.29 2003/10/10 07:42:45 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.30 2003/10/21 23:22:50 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -244,7 +245,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	}
 
 	private void closeMe(IWContext iwc) {
-		iwc.forwardToIBPage(getParentPage(), _responsePage);
+		String backUrl = BuilderLogic.getInstance().getIBPageURL(iwc, ((Integer)_responsePage.getPrimaryKey()).intValue());
+		backUrl += 	"&"	+ PostingParameterList.PARAM_RETURN_FROM_DATE + "=" + 
+						iwc.getParameter(PostingParameterList.PARAM_RETURN_FROM_DATE)+
+					"&"	+ PostingParameterList.PARAM_RETURN_TO_DATE + "=" + 
+						iwc.getParameter(PostingParameterList.PARAM_RETURN_TO_DATE);
+		getParentPage().setToRedirect(backUrl);
 	}
 	 
 	/*
@@ -279,10 +285,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 		app.setSearchPanel(topPanel);
 		app.setMainPanel(postingForm);
 		app.setButtonPanel(buttonPanel);
-		add(app);		
-		if (error.length() != 0) {
-			add(getSmallErrorText(error));
+		if(iwc.isParameterSet(PostingParameterList.PARAM_RETURN_FROM_DATE)) {
+			app.addHiddenInput(PostingParameterList.PARAM_RETURN_FROM_DATE, iwc.getParameter(PostingParameterList.PARAM_RETURN_FROM_DATE));
 		}
+		if(iwc.isParameterSet(PostingParameterList.PARAM_RETURN_TO_DATE)) {
+			app.addHiddenInput(PostingParameterList.PARAM_RETURN_TO_DATE, iwc.getParameter(PostingParameterList.PARAM_RETURN_TO_DATE));
+		}
+		add(app);		
 	}
 
 	/*
@@ -296,6 +305,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 		Table table = new Table();
 		table.setWidth("75%");
+		int row = 1;
 		String userName = "";
 		User user = iwc.getCurrentUser();
 		
@@ -308,23 +318,32 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 		String from = formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4);
 		String to = formatDate(pp != null ? pp.getPeriodeTo() : dd, 4);
+		if(hasError()) {
+			if (_errorText.length() != 0) {
+				table.add(getErrorText(_errorText), 1, row);
+				table.mergeCells(1, row, 4, row);
+				row++;
+			}
+		}
 
-		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
+		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,row);
 		table.add(getTextInput(PARAM_PERIOD_FROM, 
 				(pp != null ? from : 
-				(String) _pMap.get(PARAM_PERIOD_FROM)), 40, 4), 2, 1);
+				(String) _pMap.get(PARAM_PERIOD_FROM)), 40, 4), 2, row);
 	
-		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
+		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,row);
 		table.add(getTextInput(PARAM_PERIOD_TO, 
 				(pp != null ? to : 
-				(String) _pMap.get(PARAM_PERIOD_TO)), 40, 4), 4, 1);
+				(String) _pMap.get(PARAM_PERIOD_TO)), 40, 4), 4, row);
+		
+		row++;
 
-		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
+		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,row);
 		String dt = formatDate(pp != null ? pp.getChangedDate(): rightNow, 6);
-		table.add(getText(pp != null ? dt : ""), 2, 2);
+		table.add(getText(pp != null ? dt : ""), 2, row);
 
-		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
-		table.add(getText(pp != null ? pp.getChangedSign() : ""), 4, 2);
+		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,row);
+		table.add(getText(pp != null ? pp.getChangedSign() : ""), 4, row);
 		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
 		if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 			table.add(new HiddenInput(PARAM_MODE_COPY, ""+iwc.getParameter(PARAM_MODE_COPY)));
@@ -651,6 +670,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		menu.addMenuElementFirst("0", localize(KEY_COM_BEL_HEADER_ONE, "Välj Kommuntillhörighet"));
 		menu.setSelectedElement(refIndex);
 		return menu;
+	}
+
+	private boolean hasError() {
+		return _errorText.length() == 0 ? false : true;
 	}
 
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.24 2003/10/10 00:51:40 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.25 2003/10/21 23:22:50 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.24 2003/10/10 00:51:40 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.25 2003/10/21 23:22:50 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -85,6 +85,8 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String PARAM_MODE_COPY = "mode_copy";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
+	public final static String PARAM_RETURN_FROM_DATE = "return_from_date";
+	public final static String PARAM_RETURN_TO_DATE = "return_to_date";
 	private final static String PARAM_DELETE_ID = "param_delete_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 
@@ -158,19 +160,7 @@ public class PostingParameterList extends AccountingBlock {
 	 */	
 	private void viewForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
-		
-		if (iwc.isParameterSet(PARAM_FROM)) {
-			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
-		} else{
-			_currentFromDate = parseDate("2001-01-01");
-		}
-		
-		if (iwc.isParameterSet(PARAM_TO)) {
-			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
-		} else {
-			_currentToDate = parseDate("2009-01-01");
-		}
-
+		setupDefaultDates(iwc);
 		app.setLocalizedTitle(KEY_HEADER, "Konteringlista");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getPostingTable(iwc));
@@ -205,7 +195,12 @@ public class PostingParameterList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_EDIT, "", 9);
 		list.setLocalizedHeader(KEY_COPY, "", 10);
 		list.setLocalizedHeader(KEY_REMOVE, "", 11);
-		
+
+		String tod = iwc.isParameterSet(PARAM_TO) ? 
+				iwc.getParameter(PARAM_TO) : iwc.getParameter(PARAM_RETURN_TO_DATE);  
+		String fromd = iwc.isParameterSet(PARAM_FROM) ? 
+				iwc.getParameter(PARAM_FROM) : iwc.getParameter(PARAM_RETURN_FROM_DATE);  
+
 		try {
 			pBiz = getPostingBusiness(iwc);
 			Collection items = pBiz.findPostingParametersByPeriode(_currentFromDate, _currentToDate);
@@ -215,8 +210,9 @@ public class PostingParameterList extends AccountingBlock {
 					PostingParameters p = (PostingParameters) iter.next();
 					Link link = getLink(formatDate(p.getPeriodeFrom(), 4) + "-" + formatDate(p.getPeriodeTo(), 4),
 										 PARAM_EDIT_ID, p.getPrimaryKey().toString());
-					
 					link.setPage(_editPage);
+					link.addParameter(PARAM_RETURN_FROM_DATE, fromd);
+					link.addParameter(PARAM_RETURN_TO_DATE, tod);
 					list.add(link);
 
 					if (p.getActivity() == null) {
@@ -253,9 +249,6 @@ public class PostingParameterList extends AccountingBlock {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					}
 
-					// Check this out
-					// added a new thingy in the business getting a specific fields length
-					// Its useful (Kelly)
 					int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
 					list.add(p.getPostingString().substring(0, accountLength));
 					list.add(p.getDoublePostingString().substring(0, accountLength));
@@ -263,12 +256,16 @@ public class PostingParameterList extends AccountingBlock {
 
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
+					edit.addParameter(PARAM_RETURN_FROM_DATE, fromd);
+					edit.addParameter(PARAM_RETURN_TO_DATE, tod);
 					edit.setPage(_editPage);
 					list.add(edit);
 					
 					Link copy = new Link(getCopyIcon(localize(KEY_BUTTON_COPY, "Kopiera")));
 					copy.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
 					copy.addParameter(PARAM_MODE_COPY, "1");
+					edit.addParameter(PARAM_RETURN_FROM_DATE, fromd);
+					edit.addParameter(PARAM_RETURN_TO_DATE, tod);
 					copy.setPage(_editPage);
 					list.add(copy);
 
@@ -314,6 +311,41 @@ public class PostingParameterList extends AccountingBlock {
 		table.add(toDate, 3, 1);
 		return table;
 	}
+
+
+	private void setupDefaultDates(IWContext iwc) { 
+	
+		if (iwc.isParameterSet(PARAM_FROM)) {
+			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
+		} else {
+			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
+					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : getFlattenedTodaysDate();
+		}
+			
+		if (iwc.isParameterSet(PARAM_TO)) {
+			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
+		} else {
+			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
+					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
+		}
+			
+		if(_currentToDate == null) {
+			_currentToDate = parseDate("9999-12-31");
+		}
+		if(_currentFromDate == null) {
+			_currentFromDate = getFlattenedTodaysDate();
+		}
+		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
+		_currentToDate = parseDate(formatDate(_currentToDate, 4));
+	}
+	
+	private Date getFlattenedTodaysDate() {
+		Date date = new Date(System.currentTimeMillis());
+		String dd = formatDate(date, 4);
+		date = parseDate(dd.substring(0,2)+"01");
+		return date;
+	}
+
 
 	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);

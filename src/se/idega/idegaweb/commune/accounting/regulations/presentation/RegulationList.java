@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.12 2003/10/14 21:28:26 kjell Exp $
+ * $Id: RegulationList.java,v 1.13 2003/10/21 23:22:50 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,8 +22,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
-//import com.idega.block.school.business.SchoolBusiness;
-//import com.idega.block.school.data.SchoolCategory;
 
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -41,15 +39,14 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.12 2003/10/14 21:28:26 kjell Exp $
+ * $Id: RegulationList.java,v 1.13 2003/10/21 23:22:50 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RegulationList extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
-	//private final static int ACTION_EDIT = 1;
 	private final static int ACTION_DELETE = 1;
 	private final static String PP = "cacc_regulation_list"; // Parameter prefix 
 
@@ -58,8 +55,6 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_CONDITION_TYPE = PP + "condition_type";
 	private final static String KEY_CONDITION_ORDER = PP + "condition_order";
 	private final static String KEY_REG_SPEC_TYPE = PP + "reg_specification_type";
-	//private final static String KEY_COPY = PP + "copy";
-	//private final static String KEY_EDIT = PP + "edit";
 	private final static String KEY_CLICK_REMOVE = PP + "click_to_remove";
 	private final static String KEY_HEADER_OPERATION = PP + "operation_header"; 
 	private final static String KEY_HEADER_PAYMENT_FLOW_TYPE = PP + "payment_flow_type_header"; 
@@ -67,7 +62,6 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_HEADER = PP + "header";
 	private final static String KEY_BUTTON_COPY = PP + "button_copy";
 	private final static String KEY_BUTTON_EDIT = PP + "button_edit";
-//	private final static String KEY_MENU_OPERATION_HEADER = PP + "menu_operation_header"; 
 	private final static String KEY_MENU_SORTNAME_HEADER = PP + "menu_sortname_header"; 
 	private final static String KEY_MENU_SORTPERIODE_HEADER = PP + "menu_sortperiode_header"; 
 	private final static String KEY_NEW = PP + "new";
@@ -85,14 +79,15 @@ public class RegulationList extends AccountingBlock {
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_NEW = "param_button_new";
 	private final static String PARAM_SEARCH = "param_button_search";
-	public final static String PARAM_SELECTOR_OPERATION = "param_sel_operation";
-	public final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_sel_payment_flow_type";
-	public final static String PARAM_RETURN_FROM_DATE = "return_from_date";
-	public final static String PARAM_RETURN_TO_DATE = "return_to_date";
 	private final static String PARAM_SELECTOR_SORT_BY = "param_sel_sort_by";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
 	private final static String PARAM_MODE_COPY = "mode_copy";
+
+	public final static String PARAM_SELECTOR_OPERATION = "param_sel_operation";
+	public final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_sel_payment_flow_type";
+	public final static String PARAM_RETURN_FROM_DATE = "return_from_date";
+	public final static String PARAM_RETURN_TO_DATE = "return_to_date";
 
 
 	
@@ -175,37 +170,12 @@ public class RegulationList extends AccountingBlock {
 			_currentOperation = _currentOperation == null ? "" : _currentOperation;
 		} catch (RemoteException e) {}
 
-
-//		_currentOperation = iwc.isParameterSet(PARAM_SELECTOR_OPERATION) ? 
-//				iwc.getParameter(PARAM_SELECTOR_OPERATION) : "0";
-
 		_currentFlowType = iwc.isParameterSet(PARAM_SELECTOR_PAYMENT_FLOW_TYPE) ? 
 				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)) : 1;
 		_currentSortBy = iwc.isParameterSet(PARAM_SELECTOR_SORT_BY) ? 
 				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_SORT_BY)) : 1;
 		
-		if (iwc.isParameterSet(PARAM_FROM)) {
-			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
-		} else {
-			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : getFlattenedTodaysDate();
-		}
-		
-		if (iwc.isParameterSet(PARAM_TO)) {
-			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
-		} else {
-			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
-		}
-		
-		if(_currentToDate == null) {
-			_currentToDate = parseDate("9999-12-31");
-		}
-		if(_currentFromDate == null) {
-			_currentFromDate = getFlattenedTodaysDate();
-		}
-		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
-		_currentToDate = parseDate(formatDate(_currentToDate, 4));
+		setupDefaultDates(iwc);
 		
 		app.setLocalizedTitle(KEY_HEADER, "Regelverk");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -327,8 +297,6 @@ public class RegulationList extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 3);
 		table.add(new OperationalFieldsMenu(), 2, 1);
 		
-//		table.add(getOperationalFieldDropdownMenu(PARAM_SELECTOR_OPERATION, _currentOperation), 2, 1);
-//		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_OPERATION, _currentOperation), 2, 1);
 		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, _currentFlowType), 2, 2);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 3);
 
@@ -367,30 +335,6 @@ public class RegulationList extends AccountingBlock {
 		return (DropdownMenu) getStyledInterface(menu);
 	}
 
-/*
-	/*
-	 * Generates a DropDownSelector for Main operation (Huvudverksamhet) 
-	 * from the school framework 
-	 * @see com.idega.block.school.data.SchoolCategory#
-	 * @param iwc Idega Web Context 
-	 * @param name HTML Parameter ID for this selector
-	 * @param refIndex The initial position to set the selector to 
-	 * @return the drop down menu
-	 */
-/*
-	private DropdownMenu mainOperationSelector(IWContext iwc, String name, String refIndex) {
-		
-		DropdownMenu menu = null;
-		try {
-			menu = (DropdownMenu) getStyledInterface(
-					getDropdownMenuLocalized(name, getSchoolBusiness(iwc).getSchoolCategories(),"getLocalizationKey"));
-		} catch (Exception e) {
-		}
-		menu.addMenuElementFirst("0", localize(KEY_MENU_OPERATION_HEADER, "Välj Huvudverksamhet"));
-		menu.setSelectedElement(refIndex);
-		return menu;
-	}
-*/
 
 	/*
 	 * Generates a DropDownSelector for Payment flow type
@@ -413,44 +357,37 @@ public class RegulationList extends AccountingBlock {
 		return menu;
 	}
 
-
-	/*
-	 * Returns a DropdownMenu for operational fields. 
-	 */
-	/*
-	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
-		menu.addMenuElement("", localize(KEY_MENU_OPERATION_HEADER, "Välj huvudverksamhet"));
-		try {
-			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
-			if (c != null) {
-				Iterator iter = c.iterator();
-				while (iter.hasNext()) {
-					SchoolCategory sc = (SchoolCategory) iter.next();
-					String id = sc.getPrimaryKey().toString();
-					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
-				}
-				if (operationalField != null) {
-					menu.setSelectedElement(operationalField);
-				}
-			}		
-		} catch (Exception e) {
-			add(new ExceptionWrapper(e));
-		}
-		return menu;	
-	}
-
-*/
-
-//	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
-//		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-//	}
-
 	private Date getFlattenedTodaysDate() {
 		Date date = new Date(System.currentTimeMillis());
 		String dd = formatDate(date, 4);
 		date = parseDate(dd.substring(0,2)+"01");
 		return date;
+	}
+
+	private void setupDefaultDates(IWContext iwc) { 
+	
+		if (iwc.isParameterSet(PARAM_FROM)) {
+			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
+		} else {
+			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
+					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : getFlattenedTodaysDate();
+		}
+			
+		if (iwc.isParameterSet(PARAM_TO)) {
+			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
+		} else {
+			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
+					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
+		}
+			
+		if(_currentToDate == null) {
+			_currentToDate = parseDate("9999-12-31");
+		}
+		if(_currentFromDate == null) {
+			_currentFromDate = getFlattenedTodaysDate();
+		}
+		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
+		_currentToDate = parseDate(formatDate(_currentToDate, 4));
 	}
 
 
