@@ -3,7 +3,9 @@ package se.idega.idegaweb.commune.presentation;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import com.idega.business.IBOLookup;
@@ -23,6 +25,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.Age;
 
 /**
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -40,6 +43,8 @@ public class CitizenChildren extends CommuneBlock {
 	private static final String prmChildSSN = "comm_child_ssn";
 	private String prmSubmitName = "submit_cits_child";
 	private boolean showSSNSearchForm = false;
+	private boolean showOutOfRangeChildren =true;
+	private int fromAge =-1, toAge = 1000;
 
 
 	public CitizenChildren() {
@@ -104,14 +109,29 @@ public class CitizenChildren extends CommuneBlock {
 		int row = 1;
 		Collection childs = getChilds(iwc, this.user);
 		if (!childs.isEmpty()) {
-			java.util.Iterator iter = childs.iterator();
-			User user;
+			Iterator iter = childs.iterator();
+			User child;
 			RadioButton rad;
+			ArrayList outOfRangeChilds = new ArrayList();
 			while (iter.hasNext()) {
-				user = (User) iter.next();
-				rad = new RadioButton(prmChildId, ((Integer) user.getPrimaryKey()).toString());
-				T.add(getChildLink(user), 1, row);
-				row++;
+				child = (User) iter.next();
+				Age age = new Age(child.getDateOfBirth());
+				if(age.getYears() <= toAge && age.getYears() >=fromAge){
+					//rad = new RadioButton(prmChildId, ((Integer) user.getPrimaryKey()).toString());
+					T.add(getChildLink(user), 1, row);
+					row++;
+				}
+				else{
+					outOfRangeChilds.add(child);
+				}
+			}
+			if(showOutOfRangeChildren && !outOfRangeChilds.isEmpty()){
+				T.add(getHeader(iwrb.getLocalizedString("citizen_children.out_of_range_childs","Children out of range:")),1,row);
+				Iterator iter2 = outOfRangeChilds.iterator();
+				while(iter.hasNext()){
+					child = (User) iter.next();
+					T.add(child.getName(),1,row++);
+				}
 			}
 
 		}
@@ -168,5 +188,22 @@ public class CitizenChildren extends CommuneBlock {
 	 **/
 	public void setShowSSNSearchForm( boolean showForm){
 		this.showSSNSearchForm = showForm;
+	}
+	
+	/**
+	 * Sets if the component is to set children age range.
+	 * <br>This defaults to the range -1 to 1000
+	 **/
+	public void setAgeRange(int from,int to){
+		this.fromAge = from;
+		this.toAge = to;
+	}
+	
+	/**
+	 * Sets if the component is to show the children that dont fit specified range of age.
+	 * <br>This defaults to true
+	 **/
+	public void setShowOutOfRangeChilds(boolean show){
+		this.showOutOfRangeChildren = show;
 	}
 }
