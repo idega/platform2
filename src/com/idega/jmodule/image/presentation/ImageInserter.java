@@ -65,6 +65,11 @@ public ImageInserter(String imSessionImageName) {
   this.sHiddenInputName = imSessionImageName;
 }
 
+public ImageInserter(String imSessionImageName, boolean hasUseBox) {
+  this(imSessionImageName);
+  setHasUseBox(hasUseBox);
+}
+
 public ImageInserter(int imageId, String imSessionImageName) {
   this.imageId=imageId;
   this.imSessionImageName=imSessionImageName;
