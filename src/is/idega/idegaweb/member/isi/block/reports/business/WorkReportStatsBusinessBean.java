@@ -3422,6 +3422,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			age2 =age1;
 		}
 		
+		System.out.println("showClubs=" + showClubs + ", showPlayers=" + showPlayers + ", showMembers=" + showMembers + ", gender=" + gender + ", age1=" + age1 + ", age2=" + age2);
+		
 		boolean filterByAge = (age1==0 && age2==123);
 		
 		//initialize stuff
@@ -3468,6 +3470,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//String cName = report.getGroupName();
 			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
 			String cName = report.getGroupName();
+			
+			System.out.println("Handling " + regionalUnionIdentifier + "-" + cName);
 
 			//fetch the stats or initialize for this regional union (i.e. the one associated with regionalUnionIdentifier)
 			//Map clubMap = (Map) regionalUnionsClubMap.get(regionalUnionIdentifier);
@@ -3480,6 +3484,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				ruPlayers.addData(clubName, "");
 				ruPlayers.addData(countType, "a - players");
 				ruPlayers.addData(count, new Integer(0));
+				System.out.println("Addin player count for ru " + regionalUnionIdentifier);
 				reportCollection.add(ruPlayers);
 			}
 			if(ruMembers==null && showMembers) {
@@ -3489,6 +3494,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				ruMembers.addData(clubName, "");
 				ruMembers.addData(countType, "a - members");
 				ruMembers.addData(count, new Integer(0));
+				System.out.println("Addin member count for ru " + regionalUnionIdentifier);
 				reportCollection.add(ruMembers);
 			}
 			
