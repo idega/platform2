@@ -122,7 +122,7 @@ public class TournamentResultsDetailed extends JModuleObject {
             System.err.println("v > 0.....SIZE() = "+v.size());
             ResultsCollector rip = (ResultsCollector) v.get(0);
             if (rip != null) {
-                rip.getStrokesInfo();
+                rip.calculateCompareInfo();
                 System.err.println("Rip != null.....DIFF = "+rip.getDifference());
                 System.err.println("Rip != null.....TotalStrokes = "+rip.getTotalStrokes());
                 System.err.println("Rip != null.....Holes = "+rip.getHoles());
