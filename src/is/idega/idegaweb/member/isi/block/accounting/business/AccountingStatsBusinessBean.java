@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -620,8 +621,40 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
+		Comparator dateComparator = new Comparator() {
+
+			public int compare(Object arg0, Object arg1) {
+				int comp = 0;
+				try {
+					String[] sta0 = ((String) arg0).trim().split(" ");
+					String[] sta1 = ((String) arg1).split(" ");
+					String month0 = sta0[1];
+					String month1 = sta1[1];
+					String year0 = sta0[2];
+					String year1 = sta1[2];
+					
+					comp = year0.compareTo(year1);
+					if(comp == 0) {
+						int i0 = monthList.indexOf(month0.substring(0, 3));
+						int i1 = monthList.indexOf(month1.substring(0, 3));
+						comp = i0 - i1;
+					}
+					if(comp == 0) {
+						int day0 = Integer.parseInt(sta0[0].substring(0, sta0[0].length()-1)); // substring to take the dot away
+						int day1 = Integer.parseInt(sta1[0].substring(0, sta1[0].length()-1));
+						comp = day0 - day1;
+					}
+				} catch(Exception e) {
+				}
+				return comp;
+			}
+			
+			private List monthList = Arrays.asList(new String[] {"jan", "feb", "mar", "apr", "maí", "jún", "júl", "ágú", "sep", "okt", "nóv", "des"});
+		};
+		
 		ReportableField[] sortFields = new ReportableField[] {divisionField, entryDateField, groupField, personalIDField };
-		Comparator comparator = new FieldsComparator(sortFields);
+		Comparator[] comparators = new Comparator[] {null, dateComparator, null, null};
+		Comparator comparator = new FieldsComparator(sortFields, comparators);
 		Collections.sort(reportCollection, comparator);
 		
 		//finished return the collection
