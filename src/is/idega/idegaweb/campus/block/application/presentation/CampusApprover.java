@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.24 2002/05/03 00:05:35 palli Exp $
+ * $Id: CampusApprover.java,v 1.25 2002/05/17 14:09:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -402,8 +402,12 @@ public class CampusApprover extends Block {
       T.setCellpadding(2);
       T.setCellspacing(1);
     */
-    System.out.println("sGlobalStatus = " + sGlobalStatus);
-    List L = ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId,sGlobalStatus,sGlobalOrder);
+    List L = null;
+    if (sGlobalOrder != null && !sGlobalOrder.equals("-1")) {
+      L = ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId,sGlobalStatus,sGlobalOrder);
+    } else {
+      L = ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId,sGlobalStatus,null);
+    }
 
     if(L != null){
       ListIterator iterator = L.listIterator();
@@ -1557,14 +1561,14 @@ public class CampusApprover extends Block {
     DropdownMenu status = statusDrop("global_status",sGlobalStatus);
     DropdownMenu order = orderDrop("global_order",sGlobalOrder);
     SubmitButton New = new SubmitButton("new","New");
-    SubmitButton New2 = new SubmitButton("new2","New transfer");
+//    SubmitButton New2 = new SubmitButton("new2","New transfer");
     drp.setToSubmit();
     status.setToSubmit();
     order.setToSubmit();
     Edit.setStyle(status);
     Edit.setStyle(order);
     Edit.setStyle(New);
-    Edit.setStyle(New2);
+//    Edit.setStyle(New2);
     DataTable T = new DataTable();
     T.addTitle(iwrb.getLocalizedString("filter","Filter"));
     T.setTitlesHorizontal(true);
@@ -1580,7 +1584,7 @@ public class CampusApprover extends Block {
     T.add(order,col++,row);
     if(iSubjectId > 0) {
       T.add(New,col++,row);
-      T.add(New2,col++,row);
+//      T.add(New2,col++,row);
     }
     myForm.add(T);
 
@@ -1654,6 +1658,7 @@ public class CampusApprover extends Block {
     DropdownMenu drp = new DropdownMenu(name);
     Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
 
+    drp.addMenuElement("-1",iwrb.getLocalizedString("submitted","Submitted"));
     drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(),iwrb.getLocalizedString("name","Name"));
     drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(),iwrb.getLocalizedString("ssn","Socialnumber"));
     drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getLegalResidenceColumnName(),iwrb.getLocalizedString("legal_residence","Legal Residence"));
