@@ -262,91 +262,92 @@ private String getHTMLString(){
 private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
     ImageEntity image = new ImageEntity(imageId);
-    String texti = image.getText();
-    String link = image.getLink();
-    String name = image.getName();
-    if( name != null ) setName(name);
+    if( (image!=null) && (image.getID()!=-1) ){//begin debug
+      String texti = image.getText();
+      String link = image.getLink();
+      String name = image.getName();
+      if( name != null ) setName(name);
 
 
-    String width = image.getWidth();
-    String height = image.getHeight();
+      String width = image.getWidth();
+      String height = image.getHeight();
 
-    if(!limitImageWidth){
-      if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
-        setWidth(width);
+      if(!limitImageWidth){
+        if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
+          setWidth(width);
+        }
+        if( (height!=null) && (!height.equalsIgnoreCase("")) && (!height.equalsIgnoreCase("-1")) ) {
+          setHeight(height);
+        }
       }
-      if( (height!=null) && (!height.equalsIgnoreCase("")) && (!height.equalsIgnoreCase("-1")) ) {
-        setHeight(height);
-      }
-    }
-    else{
-      setWidth(maxImageWidth);
-    }
-
-    if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
-      Table imageTable = new Table(1, 2);
-      imageTable.setAlignment("center");
-      imageTable.setAlignment(1,1,"center");
-      imageTable.setAlignment(1,2,"left");
-      imageTable.setVerticalAlignment("top");
-      //imageTable.setCellpadding(0);
-      //imageTable.setCellspacing(0);
-      imageTable.setColor(1,2,textBgColor);
-      String sWidth = getWidth();
-
-      if( (sWidth!=null) && (!sWidth.equalsIgnoreCase(""))  && (!limitImageWidth) ){
-        imageTable.setWidth(sWidth);
-      }
-      else if( limitImageWidth ){
-        imageTable.setWidth(maxImageWidth);
+      else{
+        setWidth(maxImageWidth);
       }
 
-      Text imageText = new Text(texti);
-      imageText.setFontSize(1);
+      if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
+        Table imageTable = new Table(1, 2);
+        imageTable.setAlignment("center");
+        imageTable.setAlignment(1,1,"center");
+        imageTable.setAlignment(1,2,"left");
+        imageTable.setVerticalAlignment("top");
+        //imageTable.setCellpadding(0);
+        //imageTable.setCellspacing(0);
+        imageTable.setColor(1,2,textBgColor);
+        String sWidth = getWidth();
 
-      if ( (link!=null) && (!"".equalsIgnoreCase(link)) ){//has a link
-        Link textLink = new Link(imageText,link);
-        textLink.setTarget("_new");
-        textLink.setFontSize(1);
-        imageTable.add(textLink, 1, 2);//add the text with the link on it
+        if( (sWidth!=null) && (!sWidth.equalsIgnoreCase(""))  && (!limitImageWidth) ){
+          imageTable.setWidth(sWidth);
+        }
+        else if( limitImageWidth ){
+          imageTable.setWidth(maxImageWidth);
+        }
 
-        //should we add the image with a link? or just the image
-        if( zoomView ){
+        Text imageText = new Text(texti);
+        imageText.setFontSize(1);
+
+        if ( (link!=null) && (!"".equalsIgnoreCase(link)) ){//has a link
+          Link textLink = new Link(imageText,link);
+          textLink.setTarget("_new");
+          textLink.setFontSize(1);
+          imageTable.add(textLink, 1, 2);//add the text with the link on it
+
+          //should we add the image with a link? or just the image
+          if( zoomView ){
+            Link imageLink = new Link(getHTMLString());
+            imageLink.addParameter("image_id",imageId);
+            imageTable.add(imageLink, 1, 1);
+          }
+          else if( (!zoomView) && (linkOnImage) ) {
+            Link imageLink = new Link(getHTMLString(), link);
+            imageLink.setTarget("_new");
+            imageTable.add(imageLink, 1, 1);
+          }
+          else imageTable.add(getHTMLString(),1,1);
+
+        }
+        else{//or no link
+
+          if( zoomView ){
+            Link imageLink = new Link(getHTMLString());
+            imageLink.addParameter("image_id",imageId);
+            imageTable.add(imageLink, 1, 1);
+          }
+          else imageTable.add(getHTMLString(),1,1);
+
+          imageTable.add(imageText, 1, 2);
+        }
+
+        imageTable.print(modinfo);
+      }
+      else  {
+        if(zoomView){
           Link imageLink = new Link(getHTMLString());
           imageLink.addParameter("image_id",imageId);
-          imageTable.add(imageLink, 1, 1);
+          imageLink.print(modinfo);
         }
-        else if( (!zoomView) && (linkOnImage) ) {
-          Link imageLink = new Link(getHTMLString(), link);
-          imageLink.setTarget("_new");
-          imageTable.add(imageLink, 1, 1);
-        }
-        else imageTable.add(getHTMLString(),1,1);
-
+        else print(getHTMLString());
       }
-      else{//or no link
-
-        if( zoomView ){
-          Link imageLink = new Link(getHTMLString());
-          imageLink.addParameter("image_id",imageId);
-          imageTable.add(imageLink, 1, 1);
-        }
-        else imageTable.add(getHTMLString(),1,1);
-
-        imageTable.add(imageText, 1, 2);
-      }
-
-      imageTable.print(modinfo);
-    }
-    else  {
-      if(zoomView){
-        Link imageLink = new Link(getHTMLString());
-        imageLink.addParameter("image_id",imageId);
-        imageLink.print(modinfo);
-      }
-      else print(getHTMLString());
-    }
-
+    }//end debug
   }
   catch(Exception e){
     e.printStackTrace(System.err);

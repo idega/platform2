@@ -32,12 +32,14 @@ public class InsertAd extends JModuleObject{
 		try {
 			ad = new Ad(ad_id);
 		}
-		catch (SQLException s) {
+		catch (Exception s) {
 			ad = new Ad(1);
 		}
-
-		image = new Image(ad.getImageID(true));
-		add(new Link(image,"/ads/bannerClicked.jsp?ad_id="+ad_id));
+                if( ad!=null ){
+		//image = new Image(ad.getImageID(true));
+                  image = new Image(ad.getImageID(false));//skip impressions
+                  add(new Link(image,"/ads/bannerClicked.jsp?ad_id="+ad_id));
+                }
 
 /*		if (isAdmin) {
 			Form adForm = new Form(new Window("gimmi",600,430,"/ads/banner.jsp"));
