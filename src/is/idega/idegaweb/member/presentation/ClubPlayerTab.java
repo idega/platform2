@@ -95,7 +95,7 @@ public class ClubPlayerTab extends UserGroupTab {
 		fieldValues.put(_unionFieldName, "");
 		fieldValues.put(_cplayFieldName, "");
 		fieldValues.put(_nameFieldName, "");
-		fieldValues.put(_competitionFieldName, "");
+		fieldValues.put(_competitionFieldName, new Boolean(false));
 		fieldValues.put(_coachesFieldName, "");
 	}
 
@@ -251,8 +251,7 @@ public class ClubPlayerTab extends UserGroupTab {
 				fieldValues.put(_cplayFieldName, flokkur);
 			if (name != null)
 				fieldValues.put(_nameFieldName, name);
-			if (comp != null)
-				fieldValues.put(_competitionFieldName, comp);
+			fieldValues.put(_competitionFieldName, new Boolean(comp!=null));
 			if (coach != null)
 				fieldValues.put(_coachesFieldName, coach);
 			
