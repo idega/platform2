@@ -1,5 +1,5 @@
 /*
- * $Id: PersonalIDHandler.java,v 1.1 2005/02/07 13:28:11 laddi Exp $
+ * $Id: PersonalIDHandler.java,v 1.2 2005/02/07 13:35:15 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.presentation.ui.TextInput;
 
 
 /**
- * Last modified: $Date: 2005/02/07 13:28:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 13:35:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PersonalIDHandler extends TextInput implements InputHandler {
 
@@ -70,7 +70,7 @@ public class PersonalIDHandler extends TextInput implements InputHandler {
 	 */
 	public Object getResultingObject(String[] value, IWContext iwc) throws Exception {
 		if (value != null && value.length > 0) {
-			return value[0];
+			return value[0].toString();
 		}
 		else
 			return null;
@@ -90,7 +90,7 @@ public class PersonalIDHandler extends TextInput implements InputHandler {
 	 * @see com.idega.business.InputHandler#convertSingleResultingObjectToType(java.lang.Object, java.lang.String)
 	 */
 	public Object convertSingleResultingObjectToType(Object value, String className) {
-		return value;
+		return value.toString();
 	}
 
 }
