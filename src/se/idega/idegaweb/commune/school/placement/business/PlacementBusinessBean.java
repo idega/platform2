@@ -1,5 +1,5 @@
 /*
- * $Id: PlacementBusinessBean.java,v 1.3 2004/10/19 10:33:42 thomas Exp $
+ * $Id: PlacementBusinessBean.java,v 1.1 2004/10/22 12:57:49 thomas Exp $
  * Created on Oct 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package se.idega.idegaweb.commune.school.accounting.business;
+package se.idega.idegaweb.commune.school.placement.business;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
