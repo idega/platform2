@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.12 2003/05/22 21:26:37 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.13 2003/05/23 08:06:16 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,8 +34,8 @@ import com.idega.user.data.User;
 public class ChildCareQueueBMPBean extends AbstractCaseBMPBean 
 	implements ChildCareQueue,Case {
 	private final static String ENTITY_NAME = "comm_childcare_queue";
-	private final static String CASE_CODE_KEY = "MBANBOP";
-	private final static String CASE_CODE_KEY_DESC = "Queue for child care";
+	private final static String CASE_CODE_KEY = "MBANQUE";
+	private final static String CASE_CODE_KEY_DESC = "Old queue for child care";
 	
 	protected final static String CONTRACT_ID = "contract_id";
 	protected final static String CHILD_ID = "child_id";
