@@ -357,7 +357,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public void savePayment(int userID, int distanceID, String payMethod, String amount) {
 		try {
 			RunHome runHome = (RunHome) getIDOHome(Run.class);
-			Collection runObjs = runHome.findRunByUserIDandDistanceID(userID,distanceID);
+			Collection runObjs = null;//runHome.findRunByUserIDandDistanceID(userID,distanceID);
 			if(runObjs != null) {
 				Iterator runIt = runObjs.iterator();
 				while(runIt.hasNext()) {
@@ -373,9 +373,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
+		//catch (FinderException e) {
+			//e.printStackTrace();
+		//}
 	}
 	public void savePaymentByUserID(int userID, String payMethod, String amount) {
 		try {
@@ -442,7 +442,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		Run run = null;
 		try {
 			RunHome runHome = (RunHome) getIDOHome(Run.class);
-			Collection runObjs = runHome.findRunByUserIDandDistanceID(userID,distanceID);
+			Collection runObjs = null;//runHome.findRunByUserIDandDistanceID(userID,distanceID);
 			if(runObjs != null) {
 				Iterator runIt = runObjs.iterator();
 				while(runIt.hasNext()) {
