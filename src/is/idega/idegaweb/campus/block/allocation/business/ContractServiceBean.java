@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.19 2004/06/28 10:51:12 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.20 2004/07/19 11:43:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -831,13 +831,27 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			contractDateTo = new IWTimestamp();
 			contractDateFrom = new IWTimestamp();
 		}
+		int years = contractDateTo.getYear()-contractDateFrom.getYear();
+		int months = contractDateTo.getMonth()-contractDateFrom.getMonth();
 		Date nextAvailable = getNextAvailableDate(apartment);
-		if (nextAvailable != null)
-			contractDateFrom = new IWTimestamp(nextAvailable.getTime());
-		return new Period(contractDateFrom.getDate(), contractDateFrom.getDate());
+		if (nextAvailable != null ){
+			IWTimestamp nextD = new IWTimestamp(nextAvailable.getTime());
+			if(nextD.isLaterThan(contractDateFrom) )
+				contractDateFrom = nextD;
+		}
+		if(years>0)
+			contractDateTo.setYear(contractDateFrom.getYear()+years);
+		
+		
+		return new Period(contractDateFrom.getDate(), contractDateTo.getDate());
 	}
+	
+	/**
+	 * Returns the first date that the given apartment can be rented from.
+	 * Contracts with getAllocateableStatuses() are checked.
+	 */
 	public Date getNextAvailableDate(Apartment apartment) {
-		ApartmentContracts apartmentContracts = new ApartmentContracts(apartment,getRentableStatuses());
+		ApartmentContracts apartmentContracts = new ApartmentContracts(apartment,getAllocateableStatuses());
 		Date nextAvailable = apartmentContracts.getNextDate();
 		// If apartment is not in contract table:
 		if (!apartmentContracts.hasContracts() && apartment.getUnavailableUntil() != null) {
@@ -929,8 +943,20 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		return map;
 	}
 	
+	/**
+	 * Returns statuses:  signed, ended,resigned and terminated.
+	 */
 	public String[] getRentableStatuses(){
 		String[] statuses = {ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
+				ContractBMPBean.statusTerminated};
+		return statuses;
+	}
+	
+	/**
+	 * Returns statuses: created,printed, signed, ended,resigned and terminated.
+	 */
+	public String[] getAllocateableStatuses(){
+		String[] statuses = {ContractBMPBean.statusCreated,ContractBMPBean.statusPrinted,ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
 				ContractBMPBean.statusTerminated};
 		return statuses;
 	}

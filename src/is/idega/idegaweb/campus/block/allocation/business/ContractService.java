@@ -48,4 +48,5 @@ public interface ContractService extends com.idega.business.IBOService
 	 public void finalizeGarbageContracts(java.sql.Date lastChangeDate)throws java.rmi.RemoteException;
 	 public ContractAccountApartmentHome getContractAccountApartmentHome() throws RemoteException;
 	 public String[] getRentableStatuses();
+	 public String[] getAllocateableStatuses();
 }
