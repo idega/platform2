@@ -21,7 +21,8 @@ import com.idega.block.trade.business.CurrencyBusiness;
 
 public class TradeBundleStarter implements IWBundleStartable,ActionListener{
 
-public static IWBundle bundle_;
+private IWBundle bundle_;
+private EventTimer timer;
 public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
 
   public TradeBundleStarter() {
@@ -29,7 +30,7 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
 
   public void start(IWBundle bundle){
     bundle_ = bundle;
-    EventTimer timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
+    timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
     timer.addActionListener(this);
     //Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
     // -- Fix for working properly on Interebase with entity-auto-create-on.
@@ -39,17 +40,29 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
 
   public void actionPerformed(ActionEvent event) {
     try{
-      if(event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)){
+      if (event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)) {
         CurrencyBusiness.getCurrencyMap(bundle_);
       }
     }
-    catch(com.idega.data.IDONoDatastoreError error){
+    catch (com.idega.data.IDONoDatastoreError error) {
       System.err.println("TradeBundleStarter.actionPerformed() Error: "+error.getMessage());
-    }catch (RemoteException re) {
+    }
+    catch (RemoteException re) {
       System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
-    }catch (Exception re) {
+    }
+    catch (Exception re) {
       System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
+      re.printStackTrace();
     }
   }
 
+	/**
+	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
+	 */
+	public void stop(IWBundle starterBundle) {
+		if (timer != null) {
+			timer.stop();
+			timer = null;
+		}
+	}
 }
