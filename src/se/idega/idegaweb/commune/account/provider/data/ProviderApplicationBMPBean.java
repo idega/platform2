@@ -6,9 +6,9 @@ import com.idega.block.process.data.*;
 /**
  * Title:        idegaWeb
  * Description:
- * Copyright:    Copyright (c) 2001
+ * Copyright:    Copyright (c) 2002
  * Company:      idega software
- * @author
+ * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
 
@@ -20,13 +20,17 @@ public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements P
   private static final String COLUMN_NAME="PROV_NAME";
   private static final String COLUMN_ADDRESS="PROV_ADDRESS";
   private static final String COLUMN_PLACES="PROV_PLACES";
-
+  private static final String COLUMN_PHONE="PROV_PHONE";
+  private static final String COLUMN_MANAGER_NAME="PROV_MANAGER_NAME";
 
   public void initializeAttributes() {
     addGeneralCaseRelation();
-    this.addAttribute(COLUMN_EMAIL,"Admin email",String.class);
+
     this.addAttribute(COLUMN_NAME,"Provider name",String.class);
     this.addAttribute(COLUMN_ADDRESS,"Provider address",String.class);
+    this.addAttribute(COLUMN_PHONE,"Telephone",String.class,30);
+    this.addAttribute(COLUMN_MANAGER_NAME,"Manager Name",String.class);
+    this.addAttribute(COLUMN_EMAIL,"Manager email",String.class);
     this.addAttribute(COLUMN_PLACES,"Provider places",Integer.class);
 
   }
@@ -72,5 +76,13 @@ public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements P
 
   public void setNumberOfPlaces(int places){
     this.setColumn(COLUMN_PLACES,places);
+  }
+
+  public String getManagerName(){
+    return this.getStringColumnValue(COLUMN_MANAGER_NAME);
+  }
+
+  public void setManagerName(String name){
+    this.setColumn(COLUMN_MANAGER_NAME,name);
   }
 }
