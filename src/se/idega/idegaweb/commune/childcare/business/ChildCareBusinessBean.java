@@ -437,7 +437,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			System.out.println("Got no users for provider " + application.getProviderId());
 	}
 
-	private void sendMessageToParents(ChildCareApplication application, String subject, String body) {
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
 		try {
 			User child = application.getChild();
 			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName()};
@@ -1018,6 +1018,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
+	
+	public Collection getOpenAndGrantedApplicationsByProvider(int providerId) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
+
+			return home.findAllCasesByProviderStatus(providerId, caseStatus);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+		
 
 	public Collection getAcceptedApplicationsByProvider(int providerID) throws RemoteException {
 		try {
