@@ -60,6 +60,9 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 		if(xmlFileID>0){
 			data.setXmlFileId(xmlFileID);
 		}
+		// name must be stored within the document because it is the identifier when using the query as input for
+		// another query
+		helper.setName(name);
 		data.setDocument(helper.createDocument());
 		data.setName(name);
 		ICFile query =  data.store();

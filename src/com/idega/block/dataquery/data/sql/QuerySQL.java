@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
 import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.block.dataquery.business.QueryFieldPart;
@@ -25,7 +27,7 @@ import com.idega.util.datastructures.HashMatrix;
  * @version 1.0
  * Created on May 30, 2003
  */
-public class QuerySQL {
+public class QuerySQL implements DynamicExpression {
   
   private final String DOT = ".";
   private final String ALIAS_PREFIX = "A_";
@@ -35,7 +37,7 @@ public class QuerySQL {
   
   // tablename : path : number
   private HashMatrix aliasMatrix = new HashMatrix();
-  private int aliasCounter = 0; 
+  private int counter = 0;
   
   // path (String)
   private Set entitiesUsedByField = new HashSet();
@@ -52,47 +54,126 @@ public class QuerySQL {
   // conditions
   private List conditions = new ArrayList();
   
-  private SelectStatement query = null;
+  private DynamicExpression query = null;
+  
+  private QuerySQL previousQuery = null;
+  private QuerySQL nextQuery = null;
+  
   // caching of table names
   private Map beanClassNameTableNameMap = new HashMap();
   
-  public void initialize(QueryHelper queryHelper) {
+  /** The specified query helper is the very last query in a sequence, that is the specified query can have one or more
+   * queries as source. 
+   * Sequence: first_query -> second_query -> ..... -> specified query helper
+   * To initialize the corresponding sql queries we have to go back to the very first query helper in the sequence but we
+   * are returning the corresponding sql query of the specified query helper that is the very last sql query is returned.
+   * first sql query -> second sql query -> ..... -> returned sql query
+   * Do not change the behaviour because you have to work with last sql query.
+   */ 
+  static public  QuerySQL getInstance(QueryHelper queryHelper, String uniqueIdentifier)	{
+  	// go back to the very first query helper
+  	QueryHelper currentQueryHelper = queryHelper;
+  	while (currentQueryHelper.hasPreviousQuery())	{
+  		currentQueryHelper = currentQueryHelper.previousQuery();
+  	}
+  	QuerySQL currentQuery = new QuerySQL(currentQueryHelper, uniqueIdentifier, 0, new TreeMap(), new HashMap(), null);
+  	// go forward to the very first query
+  	while(currentQuery.hasNextQuery())	{
+  		currentQuery = currentQuery.nextQuery();
+  	}
+  	return currentQuery;
+  }
+		
+  	
+  
+	private QuerySQL(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, QuerySQL previousQuery)	{
+  	initialize(queryHelper, uniqueIdentifier, counter, queryTablesNames,  entityQueryEntityMap, previousQuery);
+  }
+  
+  protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, QuerySQL previousQuery) {
+  	this.previousQuery = previousQuery;
+  	this.counter = counter;
   	name = queryHelper.getName();
-    try {
+  	// add all already existing table names
+  	beanClassNameTableNameMap.putAll(queryTablesNames);
+  	entityQueryEntity.putAll(entityQueryEntityMap);
+  	// create table name for this instance
+  	String myTableName = new StringBuffer("Q_").append(uniqueIdentifier).
+  	append("_").append(++counter).toString();
+  	// add the table name for this instance to the map
+  	beanClassNameTableNameMap.put(name, myTableName);
+  	QueryEntityPart queryEntity = new QueryEntityPart(name, name, name);
+  	entityQueryEntityMap.put(name, queryEntity);
+  	try {
       query = createQuery(queryHelper);
     }
     catch (IOException ex)  {
       query = null;
       System.err.println(ex.getMessage());
     }
+    // go to the next query
+    if (queryHelper.hasNextQuery())	{
+    	QueryHelper nextQueryHelper = queryHelper.nextQuery();
+    	QuerySQL querySQL = new QuerySQL(nextQueryHelper, uniqueIdentifier, this.counter , beanClassNameTableNameMap, entityQueryEntityMap ,this);
+    	// get the generated dynamic expression
+    	nextQuery = querySQL;
+    }	
+  }
+  
+  public boolean hasPreviousQuery()	{
+  	return previousQuery() != null;
+  }
+  
+  public boolean hasNextQuery()	{
+  	return nextQuery() != null;
+  }
+  
+  public QuerySQL nextQuery()	{
+  	return nextQuery;
+  }
+  
+  public QuerySQL previousQuery()	{
+  	return previousQuery;
   }
   
   public boolean isDynamic()	{
-  	return ((DynamicExpression) query).isDynamic();
+  	boolean isDynamic = ((DynamicExpression) query).isDynamic();
+  	if (isDynamic && hasPreviousQuery())	{
+  		return previousQuery().isDynamic();
+  	}
+  	return isDynamic;
   }
   
   public Map getIdentifierValueMap()	{
-  	return ((DynamicExpression) query).getIdentifierValueMap();
+  	Map myMap = ((DynamicExpression) query).getIdentifierValueMap();
+  	if (hasPreviousQuery()) 	{
+  		myMap.putAll(previousQuery().getIdentifierValueMap());
+  	}
+  	return myMap;
   }
   
-  public Map getIdentifierDescriptionValueMap()	{
-  	return ((DynamicExpression) query).getIdentifierDescriptionMap();
+  public Map getIdentifierDescriptionMap()	{
+  	Map myMap =((DynamicExpression) query).getIdentifierDescriptionMap();
+  	if (hasPreviousQuery()) {
+  		myMap.putAll(previousQuery().getIdentifierDescriptionMap());
+  	}
+  	return myMap;
   }
   
   public void setIdentifierValueMap(Map identifierValueMap) {
   	((DynamicExpression) query).setIdentifierValueMap(identifierValueMap);
+  	if (hasPreviousQuery())	{
+  		previousQuery().setIdentifierValueMap(identifierValueMap);
+  	}
   }
   
-  public String getSQLStatement() {
-    if (query == null)  {
-      return "";
-    }
-    else
-    {
-      return query.toSQLString();
-    }
+  /**
+   * Returns the corresponding sql statement
+   */
+  public String toSQLString() {
+  	return query.toSQLString();
   }
-  
+  	
   public List getDisplayNames() {
     List displayNames = new ArrayList();
     Iterator fieldOrderIterator = fieldOrder.iterator();
@@ -181,12 +262,11 @@ public class QuerySQL {
    		}
     }
     // set conditions (where clause)
-    int i = 0;
     Iterator conditionsIterator = conditions.iterator();
     while (conditionsIterator.hasNext())  {
       QueryConditionPart condition = (QueryConditionPart) conditionsIterator.next();
       // use the counter as identifier
-      String identifier = Integer.toString(i++);
+      String identifier = Integer.toString(++counter);
       CriterionExpression criterion = new CriterionExpression(condition, identifier, this);
       if (criterion.isValid()) {
       	// mark used entities
@@ -202,17 +282,17 @@ public class QuerySQL {
     List outerJoins = new ArrayList();
     while (entityIterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) entityIterator.next();
-      String path = queryEntity.getPath();
+     	String path = queryEntity.getPath();
       // add only entities that are actually used
       if (entitiesUsedByCriterion.contains(path))	{
       	// if an entity is used by a criterion use strong conditions, that is do not use left outer join
       	PathCriterionExpression pathCriterionExpression = new PathCriterionExpression(queryEntity, this);
-        if (pathCriterionExpression.isValid())	{
+       	if (pathCriterionExpression.isValid())	{
       		List joins = pathCriterionExpression.getInnerJoins();
       		innerJoins.addAll(joins);
       		if (pathCriterionExpression.hasCriteria())	{
       			// if the path contains only one entity there are't any criterias 
-	        	query.addWhereClause(pathCriterionExpression);
+	       		query.addWhereClause(pathCriterionExpression);
       		}
         }
       }
@@ -250,7 +330,15 @@ public class QuerySQL {
     return query;
   }
       
-    
+
+	public void addTableNamesForQueries(Map queryNameTableName)	{
+		beanClassNameTableNameMap.putAll(queryNameTableName);
+	}
+	
+	public String getMyTableName()	{
+		return (String) beanClassNameTableNameMap.get(name);
+	}
+		
  
   protected String getTableName(String beanClassName) {
     // performance improvement
@@ -292,7 +380,7 @@ public class QuerySQL {
 		String alias = (String) aliasMatrix.get(tableName, entityPath);
 		if (alias == null)	{
 			StringBuffer buffer = new StringBuffer(ALIAS_PREFIX);
-			buffer.append(++aliasCounter);
+			buffer.append(++counter);
 			alias = buffer.toString();
 			aliasMatrix.put(tableName, entityPath, alias);
 		}
@@ -327,5 +415,13 @@ public class QuerySQL {
 	protected String getTypeClassForField(String path, String fieldName)	{
 		QueryFieldPart field = getField(path, fieldName);
 		return field.getTypeClass();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.dataquery.data.sql.Expression#isValid()
+	 */
+	public boolean isValid() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

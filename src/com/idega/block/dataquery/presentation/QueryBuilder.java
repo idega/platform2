@@ -7,6 +7,7 @@ package com.idega.block.dataquery.presentation;
 //import java.awt.Color;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.dataquery.business.QueryConditionPart;
@@ -28,6 +30,8 @@ import com.idega.business.IBOLookup;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.data.IWTreeNode;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -75,6 +79,7 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_DROP = "drop";
 	private static final String PARAM_DYNAMIC = "dynamic";
 	public static final String PARAM_QUIT = "quit";
+	private static final String PARAM_QUERY_AS_SOURCE = "source_query";
 	private static final String PARAM_SOURCE = "source_entity";
 	private static final String PARAM_RELATED = "related_entity";
 	private static final String PARAM_FIELDS = "entity_fields";
@@ -104,6 +109,7 @@ public class QueryBuilder extends Block {
 	private String stepTableColor = "#CDD6E6";
 	private boolean allowEmptyConditions = true;
 	private boolean showSourceEntityInSelectBox = true;
+	private boolean showQueries = true;
 	private boolean closeParentWindow = false;
 	private boolean allowFunctions = true;
 	private QuerySession sessionBean;
@@ -323,15 +329,7 @@ public class QueryBuilder extends Block {
 			step = 5;
 		}
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
-			helper.setTemplate(true);
-			String name = iwc.getParameter(PARAM_QUERY_NAME);
-			if (name == null)
-				name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
-			ICFile q = sessionBean.storeQuery(name, queryFolderID);
-			if (q != null) {
-				queryID = ((Integer) q.getPrimaryKey()).intValue();
-				//add("Query was saved with ID: "+queryID  );
-			}
+			processStep5(iwc);
 			//else
 			//add("Query was not saved");
 		}
@@ -416,6 +414,11 @@ public class QueryBuilder extends Block {
 			return helper.hasSourceEntity();
 	}
 	private boolean processStep1(IWContext iwc) throws RemoteException{
+		if (iwc.isParameterSet(PARAM_QUERY_AS_SOURCE))	{
+			String queryId = iwc.getParameter(PARAM_QUERY_AS_SOURCE);
+			QueryHelper queryHelperAsSource = sessionBean.getQueryService().getQueryHelper(Integer.parseInt(queryId));
+			helper.addQuery(queryHelperAsSource);
+		}
 		if (iwc.isParameterSet(PARAM_SOURCE)) {
 			String sourceEntity = iwc.getParameter(PARAM_SOURCE);
 			if (sourceEntity.length() > 0 && !sourceEntity.equalsIgnoreCase("empty")) {
@@ -439,6 +442,20 @@ public class QueryBuilder extends Block {
 		}
 		return false;
 	}
+	
+	private boolean processStep5(IWContext iwc) throws IOException	{
+		helper.setTemplate(true);
+		String name = iwc.getParameter(PARAM_QUERY_NAME);
+		if (name == null) {
+			name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
+		}
+		ICFile q = sessionBean.storeQuery(name, queryFolderID);
+		if (q != null) {
+			queryID = ((Integer) q.getPrimaryKey()).intValue();
+		}
+		return true;
+	}		
+
 	
 	private boolean processFunction(IWContext iwc){
 		String type = iwc.getParameter(PARAM_FUNCTION);
@@ -591,7 +608,7 @@ public class QueryBuilder extends Block {
 				QueryEntityPart source = helper.getSourceEntity();
 				select.setSelectedElement(source.encode());
 			}
-			table.add(select, 1, row);
+			table.add(select, 1, row++);
 		}
 		else {
 			DropdownMenu drp = new DropdownMenu(PARAM_SOURCE);
@@ -605,10 +622,36 @@ public class QueryBuilder extends Block {
 				QueryEntityPart source = helper.getSourceEntity();
 				drp.setSelectedElement(source.encode());
 			}
-			table.add(drp, 1, row);
+			table.add(drp, 1, row++);
 
 		}
-		row++;
+		if (showQueries)	{
+			SelectionBox select = new SelectionBox(PARAM_QUERY_AS_SOURCE);
+			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
+			select.setHeight("20");
+			select.setWidth("300");
+			ICTreeNode rootNode;
+			try {
+				rootNode = (ICTreeNode) getFile(getQueryFolderID());
+				Iterator iterator = rootNode.getChildren();
+				if (iterator == null) {
+					iterator = new ArrayList(0).iterator();
+				} 
+				while (iterator.hasNext())	{
+					ICTreeNode node = (ICTreeNode) iterator.next();
+					String name = node.getNodeName();
+  				int id = node.getNodeID();
+					select.addMenuElement(Integer.toString(id), name);
+				}
+				table.add(select, 2, row - 1 );
+			}
+			catch (FinderException ex) {
+				String message =
+					"[QueryBuilder]: Can't retrieve folder.";
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			}
+		}
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
 			if (helper.hasSourceEntity())
@@ -650,6 +693,9 @@ public class QueryBuilder extends Block {
 		Table table = getStepTable();
 
 		int row = 2;
+		
+			
+			
 
 		QueryEntityPart entityPart = helper.getSourceEntity();
 		List entities = helper.getListOfRelatedEntities();
@@ -670,6 +716,30 @@ public class QueryBuilder extends Block {
 		box.getLeftBox().setHeight("20");
 		box.getRightBox().selectAllOnSubmit();
 		fillFieldSelectionBox(service, entityPart, fieldMap, box);
+		
+		if (helper.hasPreviousQuery())	{
+			List resultFields = new ArrayList();
+			QueryHelper previousQuery = helper.previousQuery();
+			String previousQueryName = previousQuery.getName();
+			List fields = previousQuery.getListOfFields();
+			Iterator fieldIterator = fields.iterator();
+			while (fieldIterator.hasNext())	{
+				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+				String display = fieldPart.getDisplay();
+				String type = fieldPart.getTypeClass();
+							
+				QueryFieldPart newFieldPart = 
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
+				resultFields.add(newFieldPart);
+			}
+			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
+		}
+		
+		
+		
+		
+		
+		
 		while (iterator.hasNext()) {
 			entityPart = (QueryEntityPart) iterator.next();
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
@@ -751,6 +821,34 @@ public class QueryBuilder extends Block {
 			}
 		}
 	}
+
+	private void fillFieldSelectionBox(
+		String entityName,
+		List choiceFields,
+		Map fieldMap,
+		SelectionDoubleBox box)
+		throws RemoteException {
+		//System.out.println("filling box with fields from " + entityPart.getName());
+		Iterator iter = choiceFields.iterator();
+		while (iter.hasNext()) {
+			QueryFieldPart part = (QueryFieldPart) iter.next();
+			//System.out.println(" " + part.getName());
+			String enc = part.encode();
+			if (fieldMap.containsKey(enc)) {
+				box.getRightBox().addElement(
+					part.encode(),
+					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
+					fieldMap.remove(enc);
+			}
+			else {
+				box.getLeftBox().addElement(
+					part.encode(),
+					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
+			}
+		}
+	}
+
+
 
 	public PresentationObject getStep4Old(IWContext iwc) {
 		Table table = getStepTable();
@@ -1213,5 +1311,18 @@ public class QueryBuilder extends Block {
 	public void setDefaultDynamicPattern(String string) {
 		defaultDynamicPattern = string;
 	}
+
+
+  private ICFile getFile(int fileId) throws FinderException {
+    try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByPrimaryKey(new Integer(fileId));
+      return file;
+    }
+    catch(RemoteException ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+  }     
+
 
 }

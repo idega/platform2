@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.block.dataquery.data.Query;
+import com.idega.block.dataquery.data.sql.QuerySQL;
 import com.idega.data.GenericEntity;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
@@ -33,6 +34,7 @@ public class QueryHelper {
 	private String name = null;
 	private XMLDocument doc = null;
 	private XMLElement root = null;
+	private QuerySQLPart sqlPart = null;
 	private QueryEntityPart sourceEntity = null;
 	private List listOfRelatedEntities = null;
 	private List listOfFields = null;
@@ -40,8 +42,13 @@ public class QueryHelper {
 	private int step = 0;
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false, fieldsLock = false;
-
-	public QueryHelper() {
+	
+	private QueryHelper previousQuery;
+	private QueryHelper nextQuery;
+	
+	private QuerySQL mySQLQuery;
+	
+	public QueryHelper()	{
 	}
 
 	public QueryHelper(Query query) throws XMLException, Exception {
@@ -49,21 +56,40 @@ public class QueryHelper {
 	}
 
 	public QueryHelper(InputStream stream) throws XMLException, Exception {
-		doc = new XMLParser().parse(stream);
-		init();
+		this(new XMLParser().parse(stream));
 	}
 
-	public QueryHelper(XMLDocument document, String name) {
+	public QueryHelper(XMLDocument document) {
 		doc = document;
-		this.name = name;
-		init();
+		init(doc.getRootElement());
 	}
+	
+	public QueryHelper(XMLElement root)	{
+		init(root);
+	}
+	
+	public QueryHelper(XMLElement root, QueryHelper nextQuery)	{
+		this.nextQuery = nextQuery;
+		init(root);
+	}
+		
 
-	private void init() {
-		root = doc.getRootElement();
+	private void init(XMLElement root) {
+		this.root = root; 
 		if (root != null) {
+			name = root.getAttribute(QueryXMLConstants.NAME).getValue();
+			// check for an existing next query
+			XMLElement previousQueryElement = root.getChild(QueryXMLConstants.ROOT);
+			if (previousQueryElement != null)	{
+				previousQuery = new QueryHelper(previousQueryElement, this);
+			}
 			XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
 			isTemplate = (template != null && Boolean.getBoolean(template.getValue()));
+			// check for direct sql
+			XMLElement sqlElement = root.getChild(QueryXMLConstants.SQL);
+			if (sqlElement != null)	{
+				QuerySQLPart sqlPart = new QuerySQLPart(sqlElement);
+			}
 			XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 			if (source != null) {
 				// SOURCE ENTITY PART (STEP 1)
@@ -120,12 +146,6 @@ public class QueryHelper {
 		}
 	}
 
-	private XMLElement getRootElement() {
-		if (root == null)
-			root = new XMLElement(QueryXMLConstants.ROOT);
-		return root;
-	}
-
 	private XMLElement getSourceEntityElement() {
 		return new XMLElement(QueryXMLConstants.SOURCE_ENTITY);
 	}
@@ -138,11 +158,33 @@ public class QueryHelper {
 	}
 
 	public XMLDocument createDocument() {
-		if (doc == null)
-			doc = new XMLDocument(getRootElement());
+		if (doc == null)  {
+			doc = new XMLDocument(getUpdatedRootElement());
+		}
+		else {
+			updateRootElement();
+		}
+		return doc;
+	}
+			
+	protected XMLElement getUpdatedRootElement()	{
+		if (root == null) {
+			root = new XMLElement(QueryXMLConstants.ROOT);
+		}
+		updateRootElement();
+		return root;
+	}
+		
+	private void updateRootElement() {
+		if (hasPreviousQuery())	{
+			XMLElement previousQueryRootElement = previousQuery().getUpdatedRootElement();
+			previousQueryRootElement = previousQueryRootElement.detach();
+			root.addContent(previousQueryRootElement);
+		}
 		if (isTemplate()) {
 			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
 		}
+		root.setAttribute(QueryXMLConstants.NAME, name);
 		//	SOURCE ENTITY PART (STEP 1)
 		if (sourceEntity != null) {
 			XMLElement sourceElement = getSourceEntityElement();
@@ -183,7 +225,6 @@ public class QueryHelper {
 			}
 			
 		}
-		return doc;
 	}
 
 	/**
@@ -250,6 +291,10 @@ public class QueryHelper {
 	 */
 	public XMLElement getRoot() {
 		return root;
+	}
+
+	public QuerySQLPart getSQL()	{
+		return sqlPart;
 	}
 
 	/**
@@ -372,6 +417,10 @@ public class QueryHelper {
 			listOfFields.add(field);
 			checkStep();
 		}
+	}
+	
+	public void addQuery(QueryHelper queryHelper)	{
+		this.previousQuery = queryHelper;
 	}
 
 	/**
@@ -563,6 +612,26 @@ public class QueryHelper {
 	
 	public String getName()	{
 		return name;
+	}
+	
+	public void setName(String name)	{
+		this.name = name;
+	}
+	
+	public boolean hasNextQuery() {
+		return nextQuery() != null;
+	}
+	
+	public boolean hasPreviousQuery()	{
+		return previousQuery() != null;
+	}
+	
+	public QueryHelper previousQuery()	{
+		return previousQuery;
+	}
+
+	public QueryHelper nextQuery()	{
+		return nextQuery;
 	}
 
 }

@@ -8,7 +8,6 @@ package com.idega.block.dataquery.business;
 
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,24 +34,23 @@ import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.util.xml.XMLFile;
 
 /**
  * @author aron
  */
-public class QueryServiceBean extends IBOServiceBean  implements QueryService {
+public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 
 	public QueryHelper getQueryHelper(XMLFile xmlFile){
 		XMLData data = XMLData.getInstanceForFile(xmlFile);
-		String name = data.getName();
-		return new QueryHelper(data.getDocument(), name);
+		return new QueryHelper(data.getDocument());
 	}
 	
 	public QueryHelper getQueryHelper(int xmlFileID){
 		XMLData data = XMLData.getInstanceForFile(xmlFileID);
-		String name = data.getName();
-		return new QueryHelper(data.getDocument(), name);
+		return new QueryHelper(data.getDocument());
 	}
 	
 	public QueryHelper getQueryHelper(){
@@ -297,23 +295,18 @@ public class QueryServiceBean extends IBOServiceBean  implements QueryService {
 		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
 	}
 	
-	public QueryResult generateQueryResult(Integer queryID) throws QueryGenerationException{
+	public QueryResult generateQueryResult(Integer queryID, IWContext iwc) throws QueryGenerationException{
 		
 		try {
 			QueryHelper queryHelper = getQueryHelper(queryID.intValue());
 			QueryToSQLBridge bridge = getQueryToSQLBridge();
-			QuerySQL query = bridge.createQuerySQL(queryHelper);
-			String sqlStatement = query.getSQLStatement();
+			QuerySQL query = bridge.createQuerySQL(queryHelper, iwc);
 			System.out.println("QueryServece#generateQueryResult - SQL: ");
-			System.out.println(sqlStatement);
-			List displayNames = query.getDisplayNames();
-			QueryResult queryResult = bridge.executeStatement(sqlStatement, displayNames);
+			//System.out.println(sqlStatement);
+			QueryResult queryResult = bridge.executeQueries(query);
 			return queryResult;
 		}
 		catch (RemoteException e) {
-			throw new QueryGenerationException(e.getMessage());
-		}
-		catch (SQLException e) {
 			throw new QueryGenerationException(e.getMessage());
 		}
 	}

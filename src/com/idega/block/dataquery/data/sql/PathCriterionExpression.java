@@ -49,17 +49,19 @@ public class PathCriterionExpression implements DynamicExpression {
   protected void initialize() throws IDOCompositePrimaryKeyException, ExpressionException {
   	// the very first name is always a class
   	List pathElements = queryEntityPart.getPathNames();
+  	// Note: class name can also be a query name
     String className = (String) pathElements.get(0);
-    IDOEntity entity = getInstance(className);
-    IDOEntityDefinition definition = entity.getEntityDefinition();
 
-    String tableName = definition.getSQLTableName();
+    String tableName = querySQL.getTableName(className);
     String targetPath = (String) pathElements.get(0);
 		innerJoins.add(new InnerJoinExpression(tableName, targetPath, querySQL));			      
 
     if (pathElements.size() > 1) {
     	criteriaList = new ArrayList();
     	// start with the first element
+    	IDOEntity entity = getInstance(className);
+    	IDOEntityDefinition definition = entity.getEntityDefinition();
+
 
     	getConditions(definition, targetPath, pathElements, 1, criteriaList);
     }
