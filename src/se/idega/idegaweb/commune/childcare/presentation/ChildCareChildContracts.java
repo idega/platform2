@@ -181,7 +181,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 					validFrom = new IWTimestamp(contract.getValidFromDate());
 				}
 				try {
-					logs = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDates(member, validFrom.getDate(), terminated != null ? terminated.getDate() : null);
+					logs = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findAllByPlacementAndDates(member, validFrom.getDate(), terminated != null ? terminated.getDate() : null);
 					if (logs.isEmpty()) {
 						SchoolClassMemberLog log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, validFrom.getDate());
 						logs.add(log);
