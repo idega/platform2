@@ -186,12 +186,11 @@ public class ChildCareContracts extends ChildCareBlock {
 					}
 					
 					if (contract != null) {
-						student = contract.getSchoolClassMember();
+						//student = contract.getSchoolClassMember();
 						application = contract.getApplication();
 						//hasComments = true;
 						
 						created = new IWTimestamp(contract.getCreatedDate());
-						student = contract.getSchoolClassMember();
 						if (contract.getValidFromDate() != null)
 							validFrom = new IWTimestamp(contract.getValidFromDate());
 						else
