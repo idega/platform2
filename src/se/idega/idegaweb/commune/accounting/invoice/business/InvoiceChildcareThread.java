@@ -567,7 +567,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					e.printStackTrace();
 					createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
 				}
-				errorRelated.logToConsoleCompact();
+//				errorRelated.logToConsoleCompact();
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
