@@ -19,6 +19,7 @@ import com.idega.block.school.data.School;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.user.data.User;
 
 /**
  * @author Roar
@@ -37,6 +38,7 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 		
 		return new ArrayList();
 	}
+	
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness#findRegularPaymentsForPeriodeAndSchool(java.sql.Date, java.sql.Date, com.idega.block.school.data.School)
 	 */
@@ -44,4 +46,14 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
 		return home.findRegularPaymentsForPeriodeAndProvider(from, to, provider);
 	}
+
+	 /*  (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness#findRegularPaymentsForPeriodeAndSchool(java.sql.Date, java.sql.Date, com.idega.block.school.data.School)
+	 */
+	public Collection findOngoingRegularPaymentsForUserAndSchoolByDate(User child, School provider, Date date)  throws IDOLookupException, FinderException{
+		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
+		return home.findOngoingRegularPaymentsForUserAndProviderByDate(child, provider, date);
+	}
+	
+
 }
