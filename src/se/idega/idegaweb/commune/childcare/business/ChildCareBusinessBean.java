@@ -1151,6 +1151,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				sendMessageToParents(application, subject, body);
 			}
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			application.store();
 			t.commit();
 		}
 		catch (FinderException e) {
@@ -1208,7 +1209,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		application.setFromDate(newDate);
 		changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 		addContractToArchive(oldFileID,-1,false, application, -1, fromDate.getDate(), employmentTypeID,-1,user,false,-1,-1,null);
-
+	    application.store();
 		try {
 			SchoolClassMember member = getLatestPlacement(application.getChildId(), application.getProviderId());
 			member.setRegisterDate(fromDate.getTimestamp());
@@ -3815,6 +3816,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						archive.setInvoiceReceiver(parent);
 						archive.store();
 					}*/
+					application.store();
 				}
 			}
 
