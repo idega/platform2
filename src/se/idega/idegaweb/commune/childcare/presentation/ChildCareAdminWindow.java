@@ -139,6 +139,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	public static final String PARAMETER_CANCEL_CONTRACT_DIRECTLY = "cc_cancel_contract_directly";
 	
+	public static final String PARAMETER_CLOSE = "cc_close";
+	
 	// private static final String PROPERTY_RESTRICT_DATES =
 	// "child_care_restrict_alter_date";
 
@@ -819,6 +821,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		_submitButton = changeDate;
 		_child = helper.getApplication().getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
+		close.setOnClick("javascript:findObj('" + PARAMETER_CLOSE + "').value = 'true';");
+		form.add(new HiddenInput(PARAMETER_CLOSE, "false"));
 		form.setToDisableOnSubmit(changeDate, true);
 		table.add(changeDate, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -952,6 +956,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		_submitButton = placeInGroup;
 		_child = application.getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
+		close.setOnClick("javascript:findObj('" + PARAMETER_CLOSE + "').value = 'true';");
+		form.add(new HiddenInput(PARAMETER_CLOSE, "false"));
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -1099,9 +1105,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		_child = helper.getApplication().getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
 		_addCheckGroupScript = true;
+		close.setOnClick("javascript:findObj('" + PARAMETER_CLOSE + "').value = 'true';");
+		form.add(new HiddenInput(PARAMETER_CLOSE, "false"));
 		form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);		
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -1731,6 +1739,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		_submitButton = submit;
 		_child = application.getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
+		close.setOnClick("javascript:findObj('" + PARAMETER_CLOSE + "').value = 'true';");
+		form.add(new HiddenInput(PARAMETER_CLOSE, "false"));
 		layoutTbl.mergeCells(1, row, layoutTbl.getColumns(), row);
 		layoutTbl.add(close, 1, row);
 		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
@@ -2376,6 +2386,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\nfunction checkCareTime(){\n\t");
 		if (checkGroupPlacement) {
 			buffer.append(getCheckGroupScript(iwc, false));
+		} else {
+			buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("');");
+			buffer.append("\n\t var if (close == 'true') return true;");			
 		}
 		buffer.append("\n\t var message = '';");
 		buffer.append("\n\t var childYear = " + childYear + ";");
@@ -2477,6 +2490,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			currentGroupId = new Integer(log.getSchoolClassID());
 		} catch (Exception e) {}
 		
+
+		buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("');");
+		buffer.append("\n\t var if (close == 'true') return true;");			
 
 		buffer.append("\n\t var careTimeInput = ").append("findObj('").append(PARAMETER_CHILDCARE_TIME).append("');");
 		if (isUsePredefinedCareTimeValues()) {
