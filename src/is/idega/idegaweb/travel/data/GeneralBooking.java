@@ -11,6 +11,7 @@ public interface GeneralBooking extends com.idega.data.IDOEntity,is.idega.idegaw
  public is.idega.idegaweb.travel.data.BookingEntry[] getBookingEntries()throws javax.ejb.FinderException,java.rmi.RemoteException;
  public int getBookingTypeID();
  public java.lang.String getCity();
+ public java.lang.String getCode();
  public java.lang.String getComment();
  public java.lang.String getCountry();
  public java.lang.String getCreditcardAuthorizationNumber();
@@ -42,6 +43,7 @@ public interface GeneralBooking extends com.idega.data.IDOEntity,is.idega.idegaw
  public void setBookingDate(java.sql.Timestamp p0);
  public void setBookingTypeID(int p0);
  public void setCity(java.lang.String p0);
+ public void setCode(java.lang.String p0);
  public void setComment(java.lang.String p0);
  public void setCountry(java.lang.String p0);
  public void setCreditcardAuthorizationNumber(java.lang.String p0);
