@@ -26,7 +26,7 @@ public class ClientManager implements PacketManager{
   private static String USER_LIST = "user_list";
   private static String USER_LIST_VERSION = "user_list_version";
   private static String PREFIX = "v.";
-  private int version = 1;
+  private int version = 0;
 
   public void clientCheckIn(String sessionId, String memberId){
     try{
@@ -92,7 +92,7 @@ public class ClientManager implements PacketManager{
        //list changed update it..without self
         /**@todo make a removeProperty method in packet*/
         packet.clearProperties();
-        packet.addProperty(new Property(USER_LIST, getConnectedClients()));
+        packet.addProperty(new Property(USER_LIST, getConnectedClients(sessionId)));
         packet.addProperty(new Property(USER_LIST_VERSION, getUserListVersion()) );
       }
 
@@ -107,14 +107,16 @@ public class ClientManager implements PacketManager{
    return (PREFIX+version);
   }
 
-  public static Vector getConnectedClients(){
+  public static Vector getConnectedClients(String sessionId){
     /**@todo: don't make a new instance everytime and don't add the client asking*/
     Vector connClients=new Vector();
     Enumeration enum = ClientManager.clients.keys();
 
     while (enum.hasMoreElements()){
-      String sessionId = (String)enum.nextElement();
-      connClients.add( new Property(sessionId,((User)ClientManager.clients.get(sessionId)).getName()) );
+      String id = (String)enum.nextElement();
+      if( !id.equalsIgnoreCase(sessionId) ){
+        connClients.add( new Property(id,((User)ClientManager.clients.get(id)).getName()) );
+      }
     }
 
     return connClients;
