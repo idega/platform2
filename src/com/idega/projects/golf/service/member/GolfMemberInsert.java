@@ -173,7 +173,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     ImageInserter imageInsert = new ImageInserter("image_id");
       imageInsert.setHasUseBox(false);
       imageInsert.setMaxImageWidth(110);
-      imageInsert.setDefaultImageURL("/pics/member/x.gif");
+      //imageInsert.setDefaultImageURL("/pics/member/x.gif");
 
 
     Table table = new Table(7, 5);
