@@ -830,8 +830,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						//C/O address
 						Address ad = getUserBusiness().getUsersCoAddress(custodian);
 						String co = "";
-						if (ad != null)
-							co = ad.getName();
+						if (ad != null) {
+							//Hack to fix silly bug in database. There seems to be an entry in the Address table with type == 2 for the user, but the street name and number are null.
+							if (ad.getStreetName() != null)
+								co = ad.getName();
+						}
 						if (co.length() < 25) {
 							StringBuffer p = new StringBuffer(co);
 							while (p.length() < 25)

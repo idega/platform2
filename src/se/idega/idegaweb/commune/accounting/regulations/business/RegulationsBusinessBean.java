@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.89 2003/12/10 11:08:52 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.90 2003/12/10 13:43:34 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1631,7 +1631,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							reg.getPaymentFlowType().getLocalizationKey(),
 							period,
 							RuleTypeConstant.FORMULA,
-							RegSpecConstant.SUBVENTION,
+							RegSpecConstant.CHECKTAXA,
 							conditions,
 							total_sum,
 							contract);
@@ -1644,7 +1644,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 				if (d != null) {
 					ret = new PostingDetail();
-					ret.setAmount(Math.abs(d.getAmount()-total_sum));
+					ret.setAmount(Math.round(d.getAmount()-total_sum));
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
 					//				ret.setVat(32.0f);
@@ -1654,7 +1654,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			else if (type.equals("cacc_sp_calc_type.syskon")) {
 				float amount = reg.getDiscount() * total_sum / 100;
 				ret = new PostingDetail();
-				ret.setAmount(Math.abs(amount));
+				ret.setAmount(Math.round(amount));
 				ret.setRuleSpecType(reg.getLocalizationKey());
 				ret.setTerm(reg.getName());
 				//				ret.setVat(32.0f);
@@ -1703,15 +1703,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							}
 						}
 					
-						if (!missingIncome) {
-							float perc = reg.getMaxAmountDiscount();
+						float perc = reg.getMaxAmountDiscount();
+						if (!missingIncome && income > 0.0f && perc > 0.0f) {
 							System.out.println("perc = " + perc);
 							System.out.println("income = " + income);
 							
 							float amount = income * perc / 100;
 							if (amount < total_sum) {
 								ret = new PostingDetail();
-								ret.setAmount(Math.abs(amount - total_sum));
+								ret.setAmount(Math.round(amount - total_sum));
 								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 								ret.setTerm(reg.getName());
 								//			ret.setVat(32.0f);
@@ -1723,12 +1723,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						}
 					}
 					catch (NoCustodianFound e) {
-//						e.printStackTrace();
+						throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
 					}
 					catch (RemoteException e) {
-//						e.printStackTrace();
+						throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
 					}
-
 				}
 			}
 			else if (type.equals("cacc_sp_calc_type.laginkomst")) {
@@ -1744,7 +1743,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 		else {
 			ret = new PostingDetail();
-			ret.setAmount(reg.getAmount().floatValue());
+			ret.setAmount(Math.round(reg.getAmount().floatValue()));
 			ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 			ret.setTerm(reg.getName());
 			//			ret.setVat(32.0f);
