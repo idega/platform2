@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.10 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: ContractBusiness.java,v 1.11 2002/06/20 13:57:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.idegaweb.IWApplicationContext;
 import java.util.List;
 import java.util.Iterator;
 import com.idega.util.idegaTimestamp;
@@ -54,7 +55,7 @@ import com.idega.block.application.data.Application;
  */
 public  class ContractBusiness {
 
-  public static String signCampusContract(int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
+  public static String signCampusContract(IWApplicationContext iwac,int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
                 boolean newAccount,boolean newPhoneAccount,boolean newLogin ,boolean generatePasswd,IWResourceBundle iwrb,String login,String passwd){
     Contract eContract = null;
     String pass = null;
@@ -104,7 +105,7 @@ public  class ContractBusiness {
         //System.err.println("updateing contract ");
         eContract.update();
         //System.err.println("lets try to commit");
-        MailingListBusiness.processMailEvent(iContractId,LetterParser.SIGNATURE);
+        MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.SIGNATURE);
       }
 
 
@@ -229,31 +230,31 @@ public  class ContractBusiness {
     }
   }
 
-  public static void returnKey(int iContractId){
+  public static void returnKey(IWApplicationContext iwac,int iContractId){
     try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setEnded();
       C.update();
-      MailingListBusiness.processMailEvent(iContractId,LetterParser.RETURN);
+      MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.RETURN);
     }
     catch (SQLException ex) {
       ex.printStackTrace( );
     }
   }
 
-  public static void deliverKey(int iContractId){
+  public static void deliverKey(IWApplicationContext iwac,int iContractId){
      try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setStarted();
       C.update();
-       MailingListBusiness.processMailEvent(iContractId,LetterParser.DELIVER);
+       MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.DELIVER);
     }
     catch (SQLException ex) {
       ex.printStackTrace( );
     }
   }
 
-  public static void resignContract(int iContractId,idegaTimestamp movingDate,String info,boolean datesync){
+  public static void resignContract(IWApplicationContext iwac,int iContractId,idegaTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
@@ -262,7 +263,7 @@ public  class ContractBusiness {
       C.setResignInfo(info);
       C.setStatusResigned();
       C.update();
-      MailingListBusiness.processMailEvent(iContractId,LetterParser.RESIGN);
+      MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.RESIGN);
     }
     catch (SQLException ex) {
       ex.printStackTrace();

@@ -191,10 +191,10 @@ public class ContractKeyWindow extends Window{
     if(iwc.isParameterSet("val")){
       String val = iwc.getParameter("val");
       if(val.equals("return")){
-        ContractBusiness.returnKey(id);
+        ContractBusiness.returnKey(iwc,id);
       }
       else if(val.equals("deliver")){
-        ContractBusiness.deliverKey(id);
+        ContractBusiness.deliverKey(iwc,id);
       }
     }
   }

@@ -418,7 +418,7 @@ public class Emailer extends Block {
 
                 if (letter != null) {
 
-                    MailingListBusiness.sendMail(letter, null);
+                    MailingListBusiness.sendMail(iwc,letter, null);
 
                 }
 

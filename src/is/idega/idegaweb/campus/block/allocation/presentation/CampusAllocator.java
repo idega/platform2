@@ -941,7 +941,7 @@ public class CampusAllocator extends Block implements Campus{
         if(L == null && eApplicant != null ){
           User eUser = makeNewUser(eApplicant);
           if(eUser!=null){
-            if(makeNewContract(eUser,eApplicant,iApartmentId,from,to))
+            if(makeNewContract(iwc,eUser,eApplicant,iApartmentId,from,to))
               returner = iwrb.getLocalizedString("alloc_was_saved","Contract was saved");
             else
               returner = iwrb.getLocalizedString("alloc_not_saved","Contract was not saved");
@@ -1007,7 +1007,7 @@ public class CampusAllocator extends Block implements Campus{
     return null;
   }
 
-  private boolean makeNewContract(User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
+  private boolean makeNewContract(IWContext iwc,User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
 
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
       eContract.setApartmentId(iApartmentId);
@@ -1018,7 +1018,7 @@ public class CampusAllocator extends Block implements Campus{
       eContract.setValidTo(to.getSQLDate());
       try{
         eContract.insert();
-        MailingListBusiness.processMailEvent( eContract.getID(),LetterParser.ALLOCATION);
+        MailingListBusiness.processMailEvent(iwc, eContract.getID(),LetterParser.ALLOCATION);
         return true;
       }
       catch(SQLException ex){

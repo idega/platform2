@@ -221,7 +221,7 @@ public class ContractReSignWindow extends Window{
     }
     else if(eUser !=null && usid == eUser.getID()){
     System.out.println("is other user");
-      ContractBusiness.resignContract(id,movDate,sInfo,datesync);
+      ContractBusiness.resignContract(iwc,id,movDate,sInfo,datesync);
 
     }
     setParentToReload();

@@ -476,7 +476,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
     boolean createLogin =   sCreateLogin != null ? true:false;
 
-    passwd = ContractBusiness.signCampusContract(id,iGroupId ,1,sEmail,sendMail,
+    passwd = ContractBusiness.signCampusContract(iwc,id,iGroupId ,1,sEmail,sendMail,
 
       newAccount ,newPhoneAccount ,createLogin ,false,iwrb,login,passwd  );
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.32 2002/06/20 11:39:26 aron Exp $
+ * $Id: CampusApprover.java,v 1.33 2002/06/20 13:57:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.data.*;
 import java.sql.SQLException;
@@ -208,7 +209,7 @@ public class CampusApprover extends Block {
       Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
 
       if (((oldStatus == null) || (!oldStatus.equals("A"))) && status.equals("A")) {
-	MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+	MailingListBusiness.processMailEvent(iwc,new EntityHolder(Appli),LetterParser.APPROVAL);
 
 	CampusApplicationHome CAHome = null;
 	CampusApplication CA = null;
@@ -259,7 +260,7 @@ public class CampusApprover extends Block {
 	}
       }
       if(status.equals("R"))
-	MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.REJECTION);
+	MailingListBusiness.processMailEvent(iwc,new EntityHolder(Appli),LetterParser.REJECTION);
     }
     catch(Exception e){
       e.printStackTrace();
@@ -463,6 +464,7 @@ public class CampusApprover extends Block {
 	  e.printStackTrace();
 	}
 
+        /*
 	String cypher = null;
 	if (a != null && a.getID() != -1) {
 	  com.idega.block.application.business.ReferenceNumberHandler h = new com.idega.block.application.business.ReferenceNumberHandler();
@@ -475,6 +477,10 @@ public class CampusApprover extends Block {
 
 	  cypher = ct.doCyper(id,key);
 	}
+        */
+        String cypher = null;
+        if(a != null && a.getID() != -1)
+          cypher = ReferenceNumberFinder.getInstance(iwc).lookup(a.getID());
 
 	T.add(Edit.formatText(String.valueOf(i+1)),col++,row);
 	if (CA == null)

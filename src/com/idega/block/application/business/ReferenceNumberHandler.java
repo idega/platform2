@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.8 2002/05/28 17:22:26 gummi Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.9 2002/06/20 13:57:38 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.block.application.business;
 
 import com.idega.block.application.presentation.ReferenceNumber;
 import com.idega.presentation.IWContext;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWBundle;
@@ -56,7 +57,7 @@ public class ReferenceNumberHandler implements IWEventListener {
   /**
    *
    */
-  public static String getCypherKey(IWContext iwc) {
+  public static String getCypherKey(IWApplicationContext iwc) {
     IWBundle iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     CypherText cyph = new CypherText();
 

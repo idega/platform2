@@ -3,6 +3,7 @@ package is.idega.idegaweb.campus.block.mailinglist.business;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import com.idega.block.building.business.ApartmentHolder;
 import com.idega.core.user.data.User;
 import com.idega.core.user.business.UserBusiness;
@@ -27,6 +28,7 @@ public class EntityHolder {
 
   User eUser;
   Applicant eApplicant;
+  Application eApplication;
   CampusApplication eCampusApplication;
   ApartmentHolder apartmentHolder;
   Contract eContract;
@@ -49,7 +51,11 @@ public class EntityHolder {
 
   private void init(){
     try {
-      eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+      CampusApplicationHolder appHolder = CampusApplicationFinder.getApplicantInfo(eContract.getApplicantId().intValue());
+      eApplicant = appHolder.getApplicant();
+      eApplication = appHolder.getApplication();
+      eCampusApplication = appHolder.getCampusApplication();
+
       eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       emails = UserBusiness.listOfUserEmails(eUser.getID());
       apartmentHolder = new ApartmentHolder(eContract.getApartmentId().intValue());
@@ -90,5 +96,11 @@ public class EntityHolder {
   }
   public ApartmentHolder getApartmentHolder(){
     return apartmentHolder;
+  }
+  public Application getApplication(){
+    return eApplication;
+  }
+  public CampusApplication getCampusApplication(){
+    return eCampusApplication;
   }
 }

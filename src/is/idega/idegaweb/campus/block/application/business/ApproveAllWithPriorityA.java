@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.block.application.data.*;
 import is.idega.idegaweb.campus.block.application.data.*;
 import is.idega.idegaweb.campus.block.mailinglist.business.*;
@@ -26,7 +26,7 @@ public class ApproveAllWithPriorityA {
   public ApproveAllWithPriorityA() {
   }
 
-  public void approveAll() {
+  public void approveAll(IWApplicationContext iwac) {
     StringBuffer query = new StringBuffer("select app_application_id ");
     query.append("from cam_application cam_app, app_application app ");
     query.append("where app.app_application_id = cam_app.app_application_id ");
@@ -68,7 +68,7 @@ public class ApproveAllWithPriorityA {
       A.update();
       Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
 
-      MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+      MailingListBusiness.processMailEvent(iwac,new EntityHolder(Appli),LetterParser.APPROVAL);
 
       CampusApplicationHome CAHome = null;
       CampusApplication CA = null;

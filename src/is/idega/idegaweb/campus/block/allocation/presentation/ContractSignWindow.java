@@ -273,7 +273,7 @@ public class ContractSignWindow extends Window{
     boolean newAccount =  sFinAccount != null ? true:false;
     boolean newPhoneAccount =   sPhoneAccount != null ? true:false;
     boolean createLogin =   sCreateLogin != null ? true:false;
-    passwd = ContractBusiness.signCampusContract(id,iGroupId ,1,sEmail,sendMail,
+    passwd = ContractBusiness.signCampusContract(iwc,id,iGroupId ,1,sEmail,sendMail,
       newAccount ,newPhoneAccount ,createLogin ,false,iwrb,login,passwd  );
     if(login !=null && passwd !=null)
       print = true;
