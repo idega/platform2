@@ -367,7 +367,11 @@ public class AccountTariffer extends Finance {
 		int col = 1;
 		T.add(getHeader(localize("paydate", "Paydate")), col, row++);
 		DateInput payDate = new DateInput(prmPayDate, true);
-		payDate.setDate(IWTimestamp.RightNow().getSQLDate());
+		IWTimestamp today = IWTimestamp.RightNow();
+		today.addMonths(1);
+		today.setDay(1);
+		
+		payDate.setDate(today.getSQLDate());
 		T.add(payDate, col, row);
 		col++;
 		row = 1;
