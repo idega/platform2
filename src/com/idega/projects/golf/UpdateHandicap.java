@@ -70,6 +70,7 @@ public class UpdateHandicap {
               }
             }
 
+            System.out.println("Number of scorecards: "+scorecard.length);
             for (int m=0; m < scorecard.length; m++) {
 
                 int scorecardID = scorecard[m].getID();
