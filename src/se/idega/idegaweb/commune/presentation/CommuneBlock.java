@@ -215,6 +215,15 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		}
 		return iwrb.getLocalizedString(textKey, defaultText);
 	}
+	
+	/**
+	 * Method localize.
+	 * @param text text[0] is key, text[1] is default value.
+	 * @return String The locale text
+	 */
+	public String localize(String[] text) {
+		return localize(text[0], text[1]);
+	}	
 
 	public Text getText(String s) {
 		return getStyleText(s, this.STYLENAME_TEXT);
