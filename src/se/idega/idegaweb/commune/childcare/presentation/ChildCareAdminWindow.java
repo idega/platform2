@@ -19,6 +19,7 @@ import javax.ejb.FinderException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
+import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
@@ -1380,7 +1381,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		close();
 	}
 
-	private void alterValidFromDate(IWContext iwc) throws RemoteException {
+	private void alterValidFromDate(IWContext iwc) throws RemoteException , NoPlacementFoundException{
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int careTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), -1, iwc.getCurrentLocale(), iwc.getCurrentUser());

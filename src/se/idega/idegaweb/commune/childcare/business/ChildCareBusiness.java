@@ -22,8 +22,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public void addMissingGrantedChecks() throws java.rmi.RemoteException;
- public void alterValidFromDate(int p0,java.sql.Date p1, int employmentTypeID,java.util.Locale p2,com.idega.user.data.User p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void alterValidFromDate(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.sql.Date p1, int employmentTypeID,java.util.Locale p2,com.idega.user.data.User p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void alterValidFromDate(int p0,java.sql.Date p1, int employmentTypeID,java.util.Locale p2,com.idega.user.data.User p3)throws java.rmi.RemoteException, java.rmi.RemoteException, NoPlacementFoundException;
+ public void alterValidFromDate(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.sql.Date p1, int employmentTypeID,java.util.Locale p2,com.idega.user.data.User p3)throws java.rmi.RemoteException, java.rmi.RemoteException, NoPlacementFoundException;
  public boolean assignApplication(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;
  public boolean assignApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;
  public boolean assignContractToApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.util.Locale p2) throws java.rmi.RemoteException;

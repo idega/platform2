@@ -917,7 +917,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, int schoolTypeID, int employmentTypeID, User user, Locale locale) throws RemoteException {
+		UserTransaction t = super.getSessionContext().getUserTransaction();
 		try {
+			t.begin();
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 			if (groupID != -1) {
@@ -926,15 +928,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				sendMessageToParents(application, subject, body);
 			}
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			t.commit();
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
+			try {
+				t.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		catch (NoPlacementFoundException e) {
+			e.printStackTrace();
+			try {
+				t.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 
 		return false;
 	}
 	
-	public void alterValidFromDate(int applicationID, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException {
+	public void alterValidFromDate(int applicationID, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			alterValidFromDate(application, newDate, employmentTypeID, locale, user); 
@@ -944,7 +967,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}		
 	}
 
-	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException {
+	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
 		application.setApplicationStatus(getStatusReady());
 		int oldFileID = application.getContractFileId();
 		IWTimestamp fromDate = new IWTimestamp(newDate);
@@ -2202,7 +2225,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	private void addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID) {
+	private void addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID) throws NoPlacementFoundException {
 		try {
 			ChildCareContract archive = null;
 			if (contractFileID != -1)
@@ -2227,6 +2250,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				archive.setSchoolClassMember(student);
 			}
 			catch (FinderException fe) {
+				throw new NoPlacementFoundException(fe);
 			}
 			archive.store();
 			
