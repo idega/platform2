@@ -229,11 +229,13 @@ public class RunResultViewer extends Block {
 
 	private void getGroupCompetitionResults(Table table, int row) {
 		try {
+			System.out.println("1. Getting all runners");
 			List runs = new ArrayList(getRunBiz().getRunnersByDistance(distance, null));
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
 			
+			System.out.println("2. Sorting out group runners");
 			Run runner;
 			RunGroup runnerGroup;
 			Iterator iterator = runs.iterator();
@@ -245,12 +247,15 @@ public class RunResultViewer extends Block {
 						runnerGroup = new RunGroup(runner.getRunGroupName());
 						runGroups.put(runner.getRunGroupName(), runnerGroup);
 					}
+					
+					System.out.println("- Adding group runners to map");
 					map.put(runnerGroup, runner);
 				}
 			}
 
 			List groupList = new ArrayList(map.keySet());
 			Collections.sort(groupList, new RunGroupComparator(map));
+			System.out.println("4. Sorting run groups");
 
 			iterator = groupList.iterator();
 			Run run;
@@ -262,18 +267,20 @@ public class RunResultViewer extends Block {
 			while (iterator.hasNext()) {
 				runGroup = (RunGroup) iterator.next();
 				runnersInRunGroup = map.getCollection(runGroup);
-				row = insertRunGroupIntoTable(table, row, runGroup.getGroupName() + " - " + runGroup.getCounter().toString());
-
-				runIter = runnersInRunGroup.iterator();
-				num = 1;
-				count = 0;
-				while (runIter.hasNext()) {
-					run = (Run) runIter.next();
-					if (count < 3) {
+				if (runnersInRunGroup.size() == 3) {
+					row = insertRunGroupIntoTable(table, row, runGroup.getGroupName() + " - " + runGroup.getCounter().toString());
+					System.out.println("- Inserting group to table: " + runGroup.getGroupName());
+	
+					runIter = runnersInRunGroup.iterator();
+					num = 1;
+					count = 0;
+					while (runIter.hasNext()) {
+						run = (Run) runIter.next();
 						num = runs.indexOf(run);
 						row = insertRunIntoTable(table, row, run, num, count+1);
+						count++;
 					}
-					count++;
+					System.out.println("- Inserting runners from group to table");
 				}
 			}
 		}
