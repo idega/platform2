@@ -497,8 +497,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	/**
 	 * @param club
 	 * @param types
-	 * @param dateFrom
-	 * @param dateTo
 	 * @param divisions
 	 * @param groups
 	 * @return Collection
@@ -507,10 +505,10 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	public Collection ejbFindAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(
 			Group club,
 			String[] types,
-			Timestamp paymentDate,
 			Collection divisions,
 			Collection groups)
 	throws FinderException {
+		IWTimestamp now = new IWTimestamp();
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
 		
@@ -521,7 +519,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 				
 		sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
 		sql.appendWhereEquals(F_ + COLUMN_ASSESSMENT_ROUND_ID, A_ + "ISI_ASS_ROUND_ID" );
-		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanOrEqualsSign().append(paymentDate);
+		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanOrEqualsSign().append(now.getDate());
 		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
 			sql.appendAnd().append(F_ + COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
@@ -531,6 +529,40 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(F_ + COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(F_ + COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		return idoFindIDsBySQL(sql.toString());
+	}
+
+	/**
+	 * @param club
+	 * @param types
+	 * @param entryDate
+	 * @param divisions
+	 * @param groups
+	 * @return Collection
+	 * @throws FinderException
+	 */
+	public Collection ejbFindAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+			Group club,
+			String[] types,
+			Date entryDate,
+			Collection divisions,
+			Collection groups)
+	throws FinderException {
+		IWTimestamp toStamp = new IWTimestamp(entryDate);
+		toStamp.addDays(1);
+		IDOUtil util = IDOUtil.getInstance();
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(ENTITY_NAME);
+		sql.appendWhereEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
+		sql.appendAnd().appendBetweenStamps(COLUMN_DATE_OF_ENTRY, entryDate, toStamp.getDate());
+		if (club != null)
+			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
+		if  (types != null && types.length>0)
+			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
+		if  (divisions != null && divisions.size()>0)
+			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
+		if  (groups != null && groups.size()>0)
+			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
