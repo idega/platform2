@@ -136,6 +136,7 @@ public class Emailer extends CampusBlock {
 		T.setWidth(2, 1, "40%");
 		//T.setWidth(3, 1, "30%");
 		T.setVerticalAlignment(1, 1, "top");
+		T.setRowVerticalAlignment(2,Table.VERTICAL_ALIGN_TOP);
 		T.setVerticalAlignment(2, 1, "top");
 		T.setVerticalAlignment(3, 1, "top");
 		T.mergeCells(3, 1, 3, 2);
@@ -359,7 +360,7 @@ public class Emailer extends CampusBlock {
 		TextInput host = new TextInput(prmHost);
 		TextArea body = new TextArea(prmBody);
 		body.setColumns(80);
-		body.setRows(14);
+		body.setRows(30);
 		CheckBox parse = new CheckBox(prmParse);
 		CheckBox useronly = new CheckBox(prmUserOnly);
 
