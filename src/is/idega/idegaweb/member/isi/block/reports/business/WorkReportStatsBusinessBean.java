@@ -89,7 +89,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_CLUB_COUNT_THIS_YEAR = "WorkReportStatsBusiness.club_count_this_year";
 	private static final String LOCALIZED_CLUB_COUNT_LAST_YEAR = "WorkReportStatsBusiness.club_count_last_year";
 	private static final String LOCALIZED_TOTAL = "WorkReportStatsBusiness.total";
-	
+	private static final String LOCALIZED_MEMBERS_ANNUAL_CHANGE_PERCENT = "WorkReportStatsBusiness.member_annual_change";
+	private static final String LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT = "WorkReportStatsBusiness.player_annual_change";
 
 	// names of reportable fields
 	private static final String FIELD_NAME_COMPARING_YEAR = "comparing_year";
@@ -137,7 +138,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_CLUB_COUNT_INACTIVE = "club_count_inactive";
 	private static final String FIELD_NAME_CLUB_COUNT_THIS_YEAR = "club_count_this_year";
 	private static final String FIELD_NAME_CLUB_COUNT_LAST_YEAR = "club_count_last_year";
-	
+	private static final String FIELD_NAME_MEMBERS_ANNUAL_CHANGE_PERCENT = "annual_member_change_percent";
+	private static final String FIELD_NAME_PALYERS_ANNUAL_CHANGE_PERCENT = "annual_player_change_percent";
 
 	/**
 	 *  
@@ -2786,6 +2788,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		membersLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS_LAST_YEAR, "Members last year"), currentLocale);
 		reportCollection.addField(membersLastYear);
 		
+		ReportableField membersAnnualChangePercent = new ReportableField(FIELD_NAME_MEMBERS_ANNUAL_CHANGE_PERCENT, String.class);
+		membersAnnualChangePercent.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS_ANNUAL_CHANGE_PERCENT, "Member Annual Change"), currentLocale);
+		reportCollection.addField(membersAnnualChangePercent);
+		
 		// players
 		ReportableField playersThisYear = new ReportableField(FIELD_NAME_PLAYERS_THIS_YEAR, Integer.class);
 		playersThisYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_THIS_YEAR, "Players this year"), currentLocale);
@@ -2794,15 +2800,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField playersLastYear = new ReportableField(FIELD_NAME_PLAYERS_LAST_YEAR, Integer.class);
 		playersLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_LAST_YEAR, "Players last year"), currentLocale);
 		reportCollection.addField(playersLastYear);
-
-		// competitors
-		ReportableField competitorsThisYear = new ReportableField(FIELD_NAME_COMPETITORS_THIS_YEAR, Integer.class);
-		competitorsThisYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COMPETITORS_THIS_YEAR, "Players this year"), currentLocale);
-		reportCollection.addField(competitorsThisYear);
-
-		ReportableField competitorsLastYear = new ReportableField(FIELD_NAME_COMPETITORS_LAST_YEAR, Integer.class);
-		competitorsLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COMPETITORS_LAST_YEAR, "Players last year"), currentLocale);
-		reportCollection.addField(competitorsLastYear);		
+		
+		ReportableField playersAnnualChangePercent = new ReportableField(FIELD_NAME_PALYERS_ANNUAL_CHANGE_PERCENT, String.class);
+		playersAnnualChangePercent.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT, "Player Annual Change"), currentLocale);
+		reportCollection.addField(playersAnnualChangePercent);
 		
 		//Real data stuff
 		//Gathering data
@@ -2830,12 +2831,20 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			ReportableData regData = new ReportableData();
 			regData.addData(regionalUnionName, regionalUnionIdentifier);
 			regData.addData(clubName, report.getGroupName());
-			regData.addData(membersThisYear, new Integer(report.getNumberOfMembers()));
-			regData.addData(membersLastYear, lastYearReport==null?(new Integer(0)):(new Integer(lastYearReport.getNumberOfMembers())));
-			regData.addData(playersThisYear, new Integer(report.getNumberOfPlayers()));
-			regData.addData(playersLastYear, lastYearReport==null?(new Integer(0)):(new Integer(lastYearReport.getNumberOfPlayers())));
-			regData.addData(competitorsThisYear, new Integer(report.getNumberOfCompetitors()));
-			regData.addData(competitorsLastYear, lastYearReport==null?(new Integer(0)):(new Integer(lastYearReport.getNumberOfCompetitors())));
+			
+			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+			int mLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
+			int mChange = mLastYear==0?-1:(100*mThisYear)/mLastYear;
+			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
+			int pChange = pLastYear==0?-1:(100*pThisYear)/pLastYear;
+			
+			regData.addData(membersThisYear, new Integer(mThisYear));
+			regData.addData(membersLastYear, new Integer(mLastYear));
+			regData.addData(membersAnnualChangePercent, mChange==-1?"":Integer.toString(mChange));
+			regData.addData(playersThisYear, new Integer(pThisYear));
+			regData.addData(playersLastYear, new Integer(pLastYear));
+			regData.addData(playersAnnualChangePercent, pChange==-1?"":Integer.toString(pChange));
 			
 			reportCollection.add(regData);
 		}
