@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/17 15:02:07 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/19 11:53:18 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.129 $
+ * @version $Revision: 1.130 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -94,6 +94,10 @@ public class InvoiceChildcareThread extends BillingThread{
 	private PostingDetail postingDetail;
 	private Map siblingOrders = new HashMap();
 	private Set incoiceEntryChildSet;
+	
+	public InvoiceChildcareThread(Date dateInMonth, IWContext iwc, School school, boolean testRun){
+		super(dateInMonth,iwc,school,testRun);
+	}
 	
 	public InvoiceChildcareThread(Date month, IWContext iwc){
 		super(month,iwc);
@@ -232,8 +236,13 @@ public class InvoiceChildcareThread extends BillingThread{
 			if (hasPlacements()) {
 				throw new NotEmptyException("invoice.must_first_empty_old_data");
 			}
-			
-			Collection contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
+			Collection contractArray = null;
+			if(getSchool()!=null){
+				contractArray = getChildCareContractHome().findByDateRangeAndProviderWhereStatusActive(startPeriod.getDate(), endPeriod.getDate(),getSchool());
+			}
+			else{
+				contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
+			}
 			log.info("# of contracts: "+contractArray.size());
 			Iterator contractIter = contractArray.iterator();
 			errorOrder = 0;
@@ -759,7 +768,13 @@ public class InvoiceChildcareThread extends BillingThread{
 		School school;
 		
 		try {
-			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			Iterator regularPaymentIter = null;
+			if(getSchool()!=null){
+				regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndSchool(month.getFirstDateOfMonth(),month.getLastDateOfMonth(), getSchool()).iterator();
+			}
+			else{
+				regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			}
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();

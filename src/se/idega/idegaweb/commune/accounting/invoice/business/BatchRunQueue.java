@@ -124,7 +124,7 @@ public class BatchRunQueue {
 		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		if (sch.findChildcareCategory().getCategory().equals(batchRunObject.schoolCategory)) {
 			if(BatchRunSemaphore.getChildcareRunSemaphore()){
-				runningThread = new InvoiceChildcareThread(batchRunObject.month, batchRunObject.iwc);
+				runningThread = new InvoiceChildcareThread(batchRunObject.month, batchRunObject.iwc,batchRunObject.school, batchRunObject.testRun);
 				runningThread.start();
 			}else{
 				throw new BatchAlreadyRunningException("Childcare");
