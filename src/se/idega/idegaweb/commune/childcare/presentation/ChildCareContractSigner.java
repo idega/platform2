@@ -73,7 +73,6 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 
 
 	private Form makeTableOfContracts(IWContext iwc) throws Exception{
-		System.out.println("makeTableOfContracts()");			
 		ContractService service = (ContractService) IBOLookup.getServiceInstance(iwc,ContractService.class);
 		ContractHome home = service.getContractHome();
 		ContractCategoryHome catHome = service.getContractCategoryHome();
@@ -92,9 +91,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		
 		int row = 1;
 		
-//		t.add(new Text("Text"), 1, 1);
-//		t.add(new Text("Text"), 1, 1);
-//		t.add(new Text("Text"), 1, 1);
+
 		IWResourceBundle iwrb = getResourceBundle(iwc);		
 		
 		while (i.hasNext()){
@@ -121,8 +118,6 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
 				signBtn.setAsImageButton(true);
 				
-//				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
-//				signBtn.setParameter(ACTION, ACTION_FILLOUT);
 				t.add(signBtn, 3, row);				
 			}
 				

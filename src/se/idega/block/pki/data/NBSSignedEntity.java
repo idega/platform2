@@ -15,7 +15,7 @@ import java.sql.Date;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public abstract class NBSSignedEntity {
-	public final static int ACTION_INIT = 1, ACTION_PROCESS = 2, ACTION_END = 3;
+	public final static int ACTION_INIT = 1, ACTION_PROCESS = 2;
 
 	
 	public abstract void setXmlSignedData(String data);
@@ -28,7 +28,6 @@ public abstract class NBSSignedEntity {
 	private int _action;	
 
 	public NBSSignedEntity(){
-		System.out.println("NBSSignedEntity()");
 		_action = ACTION_INIT;
 	}
 	
@@ -42,14 +41,9 @@ public abstract class NBSSignedEntity {
 				_action = ACTION_PROCESS;
 				break;
 			case ACTION_PROCESS:
-				_action = ACTION_END;
-				break;
-			case ACTION_END:
 				_action = ACTION_INIT;
 				break;
+
 		}
-		System.out.println("Action set to: " + _action);
-		
-	
 	}
 }
