@@ -1301,7 +1301,7 @@ public class IFSFileCreationThread extends Thread {
 		}		
 	}
 	
-	public void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean extra) throws IOException {
+	private void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean doublePosting) throws IOException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35 };
 			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text" };
@@ -1337,8 +1337,9 @@ public class IFSFileCreationThread extends Thread {
 				cell.setCellValue(getNumberFormat().format(amount));
 				cell.setCellStyle(styleAlignRight);
 				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
-				if (extra) {
+				if (doublePosting) {
 					cellNumber = 0;
+					numberOfRecords++;
 					row = sheet.createRow(rowNumber++);
 					row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());				
 					for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
@@ -1430,7 +1431,7 @@ public class IFSFileCreationThread extends Thread {
 				PaymentHeader pHead = (PaymentHeader) it.next();
 				
 				ArrayList pRecs = new ArrayList(((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead));
-				Collections.sort(pRecs, new PaymentComparator());
+				//Collections.sort(pRecs, new PaymentComparator());
 				if (!pRecs.isEmpty()) {
 					Iterator irIt = pRecs.iterator();
 					firstRecord = true;
