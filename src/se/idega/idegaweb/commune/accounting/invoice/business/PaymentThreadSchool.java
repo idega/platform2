@@ -53,16 +53,15 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
 
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/10 10:18:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/10 14:14:28 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -192,21 +191,51 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_DBError");
+			if(errorRelated!=null)
+			{
+				createNewErrorMessage(errorRelated.toString(), "invoice.Severe_DBError");
+			}else{
+				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_DBError");
+			}
 		} catch (FinderException e) {
 			e.printStackTrace();
+			if(errorRelated!=null)
+		{
+			createNewErrorMessage(errorRelated.toString(), "invoice.Severe_CouldNotFindSchoolCategory");
+		}else{
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindSchoolCategory");
+		}
 		} catch (EJBException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
+			if(errorRelated!=null)
+			{
+				createNewErrorMessage(errorRelated.toString(), "invoice.Severe_CouldNotFindHomeCommune");
+			}else{
+				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
+			}
 		} catch (CreateException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
+			if(errorRelated!=null)
+			{
+				createNewErrorMessage(errorRelated.toString(), "invoice.Severe_CouldNotFindHomeCommune");
+			}else{
+				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
+			}
 		} catch (IDOException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_IDOException");
+			if(errorRelated!=null)
+			{
+				createNewErrorMessage(errorRelated.toString(), "invoice.Severe_IDOException");
+			}else{
+				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_IDOException");
+			}
 		} catch (NotEmptyException e) {
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
+			if(errorRelated!=null)
+			{
+				createNewErrorMessage(errorRelated.toString(), "invoice.Severe_MustFirstEmptyOldData");
+			}else{
+				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
+			}
 			e.printStackTrace();
 		}
 	}
@@ -230,16 +259,23 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
             
 			System.out.println(
-                               "Getting regulations for school "+ school.getName()
-                               + "\n  Category "+ category.getCategory()
-                               + "\n  PaymentFlowConstant.OUT "+ PaymentFlowConstant.OUT
-                               + "\n  "+ currentDate.toString()
-                               + "\n  RuleTypeConstant.DERIVED "+ RuleTypeConstant.DERIVED
-                               + "\n  #conditions "+ conditions.size()
-                               + "\n  "+ conditions.toString()
-                               + "\n  Condition Operation "+schoolClassMember.getSchoolType().getLocalizationKey()
-                               + "\n  Condition Year "+schoolClassMember.getSchoolYear().getName()
-                               );
+           "Getting regulations for school "+ school.getName()
+           + "\n  Category "+ category.getCategory()
+           + "\n  PaymentFlowConstant.OUT "+ PaymentFlowConstant.OUT
+           + "\n  "+ currentDate.toString()
+           + "\n  RuleTypeConstant.DERIVED "+ RuleTypeConstant.DERIVED
+           + "\n  #conditions "+ conditions.size()
+           + "\n  "+ conditions.toString()
+           + "\n  Condition Operation "+schoolClassMember.getSchoolType().getLocalizationKey()
+           + "\n  Condition Year "+schoolClassMember.getSchoolYear().getName()
+           );
+			errorRelated.append(
+			   "Category "+ category.getCategory()+"<br>"
+			   + "PaymentFlowConstant.OUT "+ PaymentFlowConstant.OUT+"<br>"
+			   + "Date "+ currentDate.toString()+"<br>"
+			   + "RuleTypeConstant.DERIVED "+ RuleTypeConstant.DERIVED+"<br>"
+			   + "#conditions "+ conditions.size()+"<br>"
+			   );
 			//Get the check
 			postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
                                                                                                  category.getCategory(),		//The ID that selects barnomsorg in the regulation
