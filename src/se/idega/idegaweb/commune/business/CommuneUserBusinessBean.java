@@ -23,6 +23,7 @@ import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.*;
 
 import javax.ejb.*;
@@ -700,8 +701,35 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		Address userAddress = getUsersMainAddress(user);
 		Address otherUserAddress = getUsersMainAddress(compareUser);
 		if (userAddress != null && otherUserAddress != null) {
-			if(userAddress.getStreetAddress().equalsIgnoreCase(otherUserAddress.getStreetAddress() ))
-				return true;
+			if(userAddress.getStreetAddress().equalsIgnoreCase(otherUserAddress.getStreetAddress() )) {
+				PostalCode userPostal = null;
+				PostalCode otherUserPostal = null;
+
+				try {
+					userPostal = userAddress.getPostalCode();
+				}
+				catch (SQLException e) {
+					userPostal = null;					
+				}
+				
+				try {
+					otherUserPostal = otherUserAddress.getPostalCode();
+				}
+				catch (SQLException e) {
+					otherUserPostal = null;					
+				}
+
+				if (userPostal != null && otherUserPostal != null) {
+					if (userPostal.getPostalCode().equalsIgnoreCase(otherUserPostal.getPostalCode())) {
+						return true;
+					}
+				}
+				else if (userPostal == null && otherUserPostal == null) {
+					return true;
+				}
+					
+				return false;
+			}
 		}
 		
 		return false;
