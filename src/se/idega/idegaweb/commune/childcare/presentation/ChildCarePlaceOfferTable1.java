@@ -279,7 +279,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		
 		Contract contract = app.getContract();
 		if (contract != null && ! contract.isSigned()){
-			Link signBtn = new Link(_page.getSignIcon(_page.localize(SIGN_TOOLTIP)));
+			Link signBtn = new Link(_page.localize(SIGN_TOOLTIP));
 			signBtn.setWindowToOpen(ChildCareWindowBig.class);
 			signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
 			signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
