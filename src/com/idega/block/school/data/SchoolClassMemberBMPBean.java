@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/21 10:47:19 $ by $Author: staffan $
- * @version $Revision: 1.52 $
+ * Last modified: $Date: 2003/10/21 18:40:33 $ by $Author: staffan $
+ * @version $Revision: 1.53 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -463,31 +463,27 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 	
 	public Collection ejbFindAllCurrentInvoiceCompensationBySchoolType
-        (final int schoolTypeId) throws FinderException {
+        (final String operationalField) throws FinderException {
 		final IDOQuery sql = idoQuery ();
         sql.appendSelectAllFrom (getTableName() + " m")
                 .append (',' + SchoolClassBMPBean.SCHOOLCLASS + " c")
-                .append (',' + SchoolBMPBean.SCHOOL + " s")
-                .append (',' + SchoolBMPBean.SCHOOL + '_'
-                         + SchoolTypeBMPBean.SCHOOLTYPE + " t")
+                .append (',' + SchoolTypeBMPBean.SCHOOLTYPE + " t")
                 .appendWhere ()
                 .appendEquals ("m." + SCHOOLCLASS,
                                "c." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
-                .appendAndEquals ("c." + SchoolClassBMPBean.SCHOOL,
-                                  "s." + SchoolBMPBean.SCHOOL + "_id")
-                .appendAndEquals ("s." + SchoolBMPBean.SCHOOL + "_id",
-                                  "t." + SchoolBMPBean.SCHOOL + "_id")
-                .appendAndEquals ("t." + SchoolBMPBean.SCHOOLTYPE, schoolTypeId)
+                .appendAndEquals ("c." + SchoolClassBMPBean.SCHOOLTYPE,
+                                  "t." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
+                .appendAndEqualsQuoted ("t." + SchoolTypeBMPBean.SCHOOLCATEGORY,
+                                        operationalField)
                 .appendAnd ()
-                .append (REMOVED_DATE)
-                .appendNOTEqual ()
-                .append ("null")
+                .append ("m." + REMOVED_DATE + " is not null")
                 .appendAnd ()
                 .appendLeftParenthesis ();
         
         for (Iterator i = ejbHomeGetInvoiceIntervalTypes ().iterator ();
              i.hasNext ();) {
-            sql.appendEqualsQuoted (INVOICE_INTERVAL, i.next ().toString ());
+            sql.appendEqualsQuoted ("m." + INVOICE_INTERVAL,
+                                    i.next ().toString ());
             if (i.hasNext ()) {
                 sql.appendOr ();
             }

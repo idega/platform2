@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.*;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
 /**
@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/10/21 16:15:02 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/21 18:40:21 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -54,15 +54,10 @@ public class InvoiceByCompensationView extends AccountingBlock {
     private static final String NAME_KEY = PREFIX + "name";
 	private final static String OPERATIONAL_FIELD_KEY
         = PREFIX + "operational_field";
-	private final static String OPERATIONAL_FIELD_SELECTOR_HEADER_KEY
-        = PREFIX + "operational_field_selector_header";
-	private final static String OPERATIONAL_FIELD_SELECTOR_HEADER_DEFAULT
-        = "Välj huvudverksamhet";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String SAVE_DEFAULT = "Spara";
     private static final String SAVE_KEY = PREFIX + "save";
-    //private static final String SCHOOL_DEFAULT = "Skola";
     private static final String SCHOOL_KEY = PREFIX + "school";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "ssn";
@@ -153,8 +148,9 @@ public class InvoiceByCompensationView extends AccountingBlock {
         final SchoolHome schoolHome = schoolBusiness.getSchoolHome ();
 
         // search the database for members to display
-        final SchoolClassMember [] members
-                = communeBusiness.getCurrentMembersWithInvoiceInterval (4);
+        final String operationalField = getSession ().getOperationalField ();
+        final SchoolClassMember [] members = communeBusiness
+                .getCurrentMembersWithInvoiceInterval (operationalField);
 
         // display each member
         for (int i = 0; i < members.length; i++) {
@@ -356,8 +352,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
                         1, 1);
         String operationalField = getSession ().getOperationalField();
         operationalField = operationalField == null ? "" : operationalField;
-        innerTable.add (getOperationalFieldDropdownMenu
-                        (OPERATIONAL_FIELD_KEY, operationalField), 2, 1);
+        innerTable.add (new OperationalFieldsMenu (), 2, 1);
         mainTable.add (innerTable, 1, 2);
         mainTable.add (content, 1, 3);
         return mainTable;
@@ -382,32 +377,6 @@ public class InvoiceByCompensationView extends AccountingBlock {
         return school.getName ();
     }
 
-
-	/*
-	 * Returns a DropdownMenu for operational fields. 
-	 */
-	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
-		menu.addMenuElement("", localize(OPERATIONAL_FIELD_SELECTOR_HEADER_KEY, OPERATIONAL_FIELD_SELECTOR_HEADER_DEFAULT));
-		try {
-			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
-			if (c != null) {
-				Iterator iter = c.iterator();
-				while (iter.hasNext()) {
-					SchoolCategory sc = (SchoolCategory) iter.next();
-					String id = sc.getPrimaryKey().toString();
-					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
-				}
-				if (operationalField != null) {
-					menu.setSelectedElement(operationalField);
-				}
-			}		
-		} catch (Exception e) {
-			add(new ExceptionWrapper(e));
-		}
-		return menu;	
-	}
-	
     private static Date getDateFromString (final String rawInput) {
         final StringBuffer digitOnlyInput = new StringBuffer();
         for (int i = 0; i < rawInput.length(); i++) {
