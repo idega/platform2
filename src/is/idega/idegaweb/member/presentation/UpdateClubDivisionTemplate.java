@@ -112,7 +112,7 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 		mainTable.add(topTable, 1, 1);
 		mainTable.add(bottomTable, 1, 3);
 		
-		add(form);
+		add(form, iwc);
 	}
 
 	private void init(IWContext iwc) {
