@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.10 2004/01/12 10:02:52 gimmi Exp $
+/* $Id: ControlList.java,v 1.11 2004/02/16 12:50:56 staffan Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -9,18 +9,20 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.sql.Date;
 
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.Image;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.MediaWritable;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Window;
+import com.idega.util.LocaleUtil;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
@@ -44,7 +46,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.10 2004/01/12 10:02:52 gimmi Exp $ 
+ * $Id: ControlList.java,v 1.11 2004/02/16 12:50:56 staffan Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -72,6 +74,8 @@ public class ControlList extends AccountingBlock {
 	public final static String PARAMETER_SEARCH = "param_search";
 
 	private String _errorMessage;
+	private static final NumberFormat integerFormatter
+		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
 		
 	/**
 	 * Handles all of the blocks presentation.
@@ -161,49 +165,69 @@ public class ControlList extends AccountingBlock {
 		}
 				
 		Iterator iter = collection.iterator();
-		int sum1 = 0;
-		int sum2 = 0;
-		int sum3 = 0;
-		int sum4 = 0;
+		
+		// render header
 		int row = 1;
+		Object[] header = (Object[]) iter.next();
+		list.add(header[1] + "");
+		list.add(header[2] + "");
+		list.add(header[3] + "");
+		list.add(header[4] + "");
+		list.add(header[5] + "");
+		row++;
+
+		long sum1 = 0;
+		long sum2 = 0;
+		long sum3 = 0;
+		long sum4 = 0;
+
 		while (iter.hasNext()) {
 			Object[] obj = (Object[]) iter.next();
 			
-			list.add(getSmallText((String)(obj[1])));
-			list.add(getSmallText((String)(obj[2])));
-			list.add(getSmallText((String)(obj[3])));
-			list.add(getSmallText((String)(obj[4])));
-			list.add(getSmallText((String)(obj[5])));
+			// get values
+			final long currentMonthIndividualsCount = ((Long) obj[2]).longValue ();
+			final long compareMonthIndividualsCount = ((Long) obj[3]).longValue ();
+			final long currentMonthTotalAmount = ((Long) obj[4]).longValue ();
+			final long compareMonthTotalAmount = ((Long) obj[5]).longValue ();
 
-			String value = (String)(obj[2]);
-			if (value.length() > 0 && row > 1) {
-				sum1 += Integer.parseInt((String)(obj[2]));
-			}
-			value = (String)(obj[3]);
-			if (value.length() > 0 && row > 1) {
-				sum2 += Integer.parseInt((String)(obj[3]));
-			}
-			value = (String)(obj[4]);
-			if (value.length() > 0 && row > 1) {
-				sum3 += Integer.parseInt((String)(obj[4]));
-			}
-			value = (String)(obj[5]);
-			if (value.length() > 0 && row > 1) {
-				sum4 += Integer.parseInt((String)(obj[5]));
-			}
+			// render row for one school
+			list.add(getSmallText((String)(obj[1])));
+			list.setColumnAlignment (2, Table.HORIZONTAL_ALIGN_RIGHT);
+			list.add(integerFormatter.format (currentMonthIndividualsCount));
+			list.setColumnAlignment (3, Table.HORIZONTAL_ALIGN_RIGHT);
+			list.add(integerFormatter.format (compareMonthIndividualsCount));
+			list.setColumnAlignment (4, Table.HORIZONTAL_ALIGN_RIGHT);
+			list.add(integerFormatter.format (currentMonthTotalAmount));
+			list.setColumnAlignment (5, Table.HORIZONTAL_ALIGN_RIGHT);
+			list.add(integerFormatter.format (compareMonthTotalAmount));
+
+			// acumulate to sum row
+			sum1 += currentMonthIndividualsCount;
+			sum2 += compareMonthIndividualsCount;
+			sum3 += currentMonthTotalAmount;
+			sum4 += compareMonthTotalAmount;
 			row++;
 		}
-		list.add(getSmallText(" "));
-		list.add(getSmallText(" "));
-		list.add(getSmallText(" "));
-		list.add(getSmallText(" "));
-		list.add(getSmallText(" "));
 
-		list.add(getSmallText(localize(KEY_TALLY, "Total")));
-		list.add(getSmallText(""+sum1));
-		list.add(getSmallText(""+sum2));
-		list.add(getSmallText(""+sum3));
-		list.add(getSmallText(""+sum4));
+		// render empty row
+		list.add(" ");
+		list.add(" ");
+		list.add(" ");
+		list.add(" ");
+		list.add(" ");
+
+		// render sum row
+		list.add(KEY_TALLY, "Total");
+		list.setColumnAlignment (2, Table.HORIZONTAL_ALIGN_RIGHT);
+		list.add (integerFormatter.format (sum1));
+		list.setColumnAlignment (3, Table.HORIZONTAL_ALIGN_RIGHT);
+		list.add (integerFormatter.format (sum2));
+		list.setColumnAlignment (4, Table.HORIZONTAL_ALIGN_RIGHT);
+		list.add (integerFormatter.format (sum3));
+		list.setColumnAlignment (5, Table.HORIZONTAL_ALIGN_RIGHT);
+		list.add (integerFormatter.format (sum4));
+		list.skip ();
+
 		return list;
 	}
 

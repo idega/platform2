@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.14 2004/02/16 10:09:28 staffan Exp $
+ * $Id: ControlListBusinessBean.java,v 1.15 2004/02/16 12:50:56 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,24 +9,26 @@
  */
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.rmi.RemoteException;
-import javax.ejb.FinderException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.TreeSet;
+import java.util.Iterator;
+import javax.ejb.FinderException;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 /**
  * This business handles the logic to retrieve a control list after a batch run.
@@ -35,12 +37,11 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * <p>
- * Last modified: $Date: 2004/02/16 10:09:28 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/16 12:50:56 $ by $Author: staffan $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
@@ -62,9 +63,7 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 	 * @return array of data for the ControlList
 	 */
 	public Collection getControlListValues(Date compareMonth, Date withMonth, String opField) throws ControlListException, RemoteException {
-		Iterator providers = null;
 		ArrayList arr = new ArrayList();
-
 
 		if(compareMonth == null) {		
 			throw new ControlListException(KEY_DATE_MISSING, ERROR_DATE_MISSING);
@@ -85,15 +84,30 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 			""+compareMonth.toString()}
 		);
 
-		providers = getProvidersFromPaymentHeadersByPeriodAndSchoolCategory(
-				withMonth,
-				opField).iterator();
-		
-		final InvoiceBusiness invoiceBusiness = getInvoiceBusiness ();
+		final Collection schools = new TreeSet (new Comparator () {
+				final String getName (final Object o) {
+					return ((School) o).getName ();
+				}
 
-		while (providers.hasNext()) {
-			PaymentHeader ph = (PaymentHeader) providers.next();
-			final School school = ph.getSchool ();
+				public int compare (final Object o1, final Object o2) {
+					return getName (o1).compareToIgnoreCase (getName (o2));
+				}
+
+				public boolean equals (final Object o) {
+					return o.hashCode () == hashCode ();
+				}
+			});
+		for (Iterator i = getProvidersFromPaymentHeadersByPeriodAndSchoolCategory
+						 (withMonth, opField).iterator(); i.hasNext ();) {
+			schools.add (((PaymentHeader) i.next ()).getSchool ());
+		}
+		for (Iterator i = getProvidersFromPaymentHeadersByPeriodAndSchoolCategory
+						 (compareMonth, opField).iterator(); i.hasNext ();) {
+			schools.add (((PaymentHeader) i.next ()).getSchool ());
+		}
+		final InvoiceBusiness invoiceBusiness = getInvoiceBusiness ();
+		for (Iterator i = schools.iterator (); i.hasNext ();) {
+			final School school = (School) i.next ();
 			long currentMonthIndividualsCount = 0;
 			long compareMonthIndividualsCount = 0;
 			long currentMonthTotalAmount = 0;
@@ -114,10 +128,10 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 			arr.add(new Object[] {
 				new Integer(cnt++), 
 				school.getName(), 
-				""+currentMonthIndividualsCount,
-				""+compareMonthIndividualsCount,
-				""+currentMonthTotalAmount,
-				""+compareMonthTotalAmount
+				new Long (currentMonthIndividualsCount),
+				new Long (compareMonthIndividualsCount),
+				new Long (currentMonthTotalAmount),
+				new Long (compareMonthTotalAmount)
 			});				
 		}
 		

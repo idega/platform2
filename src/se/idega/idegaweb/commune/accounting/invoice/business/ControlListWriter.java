@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.7 2004/01/12 10:08:42 gimmi Exp $
+/* $Id: ControlListWriter.java,v 1.8 2004/02/16 12:50:56 staffan Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -51,7 +51,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.7 2004/01/12 10:08:42 gimmi Exp $
+ * $Id: ControlListWriter.java,v 1.8 2004/02/16 12:50:56 staffan Exp $
  *
  * @author Kelly
  */
@@ -156,34 +156,43 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			
 			int cellRow = 1;
 			Iterator iter = data.iterator();
+
+			// render header
+			Object[] header = (Object[]) iter.next();
+			row = sheet.createRow((short)cellRow);
+			row.createCell((short)0).setCellValue((String)(header[1]));
+			row.createCell((short)1).setCellValue((String)(header[2]));
+			row.createCell((short)2).setCellValue((String)(header[3]));
+			row.createCell((short)3).setCellValue((String)(header[4]));
+			row.createCell((short)4).setCellValue((String)(header[5]));
+			cellRow++;
+
 			int sum1 = 0;
 			int sum2 = 0;
 			int sum3 = 0;
 			int sum4 = 0;
+
 			while (iter.hasNext()) {
 				row = sheet.createRow((short)cellRow);
 				Object[] obj = (Object[]) iter.next();
+
 				row.createCell((short)0).setCellValue((String)(obj[1]));
-				row.createCell((short)1).setCellValue((String)(obj[2]));
-				row.createCell((short)2).setCellValue((String)(obj[3]));
-				row.createCell((short)3).setCellValue((String)(obj[4]));
-				row.createCell((short)4).setCellValue((String)(obj[5]));
-				String value = (String)(obj[2]);
-				if (value.length() > 0 && cellRow > 1) {
-					sum1 += Integer.parseInt((String)(obj[2]));
-				}
-				value = (String)(obj[3]);
-				if (value.length() > 0 && cellRow > 1) {
-					sum2 += Integer.parseInt((String)(obj[3]));
-				}
-				value = (String)(obj[4]);
-				if (value.length() > 0 && cellRow > 1) {
-					sum3 += Integer.parseInt((String)(obj[4]));
-				}
-				value = (String)(obj[5]);
-				if (value.length() > 0 && cellRow > 1) {
-					sum4 += Integer.parseInt((String)(obj[5]));
-				}
+
+				final long currentMonthIndividualsCount = ((Long) obj[2]).longValue ();
+				final long compareMonthIndividualsCount = ((Long) obj[3]).longValue ();
+				final long currentMonthTotalAmount = ((Long) obj[4]).longValue ();
+				final long compareMonthTotalAmount = ((Long) obj[5]).longValue ();
+
+				row.createCell((short)1).setCellValue(currentMonthIndividualsCount);
+				row.createCell((short)2).setCellValue(compareMonthIndividualsCount);
+				row.createCell((short)3).setCellValue(currentMonthTotalAmount);
+				row.createCell((short)4).setCellValue(compareMonthTotalAmount);
+
+				sum1 += currentMonthIndividualsCount;
+				sum2 += compareMonthIndividualsCount;
+				sum3 += currentMonthTotalAmount;
+				sum4 += compareMonthTotalAmount;
+				
 				cellRow++;
 			}
 
