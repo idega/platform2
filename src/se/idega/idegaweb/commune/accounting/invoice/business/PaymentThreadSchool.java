@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/14 18:21:20 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/15 10:41:08 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.52 $
+ * @version $Revision: 1.53 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -170,6 +170,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}else{
 						createNewErrorMessage("invoice.Regulation", "invoice.RegulationException");
 					}
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+					java.io.StringWriter sw = new java.io.StringWriter ();
+					e.printStackTrace (new java.io.PrintWriter (sw, true));
+					errorRelated.append ("</br>" + sw + "</br>");
+					if (errorRelated.length () > 900) errorRelated = new StringBuffer (errorRelated.substring (1, 900));
+					createNewErrorMessage(errorRelated.toString(), "invoice.NullpointerException");
 				}
 				dispTime("Getting regulations for resource");
 				timerStart();
