@@ -67,6 +67,7 @@ private IWApplicationContext iwac;
 			AddressBusiness biz = getAddressBusiness();
 			Country country = ((CountryHome)IDOLookup.getHome(Country.class)).findByCountryName(countryName);
 			
+			// connect postal code to commune and create commune if needed
 			PostalCode postalCode = biz.getPostalCodeAndCreateIfDoesNotExist(code,area,country);
 			if(null == postalCode.getCommuneID() || postalCode.getCommuneID().length() == 0) {
 				biz.connectPostalCodeToCommune(postalCode, area);
@@ -78,33 +79,6 @@ private IWApplicationContext iwac;
 		}
 	}
 
-	private void importCommune(IWBundle bundle) {
-		File communeCodeFolder = new File(bundle.getResourcesRealPath() + FileUtil.getFileSeparator() + "postalcode");
-		if (communeCodeFolder.isDirectory()) {
-			File[] files = communeCodeFolder.listFiles();
-			if (files != null && files.length > 0) {
-				for (int i = 0; i < files.length; i++) {
-					ColumnSeparatedImportFile communes = new ColumnSeparatedImportFile(files[i]);
-					try {
-						String record;
-						while (!(record = (String) communes.getNextRecord()).equals("")) {
-							ArrayList values = communes.getValuesFromRecordString(record);
-							connectPostal((String) values.get(0), (String) values.get(1));
-						}
-					}
-					catch (Exception e) {
-						System.err.println("PostalCodeBundleStarter : Cant use file = " + files[i].getName()
-								+ " (error = " + e.getMessage() + ")");
-					}
-				}
-			}
-		}
-	}
-	
-	private void connectPostal(String postalCode, String cityCode) {
-		//TODO (JJ) implement
-	}
-	
 	private AddressBusiness getAddressBusiness() throws RemoteException{
 		return (AddressBusiness) IBOLookup.getServiceInstance(iwac,AddressBusiness.class);
 	}
