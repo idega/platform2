@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/08 14:30:16 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/09 08:01:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -72,6 +72,10 @@ public class TerminateClassMembership extends CommuneBlock {
     
     private static final SimpleDateFormat shortDateFormatter
         = new SimpleDateFormat ("yyyyMMdd");
+    private static int MAX_FOUND_USER_COLS = 1;
+    private static int MAX_FOUND_USER_ROWS = 20;
+    private static int MAX_FOUND_USERS
+        = MAX_FOUND_USER_COLS * MAX_FOUND_USER_ROWS;
 
 	/**
 	 * Main is the event handler of InvoiceByCompensationForm.
@@ -177,10 +181,11 @@ public class TerminateClassMembership extends CommuneBlock {
         searcher.setLastNameLength (14);
         searcher.setFirstNameLength (14);
         searcher.setPersonalIDLength (12);
+        searcher.setMaxFoundUserCols (MAX_FOUND_USER_COLS); 
+        searcher.setMaxFoundUserRows (MAX_FOUND_USER_ROWS);
 
         // 2. do search
-        final Collection students = getStudents (context, searcher);
-        searcher.setUsersFound (students);
+        fillSearcherWithStudents (context, searcher);
 
         // 3. output result
         final Table table = new Table ();
@@ -190,6 +195,7 @@ public class TerminateClassMembership extends CommuneBlock {
         searchForm.add (searcher);
         table.add (searchForm, 1, 1);
         if (null != foundUser) {
+            // exactly one user found - display user info and termination form
             final Table terminateTable = new Table ();
             terminateTable.add (getStudentTable (context, foundUser), 1, 2);
             terminateTable.add (getSubmitButton
@@ -207,11 +213,10 @@ public class TerminateClassMembership extends CommuneBlock {
      *
 	 * @param context session data
 	 * @param searcher to use for searching
-     * @return filled or empty collection of students - never 'null'
      * @exception RemoteException if exception happens in lower layer
      */
-    private Collection getStudents (final IWContext context,
-                                    final UserSearcher searcher)
+    private void fillSearcherWithStudents (final IWContext context,
+                                           final UserSearcher searcher)
         throws RemoteException {
         final Collection students = new ArrayList ();
         try {
@@ -233,13 +238,17 @@ public class TerminateClassMembership extends CommuneBlock {
                         = communeBusiness.getCurrentSchoolClassMembership
                         (user);
                 if (null != student && null == student.getRemovedDate ()) {
+                    if (MAX_FOUND_USERS <= students.size ()) {
+                        // too many students found
+                        throw new FinderException ();
+                    }
                     students.add (user);
                 }
             }
         } catch (FinderException e) {
-            // no students found
+            // no students found or too many students found
         }
-        return students;
+        searcher.setUsersFound (students);
     }
 
 
