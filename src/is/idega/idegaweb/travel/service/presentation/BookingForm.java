@@ -3835,7 +3835,7 @@ public abstract class BookingForm extends TravelManager{
       _productId = product.getID();
       _service = getTravelStockroomBusiness(iwc).getService(product);
     }catch (NullPointerException np) {
-      System.err.println("BookingForm : Product == null, probably expired session");
+      //System.err.println("BookingForm : Product == null, probably expired session");
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
