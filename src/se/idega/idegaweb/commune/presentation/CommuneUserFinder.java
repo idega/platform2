@@ -124,7 +124,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 					if (addUser(iwc, user)) {
 						showSubmit = true;
 						radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());
-						if (row == 2)
+						if (row == 3)
 							radio.setSelected();
 					
 						table.add(radio, 1, row);
