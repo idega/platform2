@@ -6,7 +6,6 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public float getAmount();
  public float getAmountVAT();
  public java.lang.String getChangedBy();
- public int getSchoolClassMemberId();
  public java.lang.String getCreatedBy();
  public java.sql.Date getDateChanged();
  public java.sql.Date getDateCreated();
@@ -25,13 +24,13 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public int getProviderId();
  public java.lang.String getRuleSpecType();
  public java.lang.String getRuleText();
+ public int getSchoolClassMemberId();
  public int getVATType();
  public void initializeAttributes();
  public void setAmount(float p0);
  public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
  public void setColumnProviderId(int p0);
- public void setSchoolClassMemberId(int p0);
  public void setCreatedBy(java.lang.String p0);
  public void setDateChanged(java.sql.Date p0);
  public void setDateCreated(java.sql.Date p0);
@@ -54,5 +53,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setRuleSpecType(java.lang.String p0);
  public void setRuleSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType p0);
  public void setRuleText(java.lang.String p0);
+ public void setSchoolClassMemberId(com.idega.block.school.data.SchoolClassMember p0);
+ public void setSchoolClassMemberId(int p0);
  public void setVATType(int p0);
 }

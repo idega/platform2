@@ -177,6 +177,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setSchoolClassMemberId(int i) {
 		setColumn(COLUMN_SCHOOL_CLASS_MEMBER_ID, i);
 	}
+	public void setSchoolClassMemberId(SchoolClassMember scm) {
+		setColumn(COLUMN_SCHOOL_CLASS_MEMBER_ID, scm);
+	}
 	public void setInvoiceText(String s) {
 		setColumn(COLUMN_INVOICE_TEXT, s);
 	}
