@@ -460,12 +460,16 @@ public class Contracts extends TravelManager {
           }
 
         ResellerDayHome resDayHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
-        Collection tempToDelete = resDayHome.findResellerDays(reseller, service);
+        resDayHome.removeResellerDays(reseller, service);
+        /*
+        int[] tempToDelete = resDayHome.getResellerDays(reseller, service);
         Iterator iter = tempToDelete.iterator();
         while (iter.hasNext()) {
           ResellerDay item = (ResellerDay) iter.next();
+          Product tProd = ((ProductHome) IDOLookup.getHome(Product.class)).findByPrimaryKey(new Integer(item.getServiceId()));
+          System.out.println("[Contracts] Removing ResellerDayHome. Product : "+tProd.getProductName(iwc.getCurrentLocaleId())+", id = "+tProd.getID()+" ... day of week : "+item.getDayOfWeek());
           item.remove();
-        }
+        }*/
 
         ResellerDay resDay;
         int[] activeDays = new int[counter];
@@ -793,6 +797,7 @@ public class Contracts extends TravelManager {
 
 
     if (contract != null) {
+    	Product conProd = ((ProductHome) IDOLookup.getHome(Product.class)).findByPrimaryKey(new Integer(contract.getServiceId()));
       pAlot.setContent(Integer.toString(contract.getAlotment()));
       pDays.setContent(Integer.toString(contract.getExpireDays()) );
       pDiscount.setContent(contract.getDiscount());
@@ -821,13 +826,17 @@ public class Contracts extends TravelManager {
         timeframe = tsb.getTimeframe(product);
         if (timeframe != null) {
         	useTimeframes = true;
+        	//System.out.println("[Contract] getting timeframe from date : "+new IWTimestamp(timeframe.getFrom()).getSQLDate());
 	        pFrom.setDate(new IWTimestamp(timeframe.getFrom()).getSQLDate());
+					//System.out.println("[Contract] getting timeframe to date :"+new IWTimestamp(timeframe.getTo()).getSQLDate());
 	        pTo.setDate(new IWTimestamp(timeframe.getTo()).getSQLDate());
         }
       }else {
       	if (contract.getFrom() != null) {
       		useTimeframes = true;
+					//System.out.println("[Contract] getting contract from date : "+new IWTimestamp(contract.getFrom()).getSQLDate());
 	        pFrom.setDate(new IWTimestamp(contract.getFrom()).getSQLDate());
+					//System.out.println("[Contract] getting contract to date :"+new IWTimestamp(contract.getTo()).getSQLDate());
 	        pTo.setDate(new IWTimestamp(contract.getTo()).getSQLDate());
       	}
       }
