@@ -32,6 +32,7 @@ public class ProductItemThumbnail extends ProductItem {
   private int _width = 0;
   private int _height = 0;
   private boolean _clickableThumbnail = true;
+  private boolean _addBorder = false;
 
   /**
    *  Constructor for the ProductItemThumbnail object
@@ -85,6 +86,8 @@ public class ProductItemThumbnail extends ProductItem {
       if ( _height > 0 ) {
         image.setWidth( _height );
       }
+      if (_addBorder)
+      	image.setBorder(1);
       
 		  if (_clickableThumbnail) {
 				List images = null;
@@ -141,5 +144,12 @@ public class ProductItemThumbnail extends ProductItem {
 
 	public void setClickableThumbnail(boolean clickableThumbnail) {
 		_clickableThumbnail = clickableThumbnail;
+	}
+
+	/**
+	 * @param border
+	 */
+	public void setAddBorder(boolean border) {
+		_addBorder = border;
 	}
 }

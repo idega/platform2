@@ -1,5 +1,5 @@
 /*
- * $Id: ProductViewerLayoutHandler.java,v 1.5 2003/07/08 22:05:51 laddi Exp $
+ * $Id: ProductViewerLayoutHandler.java,v 1.6 2003/08/18 16:04:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.idega.block.trade.stockroom.presentation.ProductViewerLayoutIdega;
 import com.idega.block.trade.stockroom.presentation.ProductViewerLayoutStandard;
+import com.idega.block.trade.stockroom.presentation.ProductViewerLayoutTeaser;
 import com.idega.builder.handler.PropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -41,6 +42,7 @@ public class ProductViewerLayoutHandler implements PropertyHandler {
     menu.addMenuElement("","Select:");
     menu.addMenuElement(ProductViewerLayoutIdega.class.getName(), "Idega Portal");
 		menu.addMenuElement(ProductViewerLayoutStandard.class.getName(), "Standard");
+		menu.addMenuElement(ProductViewerLayoutTeaser.class.getName(), "Teaser");
     menu.setSelectedElement(value);
     return(menu);
   }

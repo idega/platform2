@@ -55,6 +55,7 @@ public class ProductViewer extends Block {
   String _fontStyle;
   String _headerFontStyle;
   String _priceFontStyle;
+	String _linkFontStyle;
   Image _seperator = null;
   boolean _useHRasSeperator = false;
   boolean _showRandom = false;
@@ -325,6 +326,10 @@ public class ProductViewer extends Block {
   public void setPriceFontStyle(String style) {
     _priceFontStyle = style;
   }
+
+	public void setLinkFontStyle(String style) {
+		_linkFontStyle = style;
+	}
 
   private List getCategoriesFromParameter(IWContext iwc) throws RemoteException {
     Vector vector = new Vector();
