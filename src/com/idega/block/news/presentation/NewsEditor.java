@@ -1,15 +1,17 @@
 package com.idega.block.news.presentation;
 
+
+import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
-import	com.idega.block.news.data.*;
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.block.news.data.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
-import	com.idega.data.*;
+import com.idega.data.*;
 import com.idega.util.text.*;
 import javax.servlet.http.*;
 import com.idega.util.text.TextSoap;
@@ -90,7 +92,7 @@ private int attributeId = 3;
   }
 
   public void main(ModuleInfo modinfo)throws Exception{
-    this.isAdmin=this.isAdministrator(modinfo);
+    this.isAdmin=AccessControl.hasEditPermission(this,modinfo);
 
     setSpokenLanguage(modinfo);
     String mode = modinfo.getParameter("mode");

@@ -177,7 +177,7 @@ public class ReportCategoryMaker extends JModuleObject{
 
   public void main(ModuleInfo modinfo) {
     /* try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException e){
       isAdmin = false;

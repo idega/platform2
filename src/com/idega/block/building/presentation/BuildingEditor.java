@@ -3,7 +3,6 @@ package com.idega.block.building.presentation;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.login.business.*;
 import com.idega.jmodule.object.*;
 import com.idega.block.building.data.*;
 import java.sql.SQLException;

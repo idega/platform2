@@ -1,5 +1,6 @@
 package com.idega.block.news.presentation;
 
+import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -115,7 +116,7 @@ public void setNewsEditorUrl(String url){
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
-  this.isAdmin=this.isAdministrator(modinfo);
+  this.isAdmin = AccessControl.hasEditPermission(this,modinfo);
   IWBundle iwb = getBundle(modinfo);
 
   IWResourceBundle iwrb = getResourceBundle(modinfo);
