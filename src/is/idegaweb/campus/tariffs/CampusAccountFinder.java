@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Vector;
 import com.idega.data.EntityFinder;
 import is.idegaweb.campus.entity.ContractAccountApartment;
+import is.idegaweb.campus.entity.TariffIndex;
 
 /**
  *
@@ -55,6 +56,22 @@ public class CampusAccountFinder  {
       count = 0;
     return count;
   }
+
+  public static TariffIndex getTariffIndex(String type){
+    TariffIndex ti = new TariffIndex();
+    try {
+      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,ti.getColumnNameType(),type,ti.getColumnNameDate());
+      if(L!= null)
+        ti =  (TariffIndex) L.get(0);
+      else
+        ti =  null;
+    }
+    catch (SQLException ex) {
+      ti = null;
+    }
+    return ti;
+  }
+
   /*
   public Account findAccountFromApartmentSeries(String serie){
 

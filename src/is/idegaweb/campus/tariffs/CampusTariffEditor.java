@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.6 2001/08/13 10:12:43 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.7 2001/08/17 09:52:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -602,7 +602,7 @@ public class CampusTariffEditor extends KeyEditor{
   private TariffIndex[] getTariffIndices(){
     TariffIndex[] ti = new TariffIndex[0];
     try {
-       ti = (TariffIndex[])(new TariffIndex()).findAllDescendingOrdered(TariffIndex.getDateColumnName());
+       ti = (TariffIndex[])(new TariffIndex()).findAllDescendingOrdered(TariffIndex.getColumnNameDate());
     }
     catch (SQLException ex) {
 
