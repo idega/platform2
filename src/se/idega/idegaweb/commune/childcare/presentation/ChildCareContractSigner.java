@@ -6,30 +6,31 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.swing.text.html.HTMLWriter;
 
-import org.apache.poi.hssf.record.PrecisionRecord;
 
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 
+import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.contract.business.ContractFinder;
 import com.idega.block.contract.data.Contract;
+import com.idega.block.contract.data.ContractCategory;
 import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.URLIncluder;
+
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.PreformattedText;
+
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.lowagie.text.html.HtmlEncoder;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.util.IWTimestamp;
+
 
 /**
  * @author Roar
@@ -42,6 +43,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 	public final static String PAR_CONTRACT_ID = "ChildCareContractSigner_CONTRACT_ID";
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	private final static String PAR_CONTRACT_TEXT = "CONTRACT_TEXT";
 	
 	
 	public String getBundleIdentifier() {
@@ -60,20 +62,27 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		}
 	}	
 	
-	private static String ACTION = "ACTION";
+	private static String ACTION = "se.idega.idegaweb.commune.childcare.presentation.ChildCareContractSigner.ACTION";
 	private static String ACTION_SIGN = "SIGN";
+	private static String ACTION_CREATE = "CREATE";
 		
-	private void control(IWContext iwc) throws SQLException{
+	private void control(IWContext iwc) throws Exception{
+		
+		
 		System.out.println("control()");	
+		
 		String action = iwc.getParameter(ACTION);
 		
+		System.out.println("ChildCareContract.Signing.ACTION: " + action);
+		
 		if (action != null && action.equals(ACTION_SIGN)){
+			
 			System.out.println("Forwarding");	
 			int contractId = Integer.parseInt(iwc.getParameter(PAR_CONTRACT_ID));
 			
 			Contract contract =
-				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class))
-					.findByPrimaryKeyLegacy(contractId);			
+				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHome(Contract.class))
+					.findByPrimaryKey(contractId);			
 			
 			iwc.setSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY, 
 				new NBSSignedEntity() {
@@ -111,18 +120,33 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 				.init(contract)
 			);
 					
-			iwc.removeSessionAttribute(NBSSigningBlock.INIT_DONE);						
+//			iwc.removeSessionAttribute(NBSSigningBlock.INIT_DONE);		
+			add(new HiddenInput(ACTION, ""));
+				
 			iwc.forwardToIBPage(getParentPage(), getResponsePage());		
 			
 			
+			
+		} else if (action != null && action.equals(ACTION_CREATE)){
+			System.out.println("");
+			String text = iwc.getParameter(PAR_CONTRACT_TEXT);
+			System.out.println("Insert text: " + text);
+			ContractBusiness.createContract(iwc.getCurrentUser().getID(), 1, IWTimestamp.RightNow(), IWTimestamp.RightNow(), "C", text);
+			add(createForm(iwc));			
+			
 		} else {
-			Table t = makeTableOfContracts(iwc);
-			Form f = new Form();
-			f.add(t);
-			add(f);
+			add(createForm(iwc));
 		}
 		System.out.println("control() done");	
 	}
+	
+	private Form createForm(IWContext iwc){
+		Form f = new Form();
+		f.add(makeTableOfContracts(iwc));
+	
+		return f;
+	}
+
 
 
 	private Table makeTableOfContracts(IWContext iwc) {
@@ -138,28 +162,44 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		Iterator i = contracts.iterator();
 		
 		Table t = new Table(3, contracts.size());
-		t.setCellpadding(0);
-		t.setCellspacing(0);	
-		t.setBorder(1);	
+		t.setCellpadding(2);
+		t.setCellspacing(2);	
+		t.setBorder(0);	
 		
 		int row = 1;
+		
+//		t.add(new Text("Text"), 1, 1);
+//		t.add(new Text("Text"), 1, 1);
+//		t.add(new Text("Text"), 1, 1);
+		
+		
 		while (i.hasNext()){
 			Contract contract = (Contract) i.next();
 
 			System.out.println("Contract.id: " + contract.getID());
 			
+			String text = contract.getText();
+			if (text == null){
+				text = " ";
+			}
+			
+			ContractCategory cat = ContractBusiness.findCategory(contract.getCategoryId().intValue());
+			
+			t.add(new Text(cat.getName()), 1, row);
+						
 			if (contract.isSigned()) {
-				t.add(new Text("Signed " + contract.getSignedDate()), 1, row);
+				t.add(new Text("Signed " + contract.getSignedDate()), 3, row);
 			}else {
 				Link signBtn = new Link("Sign Contract");
+				signBtn.setAsImageButton(true);
 				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
 				signBtn.setParameter(ACTION, ACTION_SIGN);
-				t.add(signBtn, 1, row);				
+				t.add(signBtn, 2, row);				
 			}
 				
 //			t.add(new Text(""+contract.getID()), 2, row);
-			t.add(new Text(contract.getText()), 2, row);
-			t.add(new Text(escapeHTML(contract.getXmlSignedData())), 3, row);
+
+//			t.add(new Text(escapeHTML(contract.getXmlSignedData())), 3, row);
 
 			
 			row ++;
