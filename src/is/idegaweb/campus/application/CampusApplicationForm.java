@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.10 2001/08/16 03:13:33 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.11 2001/08/16 04:20:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -872,6 +872,15 @@ public class CampusApplicationForm extends ApplicationForm {
     catch(SQLException e) {
       e.printStackTrace();
     }
+  }
+
+  public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    try{
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 
 }
