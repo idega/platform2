@@ -323,35 +323,23 @@ public class StaffFinder {
 
 
       if ( list != null ) {
-
-        Iterator iter = list.iterator();
-
-        while (iter.hasNext()) {
-
-          StaffLocalized item = (StaffLocalized) iter.next();
-
-          if ( item.getLocaleId() == iLocaleID ) {
-
-            return item;
-
+        if(list.size() == 1){
+          return (StaffLocalized) list.get(0);
+        } else {
+          Iterator iter = list.iterator();
+          while (iter.hasNext()) {
+            StaffLocalized item = (StaffLocalized) iter.next();
+            if ( item.getLocaleId() == iLocaleID ) {
+              return item;
+            }
           }
-
         }
-
       }
-
       return null;
-
-    }
-
-    catch (Exception e) {
-
+    } catch (Exception e) {
       e.printStackTrace();
-
       return null;
-
     }
-
   }
 
 

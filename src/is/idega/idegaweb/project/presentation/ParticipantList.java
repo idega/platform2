@@ -553,6 +553,7 @@ public class ParticipantList extends AbstractContentList {
 
     private UserList() {
       super();
+      this.setWidth("728");
     }
 
     private UserList(String name) {
@@ -591,54 +592,145 @@ public class ParticipantList extends AbstractContentList {
 
     }
 
-    public void initColumns(IWContext iwc) throws java.lang.Exception {
-      this.setColumns(6);
-      this.setWidth("567");
-      this.setExtraRowsAtBeginning(1);
+//    public void initColumns(IWContext iwc) throws java.lang.Exception {
+//      this.setColumns(6);
+//      this.setWidth("567");
+//      this.setExtraRowsAtBeginning(1);
+//
+//
+//      this.setColumnWidth(1,"40");
+//      this.setColumnWidth(2,"200");
+//      this.setColumnWidth(3,"47");
+//      this.setColumnWidth(4,"50");
+//      this.setColumnWidth(5,"50");
+//      this.setColumnWidth(6,"180");
+//
+//    }
 
+
+    public void initColumns(IWContext iwc) throws java.lang.Exception {
+      this.setColumns(8);
+      this.setWidth("728");
+      this.setExtraRowsAtBeginning(1);
+      this.setMinimumNumberOfRows(8);
+
+      this.setRowColor(1,"#CCCC66");
+      this.setLinesBetween(false);
+      this.setSebraColor("#F4F4DB","#FFFFFF");
 
       this.setColumnWidth(1,"40");
-      this.setColumnWidth(2,"200");
-      this.setColumnWidth(3,"47");
-      this.setColumnWidth(4,"50");
-      this.setColumnWidth(5,"50");
-      this.setColumnWidth(6,"180");
+      this.setColumnWidth(2,"4");
+      this.setColumnWidth(3,"220");
+      this.setColumnWidth(4,"4");
+      this.setColumnWidth(5,"167");
+      this.setColumnWidth(6,"4");
+      this.setColumnWidth(7,"75");
+      this.setColumnWidth(8,"4");
+      this.setColumnWidth(9,"210");
 
     }
+
+
+
+//    public PresentationObject getObjectToAddToColumn(int colIndex, int rowIndex, Object item, IWContext iwc, boolean beforeEntities)throws Exception{
+//      if(item == null){
+//        if(beforeEntities && (rowIndex == 1)){
+//          Text text = new Text();
+//          text.setBold();
+//
+//          switch (colIndex) {
+//            case 1:
+//              text.setText("Velja");
+//              break;
+//            case 2:
+//              text.setText("Nafn");
+//              break;
+//            case 3:
+//              text.setText("");
+//              break;
+//            case 4:
+//              text.setText("Sími");
+//              break;
+//            case 5:
+//              //text.setText("Fax");
+//              break;
+//            case 6:
+//              text.setText("Tölvupóstur");
+//              break;
+//          }
+//          return text;
+//
+//        }
+//      } else {
+//          Text text = new Text("");
+//          text.setFontSize(Text.FONT_SIZE_7_HTML_1);
+//          text.setFontFace(Text.FONT_FACE_ARIAL);
+//
+//          StaffHolder staffHolder = (StaffHolder)item;
+//
+//          switch (colIndex) {
+//            case 1:
+//              return getCheckBox(staffHolder.getGroupID());
+//              //break;
+//            case 2:
+//              text.setText(staffHolder.getName());
+//              break;
+//            case 3:
+//              text.setText("");
+//              break;
+//            case 4:
+//              if(staffHolder.getWorkPhone() != null){
+//                text.setText(staffHolder.getWorkPhone());
+//              }
+//              break;
+//            case 5:
+//              //text.setText("fax");
+//              break;
+//            case 6:
+//              if(staffHolder.getEmail() != null){
+//              text.setText(staffHolder.getEmail());
+//              }
+//              break;
+//          }
+//          return text;
+//      }
+//      return null;
+//    }
+
 
     public PresentationObject getObjectToAddToColumn(int colIndex, int rowIndex, Object item, IWContext iwc, boolean beforeEntities)throws Exception{
       if(item == null){
         if(beforeEntities && (rowIndex == 1)){
           Text text = new Text();
+          text.setFontFace(Text.FONT_FACE_ARIAL);
+          text.setFontColor("#FFFFFF");
+          text.setFontSize(Text.FONT_SIZE_7_HTML_1);
           text.setBold();
 
           switch (colIndex) {
             case 1:
-              text.setText("Velja");
-              break;
-            case 2:
-              text.setText("Nafn");
+              text.setText("Choose");
               break;
             case 3:
-              text.setText("");
-              break;
-            case 4:
-              text.setText("Sími");
+              text.setText("Name");
               break;
             case 5:
-              //text.setText("Fax");
+              text.setText("Title");
               break;
-            case 6:
-              text.setText("Tölvupóstur");
+            case 7:
+              text.setText("Phone");
               break;
+            case 9:
+              text.setText("e-mail");
+              break;
+            default:
+              return null;
           }
           return text;
 
         }
       } else {
           Text text = new Text("");
-          text.setFontSize(Text.FONT_SIZE_7_HTML_1);
-          text.setFontFace(Text.FONT_FACE_ARIAL);
 
           StaffHolder staffHolder = (StaffHolder)item;
 
@@ -647,29 +739,46 @@ public class ParticipantList extends AbstractContentList {
               return getCheckBox(staffHolder.getGroupID());
               //break;
             case 2:
-              text.setText(staffHolder.getName());
-              break;
-            case 3:
-              text.setText("");
+              /**
+               * @todo change accesscontrol
+               */
+//              boolean staffHolderIsSuperAdmin = iwc.getAccessController().getAdministratorUser().getID() == staffHolder.getUserID();
+//              if(iwc.isSuperAdmin() && !staffHolderIsSuperAdmin){  //tmp
+//                text = new Link(staffHolder.getName());
+//  //              ((Link)text).setWindowToOpen(StaffEditor.class);
+//  //              ((Link)text).addParameter(StaffBusiness.PARAMETER_USER_ID,staffHolder.getUserID());
+//                ((Link)text).setWindowToOpen(StaffPropertyWindow.class);
+//                ((Link)text).addParameter(StaffPropertyWindow.PARAMETERSTRING_USER_ID, staffHolder.getUserID());
+//              } else {
+                text.setText(staffHolder.getName());
+//              }
               break;
             case 4:
+              if(staffHolder.getTitle() != null){
+                text.setText(staffHolder.getTitle());
+              }
+              break;
+            case 6:
               if(staffHolder.getWorkPhone() != null){
                 text.setText(staffHolder.getWorkPhone());
               }
               break;
-            case 5:
-              //text.setText("fax");
-              break;
-            case 6:
+            case 8:
               if(staffHolder.getEmail() != null){
-              text.setText(staffHolder.getEmail());
+                text.setText(staffHolder.getEmail());
               }
               break;
+            default:
+              return null;
           }
+          text.setFontSize(Text.FONT_SIZE_7_HTML_1);
+          text.setFontFace(Text.FONT_FACE_ARIAL);
           return text;
       }
       return null;
     }
+
+
 
     public CheckBox getCheckBox(int userId){
       if(RelatedUsersNotDirectly != null){
