@@ -716,7 +716,8 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
                                     table.mergeCells(1,row,1,row + (numberInGroup -1));
     //				table.setVerticalAlignment(1,row,"top");
 
-                                    sView = TournamentController.getStartingtimeView(tournamentRound.getID(),"startingtime_date","'"+startHour.toSQLDateString()+"'","grup_num",groupCounter+"",tee_number,"");
+                                    sView = TournamentController.getStartingtimeView(tournamentRound.getID(),"","","grup_num",groupCounter+"",tee_number,"");
+                                    // old sView = TournamentController.getStartingtimeView(tournamentRound.getID(),"startingtime_date","'"+startHour.toSQLDateString()+"'","grup_num",groupCounter+"",tee_number,"");
                                     //sView = (StartingtimeView[]) (new StartingtimeView()).findAll("Select sv.* from startingtime_view sv, tournament_round_startingtime trs where sv.startingtime_id = trs.startingtime_id AND trs.tournament_id = "+tournamentRound.getID()+" AND sv.startingtime_date = '" +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
                                     startInGroup = sView.length;
 
@@ -1185,9 +1186,10 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
    return tournParticipants;
 
   }
-	public static StartingtimeView[] getStartingtimeView(int tournament_round_id, String column_name,String column_value,String column_name_1,String column_value_1,String order) throws SQLException {
-			return TournamentController.getStartingtimeView(tournament_round_id,column_name,column_value, column_name_1, column_value_1, 1,order);
-	}
+
+  public static StartingtimeView[] getStartingtimeView(int tournament_round_id, String column_name,String column_value,String column_name_1,String column_value_1,String order) throws SQLException {
+                  return TournamentController.getStartingtimeView(tournament_round_id,column_name,column_value, column_name_1, column_value_1, 1,order);
+  }
 
   public static StartingtimeView[] getStartingtimeView(int tournament_round_id, String column_name,String column_value,String column_name_1,String column_value_1,int tee_number,String order) throws SQLException {
 
