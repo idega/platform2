@@ -325,9 +325,13 @@ public class WorkReportWindow extends IWAdminWindow {
 			menu.add(operations, 1, 1);
 			menu.setRowColor(1, COLOR_MIDDLE);
 			menu.add(selectReport, 1, 2);
-			menu.add(uploadReport, 1, 4);
-			menu.setRowColor(4, COLOR_MIDDLE);
-			menu.add(uploadList, 1, 5);
+			
+			if(WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+				menu.add(uploadReport, 1, 4);
+				menu.setRowColor(4, COLOR_MIDDLE);
+				menu.add(uploadList, 1, 5);
+			}
+			
 			menu.add(workOnReport, 1, 6);
 			menu.setRowColor(6, COLOR_MIDDLE);
 			menu.add(editList, 1, 7);
