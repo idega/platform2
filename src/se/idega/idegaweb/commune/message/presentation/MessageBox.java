@@ -99,16 +99,16 @@ public class MessageBox extends CommuneBlock {
   }
 
   private void viewMessageList(IWContext iwc)throws Exception{
-    add(getLocalizedHeader("my_messages", "My messages"));
+    add(getLocalizedHeader("message.my_messages", "My messages"));
     add(new Break(2));
 
     Form f = new Form();
     ColumnList messageList = new ColumnList(4);
     f.add(messageList);
     messageList.setBackroundColor("#e0e0e0");
-    messageList.setHeader(localize("date","Date"),1);
-    messageList.setHeader(localize("from","From"),2);
-    messageList.setHeader(localize("subject","Subject"),3);
+    messageList.setHeader(localize("message.date","Date"),1);
+    messageList.setHeader(localize("message.from","From"),2);
+    messageList.setHeader(localize("message.subject","Subject"),3);
 
     int userId = iwc.getUserId();
     Collection messages = getMessageBusiness(iwc).findMessages(userId);
@@ -125,7 +125,7 @@ public class MessageBox extends CommuneBlock {
       CheckBox deleteCheckbox = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
       messageList.add(deleteCheckbox);
     }
-    Link deleteButton = getLocalizedLink("delete","Delete");
+    Link deleteButton = getLocalizedLink("message.delete","Delete");
     deleteButton.setAsImageButton(true);
     deleteButton.setToFormSubmit(f);
 
@@ -141,16 +141,16 @@ public class MessageBox extends CommuneBlock {
   private void viewMessage(IWContext iwc)throws Exception{
     Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID),iwc);
 
-    add(getLocalizedHeader("message","Message"));
+    add(getLocalizedHeader("message.message","Message"));
     add(new Break(2));
-    add(getLocalizedText("from","From"));
+    add(getLocalizedText("message.from","From"));
     add(getText(": "));
     add(getLink(msg.getSenderName()));
     add(new Break(2));
-    add(getLocalizedText("date","Date"));
+    add(getLocalizedText("message.date","Date"));
     add(getText(": "+msg.getDateString()));
     add(new Break(2));
-    add(getLocalizedText("subject","Subject"));
+    add(getLocalizedText("message.subject","Subject"));
     add(getText(": "+msg.getSubject()));
     add(new Break(2));
     add(getText(msg.getBody()));
@@ -159,7 +159,7 @@ public class MessageBox extends CommuneBlock {
     Table t = new Table();
     t.setWidth("100%");
     t.setAlignment(1,1,"right");
-    Link l = getLocalizedLink("back", "Back");
+    Link l = getLocalizedLink("message.back", "Back");
     l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
     l.setAsImageButton(true);
     t.add(l,1,1);
@@ -176,20 +176,20 @@ public class MessageBox extends CommuneBlock {
     }
 
     if(nrOfMessagesToDelete==1){
-      add(getLocalizedHeader("delete_message","Delete message"));
+      add(getLocalizedHeader("message.delete_message","Delete message"));
     }else{
-      add(getLocalizedHeader("delete_messages","Delete messages"));
+      add(getLocalizedHeader("message.delete_messages","Delete messages"));
     }
     add(new Break(2));
 
     String s = null;
     if(nrOfMessagesToDelete==0){
-      s = localize("no_messages_to_delete","No messages selected. You have to mark the message(s) to delete.");
+      s = localize("message.no_messages_to_delete","No messages selected. You have to mark the message(s) to delete.");
     }else if(nrOfMessagesToDelete==1){
       Message msg = getMessageBusiness(iwc).getMessage(msgId);
-      s = localize("one_message_to_delete","Do you really want to delete the message with subject: ")+msg.getSubject()+"?";
+      s = localize("message.one_message_to_delete","Do you really want to delete the message with subject: ")+msg.getSubject()+"?";
     }else{
-      s = localize("messages_to_delete","Do you really want to delete the selected messages?");
+      s = localize("message.messages_to_delete","Do you really want to delete the selected messages?");
     }
 
     Table t = new Table(1,5);
@@ -197,12 +197,12 @@ public class MessageBox extends CommuneBlock {
     t.add(getText(s),1,1);
     t.setAlignment(1,1,"center");
     if(nrOfMessagesToDelete==0){
-      Link l = getLocalizedLink("back","back");
+      Link l = getLocalizedLink("message.back","back");
       l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
       l.setAsImageButton(true);
       t.add(l,1,4);
     }else{
-      Link l = getLocalizedLink("ok","OK");
+      Link l = getLocalizedLink("message.ok","OK");
       l.addParameter(PARAM_DELETE_MESSAGE,"true");
       for(int i=0; i<ids.length; i++){
         l.addParameter(PARAM_MESSAGE_ID,ids[i]);
@@ -210,7 +210,7 @@ public class MessageBox extends CommuneBlock {
       l.setAsImageButton(true);
       t.add(l,1,4);
       t.add(getText(" "),1,4);
-      l = getLocalizedLink("cancel","Cancel");
+      l = getLocalizedLink("message.cancel","Cancel");
       l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
       l.setAsImageButton(true);
       t.add(l,1,4);
