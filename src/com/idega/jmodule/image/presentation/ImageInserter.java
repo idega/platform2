@@ -60,6 +60,7 @@ public ImageInserter(int imageId, String imSessionImageName) {
           image = new Image(imageId);
         }
         image.setMaxImageWidth(140);
+        image.setNoImageLink();
 
       Window insertNewsImageWindow = new Window("Ný mynd",ImageBusiness.IM_BROWSER_WIDTH,ImageBusiness.IM_BROWSER_HEIGHT,adminURL);
       Link imageAdmin = new Link(image,insertNewsImageWindow);

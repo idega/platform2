@@ -130,8 +130,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
-  isAdmin= isAdministrator(modinfo);
- // isAdmin= true;
+ // isAdmin= isAdministrator(modinfo);
+  isAdmin= true;
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
   String imageId = modinfo.getParameter("image_id");
@@ -413,12 +413,6 @@ public void main(ModuleInfo modinfo)throws Exception{
   add(outerTable);
 }
 
-public static Table getImageInTable(int imageId) throws SQLException {
-    Table table = new Table();
-    com.idega.jmodule.object.Image image = new com.idega.jmodule.object.Image(imageId);
-    table.add(image);
-return table;
-}
 
 private Table displayImage( ImageEntity image ) throws SQLException
 {
@@ -789,8 +783,8 @@ private Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modi
       iPercent = 100;
       percent = "100";
     }
-    myndin.setWidth( (myndin.getWidth()* iPercent)/100  );
-    myndin.setHeight( (myndin.getHeight()* iPercent)/100 );
+    myndin.setWidth( (Integer.parseInt(myndin.getWidth())* iPercent)/100  );
+    myndin.setHeight( (Integer.parseInt(myndin.getHeight())* iPercent)/100 );
 
     innerTable.add( myndin ,2,1);
 
