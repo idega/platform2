@@ -224,7 +224,7 @@ public class ServiceViewer extends Window {
           content.add(price,++x,y);
         //Info and buy buttons
           if( showMoreButton){
-            Link more = new Link(iwrb.getLocalizedString("more.button","more"));
+            Link more = new Link(iwrb.getLocalizedString("travel.more.button","more"));
             more.setWindowToOpen(ServiceViewer.class);
             more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
             more.setAsImageButton(true);
@@ -233,7 +233,7 @@ public class ServiceViewer extends Window {
 
           if( showBuyButton){
             Link buy = LinkGenerator.getLink(iwc,prod.getID());
-            buy.setText(iwrb.getLocalizedString("buy.button","buy"));
+            buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
             buy.setAsImageButton(true);
             content.add(buy,++x,y);
           }
@@ -276,20 +276,20 @@ public class ServiceViewer extends Window {
 
       //active days
         Text day = (Text) boldText.clone();
-        day.setText(iwrb.getLocalizedString("service.info.departures","Departures: "));
+        day.setText(iwrb.getLocalizedString("travel.serviceviewer.departures","Departures: "));
         Text days = new Text(getServiceDepartures(service));
         content.add(day,1,++y);
         content.add(days,2,y);
 
       //timeframe - trip length
         Text dur = (Text) boldText.clone();
-        dur.setText(iwrb.getLocalizedString("service.info.departures","Departures: "));
+        dur.setText(iwrb.getLocalizedString("travel.serviceviewer.duration","Duration: "));
         Text duration = new Text(getServiceDurationString(service));
         content.add(dur,1,++y);
         content.add(duration,2,y);
       //Price
         Text price = (Text) boldText.clone();
-        price.setText(iwrb.getLocalizedString("service.info.price","Price: "));
+        price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
         Text prices = new Text(getServicePrice(service));
         content.add(price,1,++y);
         content.add(prices,2,y);
@@ -298,7 +298,7 @@ public class ServiceViewer extends Window {
 
       if( showBuyButton){
         Link buy = LinkGenerator.getLink(iwc,service.getID());
-        buy.setText(iwrb.getLocalizedString("buy.button","buy"));
+        buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
         buy.setAsImageButton(true);
         content.add(buy,2,++y);
         content.setAlignment(2,y,"right");
