@@ -85,9 +85,9 @@ public class DefaultCheckoutReceiptWindow extends StyledIWAdminWindow {
         super.main(iwc);
         IWResourceBundle iwrb = getResourceBundle(iwc);
 
-        setTitle("Receipt window");
+        setTitle(iwrb.getLocalizedString(LABEL_TITLE, "Receipt window"));
         addTitle(iwrb.getLocalizedString(LABEL_TITLE, "Receipt window"),
-                IWConstants.BUILDER_FONT_STYLE_TITLE);
+                TITLE_STYLECLASS);
 
         showList(iwc);
     }

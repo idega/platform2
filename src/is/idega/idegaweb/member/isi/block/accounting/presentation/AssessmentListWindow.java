@@ -59,8 +59,8 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		super.main(iwc);
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		setTitle("Assessmentlist window");
-		addTitle(iwrb.getLocalizedString("isi_acc_ass_list_window", "Assessment list window"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+		setTitle(iwrb.getLocalizedString("isi_acc_ass_list_window", "Assessment list window"));
+		addTitle(iwrb.getLocalizedString("isi_acc_ass_list_window", "Assessment list window"), TITLE_STYLECLASS);
 		
 		String assID = iwc.getParameter(AutomaticAssessment.ASSESSMENT_ID);
 		if (assID != null && !"".equals(assID)) {

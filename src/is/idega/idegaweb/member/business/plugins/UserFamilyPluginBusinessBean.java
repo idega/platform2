@@ -1,5 +1,5 @@
 /*
- * $Id: UserFamilyPluginBusinessBean.java,v 1.1 2004/09/01 16:52:34 thomas Exp $
+ * $Id: UserFamilyPluginBusinessBean.java,v 1.2 2004/09/08 04:24:14 laddi Exp $
  * Created on Aug 31, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,18 +18,19 @@ import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/09/01 16:52:34 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/09/08 04:24:14 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class UserFamilyPluginBusinessBean extends IBOServiceBean implements UserFamilyPluginBusiness {
+public class UserFamilyPluginBusinessBean extends IBOServiceBean implements UserFamilyPluginBusiness, UserGroupPlugInBusiness {
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)

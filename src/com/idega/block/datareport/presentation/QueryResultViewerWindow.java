@@ -1,6 +1,5 @@
 package com.idega.block.datareport.presentation;
 
-import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 
@@ -27,7 +26,8 @@ public class QueryResultViewerWindow extends com.idega.idegaweb.presentation.Sty
   public void main(IWContext iwc) throws Exception {  
     // get resource bundle 
     IWResourceBundle iwrb = getResourceBundle(iwc);
-    addTitle(iwrb.getLocalizedString("ro_report_viewer", "ReportGeneratorViewer"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+    setTitle(iwrb.getLocalizedString("ro_report_viewer", "ReportGeneratorViewer"));
+    addTitle(iwrb.getLocalizedString("ro_report_viewer", "ReportGeneratorViewer"), TITLE_STYLECLASS);
     QueryResultViewer result = new QueryResultViewer();
     add(result);
  }

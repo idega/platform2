@@ -650,7 +650,6 @@ public class CashierWindow extends StyledIWAdminWindow {
         boolean hasPermission = getHasPermissionToViewWindow(iwc);
         if (!hasPermission) { return; }
 
-        setTitle("Cashier window");
         StringBuffer title = new StringBuffer(iwrb.getLocalizedString(
                 "isi_acc_cashier_window", "Cashier Window"));
         if (eClub != null) {
@@ -661,7 +660,8 @@ public class CashierWindow extends StyledIWAdminWindow {
                 title.append(eDiv.getName());
             }
         }
-        addTitle(title.toString(), IWConstants.BUILDER_FONT_STYLE_TITLE);
+        setTitle(title.toString());
+        addTitle(title.toString(), TITLE_STYLECLASS);
 
         String action = iwc.getParameter(ACTION);
 
