@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.10 2001/05/22 19:10:10 haffi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.11 2001/05/22 19:30:13 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,10 +52,18 @@ public class GolfMainJSPModule extends MainSideJSPModule {
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
 
-    //setLinkColor("black");
-    setLinkColor(iwb.getProperty("link_color"));
-    setVlinkColor("black");
-    setHoverColor("#8ab490");
+    String linkColor = iwb.getProperty("link_color");
+    if( linkColor == null ) linkColor = "black";
+
+    String vLinkColor = iwb.getProperty("vlink_color");
+    if( vLinkColor == null ) vLinkColor = "black";
+
+    String hoverLinkColor = iwb.getProperty("hover_link_color");
+    if( hoverLinkColor == null ) hoverLinkColor = "#8ab490";
+
+    setLinkColor(linkColor);
+    setVlinkColor(vLinkColor);
+    setHoverColor(hoverLinkColor);
 
     try {
      User();
