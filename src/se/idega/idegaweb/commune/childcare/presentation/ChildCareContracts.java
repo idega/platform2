@@ -248,9 +248,7 @@ public class ChildCareContracts extends ChildCareBlock {
 						alterCareTime.setWindowToOpen(ChildCareWindow.class);
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PRE_SCHOOL, String.valueOf(showPreSchool));
-						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_EMPLOYMENT_DROP, String.valueOf(showEmplDrop));
-						
+																		
 						if (validFrom.isLaterThan(stamp)) {
 							showComment = true;
 							//showNotStartedComment = true;
@@ -262,8 +260,7 @@ public class ChildCareContracts extends ChildCareBlock {
 							delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
-							delete.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PARENTAL, String.valueOf(showParentalRadio));
-							
+														
 						}
 						else {
 							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
@@ -271,7 +268,6 @@ public class ChildCareContracts extends ChildCareBlock {
 							delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
-							delete.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PARENTAL, String.valueOf(showParentalRadio));
 						}
 						if (_alwaysShowDeleteContract) {
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_CANCEL_CONTRACT_DIRECTLY, String.valueOf(true));
@@ -796,18 +792,7 @@ public class ChildCareContracts extends ChildCareBlock {
 		
 	}
 	
-	public void setShowParentRadioButton(boolean show){
-		showParentalRadio = show;
-	}
-	
-	public void setShowPreSchool(boolean show){
-		showPreSchool= show;
-	}
-	
-	public void setShowEmploymentDropDown(boolean show){
-		showEmplDrop = show;
-	}
-	
+		
 	public void setAlwaysShowDeleteContract(boolean b) {
 		_alwaysShowDeleteContract = b;
 	}

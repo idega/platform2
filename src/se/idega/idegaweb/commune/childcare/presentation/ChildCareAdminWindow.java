@@ -133,12 +133,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
 
-	public static final String PARAMETER_SHOW_PARENTAL = "cc_show_parental";
-
-	public static final String PARAMETER_SHOW_EMPLOYMENT_DROP = "cc_show_employment_drop";
-
-	public static final String PARAMETER_SHOW_PRE_SCHOOL = "cc_show_preschool";
-
 	public static final String PARAMETER_CANCEL_CONTRACT_DIRECTLY = "cc_cancel_contract_directly";
 	
 	// private static final String PROPERTY_RESTRICT_DATES =
@@ -241,13 +235,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private int _pageID;
 
-	private boolean _showVacancies = false;
+	private boolean _showVacancies;
 
-	private boolean _showEmploymentDrop = true;
+	private boolean _showEmploymentDrop;
 
-	private boolean _showPreSchool = true;
+	private boolean _showPreSchool;
 	
-	private boolean _showParental = true;
+	private boolean _showParental;
 
 	// private IWTimestamp earliestDate;
 
@@ -348,9 +342,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_PAGE_ID);
 		form.maintainParameter(PARAMETER_CONTRACT_ID);
 		form.maintainParameter(PARAMETER_PLACEMENT_ID);
-		form.maintainParameter(PARAMETER_SHOW_PARENTAL);
-		form.maintainParameter(PARAMETER_SHOW_EMPLOYMENT_DROP);
-		form.maintainParameter(PARAMETER_SHOW_PRE_SCHOOL);
 		form.maintainParameter(PARAMETER_CANCEL_CONTRACT_DIRECTLY);
 		form.setStyleAttribute("height:100%");
 
@@ -1978,13 +1969,17 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 
 		_showVacancies = getBusiness().getUseVacancies();
-		if (iwc.isParameterSet(PARAMETER_SHOW_EMPLOYMENT_DROP))
+		_showParental = getBusiness().getUseParental();
+		_showEmploymentDrop = getBusiness().getUseEmployment();
+		_showPreSchool = getBusiness().getUsePreschoolLine();
+		
+		/*if (iwc.isParameterSet(PARAMETER_SHOW_EMPLOYMENT_DROP))
 			_showEmploymentDrop = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_EMPLOYMENT_DROP)).booleanValue();
 		if (iwc.isParameterSet(PARAMETER_SHOW_PRE_SCHOOL))
 			_showPreSchool = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PRE_SCHOOL)).booleanValue();
 		if (iwc.isParameterSet(PARAMETER_SHOW_PARENTAL))
 			_showParental = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PARENTAL)).booleanValue();
-		
+		*/
 		
 	}
 

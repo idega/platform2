@@ -558,13 +558,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 					else {
 						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
-						placeInGroup.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_EMPLOYMENT_DROP, String.valueOf(showEmplDrop));
 						table.add(placeInGroup, column, 1);
 					}
 				}
 				else {
 					placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
-					placeInGroup.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_EMPLOYMENT_DROP, String.valueOf(showEmplDrop));
 					table.add(placeInGroup, column, 1);
 				}
 			}
@@ -596,8 +594,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, method);
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_SHOW_PRE_SCHOOL, String.valueOf(showPreSchool));
-		
+				
 		return button;
 	}
 	
@@ -667,11 +664,5 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		}
 	}
 	
-	public void setShowEmploymentDropDown(boolean show){
-		showEmplDrop = show;
-	}
 	
-	public void setShowPreSchool(boolean show){
-		showPreSchool= show;
-	}
 }
