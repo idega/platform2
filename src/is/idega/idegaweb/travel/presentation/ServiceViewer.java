@@ -40,7 +40,7 @@ import java.util.List;
  * @version 1.0
  */
 
-public class ServiceViewer extends Block {
+public class ServiceViewer extends Window {
 
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
   public static final String IW_TRAVEL_SERVICE_ID = "iw_tr_serv_id";
@@ -57,18 +57,18 @@ public class ServiceViewer extends Block {
   private Supplier supplier;
   private Service service;
 
-  private idegaTimestamp dateFrom;
-  private idegaTimestamp dateTo;
-  private String width;
-  private String height;
-  private String color1;
-  private String color2;
+  private idegaTimestamp dateFrom,dateTo;
+  private String width,height,color1,color2;
+  private int windowWidth = 600;
+  private int windowHeight = 480;
   private Link link;
   private Text text;
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
     iwrb = this.getResourceBundle(iwc);
+    super.setWidth(windowWidth);
+    super.setHeight(windowHeight);
 
     tsb = TravelStockroomBusiness.getNewInstance();
     cal = new idegaCalendar();
@@ -217,8 +217,8 @@ public class ServiceViewer extends Block {
           price.setText(getServicePrice(serv));
           content.add(price,++x,y);
         //Info and buy buttons
-          Link more = new Link(ServiceViewer.class);
-          more.setTarget(Link.TARGET_NEW_WINDOW);
+          Link more = new Link();
+          more.setWindowToOpen(ServiceViewer.class);
           more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
           more.setText("more");/**@todo localize **/
           more.setAsImageButton(true);
@@ -304,6 +304,14 @@ public class ServiceViewer extends Block {
 
   public void setHeight(String height){
    this.height = height;
+  }
+
+  public void setWindowHeight(int windowHeight){
+   this.windowHeight = windowHeight;
+  }
+
+  public void setWindowWidth(int windowWidth){
+   this.windowWidth = windowWidth;
   }
 
   public void setTextPrototype(Text text){
