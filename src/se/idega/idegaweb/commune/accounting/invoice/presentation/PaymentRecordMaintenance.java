@@ -68,11 +68,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/23 12:54:16 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/23 13:05:15 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -131,7 +131,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
 	private static final String PAYMENT_HEADER_DEFAULT = "Utbetalning";
 	private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
-	private static final String PAYMENT_RECORDS_KEY = PREFIX + "payment_records";
+	//private static final String PAYMENT_RECORDS_KEY = PREFIX + "payment_records";
 	private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
 	private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
 	private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
@@ -151,8 +151,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String PROVIDER_KEY = PREFIX + "provider";
 	private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
 	private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
-	private static final String REMOVE_DEFAULT = "Ta bort";
-	private static final String REMOVE_KEY = PREFIX + "remove";
+	//private static final String REMOVE_DEFAULT = "Ta bort";
+	//private static final String REMOVE_KEY = PREFIX + "remove";
 	private static final String SAVE_EDITS_DEFAULT = "Spara ändringar";
 	private static final String SAVE_EDITS_KEY = PREFIX + "save_edits";
 	private static final String SCHOOL_CLASS_DEFAULT = "Grupp";
@@ -838,10 +838,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 									 (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
 										CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
 									 columnCount, 2);
-				final PaymentHeaderHome headerHome
-						= business.getPaymentHeaderHome ();
-				final PaymentHeader header = headerHome.findByPrimaryKey
-						(new Integer (records [0].getPaymentHeader ()));
+				//final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
+				//final PaymentHeader header = headerHome.findByPrimaryKey(new Integer (records [0].getPaymentHeader ()));
 				table.add (getPaymentRecordListTable (records), 1, row++);
 				table.mergeCells (1, row, columnCount, row);
 				table.add (getPaymentSummaryTable (context, records, business),
