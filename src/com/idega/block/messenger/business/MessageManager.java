@@ -1,0 +1,84 @@
+package com.idega.block.messenger.business;
+
+import java.util.HashMap;
+import java.util.Vector;
+import com.idega.block.messenger.data.Packet;
+import com.idega.block.messenger.data.Message;
+
+
+/**
+ * Title:        com.idega.block.messenger.business
+ * Description:  idega classes
+ * Copyright:    Copyright (c) 2001
+ * Company:      Idega Software
+ * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
+ * @version 1.0
+ */
+
+public class MessageManager implements PacketManager{
+  public static HashMap inbox = new HashMap();
+
+  public static void sendToInbox(Message message, String recipientId){
+   System.out.println("MessageManager : before inbox get");
+    Vector messageVector = (Vector) inbox.get(recipientId);
+     System.out.println("MessageManager : after inbox get");
+    if( messageVector == null ){
+      messageVector = new Vector();
+    }
+    messageVector.add(message);
+    inbox.put(recipientId,messageVector);
+  }
+
+  public void processPacket(Packet packet){
+  //get the stored messages from the client packet
+    if(packet!=null){
+      Vector messages = packet.getMessages();
+      if( messages!=null ){
+        int length = messages.size();
+        String senderName;
+        String recipientName;
+        System.out.println("MessageManager : "+length+" Messages in packet.");
+        for (int i = 0; i < length; i++) {
+          Message msg = (Message) messages.elementAt(i);
+          System.out.println("MessageManager : getting sender name from ClientManager");
+          senderName = ClientManager.getClientName(msg.getSender()) ;
+          if ( senderName != null ) msg.setSenderName(senderName);
+          else {
+            msg.setSenderName("MessageManager : Unknown sender");
+            System.out.println("MessageManager : Unknown sender");
+          }
+
+          recipientName = ClientManager.getClientName(msg.getRecipient());
+          if ( recipientName != null ) msg.setRecipientName(recipientName);
+          else {
+            msg.setRecipientName("MessageManager : Unknown recipient");
+            System.out.println("MessageManager : Unknown recipient");
+          }
+
+          MessageManager.sendToInbox( msg, msg.getRecipient() );
+
+        }
+      }
+      else System.out.println("MessageManager : No messages in packet!");
+
+
+    //set the stored messages to the client packet
+     packet.clearMessages();
+     System.out.println("MessageManager : getting stored messages");
+
+      Vector storedMessages = (Vector) MessageManager.inbox.get(packet.getSender());
+      if( storedMessages!=null ){
+        packet.setMessages(storedMessages);
+      }
+      else  System.out.println("MessageManager : No stored messages!");
+
+      inbox.remove(packet.getSender());
+      //this ignores if the messages got to the client or not. That requers an Observer pattern
+      System.out.println("MessageManager : done getting stored messages");
+    }
+    else  System.out.println("MessageManager : packet is NULL!");
+  }
+
+
+
+}
