@@ -24,10 +24,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/29 13:27:24 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/11 10:13:28 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -58,6 +58,8 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String ANSWER_DEFAULT = "Svar till medborgare";
 	private final static String APPLIES_KEY = "viewpoint.applies";
 	private final static String APPLIES_DEFAULT = "Avser";
+	private final static String CANCEL_KEY = "viewpoint.cancel";
+	private final static String CANCEL_DEFAULT = "Avbryt";
 	private final static String CONFIRMANSWERSENT_KEY
         = "viewpoint.confirmAnswerSent";
 	private final static String CONFIRMANSWERSENT_DEFAULT
@@ -150,7 +152,7 @@ public class ViewpointForm extends CommuneBlock {
             return;
         }
 
-		try {
+		try {            
 			switch (getActionId (iwc)) {
 				case SHOWTOPCATEGORIESFORM_ACTION :
 					showTopCategoriesForm (iwc);
@@ -362,7 +364,8 @@ public class ViewpointForm extends CommuneBlock {
 		final SubmitButton submit
                 = getSubmitButton (IACCEPTTOHANDLETHISVIEWPOINT_KEY,
                                    IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT);
-		table.add(submit, 1, 5);
+		table.add (submit, 1, 5);
+		table.add (getCancelLink (iwc), 1, 6);
 		form.add(table);
 		add(form);
 	}
@@ -411,6 +414,7 @@ public class ViewpointForm extends CommuneBlock {
 		table.add(new Break(), 1, row);
 		table.add(textArea, 1, row++);
 		table.add(submit, 1, row++);
+		table.add (getCancelLink (iwc), 1, row++);
 		form.add(table);
 		add(form);
 	}
@@ -510,6 +514,16 @@ public class ViewpointForm extends CommuneBlock {
         return table;
     }
 
+    private Link getCancelLink (final IWContext iwc) throws RemoteException {
+ 		final UserBusiness userBusiness = (UserBusiness)
+                IBOLookup.getServiceInstance (iwc, UserBusiness.class);
+        final User user = iwc.getCurrentUser ();
+		final Link cancel
+                = new Link (getLocalizedString (CANCEL_KEY, CANCEL_DEFAULT));
+        cancel.setPage (userBusiness.getHomePageIDForUser (user));
+        return cancel;
+    }
+
 	private Link getUserHomePageLink (final IWContext iwc)
         throws RemoteException {
 		final Text userHomePageText
@@ -520,7 +534,7 @@ public class ViewpointForm extends CommuneBlock {
         final User user = iwc.getCurrentUser ();
 		final Link link = new Link (userHomePageText);
         link.setPage (userBusiness.getHomePageIDForUser (user));
-		return (link);
+		return link;
 	}
 
 	private String getLocalizedString(final String key, final String value) {
