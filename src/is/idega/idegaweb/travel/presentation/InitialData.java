@@ -82,7 +82,7 @@ public class InitialData extends TravelManager {
 	private static String parameterCreditCardRefund = "parameterCreditcardRefund";
 	private static String parameterTPosProperties = "parTPosProp";
 	private static String parameterUsers = "parameterUsers";
-	private static String PARAMETER_SUPPLY_POOL= "pSupPool";
+	public static String PARAMETER_SUPPLY_POOL= "pSupPool";
 	private static String PARAMETER_USER_ID = "uid";;
 	private static String  parameterVoucher = "paraneterVoucher";
 	private String parameterResellerId = "contractResellerId";
@@ -471,7 +471,7 @@ public class InitialData extends TravelManager {
 				
 				
 				//pGroup = SupplierManager.getPermissionGroup(supps[i]);
-				try { /** @todo Skoða betur.......*/
+				try { /** @todo Skoï¿½a betur.......*/
 					//users = UserGroupBusiness.getUsersContained(pGroup);
 					user = getSupplierManagerBusiness(iwc).getMainUser(supp);
 					if (user != null) {
@@ -606,7 +606,7 @@ public class InitialData extends TravelManager {
 		TextInput orgID = new TextInput("organization_id");
 		orgID.setSize(inputSize);
 		TextInput userName = new TextInput("supplier_user_name");
-		userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verður að velja notendanafn"));
+		userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verï¿½ur aï¿½ velja notendanafn"));
 		PasswordInput passOne = new PasswordInput("supplier_password_one");
 		passOne.setAsNotEmpty("Gimmi flippar");
 		PasswordInput passTwo = new PasswordInput("supplier_password_two");
@@ -1030,7 +1030,7 @@ public class InitialData extends TravelManager {
 		TextInput email = new TextInput("reseller_email");
 		email.setSize(inputSize);
 		TextInput userName = new TextInput("reseller_user_name");
-		userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verður að velja notendanafn"));
+		userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verï¿½ur aï¿½ velja notendanafn"));
 		PasswordInput passOne = new PasswordInput("reseller_password_one");
 		PasswordInput passTwo = new PasswordInput("reseller_password_two");
 		

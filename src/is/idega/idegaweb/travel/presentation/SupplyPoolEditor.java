@@ -9,6 +9,8 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import com.idega.block.trade.stockroom.data.DayInfo;
+import com.idega.block.trade.stockroom.data.DayInfoHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.SupplyPool;
 import com.idega.block.trade.stockroom.data.SupplyPoolDay;
@@ -22,6 +24,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -33,6 +36,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 
 
 /**
@@ -49,6 +53,8 @@ public class SupplyPoolEditor extends TravelBlock {
 	private static final String PARAMETER_SAVE_POOL_DAYS = "as_pd";
 	private static final String PARAMETER_DELETE_POOL = "ad_p";
 	private static final String PARAMETER_SHOW_POOLS = "ash_p";
+	private static final String PARAMETER_EDIT_DAYS_INFO = "ae_di";
+	private static final String PARAMETER_SAVE_DAYS_INFO = "as_di";
 	
 	private static final String PARAMETER_POOL_ID = "p_i";
 	private static final String PARAMETER_NAME = "p_n";
@@ -57,10 +63,13 @@ public class SupplyPoolEditor extends TravelBlock {
 	private static final String PARAMETER_MAX = "p_ma_";
 	private static final String PARAMETER_MIN = "p_mi_";
 	private static final String PARAMETER_ESTIMATED = "p_es_";
+	private static final String PARAMETER_EST_MONTH = "p_es_month_";
 	
 	private IWResourceBundle iwrb;
 	private HashMap parameters = new HashMap();
 	private String textStyle;
+	
+	private IWTimestamp timeStamp = null;
 	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -99,6 +108,38 @@ public class SupplyPoolEditor extends TravelBlock {
 			} else if (action.equals(PARAMETER_DELETE_POOL)) {
 				deletePool(iwc);
 				form.add(getPoolList(iwc));
+			}else if (action.equals(PARAMETER_EDIT_DAYS_INFO)) {
+				if (timeStamp == null) {
+					String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+					String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+					String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+
+					if(month != null && !month.equals("") &&
+							day != null && !day.equals("") &&
+							year != null && !year.equals("")) {
+						timeStamp = getTimestamp(day,month,year);
+					}
+					else {
+						timeStamp = IWTimestamp.RightNow();
+					}
+					form = getPoolMonthEditor(iwc, timeStamp);
+				}	
+			} else if(action.equals(PARAMETER_SAVE_DAYS_INFO)) {
+				String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+				String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+				String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+
+				if(month != null && !month.equals("") &&
+						day != null && !day.equals("") &&
+						year != null && !year.equals("")) {
+					timeStamp = getTimestamp(day,month,year);
+				}
+				else {
+					timeStamp = IWTimestamp.RightNow();
+				}
+				savePoolMonthDays(iwc, timeStamp);
+				form = getPoolMonthEditor(iwc, timeStamp);
+			
 			}
 			return form;
 		}
@@ -218,6 +259,52 @@ public class SupplyPoolEditor extends TravelBlock {
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void savePoolMonthDays(IWContext iwc, IWTimestamp stamp) throws RemoteException {
+		String sPoolID = iwc.getParameter(PARAMETER_POOL_ID);
+		IWCalendar calendar = new IWCalendar();
+		int daycount = calendar.getLengthOfMonth(stamp.getMonth(),stamp.getYear()); 
+		int n = 1;
+		while(n <= daycount) {
+			if(sPoolID != null && !sPoolID.equals("")) {
+				try {
+					SupplyPool pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
+					Integer poolPK = (Integer) pool.getPrimaryKey();
+
+					String countString = iwc.getParameter(PARAMETER_EST_MONTH + n); 
+					IWTimestamp date = new IWTimestamp(n, stamp.getMonth(), stamp.getYear());
+					if(countString != null && !countString.equals("") && !countString.equals(" ")) {
+						int count = Integer.parseInt(countString);
+						DayInfo dayInfo = null;
+						try {
+							dayInfo = getDayInfoHome().findBySupplyPoolIdAndDate(poolPK.intValue(), date.getDate());
+						} catch (FinderException e1) {
+							try {
+								dayInfo = getDayInfoHome().create();
+							}
+							catch (CreateException e2) {
+								e2.printStackTrace();
+							}
+						}
+						dayInfo.setCount(count);
+						dayInfo.setSupplyPoolId(poolPK.intValue());
+						dayInfo.setDate(date.getDate());
+						dayInfo.store();
+					}
+				}
+				catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+				catch (EJBException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+			n++;
 		}
 	}
 	
@@ -345,6 +432,126 @@ public class SupplyPoolEditor extends TravelBlock {
 			e.printStackTrace();
 		}
 
+		getProductsUsingPool(iwc, form, pool);
+		
+		Link moreLink = new Link(iwrb.getLocalizedImageButton("more", "More"));
+		moreLink.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_DAYS_INFO);
+		moreLink.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
+		moreLink.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
+		form.add(moreLink);
+				
+		return form;
+	}
+
+	private Form getPoolMonthEditor(IWContext iwc, IWTimestamp stamp) {
+		Form form = new Form();
+		IWCalendar calendar = new IWCalendar();
+		Table table = new Table();
+		table.setWidth(400);
+		table.setColor(TravelManager.WHITE);
+		table.setCellspacing(1);
+		table.setCellpadding(0);
+		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
+		form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
+		form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
+		form.add(table);
+		
+		int row = 1;
+		
+		String sPoolID = iwc.getParameter(PARAMETER_POOL_ID);
+		SupplyPool pool = null;
+		SupplyPoolDay poolDay = null;
+		Object poolPK = null;
+		try {
+			pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
+			poolPK = pool.getPrimaryKey();
+		} catch (FinderException f) {
+		} catch (NumberFormatException n) {
+		}
+				
+		table.mergeCells(1,row,7,row);
+		table.add(getHeaderText(pool.getName()), 1, row);
+		table.setRowColor(row++, TravelManager.backgroundColor);
+		
+		table.mergeCells(1, row, 7, row);
+		table.setRowColor(row, TravelManager.GRAY);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.add(getLastMonthsLink(iwrb, pool, timeStamp), 1, row);
+		table.add(new Text(stamp.getDateString("MMMMMMMM yyyy",iwc.getCurrentLocale())), 1, row); 
+		table.add(getNextMonthsLink(iwrb, pool, timeStamp), 1, row++); 
+		
+		for(int i=1; i<=7; i++) {
+			int max = -1; 
+			try {
+				if(poolPK != null) {
+					poolDay = getSupplyPoolDayHome().findByPrimaryKey(new SupplyPoolDayPK(poolPK, new Integer(i)));
+				  if (poolDay.getMax() > -1) {
+				  		max = poolDay.getMax();
+				  }
+				}
+			}
+			catch (FinderException e) {
+//				e.printStackTrace();
+			}
+			table.add(getText(calendar.getDayName(i, iwc.getCurrentLocale(),IWCalendar.SHORT)), i, row);
+			if(max != -1) {
+				table.add("(" + max +")", i, row);
+			}
+			table.setAlignment(i, row, Table.HORIZONTAL_ALIGN_CENTER);
+			table.setRowColor(row, TravelManager.GRAY);
+		}
+		
+		int daycount = calendar.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
+		int column = calendar.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);	
+		int n = 1;
+		int poolId = ((Integer) poolPK).intValue();
+		row++;
+		while(n <= daycount) {
+			TextInput input = new TextInput(PARAMETER_EST_MONTH + n);
+			DayInfo dayInfo = null;
+			IWTimestamp date = new IWTimestamp(n, stamp.getMonth(), stamp.getYear());
+			try {
+				dayInfo = getDayInfoHome().findBySupplyPoolIdAndDate(poolId, date.getDate());
+			}
+			catch (FinderException e) {
+				dayInfo = null;
+			}
+			input.setSize(4);
+			if(dayInfo != null) {
+				input.setContent(Integer.toString(dayInfo.getCount()));
+			}
+			
+			table.setRowColor(row, TravelManager.GRAY);
+			table.add(new Text(String.valueOf(n)), column, row);
+			table.add(Text.BREAK, column, row);
+			table.add(input, column, row);
+			
+			column = column % 7 + 1;
+			if (column == 1)
+				row++;
+			n++;
+		}
+		
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), ACTION_PARAMETER, PARAMETER_SAVE_DAYS_INFO);
+		SubmitButton back = new SubmitButton(iwrb.getLocalizedImageButton("back", "Back"));
+		
+		table.setRowColor(++row, TravelManager.GRAY);
+		table.add(back, 1, row); 
+		table.setAlignment(7, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(save, 7, row); 
+
+		getProductsUsingPool(iwc,form,pool);
+		
+		form.maintainParameter(PARAMETER_POOL_ID);
+		
+		return form;
+	}
+	/**
+	 * @param iwc
+	 * @param form
+	 * @param pool
+	 */
+	private void getProductsUsingPool(IWContext iwc, Form form, SupplyPool pool) {
 		try {
 			if (pool != null) {
 				Table table2 = new Table();
@@ -381,10 +588,8 @@ public class SupplyPoolEditor extends TravelBlock {
 		catch (IDOCompositePrimaryKeyException e) {
 			e.printStackTrace();
 		}
-				
-		return form;
 	}
-	
+
 	private Table getPoolList(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setWidth("400");
@@ -467,7 +672,61 @@ public class SupplyPoolEditor extends TravelBlock {
 		}
 		return link;
 	}
-	
+	private Link getNextMonthsLink(IWResourceBundle iwrb, SupplyPool pool, IWTimestamp idts) {
+		Link L = new Link(iwrb.getLocalizedString("right", "-->"));
+		L.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_DAYS_INFO);
+		L.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
+		L.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
+		L.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
+		if (idts.getMonth() == 12) {
+			L.addParameter(CalendarParameters.PARAMETER_DAY, idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() + 1));
+		}
+		else {
+			L.addParameter(CalendarParameters.PARAMETER_DAY, idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth() + 1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear()));
+		}
+		return L;
+	}
+	private Link getLastMonthsLink(IWResourceBundle iwrb, SupplyPool pool, IWTimestamp idts) {
+		Link L = new Link(iwrb.getLocalizedString("left", "<--"));
+		L.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_DAYS_INFO);
+		L.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
+		L.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
+		L.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
+		if (idts.getMonth() == 1) {
+			L.addParameter(CalendarParameters.PARAMETER_DAY,idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(12));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() - 1));
+		}
+		else {
+			L.addParameter(CalendarParameters.PARAMETER_DAY,idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth() - 1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear()));
+		}
+		return L; 
+	}
+	private static IWTimestamp getTimestamp(String day, String month, String year) {
+		IWTimestamp stamp = new IWTimestamp();
+
+		if (day != null) {
+			stamp.setDay(Integer.parseInt(day));
+		}
+		if (month != null) {
+			stamp.setMonth(Integer.parseInt(month));
+		}
+		if (year != null) {
+			stamp.setYear(Integer.parseInt(year));
+		}
+
+		stamp.setHour(0);
+		stamp.setMinute(0);
+		stamp.setSecond(0);
+
+		return stamp;
+	}
 	public void addParameter(String name, String value) {
 		parameters.put(name, value);
 	}
@@ -484,6 +743,15 @@ public class SupplyPoolEditor extends TravelBlock {
 	public SupplyPoolDayHome getSupplyPoolDayHome() {
 		try {
 			return (SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IDORuntimeException(e);
+		}
+	}
+	
+	public DayInfoHome getDayInfoHome() {
+		try {
+			return (DayInfoHome) IDOLookup.getHome(DayInfo.class);
 		}
 		catch (IDOLookupException e) {
 			throw new IDORuntimeException(e);

@@ -31,6 +31,8 @@ import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusinessBean;
 import com.idega.block.trade.stockroom.business.StockroomBusiness;
 import com.idega.block.trade.stockroom.business.StockroomBusinessBean;
+import com.idega.block.trade.stockroom.data.DayInfo;
+import com.idega.block.trade.stockroom.data.DayInfoHome;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
@@ -69,7 +71,7 @@ import com.idega.util.datastructures.HashtableDoubleKeyed;
  * Description:  Stockroom Business
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
+ * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a><br><a href="mailto:gimmi@idega.is">Grï¿½mur Jï¿½nsson</a>
  * @version 1.0
  */
 
@@ -737,7 +739,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       try {
         CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder("ISK");
         returner = holder.getCurrencyID();
-/*        String iceKr = "Íslenskar Krónur";
+/*        String iceKr = "ï¿½slenskar Krï¿½nur";
         String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+com.idega.block.trade.data.CurrencyBMPBean.getColumnNameCurrencyName() +" = '"+iceKr+"'");
         if (id == null || id.length == 0) {
             curr = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
@@ -1305,9 +1307,18 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 						try {
 							SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
 							SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
-							int max = pDay.getMax();
-	
+							Integer supplyPoolId = (Integer) pool.getPrimaryKey();
 							int iBookingExtra = getBooker().getBookingsTotalCountByOthersInPool(product, stamp);
+							
+							IWTimestamp date = new IWTimestamp(stamp.getDay(), stamp.getMonth(), stamp.getYear());
+							DayInfo dayInfo = ((DayInfoHome) IDOLookup.getHome(DayInfo.class)).findBySupplyPoolIdAndDate(supplyPoolId.intValue(),date.getDate());
+							if(dayInfo != null) {
+								int count = dayInfo.getCount();
+								count -= iBookingExtra; 
+								return count;
+							}
+
+							int max = pDay.getMax();
 							max -= iBookingExtra;
 							returner = new Integer(max);
 						} catch (FinderException fe) {
