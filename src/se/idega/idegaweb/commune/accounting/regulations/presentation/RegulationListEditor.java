@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
+ * $Id: RegulationListEditor.java,v 1.5 2003/09/11 14:34:39 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
+ * $Id: RegulationListEditor.java,v 1.5 2003/09/11 14:34:39 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -70,6 +70,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String KEY_HEADER_VAT_ELIGIBLE = PP + "header_vat_eligible";
 	private final static String KEY_HEADER_VAT_REGULATION = PP + "header_vat_regulation";
 	private final static String KEY_HEADER_SPECIAL_CALCULATION = PP + "header_special_calculation";
+	private final static String KEY_HEADER_DISCOUNT = PP + "header_discount";
 
 	private final static String KEY_CONDITION_HEADER = PP + "condition_header";
 	//private final static String KEY_INTERVAL_HEADER = PP + "intervall_header";
@@ -88,6 +89,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String KEY_VAT_NO = PP + "vat_no";
 	private final static String PARAM_NAME = "param_name";
 	private final static String PARAM_AMOUNT = "param_amount";
+	private final static String PARAM_DISCOUNT = "param_discount";
 	private final static String PARAM_PERIOD_FROM = "param_period_from";
 	private final static String PARAM_PERIOD_TO = "param_period_to";
 
@@ -137,7 +139,7 @@ public class RegulationListEditor extends AccountingBlock {
 					viewMainForm(iwc, "");
 					break;
 				case ACTION_SAVE :
-					if(!saveData(iwc)) {
+					if (!saveData(iwc)) {
 						viewMainForm(iwc, _errorText);
 					}
 					break;
@@ -157,10 +159,10 @@ public class RegulationListEditor extends AccountingBlock {
 		try {
 			String id = null;
 			
-			if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+			if (iwc.isParameterSet(PARAM_EDIT_ID)) {
 				id = iwc.getParameter(PARAM_EDIT_ID);
 			}
-			if(iwc.isParameterSet(PARAM_MODE_COPY)) {
+			if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 				id = null;
 			}
 			
@@ -178,7 +180,8 @@ public class RegulationListEditor extends AccountingBlock {
 					iwc.getParameter(PARAM_SELECTOR_CONDITION_TYPE),
 					iwc.getParameter(PARAM_SELECTOR_SPECIAL_CALCULATION),
 					iwc.getParameter(PARAM_SELECTOR_VAT_RULE),
-					iwc.getParameter(PARAM_CHANGED_SIGN)
+					iwc.getParameter(PARAM_CHANGED_SIGN),
+					iwc.getParameter(PARAM_DISCOUNT)
 			);
 		} catch (RegulationException e) {
 			_errorText = localize(e.getTextKey(), e.getDefaultText());
@@ -249,7 +252,7 @@ public class RegulationListEditor extends AccountingBlock {
 		app.setMainPanel(regulationForm);
 		app.setButtonPanel(bottomPanel);
 		add(app);		
-		if(error.length() != 0) {
+		if (error.length() != 0) {
 			add(getSmallErrorText(error));
 		}
 	}
@@ -273,7 +276,7 @@ public class RegulationListEditor extends AccountingBlock {
 		int payStreamPK = 0;
 		int condTypePK = 0;
 		int regSpecTypePK = 0;
-		if(r != null) {
+		if (r != null) {
 			mainOpPK = Integer.parseInt(r.getOperation() != null ? 
 					r.getOperation().getPrimaryKey().toString() : "0");	
 			payStreamPK = Integer.parseInt(r.getPaymentFlowType() != null ? 
@@ -293,44 +296,48 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedLabel(KEY_HEADER_NAME, "Benämning"), 1, 2);
 		table.add(getLocalizedLabel(KEY_HEADER_AMOUNT, "Månadsbelopp"), 1, 3);
-		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,4);
-		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,5);
+		table.add(getLocalizedLabel(KEY_HEADER_DISCOUNT, "Rabattsats"), 1, 4);
+		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,5);
+		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,6);
 
 		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_MAIN_OPERATION, mainOpPK), 2, 1);
 		table.add(getTextInput(PARAM_NAME, r != null ? r.getName() : "", 200, 40), 2, 2);
 		table.add(getTextInput(PARAM_AMOUNT, r != null ? 
 				formatCash(r.getAmount()) : "", 60, 10), 2, 3);
+		table.add(getTextInput(PARAM_DISCOUNT, r != null ? ""+r.getDiscount() : "", 40, 5), 2, 4);
 		table.add(getTextInput(PARAM_PERIOD_FROM, (formatDate(r != null ? 
-				r.getPeriodFrom() : dd, 4)), 40, 4), 2, 4);
-		table.add(getText(formatDate(r != null ? r.getChangedDate(): rightNow, 6)), 2, 5);
+				r.getPeriodFrom() : dd, 4)), 40, 4), 2, 5);
+		table.add(getText(formatDate(r != null ? r.getChangedDate(): rightNow, 6)), 2, 6);
 
 		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW, "Ström"),3 ,1);
 		table.add("", 3, 2);
 		table.add("", 3, 3);
-		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,4);
-		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,5);
+		table.add("", 3, 4);
+		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,5);
+		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,6);
 
 		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, payStreamPK), 4, 1);
 		table.add("", 4, 2);
 		table.add("", 4, 3);
-		table.add(getTextInput(PARAM_PERIOD_TO, (formatDate(r != null ? r.getPeriodTo() : dd, 4)), 40, 4), 4, 4);
-		table.add(""+userName, 4, 5);
+		table.add("", 4, 4);
+		table.add(getTextInput(PARAM_PERIOD_TO, (formatDate(r != null ? r.getPeriodTo() : dd, 4)), 40, 4), 4, 5);
+		table.add(""+userName, 4, 6);
 		table.add(new HiddenInput(PARAM_CHANGED_SIGN, ""+userName));
 
-		table.add(getLocalizedLabel(KEY_CONDITION_TYPE_HEADER, "Villkorstyp"), 1, 6);
-		table.add(getLocalizedLabel(KEY_REG_SPEC_TYPE_HEADER, "Regelspec.typ"), 1, 7);
-		table.add(conditionTypeSelector(iwc, PARAM_SELECTOR_CONDITION_TYPE, condTypePK), 2, 6);
-		table.add(regSpecTypeSelector(iwc, PARAM_SELECTOR_REG_SPEC_TYPE, regSpecTypePK), 2, 7);
-		table.add(getLocalizedLabel(KEY_CONDITION_ORDER_HEADER, "Villkorsordning"), 3, 6);
+		table.add(getLocalizedLabel(KEY_CONDITION_TYPE_HEADER, "Villkorstyp"), 1, 7);
+		table.add(getLocalizedLabel(KEY_REG_SPEC_TYPE_HEADER, "Regelspec.typ"), 1, 8);
+		table.add(conditionTypeSelector(iwc, PARAM_SELECTOR_CONDITION_TYPE, condTypePK), 2, 7);
+		table.add(regSpecTypeSelector(iwc, PARAM_SELECTOR_REG_SPEC_TYPE, regSpecTypePK), 2, 8);
+		table.add(getLocalizedLabel(KEY_CONDITION_ORDER_HEADER, "Villkorsordning"), 3, 7);
 	
 		if (r != null) {
-			table.add(getTextInput(PARAM_CONDITION_ORDER, r.getConditionOrder() != null ? ""+r.getConditionOrder().intValue() : "", 40, 4), 4, 6);
+			table.add(getTextInput(PARAM_CONDITION_ORDER, r.getConditionOrder() != null ? ""+r.getConditionOrder().intValue() : "", 40, 4), 4, 7);
 		}
 
-		if(iwc.isParameterSet(PARAM_MODE_COPY)) {
+		if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 			table.add(new HiddenInput(PARAM_MODE_COPY, ""+iwc.getParameter(PARAM_MODE_COPY)));
 		}
-		if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+		if (iwc.isParameterSet(PARAM_EDIT_ID)) {
 			table.add(new HiddenInput(PARAM_EDIT_ID, ""+iwc.getParameter(PARAM_EDIT_ID)));
 		}
 		return table;	
@@ -353,14 +360,14 @@ public class RegulationListEditor extends AccountingBlock {
 		Collection conditions = null;
 		Iterator iter = null;
 		conditions = findAllConditionsByRegulation(iwc, r);
-		if(conditions != null) {
+		if (conditions != null) {
 			iter = conditions.iterator();
 		}
 		
 		for (int index = 1; index <= 5; index++) {
 			Condition field = null;
-			if(iter != null) {
-				if(iter.hasNext()) { 
+			if (iter != null) {
+				if (iter.hasNext()) { 
 					field = (Condition) iter.next();
 				}
 			}
@@ -371,7 +378,7 @@ public class RegulationListEditor extends AccountingBlock {
 					PARAM_SELECTOR_OPERATION +"_" +index, 
 					PARAM_SELECTOR_INTERVAL +"_" +index)
 			);
-			if(field != null) {
+			if (field != null) {
 				dDrop.setSelectedValues(""+field.getConditionID(), ""+field.getIntervalID());
 			}
 			table.add(dDrop, 2, row++);
@@ -398,7 +405,7 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_VAT_ELIGIBLE, "Momsersättning"), 1, 2);
 		table.add(getLocalizedLabel(KEY_HEADER_VAT_REGULATION, "Momsregel"), 1, 3);
 
-		if(r != null) {
+		if (r != null) {
 			vatYesNoID = r.getVATEligible() != null ? r.getVATEligible().intValue() : 0;	
 			vatRulePK = Integer.parseInt(r.getVATRegulation() != null ? 
 					r.getVATRegulation().getPrimaryKey().toString() : "0");
@@ -426,7 +433,7 @@ public class RegulationListEditor extends AccountingBlock {
 		try {
 			int regulationID = 0;
 			
-			if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+			if (iwc.isParameterSet(PARAM_EDIT_ID)) {
 				regulationID = Integer.parseInt(iwc.getParameter(PARAM_EDIT_ID));
 			}
 			r = getRegulationBusiness(iwc).findRegulation(regulationID);
