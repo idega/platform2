@@ -1,7 +1,7 @@
 package com.idega.block.albumcollection.business;
 
 import com.idega.data.EntityFinder;
-import com.idega.business.IDOLegacyEntityComparator;
+import com.idega.data.IDOLegacyEntityComparator;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.IWTimestamp;
 import com.idega.presentation.text.Text;
