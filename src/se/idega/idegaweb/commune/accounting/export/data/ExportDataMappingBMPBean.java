@@ -33,6 +33,9 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	private static final String COLUMN_STANDARD_PAYMENT_DAY = "standard_payment_day";
 	private static final String COLUMN_FILE_CREATION_FOLDER = "file_folder";
 	private static final String COLUMN_IFS_FILE_FOLDER = "ifs_file_folder";
+	private static final String COLUMN_FILE_BACKUP_FOLDER = "file_backup_folder";
+	private static final String COLUMN_LIST_CREATION_FOLDER = "list_folder";
+	private static final String COLUMN_LIST_BACKUP_FOLDER = "list_backup_folder";
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -132,6 +135,18 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	public String getIFSFileFolder() {
 		return getStringColumnValue(COLUMN_IFS_FILE_FOLDER);
 	}
+
+	public String getFileBackupFolder() {
+		return getStringColumnValue(COLUMN_FILE_BACKUP_FOLDER);
+	}
+
+	public String getListCreationFolder() {
+		return getStringColumnValue(COLUMN_LIST_CREATION_FOLDER);
+	}
+
+	public String getListBackupFolder() {
+		return getStringColumnValue(COLUMN_LIST_BACKUP_FOLDER);
+	}
 	
 	//Setters
 	public void setOperationalField(String operationalField) {
@@ -188,6 +203,18 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	
 	public void setIFSFileFolder(String folder) {
 		setColumn(COLUMN_IFS_FILE_FOLDER,folder);
+	}
+
+	public void setFileBackupFolder(String folder) {
+		setColumn(COLUMN_FILE_BACKUP_FOLDER,folder);
+	}
+
+	public void setListCreationFolder(String folder) {
+		setColumn(COLUMN_LIST_CREATION_FOLDER,folder);
+	}
+
+	public void setListBackupFolder(String folder) {
+		setColumn(COLUMN_LIST_BACKUP_FOLDER,folder);
 	}
 	
 	//Find methods

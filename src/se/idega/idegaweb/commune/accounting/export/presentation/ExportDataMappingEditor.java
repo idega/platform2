@@ -35,6 +35,9 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	private static final String PARAMETER_CUSTOMER_CLAIM_ACCOUNT = "edm_customer_claim_account";
 	private static final String PARAMETER_FILE_CREATION_FOLDER = "edm_file_creation_folder";
 	private static final String PARAMETER_IFS_FILE_FOLDER = "edm_ifs_file_folder";
+	private static final String PARAMETER_FILE_BACKUP_FOLDER = "edm_ifs_file_backup_folder";
+	private static final String PARAMETER_LIST_CREATION_FOLDER = "edm_ifs_list_folder";
+	private static final String PARAMETER_LIST_BACKUP_FOLDER = "edm_ifs_list_backup_folder";
 	private static final String PARAMETER_ACCOUNT_SETTLEMENT_TYPE = "edm_account_settlement_type";
 	private static final String PARAMETER_STANDARD_PAYMENT_DAY = "edm_standard_payment_day";
 	private static final String PARAMETER_CASH_FLOW_IN = "edm_cash_flow_in";
@@ -61,7 +64,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		Script script = new Script();
 		script.addFunction("validateForm", getValidateFormScript());
 
-		Table table = new Table(3, 29);
+		Table table = new Table(3, 35);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 12);
@@ -148,6 +151,33 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.add(getSmallHeader(localize("export.ifs_file_folder", "IFS file folder") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		table.add(IFSFileFolder, 3, row++);
+
+		TextInput fileBackupFolder = getTextInput(PARAMETER_FILE_BACKUP_FOLDER, "", _inputWidth, 255);
+		if (_mapping != null && _mapping.getFileBackupFolder() != null)
+			fileBackupFolder.setContent(_mapping.getFileBackupFolder());
+		
+		table.setHeight(row++, 3);
+		table.add(getSmallHeader(localize("export.file_backup_folder", "File backup folder") + ":"), 1, row);
+		table.setNoWrap(1, row);
+		table.add(fileBackupFolder, 3, row++);
+
+		TextInput listCreationFolder = getTextInput(PARAMETER_LIST_CREATION_FOLDER, "", _inputWidth, 255);
+		if (_mapping != null && _mapping.getListCreationFolder() != null)
+			listCreationFolder.setContent(_mapping.getListCreationFolder());
+		
+		table.setHeight(row++, 3);
+		table.add(getSmallHeader(localize("export.list_creation_folder", "List creation folder") + ":"), 1, row);
+		table.setNoWrap(1, row);
+		table.add(listCreationFolder, 3, row++);
+		
+		TextInput listBackupFolder = getTextInput(PARAMETER_LIST_BACKUP_FOLDER, "", _inputWidth, 255);
+		if (_mapping != null && _mapping.getListBackupFolder() != null)
+			listBackupFolder.setContent(_mapping.getListBackupFolder());
+		
+		table.setHeight(row++, 3);
+		table.add(getSmallHeader(localize("export.list_backup_folder", "List backup folder") + ":"), 1, row);
+		table.setNoWrap(1, row);
+		table.add(listBackupFolder, 3, row++);
 		
 		DropdownMenu accountSettlementType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_ACCOUNT_SETTLEMENT_TYPE));
 		accountSettlementType.addMenuElement(getBusiness().getExportBusiness().getAccountSettlementTypeDayByDay(), localize("export.type_day_by_day", "Day by day"));
@@ -244,7 +274,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 				providerAuthorization = true;
 				
 			try {
-				getBusiness().getExportBusiness().storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), iwc.getParameter(PARAMETER_FILE_CREATION_FOLDER), iwc.getParameter(PARAMETER_IFS_FILE_FOLDER), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), Integer.parseInt(iwc.getParameter(PARAMETER_STANDARD_PAYMENT_DAY)), cashFlowIn, cashFlowOut, providerAuthorization);
+				getBusiness().getExportBusiness().storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), iwc.getParameter(PARAMETER_FILE_CREATION_FOLDER), iwc.getParameter(PARAMETER_IFS_FILE_FOLDER), iwc.getParameter(PARAMETER_FILE_BACKUP_FOLDER), iwc.getParameter(PARAMETER_LIST_CREATION_FOLDER), iwc.getParameter(PARAMETER_LIST_BACKUP_FOLDER), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), Integer.parseInt(iwc.getParameter(PARAMETER_STANDARD_PAYMENT_DAY)), cashFlowIn, cashFlowOut, providerAuthorization);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
