@@ -1282,7 +1282,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		catch (IDOCompositePrimaryKeyException e) {
 			e.printStackTrace();
@@ -1292,9 +1292,9 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
-//			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
-//			Cacheing disabled for a while			
-			HashMap subMap = null;
+			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
+//			Cacheing disabled for a while // erm re-enabled			
+//			HashMap subMap = null;
 			if (subMap == null) {
 				subMap = new HashMap();
 			}
