@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.trade.data.CreditCardInformation;
@@ -105,7 +106,7 @@ public class CreditCardMerchantEditor extends TravelManager {
     }
   }
 
-  public Form getTPosMerchantEditorForm(IWContext iwc) throws RemoteException{
+  public Form getTPosMerchantEditorForm(IWContext iwc) throws RemoteException, RemoveException{
     Form form = new Form();
     if (super.isSupplierManager()) {
       String action = iwc.getParameter(_parameterAction);
@@ -134,7 +135,7 @@ public class CreditCardMerchantEditor extends TravelManager {
       	form = verifyDelete(iwc);
       } else if (action.equals(_actionDeleteVerified)) {
       	delete(iwc);
-      	form = getMerchantForm();
+      	form = getMainMenu();
       }
 
       return form;
@@ -215,7 +216,9 @@ public class CreditCardMerchantEditor extends TravelManager {
   		verifyText.addToText(_reseller.getName());
   		form.maintainParameter(this._parameterResellerId);
   	}*/
-  	form.maintainParameter(this._parameterSupplierId);
+  	
+		form.maintainParameter(this._parameterMerchantID);
+		form.maintainParameter(this._parameterSupplierId);
   	int row = 1;
   	table.add(getHeaderText(_iwrb.getLocalizedString("travel.delete_tpos_merchant", "Delete TPOS Merchant")), 1, row);
   	table.mergeCells(1, row, 2, row);
@@ -235,7 +238,8 @@ public class CreditCardMerchantEditor extends TravelManager {
   	return form;
   }
   
-  private void delete(IWContext iwc) {
+  private void delete(IWContext iwc) throws RemoveException {
+  	this._merchant.remove();
   	/*
 		if (_supplier != null) {
 		  _supplier.setTPosMerchantId(null);
