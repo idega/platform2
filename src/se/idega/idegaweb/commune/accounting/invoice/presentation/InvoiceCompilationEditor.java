@@ -1,12 +1,14 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.text.Text;
-import com.idega.user.data.User;
-import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.presentation.*;
+
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -15,10 +17,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <b>English - Swedish mini lexicon:</b><br/>
  * Invoice compilation = Faktureringsunderlag<br/>
  * <p>
- * Last modified: $Date: 2003/10/27 16:15:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/27 20:22:21 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -29,8 +31,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
-    private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
-    private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
+    //private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
+    //private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
 
@@ -46,14 +48,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         //		setResourceBundle (getResourceBundle(context));
         
 		try {
-			final int action = parseAction (context);
+			final int action = parseAction ();
 			switch (action) {
 				case ACTION_SHOW_COMPILATION:
-					showCompilation (context);
+					showCompilation ();
 					break;
                     
                 default:
-                    showCompilationList (context);
+                    showCompilationList ();
 					break;					
 			}
 		} catch (Exception exception) {
@@ -61,7 +63,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		}
 	}
 	
-	private int parseAction (IWContext context) {
+	private int parseAction (/*IWContext context*/) {
         return ACTION_SHOW_COMPILATION_LIST;
 	}	
 
@@ -70,7 +72,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 *
 	 * @param context session data like user info etc.
 	 */
-    private void showCompilation (final IWContext context) {
+    private void showCompilation (/*final IWContext context*/) {
         throw new UnsupportedOperationException ("n.i.y.");
     }
 
@@ -79,7 +81,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 *
 	 * @param context session data like user info etc.
 	 */
-    private void showCompilationList (final IWContext context)
+    private void showCompilationList (/*final IWContext context*/)
         throws RemoteException {
         add (createMainTable (new Text ("content goes here...")));
         throw new UnsupportedOperationException ("n.i.y.");
