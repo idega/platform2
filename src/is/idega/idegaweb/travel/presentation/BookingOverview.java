@@ -11,7 +11,6 @@ import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 
@@ -463,11 +462,11 @@ public class BookingOverview extends TravelManager {
                             table.add(availableTextBold,7,row);
                           }
 
-                          table.setColor(3,row,NatBusiness.backgroundColor);
-                          table.setColor(4,row,NatBusiness.ORANGE);
-                          table.setColor(5,row,NatBusiness.YELLOW);
-                          table.setColor(6,row,NatBusiness.RED);
-                          table.setColor(7,row,NatBusiness.LIGHTGREEN);
+                          table.setColor(3,row,super.backgroundColor);
+                          table.setColor(4,row,super.ORANGE);
+                          table.setColor(5,row,super.YELLOW);
+                          table.setColor(6,row,super.RED);
+                          table.setColor(7,row,super.LIGHTGREEN);
 
                           table.add(btnNanar,8,row);
                           if (supplier != null) {
@@ -612,12 +611,12 @@ public class BookingOverview extends TravelManager {
             table.add(availableTextBold,7,row);
           }
 
-          table.setColor(3,row,NatBusiness.backgroundColor);
-          table.setColor(4,row,NatBusiness.ORANGE);
-          table.setColor(5,row,NatBusiness.YELLOW);
-          table.setColor(6,row,NatBusiness.RED);
-          table.setColor(7,row,NatBusiness.LIGHTGREEN);
-          table.setColor(8,row,NatBusiness.backgroundColor);
+          table.setColor(3,row,super.backgroundColor);
+          table.setColor(4,row,super.ORANGE);
+          table.setColor(5,row,super.YELLOW);
+          table.setColor(6,row,super.RED);
+          table.setColor(7,row,super.LIGHTGREEN);
+          table.setColor(8,row,super.backgroundColor);
 
 
           Text Tname;
@@ -656,13 +655,13 @@ public class BookingOverview extends TravelManager {
               table.add(Tbooked,4,row);
 
 
-              table.setColor(1,row,NatBusiness.ORANGE);
-              table.setColor(2,row,NatBusiness.ORANGE);
-              table.setColor(4,row,NatBusiness.ORANGE);
-              table.setColor(5,row,NatBusiness.YELLOW);
-              table.setColor(6,row,NatBusiness.RED);
-              table.setColor(7,row,NatBusiness.LIGHTGREEN);
-              table.setColor(8,row,NatBusiness.backgroundColor);
+              table.setColor(1,row,super.ORANGE);
+              table.setColor(2,row,super.ORANGE);
+              table.setColor(4,row,super.ORANGE);
+              table.setColor(5,row,super.YELLOW);
+              table.setColor(6,row,super.RED);
+              table.setColor(7,row,super.LIGHTGREEN);
+              table.setColor(8,row,super.backgroundColor);
             }
           }
 
@@ -685,13 +684,13 @@ public class BookingOverview extends TravelManager {
             table.add(Tbooked,5,row);
 
 
-            table.setColor(1,row,NatBusiness.YELLOW);
-            table.setColor(2,row,NatBusiness.YELLOW);
-            table.setColor(4,row,NatBusiness.YELLOW);
-            table.setColor(5,row,NatBusiness.YELLOW);
-            table.setColor(6,row,NatBusiness.RED);
-            table.setColor(7,row,NatBusiness.LIGHTGREEN);
-            table.setColor(8,row,NatBusiness.backgroundColor);
+            table.setColor(1,row,super.YELLOW);
+            table.setColor(2,row,super.YELLOW);
+            table.setColor(4,row,super.YELLOW);
+            table.setColor(5,row,super.YELLOW);
+            table.setColor(6,row,super.RED);
+            table.setColor(7,row,super.LIGHTGREEN);
+            table.setColor(8,row,super.backgroundColor);
           }
 
 
@@ -725,19 +724,19 @@ public class BookingOverview extends TravelManager {
               table.add(Thotel,8,row);
 
 
-              table.setColor(1,row,NatBusiness.RED);
-              table.setColor(2,row,NatBusiness.RED);
-              table.setColor(6,row,NatBusiness.RED);
-              table.setColor(7,row,NatBusiness.LIGHTGREEN);
-              table.setColor(8,row,NatBusiness.backgroundColor);
+              table.setColor(1,row,super.RED);
+              table.setColor(2,row,super.RED);
+              table.setColor(6,row,super.RED);
+              table.setColor(7,row,super.LIGHTGREEN);
+              table.setColor(8,row,super.backgroundColor);
           }
 
         ++row;
         table.mergeCells(1,row,6,row);
         availableTextBold.setText(Integer.toString(available));
-        table.setColor(1,row,NatBusiness.LIGHTGREEN);
-        table.setColor(7,row,NatBusiness.LIGHTGREEN);
-        table.setColor(8,row,NatBusiness.backgroundColor);
+        table.setColor(1,row,super.LIGHTGREEN);
+        table.setColor(7,row,super.LIGHTGREEN);
+        table.setColor(8,row,super.backgroundColor);
         Text Tavail = (Text) super.theSmallBoldText.clone();
           Tavail.setText(iwrb.getLocalizedString("travel.available_seats","Available seats"));
         if (seats > 0) {

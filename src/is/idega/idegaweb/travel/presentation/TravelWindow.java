@@ -3,7 +3,7 @@ package is.idega.travel.presentation;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
-import com.idega.projects.nat.business.*;
+import is.idega.travel.presentation.TravelManager;
 
 import com.idega.idegaweb.IWResourceBundle;
 
@@ -63,12 +63,12 @@ public class TravelWindow extends Window {
     jPage = super.getPage(modinfo);
       jPage.setAllMargins(0);
 
-    table.setColor(1,1,NatBusiness.DARKBLUE);
-    table.setColor(2,1,NatBusiness.DARKBLUE);
-    table.setColor(3,1,NatBusiness.DARKBLUE);
+    table.setColor(1,1,TravelManager.DARKBLUE);
+    table.setColor(2,1,TravelManager.DARKBLUE);
+    table.setColor(3,1,TravelManager.DARKBLUE);
 
     Text header1 = new Text("idega");
-      header1.setFontColor(NatBusiness.LIGHTORANGE);
+      header1.setFontColor(TravelManager.LIGHTORANGE);
       header1.setBold();
       header1.setFontSize(Text.FONT_SIZE_12_HTML_3);
     Text header2 = new Text("Web");
@@ -79,7 +79,7 @@ public class TravelWindow extends Window {
     table.add(header1,2,1);
     table.add(header2,2,1);
 
-    text.setFontColor(NatBusiness.textColor);
+    text.setFontColor(TravelManager.textColor);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
     iwrb = super.getResourceBundle(modinfo);

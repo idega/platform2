@@ -12,7 +12,6 @@ import com.idega.block.trade.stockroom.business.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import java.sql.SQLException;
 
 import is.idega.travel.data.Service;
@@ -542,7 +541,7 @@ public class ServiceDesigner extends TravelManager {
           Text priceDiscountText = (Text) theText.clone();
             priceDiscountText.setText("T - Price / Discount");
 
-          table.setColor(1,row,NatBusiness.backgroundColor);
+          table.setColor(1,row,super.backgroundColor);
           table.mergeCells(1,row,3,row);
 
           Link link = new Link();
@@ -569,7 +568,7 @@ public class ServiceDesigner extends TravelManager {
 
               ++row;
               table.mergeCells(1,row,3,row);
-              table.setColor(1,row, NatBusiness.backgroundColor);
+              table.setColor(1,row, super.backgroundColor);
 
           }
 

@@ -11,7 +11,6 @@ import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import java.sql.SQLException;
 
 import is.idega.travel.business.TravelStockroomBusiness;
@@ -211,13 +210,13 @@ public class DailyReport extends TravelManager {
 
 
       Text headerText = (Text) theBoldText.clone();
-          headerText.setFontColor(NatBusiness.textColor);
+          headerText.setFontColor(super.textColor);
           headerText.setText(iwrb.getLocalizedString("travel.daily_report","Daily report"));
           headerText.addToText(" : ");
 
       Text timeText = (Text) theBoldText.clone();
           timeText.setText(stamp.getLocaleDate(modinfo));
-          timeText.setFontColor(NatBusiness.textColor);
+          timeText.setFontColor(super.textColor);
       Text nameText = (Text) theBoldText.clone();
           nameText.setText(product.getName());
 
@@ -303,7 +302,7 @@ public class DailyReport extends TravelManager {
       table.setWidth(4,fourWidth);
       table.setWidth(5,fiveWidth);
 
-      table.setBorderColor(NatBusiness.textColor);
+      table.setBorderColor(super.textColor);
 
       int attendance;
       int ibookings;
@@ -327,7 +326,7 @@ public class DailyReport extends TravelManager {
           totalAttendance += attendance;
           totalAmount += amount;
 
-          table.setRowColor(row,NatBusiness.backgroundColor);
+          table.setRowColor(row,super.backgroundColor);
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
 
@@ -364,7 +363,7 @@ public class DailyReport extends TravelManager {
           addTable.setWidth("100%");
           addTable.setBorder(1);
           addTable.setCellspacing(0);
-          addTable.setBorderColor(NatBusiness.textColor);
+          addTable.setBorderColor(super.textColor);
           addTable.setWidth(2,twoWidth);
           addTable.setWidth(3,threeWidth);
           addTable.setWidth(4,fourWidth);
@@ -414,7 +413,7 @@ public class DailyReport extends TravelManager {
           totalTable.setWidth("100%");
           totalTable.setBorder(1);
           totalTable.setCellspacing(0);
-          totalTable.setBorderColor(NatBusiness.textColor);
+          totalTable.setBorderColor(super.textColor);
           totalTable.setWidth(2,twoWidth);
           totalTable.setWidth(3,threeWidth);
           totalTable.setWidth(4,fourWidth);

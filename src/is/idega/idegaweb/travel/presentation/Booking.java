@@ -11,7 +11,6 @@ import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import is.idega.travel.business.TravelStockroomBusiness;
 import com.idega.util.text.*;
 import java.sql.SQLException;
@@ -52,7 +51,11 @@ public class Booking extends TravelManager {
 
   public static String parameterProductId = Product.getProductEntityName();
   private static String parameterBookAnyway = "bookingBookAnyway";
-  private static String parameterSendInquery = "bokkingSendInquery";
+  private static String parameterSendInquery = "bookingSendInquery";
+  private static String parameterInqueryId = "bookInqueryId";
+  private static String parameterRespondInquery = "bookingRespondInquery";
+  private static String parameterRespondYes = "bookingYes";
+  private static String parameterRespondNo = "bookingNo";
 
   private idegaTimestamp stamp;
 
@@ -79,9 +82,12 @@ public class Booking extends TravelManager {
         }else if (action.equals(this.BookingParameter)) {
             checkBooking(modinfo);
         }else if (action.equals(this.parameterBookAnyway)) {
-            saveBooking(modinfo);
+            saveBooking(modinfo, true);
         }else if (action.equals(this.parameterSendInquery)) {
             sendInquery(modinfo);
+        }else if (action.equals(this.parameterRespondInquery)) {
+            inqueryResponse(modinfo);
+            displayForm(modinfo);
         }
 //      }else {
 //        add("TEMP _LOGIN");
@@ -159,7 +165,7 @@ public class Booking extends TravelManager {
               contentTable.setWidth("95%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
-              contentTable.setBorderColor(NatBusiness.textColor);
+              contentTable.setBorderColor(super.textColor);
           sb.add(contentTable);
         }
         else {
@@ -326,21 +332,21 @@ public class Booking extends TravelManager {
 
             if (inqueries.length > 0) {
               table.add(getInqueries(modinfo, inqueries),1,row);
-              table.setColor(1,row,NatBusiness.YELLOW);
+              table.setColor(1,row,super.YELLOW);
             }else {
-              table.setColor(1,row,NatBusiness.backgroundColor);
+              table.setColor(1,row,super.backgroundColor);
             }
           }else {
-            table.setColor(1,row,NatBusiness.backgroundColor);
+            table.setColor(1,row,super.backgroundColor);
           }
 
-          table.setColor(6,row,NatBusiness.backgroundColor);
+          table.setColor(6,row,super.backgroundColor);
           table.setVerticalAlignment(6,row,"top");
           table.add(getCalendar(modinfo),6,row);
 
           ++row;
           table.mergeCells(1,row,5,row);
-          table.setColor(1,row,NatBusiness.backgroundColor );
+          table.setColor(1,row,super.backgroundColor );
           table.mergeCells(6,1,6,row);
           table.add(getBookingForm(),1,row);
 
@@ -353,13 +359,13 @@ public class Booking extends TravelManager {
           table.mergeCells(1,row,5,row);
           table.setAlignment(1,row, "center");
 
-          table.setColor(6,row,NatBusiness.backgroundColor);
+          table.setColor(6,row,super.backgroundColor);
           table.setVerticalAlignment(6,row,"top");
           table.add(getCalendar(modinfo),6,row);
 
           ++row;
           table.mergeCells(1,row,5,row);
-          table.setColor(1,row,NatBusiness.backgroundColor );
+          table.setColor(1,row,super.backgroundColor );
           table.mergeCells(6,1,6,row);
       }
 
@@ -369,11 +375,12 @@ public class Booking extends TravelManager {
 
 
   public Table getCalendar(ModuleInfo modinfo) {
-      String colorForAvailableDay = NatBusiness.textColor;
+      String colorForAvailableDay = super.textColor;
+      String colorForInquery = super.YELLOW;
 
       Table table = new Table(4,5);
           table.setBorder(0);
-          table.setColor(NatBusiness.backgroundColor);
+          table.setColor(super.backgroundColor);
           table.setAlignment("center");
 
 
@@ -472,14 +479,14 @@ public class Booking extends TravelManager {
           sm.T.setBorder(1);
           sm.T.setCellpadding(2);
 //          sm.T.setCellspacing(2);
-          sm.T.setBorderColor(NatBusiness.backgroundColor);
+          sm.T.setBorderColor(super.backgroundColor);
           sm.useNextAndPreviousLinks(false);
-          sm.setBackgroundColor(NatBusiness.backgroundColor);
+          sm.setBackgroundColor(super.backgroundColor);
           sm.setTextColor("WHITE");
           sm.setDaysAsLink(true);
           sm.showNameOfDays(false);
           sm.setHeaderTextColor("#666699");
-          sm.setHeaderColor(NatBusiness.textColor);
+          sm.setHeaderColor(super.textColor);
           sm.setBodyColor("#8484D6");
           sm.setInActiveCellColor("#B1B1E5");
           sm.useColorToday(false);
@@ -496,6 +503,16 @@ public class Booking extends TravelManager {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (!TravelStockroomBusiness.getIfExpired(contract, temp))
             if (TravelStockroomBusiness.getIfDay(modinfo,contract,product,temp)) {
+              sm.setDayColor(temp, colorForAvailableDay);
+            }
+            temp.addDays(1);
+          }
+        }
+        else if (supplier != null) {
+          for (int i = 1; i <= lengthOfMonth; i++) {
+            if (tsb.getNumberOfUnansweredInqueries(productId, temp) > 0) {
+              sm.setDayColor(temp, colorForInquery);
+            }else if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
             }
             temp.addDays(1);
@@ -538,6 +555,9 @@ public class Booking extends TravelManager {
       Text contentText;
 
       idegaTimestamp theStamp;
+      Link answerYes;
+      Link answerNo;
+
 
       for (int i = 0; i < inqueries.length; i++) {
           theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
@@ -570,7 +590,19 @@ public class Booking extends TravelManager {
           ++row;
           table.mergeCells(2,row,3,row);
           table.setAlignment(2,row,"right");
-          table.add(new SubmitButton("TEMP-SVARA"),2,row);
+          answerYes = new Link("T - Staðfesta bókun");
+            answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
+            answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
+            answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
+
+          answerNo = new Link("T - Hafna bókun");
+            answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
+            answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
+            answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
+
+          table.add(answerYes,2,row);
+          table.add("&nbsp;&nbsp;",2,row);
+          table.add(answerNo,2,row);
 
       }
 
@@ -586,7 +618,7 @@ public class Booking extends TravelManager {
         table.setWidth("100%");
         table.setCellspacing(0);
         table.setBorder(1);
-        table.setBorderColor(NatBusiness.textColor);
+        table.setBorderColor(super.textColor);
         int row = 1;
 
       String cellWidth = "60";
@@ -691,10 +723,10 @@ public class Booking extends TravelManager {
 
       ++row;
       table.add(bookingStatusText,1,row);
-      table.setColor(2,row,NatBusiness.backgroundColor);
-      table.setColor(3,row,NatBusiness.RED);
-      table.setColor(4,row,NatBusiness.YELLOW);
-      table.setColor(5,row,NatBusiness.LIGHTGREEN);
+      table.setColor(2,row,super.backgroundColor);
+      table.setColor(3,row,super.RED);
+      table.setColor(4,row,super.YELLOW);
+      table.setColor(5,row,super.LIGHTGREEN);
 
       table.add(countTextBold,2,row);
       table.add(bookedTextBold,3,row);
@@ -1022,13 +1054,13 @@ public class Booking extends TravelManager {
 
       add(form);
     }else {
-      saveBooking(modinfo);
+      saveBooking(modinfo, true);
     }
 
   }
 
 
-  private void saveBooking(ModuleInfo modinfo) {
+  private int saveBooking(ModuleInfo modinfo, boolean displayForm) {
       String surname = modinfo.getParameter("surname");
       String lastname = modinfo.getParameter("lastname");
       String address = modinfo.getParameter("address");
@@ -1047,6 +1079,8 @@ public class Booking extends TravelManager {
       String ccYear = modinfo.getParameter("ccYear");
 
 
+      int returner = 0;
+
       String many;
       int iMany = 0;
       int iHotelId;
@@ -1054,7 +1088,7 @@ public class Booking extends TravelManager {
       ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
       int bookingId = -1;
 
-      boolean displayForm = false;
+      boolean displayFormInternal = false;
 
       try {
         int[] manys = new int[pPrices.length];
@@ -1076,17 +1110,19 @@ public class Booking extends TravelManager {
 
         if (supplier != null) {
             bookingId = tsb.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
-            displayForm = true;
+            displayFormInternal = true;
         }else if (reseller != null) {
             if (reseller.getReferenceNumber().equals(referenceNumber)) {
               bookingId = tsb.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
               reseller.addTo(is.idega.travel.data.Booking.class, bookingId);
-              displayForm= true;
+              displayFormInternal= true;
             }
         }else if ((supplier == null) && (reseller == null) ) {
             // if (Median.isCCValid(ccNumber,ccMonth, ccYear));
             bookingId = tsb.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
         }
+
+        returner = bookingId;
 
         if (bookingId != -1) {
           BookingEntry bEntry;
@@ -1110,8 +1146,11 @@ public class Booking extends TravelManager {
       }
 
       if (displayForm)
+      if (displayFormInternal)
       displayForm(modinfo);
 
+
+      return returner;
   }
 
   private void sendInquery(ModuleInfo modinfo) {
@@ -1130,6 +1169,11 @@ public class Booking extends TravelManager {
     String referenceNumber = modinfo.getParameter("reference_number");
 
     try {
+        int bookingId = saveBooking(modinfo, false);
+        is.idega.travel.data.Booking booking = new is.idega.travel.data.Booking(bookingId);
+          booking.setIsValid(false);
+          booking.update();
+
         Inquery inq = new Inquery();
           inq.setAnswered(false);
           inq.setEmail(email);
@@ -1139,10 +1183,69 @@ public class Booking extends TravelManager {
           inq.setName(surname+" "+lastname);
           inq.setServiceID(product.getID());
           inq.setNumberOfSeats(Integer.parseInt(numberOfSeats));
+          inq.setBookingId(bookingId);
         inq.insert();
     }catch (SQLException sql) {
       sql.printStackTrace();
     }
+  }
+
+  private void inqueryResponse(ModuleInfo modinfo) {
+    String yesNo = modinfo.getParameter(this.parameterRespondInquery);
+    String sInqueryId = modinfo.getParameter(this.parameterInqueryId);
+    Boolean book = null;
+
+    String mailHost = "mail.idega.is";
+
+    String mailSubject = "NAT "+iwrb.getLocalizedString("travel.idega.inquery","Inquery");
+    StringBuffer responseString = new StringBuffer();
+
+    if (yesNo != null) {
+      if (yesNo.equals(this.parameterRespondYes)) book = new Boolean(true);
+      if (yesNo.equals(this.parameterRespondNo)) book = new Boolean(false);
+    }
+
+    javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+    if (book != null) {
+      try {
+        tm.begin();
+        com.idega.util.SendMail sm = new com.idega.util.SendMail();
+        int inqueryId = Integer.parseInt(sInqueryId);
+        Inquery inquery = new Inquery(inqueryId);
+        is.idega.travel.data.Booking booking = inquery.getBooking();
+        Service tempService = booking.getService();
+
+
+        responseString.append("T - Svar við fyrirspurn þinni varðandi "+inquery.getNumberOfSeats()+" sæti í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(modinfo)+"\n");
+
+        if (book.booleanValue() == false) {
+            responseString.append("Beiðninni er hafnað");
+            sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+
+        }else if (book.booleanValue() == true) {
+            responseString.append("Beiðnin er samþykk, búið er að bóka");
+//            is.idega.travel.data.Booking booking = inquery.getBooking();
+              booking.setIsValid(true);
+            booking.update();
+
+            sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+        }
+        inquery.setAnswered(true);
+        inquery.setAnswerDate(idegaTimestamp.getTimestampRightNow());
+        inquery.update();
+        tm.commit();
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+        try {
+          tm.rollback();
+        }catch (javax.transaction.SystemException sy) {
+          sy.printStackTrace(System.err);
+        }
+      }
+    }
+
+
+
   }
 
 }

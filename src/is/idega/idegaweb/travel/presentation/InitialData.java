@@ -9,7 +9,6 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.data.*;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;

@@ -32,6 +32,7 @@ public class Inquery extends GenericEntity{
     addAttribute(getAnswerDateColumnName(), "Hvenær var svarað", true, true, java.sql.Timestamp.class);
     addAttribute(getServiceIDColumnName(), "Vara", true, true, Integer.class, "many-to-one", Service.class);
     addAttribute(getNumberOfSeatsColumnName(), "sæti", true, true, Integer.class);
+    addAttribute(getBookingIdColumnName(), "bókun", true, true, Integer.class);
   }
 
 
@@ -122,6 +123,18 @@ public class Inquery extends GenericEntity{
     setColumn(getNumberOfSeatsColumnName(),numberOfSeats);
   }
 
+  public void setBookingId(int bookingId) {
+    setColumn(getBookingIdColumnName(), bookingId);
+  }
+
+  public int getBookingId() {
+    return getIntColumnValue(getBookingIdColumnName());
+  }
+
+  public Booking getBooking() throws SQLException {
+    return new Booking(getBookingId());
+  }
+
   public static String getInqueryTableName(){return "TB_INQUERY";}
   public static String getNameColumnName() {return "NAME";}
   public static String getEmailColumnName() {return "EMAIL";}
@@ -132,5 +145,6 @@ public class Inquery extends GenericEntity{
   public static String getAnswerDateColumnName() {return "ANSWER_DATE";}
   public static String getServiceIDColumnName() {return "TB_SERVICE_ID";}
   public static String getNumberOfSeatsColumnName() {return "NUMBER_OF_SEATS";}
+  public static String getBookingIdColumnName() {return "TB_BOOKING_ID";}
 
 }

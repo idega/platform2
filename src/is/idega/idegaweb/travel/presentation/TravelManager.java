@@ -5,7 +5,6 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import javax.servlet.jsp.JspPage;
 import com.idega.idegaweb.IWBundle;
-import com.idega.projects.nat.business.NatBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.presentation.*;
@@ -28,6 +27,17 @@ public class TravelManager extends JModuleObject {
     protected Text smallText = new Text();
     protected Text theSmallBoldText = new Text();
 
+    public static String backgroundColor = "#D5D7EA";
+    public static String textColor = "#666699";
+
+    public static String YELLOW = "#FFFFCC";
+    public static String GREEN = "#99FF99";
+    public static String ORANGE = "#FCCB66";
+    public static String RED = "#F19393";
+    public static String BLUE = "#99CCFF";
+    public static String LIGHTGREEN = "#CCFFCC";
+    public static String LIGHTORANGE = "#FFCC99";
+    public static String DARKBLUE = "#85839D";
 
     private static String sAction = "travelManagerAction";
 
@@ -76,7 +86,7 @@ public class TravelManager extends JModuleObject {
           table.setHeight("100%");
           table.setCellpadding(0);
           table.setCellspacing(0);
-          table.setColor(1,2,NatBusiness.backgroundColor);
+          table.setColor(1,2,this.backgroundColor);
           table.setVerticalAlignment(1,1,"top");
           table.setVerticalAlignment(1,2,"top");
           table.setAlignment(1,1,"left");
@@ -191,18 +201,18 @@ public class TravelManager extends JModuleObject {
 
         theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
         theText.setFontFace(Text.FONT_FACE_VERDANA);
-        theText.setFontColor(NatBusiness.textColor);
+        theText.setFontColor(this.textColor);
         theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
         theBoldText.setFontFace(Text.FONT_FACE_VERDANA);
         theBoldText.setBold();
-        theBoldText.setFontColor(NatBusiness.textColor);
+        theBoldText.setFontColor(this.textColor);
         smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         smallText.setFontFace(Text.FONT_FACE_VERDANA);
-        smallText.setFontColor(NatBusiness.textColor);
+        smallText.setFontColor(this.textColor);
         theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA);
         theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         theSmallBoldText.setBold();
-        theSmallBoldText.setFontColor(NatBusiness.textColor);
+        theSmallBoldText.setFontColor(this.textColor);
 
     }
 

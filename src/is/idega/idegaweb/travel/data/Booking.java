@@ -181,6 +181,7 @@ public class Booking extends GenericEntity{
     return getBooleanColumnValue(getIsValidColumnName());
   }
 
+
   public void setIsValid(boolean isValid) {
     setColumn(getIsValidColumnName(), isValid);
   }

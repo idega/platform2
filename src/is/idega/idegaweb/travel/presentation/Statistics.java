@@ -11,7 +11,6 @@ import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import java.sql.SQLException;
 import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.data.*;
@@ -228,12 +227,12 @@ public class Statistics extends TravelManager {
 
 
       Text headerText = (Text) theBoldText.clone();
-          headerText.setFontColor(NatBusiness.textColor);
+          headerText.setFontColor(super.textColor);
           headerText.setText(iwrb.getLocalizedString("travel.name_of_trip_lg","Name of trip"));
           headerText.addToText(" : ");
 
       Text timeframeText = (Text) theBoldText.clone();
-          timeframeText.setFontColor(NatBusiness.textColor);
+          timeframeText.setFontColor(super.textColor);
           timeframeText.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
           timeframeText.addToText(" : ");
 
@@ -244,7 +243,7 @@ public class Statistics extends TravelManager {
       Text nameText = (Text) theText.clone();
           nameText.setText(service.getName());
       Text statusText = (Text) theBoldText.clone();
-          statusText.setFontColor(NatBusiness.textColor);
+          statusText.setFontColor(super.textColor);
           statusText.setText(iwrb.getLocalizedString("travel.status","Status"));
           statusText.addToText(" : ");
 
@@ -360,15 +359,15 @@ public class Statistics extends TravelManager {
       table.setColumnAlignment(2,"center");
       table.setWidth(2,"100");
 
-      table.setBorderColor(NatBusiness.textColor);
-      table.setRowColor(1,NatBusiness.backgroundColor);
-      table.setRowColor(2,NatBusiness.YELLOW);
-      table.setRowColor(3,NatBusiness.ORANGE);
-      table.setRowColor(4,NatBusiness.BLUE);
-      table.setRowColor(5,NatBusiness.GREEN);
-      table.setRowColor(6,NatBusiness.LIGHTORANGE);
-      table.setRowColor(7,NatBusiness.RED);
-      table.setRowColor(8,NatBusiness.LIGHTGREEN);
+      table.setBorderColor(super.textColor);
+      table.setRowColor(1,super.backgroundColor);
+      table.setRowColor(2,super.YELLOW);
+      table.setRowColor(3,super.ORANGE);
+      table.setRowColor(4,super.BLUE);
+      table.setRowColor(5,super.GREEN);
+      table.setRowColor(6,super.LIGHTORANGE);
+      table.setRowColor(7,super.RED);
+      table.setRowColor(8,super.LIGHTGREEN);
 
 
       return table;

@@ -12,7 +12,6 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.projects.nat.business.NatBusiness;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 
@@ -248,7 +247,7 @@ public class ServiceOverview extends TravelManager {
             table.add(delete,2,row);
 
 
-            table.setColor(2,row,NatBusiness.backgroundColor);
+            table.setColor(2,row,super.backgroundColor);
 
             ++row;
             table.mergeCells(1,row,5,row);

@@ -12,7 +12,7 @@ import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import is.idega.travel.data.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.projects.nat.business.NatBusiness;
+
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -122,8 +122,8 @@ public class Contracts extends TravelManager {
           table.add(resName,1,row);
           table.add(refNum,2,row);
           table.add(assign,3,row);
-          table.setColor(1,row,NatBusiness.backgroundColor);
-          table.setColor(2,row,NatBusiness.backgroundColor);
+          table.setColor(1,row,super.backgroundColor);
+          table.setColor(2,row,super.backgroundColor);
 
       }
 //      table.add(resellers);
@@ -405,10 +405,10 @@ public class Contracts extends TravelManager {
         ++row;
         pName = (Text) theBoldText.clone();
           pName.setText(products[i].getName());
-          pName.setFontColor(NatBusiness.DARKBLUE);
+          pName.setFontColor(super.DARKBLUE);
 
         table.add(pName,1,row);
-        table.setRowColor(row, NatBusiness.backgroundColor);
+        table.setRowColor(row, super.backgroundColor);
         table.mergeCells(1,row,3,row);
 
         if (products[i].getID() == productId) {
@@ -538,27 +538,27 @@ public class Contracts extends TravelManager {
             }
 
 
-            pName.setFontColor(NatBusiness.backgroundColor);
-            table.setRowColor(row, NatBusiness.DARKBLUE);
+            pName.setFontColor(super.backgroundColor);
+            table.setRowColor(row, super.DARKBLUE);
 
             ++row;
             table.add(tDiscount,1,row);
             table.add(pDiscount,3,row);
-            table.setRowColor(row, NatBusiness.backgroundColor);
+            table.setRowColor(row, super.backgroundColor);
 
             ++row;
             table.add(tNumberOfSeatsPerTour,1,row);
             table.add(pAlot,3,row);
-            table.setRowColor(row, NatBusiness.backgroundColor);
+            table.setRowColor(row, super.backgroundColor);
 
             ++row;
-            table.setRowColor(row, NatBusiness.backgroundColor);
+            table.setRowColor(row, super.backgroundColor);
             table.add(tWeekdays,1,row);
             table.add(weekdayFixTable,3,row);
             table.mergeCells(3,row,4,row);
 
             ++row;
-            table.setRowColor(row, NatBusiness.backgroundColor);
+            table.setRowColor(row, super.backgroundColor);
             table.add(tTimeframe,1,row);
             table.mergeCells(3,row,4,row);
             table.add(tfFromText,2,row);
@@ -567,14 +567,14 @@ public class Contracts extends TravelManager {
             table.add(pTo,3,row);
 
             ++row;
-            table.setRowColor(row, NatBusiness.backgroundColor);
+            table.setRowColor(row, super.backgroundColor);
             table.add(tValidUntil,1,row);
             table.mergeCells(3,row,4,row);
             table.add(pDays,3,row);
             table.add(tDaysBefore,3,row);
 
             ++row;
-            table.setRowColor(row, NatBusiness.DARKBLUE);
+            table.setRowColor(row, super.DARKBLUE);
             SubmitButton submit = new SubmitButton("T-SAVE",this.sAction,this.parameterSaveProductInfo);
             table.add(submit,4,row);
             table.setAlignment(4,row,"right");
@@ -585,7 +585,7 @@ public class Contracts extends TravelManager {
           table.setAlignment(4,row,"right");
           table.add(temp,4,row);
         }
-        //table.setRowColor(row, NatBusiness.DARKBLUE);
+        //table.setRowColor(row, super.DARKBLUE);
     }
 
 

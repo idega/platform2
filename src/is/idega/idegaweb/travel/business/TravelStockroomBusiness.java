@@ -815,6 +815,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             sql.append(" and ");
             sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
             sql.append(" and ");
+            sql.append(" b."+Booking.getIsValidColumnName()+"='Y'");
+            sql.append(" and ");
             sql.append(" b."+Booking.getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
             sql.append(" b."+Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
@@ -853,6 +855,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             sql.append("Select "+Booking.getTotalCountColumnName()+" from "+Booking.getBookingTableName());
             sql.append(" where ");
             sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(Booking.getIsValidColumnName()+" = 'Y'");
             if ( (fromStamp != null) && (toStamp == null) ) {
               sql.append(" and ");
               sql.append(Booking.getBookingDateColumnName()+" = '"+fromStamp.toSQLDateString()+"'");
@@ -877,6 +881,31 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         e.printStackTrace(System.err);
     }
 
+    return returner;
+  }
+
+  public static int getNumberOfUnansweredInqueries(int productId, idegaTimestamp stamp) {
+    int returner = 0;
+    try {
+      Inquery inq = (Inquery) Inquery.getStaticInstance(Inquery.class);
+
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("SELECT count("+inq.getIDColumnName()+") FROM "+Inquery.getInqueryTableName());
+        buffer.append(" WHERE ");
+        buffer.append(inq.getAnsweredColumnName() +" = 'N'");
+        buffer.append(" AND ");
+        buffer.append(inq.getServiceIDColumnName()+" = "+productId);
+        buffer.append(" AND ");
+        buffer.append(inq.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
+      String[] bufferReturn = SimpleQuerier.executeStringQuery(buffer.toString());
+      if (bufferReturn != null)
+        if (bufferReturn.length > 0) {
+          returner = Integer.parseInt(bufferReturn[0]);
+        }
+
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
     return returner;
   }
 
@@ -939,6 +968,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         sql.append("Select * from "+Booking.getBookingTableName());
         sql.append(" where ");
         sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+        sql.append(" and ");
+        sql.append(Booking.getIsValidColumnName()+" = 'Y'");
         sql.append(" and ");
         sql.append(Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
         if (bookingTypeIds != null) {

@@ -6,7 +6,6 @@ import com.idega.jmodule.object.textObject.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.travel.data.*;
-import com.idega.projects.nat.business.NatBusiness;
 import com.idega.core.data.*;
 import java.sql.SQLException;
 
