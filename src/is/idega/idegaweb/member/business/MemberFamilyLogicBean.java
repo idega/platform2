@@ -5,6 +5,7 @@ import javax.ejb.*;
 import java.rmi.RemoteException;
 
 import com.idega.business.IBOServiceBean;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.*;
 
 /**
@@ -62,7 +63,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 
   protected User convertGroupToUser(Group group){
     try{
-      return getUserHome().findUserForUserGroup(group);
+      return getUserBusiness().castUserGroupToUser(group);
     }
     catch(Exception e){
       throw new EJBException("Group "+group+" is not a UserGroup");
@@ -80,7 +81,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 
 
   /**
-   * @returns A Collection of User object who are children of a user. Returns an empty Collection if no children found.
+   * @return A Collection of User object who are children of a user. Returns an empty Collection if no children found.
    * @throws NoChildrenFound if no children are found
    */
   public Collection getChildrenFor(User user)throws NoChildrenFound,RemoteException{
@@ -100,7 +101,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @returns A Collection of User object who are siblings of a user. Returns an empty Collection if no siblings found.
+   * @return A Collection of User object who are siblings of a user. Returns an empty Collection if no siblings found.
    * @throws NoSiblingFound if no siblings are found
    */
   public Collection getSiblingsFor(User user)throws NoSiblingFound,RemoteException{
@@ -120,7 +121,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @returns User object for the spouse of a user.
+   * @return User object for the spouse of a user.
    * @throws NoSpouseFound if no spouse is found
    */
   public User getSpouseFor(User user)throws NoSpouseFound{
@@ -137,7 +138,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @returns A Collection of User object who are custodians of a user. Returns an empty Collection if no custodians are found.
+   * @return A Collection of User object who are custodians of a user. Returns an empty Collection if no custodians are found.
    * @throws NoCustodianFound if no custodians are found
    */
   public Collection getCustodiansFor(User user)throws NoCustodianFound,RemoteException{
@@ -210,7 +211,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @returns True if the parent is the parent of childToCheck else false
+   * @return True if the parent is the parent of childToCheck else false
    */
   public boolean isParentOf(User parentToCheck,User child) throws RemoteException {
     try {
@@ -223,7 +224,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @returns True if the personToCheck is a spouse of relatedPerson else false
+   * @return True if the personToCheck is a spouse of relatedPerson else false
    */
   public boolean isSpouseOf(User personToCheck,User relatedPerson) throws RemoteException {
     if ( this.hasPersonGotSpouse(personToCheck) ) {
@@ -240,7 +241,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @returns True if the personToCheck is a sibling of relatedPerson else false
+   * @return True if the personToCheck is a sibling of relatedPerson else false
    */
   public boolean isSiblingOf(User personToCheck,User relatedPerson) throws RemoteException {
     try {
@@ -331,6 +332,10 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 	 */
 	public String getSpouseRelationType() {
 		return RELATION_TYPE_GROUP_SPOUSE;
+	}
+
+	public UserBusiness getUserBusiness()throws RemoteException{
+		return (UserBusiness)this.getServiceInstance(UserBusiness.class);	
 	}
 
 }

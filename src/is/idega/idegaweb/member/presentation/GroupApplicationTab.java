@@ -116,7 +116,7 @@ public class GroupApplicationTab extends UserTab {
 				Group parent = (Group)(groupBiz.getGroupByGroupID(app.getApplicationGroupId()).getParentNode());
 				add("parent : "+parent.getName());
 				
-				Collection allGroups = groupBiz.getGroupsContained( parent  );
+				Collection allGroups = groupBiz.getChildGroupsRecursive( parent  );
 				Iterator aGroups = allGroups.iterator();
 				while (aGroups.hasNext()) {
 					Group group = (Group) aGroups.next();
