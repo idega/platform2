@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.6 2003/08/29 00:53:46 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.7 2003/08/29 01:35:41 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -77,7 +77,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				ActivityType ah = (ActivityType) iter.next();
-				ret += ah.getTextKey();
+				ret += ah.getTextKey().replaceAll("^.*\\.", "");
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -122,7 +122,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				CommuneBelongingType cbt = (CommuneBelongingType) iter.next();
-				ret += cbt.getTextKey();
+				ret += cbt.getTextKey().replaceAll("^.*\\.", "");
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -166,7 +166,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				CompanyType ct = (CompanyType) iter.next();
-				ret += ct.getTextKey();
+				ret += ct.getTextKey().replaceAll("^.*\\.", "");
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -270,16 +270,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				RegulationSpecType rst = (RegulationSpecType) iter.next();
-				ret += rst.getTextKey();
+				ret += rst.getTextKey().replaceAll("^.*\\.", "");
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
 			}
 			return ret;				
 		} catch (RemoteException e) {
-			return null;
+			return "";
 		} catch (FinderException e) {
-			return null; 
+			return ""; 
 		} 
 	}	
 

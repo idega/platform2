@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.1 2003/08/29 00:55:00 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.2 2003/08/29 01:35:24 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/08/29 00:55:00 $
+ * $Date: 2003/08/29 01:35:24 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -227,7 +227,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		String ret = getParameter(iwc, param);
 		ret = ret.toLowerCase().replaceAll(" ", "_").replaceAll("å","aa").replaceAll("ä","ae").replaceAll("ö", "oe");
 		ret = ret.replaceAll("Å","aa").replaceAll("Ä","ae").replaceAll("Ö", "oe");
-		ret = ret.replaceAll("'","_").replaceAll(" ","_").replaceAll("`", "_");
+		ret = ret.replaceAll("'","_").replaceAll(".","_").replaceAll("`", "_");
 		ret = ret.replaceAll("`","_").replaceAll(" ","_").replaceAll("=", "_");
 		return ret;
 	}
