@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.92 2005/02/24 16:22:11 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.93 2005/02/25 07:34:52 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -576,8 +576,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			delete.setOnClick("return confirm('" + localize("child_care.delete_offer_confirm", "Are you sure you want to delete this offer?") + "')");
 			delete.addParameter(PARAMETER_APPLICATION_ID, String.valueOf(acceptedApplication.getPrimaryKey()));
 			delete.addParameter(PARAMETER_DELETE_OFFER, String.valueOf(true));
-//			layoutTbl.add(delete, 5, row - 1);
-//			layoutTbl.mergeCells(5, row - 1, 5, row);
+			layoutTbl.add(delete, 5, row - 1);
+			layoutTbl.mergeCells(5, row - 1, 5, row);
 
 			boolean hasBankId = false;
 			hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner());
