@@ -18,6 +18,13 @@ public class SchoolStudyPathHomeImpl extends com.idega.data.IDOFactory implement
  }
 
 
+public java.util.Collection findAllStudyPaths()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((SchoolStudyPathBMPBean)entity).ejbHomeFindAllStudyPaths();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0)throws com.idega.data.IDOLookupException,com.idega.data.IDORelationshipException,javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection theReturn = ((SchoolStudyPathBMPBean)entity).ejbHomeFindStudyPaths(p0);
