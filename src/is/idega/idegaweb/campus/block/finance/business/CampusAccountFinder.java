@@ -103,6 +103,7 @@ public class CampusAccountFinder  {
 	 sql.append(ContractBMPBean.statusTerminated);
     sql.append("')");
     sql.append(" and (");
+    /*
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
@@ -110,6 +111,13 @@ public class CampusAccountFinder  {
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
     sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
+    */
+    sql.append("(").append(validto).append(more).append(start).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(validfrom).append(more).append(start).append(" and ").append(validfrom).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(validto).append(more).append(end).append(")");
+    
     sql.append(")");
     sql.append(" order by ic_user_id ");
 	
