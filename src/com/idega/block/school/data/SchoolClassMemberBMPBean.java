@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/17 10:04:36 $ by $Author: staffan $
- * @version $Revision: 1.49 $
+ * Last modified: $Date: 2003/10/20 10:19:11 $ by $Author: anders $
+ * @version $Revision: 1.50 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -38,6 +38,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String NOTES = "notes";
 	public final static String SCHOOLCLASS = "sch_school_class_id";
 	public final static String REGISTER_DATE = "register_date";
+	public final static String REGISTRATION_CREATED_DATE = "registration_created_date";
 	public final static String REMOVED_DATE = "removed_date";
 	public final static String REGISTRATOR = "registrator";
 	public final static String NEEDS_SPECIAL_ATTENTION = "NEEDS_SPECIAL_ATTENTION";
@@ -59,6 +60,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(SCHOOLCLASS, "class", true, true, Integer.class, MANY_TO_ONE, SchoolClass.class);
 		this.addAttribute(NOTES, "notes", true, true, String.class, 255);
 		this.addAttribute(REGISTER_DATE, "registerdate", true, true, Timestamp.class);
+		this.addAttribute(REGISTRATION_CREATED_DATE, "inregisterdate", true, true, Timestamp.class);
 		this.addAttribute(REMOVED_DATE, "removeddate", true, true, Timestamp.class);
 		this.addAttribute(REGISTRATOR, "registrator", true, true, Integer.class, MANY_TO_ONE, com.idega.core.user.data.User.class);
 		this.addAttribute(NEEDS_SPECIAL_ATTENTION, "Needs special attention", true, true, Boolean.class);
@@ -97,6 +99,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 	public Timestamp getRegisterDate() {
 		return (Timestamp)this.getColumnValue(REGISTER_DATE);
+	}
+	public void setRegistrationCreatedDate(Timestamp stamp) {
+		this.setColumn(REGISTRATION_CREATED_DATE, stamp);
+	}
+	public Timestamp getRegistrationCreatedDate() {
+		return (Timestamp)this.getColumnValue(REGISTRATION_CREATED_DATE);
 	}
 	public void setRemovedDate(Timestamp stamp) {
 		this.setColumn(REMOVED_DATE, stamp);
