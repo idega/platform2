@@ -10,20 +10,18 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Vector;
-
+import javax.faces.component.UIComponent;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
@@ -581,7 +579,7 @@ public class TeeTimeTable extends GolfBlock {
 
 	public SubmitButton insertButton(String btnName, String Method, String Action, Form theForm) {
 		SubmitButton mySubmit = new SubmitButton(btnName);
-		theForm.addObject(mySubmit);
+		theForm.getChildren().add(mySubmit);
 
 		theForm.setMethod(Method);
 		theForm.setAction(Action);
@@ -591,7 +589,7 @@ public class TeeTimeTable extends GolfBlock {
 
 	private SubmitButton insertButton(Image image, String imageName, String Method, String Action, Form theForm) {
 		SubmitButton mySubmit = new SubmitButton(image, imageName);
-		theForm.addObject(mySubmit);
+		theForm.getChildren().add(mySubmit);
 
 		theForm.setMethod(Method);
 		theForm.setAction(Action);
@@ -610,7 +608,7 @@ public class TeeTimeTable extends GolfBlock {
 
 	public HiddenInput insertHiddenInput(String inpName, String value, Form theForm) {
 		HiddenInput myObject = new HiddenInput(inpName, value);
-		theForm.addObject(myObject);
+		theForm.getChildren().add(myObject);
 
 		return myObject;
 	}
@@ -772,7 +770,7 @@ public class TeeTimeTable extends GolfBlock {
 
 	}
 
-	public PresentationObject getRegistrationForm(IWContext iwc, IWCalendar dateFunc, TableInfo myTableInfo, boolean admin, Vector tournamentRounds) throws SQLException, IOException {
+	public UIComponent getRegistrationForm(IWContext iwc, IWCalendar dateFunc, TableInfo myTableInfo, boolean admin, Vector tournamentRounds) throws SQLException, IOException {
 
 		Form mainForm = null;
 		boolean plainUser = true;
