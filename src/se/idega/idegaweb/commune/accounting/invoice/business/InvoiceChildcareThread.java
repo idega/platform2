@@ -81,7 +81,7 @@ public class InvoiceChildcareThread extends BillingThread{
 
 	private static final String HOURS_PER_WEEK = "t/v ";		//Localize this text in the user interfaceC:\emacs\bin/
 	private static final String CHECK = "Check ";
-	private static final String DAYS = "dagar";
+	private static final String DAYS = " dagar";
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
 	private Map siblingOrders = new HashMap();
@@ -640,7 +640,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setAmount(amount);
 						totalSum += amount;
 						if(totalSum<0){
-							createNewErrorMessage(errorRelated.toString(),"invoice.SumLessThanZeroForRegularInvoiceRecord");
+							createNewErrorMessage(errorRelated,"invoice.SumLessThanZeroForRegularInvoiceRecord");
 						}
 						invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
 						invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
@@ -653,10 +653,10 @@ public class InvoiceChildcareThread extends BillingThread{
 
 					} catch (RemoteException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
+						createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
 					} catch (CreateException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
+						createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
 					}
 				}
 			} catch (RemoteException e) {
