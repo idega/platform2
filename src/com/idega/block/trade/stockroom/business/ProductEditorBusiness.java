@@ -164,24 +164,32 @@ public class ProductEditorBusiness extends IBOServiceBean{
   }
 
   public SelectionBox getSelectionBox(Product product, String name, int productCatalogObjectInstanceId) {
-      SelectionBox catSel = new SelectionBox(name);
-      List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
-      if (product != null) {
-	try {
-	  List rCats = ProductBusiness.getProductCategories(product);
+	  SelectionBox catSel = new SelectionBox(name);
+	  List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
+	  if (product != null) {
+		try {
+	 	  cats = ProductBusiness.getProductCategories(product);
+		}catch (IDOFinderException ido) {
+		  ido.printStackTrace(System.err);
+		}
+	  }
+	
 	  Category icCat;
-	  if (rCats != null && rCats.size() > 0) {
-	    for (int i = 0; i < rCats.size(); i++) {
+	  if (cats != null ) {
+	  	Iterator iter = cats.iterator();
+	  	while ( iter.hasNext() ) {
+	  	  icCat = (Category) iter.next();	
+		  catSel.addMenuElement(icCat.getID(),icCat.getName());
+		  catSel.setSelectedElement(Integer.toString(icCat.getID()));
+	  	}
+	    /*for (int i = 0; i < rCats.size(); i++) {
 	      icCat = (Category) rCats.get(i);
 	      catSel.addMenuElement(icCat.getID(),icCat.getName());
 	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
-	    }
+	    }*/
 	  }
-	}catch (IDOFinderException ido) {
-	  ido.printStackTrace(System.err);
-	}
-      }
-    return catSel;
+
+	  return catSel;
   }
 
   public List getFiles(Product product) {
