@@ -711,16 +711,17 @@ public class Booking extends TravelManager {
 
           Text totalText = (Text) theBoldText.clone();
             totalText.setText("T - Total");
-          TextInput TotalPassTextInput = new TextInput("total_pass","0");
-            TotalPassTextInput.setDisabled(true);
-            TotalPassTextInput.setSize(5);
-          TextInput TotalTextInput = new TextInput("total","0");
-            TotalTextInput.setDisabled(true);
-            TotalTextInput.setSize(8);
+//          TextInput TotalPassTextInput = new TextInput("total_pass","0");
+//          ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
+//            TotalPassTextInput.setDisabled(true);
+//            TotalPassTextInput.setSize(5);
+//          ResultOutput TotalTextInput = new ResultOutput("total","0");
+//            TotalTextInput.setDisabled(true);
+ //           TotalTextInput.setSize(8);
+
+          ResultOutput flipps = new ResultOutput();
 
           ++row;
-          ResultOutput flipps = new ResultOutput(form.getName());
-
 
 
           for (int i = 0; i < pPrices.length; i++) {
@@ -739,15 +740,19 @@ public class Booking extends TravelManager {
                 pPriceMany.setAsNotEmpty("T - Ekki tómt");
                 pPriceMany.setAsIntegers("T - Bara tölur takk");
 
-                flipps.add(pPriceText, form.getName() );
-                flipps.add(pPriceMany, form.getName() );
+          //      TotalTextInput.add(pPriceText);
+          flipps.add(pPriceText);
+          flipps.add(pPriceMany);
+                //TotalPassTextInput.add(pPriceMany);
+
+
             /**
              * @todo implementa fyrir og bil...
              * @todo laga total reikninga
              */
-/*
-                pPriceMany.setOnBlur("this.form."+pPriceText.getName()+".value=("+price+"*this.form."+pPriceMany.getName()+".value)");
 
+                pPriceMany.setOnBlur("this.form."+pPriceText.getName()+".value=("+price+"*this.form."+pPriceMany.getName()+".value)");
+/*
                 String totalCalc = "this.form."+TotalTextInput.getName()+".value=(";
                 String totalPass = "this.form."+TotalPassTextInput.getName()+".value=(";
                 for (int j = 0; j < pPrices.length; j++) {
@@ -769,15 +774,14 @@ public class Booking extends TravelManager {
           ++row;
 
           table.add(totalText,1,row);
-          table.add(TotalPassTextInput,2,row);
-          table.add(TotalTextInput,2,row);
-
+          //table.add(TotalPassTextInput,2,row);
+          //table.add(TotalTextInput,2,row);
+table.add(flipps,2,row);
 
 
 
 
           ++row;
-          table.add(flipps,4,row);
           ++row;
           table.add(new SubmitButton("TEMP BÓKA"),4,row);
           table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
