@@ -22,6 +22,7 @@ import com.idega.core.location.data.Country;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
+import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -354,7 +355,12 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 //		String sql = "select * from " + SCHOOL + " where " + 
 //				" (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
 //				" order by upper(" + NAME + ")";
-		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
+		try{
+			return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
+		}catch (IDOFinderException ex){
+			//some databases doesn't understand UPPER
+			return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by "+NAME);
+		}
 	}
 
 	public Collection ejbFindAllSchoolsIncludingTerminated() throws javax.ejb.FinderException {
