@@ -1,5 +1,5 @@
 /*
- * $Id: TariffIndex.java,v 1.5 2001/08/17 10:20:08 aron Exp $
+ * $Id: TariffIndex.java,v 1.6 2001/08/17 10:23:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ public class TariffIndex extends GenericEntity{
   public static String getColumnNameIndex(){ return "RENT_INDEX";}
   public static String getColumnNameName(){return "NAME";}
   public static String getColumnNameInfo(){return "INFO";}
-  public static String getColumnNameType(){return "TYPE";}
+  public static String getColumnNameType(){return "INDEX_TYPE";}
   public static String getColumnNameDate(){return "FROM_DATE";}
 
   public String getEntityName(){
