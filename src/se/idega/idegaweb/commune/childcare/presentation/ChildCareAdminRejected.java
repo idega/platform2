@@ -107,9 +107,9 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				if (rejectDate != null)
 					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column, row);
 				column++;
-				if (application.getApplicationStatus() == getBusiness().getStatusCancelled() || (application.getApplicationStatus() == getBusiness().getStatusNotAnswered() && application.getQueueDate() != null)) {
+				if (application.getApplicationStatus() == getBusiness().getStatusCancelled() || ((application.getApplicationStatus() == getBusiness().getStatusNotAnswered() || application.getApplicationStatus() == getBusiness().getStatusTimedOut()) && application.getQueueDate() != null)) {
 					String description = null;
-					if (application.getApplicationStatus() == getBusiness().getStatusNotAnswered()) {
+					if (application.getApplicationStatus() == getBusiness().getStatusNotAnswered() || application.getApplicationStatus() == getBusiness().getStatusTimedOut()) {
 						description = localize("child_care.activate_application", "Click to reactivate application");
 					}
 					else if (application.getApplicationStatus() == getBusiness().getStatusCancelled()) {
