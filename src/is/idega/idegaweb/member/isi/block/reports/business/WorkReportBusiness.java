@@ -1,5 +1,5 @@
 /*
- * $Id: WorkReportBusiness.java,v 1.56 2004/09/07 23:04:37 eiki Exp $
+ * $Id: WorkReportBusiness.java,v 1.57 2004/09/08 00:44:24 eiki Exp $
  * Created on Sep 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,17 +35,18 @@ import com.idega.data.IDOException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/07 23:04:37 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/09/08 00:44:24 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  */
-public interface WorkReportBusiness extends IBOService,MemberUserBusiness{
+public interface WorkReportBusiness extends IBOService,MemberUserBusiness,UserGroupPlugInBusiness{
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getTotalCountOfMembersForWorkReportYear
  */
@@ -497,10 +498,10 @@ public Collection findGroupsByFields(Collection listViewerFields, Collection fin
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#isUserAssignableFromGroupToGroup
  */
-public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws java.rmi.RemoteException;
+public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup);
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#isUserSuitedForGroup
  */
-public String isUserSuitedForGroup(User user, Group targetGroup) throws java.rmi.RemoteException;
+public String isUserSuitedForGroup(User user, Group targetGroup);
 
 }

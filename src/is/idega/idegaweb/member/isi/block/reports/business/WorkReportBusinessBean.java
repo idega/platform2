@@ -59,6 +59,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
@@ -72,7 +73,7 @@ import com.idega.util.ListUtil;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson </a>
  * @version 1.0
  */
-public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness {
+public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness,UserGroupPlugInBusiness{
 
 	private WorkReportGroupHome workReportGroupHome;
 
