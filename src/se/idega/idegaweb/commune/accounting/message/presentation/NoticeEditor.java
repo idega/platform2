@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
+ * $Id: NoticeEditor.java,v 1.5 2003/09/10 08:11:08 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/10 08:11:08 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -63,6 +63,7 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String KEY_TITLE = KP + "title";
 	private final static String KEY_TITLE_SEND_CONFIRM = KP + "title_send_confirm";
 	private final static String KEY_TITLE_SEND_CONFIRM_ERROR = KP + "title_send_confirm_error";
+	private final static String KEY_TITLE_NOTICE_SENT = KP + "title_notice_sent";
 //	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
 	private final static String KEY_SCHOOL = KP + "school";
 	private final static String KEY_PREVIEW = KP + "preview";
@@ -210,7 +211,7 @@ public class NoticeEditor extends AccountingBlock {
 		}
 
 		ApplicationForm app = new ApplicationForm(this);
-		app.setLocalizedTitle(KEY_TITLE_SEND_CONFIRM, "Påminnelsebrev sänt");
+		app.setLocalizedTitle(KEY_TITLE_NOTICE_SENT, "Påminnelsebrev sänt");
 		
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
