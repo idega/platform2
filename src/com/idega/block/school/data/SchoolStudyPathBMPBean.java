@@ -168,7 +168,8 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	public Collection ejbFindAllStudyPathsByMemberId(int id) throws FinderException {
 		String select = "select s.* from " + TABLE_NAME + 
 				" s,sch_study_path_sch_class_membe m where m.sch_class_member_id = " + id + 
-				" and m.sch_study_path_id = s.sch_study_path_id order by s." + COLUMN_CODE;
+				" and m.sch_study_path_id = s.sch_study_path_id " +
+				" and (s." + COLUMN_IS_VALID + " is null " +				" or s." + COLUMN_IS_VALID + " = 'Y') order by s." + COLUMN_CODE;
 		return super.idoFindPKsBySQL(select);
 	}
 
