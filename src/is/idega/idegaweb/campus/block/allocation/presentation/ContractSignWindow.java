@@ -68,7 +68,7 @@ public class ContractSignWindow extends Window{
   }
 
   protected void control(IWContext iwc)throws java.rmi.RemoteException{
-
+    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     // permissons !!
@@ -108,8 +108,8 @@ public class ContractSignWindow extends Window{
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
-      List lFinanceAccounts = FinanceFinder.getInstance().listOfAccountInfoByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
-      List lPhoneAccounts = FinanceFinder.getInstance().listOfAccountInfoByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
+      List lFinanceAccounts = FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
+      List lPhoneAccounts = FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
 
       if(SysProps != null){
         int groupId = SysProps.getDefaultGroup();
@@ -117,6 +117,7 @@ public class ContractSignWindow extends Window{
           eGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId);
         }
         catch (SQLException ex) {
+          ex.printStackTrace();
           eGroup = null;
         }
       }
@@ -186,7 +187,7 @@ public class ContractSignWindow extends Window{
         if(eGroup != null){
           HiddenInput Hgroup = new HiddenInput("user_group",String.valueOf(eGroup.getID()));
           T.add(Hgroup);
-          if(lFinanceAccounts == null){
+          if(lFinanceAccounts.isEmpty()){
             T.add(accountCheck,2,row);
             T.add(Edit.formatText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
           }
@@ -198,7 +199,7 @@ public class ContractSignWindow extends Window{
             }
           }
           row++;
-          if(lPhoneAccounts == null){
+          if(lPhoneAccounts.isEmpty()){
             T.add(phoneAccountCheck,2,row);
             T.add(Edit.formatText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
           }

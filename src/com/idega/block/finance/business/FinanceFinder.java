@@ -627,6 +627,31 @@ public class FinanceFinder  {
 
   }
 
+   public List listOfAccountByUserIdAndType(int iUserId,String type){
+    if(iUserId > 0){
+      try {
+        StringBuffer sql = new StringBuffer("select * from ");
+        sql.append(com.idega.block.finance.data.AccountBMPBean.getEntityTableName());
+        sql.append(" where ");
+        sql.append(com.idega.block.finance.data.AccountBMPBean.getUserIdColumnName());
+        sql.append( " = ");
+        sql.append(iUserId);
+        sql.append(" and ");
+        sql.append(com.idega.block.finance.data.AccountBMPBean.getTypeColumnName());
+        sql.append(" = ");
+        sql.append("'");
+        sql.append(type);
+        sql.append("'");
+        return EntityFinder.getInstance().findAll(Account.class,sql.toString());
+      }
+      catch (IDOFinderException ex) {
+        ex.printStackTrace();
+      }
+    }
+    return new Vector();
+
+  }
+
   public List listOfAccountInfoByCategoryId(int iCategoryId){
     if(iCategoryId > 0){
       try {
