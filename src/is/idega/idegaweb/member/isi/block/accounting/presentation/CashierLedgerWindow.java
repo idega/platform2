@@ -6,11 +6,11 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.CalendarLedger;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.presentation.EntityBrowser;
-import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -20,7 +20,6 @@ import com.idega.presentation.text.Link;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.user.presentation.UserPropertyWindow;
 
 /**
@@ -42,14 +41,50 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 			}
 
 			public PresentationObject getPresentationObject(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-				User user = (User) entity;
-
+				User user = (User) entity;		
+//				CalendarLedger ledger = null;
+//				Collection groups = null;
+//				boolean isInGroup = false;
+				
 				PresentationObject text = browser.getDefaultConverter().getPresentationObject(entity, path, browser, iwc);
+//				Integer userID = (Integer) user.getPrimaryKey();
+//				try {
+//					ledger = getCalendarBusiness(iwc).getLedgerByUserID(userID.intValue());//getLedger(ledgerID.intValue());
+//					groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+//				}catch(Exception e) {
+//					e.printStackTrace();
+//				}
+//				Iterator groupIter = groups.iterator();
+//				//go through the groupIDs to see if the user is in the ledgerGroup
+//				while(groupIter.hasNext()) {
+//					Group g = (Group) groupIter.next();
+//					Integer groupID = (Integer) g.getPrimaryKey();
+//					if(groupID.intValue() == ledger.getGroupID()) {
+//						isInGroup = true;
+//					}
+//				}
+//				Link aLink = new Link(text);
+//				if(isInGroup == false) {
+//					aLink.setStyleClass("errorMessage");
+//				}
+//				else {
+//					if(user.getMetaData(NEW_USER_IN_LEDGER) != null) {
+//						user.removeMetaData(NEW_USER_IN_LEDGER);
+//						user.setMetaData(NEW_USER_IN_LEDGER,"");
+//						try {
+//							user.updateMetaData();
+//						}catch(Exception e) {
+//							e.printStackTrace();
+//						}												
+////						user.store();
+//					}				
+//					aLink.setStyleClass("styledLinkUnderline");
+//				}
 				Link aLink = new Link(text);
 				aLink.setStyleClass("errorMessage");
 				aLink.setWindowToOpen(UserPropertyWindow.class);
 				aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
-
+				
 				return aLink;
 			}
 		};
@@ -57,9 +92,9 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		Collection users = null;
 		User user = null;
 		
+		
 		try {
 			users = getUserBusiness(getIWApplicationContext()).getUserHome().findUsersByMetaData(NEW_USER_IN_LEDGER,NEW_USER_IN_LEDGER);
-			System.out.println("users: " + users.toString());
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -81,7 +116,6 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		
 		entityBrowser.setEntityToPresentationConverter(nameKey, converterLink);
 		
-		add("entityBrowser: ");
 		add(entityBrowser);
 		
 	}
@@ -97,6 +131,18 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 			}
 		}
 		return userBiz;
+	}
+	public CalBusiness getCalendarBusiness(IWApplicationContext iwc) {
+		CalBusiness calBiz = null;
+		if (calBiz == null) {
+			try {
+				calBiz = (CalBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CalBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return calBiz;
 	}
 
 }
