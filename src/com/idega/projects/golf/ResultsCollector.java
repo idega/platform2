@@ -79,7 +79,7 @@ public class ResultsCollector {
   }
 
   public int getRound(int roundNumber) {
-    int position = 0;
+    int position = -1;
 
     if (roundNumber_ != null) {
       position = roundNumber_.indexOf(new Integer(roundNumber));
