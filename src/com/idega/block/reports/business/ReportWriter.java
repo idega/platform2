@@ -145,8 +145,8 @@ public class ReportWriter {
         document.open();
 
         Table datatable = new Table(Headers.length);
-        datatable.setCellpadding(0);
-        datatable.setCellspacing(3);
+        datatable.setSpaceInsideCell(0);
+        datatable.setSpaceInsideCell(3);
         datatable.setBorder(Rectangle.NO_BORDER);
         datatable.setWidth(100);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationWriter.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: CampusApplicationWriter.java,v 1.2 2001/12/06 13:52:48 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,8 +52,8 @@ public class CampusApplicationWriter{
           //System.err.println("email "+CAH.getCampusApplication().getEmail());
           Table datatable = new Table(4);
 
-          datatable.setCellpadding(0);
-          datatable.setCellspacing(3);
+          datatable.setSpaceBetweenCells(0);
+          datatable.setSpaceInsideCell(3);
           datatable.setBorder(Rectangle.NO_BORDER);
 
           int headerwidths[] = {18, 32, 18, 32};
