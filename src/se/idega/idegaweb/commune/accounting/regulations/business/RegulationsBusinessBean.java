@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.90 2003/12/10 13:43:34 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.91 2003/12/10 17:08:36 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,6 +26,8 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
@@ -65,6 +67,7 @@ import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
@@ -1704,10 +1707,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						}
 					
 						float perc = reg.getMaxAmountDiscount();
-						if (!missingIncome && income > 0.0f && perc > 0.0f) {
-							System.out.println("perc = " + perc);
-							System.out.println("income = " + income);
-							
+						if (!missingIncome && income > 0.0f && perc > 0.0f) {							
 							float amount = income * perc / 100;
 							if (amount < total_sum) {
 								ret = new PostingDetail();
@@ -1731,14 +1731,55 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 			}
 			else if (type.equals("cacc_sp_calc_type.laginkomst")) {
-				throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+				User child = null;
+				if (contract != null) {
+					child = contract.getChild();
+				}
+				else if (placement != null) {
+					child = placement.getStudent();
+				}
 				
-				/*ret = new PostingDetail();
-				ret.setAmount(reg.getAmount().floatValue());
-				ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
-				ret.setTerm("Palli will fix this...");
-				ret.setVat(32.0f);
-				ret.setVatRegulationID(1);*/
+				if (child != null) {
+					try {
+						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodeAndCategory(period,((Integer)child.getPrimaryKey()).intValue(), reg.getOperation());
+						if (low != null && !low.isEmpty()) {
+							Iterator lowIt = low.iterator();
+							if (lowIt.hasNext()) {
+								RegularInvoiceEntry entry = (RegularInvoiceEntry) lowIt.next();
+								
+								ret = new PostingDetail();
+								ret.setAmount(Math.round(entry.getAmount() - total_sum));
+								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
+								ret.setTerm(reg.getName());
+								//			ret.setVat(32.0f);
+								//			ret.setVatRegulationID(1);
+								
+							}
+							else {
+								throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+							}
+						}
+						else {
+							throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+						}
+					}
+					catch (IDOLookupException e) {
+						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+					}
+					catch (RemoteException e) {
+						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+					}
+					catch (EJBException e) {
+						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+					}
+					catch (FinderException e) {
+						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+					}
+				}
+				else {
+					throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+				}
+							
 			}
 		}
 		else {
@@ -1913,6 +1954,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		return replace;
 	}
 
+	protected RegularInvoiceBusiness getRegularInvoiceBusiness() throws RemoteException {
+		return (RegularInvoiceBusiness) getServiceInstance(RegularInvoiceBusiness.class);
+	}
+	
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
 	}

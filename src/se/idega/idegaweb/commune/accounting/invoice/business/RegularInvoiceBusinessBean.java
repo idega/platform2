@@ -1,6 +1,6 @@
 /*
  * Created on 22.10.2003
- *
+ * 
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
@@ -24,21 +24,29 @@ import com.idega.data.IDOLookupException;
 
 /**
  * @author Roar
- *
+ * 
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class RegularInvoiceBusinessBean extends IBOServiceBean implements RegularInvoiceBusiness {
 
-	public Collection findRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws IDOLookupException, FinderException{
-		RegularInvoiceEntryHome home =(RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
+	public Collection findRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws IDOLookupException, FinderException {
+		RegularInvoiceEntryHome home = (RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
 		return home.findRegularInvoicesForPeriodeUserAndCategory(from, to, userId, schoolCategoryId);
 	}
 
-	public Collection findRegularInvoicesForPeriodeAndCategory(Date date, SchoolCategory cat) throws IDOLookupException, FinderException{
+	public Collection findRegularInvoicesForPeriodeAndCategory(Date date, SchoolCategory cat) throws IDOLookupException, FinderException {
 		RegulationSpecTypeHome rstHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
-		int lagPrimary = ((Integer)rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
-		RegularInvoiceEntryHome home =(RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
-		return home.findRegularInvoicesForPeriodeAndCategoryExceptType(date,cat.getCategory(),lagPrimary);
+		int lagPrimary = ((Integer) rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
+		RegularInvoiceEntryHome home = (RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
+		return home.findRegularInvoicesForPeriodeAndCategoryExceptType(date, cat.getCategory(), lagPrimary);
+	}
+
+	public Collection findRegularLowIncomeInvoicesForPeriodeAndCategory(Date date, int userId, SchoolCategory cat) throws IDOLookupException, FinderException {
+		RegulationSpecTypeHome rstHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
+		int lagPrimary = ((Integer) rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
+		RegularInvoiceEntryHome home = (RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
+		
+		return home.findRegularInvoicesForPeriodeUserCategoryAndRegSpecType(date, userId, cat.getCategory(), lagPrimary);
 	}
 }
