@@ -87,6 +87,7 @@ private int outlineWidth = 1;
 private int headerFontSize = 2;
 private int headerSize = 21;
 private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
+private String DatastoreType;
 
 
 	public Calendar() {
@@ -132,6 +133,7 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 		height = "550";
                 max_shown = 10;
 		isAdmin=false;
+                this.DatastoreType =  getDatastoreType( new CalendarEntry() );
 	}
 
         public void connectToTimesheet() {
@@ -425,11 +427,19 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 		}
 
 
-		String idag = dag+"."+man+"."+ar;
+		String idag = "";
 			Link linkur;
 			int lengd = 10;
 			int row = 0;
 			int fjoldi_lina = max_shown;
+
+                idegaTimestamp stampur = new idegaTimestamp(dag,man,ar);
+                if ( this.DatastoreType.equalsIgnoreCase("oracle") ) {
+                  idag = stampur.toOracleString();
+                }
+                else {
+                  idag = "'"+stampur.toSQLString()+"'";
+                }
 
         	Table table = new Table();
 			table.setWidth("100%");
@@ -442,7 +452,7 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 			table.setCellspacing(0);
 
 
-                CalendarEntry[] entry = (CalendarEntry[]) (new CalendarEntry()).findAll("select * from calendar_entry where entry_date>'"+idag+"' and member_id = -1 order by entry_date",max_shown);
+                CalendarEntry[] entry = (CalendarEntry[]) (new CalendarEntry()).findAll("select * from calendar_entry where entry_date>"+idag+" and member_id = -1 order by entry_date",max_shown);
 
                 if (entry.length < max_shown ) {
                   lengd = entry.length;
@@ -717,7 +727,7 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 
 			myTable.setVerticalAlignment(1,row,"top");
 
-                        entry = (CalendarEntry[]) new CalendarEntry().findAll("Select * from calendar_entry where time_from<='"+(i)+"' AND time_to >='"+(i+0.5)+"' AND member_id ='"+this.member_id+"' AND entry_date ='"+this.ar+"-"+this.manudur+"-"+this.dombreyta+"'");
+                        entry = (CalendarEntry[]) new CalendarEntry().findAll("Select * from calendar_entry where time_from<="+(i)+" AND time_to >="+(i+0.5)+" AND member_id ='"+this.member_id+"' AND entry_date ='"+this.ar+"-"+this.manudur+"-"+this.dombreyta+"'");
 
                         if (entry != null) {
                           if (entry.length > 0) {
@@ -905,7 +915,7 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 					}
 
 
-                                entry = (CalendarEntry[]) new CalendarEntry().findAll("Select * from calendar_entry where time_from<='"+(g)+"' AND time_to >='"+(g+0.5)+"' AND member_id ='"+this.member_id+"' AND entry_date ='"+this.ar+"-"+this.manudur+"-"+this.dombreyta+"'");
+                                entry = (CalendarEntry[]) new CalendarEntry().findAll("Select * from calendar_entry where time_from<="+(g)+" AND time_to >="+(g+0.5)+" AND member_id ='"+this.member_id+"' AND entry_date ='"+this.ar+"-"+this.manudur+"-"+this.dombreyta+"'");
 
                                 if (entry != null) {
                                   if (entry.length > 0) {
@@ -1091,13 +1101,18 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 				myText.setFontSize(1);
 
 			myTable.add(myText,m,row);
-
+                        idegaTimestamp stampur = new idegaTimestamp(fyrriDagur,fyrriMan,fyrriAr);
+                        if( this.DatastoreType.equalsIgnoreCase("oracle") ) {
+                          dagsString = stampur.toOracleString();
+                        }
+                        else {
+                          dagsString = "'"+stampur.toSQLDateString()+"'";
+                        }
 
 			if (isYear) {
 			}
 			else {
-				dagsString = (TextSoap.addZero(fyrriDagur)+"."+TextSoap.addZero(fyrriMan)+"."+fyrriAr);
-				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date='"+dagsString+"' AND (member_id = -1 OR member_id = "+this.member_id+")");
+				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date="+dagsString+" AND (member_id = -1 OR member_id = "+this.member_id+")");
 				if (entry.length > 0) {
 					teljaSkipti = entry.length;
 					if (teljaSkipti > maxShown) {
@@ -1113,6 +1128,8 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 							fundur.setFontSize(1);
 						linkur = new Link(fundur,URI);
 							linkur.addParameter("idega_calendar_action","view");
+                                                        linkur.setAttribute("onMouseOver","status='"+entry[v].getName()+"';return true");
+                                                        linkur.setAttribute("onMouseOut","status='';return true");
                                                         addDateToLink(linkur,fyrriAr,fyrriMan,fyrriDagur);
 							linkur.addParameter("idega_calendar_faerslur_id",entry[v].getID());
 						myTable.add("<br>",m,row);
@@ -1126,7 +1143,10 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 						Link meira = new Link(meiraTxt,URI);
                                                         addDateToLink(meira,fyrriAr,fyrriMan,fyrriDagur);
 							meira.addParameter("idega_calendar_action","complete_list");
-						myTable.add(meira,m,row);
+                                                        meira.setAttribute("onMouseOver","status='...meira';return true");
+                                                        meira.setAttribute("onMouseOut","status='';return true");
+						myTable.add("<br>",m,row);
+                                                myTable.add(meira,m,row);
 					}
 				}
 			}
@@ -1181,8 +1201,15 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 			if (isYear) {
 			}
 			else {
-				dagsString = (TextSoap.addZero(dagur)+"."+TextSoap.addZero(manudur)+"."+ar);
-				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date='"+dagsString+"' AND (member_id = -1 OR member_id = "+this.member_id+")");
+				idegaTimestamp stampur = new idegaTimestamp(dagur,manudur,ar);
+                                if( this.DatastoreType.equalsIgnoreCase("oracle") ) {
+                                  dagsString = stampur.toOracleString();
+                                }
+                                else {
+                                  dagsString = "'"+stampur.toSQLDateString()+"'";
+                                }
+
+				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date="+dagsString+" AND (member_id = -1 OR member_id = "+this.member_id+")");
 
 				if (entry.length > 0) {
 					teljaSkipti = entry.length;
@@ -1199,6 +1226,8 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 							fundur.setFontSize(1);
 						linkur = new Link(fundur,URI);
 							linkur.addParameter("idega_calendar_action","view");
+                                                        linkur.setAttribute("onMouseOver","status='"+entry[v].getName()+"';return true");
+                                                        linkur.setAttribute("onMouseOut","status='';return true");
 							linkur.addParameter("idega_calendar_faerslur_id",entry[v].getID());
                                                         addDateToLink(linkur,ar,manudur,dagur);
 						myTable.add("<br>",j+m-1,row);
@@ -1210,7 +1239,10 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 							meiraTxt.setFontSize(1);
 						Link meira = new Link(meiraTxt,URI);
                                                         addDateToLink(meira,ar,manudur,dagur);
+                                                        meira.setAttribute("onMouseOver","status='...meira';return true");
+                                                        meira.setAttribute("onMouseOut","status='';return true");
 							meira.addParameter("idega_calendar_action","complete_list");
+						myTable.add("<br>",j+m-1,row);
 						myTable.add(meira,j+m-1,row);
 					}
 				}
@@ -1234,8 +1266,14 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 			if (isYear) {
 			}
 			else {
-				dagsString = (TextSoap.addZero(dagur)+"."+TextSoap.addZero(manudur)+"."+ar);
-				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date='"+dagsString+"' AND (member_id = -1 OR member_id = "+this.member_id+")");
+				idegaTimestamp stampur = new idegaTimestamp(dagur,manudur,ar);
+                                if( this.DatastoreType.equalsIgnoreCase("oracle") ) {
+                                  dagsString = stampur.toOracleString();
+                                }
+                                else {
+                                  dagsString = "'"+stampur.toSQLDateString()+"'";
+                                }
+				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date="+dagsString+" AND (member_id = -1 OR member_id = "+this.member_id+")");
 				if (entry.length > 0) {
 					teljaSkipti = entry.length;
 					if (teljaSkipti > maxShown) {
@@ -1253,6 +1291,8 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 						linkur = new Link(fundur,URI);
 							linkur.addParameter("idega_calendar_action","view");
                                                         addDateToLink(linkur,ar,manudur,dagur);
+                                                        linkur.setAttribute("onMouseOver","status='"+entry[v].getName()+"';return true");
+                                                        linkur.setAttribute("onMouseOut","status='';return true");
 							linkur.addParameter("idega_calendar_faerslur_id",entry[v].getID());
 						myTable.add("<br>",j,row);
 						myTable.add(linkur,j,row);
@@ -1264,7 +1304,10 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 							meiraTxt.setFontSize(1);
 						Link meira = new Link(meiraTxt,URI);
                                                         addDateToLink(meira,ar,manudur,dagur);
+                                                        meira.setAttribute("onMouseOver","status='...meira';return true");
+                                                        meira.setAttribute("onMouseOut","status='';return true");
 							meira.addParameter("idega_calendar_action","complete_list");
+						myTable.add("<br>",j,row);
 						myTable.add(meira,j,row);
 					}
 				}
@@ -1303,8 +1346,15 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 			if (isYear) {
 			}
 			else {
-				dagsString = (TextSoap.addZero(klam)+"."+TextSoap.addZero(naestMan)+"."+naestAr);
-				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date='"+dagsString+"' AND (member_id = -1 OR member_id = "+this.member_id+")");
+				idegaTimestamp stampur = new idegaTimestamp(klam,naestMan,naestMan);
+                                if( this.DatastoreType.equalsIgnoreCase("oracle") ) {
+                                  dagsString = stampur.toOracleString();
+                                }
+                                else {
+                                  dagsString = "'"+stampur.toSQLDateString()+"'";
+                                }
+
+				entry = (CalendarEntry[]) (new CalendarEntry()).findAll("Select * from calendar_entry where entry_date="+dagsString+" AND (member_id = -1 OR member_id = "+this.member_id+")");
 				if (entry.length > 0) {
 					teljaSkipti = entry.length;
 					if (teljaSkipti > maxShown) {
@@ -1322,6 +1372,8 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 						linkur = new Link(fundur,URI);
 							linkur.addParameter("idega_calendar_action","view");
                                                         addDateToLink(linkur,naestAr,naestMan,klam);
+                                                        linkur.setAttribute("onMouseOver","status='"+entry[v].getName()+"';return true");
+                                                        linkur.setAttribute("onMouseOut","status='';return true");
 							linkur.addParameter("idega_calendar_month",naestMan);
 							linkur.addParameter("idega_calendar_day",klam);
 							linkur.addParameter("idega_calendar_year",naestAr);
@@ -1335,8 +1387,11 @@ private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
 						Text meiraTxt = new Text(LANG[0]);
 							meiraTxt.setFontSize(1);
 						Link meira = new Link(meiraTxt,URI);
+                                                        meira.setAttribute("onMouseOver","status='...meira';return true");
+                                                        meira.setAttribute("onMouseOut","status='';return true");
                                                         addDateToLink(meira,naestAr,naestMan,klam);
 							meira.addParameter("idega_calendar_action","complete_list");
+						myTable.add("<br>",j+klam,row);
 						myTable.add(meira,j+klam,row);
 					}
 				}
@@ -1483,7 +1538,7 @@ private void viewToday(ModuleInfo modinfo) throws SQLException {
 	String month = modinfo.getRequest().getParameter("idega_calendar_month");
 	String year  = modinfo.getRequest().getParameter("idega_calendar_year");
 
-	String dateString = day+"."+month+"."+year;
+	String dateString = "";
 	Text header = new Text(this.getDate(modinfo));
           header.setBold();
           header.setFontColor(this.header_text_color);
@@ -1491,7 +1546,15 @@ private void viewToday(ModuleInfo modinfo) throws SQLException {
 	Link linkur;
 	int row = 1;
 
-        CalendarEntry[] entry = (CalendarEntry[]) (new CalendarEntry()).findAll("select * from calendar_entry where entry_date ='"+dateString+"' and (member_id = -1 OR member_id ='"+this.member_id+"') order by calendar_entry_id");
+        idegaTimestamp stampur = new idegaTimestamp(Integer.parseInt(day),Integer.parseInt(month),Integer.parseInt(year));
+        if( this.DatastoreType.equalsIgnoreCase("oracle") ) {
+          dateString = stampur.toOracleString();
+        }
+        else {
+          dateString = "'"+stampur.toSQLDateString()+"'";
+        }
+
+        CalendarEntry[] entry = (CalendarEntry[]) (new CalendarEntry()).findAll("select * from calendar_entry where entry_date ="+dateString+" and (member_id = -1 OR member_id ='"+this.member_id+"') order by calendar_entry_id");
 
 	Table table = new Table();
 		table.setBorder(0);
@@ -2237,4 +2300,8 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
 		this.headerFontFace=headerFontFace;
 
 	}
+
+        private String getDatastoreType(GenericEntity entity){
+          return DatastoreInterface.getDatastoreType(entity.getDatasource());
+        }
 }
