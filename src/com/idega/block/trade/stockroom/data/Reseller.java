@@ -9,6 +9,7 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.TreeableEntity;
+import com.idega.user.data.Group;
 
 
 /**
@@ -110,6 +111,26 @@ public interface Reseller extends IDOLegacyEntity, TreeableEntity {
 	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#getParent
 	 */
 	public Reseller getParent();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#getSupplierManagerID
+	 */
+	public int getSupplierManagerID();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#getSupplierManager
+	 */
+	public Group getSupplierManager();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#setSupplierManager
+	 */
+	public void setSupplierManager(Group group);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#setSupplierManagerPK
+	 */
+	public void setSupplierManagerPK(Object pk);
 
 	/**
 	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#getSettings

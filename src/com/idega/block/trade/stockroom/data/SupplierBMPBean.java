@@ -10,8 +10,9 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.block.trade.data.CreditCardInformation;
-import com.idega.block.trade.stockroom.business.SupplierManager;
-import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
+import com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean;
+import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -24,9 +25,12 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
+import com.idega.presentation.IWContext;
+import com.idega.user.data.Group;
 
 /**
  * Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
@@ -40,6 +44,7 @@ import com.idega.data.query.WildCardColumn;
 public class SupplierBMPBean extends com.idega.data.GenericEntity implements Supplier{
 
 	private String newName;
+	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
 
 	public SupplierBMPBean() {
 		super();
@@ -55,19 +60,21 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 		addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class, 500);
 		addAttribute(getColumnNameGroupID(), "Hópur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
 		addAttribute(getColumnNameIsValid(), "Í notkun", true, true, Boolean.class);
+		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		/* can this be removed */
 		addAttribute(getColumnNameTPosMerchantID(), "ViÝskiptamannanumer", true, true, Integer.class);
 
 		this.addManyToManyRelationShip(Address.class, "SR_SUPPLIER_IC_ADDRESS");
 		this.addManyToManyRelationShip(Phone.class, "SR_SUPPLIER_IC_PHONE");
 		this.addManyToManyRelationShip(Email.class, "SR_SUPPLIER_IC_EMAIL");
+
 		this.addManyToManyRelationShip(ProductCategory.class, "SR_SUPPLIER_PRODUCT_CATEGORY");
 		this.addManyToManyRelationShip(Reseller.class);
-
 		this.addManyToManyRelationShip(CreditCardInformation.class, "SR_SUPPLIER_CC_INFORMATION");
 
 		addIndex("IDX_SUPP_1", new String[]{getIDColumnName(), getColumnNameIsValid()});
-		addIndex("IDX_SUPP_1", new String[]{getColumnNameIsValid()});
+		addIndex("IDX_SUPP_2", new String[]{getColumnNameIsValid()});
+		addIndex("IDX_SUPP_3", new String[]{COLUMN_SUPPLIER_MANAGER_ID});
 	}
 
 	public void insertStartData() throws Exception {
@@ -137,6 +144,22 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 		return getBooleanColumnValue(getColumnNameIsValid());
 	}
 
+	public int getSupplierManagerID() {
+		return getIntColumnValue(COLUMN_SUPPLIER_MANAGER_ID);
+	}
+
+	public Group getSupplierManager() {
+		return (Group) getColumnValue(COLUMN_SUPPLIER_MANAGER_ID);
+	}
+	
+	public void setSupplierManager(Group group) {
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, group);
+	}
+ 	
+	public void setSupplierManagerPK(Object pk) {
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, pk);
+	}
+	
 	public Address getAddress() throws SQLException {
 		Address address = null;
 		List addr = getAddresses();
@@ -198,24 +221,52 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 		return EntityFinder.findRelated(this, com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
 	}
 
+	/**
+	 * @deprecated Replaced with findAll( supplierManager );
+	 */
 	public static Supplier[] getValidSuppliers() throws SQLException {
+		try {
+			throw new Exception("ERRRROR : Using a wrong method : getValidSuppliers(), should be findAll ( supplierManager )    !!!!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return (Supplier[]) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class).findAllByColumnOrdered(com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameIsValid(), "Y", com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
 	}
-
-	public Collection ejbFindAll() throws FinderException {
-		return this.idoFindAllIDsByColumnOrderedBySQL(this.getColumnNameIsValid(), "'Y'", getColumnNameName());
+	
+	public Collection ejbFindAll(Group supplierManager) throws FinderException {
+		Table table = new Table(this);
+		Column isValid = new Column(table, this.getColumnNameIsValid());
+		Column suppMan = new Column(table, COLUMN_SUPPLIER_MANAGER_ID);
+		Column name = new Column(table, getColumnNameName());
+		Order order = new Order(name, true);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(isValid, MatchCriteria.EQUALS, true));
+		query.addCriteria(new MatchCriteria(suppMan, MatchCriteria.EQUALS, supplierManager.getPrimaryKey()));
+		query.addOrder(order);
+		
+		return this.idoFindPKsByQuery(query);
+		
+//		return this.idoFindAllIDsByColumnOrderedBySQL(this.getColumnNameIsValid(), "'Y'", getColumnNameName());
 	}
 
 	public void update() throws SQLException {
 		if (newName != null) {
-			PermissionGroup pGroup = SupplierManager.getPermissionGroup(this);
-			pGroup.setName(newName + "_" + this.getID() + SupplierManager.permissionGroupNameExtention);
-			pGroup.update();
-			SupplierStaffGroup sGroup = SupplierManager.getSupplierStaffGroup(this);
-			sGroup.setName(newName + "_" + this.getID());
-			sGroup.update();
-			setColumn(getColumnNameName(), newName);
-			newName = null;
+			try {
+				SupplierManagerBusiness sm = (SupplierManagerBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), SupplierManagerBusiness.class);
+				Group pGroup = sm.getPermissionGroup(this);
+				pGroup.setName(newName + "_" + this.getID() + SupplierManagerBusinessBean.permissionGroupNameExtention);
+				pGroup.store();
+				SupplierStaffGroup sGroup = sm.getSupplierStaffGroup(this);
+				sGroup.setName(newName + "_" + this.getID());
+				sGroup.store();
+				setColumn(getColumnNameName(), newName);
+				newName = null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new SQLException(e.getMessage());
+			}
 		}
 		super.update();
 	}

@@ -14,6 +14,7 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.user.data.Group;
 
 
 /**
@@ -60,6 +61,26 @@ public interface Supplier extends IDOLegacyEntity {
 	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getIsValid
 	 */
 	public boolean getIsValid();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getSupplierManagerID
+	 */
+	public int getSupplierManagerID();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getSupplierManager
+	 */
+	public Group getSupplierManager();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#setSupplierManager
+	 */
+	public void setSupplierManager(Group group);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#setSupplierManagerPK
+	 */
+	public void setSupplierManagerPK(Object pk);
 
 	/**
 	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getAddress

@@ -3,6 +3,7 @@ package com.idega.block.trade.stockroom.data;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.data.IDOFactory;
+import com.idega.user.data.Group;
 
 
 /**
@@ -44,9 +45,9 @@ public class SupplierHomeImpl extends IDOFactory implements SupplierHome {
 		}
 	}
 
-	public Collection findAll() throws FinderException {
+	public Collection findAll(Group supplierManager) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SupplierBMPBean) entity).ejbFindAll();
+		java.util.Collection ids = ((SupplierBMPBean) entity).ejbFindAll(supplierManager);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

@@ -6,25 +6,25 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
-//import com.idega.block.creditcard.data.TPosMerchant;
-//import com.idega.block.creditcard.data.TPosMerchantHome;
 import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.block.trade.stockroom.business.ResellerManagerBean;
+import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.TreeableEntityBMPBean;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
+import com.idega.presentation.IWContext;
+import com.idega.user.data.Group;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -35,7 +35,7 @@ import com.idega.data.query.WildCardColumn;
  * @version 1.0
  */
 
-public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implements Reseller{
+public class ResellerBMPBean extends TreeableEntityBMPBean implements Reseller{
   private String newName;
 
   public ResellerBMPBean() {
@@ -54,6 +54,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     addAttribute(getColumnNameIsValid(),"is valid", true, true, Boolean.class);
     addAttribute(getColumnNameReferenceNumber(), "Tilvisunarnúmer", true, true, String.class);
     addAttribute(getColumnNameTPosMerchantID(), "Viðskiptanumer", true, true, Integer.class);
+		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
 
     this.addManyToManyRelationShip(Address.class);
     this.addManyToManyRelationShip(Email.class);
@@ -165,7 +166,15 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     return getPhones(com.idega.core.contact.data.PhoneBMPBean.getFaxNumberID());
   }
 
+  /**
+   * @deprecated Replaced with findAll( supplierManager )
+   */
   public static Reseller[] getValidResellers() throws SQLException {
+		try {
+			throw new Exception("ERRRROR : Using a wrong method : getValidResellers()    !!!!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     return (Reseller[]) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class).findAllByColumnOrdered(com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameIsValid(),"Y",com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
   }
 
@@ -202,17 +211,41 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
   public static String getColumnNameIsValid()         {return "IS_VALID";}
   public static String getColumnNameReferenceNumber() {return "REFERENCE_NUMBER";}
   public static String getColumnNameTPosMerchantID()  {return "TPOS_MERCHANT_ID";}
+	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
 
+	public int getSupplierManagerID() {
+		return getIntColumnValue(COLUMN_SUPPLIER_MANAGER_ID);
+	}
+
+	public Group getSupplierManager() {
+		return (Group) getColumnValue(COLUMN_SUPPLIER_MANAGER_ID);
+	}
+	
+	public void setSupplierManager(Group group) {
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, group);
+	}
+ 	
+	public void setSupplierManagerPK(Object pk) {
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, pk);
+	}
+
+  
   public void update() throws SQLException {
     if (newName != null) {
-      PermissionGroup pGroup = ResellerManager.getPermissionGroup(this);
-        pGroup.setName(newName+"_"+this.getID()+ResellerManager.permissionGroupNameExtention);
-        pGroup.update();
-      ResellerStaffGroup sGroup = ResellerManager.getResellerStaffGroup(this);
-        sGroup.setName(newName+"_"+this.getID());
-        sGroup.update();
-      setColumn(getColumnNameName(),newName);
-      newName = null;
+    	try {
+	    	ResellerManager rm = (ResellerManager) IBOLookup.getServiceInstance(IWContext.getInstance(), ResellerManager.class);
+	      Group pGroup = rm.getPermissionGroup(this);
+	        pGroup.setName(newName+"_"+this.getID()+ResellerManagerBean.permissionGroupNameExtention);
+	        pGroup.store();
+	      ResellerStaffGroup sGroup = rm.getResellerStaffGroup(this);
+	        sGroup.setName(newName+"_"+this.getID());
+	        sGroup.store();
+	      setColumn(getColumnNameName(),newName);
+	      newName = null;
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		throw new SQLException(e.getMessage());
+    	}
     }
     super.update();
   }
@@ -263,4 +296,15 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
 		return this.idoFindPKsByQuery(query);
 	}
   
+	public Collection ejbFindAllBySupplierManager(Group suppMan) throws FinderException {
+		Table table = new Table(this);
+		Column suppManColumn = new Column(table, COLUMN_SUPPLIER_MANAGER_ID);
+		Column validColumn = new Column(table, getColumnNameIsValid());
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(suppManColumn, MatchCriteria.EQUALS, suppMan));
+		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
+		return this.idoFindPKsByQuery(query);
+	}
+  	
 }
