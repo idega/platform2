@@ -1,12 +1,15 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
+import is.idega.idegaweb.travel.business.Booker;
+import com.idega.idegaweb.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
 import com.idega.core.user.data.User;
 import com.idega.block.login.business.LoginBusiness;
 
@@ -50,7 +53,7 @@ public class TravelWindow extends Window {
   }
 
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     setTemplate(iwc);
     initialize(iwc);
     super.add(table);
@@ -111,4 +114,11 @@ public class TravelWindow extends Window {
     return text;
   }
 
+  protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
+    return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
+  }
+
+  protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+  }
 }

@@ -30,7 +30,7 @@ public class ProductItemLink extends ProductItem {
     super(product);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception {
     super.main(iwc);
     drawObject();
   }

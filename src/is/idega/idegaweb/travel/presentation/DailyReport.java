@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDORelationshipException;
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -36,8 +39,6 @@ public class DailyReport extends TravelManager implements Report{
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
-
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
   private String sAction = "dailyReportAction";
   private String parameterUpdate = "dailyReportUpdate";
@@ -78,7 +79,7 @@ public class DailyReport extends TravelManager implements Report{
     iwrb = super.getResourceBundle();
   }
 
-  public Table getBookingTable(IWContext iwc, Product product, idegaTimestamp stamp) {
+  public Table getBookingTable(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, FinderException {
       int totalBookings = 0;
       int totalAttendance = 0;
       int totalAmount = 0;
@@ -192,11 +193,12 @@ public class DailyReport extends TravelManager implements Report{
       }
 
 
-      Booking[] bookings = TourBooker.getBookings(product.getID(),stamp,bookingTypeIds);
+      Booking[] bookings = getBooker(iwc).getBookings(product.getID(),stamp,bookingTypeIds);
       TravelAddress[] bookingAddresses;
       String theColor = super.GRAY;
       DropdownMenu payType;
       BookingEntry[] entries;
+      Collection coll;
       int iBookingId = 0;
       table.setRowColor(row,super.backgroundColor);
       for (int i = 0; i < bookings.length; i++) {
@@ -208,7 +210,7 @@ public class DailyReport extends TravelManager implements Report{
 
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = Booker.getBookingPrice(iwc, bookings[i]);
+          amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
 
           totalBookings += ibookings;
           if (attendance != -1000)
@@ -220,7 +222,7 @@ public class DailyReport extends TravelManager implements Report{
             nameText.setText(bookings[i].getName());
 
           payTypeText = (Text) smallText.clone();
-          payType = (DropdownMenu) Booker.getPaymentTypes(iwrb).clone();
+          payType = (DropdownMenu) getBooker(iwc).getPaymentTypes(iwrb).clone();
             payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
           iBookingId = bookings[i].getPaymentTypeId();
 
@@ -251,8 +253,10 @@ public class DailyReport extends TravelManager implements Report{
 
           if (closerLook)
           try {
+            coll = bookings[i].getTravelAddresses();
+            bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+            //bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
               addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -265,7 +269,7 @@ public class DailyReport extends TravelManager implements Report{
               ++row;
               table.setRowColor(row, theColor);
               price = entries[j].getProductPrice();
-              iEntryCount = (int) Booker.getBookingEntryPrice(iwc, entries[j], bookings[i]);
+              iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -290,8 +294,10 @@ public class DailyReport extends TravelManager implements Report{
             }
 
 
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
+          }catch (FinderException fe) {
+            fe.printStackTrace(System.err);
+          }catch (IDORelationshipException re) {
+            re.printStackTrace(System.err);
           }
 
       }
@@ -315,7 +321,7 @@ public class DailyReport extends TravelManager implements Report{
           addTable.setWidth(4,fourWidth);
           addTable.setWidth(5,fiveWidth);
 
-      bookings = Booker.getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
+      bookings = getBooker(iwc).getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
       if (bookings.length == 0) {
         addRow++;
         addTable.setRowColor(addRow,theColor);
@@ -326,7 +332,7 @@ public class DailyReport extends TravelManager implements Report{
           addTable.setAlignment(2,addRow,"center");
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = Booker.getBookingPrice(iwc, bookings[i]);
+          amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
 
           totalBookings += ibookings;
           if (attendance != -1000)
@@ -336,7 +342,7 @@ public class DailyReport extends TravelManager implements Report{
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
 
-          payType = (DropdownMenu) Booker.getPaymentTypes(iwrb).clone();
+          payType = (DropdownMenu) getBooker(iwc).getPaymentTypes(iwrb).clone();
             payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
 
 //          payTypeText = (Text) smallText.clone();
@@ -371,7 +377,9 @@ public class DailyReport extends TravelManager implements Report{
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+            coll = bookings[i].getTravelAddresses();
+            bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
+//            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
               addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -383,7 +391,7 @@ public class DailyReport extends TravelManager implements Report{
               ++addRow;
               addTable.setRowColor(addRow, theColor);
               price = entries[j].getProductPrice();
-              iEntryCount = (int) Booker.getBookingEntryPrice(iwc, entries[j], bookings[i]);
+              iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -407,8 +415,10 @@ public class DailyReport extends TravelManager implements Report{
             }
 
 
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
+          }catch (FinderException fe) {
+            fe.printStackTrace(System.err);
+          }catch (IDORelationshipException re) {
+            re.printStackTrace(System.err);
           }
 
       }
@@ -432,7 +442,7 @@ public class DailyReport extends TravelManager implements Report{
           correctionTable.setWidth(4,fourWidth);
           correctionTable.setWidth(5,fiveWidth);
 
-      bookings = Booker.getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_CORRECTION);
+      bookings = getBooker(iwc).getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_CORRECTION);
       if (bookings.length == 0) {
         corrRow++;
         correctionTable.setRowColor(corrRow,theColor);
@@ -443,7 +453,7 @@ public class DailyReport extends TravelManager implements Report{
           correctionTable.setAlignment(2,corrRow,"center");
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = Booker.getBookingPrice(iwc, bookings[i]);
+          amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
 
           totalBookings += ibookings;
           if (attendance != -1000)
@@ -481,7 +491,9 @@ public class DailyReport extends TravelManager implements Report{
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+            coll = bookings[i].getTravelAddresses();
+            bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
+//            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
               addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -493,7 +505,7 @@ public class DailyReport extends TravelManager implements Report{
               ++corrRow;
               correctionTable.setRowColor(corrRow, theColor);
               price = entries[j].getProductPrice();
-              iEntryCount = (int) Booker.getBookingEntryPrice(iwc, entries[j], bookings[i]);
+              iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -517,8 +529,10 @@ public class DailyReport extends TravelManager implements Report{
             }
 
 
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
+          }catch (FinderException fe) {
+            fe.printStackTrace(System.err);
+          }catch (IDORelationshipException re) {
+            re.printStackTrace(System.err);
           }
 
       }
@@ -590,7 +604,7 @@ public class DailyReport extends TravelManager implements Report{
                 bookedText = (Text) smallText.clone();
                   bookedText.setText(Integer.toString(many));
                 amountText = (Text) smallText.clone();
-                  amountText.setText(Integer.toString(many * ((int) tsb.getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), addresses[k].getID()))));
+                  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), addresses[k].getID()))));
 
                 nameText.setFontColor(super.BLACK);
                 bookedText.setFontColor(super.BLACK);
@@ -650,7 +664,7 @@ public class DailyReport extends TravelManager implements Report{
   }
 
 
-  private void update(IWContext iwc) {
+  private void update(IWContext iwc) throws RemoteException{
     String[] booking_ids = (String[]) iwc.getParameterValues("booking_id");
     String[] attendance  = (String[]) iwc.getParameterValues("attendance");
     String[] pay_type    = (String[]) iwc.getParameterValues("payment_type");
@@ -659,7 +673,7 @@ public class DailyReport extends TravelManager implements Report{
     if (booking_ids != null)
     for (int i = 0; i < booking_ids.length; i++) {
       try {
-        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(Integer.parseInt(booking_ids[i]));
+        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(booking_ids[i]);
         try {
           booking.setAttendance(Integer.parseInt(attendance[i]));
         }catch (NumberFormatException n) {
@@ -668,9 +682,9 @@ public class DailyReport extends TravelManager implements Report{
         try {
           booking.setPaymentTypeId(Integer.parseInt(pay_type[i]));
         }catch (NumberFormatException n) {}
-        booking.update();
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
+        booking.store();
+      }catch (FinderException fe) {
+        fe.printStackTrace(System.err);
       }
     }
   }
@@ -682,7 +696,7 @@ public class DailyReport extends TravelManager implements Report{
     return new Table();
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) throws RemoteException, FinderException {
     if (products.size() == 1) {
       return getBookingTable(iwc, (Product) products.get(0), stamp);
     }else {
@@ -690,7 +704,7 @@ public class DailyReport extends TravelManager implements Report{
     }
   }
 
-  public Table getDailyReportSimple(IWContext iwc, List products, idegaTimestamp stamp) {
+  public Table getDailyReportSimple(IWContext iwc, List products, idegaTimestamp stamp) throws RemoteException, FinderException {
       Table table = new Table();
         table.setColor(super.WHITE);
         table.setCellspacing(1);
@@ -764,9 +778,9 @@ public class DailyReport extends TravelManager implements Report{
         ++row;
         table.setRowColor(row, super.GRAY);
         prod = (Product) products.get(i);
-        bookings = Booker.getBookings(prod.getID(), stamp);
-        count = Booker.getNumberOfBookings(prod.getID(), stamp);
-        price =  Booker.getBookingPrice(iwc, bookings);
+        bookings = getBooker(iwc).getBookings(prod.getID(), stamp);
+        count = getBooker(iwc).getNumberOfBookings(prod.getID(), stamp);
+        price =  getBooker(iwc).getBookingPrice(iwc, bookings);
         depTime = ProductBusiness.getDepartureTime(prod);
         totalCount += count;
         totalPrice += price;

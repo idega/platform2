@@ -37,7 +37,7 @@ public class ProductItemThumbnail extends ProductItem {
    *
    *@param  iwc  Description of the Parameter
    */
-  public void main( IWContext iwc ) {
+  public void main( IWContext iwc ) throws Exception {
     super.main( iwc );
     drawObject();
   }

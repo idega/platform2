@@ -1,4 +1,9 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
+import javax.ejb.FinderException;
+import java.util.*;
+import com.idega.util.ListUtil;
+import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -31,7 +36,7 @@ public class TourDesigner extends TravelManager {
   IWResourceBundle iwrb;
   IWBundle iwb;
   Supplier supplier;
-  TourBusiness tb = new TourBusiness();
+  TourBusiness tb;
 
   String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
   String ServiceAction = ServiceDesigner.ServiceAction;
@@ -67,6 +72,7 @@ public class TourDesigner extends TravelManager {
     iwrb = super.getResourceBundle();
     iwb = super.getBundle();
     supplier = super.getSupplier();
+    tb  = getTourBusiness(iwc);
   }
 
   /**
@@ -75,11 +81,11 @@ public class TourDesigner extends TravelManager {
    *@param  tourId  Description of the Parameter
    *@return         Description of the Return Value
    */
-  private boolean setupData( int tourId ) {
+  private boolean setupData( int tourId ) throws RemoteException, FinderException {
     try {
       product = ProductBusiness.getProduct( tourId );
-      service = ( ( is.idega.idegaweb.travel.data.ServiceHome ) com.idega.data.IDOLookup.getHomeLegacy( Service.class ) ).findByPrimaryKeyLegacy( tourId );
-      tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHomeLegacy( Tour.class ) ).findByPrimaryKeyLegacy( tourId );
+      service = ( ( is.idega.idegaweb.travel.data.ServiceHome ) com.idega.data.IDOLookup.getHome( Service.class ) ).findByPrimaryKey( product.getPrimaryKey() );
+      tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).findByPrimaryKey( product.getPrimaryKey() );
       timeframe = product.getTimeframe();
 
       arrAddress = ProductBusiness.getArrivalAddress( product );
@@ -99,7 +105,7 @@ public class TourDesigner extends TravelManager {
    *@param  iwc  Description of the Parameter
    *@return      The tourDesignerForm value
    */
-  public Form getTourDesignerForm( IWContext iwc ) {
+  public Form getTourDesignerForm( IWContext iwc ) throws RemoteException, FinderException{
     return getTourDesignerForm( iwc, -1 );
   }
 
@@ -111,7 +117,7 @@ public class TourDesigner extends TravelManager {
    *@param  tourId  Description of the Parameter
    *@return         The tourDesignerForm value
    */
-  public Form getTourDesignerForm( IWContext iwc, int tourId ) {
+  public Form getTourDesignerForm( IWContext iwc, int tourId ) throws RemoteException, FinderException{
     boolean isDataValid = true;
 
     if ( tourId != -1 ) {
@@ -398,7 +404,11 @@ public class TourDesigner extends TravelManager {
       ++row;
       Text hotelPickupText = ( Text ) theBoldText.clone();
       hotelPickupText.setText( iwrb.getLocalizedString( "travel.hotel_pickup", "Hotel pick-up" ) );
-      SelectionBox hotels = new SelectionBox( tb.getHotelPickupPlaces( this.supplier ) );
+      HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+      Collection coll = hppHome.findHotelPickupPlaces(this.supplier);
+      List hpps = ListUtil.convertCollectionToList(coll);
+//      HotelPickupPlace[] hpps = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+      SelectionBox hotels = new SelectionBox( hpps );
       hotels.setName( "hotelPickupId" );
       hotels.keepStatusOnAction();
 
@@ -515,9 +525,11 @@ public class TourDesigner extends TravelManager {
         arrival_time.setHour( tempStamp.getHour() );
         arrival_time.setMinute( tempStamp.getMinute() );
 
-        HotelPickupPlace[] places = tb.getHotelPickupPlaces( service );
-        for ( int i = 0; i < places.length; i++ ) {
-          hotels.setSelectedElement( Integer.toString( places[i].getID() ) );
+        Collection hppService = hppHome.findHotelPickupPlaces(this.service);
+        HotelPickupPlace hpp;
+        Iterator iter = hppService.iterator();
+        while (iter.hasNext()) {
+          hotels.setSelectedElement(iter.next().toString());
         }
 
         if ( tour.getIsHotelPickup() ) {
@@ -754,6 +766,10 @@ public class TourDesigner extends TravelManager {
     }
 
     return serviceId;
+  }
+
+  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
 
 }

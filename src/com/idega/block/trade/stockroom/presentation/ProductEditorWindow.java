@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.image.presentation.*;
 import com.idega.block.trade.business.CurrencyHolder;
@@ -78,7 +80,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   }
 
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws RemoteException{
     init(iwc);
 
     String action = iwc.getParameter(ACTION);
@@ -175,12 +177,12 @@ public class ProductEditorWindow extends IWAdminWindow {
     return link;
   }
 
-  private void displayForm(IWContext iwc) {
+  private void displayForm(IWContext iwc) throws RemoteException{
     simpleForm(iwc);
 
   }
 
-  private void simpleForm(IWContext iwc) {
+  private void simpleForm(IWContext iwc) throws RemoteException{
     TextInput number = new TextInput(PAR_NUMBER);
     TextInput name = new TextInput(PAR_NAME);
     //TextArea description = new TextArea(PAR_DESCRIPTION);
@@ -200,7 +202,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       name.setContent(ProductBusiness.getProductName(_product, iLocaleID));
       description.setContent(ProductBusiness.getProductDescription(_product, iLocaleID));
       teaser.setContent(ProductBusiness.getProductTeaser(_product, iLocaleID));
-      ProductPrice pPrice = StockroomBusiness.getPrice(_product);
+      ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
       if (pPrice != null) {
 	price.setContent(Integer.toString((int) pPrice.getPrice()));
 	_currencies.setSelectedElement(Integer.toString(pPrice.getCurrencyId()));
@@ -332,7 +334,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   private void verifyDelete(IWContext iwc) {
     super.addHiddenInput(new HiddenInput(this.PRODUCT_ID, Integer.toString(_productId)));
     StringBuffer text = new StringBuffer();
-      text.append(iwrb.getLocalizedString("are_you_sure_you_want_to_delete","Are you sure you want to delete this product")).append(" : ").append(ProductBusiness.getProductName(_product));
+      text.append(iwrb.getLocalizedString("are_you_sure_you_want_to_delete","Are you sure you want to delete this product")).append(" : ").append(ProductBusiness.getProductName(_product, iLocaleID));
     super.addLeft(iwrb.getLocalizedString("delete","Delete"), text.toString() );
 
     SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("ok","OK"), this.ACTION, this.PAR_DEL_VERIFIED);
@@ -407,6 +409,10 @@ public class ProductEditorWindow extends IWAdminWindow {
     }
 
     return imageTable;
+  }
+
+  private StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (StockroomBusiness) IBOLookup.getServiceInstance(iwac, StockroomBusiness.class);
   }
 
 }

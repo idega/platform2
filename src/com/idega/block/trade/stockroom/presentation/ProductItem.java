@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.business.IBOLookup;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.image.presentation.ImageViewer;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -41,7 +44,7 @@ public class ProductItem extends Block {
     setProduct(product);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     initialize(iwc);
   }
 
@@ -98,4 +101,7 @@ public class ProductItem extends Block {
     this._fontStyle = style;
   }
 
+  protected StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException{
+    return (StockroomBusiness) IBOLookup.getServiceInstance(iwac, StockroomBusiness.class);
+  }
 }

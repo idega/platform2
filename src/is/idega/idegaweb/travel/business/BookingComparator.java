@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.business;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.presentation.IWContext;
 import com.idega.core.user.data.User;
 import com.idega.util.IsCollator;
@@ -35,6 +37,7 @@ public class BookingComparator implements Comparator {
 
   private int sortBy;
   private IWContext iwc;
+  private Booker booker;
 
   public BookingComparator(IWContext iwc) {
       sortBy = NAME;
@@ -55,36 +58,42 @@ public class BookingComparator implements Comparator {
       Booking p2 = (Booking) o2;
       int result = 0;
 
-      switch (this.sortBy) {
-        case NAME     : result = nameSort(o1, o2);
-        break;
-        case HOTELPICKUP   : result = hppSort(o1, o2);
-        break;
-        case HOTELPICKUP_NAME   : result = hppNameSort(o1, o2);
-        break;
-        case TOTALCOUNT   : result = totalCountSort(o1, o2);
-        break;
-        case USER   : result = userSort(o1, o2);
-        break;
-        case OWNER   : result = ownerSort(o1, o2);
-        break;
-        case DATE   : result = dateSort(o1, o2);
-        break;
-        case AMOUNT   : result = amountSort(o1, o2);
-        break;
+      try {
+        switch (this.sortBy) {
+          case NAME     : result = nameSort(o1, o2);
+          break;
+          case HOTELPICKUP   : result = hppSort(o1, o2);
+          break;
+          case HOTELPICKUP_NAME   : result = hppNameSort(o1, o2);
+          break;
+          case TOTALCOUNT   : result = totalCountSort(o1, o2);
+          break;
+          case USER   : result = userSort(o1, o2);
+          break;
+          case OWNER   : result = ownerSort(o1, o2);
+          break;
+          case DATE   : result = dateSort(o1, o2);
+          break;
+          case AMOUNT   : result = amountSort(o1, o2);
+          break;
+        }
+      }catch (RemoteException re) {
+        throw new RuntimeException(re.getMessage());
+      }catch (FinderException fe) {
+        throw new RuntimeException(fe.getMessage());
       }
 
       return result;
   }
 
-  private int hppNameSort(Object o1, Object o2) {
+  private int hppNameSort(Object o1, Object o2)throws RemoteException {
     int result = hppSort(o1, o2);
     if (result == 0) result = nameSort(o1, o2);
 
     return result;
   }
 
-  private int nameSort(Object o1, Object o2) {
+  private int nameSort(Object o1, Object o2)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
@@ -94,7 +103,7 @@ public class BookingComparator implements Comparator {
     return IsCollator.getIsCollator().compare(one,two);
   }
 
-  private int totalCountSort(Object o1, Object o2) {
+  private int totalCountSort(Object o1, Object o2)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
@@ -106,19 +115,23 @@ public class BookingComparator implements Comparator {
     else return 0;
   }
 
-  private int amountSort(Object o1, Object o2) {
-    Booking p1 = (Booking) o1;
-    Booking p2 = (Booking) o2;
+  private int amountSort(Object o1, Object o2) throws RemoteException, FinderException{
+    try {
+      Booking p1 = (Booking) o1;
+      Booking p2 = (Booking) o2;
 
-    float one = Booker.getBookingPrice(iwc, p1);
-    float two = Booker.getBookingPrice(iwc, p2);
+      float one = getBooker().getBookingPrice(iwc, p1);
+      float two = getBooker().getBookingPrice(iwc, p2);
 
-    if (one > two) return -1;
-    else if (one < two) return 1;
-    else return 0;
+      if (one > two) return -1;
+      else if (one < two) return 1;
+      else return 0;
+    }catch (RemoteException re) {
+      throw new RuntimeException(re.getMessage());
+    }
   }
 
-  private int hppSort(Object o1, Object o2) {
+  private int hppSort(Object o1, Object o2)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
@@ -128,13 +141,13 @@ public class BookingComparator implements Comparator {
     boolean err1 = false;
     boolean err2 = false;
     try {
-      tp1 = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(p1.getID());
-    }catch (SQLException sql) {
+      tp1 = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(new Integer(p1.getID()));
+    }catch (FinderException fe) {
       err1 = true;
     }
     try {
-      tp2 = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(p2.getID());
-    }catch (SQLException sql) {
+      tp2 = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(new Integer(p2.getID()));
+    }catch (FinderException fe) {
       err2 = true;
     }
 
@@ -160,7 +173,7 @@ public class BookingComparator implements Comparator {
 
   }
 
-  private int userSort(Object o1, Object o2) {
+  private int userSort(Object o1, Object o2)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
     try {
@@ -189,7 +202,7 @@ public class BookingComparator implements Comparator {
     }
   }
 
-  private int ownerSort(Object o1, Object o2) {
+  private int ownerSort(Object o1, Object o2)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
@@ -218,7 +231,7 @@ public class BookingComparator implements Comparator {
     }
   }
 
-  private int dateSort(Object o1, Object o2) {
+  private int dateSort(Object o1, Object o2)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
@@ -304,6 +317,18 @@ public class BookingComparator implements Comparator {
           bookings[i] = (Booking) objArr[i];
       }
       return (bookings);
+  }
+
+  private Booker getBooker() {
+    try {
+      if (booker == null) {
+        booker = (Booker)com.idega.business.IBOLookup.getServiceInstance(iwc,Booker.class);
+      }
+      return booker;
+    }catch (RemoteException re) {
+      throw new RuntimeException(re.getMessage());
+    }
+
   }
 
 }

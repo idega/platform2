@@ -1,10 +1,13 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.*;
+import java.rmi.RemoteException;
 import com.idega.data.IDOLookup;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -49,7 +52,7 @@ public class Booking extends TravelManager {
 
   private Product product;
   private int productId;
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private TravelStockroomBusiness tsb;
 
   public static String BookingAction = "booking_action";
   public static String BookingParameter = "booking";
@@ -109,10 +112,10 @@ public class Booking extends TravelManager {
       }
   }
 
-  private void initialize(IWContext iwc) {
+  private void initialize(IWContext iwc) throws RemoteException{
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
-
+      tsb =  getTravelStockroomBusiness(iwc);
       supplier = super.getSupplier();
       reseller = super.getReseller();
       if (supplier != null) supplierId = supplier.getID();
@@ -129,14 +132,14 @@ public class Booking extends TravelManager {
           productId = Integer.parseInt(sProductId);
           product = ProductBusiness.getProduct(productId);
           service = tsb.getService(product);
-          tour = TourBusiness.getTour(product);
+          tour = getTourBusiness(iwc).getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+      }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+      }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TourBusiness.TourNotFoundException tnfe) {
+      }catch (TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
@@ -145,7 +148,7 @@ public class Booking extends TravelManager {
             Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
             if (contracts.length > 0) {
               contract = contracts[0];
-              contractId = contract.getID();
+              contractId = ((Integer) contract.getPrimaryKey()).intValue();
             }
         }catch (SQLException sql) {
             sql.printStackTrace(System.err);
@@ -269,33 +272,33 @@ public class Booking extends TravelManager {
       int iBookings = 0;
       try {
         if (reseller != null) {
-          isExpired = TravelStockroomBusiness.getIfExpired(contract, stamp);
+          isExpired = tsb.getIfExpired(contract, stamp);
           if (!isExpired) {
             if (this.tour != null) {
-              isDayVisible = TourBusiness.getIfDay(iwc, contract, tour, stamp);
+              isDayVisible = getTourBusiness(iwc).getIfDay(iwc, contract, tour, stamp);
             }else {
-              isDayVisible = TravelStockroomBusiness.getIfDay(iwc, contract, product, stamp);
+              isDayVisible = tsb.getIfDay(iwc, contract, product, stamp);
             }
           }
         }
         else {
           if (this.tour != null) {
-            isDayVisible = TourBusiness.getIfDay(iwc, tour, stamp, false);
+            isDayVisible = getTourBusiness(iwc).getIfDay(iwc, tour, stamp, false);
           }else {
-            isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, product.getTimeframes(), this.stamp);
+            isDayVisible = tsb.getIfDay(iwc,this.product, product.getTimeframes(), this.stamp);
           }
           if (supplier == null) {
             if (isDayVisible) {
-              iBookings = Booker.getNumberOfBookings(productId, stamp);
+              iBookings = getBooker(iwc).getNumberOfBookings(productId, stamp);
               /*if (iBookings < tour.getMinimumSeats() || iBookings > tour.getTotalSeats()) {
                 isDayVisible = false;
               }*/ /** @todo setja í calendarHandler */
             }
           }
         }
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+      }catch (ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+      }catch (TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
       }
 
@@ -311,7 +314,7 @@ public class Booking extends TravelManager {
 
           table.mergeCells(1,row,5,row);
           if (supplier != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Inquery[] inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -322,7 +325,8 @@ public class Booking extends TravelManager {
             }
           }
           else if (reseller != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Inquery[] inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -383,7 +387,7 @@ public class Booking extends TravelManager {
       }else {
         if (isExpired) {
           if (supplier != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Inquery[] inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -394,7 +398,8 @@ public class Booking extends TravelManager {
             }
           }
           else if (reseller != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Inquery[] inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -407,7 +412,7 @@ public class Booking extends TravelManager {
           table.add(iwrb.getLocalizedString("travel.time_for_booking_has_passed","Time for booking has passed"),1,row+2);
         }else {
           if (supplier != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Inquery[] inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -418,7 +423,8 @@ public class Booking extends TravelManager {
             }
           }
           else if (reseller != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
+            Inquery[] inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -464,7 +470,7 @@ public class Booking extends TravelManager {
   }
 
 
-  private Table getInqueries(IWContext iwc,Inquery[] inqueries) {
+  private Table getInqueries(IWContext iwc,Inquery[] inqueries) throws RemoteException, FinderException, CreateException{
       Table table = new Table();
           table.setWidth("100%");
           table.setBorder(0);
@@ -487,17 +493,18 @@ public class Booking extends TravelManager {
       List groupInq;
       idegaTimestamp tempStamp;
 
-      for (int i = 0; i < inqueries.length; i++) {
+     for (int i = 0; i < inqueries.length; i++) {
           theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
 
-          groupInq = Inquirer.getMultibleInquiries(inqueries[i]);
+          groupInq = getInquirer(iwc).getInquiryHome().create().getMultibleInquiries(inqueries[i]);
           dateText = (Text) theSmallBoldText.clone();
             dateText.setFontColor(BLACK);
           if (groupInq == null || groupInq.size() <= 1) {
             dateText.setText(theStamp.getLocaleDate(iwc));
           }else {
-            theStamp = new idegaTimestamp(((Inquery) groupInq.get(0)).getInqueryDate());
-            tempStamp = new idegaTimestamp(((Inquery) groupInq.get(groupInq.size()-1)).getInqueryDate());
+            InqueryHome iHome = (InqueryHome) IDOLookup.getHome(Inquery.class);
+            theStamp = new idegaTimestamp((iHome.findByPrimaryKey(groupInq.get(0))).getInqueryDate());
+            tempStamp = new idegaTimestamp((iHome.findByPrimaryKey(groupInq.get(groupInq.size()-1))).getInqueryDate());
             dateText.setText(theStamp.getLocaleDate(iwc)+" - "+tempStamp.getLocaleDate(iwc));
           }
           nameText = (Text) theSmallBoldText.clone();
@@ -532,7 +539,7 @@ public class Booking extends TravelManager {
 
           if (supplier != null) {
               answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm booking"));
-                answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
+                answerYes.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
                 answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
                 answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
                 answerYes.addParameter("year",this.stamp.getYear());
@@ -540,7 +547,7 @@ public class Booking extends TravelManager {
                 answerYes.addParameter("day",this.stamp.getDay());
 
               answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject booking"));
-                answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
+                answerNo.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
                 answerNo.addParameter("year",this.stamp.getYear());
@@ -552,14 +559,14 @@ public class Booking extends TravelManager {
               table.add(answerNo,2,row);
           }else if (reseller != null) {
               answerNo = new Link(iwrb.getLocalizedImageButton("travel.cancel_inquiry","Cancel sinquiry"));
-                answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
+                answerNo.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
 
               table.add(answerNo,2,row);
           }
           answerDel = new Link(iwrb.getLocalizedImageButton("travel.delete_inquiry","Delete inquiry"));
-            answerDel.addParameter(this.parameterInqueryId,inqueries[i].getID());
+            answerDel.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
             answerDel.addParameter(this.parameterRespondInquery, this.parameterRespondDel);
             answerDel.addParameter(this.BookingAction, this.parameterRespondInquery);
             answerDel.addParameter("year",this.stamp.getYear());
@@ -573,7 +580,7 @@ public class Booking extends TravelManager {
   }
 
 
-  private Form getTotalTable(IWContext iwc) {
+  private Form getTotalTable(IWContext iwc) throws RemoteException, FinderException{
     Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -650,17 +657,17 @@ public class Booking extends TravelManager {
       try {
         if (reseller != null) {
           try {
-          if (TravelStockroomBusiness.getIfDay(iwc, contract,product, this.stamp)) {
+          if (tsb.getIfDay(iwc, contract,product, this.stamp)) {
             iCount = contract.getAlotment();
 
             if (iCount >0) {
               countTextBold.setText(Integer.toString(iCount));
             }
 
-            iBooked = Booker.getNumberOfBookingsByReseller(resellerId, service.getID(), this.stamp);
+            iBooked = getBooker(iwc).getNumberOfBookingsByReseller(resellerId, ((Integer) service.getPrimaryKey()).intValue(), this.stamp);
             bookedTextBold.setText(Integer.toString(iBooked));
 
-            iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, reseller.getID(), true);
+            iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, reseller.getID(), true);
             inqTextBold.setText(Integer.toString(iInquery));
 
             if (iCount >0) {
@@ -678,10 +685,10 @@ public class Booking extends TravelManager {
         }
         else {
            try {
-          if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
+          if (tsb.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
             iCount = 0;
-            iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
-            iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, true);
+            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), this.stamp);
+            iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, true);
 
             try {
               ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -725,9 +732,9 @@ public class Booking extends TravelManager {
         }
         }
 
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+      }catch (ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+      }catch (TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
       }
 
@@ -756,9 +763,9 @@ public class Booking extends TravelManager {
       table.add(availableTextBold,5,row);
       if (tour != null)
       if (tour.getNumberOfDays() > 1) {
-        List depDays = TourBusiness.getDepartureDays(iwc, tour);
+        List depDays = getTourBusiness(iwc).getDepartureDays(iwc, tour);
         String dateStr = iwc.getParameter("booking_date");
-        DropdownMenu menu = TourBusiness.getDepartureDaysDropdownMenu(iwc, depDays, "booking_date");
+        DropdownMenu menu = getTourBusiness(iwc).getDepartureDaysDropdownMenu(iwc, depDays, "booking_date");
           menu.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
           if (dateStr != null) menu.setSelectedElement(dateStr);
           menu.setToSubmit();
@@ -868,9 +875,9 @@ public class Booking extends TravelManager {
   }
 
 
-  private Table bookingInformation(IWContext iwc, int bookingId) {
+  private Table bookingInformation(IWContext iwc, int bookingId) throws RemoteException{
     try {
-      GeneralBooking booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
+      GeneralBooking booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
       int voucherNumber = Voucher.getVoucherNumber(bookingId);
       String referenceNumber = booking.getReferenceNumber();
 
@@ -929,8 +936,8 @@ public class Booking extends TravelManager {
         table.setAlignment(1, 6, "center");
 
       return table;
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+    }catch (FinderException fe) {
+      fe.printStackTrace(System.err);
       return new Table();
     }
   }
@@ -950,22 +957,22 @@ public class Booking extends TravelManager {
     if (sInqueryId != null) {
       if (book != null) {
           int inqueryId = Integer.parseInt(sInqueryId);
-          int errorMessage = Inquirer.inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
+          int errorMessage = getInquirer(iwc).inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
 
           switch (errorMessage) {
             case 0 : displayForm(iwc);
               break;
-            case 1 : displayForm(iwc, Inquirer.getInquiryResponseError(iwrb));
+            case 1 : displayForm(iwc, getInquirer(iwc).getInquiryResponseError(iwrb));
               break;
           }
       }else if (yesNo != null && yesNo.equals(this.parameterRespondDel)) {
           int inqueryId = Integer.parseInt(sInqueryId);
-          int errorMessage = Inquirer.inquiryResponse(iwc, iwrb, inqueryId, false, false, this.supplier);
+          int errorMessage = getInquirer(iwc).inquiryResponse(iwc, iwrb, inqueryId, false, false, this.supplier);
 
           switch (errorMessage) {
             case 0 : displayForm(iwc);
               break;
-            case 1 : displayForm(iwc, Inquirer.getInquiryResponseError(iwrb));
+            case 1 : displayForm(iwc, getInquirer(iwc).getInquiryResponseError(iwrb));
               break;
           }
       }
@@ -978,7 +985,7 @@ public class Booking extends TravelManager {
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     if (sBookingId != null) {
         this.bookingId = Integer.parseInt(sBookingId);
-        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
+        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
         this.stamp = new idegaTimestamp(booking.getBookingDate());
         displayForm(iwc);
     }else {
@@ -996,4 +1003,7 @@ public class Booking extends TravelManager {
     return table;
   }
 
+  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
+  }
 }

@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.data;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.Reseller;
 import java.sql.Timestamp;
@@ -44,8 +46,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
     setColumn(getColumnNameServiceId(), id);
   }
 
-  public void setService(Service service) {
-    setServiceId(service.getID());
+  public void setService(Service service) throws RemoteException{
+    setServiceId(((Integer)service.getPrimaryKey()).intValue());
   }
 
   public void setResellerId(int id) {
@@ -81,8 +83,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
     return getIntColumnValue(getColumnNameServiceId());
   }
 
-  public Service getService() throws SQLException {
-    return ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(getServiceId());
+  public Service getService() throws RemoteException, FinderException {
+    return ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(getServiceId()));
   }
 
   public int getResellerId() {

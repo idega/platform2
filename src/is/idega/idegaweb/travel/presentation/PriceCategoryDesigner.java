@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -22,7 +23,7 @@ import java.sql.SQLException;
 public class PriceCategoryDesigner extends TravelManager {
   private IWResourceBundle iwrb;
   private Supplier supplier;
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private TravelStockroomBusiness tsb;
 
   private static String parameterSavePriceCategories = "parameterSavePriceCategories";
   private static String parameterPriceCategoryId = "parameterPriceCategoryId";
@@ -33,6 +34,7 @@ public class PriceCategoryDesigner extends TravelManager {
     super.main(iwc);
     iwrb = super.getResourceBundle();
     supplier = super.getSupplier();
+    tsb = getTravelStockroomBusiness(iwc);
   }
 
   public void handleInsert(IWContext iwc) {
@@ -44,7 +46,7 @@ public class PriceCategoryDesigner extends TravelManager {
     }
   }
 
-  public Form getPriceCategoriesForm(int supplierId) {
+  public Form getPriceCategoriesForm(int supplierId) throws RemoteException{
     int extraRows = 3;
 
     Form form = new Form();

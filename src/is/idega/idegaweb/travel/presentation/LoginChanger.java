@@ -20,7 +20,7 @@ public class LoginChanger extends TravelWindow {
     super.setScrollbar(false);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
 
     LoginEditor LE = new LoginEditor();

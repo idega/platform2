@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.sql.SQLException;
@@ -31,15 +32,15 @@ public class ProductItemPrice extends ProductItem {
     super(product);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     drawObject(iwc);
   }
 
-  private void drawObject(IWContext iwc) {
+  private void drawObject(IWContext iwc) throws RemoteException{
     Text text = getText(defaultText);
     if ( _product != null ) {
-      ProductPrice pPrice = StockroomBusiness.getPrice(_product);
+      ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
       if (pPrice != null && pPrice.getPrice() > 0 ) {
 	NumberFormat format = NumberFormat.getInstance(iwc.getCurrentLocale());
 	text.setText(format.format((double)pPrice.getPrice()));

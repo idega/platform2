@@ -1,14 +1,15 @@
 
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import java.util.*;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.*;
+import java.rmi.RemoteException;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.data.IDOLookup;
 import com.idega.core.user.data.User;
-import java.util.Vector;
-import java.util.List;
 import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -49,7 +50,7 @@ public class BookingOverview extends TravelManager {
   private Contract contract;
 
   private Product product;
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private TravelStockroomBusiness tsb;
 
   private Service service;
   private Timeframe timeframe;
@@ -92,9 +93,10 @@ public class BookingOverview extends TravelManager {
       }
   }
 
-  public void initialize(IWContext iwc) {
+  public void initialize(IWContext iwc) throws RemoteException{
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
+      tsb  = getTravelStockroomBusiness(iwc);
 
       supplier = super.getSupplier();
       reseller = super.getReseller();
@@ -109,14 +111,14 @@ public class BookingOverview extends TravelManager {
         if (productId != null && !productId.equals("-1")) {
           product = ProductBusiness.getProduct(Integer.parseInt(productId));
           service = tsb.getService(product);
-          tour = TourBusiness.getTour(product);
+          tour = getTourBusiness(iwc).getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+      }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+      }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TourBusiness.TourNotFoundException tnfe) {
+      }catch (TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
@@ -405,9 +407,9 @@ public class BookingOverview extends TravelManager {
                   try {
                     prod = (Product) products.get(i);
                       if (supplier != null) {
-                        bContinue = TravelStockroomBusiness.getIfDay(iwc,prod,tempStamp);
+                        bContinue = tsb.getIfDay(iwc,prod,tempStamp);
                       }else if (reseller != null) {
-                        bContinue = TravelStockroomBusiness.getIfDay(iwc,contract,product,tempStamp);
+                        bContinue = tsb.getIfDay(iwc,contract,product,tempStamp);
                       }
                       if (bContinue) {
                           iCount = 0;
@@ -416,10 +418,10 @@ public class BookingOverview extends TravelManager {
                           iAvailable=0;
                           iAssigned=0;
                           service = tsb.getService(prod);
-                          tour = TourBusiness.getTour(prod);
+                          tour = getTourBusiness(iwc).getTour(prod);
 
                           if (supplier != null) {
-                            sDay = sDay.getServiceDay(service.getID(), tempStamp.getDayOfWeek());
+                            sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
                             if (sDay != null) {
                               iCount = sDay.getMax();
                               if (iCount < 1) {
@@ -430,23 +432,23 @@ public class BookingOverview extends TravelManager {
                             }
 
                             //iCount = tour.getTotalSeats();
-                            iBooked = Booker.getNumberOfBookings(service.getID(), tempStamp);
-                            iAssigned = Assigner.getNumberOfAssignedSeats(product, tempStamp);
+                            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                            iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(product, tempStamp);
 
-                            int resellerBookings = Booker.getNumberOfBookingsByResellers(service.getID(), tempStamp);
+                            int resellerBookings = getBooker(iwc).getNumberOfBookingsByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                             if (iAssigned != 0) {
                               iAssigned = iAssigned - resellerBookings;
                             }
 
-                            iInquery = Inquirer.getInqueredSeats(service.getID(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
+                            iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
                             //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                             iAvailable = iCount - iBooked - iAssigned;
                           }else if (reseller != null) {
                             iCount = contract.getAlotment();
-                            iBooked = Booker.getNumberOfBookingsByReseller(reseller.getID() ,service.getID(), tempStamp);
+                            iBooked = getBooker(iwc).getNumberOfBookingsByReseller(reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                             iAssigned = 0;
 
-                            iInquery = Inquirer.getInqueredSeats(service.getID(),tempStamp,reseller.getID(), true);
+                            iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,reseller.getID(), true);
                             iAvailable = iCount - iBooked - iAssigned -iInquery;
                             iCount = iCount -iBooked;
                           }
@@ -504,7 +506,7 @@ public class BookingOverview extends TravelManager {
                             table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
                             table.add(btnBook,8,row);
                           } else if (reseller != null) {
-                            if (!TravelStockroomBusiness.getIfExpired(contract, tempStamp))
+                            if (!tsb.getIfExpired(contract, tempStamp))
                               table.add(btnBook,8,row);
                           }
                           ++row;
@@ -512,11 +514,11 @@ public class BookingOverview extends TravelManager {
                       }
                   }catch (SQLException sql) {
                     sql.printStackTrace(System.err);
-                  }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+                  }catch (ServiceNotFoundException snfe) {
                     snfe.printStackTrace(System.err);
-                  }catch (TourBusiness.TourNotFoundException tnfe) {
+                  }catch (TourNotFoundException tnfe) {
                     tnfe.printStackTrace(System.err);
-                  }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+                  }catch (TimeframeNotFoundException tfnfe) {
                     tfnfe.printStackTrace(System.err);
                   }
               }
@@ -617,7 +619,7 @@ public class BookingOverview extends TravelManager {
           if (supplier != null) {
             ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
             ServiceDay sDay = sDayHome.create();
-            sDay = sDay.getServiceDay(service.getID(), currentStamp.getDayOfWeek());
+            sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), currentStamp.getDayOfWeek());
             if (sDay != null) {
               seats = sDay.getMax();
               if (seats < 1) {
@@ -627,15 +629,15 @@ public class BookingOverview extends TravelManager {
               seats = tour.getTotalSeats();
             }
 //            seats = tour.getTotalSeats();
-            assigned = Assigner.getNumberOfAssignedSeats(service.getID(), currentStamp);
-            iInqueries = Inquirer.getInqueredSeats(service.getID() , currentStamp, true);
-            booked = Booker.getNumberOfBookings(service.getID(), currentStamp);
+            assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) service.getPrimaryKey()).intValue(), currentStamp);
+            iInqueries = getInquirer(iwc).getInqueredSeats(service.getID() , currentStamp, true);
+            booked = getBooker(iwc).getNumberOfBookings(service.getID(), currentStamp);
             available = seats - booked;
           }else if (reseller != null) {
             seats = contract.getAlotment();
             assigned = 0;
-            iInqueries = Inquirer.getInqueredSeats(service.getID() , currentStamp, reseller.getID(), true);
-            booked = Booker.getNumberOfBookingsByReseller(reseller.getID(),service.getID(), currentStamp);
+            iInqueries = getInquirer(iwc).getInquiryHome().getInqueredSeats(service.getID() , currentStamp, reseller.getID(), true);
+            booked = getBooker(iwc).getNumberOfBookingsByReseller(reseller.getID(),service.getID(), currentStamp);
             available = seats - booked - iInqueries;
           }
 
@@ -698,7 +700,7 @@ public class BookingOverview extends TravelManager {
               }catch (SQLException sql) {sql.printStackTrace(System.err);}
               //                Temail.setText(reseller[i].getEmail());
               Tbooked = (Text) super.theSmallBoldText.clone();
-                Tbooked.setText(Integer.toString(Assigner.getNumberOfAssignedSeats(service.getID(), resellers[i].getID() ,currentStamp)));
+                Tbooked.setText(Integer.toString(getAssigner(iwc).getNumberOfAssignedSeats(service.getID(), resellers[i].getID() ,currentStamp)));
 
               table.mergeCells(2,row,3, row);
               table.add(Tname,1,row);
@@ -717,12 +719,16 @@ public class BookingOverview extends TravelManager {
             answerLink.addParameter(CalendarBusiness.PARAMETER_MONTH, currentStamp.getMonth());
             answerLink.addParameter(CalendarBusiness.PARAMETER_DAY, currentStamp.getDay());
           Inquery[] inqueries = null;
+
           int[] iNumbers;
-          if (supplier != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-          if (reseller != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, reseller.getID(),true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+          if (supplier != null) inqueries = getInquirer(iwc).getInqueries(service.getID(), currentStamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+          if (reseller != null) {
+            Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(service.getID(), currentStamp, reseller.getID(),true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+            inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
+          }
           for (int i = 0; i < inqueries.length; i++) {
             ++row;
-            iNumbers = Inquirer.getMultibleInquiriesNumber(inqueries[i]);
+            iNumbers = getInquirer(iwc).getMultibleInquiriesNumber(inqueries[i]);
             Tname = (Text) super.theSmallBoldText.clone();
               Tname.setText(inqueries[i].getName());
               if ( iNumbers[0] != 0 ) {
@@ -759,9 +765,10 @@ public class BookingOverview extends TravelManager {
           int[] bNumbers;
 
           if (this.supplier != null) {
-            bookings = TourBooker.getBookings(this.service.getID(), currentStamp);
+            bookings = getBooker(iwc).getBookings(((Integer) this.service.getPrimaryKey()).intValue(), currentStamp);
           }else if (this.reseller != null) {
-            bookings = TourBooker.getBookings(reseller.getID(), service.getID(), currentStamp);
+            Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(reseller.getID(), service.getID(), currentStamp);
+            bookings = getBooker(iwc).collectionToBookingsArray(coll);
           }
 
           Object serviceType;
@@ -769,12 +776,12 @@ public class BookingOverview extends TravelManager {
           Reseller bReseller;
           for (int i = 0; i < bookings.length; i++) {
               ++row;
-              booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookings[i].getID());
-              serviceType = Booker.getServiceType(this.service.getID());
+              booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
+              serviceType = getBooker(iwc).getServiceType(this.service.getID());
 
               Tname = (Text) super.theSmallBoldText.clone();
                 Tname.setText(bookings[i].getName());
-              bNumbers = Booker.getMultipleBookingNumber(booking);
+              bNumbers = getBooker(iwc).getMultipleBookingNumber(booking);
               if ( bNumbers[0] != 0 ) {
                 Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
               }
@@ -860,11 +867,14 @@ public class BookingOverview extends TravelManager {
 
   }
 
-  public void deleteBooking(IWContext iwc) {
+  public void deleteBooking(IWContext iwc) throws RemoteException, FinderException{
     String lBookingId = iwc.getParameter(this.parameterBookingId);
     if (lBookingId != null) {
-      Booker.deleteBooking(Integer.parseInt(lBookingId));
+      getBooker(iwc).deleteBooking(Integer.parseInt(lBookingId));
     }
   }
 
+  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
+}

@@ -29,7 +29,7 @@ public class ProductItemTeaser extends ProductItem {
     super(product);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception {
     super.main(iwc);
     drawObject();
   }

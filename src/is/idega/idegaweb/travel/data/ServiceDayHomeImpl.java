@@ -7,37 +7,37 @@ public class ServiceDayHomeImpl extends com.idega.data.IDOFactory implements Ser
   return ServiceDay.class;
  }
 
+
  public ServiceDay create() throws javax.ejb.CreateException{
-  return (ServiceDay) super.idoCreate();
+  return (ServiceDay) super.createIDO();
  }
 
- public ServiceDay createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
- public ServiceDay findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ServiceDay) super.idoFindByPrimaryKey(id);
- }
 
  public ServiceDay findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ServiceDay) super.idoFindByPrimaryKey(pk);
+  return (ServiceDay) super.findByPrimaryKeyIDO(pk);
  }
 
- public ServiceDay findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
 
- }
+public boolean deleteService(int p0)throws javax.ejb.FinderException,javax.ejb.RemoveException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	boolean theReturn = ((ServiceDayBMPBean)entity).ejbHomeDeleteService(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public boolean getIfDay(int p0,int p1){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	boolean theReturn = ((ServiceDayBMPBean)entity).ejbHomeGetIfDay(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public boolean setServiceWithNoDays(int p0)throws javax.ejb.FinderException,javax.ejb.RemoveException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	boolean theReturn = ((ServiceDayBMPBean)entity).ejbHomeSetServiceWithNoDays(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

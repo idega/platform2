@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import javax.mail.MessagingException;
 import com.idega.core.data.Email;
 import com.idega.data.IDOLookup;
@@ -74,7 +77,7 @@ public class PublicBooking extends Block  {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
     super.getParentPage().setExpiryDate("Tue, 20 Aug 1996 14:25:27 GMT");
@@ -99,12 +102,14 @@ public class PublicBooking extends Block  {
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
-        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(productId);
+        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
         timeframes = product.getTimeframes();
         supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(product.getSupplierId());
 
       }catch (SQLException s) {
         s.printStackTrace(System.err);
+      }catch (FinderException f) {
+        f.printStackTrace(System.err);
       }
     }
     boldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");
@@ -383,7 +388,7 @@ public class PublicBooking extends Block  {
               nameOfCategory = getText(prices[j].getPriceCategory().getName());
                 nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               try {
-                priceText = getBoldText(Integer.toString( (int) TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
+                priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
                 currencyText = getBoldText(currency.getCurrencyAbbreviation());
                 pTable.add(currencyText,5,pRow);
               }catch (ProductPriceException p) {
@@ -407,9 +412,9 @@ public class PublicBooking extends Block  {
 
       table.add(pTable,2,3);
 
-      Link currCh = new Link(iwrb.getLocalizedImageButton("travel.currency_calculator","Currency calculator"));
-        currCh.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
-      table.add(currCh, 2, 3);
+      Link currCalc = new Link(iwrb.getLocalizedImageButton("travel.currency_calculator","Currency calculator"));
+        currCalc.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
+//      table.add(currCalc, 2, 3);
 
       table.setAlignment(2,1,"right");
       table.setAlignment(2,2,"right");
@@ -442,7 +447,7 @@ public class PublicBooking extends Block  {
         ch.setProduct(product);
 
       boolean legalDay = false;
-      legalDay = TravelStockroomBusiness.getIfDay(iwc, product, stamp);
+      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
 
 
       Form form = new Form();
@@ -508,7 +513,7 @@ public class PublicBooking extends Block  {
     return table;
   }
 
-  private Table getVerifyBookingTable(IWContext iwc) throws SQLException{
+  private Table getVerifyBookingTable(IWContext iwc) throws RemoteException, SQLException{
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -678,7 +683,7 @@ public class PublicBooking extends Block  {
         try {
           if (i == 0)
           currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
-          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
+          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
         }catch (SQLException sql) {
         }catch (NumberFormatException n) {}
 
@@ -783,7 +788,7 @@ public class PublicBooking extends Block  {
     return table;
   }
 
-  private Table doBooking(IWContext iwc) {
+  private Table doBooking(IWContext iwc) throws RemoteException{
     Table table = new Table();
       String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
       String ccMonth  = iwc.getParameter(TourBookingForm.parameterCCMonth);
@@ -826,7 +831,7 @@ public class PublicBooking extends Block  {
 
             total += current;
 
-            price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+            price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
 
           }
         }
@@ -901,9 +906,9 @@ public class PublicBooking extends Block  {
             throw new Exception(e.getErrorMessage());
           }
 
-          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
+          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
           gBooking.setCreditcardAuthorizationNumber(heimild);
-          gBooking.update();
+          gBooking.store();
 
           tm.commit();
           success = true;
@@ -1040,4 +1045,7 @@ public class PublicBooking extends Block  {
     return table;
   }
 
+  protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+  }
 }

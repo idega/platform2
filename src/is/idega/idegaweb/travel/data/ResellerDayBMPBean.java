@@ -1,9 +1,12 @@
 package is.idega.idegaweb.travel.data;
 
+import javax.ejb.RemoveException;
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
+import java.util.*;
 import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.Reseller;
 import java.sql.SQLException;
-import java.util.GregorianCalendar;
 
 
 /**
@@ -71,7 +74,7 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
     return getIntColumnValue(getColumnNameServiceId());
   }
 
-  public static int[] getDaysOfWeek(int resellerId, int serviceId) {
+  public int[] getDaysOfWeek(int resellerId, int serviceId) throws RemoteException{
     int[] returner = {};
     try {
         ResellerDay[] days = (ResellerDay[]) (is.idega.idegaweb.travel.data.ResellerDayBMPBean.getStaticInstance(ResellerDay.class)).findAllByColumnOrdered(getColumnNameResellerId(), Integer.toString(resellerId),getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek());
@@ -86,7 +89,7 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
   }
 
 
-  public static boolean getIfDay(int resellerId, int serviceId, int dayOfWeek) {
+  public boolean ejbHomeGetIfDay(int resellerId, int serviceId, int dayOfWeek) {
     boolean returner = false;
     try {
         ResellerDay[] days = (ResellerDay[]) (is.idega.idegaweb.travel.data.ResellerDayBMPBean.getStaticInstance(ResellerDay.class)).findAllByColumn(getColumnNameResellerId(), Integer.toString(resellerId) ,getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
@@ -104,18 +107,35 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
   }
 
 
-  public static void deleteService(int serviceId) throws SQLException{
-      ResellerDay[] days = (ResellerDay[]) (((is.idega.idegaweb.travel.data.ResellerDayHome)com.idega.data.IDOLookup.getHomeLegacy(ResellerDay.class)).createLegacy()).findAllByColumn(getColumnNameServiceId(), serviceId);
-      for (int i = 0; i < days.length; i++) {
-          days[i].delete();
-      }
+  public void deleteService(int serviceId) throws RemoteException, FinderException, RemoveException{
+    Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(), Integer.toString(serviceId));
+    Iterator days = coll.iterator();
+    ResellerDay rDay;
+    while (days.hasNext()) {
+      rDay = (ResellerDay) this.ejbFindByPrimaryKey(days.next());
+      rDay.remove();
+    }
   }
 
-  public static void deleteReseller(int resellerId) throws SQLException{
+  public void deleteReseller(int resellerId) throws RemoteException, FinderException, RemoveException {
+    Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameResellerId(), Integer.toString(resellerId));
+    Iterator days = coll.iterator();
+    ResellerDay rDay;
+    while (days.hasNext()) {
+      rDay = (ResellerDay) this.ejbFindByPrimaryKey(days.next());
+      rDay.remove();
+    }
+
+/*
       ResellerDay[] days = (ResellerDay[]) (((is.idega.idegaweb.travel.data.ResellerDayHome)com.idega.data.IDOLookup.getHomeLegacy(ResellerDay.class)).createLegacy()).findAllByColumn(getColumnNameResellerId(), resellerId);
       for (int i = 0; i < days.length; i++) {
-          days[i].delete();
+          days[i].remove();
       }
+      */
+  }
+
+  public Collection ejbFindResellerDays(Reseller reseller, Service service) throws RemoteException, FinderException{
+    return this.idoFindPKsBySQL("select * from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getPrimaryKey().toString());
   }
 
 

@@ -7,37 +7,16 @@ public class TourHomeImpl extends com.idega.data.IDOFactory implements TourHome
   return Tour.class;
  }
 
+
  public Tour create() throws javax.ejb.CreateException{
-  return (Tour) super.idoCreate();
+  return (Tour) super.createIDO();
  }
 
- public Tour createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
- public Tour findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Tour) super.idoFindByPrimaryKey(id);
- }
 
  public Tour findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Tour) super.idoFindByPrimaryKey(pk);
+  return (Tour) super.findByPrimaryKeyIDO(pk);
  }
 
- public Tour findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

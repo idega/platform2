@@ -7,37 +7,16 @@ public class BookingEntryHomeImpl extends com.idega.data.IDOFactory implements B
   return BookingEntry.class;
  }
 
+
  public BookingEntry create() throws javax.ejb.CreateException{
-  return (BookingEntry) super.idoCreate();
+  return (BookingEntry) super.createIDO();
  }
 
- public BookingEntry createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
- public BookingEntry findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (BookingEntry) super.idoFindByPrimaryKey(id);
- }
 
  public BookingEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (BookingEntry) super.idoFindByPrimaryKey(pk);
+  return (BookingEntry) super.findByPrimaryKeyIDO(pk);
  }
 
- public BookingEntry findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

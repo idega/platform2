@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
 import com.idega.presentation.text.Text;
 import com.idega.util.idegaCalendar;
 import com.idega.presentation.ui.*;
@@ -47,7 +48,7 @@ public class ServiceDaySetter extends TravelWindow {
     super.setResizable(true);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     init(iwc);
 
@@ -94,7 +95,7 @@ public class ServiceDaySetter extends TravelWindow {
 
     try {
       ServiceDay sDay = _serviceDayHome.create();
-        sDay.setServiceWithNoDays(_product.getID());
+        _serviceDayHome.setServiceWithNoDays(_product.getID());
         sDay.store();
 
       for (int i = ServiceDayBMPBean.SUNDAY; i <= ServiceDayBMPBean.SATURDAY; i++) {
@@ -136,7 +137,7 @@ public class ServiceDaySetter extends TravelWindow {
     add(getText(_iwrb.getLocalizedString("travel.no_product_selected","No product selected")));
   }
 
-  private void drawForm(IWContext iwc) {
+  private void drawForm(IWContext iwc) throws RemoteException{
     Form form = new Form();
     Table table = TravelManager.getTable();
     form.add(table);

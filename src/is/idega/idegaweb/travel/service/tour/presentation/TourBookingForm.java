@@ -1,9 +1,10 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOFinderException;
+import com.idega.data.*;
+import com.idega.business.IBOLookup;
+import javax.ejb.*;
+import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.presentation.TravelManager;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -21,7 +22,6 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.business.*;
 
 import com.idega.block.calendar.business.CalendarBusiness;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 import java.sql.SQLException;
 
 /**
@@ -36,7 +36,6 @@ import java.sql.SQLException;
 public class TourBookingForm extends TravelManager {
   IWResourceBundle iwrb;
   Supplier supplier;
-  TravelStockroomBusiness tsb = new TravelStockroomBusiness();
 
   private Product _product;
   private Service _service;
@@ -80,7 +79,7 @@ public class TourBookingForm extends TravelManager {
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
     super.main(iwc);
-    setProduct(product);
+    setProduct(iwc, product);
     iwrb = super.getResourceBundle(iwc);
     supplier = super.getSupplier();
     setTimestamp(iwc);
@@ -97,7 +96,7 @@ public class TourBookingForm extends TravelManager {
     }
   }
 
-  public Form getBookingForm(IWContext iwc) throws SQLException {
+  public Form getBookingForm(IWContext iwc) throws RemoteException, FinderException {
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -216,7 +215,7 @@ public class TourBookingForm extends TravelManager {
               comment.keepStatusOnAction();
 
           DropdownMenu usersDrop = null;
-          DropdownMenu payType = Booker.getPaymentTypeDropdown(iwrb, "payment_type");
+          DropdownMenu payType = getTourBooker(iwc).getPaymentTypeDropdown(iwrb, "payment_type");
 
           ++row;
           table.mergeCells(2,row,4,row);
@@ -267,8 +266,10 @@ public class TourBookingForm extends TravelManager {
             table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addressId)));
           }
 
-          HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
-          if (hotelPickup.length > 0) {
+          HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+          Collection hotelPickup = hppHome.findHotelPickupPlaces(this._service);
+          //HotelPickupPlace[] hotelPickup = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+          if (hotelPickup.size() > 0) {
               ++row;
               table.mergeCells(2,row,4,row);
 
@@ -303,6 +304,12 @@ public class TourBookingForm extends TravelManager {
             ++row;
             table.add(manyDaysText, 1, row);
             table.add(manyDays, 2, row);
+          }else {
+            table.add(new HiddenInput(parameterFromDate, new idegaTimestamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
+            GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+            GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
+            List bookingsJa = gbHome.getMultibleBookings(tempBooking);
+            table.add(new HiddenInput(parameterManyDays, Integer.toString(bookingsJa.size())), 1, row);
           }
 
           Text pPriceCatNameText;
@@ -330,7 +337,7 @@ public class TourBookingForm extends TravelManager {
           int currentSum = 0;
           int currentCount = 0;
           if (_booking != null) {
-            entries = TourBooker.getBookingEntries(_booking);
+            entries = getTourBooker(iwc).getBookingEntries(_booking);
           }
 
           ++row;
@@ -363,7 +370,7 @@ public class TourBookingForm extends TravelManager {
               try {
                   ++row;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) tsb.getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -382,7 +389,7 @@ public class TourBookingForm extends TravelManager {
                         if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          price = (int) tsb.getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                          price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
                           currentSum = (int) (currentCount * price);
 
                           totalCount += currentCount;
@@ -425,6 +432,8 @@ public class TourBookingForm extends TravelManager {
 
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
+              }catch (FinderException fe) {
+                fe.printStackTrace(System.err);
               }
           }
 
@@ -566,8 +575,8 @@ public class TourBookingForm extends TravelManager {
       return form;
   }
 
-  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
-    int bookings = TourBooker.getNumberOfBookings(_productId, this._stamp);
+  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
+    int bookings = getTourBooker(iwc).getNumberOfBookings(_productId, this._stamp);
     int max = 0;
     int min = 0;
 
@@ -621,7 +630,7 @@ public class TourBookingForm extends TravelManager {
     return form;
   }*/
 
-  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
+  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
     Table table = new Table();
       table.setCellpadding(0);
@@ -638,7 +647,7 @@ public class TourBookingForm extends TravelManager {
 
       boolean isDay = true;
 
-      isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
+      isDay = getTourBusiness(iwc).getIfDay(iwc, _tour, stamp, false);
 /*
       if (isDay) {
         if (_tour.getTotalSeats() > 0)
@@ -872,7 +881,7 @@ public class TourBookingForm extends TravelManager {
           int currentSum = 0;
           int currentCount = 0;
           if (_booking != null) {
-            entries = TourBooker.getBookingEntries(_booking);
+            entries = getTourBooker(iwc).getBookingEntries(_booking);
           }
 
           for (int i = 0; i < pPrices.length; i++) {
@@ -880,7 +889,7 @@ public class TourBookingForm extends TravelManager {
                   ++row;
                   ++pRow;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) tsb.getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -897,7 +906,7 @@ public class TourBookingForm extends TravelManager {
                         if (entries[j].getProductPriceId() == pPrices[i].getID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * tsb.getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId));
+                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId));
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -932,6 +941,8 @@ public class TourBookingForm extends TravelManager {
 
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
+              }catch (FinderException fe) {
+                fe.printStackTrace(System.err);
               }
           }
 
@@ -1021,9 +1032,11 @@ public class TourBookingForm extends TravelManager {
 */
 
 
-
-          HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
-          if (hotelPickup.length > 0) {
+          HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+          Collection hotelPickup = hppHome.findHotelPickupPlaces(this._service);
+          //HotelPickupPlace[] hotelPickup = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+//          HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
+          if (hotelPickup.size() > 0) {
               ++row;
               table.mergeCells(1,row,6,row);
               table.add(hr,1,row);
@@ -1284,7 +1297,6 @@ public class TourBookingForm extends TravelManager {
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
     boolean tooMany = false;
-//    String sAvailable = iwc.getParameter("available");
 
     int iMany = 0;
 
@@ -1298,9 +1310,9 @@ public class TourBookingForm extends TravelManager {
     if (sBookingId != null){
       iBookingId = Integer.parseInt(sBookingId);
       try {
-        GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(iBookingId);
+        GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId));
         previousBookings = gBook.getTotalCount();
-      }catch (SQLException sql) {
+      }catch (FinderException sql) {
         sql.printStackTrace(System.err);
       }
     }
@@ -1333,6 +1345,7 @@ public class TourBookingForm extends TravelManager {
 
     ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
     ServiceDay sDay = sDayHome.create();
+
     sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
     if (sDay != null) {
       totalSeats = sDay.getMax();
@@ -1348,7 +1361,7 @@ public class TourBookingForm extends TravelManager {
     int iAvailable;
     if (totalSeats > 0) {
       if (betw == 1) {
-        iAvailable = totalSeats - TourBooker.getNumberOfBookings(serviceId, _stamp);
+        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
         if (iMany > iAvailable) {
           tooMany = true;
           errorDays.add(fromStamp);
@@ -1357,11 +1370,11 @@ public class TourBookingForm extends TravelManager {
         for (int r = 0; r < betw ; r++) {
           if (r != 0)
           if (_tour != null) {
-            fromStamp = new idegaTimestamp(TourBusiness.getNextAvailableDay(iwc, _tour, _product, fromStamp));
+            fromStamp = new idegaTimestamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, fromStamp));
           }else {
             fromStamp.addDays(1);
           }
-          iAvailable = totalSeats - TourBooker.getNumberOfBookings(serviceId, fromStamp);
+          iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, fromStamp);
           if (iMany > iAvailable) {
               tooMany = true;
               errorDays.add(fromStamp);
@@ -1466,7 +1479,7 @@ public class TourBookingForm extends TravelManager {
             ///// INquiry STUFF JAMMS
             if (checkInt > 0) {
               int inqId = this.sendInquery(iwc, checkInt, true);
-              int resp = Inquirer.sendInquiryEmails(iwc, iwrb, inqId);
+              int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
               /** @todo senda email....grrrr */
               if (resp == 0) {
                 return this.inquirySent;
@@ -1498,7 +1511,7 @@ public class TourBookingForm extends TravelManager {
   }
 
 
-  public int saveBooking(IWContext iwc) throws SQLException {
+  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException{
       String surname = iwc.getParameter("surname");
       String lastname = iwc.getParameter("lastname");
       String address = iwc.getParameter("address");
@@ -1622,22 +1635,22 @@ public class TourBookingForm extends TravelManager {
           if (iBookingId == -1) {
             if (i != 0) {
               if (_tour != null) {
-                _fromDate = new idegaTimestamp(TourBusiness.getNextAvailableDay(iwc, _tour, _product, _fromDate));
+                _fromDate = new idegaTimestamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, _fromDate));
               }else {
                 _fromDate.addDays(1);
               }
             }
-            lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+            lbookingId = getTourBooker(iwc).Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
           }else {
             //handle multiple...
-            List tempBookings = Booker.getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(iBookingId));
+            List tempBookings = getTourBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
-              lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+              lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                TourBooker.updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
               }
               lbookingId = iBookingId;
 
@@ -1653,9 +1666,11 @@ public class TourBookingForm extends TravelManager {
          */
         for (int o = 0; o < bookingIds.length; o++) {
           try {
-            GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingIds[o]);
-            gBook.removeFrom(Reseller.class);
-          }catch (SQLException sql) {debug(sql.getMessage());}
+            GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[o]));
+            gBook.removeFromAllResellers();
+            //gBook.removeFrom(Reseller.class);
+          }catch (FinderException sql) {debug(sql.getMessage());}
+          catch (IDORemoveRelationshipException sql) {debug(sql.getMessage());}
         }
 
         /**
@@ -1697,20 +1712,20 @@ public class TourBookingForm extends TravelManager {
               BookingEntry bEntry;
               for (int i = 0; i < pPrices.length; i++) {
                 if (manys[i] != 0) {
-                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHomeLegacy(BookingEntry.class)).createLegacy();
+                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
                     bEntry.setProductPriceId(pPrices[i].getID());
                     bEntry.setBookingId(bookingIds[k]);
                     bEntry.setCount(manys[i]);
-                  bEntry.insert();
+                  bEntry.store();
                 }
               }
             }else {
               BookingEntry bEntry;
               ProductPrice price;
               boolean done = false;
-              BookingEntry[] entries = TourBooker.getBookingEntries(((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(iBookingId));
+              BookingEntry[] entries = getTourBooker(iwc).getBookingEntries(((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
               for (int i = 0; i < entries.length; i++) {
-                entries[i].delete();
+                entries[i].remove();
               }
               //if (entries == null)
               entries = new BookingEntry[]{};
@@ -1720,16 +1735,16 @@ public class TourBookingForm extends TravelManager {
                   if (pPrices[i].getID() == entries[j].getProductPriceId()) {
                     done = true;
                     entries[j].setCount(manys[i]);
-                    entries[j].update();
+                    entries[j].store();
                     break;
                   }
                 }
                 if (!done && manys[i] != 0) {
-                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHomeLegacy(BookingEntry.class)).createLegacy();
+                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
                     bEntry.setProductPriceId(pPrices[i].getID());
                     bEntry.setBookingId(bookingIds[k]);
                     bEntry.setCount(manys[i]);
-                  bEntry.insert();
+                  bEntry.store();
                 }
               }
             }
@@ -1780,8 +1795,8 @@ public class TourBookingForm extends TravelManager {
         bookingId = saveBooking(iwc);
       }
 
-      GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
-      List bookings = Booker.getMultibleBookings(gBooking);
+      GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+      List bookings = getTourBooker(iwc).getMultibleBookings(gBooking);
       Booking booking = null;
 
       int numberOfSeats = gBooking.getTotalCount();
@@ -1791,12 +1806,12 @@ public class TourBookingForm extends TravelManager {
       while (toStamp.isLaterThan(fromStamp)) {
         booking = (Booking) bookings.get(counter);
         booking.setIsValid(false);
-        booking.update();
+        booking.store();
 
-        inquiryId = Inquirer.sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, booking.getID(), _reseller);
+        inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, booking.getID(), _reseller);
 
         if (_tour != null) {
-          fromStamp = TourBusiness.getNextAvailableDay(iwc, _tour, _product, fromStamp);
+          fromStamp = getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, fromStamp);
           if (fromStamp == null) {
             break;
           }
@@ -1823,14 +1838,14 @@ public class TourBookingForm extends TravelManager {
  */
 
 
-  private void setProduct(Product product) {
+  private void setProduct(IWContext iwc, Product product) {
     _product = product;
     try {
       _productId = product.getID();
-      _service = TravelStockroomBusiness.getService(product);
+      _service = getTravelStockroomBusiness(iwc).getService(product);
       try {
-        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(product.getID());
-      }catch (SQLException sql) {
+        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+      }catch (FinderException sql) {
         sql.printStackTrace(System.err);
       }
     }catch (NullPointerException np) {
@@ -1845,12 +1860,19 @@ public class TourBookingForm extends TravelManager {
     _resellerId = reseller.getID();
   }
 
-  public void setBooking(Booking booking) throws SQLException {
-    this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(booking.getID());
+  public void setBooking(Booking booking) throws RemoteException, FinderException {
+    this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
   }
 
   public void setTimestamp(idegaTimestamp stamp) {
     this._stamp = new idegaTimestamp(stamp);
+  }
+
+  private TourBooker getTourBooker(IWApplicationContext iwac) throws RemoteException {
+    return (TourBooker) IBOLookup.getServiceInstance(iwac, TourBooker.class);
+  }
+  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
 
 }

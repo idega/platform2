@@ -7,37 +7,30 @@ public class ResellerDayHomeImpl extends com.idega.data.IDOFactory implements Re
   return ResellerDay.class;
  }
 
+
  public ResellerDay create() throws javax.ejb.CreateException{
-  return (ResellerDay) super.idoCreate();
+  return (ResellerDay) super.createIDO();
  }
 
- public ResellerDay createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public ResellerDay findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ResellerDay) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findResellerDays(com.idega.block.trade.stockroom.data.Reseller p0,is.idega.idegaweb.travel.data.Service p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ResellerDayBMPBean)entity).ejbFindResellerDays(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ResellerDay findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ResellerDay) super.idoFindByPrimaryKey(pk);
+  return (ResellerDay) super.findByPrimaryKeyIDO(pk);
  }
 
- public ResellerDay findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
 
- }
+public boolean getIfDay(int p0,int p1,int p2){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	boolean theReturn = ((ResellerDayBMPBean)entity).ejbHomeGetIfDay(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

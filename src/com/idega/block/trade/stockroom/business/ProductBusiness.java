@@ -123,6 +123,11 @@ public class ProductBusiness {
     return product.getID();
   }
 
+
+  public static Product getProduct(Integer productId) throws SQLException{
+    return getProduct(productId.intValue());
+  }
+
   public static Product getProduct(int productId) throws SQLException{
     Object obj = products.get(Integer.toString(productId));
     if (obj == null) {
@@ -585,9 +590,14 @@ public class ProductBusiness {
  }
 
   public static idegaTimestamp getDepartureTime(int productId) throws SQLException {
-    Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(productId);
-    idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
-    return tempStamp;
+    /** @todo FIXA STRAX !!! */
+    try {
+      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
+      idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
+      return tempStamp;
+    }catch (Exception e) {
+      throw new SQLException(e.getMessage());
+    }
   }
 
   public static Address[] getDepartureAddressesOld(Product product) throws SQLException {

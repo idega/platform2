@@ -1,5 +1,10 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.data.*;
+import javax.ejb.CreateException;
+import java.util.Collection;
+import java.rmi.RemoteException;
 import java.util.List;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
@@ -40,7 +45,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     //handleInsert(iwc, supplier);
   }
 
-  public static void handleInsert(IWContext iwc, Supplier supplier) {
+  public static void handleInsert(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
     String action = iwc.getParameter(sAction);
     if (action != null) {
       if (action.equals(parameterSaveHotelPickupPlaceInfo)) {
@@ -49,7 +54,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     }
   }
 
-  private static boolean saveHotelPickupPlaces(IWContext iwc, Supplier supplier) {
+  private static boolean saveHotelPickupPlaces(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
     String[] hppIds = iwc.getParameterValues("parameterHotelPickupPlaceId");
     String[] hppNames = iwc.getParameterValues("hotel_pickup_place_name");
 
@@ -69,23 +74,24 @@ public class HotelPickupPlaceDesigner extends TravelManager {
               hotelPickupAddress.setStreetName(hppNames[i]);
               hotelPickupAddress.insert();
 
-            HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHomeLegacy(HotelPickupPlace.class)).createLegacy();
+            HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).create();
               hpp.setName(hppNames[i]);
               hpp.setAddress(hotelPickupAddress);
-              hpp.insert();
-            hpp.addTo(supplier);
+              hpp.store();
+            hpp.addToSupplier(supplier);
+//            hpp.addTo(supplier);
 
           }
         }else {
           del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
           add = iwc.getParameter("hotel_pickup_place_add_to_all_"+hppIds[i]);
 
-          HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHomeLegacy(HotelPickupPlace.class)).findByPrimaryKeyLegacy(Integer.parseInt(hppIds[i]));
+          HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(hppIds[i]);
           Address address = hpp.getAddress();
 
           if (del == null) {
             hpp.setName(hppNames[i]);
-            hpp.update();
+            hpp.store();
             if (address != null) {
               address.setStreetName(hppNames[i]);
               address.update();
@@ -94,15 +100,17 @@ public class HotelPickupPlaceDesigner extends TravelManager {
               for (int j = 0; j < prodsSize; j++) {
                 product = (Product) products.get(j) ;
                 try {
-                  hpp.addTo(Service.class, product.getID());
+                  hpp.addToService(getService(product));
+//                  hpp.addTo(Service.class, product.getID());
                   //System.err.println("Adding address \""+hppNames[i]+"\" to service \""+ProductBusiness.getProductName(product)+"\"");
-                }catch (SQLException sql) {
+                }catch (IDOAddRelationshipException are) {
                   //System.err.println("address \""+hppNames[i]+"\" ALREADY added to service \""+ProductBusiness.getProductName(product)+"\"");
                 }
               }
             }
           }else {
-            hpp.removeFrom(supplier);
+            hpp.removeFromSupplier(supplier);
+//            hpp.removeFrom(supplier);
           }
 
         }
@@ -111,13 +119,19 @@ public class HotelPickupPlaceDesigner extends TravelManager {
       returner = true;
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
+    }catch (CreateException ce) {
+      ce.printStackTrace(System.err);
+    }catch (IDOAddRelationshipException are) {
+      are.printStackTrace(System.err);
+    }catch (IDORemoveRelationshipException rre) {
+      rre.printStackTrace(System.err);
     }
 
       return returner;
   }
 
 
-  public Form getHotelPickupPlaceForm(int supplierId) throws SQLException{
+  public Form getHotelPickupPlaceForm(IWContext iwc, int supplierId) throws RemoteException, FinderException, SQLException{
     int extraFields = 3;
     int textInputWidth = 60;
 
@@ -130,7 +144,9 @@ public class HotelPickupPlaceDesigner extends TravelManager {
       table.setColor(TravelManager.WHITE);
       table.setCellspacing(1);
       table.setAlignment("center");
-      HotelPickupPlace[] places = TravelStockroomBusiness.getHotelPickupPlaces(supplier);
+      HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+      Collection coll = hppHome.findHotelPickupPlaces(supplier);
+      HotelPickupPlace[] places = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
 
     Text header = (Text) theText.clone();
       header.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
@@ -171,12 +187,12 @@ public class HotelPickupPlaceDesigner extends TravelManager {
           nameInp.setContent(places[i].getAddress().getStreetName());
           nameInp.setSize(textInputWidth);
 
-        delBox = new CheckBox("hotel_pickup_place_to_delete_"+places[i].getID());
-        addToAll = new CheckBox("hotel_pickup_place_add_to_all_"+places[i].getID());
+        delBox = new CheckBox("hotel_pickup_place_to_delete_"+places[i].getPrimaryKey().toString());
+        addToAll = new CheckBox("hotel_pickup_place_add_to_all_"+places[i].getPrimaryKey().toString());
 
         table.setRowColor(row,super.GRAY);
 
-        table.add(new HiddenInput(this.parameterHotelPickupPlaceId, Integer.toString(places[i].getID())),1,row);
+        table.add(new HiddenInput(this.parameterHotelPickupPlaceId, places[i].getPrimaryKey().toString()),1,row);
         table.add(nrTxt,1,row);
         table.add(Text.NON_BREAKING_SPACE,2,row);
         table.add(nameInp,2,row);
@@ -219,5 +235,9 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     return form;
   }
 
+  private static Service getService(Product product) throws RemoteException, FinderException{
+    ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
+    return sHome.findByPrimaryKey(product.getPrimaryKey());
+  }
 
 }

@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.*;
 import java.util.*;
@@ -86,7 +88,7 @@ public class ServiceViewer extends Window {
     //setAllMargins(0);
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     iwb = this.getBundle(iwc);
     iwrb = this.getResourceBundle(iwc);
 
@@ -100,7 +102,7 @@ public class ServiceViewer extends Window {
       if( iwc.getSessionAttribute(IW_TRAVEL_ADD_BUY_BUTTON+sService)!=null ) showBuyButton = true;
     }
 
-    tsb = TravelStockroomBusiness.getNewInstance();
+    tsb = getTravelStockroomBusiness(iwc);
     cal = new idegaCalendar();
     dayOfWeekName = new String[8];
 
@@ -142,7 +144,7 @@ public class ServiceViewer extends Window {
  private void handleEvents(IWContext iwc) throws Exception {
     if( sService!=null ){//single views
       try {
-        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(Integer.parseInt(sService));
+        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(sService));
       }
       catch (Exception ex) {
         //do nothing
@@ -176,7 +178,7 @@ public class ServiceViewer extends Window {
       try {
         ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
         ServiceDay sDay = sdayHome.create();
-        dagur = sDay.getDaysOfWeek(serv.getID());
+        dagur = sDay.getDaysOfWeek(((Integer) serv.getPrimaryKey()).intValue());
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
@@ -199,7 +201,7 @@ public class ServiceViewer extends Window {
     return depart.toString();
   }
 
-  private String getServiceDurationString(Service serv){
+  private String getServiceDurationString(Service serv) throws RemoteException{
     String duration;
 
     idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
@@ -363,7 +365,7 @@ public class ServiceViewer extends Window {
 
     try {
       int y = 1;
-      Product product = ProductBusiness.getProduct(service.getID());
+      Product product = ProductBusiness.getProduct((Integer)service.getPrimaryKey());
       //number
       Text numberAndName = getBoldText(ProductBusiness.getProductNameWithNumber(product, true, iLocaleID));//.getNumber()+" - "+ProductBusiness.getProductName(product, iLocaleID));
         numberAndName.setFontStyle("font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;font-weight:bold;color:#000099;");
@@ -432,7 +434,7 @@ public class ServiceViewer extends Window {
       content.mergeCells(1,y,2,y);
 
       if( showBuyButton){
-        Link buy = LinkGenerator.getLink(iwc,service.getID());
+        Link buy = LinkGenerator.getLink(iwc,((Integer) service.getPrimaryKey()).intValue());
         buy.setImage(iwrb.getImage("buttons/book_nat.gif"));
 //        buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
 //        buy.setAsImageButton(true);
@@ -519,7 +521,7 @@ public class ServiceViewer extends Window {
     return texti;
   }
 
-  private Table getServicePrice(IWContext iwc, Service service, boolean cutOff){
+  private Table getServicePrice(IWContext iwc, Service service, boolean cutOff) throws RemoteException{
     Table pTable = new Table();
       pTable.setWidth(Table.HUNDRED_PERCENT);
     int pRow = 1;
@@ -533,7 +535,7 @@ public class ServiceViewer extends Window {
 
     Text nameOfCategory = getText("");
 
-    Product product = ProductBusiness.getProduct(service.getID());
+    Product product = ProductBusiness.getProduct((Integer)service.getPrimaryKey());
     TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
     Timeframe[] timeframes = product.getTimeframes();
     ProductPrice[] prices = null;
@@ -541,7 +543,7 @@ public class ServiceViewer extends Window {
     if (cutOff) {
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[0].getID(), depAddresses[0].getID(), true);
       if (prices.length > 0) {
-        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(TravelStockroomBusiness.getPrice(prices[0].getID(), service.getID(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[0].getID(), depAddresses[0].getID()) ) );
+        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), ((Integer) service.getPrimaryKey()).intValue(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[0].getID(), depAddresses[0].getID()) ) );
       }
     }else {
       Currency currency;
@@ -577,7 +579,7 @@ public class ServiceViewer extends Window {
                 nameOfCategory = getText(prices[j].getPriceCategory().getName());
                   nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
                 try {
-                  priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                  priceText = getBoldText(df.format(getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
                   currencyText = getBoldText(currency.getCurrencyAbbreviation());
                   pTable.add(currencyText,5,pRow);
                 }catch (ProductPriceException p) {
@@ -611,5 +613,8 @@ public class ServiceViewer extends Window {
     return pTable;
   }
 
+  protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+  }
 }
 

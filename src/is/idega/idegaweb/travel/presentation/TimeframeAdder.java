@@ -42,7 +42,7 @@ public class TimeframeAdder extends TravelWindow {
     super.setStatus(true);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     initialize(iwc);
     mainMenu(iwc);

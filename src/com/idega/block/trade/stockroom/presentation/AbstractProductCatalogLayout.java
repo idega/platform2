@@ -1,5 +1,9 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.business.IBOLookup;
+import com.idega.block.trade.stockroom.business.StockroomBusiness;
+import java.rmi.RemoteException;
 import java.util.*;
 import com.idega.presentation.*;
 
@@ -19,4 +23,7 @@ public abstract class AbstractProductCatalogLayout extends Block {
 
   public abstract PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories);
 
+  protected StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException{
+    return (StockroomBusiness) IBOLookup.getServiceInstance(iwac, StockroomBusiness.class);
+  }
 }

@@ -17,7 +17,7 @@ public class TravelCurrencyCalculatorWindow extends TravelWindow {
     this.setTitle("Currency Calculator");
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception {
     super.main(iwc);
     CurrencyCalculator cc = new CurrencyCalculator();
     add(cc);

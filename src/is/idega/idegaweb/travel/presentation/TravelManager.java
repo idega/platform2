@@ -1,13 +1,14 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.business.*;
+import java.rmi.RemoteException;
+import com.idega.idegaweb.*;
+import com.idega.business.IBOLookup;
 import java.util.Locale;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import javax.servlet.jsp.JspPage;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.presentation.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -305,7 +306,7 @@ public class TravelManager extends Block {
 
 
         try {
-            int supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
+            int supplierId = getTravelStockroomBusiness(iwc).getUserSupplierId(iwc);
             supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
             if (!supplier.getIsValid()) {
               supplier = null;
@@ -316,7 +317,7 @@ public class TravelManager extends Block {
         }
 
         try {
-            int resellerId = TravelStockroomBusiness.getUserResellerId(iwc);
+            int resellerId = getTravelStockroomBusiness(iwc).getUserResellerId(iwc);
             reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
             if (!reseller.getIsValid()) {
               reseller = null;
@@ -435,5 +436,21 @@ public class TravelManager extends Block {
         text.setFontColor(WHITE);
         text.setBold(true);
       return text;
+    }
+
+    protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
+      return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
+    }
+
+    protected Assigner getAssigner(IWApplicationContext iwac) throws RemoteException {
+      return (Assigner) IBOLookup.getServiceInstance(iwac, Assigner.class);
+    }
+
+    protected Inquirer getInquirer(IWApplicationContext iwac) throws RemoteException {
+      return (Inquirer) IBOLookup.getServiceInstance(iwac, Inquirer.class);
+    }
+
+    protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
+      return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
     }
 }

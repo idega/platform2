@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.text.*;
@@ -31,7 +32,7 @@ public class InitialData extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private TravelStockroomBusiness tsb;
 
   private Supplier supplier;
   private Reseller reseller;
@@ -92,12 +93,14 @@ public class InitialData extends TravelManager {
       }
   }
 
-  public void initialize(IWContext iwc) {
+  public void initialize(IWContext iwc) throws RemoteException{
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
       supplier = super.getSupplier();
       reseller = super.getReseller();
+
+      tsb = getTravelStockroomBusiness(iwc);
   }
 
   private Form getDropdownForm(IWContext iwc) {
@@ -154,7 +157,7 @@ public class InitialData extends TravelManager {
               try {
                 HotelPickupPlaceDesigner.handleInsert(iwc,supplier);
                 HotelPickupPlaceDesigner hppd = new HotelPickupPlaceDesigner(iwc);
-                form = hppd.getHotelPickupPlaceForm(supplier.getID());
+                form = hppd.getHotelPickupPlaceForm(iwc, supplier.getID());
               }catch (Exception e) {
                 e.printStackTrace(System.err);
                 form = new Form();

@@ -1,119 +1,12 @@
 package is.idega.idegaweb.travel.service.tour.business;
 
 import is.idega.idegaweb.travel.business.Booker;
+import javax.ejb.*;
 
-import com.idega.util.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.service.tour.data.*;
-
-import java.sql.SQLException;
-import java.util.*;
-
-/**
- * Title:        idegaWeb Travel
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author <a href mailto:"gimmi@idega.is">Grímur Jónsson</a>
- * @version 1.0
- */
-
-public class TourBooker extends Booker {
-
-  public TourBooker() {
-  }
-
-
-  public static int BookBySupplier(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException {
-    int _bookingId = Booker.Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
-    return Book(_bookingId, hotelPickupPlaceId, roomNumber);
-  }
-
-  public static int Book(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException {
-    int _bookingId = Booker.Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment);
-    return Book(_bookingId, hotelPickupPlaceId, roomNumber);
-  }
-
-  public static int updateBooking(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException {
-    int _bookingId = Booker.updateBooking(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount,  postalCode, paymentType, userId, ownerId, addressId, comment);
-    return Book(_bookingId, hotelPickupPlaceId, roomNumber);
-  }
-
-  private static int Book(int bookingId, int hotelPickupPlaceId, String roomNumber) throws SQLException {
-    try {
-      boolean update = false;
-      TourBooking booking = null;
-      try {
-        booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(bookingId);
-        update = true;
-      }catch (Exception sql) {
-        booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).createLegacy();
-        booking.setColumn(booking.getIDColumnName(), bookingId);
-      }
-      if (booking == null) {
-        System.err.println("TourBooker : booking  == null !!!");
-        System.err.println("...bookingId          =  "+bookingId);
-        System.err.println("...hotelPickupPlaceId =  "+hotelPickupPlaceId);
-        System.err.println("...roomNumber         =  "+bookingId);
-      }
-
-      if (hotelPickupPlaceId != -1) {
-        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-        if (roomNumber != null) {
-          booking.setRoomNumber(roomNumber);
-        }
-      }
-
-      if (hotelPickupPlaceId != -1) {
-        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-        if (roomNumber != null) {
-          booking.setRoomNumber(roomNumber);
-        }
-      }
-
-
-      if (update) {
-        booking.update();
-      } else {
-        booking.insert();
-      }
-
-
-      return bookingId;
-    }catch (SQLException s) {
-
-
-
-
-      s.printStackTrace(System.err);
-      return bookingId;
-    }
-
-
-  }
-
-  public static Booking[] getBookings(int serviceId, idegaTimestamp stamp, boolean withHotelPickup) {
-    Booking[] bookings = getBookings(serviceId, stamp);
-    try {
-      List bings = new Vector();
-      TourBooking tb;
-      for (int i = 0; i < bookings.length; i++) {
-        try {
-          tb = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(bookings[i].getID());
-          if (tb.getHotelPickupPlaceID() != -1) {
-            bings.add(bookings[i]);
-          }
-        }catch (SQLException sql) {
-          System.err.println("TourBooker : getBookings : "+sql.getMessage());
-        }
-      }
-      if (bookings.length > 0) {
-        bookings = (Booking[]) bings.toArray(new Booking[]{});
-      }
-    }catch (javax.ejb.EJBException ejb) {
-      ejb.printStackTrace(System.err);
-    }
-    return bookings;
-  }
-
+public interface TourBooker extends com.idega.business.IBOService, Booker
+{
+ public int Book(int p0,int p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,com.idega.util.idegaTimestamp p9,int p10,int p11,java.lang.String p12,int p13,int p14,int p15,int p16,java.lang.String p17)throws javax.ejb.CreateException,java.rmi.RemoteException,java.sql.SQLException, java.rmi.RemoteException;
+ public int BookBySupplier(int p0,int p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,com.idega.util.idegaTimestamp p9,int p10,java.lang.String p11,int p12,int p13,int p14,int p15,java.lang.String p16)throws javax.ejb.CreateException,java.rmi.RemoteException,java.sql.SQLException, java.rmi.RemoteException;
+ public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int p0,com.idega.util.idegaTimestamp p1,boolean p2)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public int updateBooking(int p0,int p1,int p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,com.idega.util.idegaTimestamp p10,int p11,java.lang.String p12,int p13,int p14,int p15,int p16,java.lang.String p17)throws javax.ejb.CreateException,java.rmi.RemoteException,java.sql.SQLException, java.rmi.RemoteException;
 }

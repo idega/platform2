@@ -27,6 +27,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
   IWResourceBundle _iwrb;
   ProductCatalog _productCatalog;
+  IWContext _iwc;
 
   public ProductCatalogLayoutProductList() {
   }
@@ -34,6 +35,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
   public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
     _productCatalog = productCatalog;
     _iwrb = _productCatalog.iwrb;
+    _iwc = _productCatalog.iwc;
     String sOrderBy = iwc.getParameter(this.PARAMETER_ORDER_BY);
     if (sOrderBy != null) {
       orderBy = Integer.parseInt(sOrderBy);
@@ -132,7 +134,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
       try {
         product = (Product) products.get(i);
         fileId = product.getFileId();
-        pPrice = StockroomBusiness.getPrice(product);
+        pPrice = getStockroomBusiness(_iwc).getPrice(product);
         price = 0;
         if (pPrice != null) {
           price = pPrice.getPrice();

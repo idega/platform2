@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.business;
 
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.util.IsCollator;
 import com.idega.util.idegaTimestamp;
@@ -30,6 +33,7 @@ public class ProductComparator implements Comparator {
 
   private int localeId = -1;
   private int sortBy;
+  private StockroomBusiness stockroomBusiness;
 
   public ProductComparator() {
     this(1);
@@ -123,23 +127,27 @@ public class ProductComparator implements Comparator {
   }
 
   private int priceSort(Object o1, Object o2) {
-    Product p1 = (Product) o1;
-    Product p2 = (Product) o2;
+    try {
+      Product p1 = (Product) o1;
+      Product p2 = (Product) o2;
 
-    ProductPrice price1 = StockroomBusiness.getPrice(p1);
-    ProductPrice price2 = StockroomBusiness.getPrice(p2);
+      ProductPrice price1 = getStockroomBusiness().getPrice(p1);
+      ProductPrice price2 = getStockroomBusiness().getPrice(p2);
 
-    float pr1 = 0;
-    if (price1 != null) pr1 = price1.getPrice();
-    float pr2 = 0;
-    if (price2 != null) pr2 = price2.getPrice();
+      float pr1 = 0;
+      if (price1 != null) pr1 = price1.getPrice();
+      float pr2 = 0;
+      if (price2 != null) pr2 = price2.getPrice();
 
-    if (pr1 < pr2) return 1;
-    else if (pr2 < pr1) return -1;
-    else return 0;
-    /**
-     * @todo implementa fyrir mörg verð...
-     */
+      if (pr1 < pr2) return 1;
+      else if (pr2 < pr1) return -1;
+      else return 0;
+      /**
+       * @todo implementa fyrir mörg verð...
+       */
+      }catch (RemoteException re) {
+        throw new RuntimeException(re.getMessage());
+      }
   }
 
   private int dateSort(Object o1, Object o2) {
@@ -230,6 +238,17 @@ public class ProductComparator implements Comparator {
 	  products[i] = (Product) objArr[i];
       }
       return (products);
+  }
+
+  private StockroomBusiness getStockroomBusiness() {
+    try {
+      if (stockroomBusiness == null) {
+        stockroomBusiness = (StockroomBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), StockroomBusiness.class);
+      }
+      return stockroomBusiness;
+    }catch (RemoteException re) {
+      throw new RuntimeException(re.getMessage());
+    }
   }
 
 }

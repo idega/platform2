@@ -1,4 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.presentation.text.Text;
 import com.idega.util.text.TextSoap;
 import com.idega.presentation.text.Link;
@@ -44,17 +46,17 @@ public class OnlineBookingReport extends TravelManager implements Report{
     return true;
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
-    Booking[] bookings = Booker.getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},stamp);
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) throws RemoteException, FinderException {
+    Booking[] bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},stamp);
     return getReport(iwc, bookings);
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
-    Booking[] bookings = Booker.getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},fromStamp, toStamp, null, null);
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) throws RemoteException, FinderException {
+    Booking[] bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},fromStamp, toStamp, null, null);
     return getReport(iwc, bookings);
   }
 
-  private PresentationObject getReport(IWContext iwc, Booking[] bookings) {
+  private PresentationObject getReport(IWContext iwc, Booking[] bookings) throws RemoteException, FinderException{
     BookingComparator bc = new BookingComparator(iwc, BookingComparator.DATE);
     bookings = bc.sortedArray(bookings);
 
@@ -81,7 +83,7 @@ public class OnlineBookingReport extends TravelManager implements Report{
       stamp = new idegaTimestamp(gBooking.getBookingDate());
       count = bookings[i].getTotalCount();
       tCount += count;
-      price = Booker.getBookingPrice(iwc, bookings[i]);
+      price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
       tPrice += price;
 
       table.add(getText(stamp.getLocaleDate(iwc)), 1, row);

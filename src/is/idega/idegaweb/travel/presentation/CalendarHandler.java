@@ -1,6 +1,9 @@
 package is.idega.idegaweb.travel.presentation;
 
 
+import javax.ejb.FinderException;
+import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -110,14 +113,14 @@ public class CalendarHandler extends TravelManager {
     }
   }
 
-  public Table getCalendarTable(IWContext iwc) {
+  public Table getCalendarTable(IWContext iwc) throws RemoteException{
     /**
      * @todo Perform check of some sort
      */
     return getCalendarTablePrivate(iwc);
   }
 
-  private Table getCalendarTablePrivate(IWContext iwc) {
+  private Table getCalendarTablePrivate(IWContext iwc) throws RemoteException{
       int instanceId = -2;
       sm.setTimestamp(_fromStamp);
       sm.setICObjectInstanceID(instanceId);
@@ -347,10 +350,10 @@ public class CalendarHandler extends TravelManager {
         if (_contract != null) {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (idegaTimestamp) depDays.get(i);
-            if (!TravelStockroomBusiness.getIfExpired(_contract, temp))
+            if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, temp))
             try {
-            if (TravelStockroomBusiness.getIfDay(iwc,_contract,_product,temp)) {
-              if (seats > 0 && seats <= Booker.getNumberOfBookings(_productId, temp) ) {
+            if (getTravelStockroomBusiness(iwc).getIfDay(iwc,_contract,_product,temp)) {
+              if (seats > 0 && seats <= getBooker(iwc).getNumberOfBookings(_productId, temp) ) {
                 sm.setDayColor(temp, colorForFullyBooked);
                 sm.setDayFontColor(temp, colorForFullyBookedText);
               }else {
@@ -366,7 +369,7 @@ public class CalendarHandler extends TravelManager {
           if (this._viewInquiries) {
             temp = new idegaTimestamp(1, month , year);
             for (int i = 1; i <= lengthOfMonth; i++) {
-              if (Inquirer.getInqueredSeats(_productId, temp,resellerId, true) > 0) {
+              if (getInquirer(iwc).getInquiryHome().getInqueredSeats(_productId, temp,resellerId, true) > 0) {
                 sm.setDayColor(temp, colorForInquery);
                 sm.setDayFontColor(temp,colorForAvailableDayText);
               }
@@ -379,7 +382,7 @@ public class CalendarHandler extends TravelManager {
           for (int i = 0; i < depDays.size(); i++) {
             //System.err.println("trying");
             temp = (idegaTimestamp) depDays.get(i);
-            if (seats > 0 && seats <= Booker.getNumberOfBookings(_productId, temp) ) {
+            if (seats > 0 && seats <= getBooker(iwc).getNumberOfBookings(_productId, temp) ) {
             //System.err.println("bookings...");
               sm.setDayColor(temp, colorForFullyBooked);
               sm.setDayFontColor(temp, colorForFullyBookedText);
@@ -392,7 +395,7 @@ public class CalendarHandler extends TravelManager {
           if (this._viewInquiries) {
             temp = new idegaTimestamp(1, month , year);
             for (int i = 1; i <= lengthOfMonth; i++) {
-              if (Inquirer.getInqueredSeats(_productId, temp, true) > 0) {
+              if (getInquirer(iwc).getInqueredSeats(_productId, temp, true) > 0) {
                 sm.setDayColor(temp, colorForInquery);
                 sm.setDayFontColor(temp,colorForAvailableDayText);
               }
@@ -403,7 +406,7 @@ public class CalendarHandler extends TravelManager {
         else if (_reseller != null) {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (idegaTimestamp) depDays.get(i);
-            iBookings = Booker.getNumberOfBookings(_productId, temp);
+            iBookings = getBooker(iwc).getNumberOfBookings(_productId, temp);
             if (seats > 0 && seats <= iBookings ) {
               sm.setDayColor(temp, colorForFullyBooked);
               sm.setDayFontColor(temp, colorForFullyBookedText);
@@ -416,7 +419,7 @@ public class CalendarHandler extends TravelManager {
             temp = new idegaTimestamp(1, month , year);
             for (int i = 1; i <= lengthOfMonth; i++) {
 //              System.err.println("Reseller != null : "+Inquirer.getInqueredSeats(_productId, temp,_resellerId, true));
-              if (Inquirer.getInqueredSeats(_productId, temp,_resellerId, true) > 0) {
+              if (getInquirer(iwc).getInquiryHome().getInqueredSeats(_productId, temp,_resellerId, true) > 0) {
                 sm.setDayColor(temp, colorForInquery);
                 sm.setDayFontColor(temp,colorForAvailableDayText);
               }
@@ -424,10 +427,12 @@ public class CalendarHandler extends TravelManager {
             }
           }
         }
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+      }catch (ServiceNotFoundException snfe) {
         snfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+      }catch (TimeframeNotFoundException tfnfe) {
         tfnfe.printStackTrace(System.err);
+      }catch (FinderException fe) {
+        fe.printStackTrace(System.err);
       }
 
       Table legend = new Table();
@@ -490,22 +495,23 @@ public class CalendarHandler extends TravelManager {
     _product = product;
     _productId = product.getID();
     try {
+      /** @todo fixa getInstance() */
       _supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(product.getSupplierId());
-      _service = TravelStockroomBusiness.getService(product);
+      _service = getTravelStockroomBusiness(IWContext.getInstance()).getService(product);
       _timeframes = _product.getTimeframes();
 //      _timeframe = product.getTimeframe();
       try {
-        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(_productId);
-      }catch (SQLException sql) {}
+        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(_product.getPrimaryKey());
+      }catch (FinderException fe) {}
     }catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  public void setTour(Tour tour) {
+  public void setTour(Tour tour) throws RemoteException{
     this._tour = tour;
     try {
-      setProduct(ProductBusiness.getProduct(tour.getID()));// Product(tour.getID() ));
+      setProduct(ProductBusiness.getProduct((Integer)tour.getPrimaryKey()));// Product(tour.getID() ));
     }catch (SQLException s) {
       s.printStackTrace(System.err);
     }
@@ -601,11 +607,11 @@ public class CalendarHandler extends TravelManager {
     this._showPast = showPast;
   }
 
-  public List getDepartureDays(IWContext iwc) {
+  public List getDepartureDays(IWContext iwc) throws RemoteException{
     return getDepartureDays(iwc, _showPast);
   }
 
-  public List getDepartureDays(IWContext iwc, boolean showPast) {
+  public List getDepartureDays(IWContext iwc, boolean showPast) throws RemoteException {
     List depDays = new Vector();
     /**
      * @todo skoða betur, er bara tomt rugl
@@ -619,19 +625,23 @@ debug("reppetan 1");
             }else {
 debug("reppetan 2");
 */
-              depDays.addAll(TourBusiness.getDepartureDays(iwc, _tour, _fromStamp, _toStamp, showPast));
+              depDays.addAll(getTourBusiness(iwc).getDepartureDays(iwc, _tour, _fromStamp, _toStamp, showPast));
 //            }
           }else {
 //debug("reppetan 3");
-            depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
+            depDays = getTourBusiness(iwc).getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }
 //        }
       }else {
 //debug("reppetan 4");
-          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
+          depDays = getTravelStockroomBusiness(iwc).getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
       }
 
     return depDays;
+  }
+
+  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
 
 }

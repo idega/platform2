@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import javax.ejb.CreateException;
+import java.rmi.RemoteException;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -39,7 +42,6 @@ public class AdditionalBooking extends TravelWindow {
 
   private boolean isCorrection = false;
 
-  TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
   Service service;
   Product product;
   idegaTimestamp stamp;
@@ -53,7 +55,7 @@ public class AdditionalBooking extends TravelWindow {
     super.setResizable(true);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     initialize(iwc);
 
@@ -75,23 +77,25 @@ public class AdditionalBooking extends TravelWindow {
     }
   }
 
-  private void initialize(IWContext iwc) {
+  private void initialize(IWContext iwc) throws RemoteException{
     try {
       String sCorrection = iwc.getParameter(this.correction);
       if (sCorrection != null) {
         if (sCorrection.equals("true"))
         this.isCorrection = true;
       }
-        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
+        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(iwc.getParameter(this.parameterServiceId));
         product = ProductBusiness.getProduct(service.getID());
         stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
         timeframe = ProductBusiness.getTimeframe(product, stamp);
+    }catch (FinderException fe) {
+      fe.printStackTrace(System.err);
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
   }
 
-  private void displayForm(IWContext iwc) throws SQLException{
+  private void displayForm(IWContext iwc) throws RemoteException, SQLException{
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -185,7 +189,7 @@ public class AdditionalBooking extends TravelWindow {
         try {
             ++row;
             category = pPrices[i].getPriceCategory();
-            int price = (int) tsb.getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), iTimeframeId, iAddressId);
+            int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), iTimeframeId, iAddressId);
             pPriceCatNameText = (Text) text.clone();
               pPriceCatNameText.setText(category.getName());
 
@@ -225,7 +229,7 @@ public class AdditionalBooking extends TravelWindow {
   }
 
 
-  public void saveBooking(IWContext iwc) {
+  public void saveBooking(IWContext iwc) throws RemoteException{
       String name = iwc.getParameter("name");
       String addressId = iwc.getParameter(this.parameterDepartureAddressId);
 
@@ -263,16 +267,16 @@ public class AdditionalBooking extends TravelWindow {
         int ownerId = -1;
         int userId = -1;
 
-        bookingId = Booker.Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH, userId, ownerId, Integer.parseInt(addressId), "");
+        bookingId = getBooker(iwc).Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH, userId, ownerId, Integer.parseInt(addressId), "");
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {
           if (manys[i] != 0) {
-            bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHomeLegacy(BookingEntry.class)).createLegacy();
+            bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
               bEntry.setProductPriceId(pPrices[i].getID());
               bEntry.setBookingId(bookingId);
               bEntry.setCount(manys[i]);
-            bEntry.insert();
+            bEntry.store();
           }
         }
 
@@ -280,8 +284,8 @@ public class AdditionalBooking extends TravelWindow {
 
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
+      }catch (CreateException ce) {
+        ce.printStackTrace(System.err);
       }
 
 

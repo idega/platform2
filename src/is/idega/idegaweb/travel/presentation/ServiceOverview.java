@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
+import is.idega.idegaweb.travel.business.*;
 import com.idega.data.IDOLookup;
 import java.util.Vector;
 import com.idega.data.IDOFinderException;
@@ -15,13 +18,12 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
 import java.text.DecimalFormat;
 import java.util.List;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
+//import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 
 import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
@@ -46,7 +48,6 @@ public class ServiceOverview extends TravelManager {
   private Supplier supplier;
 
   private idegaCalendar cal = new idegaCalendar();
-  TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
   String[] dayOfWeekName = new String[8];
 
 
@@ -139,18 +140,18 @@ public class ServiceOverview extends TravelManager {
       return topTable;
   }
 
-  public void deleteServices(IWContext iwc) throws SQLException{
+  public void deleteServices(IWContext iwc) throws RemoteException, FinderException, SQLException{
     String[] serviceIds = (String[]) iwc.getParameterValues(deleteParameter);
     Service serviceToDelete;
     for (int i = 0; i < serviceIds.length; i++) {
-        serviceToDelete = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(Integer.parseInt(serviceIds[i]));
+        serviceToDelete = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(serviceIds[i]));
         serviceToDelete.delete();
     }
 
   }
 
 
-  public void displayForm(IWContext iwc) {
+  public void displayForm(IWContext iwc) throws RemoteException{
       add(Text.getBreak());
       Form form = new Form();
       Table topTable = this.getTopTable(iwc);
@@ -296,9 +297,9 @@ public class ServiceOverview extends TravelManager {
 
             ++row;
             table.mergeCells(1,row,5,row);
-          }catch (TravelStockroomBusiness.ServiceNotFoundException snf) {
+          }catch (ServiceNotFoundException snf) {
             snf.printStackTrace(System.err);
-          }catch (TravelStockroomBusiness.TimeframeNotFoundException tnf) {
+          }catch (TimeframeNotFoundException tnf) {
             tnf.printStackTrace(System.err);
           }catch (SQLException sql) {
             sql.printStackTrace(System.err);
@@ -393,7 +394,7 @@ public class ServiceOverview extends TravelManager {
 
 
 
-  public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws SQLException, ServiceNotFoundException, TimeframeNotFoundException {
+  public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
         Table contentTable;
         int contRow = 0;
         contentTable = new Table();
@@ -460,7 +461,7 @@ public class ServiceOverview extends TravelManager {
 
 
 
-        service = TravelStockroomBusiness.getService(product);
+        service = getTravelStockroomBusiness(iwc).getService(product);
 //        timeframe = TravelStockroomBusiness.getTimeframe(product);
         timeframes = product.getTimeframes();
         try {
@@ -521,7 +522,7 @@ public class ServiceOverview extends TravelManager {
         try {
           ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
           ServiceDay sDay = sdayHome.create();
-          dayOfWeek = sDay.getDaysOfWeek(service.getID());
+          dayOfWeek = sDay.getDaysOfWeek(((Integer) service.getPrimaryKey()).intValue());
           if (dayOfWeek.length == 7) {
             actDays.setText(iwrb.getLocalizedString("travel.daily","daily"));
           }else {
@@ -607,7 +608,13 @@ public class ServiceOverview extends TravelManager {
               priceText = (Text) theBoldText.clone();
                 priceText.setFontColor(super.BLACK);
               try {
-                priceText.setText(Integer.toString( (int) tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
+                debug("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+                if (service == null) {debug("SERVICE");}
+                if (prices[j] == null) {debug("PRICES");}
+                if (timeframes[k] == null) {debug("TIMEFRAMEs");}
+                if (depAddress == null) {debug("ADDRESS");}
+                debug("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+                priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
               }catch (ProductPriceException p) {

@@ -42,6 +42,7 @@ public class ProductCatalog extends CategoryBlock{
   int _numberOfColumns = 1;
 
   IWResourceBundle iwrb;
+  IWContext iwc;
   private IWBundle bundle;
 
   Image iCreate = null;
@@ -97,6 +98,8 @@ public class ProductCatalog extends CategoryBlock{
   private void init(IWContext iwc) {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
+    this.iwc = iwc;
+
 
     setAutoCreate(false);
 

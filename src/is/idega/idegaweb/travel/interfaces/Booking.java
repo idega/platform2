@@ -1,7 +1,9 @@
 package is.idega.idegaweb.travel.interfaces;
 
+import javax.ejb.FinderException;
+import com.idega.data.IDOEntity;
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
-import java.sql.SQLException;
 import com.idega.data.IDOLegacyEntity;
 import is.idega.idegaweb.travel.data.*;
 /**
@@ -13,7 +15,7 @@ import is.idega.idegaweb.travel.data.*;
  * @version 1.0
  */
 
-public interface Booking {
+public interface Booking extends IDOEntity{
 
   public static final int BOOKING_TYPE_ID_ONLINE_BOOKING = 1;
   public static final int BOOKING_TYPE_ID_INQUERY_BOOKING = 2;
@@ -28,73 +30,75 @@ public interface Booking {
   public static final int PAYMENT_TYPE_ID_VOUCHER = 3;
   public static final int PAYMENT_TYPE_ID_ACCOUNT = 4;
 
-  public String getName();
-  public void setName(String name);
+  public String getName() throws RemoteException;
+  public void setName(String name)throws RemoteException;
 
-  public Timestamp getBookingDate();
-  public void setBookingDate(Timestamp timestamp);
+  public Timestamp getBookingDate()throws RemoteException;
+  public void setBookingDate(Timestamp timestamp)throws RemoteException;
 
-  public Service getService();
-  public int getServiceID();
-  public void setServiceID(int id);
+  public Service getService()throws RemoteException;
+  public int getServiceID()throws RemoteException;
+  public void setServiceID(int id)throws RemoteException;
 
-  public void setCountry(String country);
-  public String getCountry();
+  public void setCountry(String country)throws RemoteException;
+  public String getCountry()throws RemoteException;
 
-  public String getTelephoneNumber();
-  public void setTelephoneNumber(String number);
+  public String getTelephoneNumber()throws RemoteException;
+  public void setTelephoneNumber(String number)throws RemoteException;
 
-  public String getEmail();
-  public void setEmail(String email);
+  public String getEmail()throws RemoteException;
+  public void setEmail(String email)throws RemoteException;
 
-  public String getCity();
-  public void setCity(String city);
+  public String getCity()throws RemoteException;
+  public void setCity(String city)throws RemoteException;
 
-  public String getAddress();
-  public void setAddress(String address);
+  public String getAddress()throws RemoteException;
+  public void setAddress(String address)throws RemoteException;
 
-  public int getTotalCount();
-  public void setTotalCount(int totalCount);
+  public int getTotalCount()throws RemoteException;
+  public void setTotalCount(int totalCount)throws RemoteException;
 
-  public int getBookingTypeID();
-  public void setBookingTypeID(int id);
+  public int getBookingTypeID()throws RemoteException;
+  public void setBookingTypeID(int id)throws RemoteException;
 
-  public Timestamp getDateOfBooking();
-  public void setDateOfBooking(Timestamp dateOfBooking);
+  public Timestamp getDateOfBooking()throws RemoteException;
+  public void setDateOfBooking(Timestamp dateOfBooking)throws RemoteException;
 
-  public String getPostalCode();
-  public void setPostalCode(String code);
+  public String getPostalCode()throws RemoteException;
+  public void setPostalCode(String code)throws RemoteException;
 
-  public void setAttendance(int attendance);
-  public int getAttendance();
+  public void setAttendance(int attendance)throws RemoteException;
+  public int getAttendance()throws RemoteException;
 
-  public void setPaymentTypeId(int type);
-  public int getPaymentTypeId();
+  public void setPaymentTypeId(int type)throws RemoteException;
+  public int getPaymentTypeId()throws RemoteException;
 
-  public boolean getIsValid();
-  public void setIsValid(boolean isValid);
+  public boolean getIsValid()throws RemoteException;
+  public void setIsValid(boolean isValid)throws RemoteException;
 
-  public void setReferenceNumber(String number);
-  public String getReferenceNumber();
+  public void setReferenceNumber(String number)throws RemoteException;
+  public String getReferenceNumber()throws RemoteException;
 
-  public int getUserId();
-  public void setUserId(int userId);
+  public int getUserId()throws RemoteException;
+  public void setUserId(int userId)throws RemoteException;
 
-  public int getOwnerId();
-  public void setOwnerId(int ownerId);
+  public int getOwnerId()throws RemoteException;
+  public void setOwnerId(int ownerId)throws RemoteException;
 
-  public String getComment();
-  public void setComment(String comment);
+  public String getComment()throws RemoteException;
+  public void setComment(String comment)throws RemoteException;
+ public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
 
-  public void insert() throws SQLException;
-  public void update() throws SQLException;
-  public void delete() throws SQLException;
-  public void addTo(Class relatingEntityClass, int id) throws SQLException;
-  public IDOLegacyEntity[] findRelated(IDOLegacyEntity relatingEntity) throws SQLException;
+  /*
+  public void insert() throws SQLException, RemoteException;
+  public void update() throws SQLException, RemoteException;
+  public void delete() throws SQLException, RemoteException;
+  public void addTo(Class relatingEntityClass, int id) throws SQLException, RemoteException;
+  public IDOLegacyEntity[] findRelated(IDOLegacyEntity relatingEntity) throws SQLException, RemoteException;
+*/
+  public int getID() throws RemoteException;
 
-  public int getID();
-
-  public BookingEntry[] getBookingEntries() throws SQLException;
+  public BookingEntry[] getBookingEntries() throws FinderException, RemoteException;
 
 
 }

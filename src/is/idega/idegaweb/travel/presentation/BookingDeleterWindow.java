@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.*;
 import com.idega.util.idegaTimestamp;
@@ -35,7 +37,7 @@ public class BookingDeleterWindow extends TravelWindow {
   public BookingDeleterWindow() {
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     setTitle("idegaWEB travel");
     init(iwc);
@@ -64,18 +66,18 @@ public class BookingDeleterWindow extends TravelWindow {
     }
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     String sBookingId = iwc.getParameter(bookingIdParameter);
     if (sBookingId != null) {
       try {
         _bookingId = Integer.parseInt(sBookingId);
-        _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(_bookingId);
-        _bookings = Booker.getMultibleBookings(_booking);
+        _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(_bookingId));
+        _bookings = getBooker(iwc).getMultibleBookings(_booking);
         _service = _booking.getService();
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
+      }catch (FinderException ce) {
+        ce.printStackTrace(System.err);
       }
     }
   }
@@ -99,7 +101,7 @@ public class BookingDeleterWindow extends TravelWindow {
     return text;
   }
 
-  private void displayForm(IWContext iwc) {
+  private void displayForm(IWContext iwc) throws RemoteException{
     Form form = new Form();
     form.addParameter(this.bookingIdParameter, _bookingId);
 
@@ -188,7 +190,7 @@ public class BookingDeleterWindow extends TravelWindow {
     add(form);
   }
 
-  private boolean handleDelete(IWContext iwc) {
+  private boolean handleDelete(IWContext iwc) throws RemoteException, FinderException{
     String[] ids = iwc.getParameterValues(this.parameterBookingIdForForm);
     if (ids != null) {
       GeneralBooking booking;
@@ -196,7 +198,7 @@ public class BookingDeleterWindow extends TravelWindow {
       for (int i = 0; i < ids.length; i++) {
         del = iwc.getParameter(this.parameterDeleteBId+ids[i]);
         if (del != null) {
-          if (!Booker.deleteBooking(Integer.parseInt(ids[i]))) {
+          if (!getBooker(iwc).deleteBooking(Integer.parseInt(ids[i]))) {
             return false;
           }
         }

@@ -38,7 +38,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
     this.setStatus(true);
   }
 
-  public void main(IWContext iwc){
+  public void main(IWContext iwc) throws Exception {
     super.main(iwc);
 
     String action = iwc.getParameter(this.sAction);

@@ -1,4 +1,7 @@
 package com.idega.block.trade.stockroom.business;
+import com.idega.business.IBOServiceBean;
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import com.idega.presentation.Image;
 import com.idega.block.trade.business.CurrencyHolder;
 import java.util.*;
@@ -23,7 +26,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ProductEditorBusiness {
+public class ProductEditorBusiness extends IBOServiceBean{
   private static ProductEditorBusiness peb;
 
   private ProductEditorBusiness() {}
@@ -102,12 +105,12 @@ public class ProductEditorBusiness {
     }
   }
 
-  public boolean setPrice(Product product, String price, String currencyId) {
+  public boolean setPrice(Product product, String price, String currencyId) throws RemoteException {
     if (price == null) {
       return false;
     }else {
       try {
-        ProductPrice pPri = StockroomBusiness.getPrice(product);
+        ProductPrice pPri = getStockroomBusiness().getPrice(product);
         int oldP = 0;
         int pCurrId = -1;
         if (pPri != null) {
@@ -248,5 +251,8 @@ public class ProductEditorBusiness {
     return _currencies;
   }
 
+  private StockroomBusiness getStockroomBusiness() throws RemoteException{
+    return (StockroomBusiness) IBOLookup.getServiceInstance(super.getIWApplicationContext(), StockroomBusiness.class);
+  }
 
 }

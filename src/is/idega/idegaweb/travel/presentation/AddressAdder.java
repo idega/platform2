@@ -41,7 +41,7 @@ public class AddressAdder extends TravelWindow {
     super.setTitle("idegaWeb Travel");
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     init(iwc);
 

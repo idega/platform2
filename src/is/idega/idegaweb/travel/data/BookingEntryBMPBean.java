@@ -1,10 +1,12 @@
 package is.idega.idegaweb.travel.data;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
+import java.util.Collection;
 import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 
-import java.sql.SQLException;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -29,8 +31,9 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
     return getBookingEntriesTableName();
   }
 
-  public ProductPrice getProductPrice() throws SQLException{
-    return ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).findByPrimaryKeyLegacy(getProductPriceId());
+  public ProductPrice getProductPrice() throws FinderException{
+    ProductPriceHome ppHome = (com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class);
+    return (ppHome).findByPrimaryKey(getProductPriceId());
   }
 
   public int getProductPriceId() {
@@ -49,8 +52,9 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
     return getIntColumnValue(getBookingIDColumnName());
   }
 
-  public Booking getBooking() throws SQLException {
-    return ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(getBookingId());
+  public Booking getBooking() throws RemoteException, FinderException {
+    GeneralBookingHome bHome = (is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class);
+    return bHome.findByPrimaryKey(new Integer(getBookingId()));
   }
 
   public void setCount(int count) {
@@ -65,4 +69,14 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
   public static String getBookingIDColumnName() {return "BOOKING_ID";}
   public static String getCountColumnName() {return "PASSENGER_COUNT";}
   public static String getProductPriceIDColumnName() {return "SR_PRODUCT_PRICE_ID";}
+
+  public Collection getEntries(Booking booking) throws FinderException, RemoteException{
+    return super.idoFindAllIDsByColumnBySQL(getBookingIDColumnName(), Integer.toString(booking.getID()));
+//    return null;
+  }
+
+  public Collection getEntries(ProductPrice pPrice) throws FinderException {
+    return super.idoFindAllIDsByColumnBySQL(getProductPriceIDColumnName(), Integer.toString(pPrice.getID()));
+  }
+
 }

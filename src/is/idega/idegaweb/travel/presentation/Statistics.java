@@ -1,8 +1,9 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.*;
+import java.rmi.RemoteException;
 import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -38,7 +39,7 @@ public class Statistics extends TravelManager {
 
   private Supplier supplier;
   private Product product;
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private TravelStockroomBusiness tsb;
   private Service service;
   private Tour tour;
   private Timeframe timeframe;
@@ -71,11 +72,11 @@ public class Statistics extends TravelManager {
       }
   }
 
-  public void initialize(IWContext iwc) {
+  public void initialize(IWContext iwc) throws RemoteException{
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
-
+      tsb = getTravelStockroomBusiness(iwc);
       String productId = iwc.getParameter(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
       try {
         if (productId == null) {
@@ -86,14 +87,14 @@ public class Statistics extends TravelManager {
         if (productId != null && !productId.equals("-1")) {
           product = ProductBusiness.getProduct(Integer.parseInt(productId));
           service = tsb.getService(product);
-          tour = TourBusiness.getTour(product);
+          tour = getTourBusiness(iwc).getTour(product);
           timeframe = tsb.getTimeframe(product);
         }
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+      }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
-      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+      }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (TourBusiness.TourNotFoundException tnfe) {
+      }catch (TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
@@ -102,7 +103,7 @@ public class Statistics extends TravelManager {
 
   }
 
-  public void displayForm(IWContext iwc) {
+  public void displayForm(IWContext iwc) throws RemoteException {
 
       Form form = new Form();
       Table topTable = getTopTable(iwc);
@@ -226,7 +227,7 @@ public class Statistics extends TravelManager {
       return topTable;
   }
 
-  public Table getContentHeader(IWContext iwc) {
+  public Table getContentHeader(IWContext iwc) throws RemoteException{
       Table table = new Table(2,3);
       table.setWidth("90%");
 
@@ -270,7 +271,7 @@ public class Statistics extends TravelManager {
       return table;
   }
 
-  public Table getContentTable(IWContext iwc) {
+  public Table getContentTable(IWContext iwc) throws RemoteException{
       Table table = new Table();
         table.setWidth("90%");
         table.setBorder(0);
@@ -333,14 +334,14 @@ public class Statistics extends TravelManager {
           seatNrText.setFontColor(super.BLACK);
           usageNrText.setFontColor(super.BLACK);
 
-      int iNetBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
-      int iInqBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
-      int iSupBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
-      int i3rdBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
+      int iNetBooking = getBooker(iwc).getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
+      int iInqBooking = getBooker(iwc).getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
+      int iSupBooking = getBooker(iwc).getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
+      int i3rdBooking = getBooker(iwc).getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
 
 
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;
-      int numberOfSeats = tour.getTotalSeats() * TourBusiness.getNumberOfTours(service.getID(), fromStamp, toStamp);
+      int numberOfSeats = tour.getTotalSeats() * getTourBusiness(iwc).getNumberOfTours(service.getID(), fromStamp, toStamp);
 
       int iAvail = numberOfSeats - total;
 
@@ -409,6 +410,10 @@ public class Statistics extends TravelManager {
 
       return table;
 
+  }
+
+  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
 
 }

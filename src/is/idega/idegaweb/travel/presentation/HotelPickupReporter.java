@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -78,7 +81,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
     return new Table();
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) throws RemoteException, FinderException{
     initialize(iwc);
     Table table = new Table();
       table.setColor(super.WHITE);
@@ -128,7 +131,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
         hotelCountText.setText("0");
       oldHppNumber = -100;
       prod = (Product) products.get(j);
-      bookings = TourBooker.getBookings(prod.getID(), stamp, true);
+      bookings = getTourBooker(iwc).getBookings(prod.getID(), stamp, true);
       bookingsList = getBookingList(bookings);
       Collections.sort(bookingsList, new BookingComparator(iwc, BookingComparator.HOTELPICKUP_NAME));
 
@@ -159,10 +162,10 @@ public class HotelPickupReporter extends TravelManager implements Report {
 
                 ++row;
                 table.setRowColor(row, super.GRAY);
-                tBooking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(booking.getID());
+                tBooking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
                 ++bookingCounter;
                 hpp = tBooking.getHotelPickupPlace();
-                if (hpp.getID() != oldHppNumber) {
+                if (((Integer) hpp.getPrimaryKey()).intValue() != oldHppNumber) {
                   hotelNameText = (Text) super.theBoldText.clone();
                     hotelNameText.setText(hpp.getName());
                     hotelNameText.setFontColor(super.BLACK);
@@ -175,7 +178,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
                   table.add(hotelCountText, 4, row);
                   table.setAlignment(5, row, "right");
 
-                  oldHppNumber = hpp.getID();
+                  oldHppNumber = ((Integer) hpp.getPrimaryKey()).intValue();
                   bookingCounter = 1;
                   hotelCount = 0;
                   ++row;
@@ -209,8 +212,8 @@ public class HotelPickupReporter extends TravelManager implements Report {
                 table.add(bookingCountTxt, 4, row);
 
                 hotelCountText.setText(""+hotelCount);
-              }catch (SQLException sql) {
-                debug(sql.getMessage());
+              }catch (FinderException fe) {
+                debug(fe.getMessage());
               }
             }
           if (expand) {
@@ -236,5 +239,8 @@ public class HotelPickupReporter extends TravelManager implements Report {
     return list;
   }
 
+  private TourBooker getTourBooker(IWApplicationContext iwac) throws RemoteException {
+    return (TourBooker) IBOLookup.getServiceInstance(iwac, TourBooker.class);
+  }
 
 }

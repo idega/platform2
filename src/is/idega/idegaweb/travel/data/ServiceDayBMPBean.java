@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.data;
 
+import javax.ejb.RemoveException;
 import com.idega.util.idegaTimestamp;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -108,18 +109,30 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   }
 
 
-  public int[] getDaysOfWeek(int serviceId) {
-    int[] returner = {};
+  public int[] getDaysOfWeek(int serviceId) throws RemoteException, RemoveException, FinderException{
+/*    int[] returner = {};
     try {
         ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumnOrdered(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek());
         returner = new int[days.length];
         for (int i = 0; i < days.length; i++) {
           if (days[i].getDayOfWeek() == -1) {
-            days[i].delete();
+            days[i].remove();
             debug("deleting ServiceDay with dayOfWeek is NULL");
           }else {
             returner[i] = days[i].getDayOfWeek();
           }
+        }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return returner;
+*/
+    int[] returner = {};
+    try {
+        ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumnOrdered(getColumnNameServiceId(), Integer.toString(serviceId),getColumnNameDayOfWeek());
+        returner = new int[days.length];
+        for (int i = 0; i < days.length; i++) {
+          returner[i] = days[i].getDayOfWeek();
         }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -157,7 +170,7 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
     //    ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumn(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
   }
 
-  public static boolean getIfDay(int serviceId, int dayOfWeek) {
+  public boolean ejbHomeGetIfDay(int serviceId, int dayOfWeek) {
     boolean returner = false;
     try {
         ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumn(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
@@ -173,15 +186,32 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
     return returner;
   }
 
-  public static void deleteService(int serviceId) throws SQLException{
-      ServiceDay[] days = (ServiceDay[]) (((is.idega.idegaweb.travel.data.ServiceDayHome)com.idega.data.IDOLookup.getHomeLegacy(ServiceDay.class)).createLegacy()).findAllByColumn(getColumnNameServiceId(), serviceId);
+  public boolean ejbHomeDeleteService(int serviceId) throws RemoteException , RemoveException, FinderException{
+/*    Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(), Integer.toString(serviceId));
+    Iterator days = coll.iterator();
+    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+    ServiceDay sDay;
+    while (days.hasNext()) {
+      sDay = sDayHome.findByPrimaryKey(days.next());
+//      sDay = (ServiceDay) this.ejbFindByPrimaryKey(days.next());
+      sDay.remove();
+    }*/
+
+
+    try {
+      ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumn(getColumnNameServiceId(),Integer.toString(serviceId));
+//      ServiceDay[] days = (ServiceDay[]) (((is.idega.idegaweb.travel.data.ServiceDayHome)com.idega.data.IDOLookup.getHomeLegacy(ServiceDay.class)).createLegacy()).findAllByColumn(getColumnNameServiceId(), serviceId);
       for (int i = 0; i < days.length; i++) {
-          days[i].delete();
+          days[i].remove();
       }
+      return true;
+    }catch (SQLException sql) {
+      throw new RemoveException(sql.getMessage());
+    }
   }
 
-  public void setServiceWithNoDays(int serviceId) throws SQLException{
-    deleteService(serviceId);
+  public boolean ejbHomeSetServiceWithNoDays(int serviceId)  throws RemoteException , RemoveException, FinderException{
+    return ejbHomeDeleteService(serviceId);
   }
 
 

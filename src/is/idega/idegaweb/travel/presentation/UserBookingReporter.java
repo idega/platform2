@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
@@ -82,11 +84,11 @@ public class UserBookingReporter extends TravelManager implements Report{
     }
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) throws RemoteException, FinderException{
     return getReport(iwc, products, stamp, new idegaTimestamp(stamp));
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) throws RemoteException, FinderException{
     initialize(iwc);
 
     if (userId != -1) {
@@ -98,7 +100,7 @@ public class UserBookingReporter extends TravelManager implements Report{
     }
   }
 
-  private Table getUserReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  private Table getUserReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) throws RemoteException, FinderException{
     Table table = getTable();
       table.setWidth("100%");
     int row = 1;
@@ -116,7 +118,7 @@ public class UserBookingReporter extends TravelManager implements Report{
       int count;
       int totalCount = 0;
 
-      Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp, is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getUserIdColumnName(), Integer.toString(userId));
+      Booking[] bookings = getBooker(iwc).getBookings(products, fromStamp, toStamp, is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getUserIdColumnName(), Integer.toString(userId));
       BookingComparator bComp = new BookingComparator(iwc, orderBy);
       bookings = bComp.sortedArray(bookings);
 
@@ -154,7 +156,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         ++row;
         owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
-        price = Booker.getBookingPrice(iwc, bookings[i]);
+        price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
         count = bookings[i].getTotalCount();
         totalPrice += price;
         totalCount += count;
@@ -188,7 +190,7 @@ public class UserBookingReporter extends TravelManager implements Report{
     return table;
   }
 
-  private Table getOwnerReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  private Table getOwnerReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) throws RemoteException, FinderException{
     Table table = getTable();
       table.setWidth("100%");
     int row = 1;
@@ -203,7 +205,7 @@ public class UserBookingReporter extends TravelManager implements Report{
       int count;
       int totalCount = 0;
 
-      Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp, is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getOwnerIdColumnName(), Integer.toString(ownerId));
+      Booking[] bookings = getBooker(iwc).getBookings(products, fromStamp, toStamp, is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getOwnerIdColumnName(), Integer.toString(ownerId));
       BookingComparator bComp = new BookingComparator(iwc, orderBy);
       bookings = bComp.sortedArray(bookings);
 
@@ -241,7 +243,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         ++row;
         user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
-        price = Booker.getBookingPrice(iwc, bookings[i]);
+        price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
         count = bookings[i].getTotalCount();
         totalPrice += price;
         totalCount += count;
@@ -278,9 +280,9 @@ public class UserBookingReporter extends TravelManager implements Report{
   }
 
 
-  private Table getDefaultReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  private Table getDefaultReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) throws RemoteException, FinderException{
 
-    Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp);
+    Booking[] bookings = getBooker(iwc).getBookings(products, fromStamp, toStamp);
     BookingComparator bComp = new BookingComparator(iwc, orderBy);
     bookings = bComp.sortedArray(bookings);
 
@@ -348,7 +350,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         table.add(getText(new idegaTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
         table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
         table.add(getText(Integer.toString(bookings[i].getTotalCount())), 3, row);
-        table.add(getText(TextSoap.decimalFormat(Booker.getBookingPrice(iwc, bookings[i]), 0)), 6, row);
+        table.add(getText(TextSoap.decimalFormat(getBooker(iwc).getBookingPrice(iwc, bookings[i]), 0)), 6, row);
 
         table.setRowColor(row, super.GRAY);
 

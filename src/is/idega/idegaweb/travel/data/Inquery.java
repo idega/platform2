@@ -2,30 +2,33 @@ package is.idega.idegaweb.travel.data;
 
 import javax.ejb.*;
 
-public interface Inquery extends com.idega.data.IDOLegacyEntity
+public interface Inquery extends com.idega.data.IDOEntity
 {
- public java.sql.Timestamp getAnswerDate();
- public boolean getAnswered();
- public is.idega.idegaweb.travel.data.GeneralBooking getBooking()throws java.sql.SQLException;
- public int getBookingId();
- public java.lang.String getEmail();
- public boolean getIfAnswered();
- public java.lang.String getInquery();
- public java.sql.Timestamp getInqueryDate();
- public java.sql.Timestamp getInqueryPostDate();
- public java.lang.String getName();
- public int getNumberOfSeats();
- public is.idega.idegaweb.travel.data.Service getService();
- public int getServiceID();
- public void setAnswerDate(java.sql.Timestamp p0);
- public void setAnswered(boolean p0);
- public void setBookingId(int p0);
- public void setEmail(java.lang.String p0);
- public void setIfAnswered(boolean p0);
- public void setInquery(java.lang.String p0);
- public void setInqueryDate(java.sql.Timestamp p0);
- public void setInqueryPostDate(java.sql.Timestamp p0);
- public void setName(java.lang.String p0);
- public void setNumberOfSeats(int p0);
- public void setServiceID(int p0);
+ public void addReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
+ public java.sql.Timestamp getAnswerDate() throws java.rmi.RemoteException;
+ public boolean getAnswered() throws java.rmi.RemoteException;
+ public is.idega.idegaweb.travel.data.GeneralBooking getBooking()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public int getBookingId() throws java.rmi.RemoteException;
+ public java.lang.String getEmail() throws java.rmi.RemoteException;
+ public boolean getIfAnswered() throws java.rmi.RemoteException;
+ public java.lang.String getInquery() throws java.rmi.RemoteException;
+ public java.sql.Timestamp getInqueryDate() throws java.rmi.RemoteException;
+ public java.sql.Timestamp getInqueryPostDate() throws java.rmi.RemoteException;
+ public java.util.List getMultibleInquiries(is.idega.idegaweb.travel.data.Inquery p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.String getName() throws java.rmi.RemoteException;
+ public int getNumberOfSeats() throws java.rmi.RemoteException;
+ public java.util.Collection getResellers()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
+ public is.idega.idegaweb.travel.data.Service getService() throws java.rmi.RemoteException;
+ public int getServiceID() throws java.rmi.RemoteException;
+ public void setAnswerDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setAnswered(boolean p0) throws java.rmi.RemoteException;
+ public void setBookingId(int p0) throws java.rmi.RemoteException;
+ public void setEmail(java.lang.String p0) throws java.rmi.RemoteException;
+ public void setIfAnswered(boolean p0) throws java.rmi.RemoteException;
+ public void setInquery(java.lang.String p0) throws java.rmi.RemoteException;
+ public void setInqueryDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setInqueryPostDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setName(java.lang.String p0) throws java.rmi.RemoteException;
+ public void setNumberOfSeats(int p0) throws java.rmi.RemoteException;
+ public void setServiceID(int p0) throws java.rmi.RemoteException;
 }

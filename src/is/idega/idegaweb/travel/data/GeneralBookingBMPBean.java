@@ -1,5 +1,13 @@
 package is.idega.idegaweb.travel.data;
 
+import java.util.*;
+import is.idega.idegaweb.travel.service.tour.data.*;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.presentation.IWContext;
+import com.idega.business.IBOLookup;
+import javax.ejb.FinderException;
+import com.idega.util.idegaTimestamp;
+import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import java.sql.*;
 import com.idega.util.CypherText;
@@ -192,8 +200,12 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     setColumn(getIsValidColumnName(), isValid);
   }
 
-  public BookingEntry[] getBookingEntries() throws SQLException {
-    return (BookingEntry[]) (is.idega.idegaweb.travel.data.BookingEntryBMPBean.getStaticInstance(BookingEntry.class).findAllByColumn(is.idega.idegaweb.travel.data.BookingEntryBMPBean.getBookingIDColumnName(), this.getID()));
+  public BookingEntry[] getBookingEntries() throws FinderException {
+    try {
+      return (BookingEntry[]) (is.idega.idegaweb.travel.data.BookingEntryBMPBean.getStaticInstance(BookingEntry.class).findAllByColumn(is.idega.idegaweb.travel.data.BookingEntryBMPBean.getBookingIDColumnName(), this.getID()));
+    }catch (SQLException sql) {
+      throw new FinderException(sql.getMessage());
+    }
   }
 
   public void setReferenceNumber(String number) {
@@ -236,17 +248,22 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     setColumn(getCreditcardAuthorizationNumberColumnName(), number);
   }
 
-
-  public void insert() throws SQLException {
+  public void store() {
     CypherText cyph = new CypherText();
     String key = cyph.getKey(8);
-    GeneralBooking[] bookings = (GeneralBooking[]) findAllByColumn(getReferenceNumberColumnName(), key);
-    while (bookings.length > 0) {
-      key = cyph.getKey(8);
-      bookings = (GeneralBooking[]) findAllByColumn(getReferenceNumberColumnName(), key);
+
+    try {
+      Collection bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), key);
+
+      while (bookingIds.size() > 0) {
+        key = cyph.getKey(8);
+        bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), key);
+      }
+      setReferenceNumber(key);
+      super.store();
+    }catch (FinderException fe) {
+    throw new IDOStoreException(fe.getMessage());
     }
-    setReferenceNumber(key);
-    super.insert();
   }
 
   public static String getBookingTableName(){return "TB_BOOKING";}
@@ -272,5 +289,274 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public static String getCreditcardAuthorizationNumberColumnName() {return "CC_AUTH_NUMBER";}
 
 
+  public  Collection ejbFindBookings(int resellerId, int serviceId, idegaTimestamp stamp) throws FinderException{
+    return ejbFindBookings(new int[] {resellerId}, serviceId, stamp);
+  }
+
+  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp) throws FinderException{
+    Collection returner = null;
+
+    if (resellerIds == null) {
+      resellerIds = new int[0];
+    }
+    Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
+
+    String[] many = {};
+      StringBuffer sql = new StringBuffer();
+        sql.append("Select b.* from "+getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
+        sql.append(" where ");
+        if (resellerIds.length > 0 ) {
+          sql.append(" br."+reseller.getIDColumnName()+" in (");
+          for (int i = 0; i < resellerIds.length; i++) {
+            if (i != 0) sql.append(", ");
+            sql.append(resellerIds[i]);
+          }
+
+          sql.append(") and ");
+        }
+        sql.append(" b."+getIDColumnName()+" = br."+this.getIDColumnName());
+        sql.append(" and ");
+        sql.append(" b."+getIsValidColumnName()+"='Y'");
+        sql.append(" and ");
+        sql.append(" b."+getServiceIDColumnName()+"="+serviceId);
+        sql.append(" and ");
+        sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
+
+    returner = this.idoFindPKsBySQL(sql.toString());
+
+    return returner;
+  }
+
+  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp) {
+    int returner = 0;
+    try {
+        if (resellerIds == null) {
+          resellerIds = new int[0];
+        }
+        Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
+
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select sum(b."+getTotalCountColumnName()+") from "+getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
+            sql.append(" where ");
+            if (resellerIds.length > 0 ) {
+              sql.append(" br."+reseller.getIDColumnName()+" in (");
+              for (int i = 0; i < resellerIds.length; i++) {
+                if (i != 0) sql.append(", ");
+                sql.append(resellerIds[i]);
+              }
+
+              sql.append(") and ");
+            }
+            sql.append(" b."+getIDColumnName()+" = br."+getIDColumnName());
+            sql.append(" and ");
+            sql.append(" b."+getIsValidColumnName()+"='Y'");
+            sql.append(" and ");
+            sql.append(" b."+getServiceIDColumnName()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
+        many = SimpleQuerier.executeStringQuery(sql.toString());
+
+        if (many != null) {
+          if (many[0] != null)
+            returner = Integer.parseInt(many[0]);
+        }
+
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+
+  public int ejbHomeGetNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType, int[] productPriceIds){
+    int returner = 0;
+    //Connection conn = null;
+    try {
+//      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(serviceId));
+
+      /** @todo lonsa við getInstance crap */
+      ProductBusiness pBus = new ProductBusiness();//(ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
+
+      Timeframe timeframe = pBus.getTimeframe(ProductBusiness.getProduct(serviceId), fromStamp);
+      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+      String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
+      String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
+      String tTable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
+
+      //conn = ConnectionBroker.getConnection();
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select b."+getTotalCountColumnName()+" from "+getBookingTableName()+" b");
+            sql.append(","+pTable+" p,"+middleTable+" m,"+tTable+" t");
+            sql.append(" where ");
+            sql.append("p."+product.getIDColumnName()+" = m."+product.getIDColumnName());
+            sql.append(" and ");
+            sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
+            sql.append(" and ");
+            if (timeframe != null) {
+              sql.append("t."+timeframe.getIDColumnName()+" = "+timeframe.getID());
+              sql.append(" and ");
+            }
+            sql.append("p."+product.getIDColumnName()+"="+serviceId);
+            sql.append(" and ");
+            sql.append("b."+getServiceIDColumnName()+"= p."+product.getIDColumnName());
+            sql.append(" and ");
+            sql.append("b."+getIsValidColumnName()+" = 'Y'");
+            if (bookingType != -1) {
+              sql.append(" and ");
+              sql.append(getBookingTypeIDColumnName()+" = "+bookingType);
+            }
+            sql.append(" and (");
+            if ( (fromStamp != null) && (toStamp == null) ) {
+              sql.append(getBookingDateColumnName()+" like '"+fromStamp.toSQLDateString()+"%'");
+            }else if ( (fromStamp != null) && (toStamp != null)) {
+              sql.append(" (");
+              sql.append(getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+              sql.append(" and ");
+              sql.append(getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
+            }
+            sql.append(" )");
+
+        many = SimpleQuerier.executeStringQuery(sql.toString());
+//        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
+
+        for (int i = 0; i < many.length; i++) {
+          returner += Integer.parseInt(many[i]);
+        }
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }finally {
+      //ConnectionBroker.freeConnection(conn);
+    }
+
+    return returner;
+  }
+
+
+  public Collection ejbFindBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue) throws FinderException{
+    Collection returner = null;
+    StringBuffer sql = new StringBuffer();
+
+    sql.append("Select * from "+getBookingTableName());
+    sql.append(" where "+getServiceIDColumnName()+" in (");
+    for (int i = 0; i < serviceIds.length; i++) {
+      if (i > 0) sql.append(", ");
+      sql.append(serviceIds[i]);
+    }
+    sql.append(") and ");
+    sql.append(getIsValidColumnName()+" = 'Y'");
+    if (fromStamp != null && toStamp == null) {
+      sql.append(" and ");
+      sql.append(getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
+    }else if (fromStamp != null && toStamp != null) {
+      sql.append(" and ");
+      sql.append(getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+      sql.append(" and ");
+      sql.append(getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"'");
+    }
+    if (bookingTypeIds != null) {
+      if (bookingTypeIds.length > 0 ) {
+        sql.append(" and (");
+        for (int i = 0; i < bookingTypeIds.length; i++) {
+          if (bookingTypeIds[i] != -1) {
+            if (i > 0) sql.append(" OR ");
+            sql.append(getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
+          }
+        }
+        sql.append(") ");
+      }
+    }
+    if (columnName != null && columnValue != null) {
+      sql.append(" and ").append(columnName).append(" = '").append(columnValue).append("'");
+    }
+
+    sql.append(" order by "+getBookingDateColumnName());
+
+    returner = this.idoFindPKsBySQL(sql.toString());
+    //returner = (GeneralBooking[]) (((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).createLegacy()).findAll(sql.toString());
+
+    return returner;
+  }
+
+  public List ejbHomeGetMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException{
+    List list = new Vector();
+
+    StringBuffer buff = new StringBuffer();
+      buff.append("SELECT * FROM "+getBookingTableName());
+      buff.append(" WHERE ");
+      buff.append(getNameColumnName()+" = '"+booking.getName()+"'");
+      buff.append(" AND ");
+      buff.append(getAddressColumnName()+" = '"+booking.getAddress()+"'");
+      buff.append(" AND ");
+      buff.append(getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
+      buff.append(" AND ");
+      buff.append(getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
+      buff.append(" AND ");
+      buff.append(getCityColumnName()+" = '"+booking.getCity()+"'");
+      buff.append(" AND ");
+      buff.append(getCountryColumnName()+" = '"+booking.getCountry()+"'");
+      buff.append(" AND ");
+      buff.append(getEmailColumnName()+" = '"+booking.getEmail()+"'");
+      buff.append(" AND ");
+      if (booking.getIsValid()) {
+        buff.append(getIsValidColumnName()+" = 'Y'");
+      }else {
+        buff.append(getIsValidColumnName()+" = 'N'");
+      }
+      buff.append(" AND ");
+      buff.append(getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
+      buff.append(" AND ");
+      buff.append(getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
+      buff.append(" AND ");
+      buff.append(getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
+      buff.append(" AND ");
+      buff.append(getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
+      buff.append(" AND ");
+      buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
+      buff.append(" ORDER BY "+getBookingDateColumnName());
+    //coll = this.idoFindPKsBySQL(buff.toString());
+    list = EntityFinder.getInstance().findAll(GeneralBooking.class, buff.toString());
+/*
+    if (list.size() < 2) {
+      return list;
+    }else {
+      int myIndex = list.indexOf(booking);
+      list = cleanList(list, booking, myIndex, numberOfDays);
+    }*/
+
+    return list;
+  }
+
+  public void removeAllTravelAddresses() throws IDORemoveRelationshipException{
+    this.idoRemoveFrom(TravelAddress.class);
+  }
+
+  public void addTravelAddress(TravelAddress tAddress) throws IDOAddRelationshipException{
+    this.idoAddTo(tAddress);
+  }
+
+  public Collection getTravelAddresses() throws IDORelationshipException {
+    return this.idoGetRelatedEntities(TravelAddress.class);
+  }
+
+  public void setPrimaryKey(Object primaryKey) {
+    super.setPrimaryKey(primaryKey);
+  }
+
+  public void removeFromReseller(Reseller reseller) throws IDORemoveRelationshipException {
+    super.idoRemoveFrom(reseller);
+  }
+
+  public void removeFromAllResellers() throws IDORemoveRelationshipException {
+    super.idoRemoveFrom(Reseller.class);
+  }
+
+  public void addToReseller(Reseller reseller) throws IDOAddRelationshipException {
+    super.idoAddTo(reseller);
+  }
 }
 

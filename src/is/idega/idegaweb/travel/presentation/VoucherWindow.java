@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -135,7 +136,7 @@ public class VoucherWindow extends Window {
     return form;
   }
 
-  public static Link getVoucherLink(Booking booking) {
+  public static Link getVoucherLink(Booking booking) throws RemoteException{
     Link link = new Link("Voucher");
       link.setWindowToOpen(VoucherWindow.class);
       link.addParameter(parameterBookingId, booking.getID());

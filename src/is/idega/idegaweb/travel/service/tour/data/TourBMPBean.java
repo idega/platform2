@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.service.tour.data;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
+import java.util.Collection;
 import is.idega.idegaweb.travel.data.HotelPickupPlace;
 import com.idega.data.*;
 import is.idega.idegaweb.travel.data.Service;
@@ -15,7 +18,7 @@ import java.sql.*;
  * @version 1.0
  */
 
-public class TourBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.service.tour.data.Tour {
+public class TourBMPBean extends GenericEntity implements Tour {
 
   public TourBMPBean() {
     super();
@@ -47,44 +50,33 @@ public class TourBMPBean extends com.idega.data.GenericEntity implements is.ideg
       this.setNumberOfDays(1);
   }
 
-  /**
-   * @deprecated
-   */
-  public boolean getIsHotelPickup() {
+  public boolean getIsHotelPickup() throws RemoteException{
     return getHotelPickup();
   }
 
-  /**
-   * @deprecated
-   */
-  public boolean getHotelPickup() {
-    /**
-     * @todo RUGL LLLLLL
-     */
+  public boolean getHotelPickup() throws RemoteException{
     try {
-      HotelPickupPlace[] rugl = (HotelPickupPlace[]) (((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(this.getID())).findRelated((HotelPickupPlace) (is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getStaticInstance(HotelPickupPlace.class)));
-      if (rugl.length == 0) {
+      Service service = ((is.idega.idegaweb.travel.data.ServiceHome) com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(this.getPrimaryKey());
+      Collection coll = service.getHotelPickupPlaces();
+//      HotelPickupPlace[] rugl = (HotelPickupPlace[]) (()).findRelated((HotelPickupPlace) (is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getStaticInstance(HotelPickupPlace.class)));
+      if (coll.size() == 0) {
         return false;
       }else {
         return true;
       }
-    }catch (SQLException sql) {
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
-      return false;
+    }catch (IDORelationshipException re) {
+      re.printStackTrace(System.err);
     }
+    return false;
     //return getBooleanColumnValue(getHotelPickupColumnName());
   }
 
-  /**
-   * @deprecated
-   */
   public void setIsHotelPickup(boolean pickup) {
     setHotelPickup(pickup);
   }
 
-  /**
-   * @deprecated
-   */
   public void setHotelPickup(boolean pickup) {
     setColumn(getHotelPickupColumnName(),pickup);
   }
@@ -147,5 +139,9 @@ public class TourBMPBean extends com.idega.data.GenericEntity implements is.ideg
   public static String getNumberOfDaysColumnName() {return "NUMBER_OF_DAYS";}
   public static String getLengthColumnName() {return "TOUR_LENGTH";}
   public static String getEstimatedSeatsUsedColumnName() {return "ESTIMATED_SEATS_USED";}
+
+  public void setPrimaryKey(Object object) {
+    super.setPrimaryKey(object);
+  }
 
 }

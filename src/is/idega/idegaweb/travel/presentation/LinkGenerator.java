@@ -24,7 +24,7 @@ public class LinkGenerator extends TravelWindow {
     super.setTitle("idegaWeb Travel");
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     super.main(iwc);
 
     String productId = iwc.getParameter(parameterProductId);
