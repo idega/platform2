@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.28 2004/07/30 09:26:40 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.29 2004/07/30 14:56:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -867,7 +867,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			wrongParameters.add(APP_FIRST_NAME);
 		if (last == null || last.length() == 0)
 			wrongParameters.add(APP_LAST_NAME);
-		if (ssn == null || !com.idega.util.text.SocialSecurityNumber.isValidSocialSecurityNumber(ssn,getCampusService(iwc).getCampusSettings().getSystemLocale()))
+		if (ssn == null || !com.idega.util.text.SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(ssn))
 			wrongParameters.add(APP_SSN);
 		if (legal == null || legal.length() == 0)
 			wrongParameters.add(APP_LEGAL_RESIDENCE);
