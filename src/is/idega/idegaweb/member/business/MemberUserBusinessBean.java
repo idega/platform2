@@ -260,40 +260,56 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	/*
 	 * Return a list of League groups if the user has a league as a top node.
 	 */
-	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException{
-		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
-		List list = new Vector();
-		if(tops!=null && !tops.isEmpty()){
-			Iterator iter = tops.iterator();
-			while (iter.hasNext()) {
-				Group group = (Group) iter.next();
-				if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(group.getGroupType())){
-					list.add(group);
-				}
-			}
-			
-		}
-		return list;
+	public List getLeaguesListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{
+		return getGroupListForUserFromTopNodesAndGroupType(user,IWMemberConstants.GROUP_TYPE_LEAGUE,iwuc);
 	}
 	
 	/*
-	 * Return a list of regional union groups if the user has a regional union as a top node.
+	 * Return a list of Federation groups if the user has a Federation as a top node.
 	 */
-	public List getRegionalUnionListForUser(User user, IWUserContext iwuc) throws RemoteException{
+	public List getFederationListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{
+		return getGroupListForUserFromTopNodesAndGroupType(user,IWMemberConstants.GROUP_TYPE_FEDERATION,iwuc);
+	}
+	
+	/*
+	 * Return a list of Union groups if the user has a Union as a top node.
+	 */
+	public List getUnionListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{
+		return getGroupListForUserFromTopNodesAndGroupType(user,IWMemberConstants.GROUP_TYPE_UNION,iwuc);
+	}
+	
+	/*
+	  * Return a list of Club groups if the user has a club as a top node.
+	 */
+	public List getClubListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{
+		return getGroupListForUserFromTopNodesAndGroupType(user,IWMemberConstants.GROUP_TYPE_CLUB,iwuc);
+	}
+	
+	/*
+	 * Return a list of Regional Union groups if the user has a Regional Union as a top node.
+	 */
+	public List getRegionalUnionListForUserFromTopNodes(User user, IWUserContext iwuc) throws RemoteException{
+		return getGroupListForUserFromTopNodesAndGroupType(user,IWMemberConstants.GROUP_TYPE_REGIONAL_UNION,iwuc);
+	}
+	
+	public List getGroupListForUserFromTopNodesAndGroupType(User user, String groupType, IWUserContext iwuc) throws RemoteException{
 		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
 		List list = new Vector();
 		if(tops!=null && !tops.isEmpty()){
 			Iterator iter = tops.iterator();
 			while (iter.hasNext()) {
 				Group group = (Group) iter.next();
-				if(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(group.getGroupType())){
+				if(groupType.equals(group.getGroupType())){
 					list.add(group);
 				}
 			}
 			
 		}
 		return list;
+		
 	}
+	
+
 	
 	/** 
 	 * @return All groups with the type iwme_regional_union
@@ -367,6 +383,8 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		else return list;
 	}
+	
+	
 	
 	/*
 		* Returns the club that is a parent for this group.

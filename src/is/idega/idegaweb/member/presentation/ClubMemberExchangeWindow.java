@@ -126,7 +126,7 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 		
 		List groups = null;
 		try {
-			List list = memBiz.getLeaguesListForUser(iwc.getCurrentUser(),iwc);
+			List list = memBiz.getLeaguesListForUserFromTopNodes(iwc.getCurrentUser(),iwc);
 			
 			
 			if(list!=null && !list.isEmpty()){
