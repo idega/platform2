@@ -117,6 +117,7 @@ public class Timesheet extends JModuleObject{
       obj = (Timesheet)super.clone();
 
 //      obj.FunctColl = this.FunctColl.clone();
+      if (this.myDags != null)
       obj.myDags = (Text) this.myDags.clone();
 //      if (this.stamp != null)
 //        obj.stamp = (idegaTimestamp)stamp.clone();
