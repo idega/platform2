@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.21 2003/05/05 07:23:53 tryggvil Exp $
+ * $Id: ContractBusiness.java,v 1.22 2003/05/24 12:47:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -139,6 +139,7 @@ public  class ContractBusiness {
     //GenericGroup gg = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(iGroupId);
     PermissionGroup pg = ((com.idega.core.accesscontrol.data.PermissionGroupHome)com.idega.data.IDOLookup.getHomeLegacy(PermissionGroup.class)).findByPrimaryKeyLegacy(iGroupId);
     AccessControl.addUserToPermissionGroup(pg,eUser.getID());
+    
     //gg.addTo(eUser);
     login = LoginCreator.createLogin(eUser.getName());
     //passwd = LoginCreator.createPasswd(8);
@@ -317,8 +318,7 @@ public  class ContractBusiness {
   }
 
   public static boolean deleteAllocation(int iContractId){
-    doGarbageContract(iContractId);
-    return true;
+    return doGarbageContract(iContractId);
     /*
     try {
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
@@ -405,7 +405,7 @@ public  class ContractBusiness {
     return r;
   }
 
-  public static  void doGarbageContract(int iContract){
+  public static  boolean doGarbageContract(int iContract){
     int id = iContract;
     try {
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
@@ -413,7 +413,8 @@ public  class ContractBusiness {
       eContract.update();
     }
     catch (SQLException ex) {
-
+		return false;
     }
+    return true;
   }
 }
