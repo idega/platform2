@@ -320,6 +320,8 @@ public class Statistics extends TravelManager {
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;
       int numberOfSeats = tour.getTotalSeats() * tsb.getNumberOfTours(service.getID(), fromStamp, toStamp);
 
+      System.err.println(" Total seats ("+tour.getTotalSeats()+") * Tours ("+tsb.getNumberOfTours(service.getID(), fromStamp, toStamp)+") = "+numberOfSeats);
+
       int iAvail = numberOfSeats - total;
 
       float usage = 100 * (float)total / (float)numberOfSeats ;

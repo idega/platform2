@@ -114,12 +114,18 @@ public class Booking extends TravelManager {
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
+
+      System.err.println("C : "+stamp.toSQLDateString());
         if (product != null) {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
+      System.err.println("D : "+stamp.toSQLDateString());
               contentTable.add(getContentHeader(modinfo));
+      System.err.println("E : "+stamp.toSQLDateString());
               contentTable.add(getTotalTable(modinfo));
+      System.err.println("F : "+stamp.toSQLDateString());
               contentTable.add(getContentTable(modinfo));
+      System.err.println("G : "+stamp.toSQLDateString());
               contentTable.setWidth("95%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
@@ -149,7 +155,7 @@ public class Booking extends TravelManager {
 
       DropdownMenu trip = null;
       try {
-        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());
@@ -159,9 +165,9 @@ public class Booking extends TravelManager {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
 
-      idegaTimestamp stamp = idegaTimestamp.RightNow();
+      idegaTimestamp temp = idegaTimestamp.RightNow();
       DropdownMenu year = new DropdownMenu("year");
-          for (int i = 2000; i < ( stamp.getYear() +4 ); i++) {
+          for (int i = 2000; i < ( temp.getYear() +4 ); i++) {
               year.addMenuElement(i,""+i);
           }
 
@@ -169,12 +175,12 @@ public class Booking extends TravelManager {
           if (parYear != null) {
               year.setSelectedElement(parYear);
           }else {
-              year.setSelectedElement(Integer.toString(stamp.getYear()));
+              year.setSelectedElement(Integer.toString(temp.getYear()));
           }
-          String parMonth = modinfo.getParameter("month");
-          String parDay = modinfo.getParameter("day");
-          if (parMonth != null) topTable.add(new HiddenInput("month",parMonth));
-          if (parDay != null) topTable.add(new HiddenInput("day",parDay));
+
+      topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
+      topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
+      topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
 
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
@@ -233,9 +239,9 @@ public class Booking extends TravelManager {
           Text depFrom = (Text) theText.clone();
             depFrom.setText(service.getAddress().getStreetName());
 
-          idegaTimestamp stamp = new idegaTimestamp(service.getDepartureTime());
+          idegaTimestamp temp = new idegaTimestamp(service.getDepartureTime());
           Text depAt = (Text) theText.clone();
-            depAt.setText(TextSoap.addZero(stamp.getHour())+":"+TextSoap.addZero(stamp.getMinute()));
+            depAt.setText(TextSoap.addZero(temp.getHour())+":"+TextSoap.addZero(temp.getMinute()));
 
           table.add(nameTextC,2,2);
           table.add(timeTextC,3,2);
@@ -720,29 +726,35 @@ public class Booking extends TravelManager {
           ++row;
 
           for (int i = 0; i < pPrices.length; i++) {
-              ++row;
-              category = pPrices[i].getPriceCategory();
-              int price = (int) pPrices[i].getPrice();
-              pPriceCatNameText = (Text) theText.clone();
-                pPriceCatNameText.setText(category.getName());
+              try {
+                  ++row;
+                  category = pPrices[i].getPriceCategory();
+                  int price = (int) tsb.getPrice(service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+    //              pPrices[i].getPrice();
+                  pPriceCatNameText = (Text) theText.clone();
+                    pPriceCatNameText.setText(category.getName());
 
-              pPriceText = new ResultOutput("thePrice"+i,"0");
-                pPriceText.setSize(8);
+                  pPriceText = new ResultOutput("thePrice"+i,"0");
+                    pPriceText.setSize(8);
 
-              pPriceMany = new TextInput("priceCategory"+i ,"0");
-                pPriceMany.setSize(5);
-                pPriceMany.setAsNotEmpty("T - Ekki tómt");
-                pPriceMany.setAsIntegers("T - Bara tölur takk");
+                  pPriceMany = new TextInput("priceCategory"+i ,"0");
+                    pPriceMany.setSize(5);
+                    pPriceMany.setAsNotEmpty("T - Ekki tómt");
+                    pPriceMany.setAsIntegers("T - Bara tölur takk");
 
-              pPriceText.add(pPriceMany,"*"+price);
-              TotalPassTextInput.add(pPriceMany);
-              TotalTextInput.add(pPriceMany,"*"+price);
+                  pPriceText.add(pPriceMany,"*"+price);
+                  TotalPassTextInput.add(pPriceMany);
+                  TotalTextInput.add(pPriceMany,"*"+price);
 
 
-              table.add(pPriceCatNameText, 1,row);
-              table.add(pPriceMany,2,row);
-              table.add(pPriceText, 2,row);
+                  table.add(pPriceCatNameText, 1,row);
+                  table.add(pPriceMany,2,row);
+                  table.add(pPriceText, 2,row);
+              }catch (SQLException sql) {
+                sql.printStackTrace(System.err);
+              }
           }
+
           ++row;
 
           table.add(totalText,1,row);
@@ -766,9 +778,13 @@ public class Booking extends TravelManager {
   // BUSINESS
   public idegaTimestamp getIdegaTimestamp(ModuleInfo modinfo) {
       idegaTimestamp stamp = null;
+
       String year = modinfo.getParameter("year");
       String month = modinfo.getParameter("month");
       String day = modinfo.getParameter("day");
+
+      if (stamp == null)
+      System.err.println("A : NULL");
 
       try {
           if ( (day != null) && (month != null) && (year != null)) {
@@ -788,7 +804,9 @@ public class Booking extends TravelManager {
           stamp = idegaTimestamp.RightNow();
       }
 
+      System.err.println("B : "+stamp.toSQLDateString());
       return stamp;
+
   }
 
 
@@ -805,33 +823,47 @@ public class Booking extends TravelManager {
       String hotelPickupPlaceId = modinfo.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
 
       String many;
-      int iMany;
+      int iMany = 0;
       int iHotelId;
 
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), true);
-      for (int i = 0; i < pPrices.length; i++) {
-          many = modinfo.getParameter("priceCategory"+i);
-          if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
-            try {
-              iMany = Integer.parseInt(many);
-              try {
-                iHotelId = Integer.parseInt(hotelPickupPlaceId);
-              }catch (NumberFormatException n) {
-                iHotelId = -1;
-              }
+      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
+      int bookingId;
 
-              tsb.BookBySupplier(service.getID(), pPrices[i].getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
-
-
-            }catch (NumberFormatException n) {
-              n.printStackTrace(System.err);
-            }catch (SQLException sql) {
-              sql.printStackTrace(System.err);
+      try {
+        int[] manys = new int[pPrices.length];
+        for (int i = 0; i < manys.length; i++) {
+            many = modinfo.getParameter("priceCategory"+i);
+            if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+                manys[i] = Integer.parseInt(many);
+                iMany += Integer.parseInt(many);
+            }else {
+                manys[i] = 0;
             }
+        }
+
+        try {
+          iHotelId = Integer.parseInt(hotelPickupPlaceId);
+        }catch (NumberFormatException n) {
+          iHotelId = -1;
+        }
+
+        bookingId = tsb.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+
+        BookingEntry bEntry;
+        for (int i = 0; i < pPrices.length; i++) {
+          bEntry = new BookingEntry();
+            bEntry.setProductPriceId(pPrices[i].getID());
+            bEntry.setBookingId(bookingId);
+            bEntry.setCount(manys[i]);
+          bEntry.insert();
+        }
 
 
 
-          }
+      }catch (NumberFormatException n) {
+        n.printStackTrace(System.err);
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
       }
 
 

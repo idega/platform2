@@ -26,6 +26,7 @@ public class HotelPickupPlace extends GenericEntity{
     addAttribute(getIDColumnName());
     addAttribute(getNameColumnName(), "Name", true, true, String.class);
     addAttribute(getAddressIDColumnName(), "Heimilisfang", true, true, Integer.class ,"many_to_one",Address.class);
+    addAttribute(getDeletedColumnName(), "Hent", true, true, Boolean.class);
 
     this.addManyToManyRelationShip(Supplier.class,"TB_HOTEL_PICKUP_PL_SR_SUPPLIER");
   }
@@ -36,14 +37,26 @@ public class HotelPickupPlace extends GenericEntity{
   public static String getHotelPickupPlaceTableName(){return "TB_HOTEL_PICKUP_PLACE";}
   public static String getNameColumnName() {return "NAME";}
   public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
+  public static String getDeletedColumnName() {return "DELETED";}
 
-
+  public void setDefaultValues() {
+    setColumn(getDeletedColumnName(),false);
+  }
 
   public String getEntityName(){
     return getHotelPickupPlaceTableName();
   }
   public String getName(){
     return getStringColumnValue(getNameColumnName());
+  }
+
+  public void delete() {
+    try {
+      setColumn(getDeletedColumnName(),true);
+      this.update();
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
   }
 
   public void setName(String name){

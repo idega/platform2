@@ -35,13 +35,23 @@ public class PriceCategory extends GenericEntity{
     addAttribute(getColumnNameNetbookingCategory(), "Verðflokkur fyrir netbókun", true, true, Boolean.class, 255);
     addAttribute(getColumnNameSupplierId(),"supplier_id (owner)", true, true, Integer.class, "many_to_one", Supplier.class);
     addAttribute(getColumnNameParentId(),"parent_id", true, true, Integer.class, "many_to_one", PriceCategory.class);
+    addAttribute(getColumnNameIsValid(), "is valid", true, true, Boolean.class);
 
- //   this.addTreeRelationShip();
+
+   this.addTreeRelationShip();
   }
 
+  public void delete() {
+    try {
+      setColumn(getColumnNameIsValid(), false);
+      this.update();
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+  }
 
-  public void setDefaultValue() {
-    //setName("");
+  public void setDefaultValues() {
+    setColumn(getColumnNameIsValid(), true);
   }
 
   public String getEntityName(){
@@ -111,6 +121,7 @@ public class PriceCategory extends GenericEntity{
   public static String getColumnNameSupplierId() {return "SUPPLIER_ID";}
   public static String getColumnNameParentId() {return "PARENT_ID";}
   public static String getColumnNameNetbookingCategory() {return "NETBOOKING_CATEGORY";}
+  public static String getColumnNameIsValid() {return "IS_VALID";}
 
 
 

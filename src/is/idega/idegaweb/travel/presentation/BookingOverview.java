@@ -184,7 +184,7 @@ public class BookingOverview extends TravelManager {
 
       DropdownMenu trip = null;
       try {
-        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());
@@ -479,7 +479,7 @@ public class BookingOverview extends TravelManager {
 
       Table table = new Table();
         table.setWidth("95%");
-        table.setBorder(1);
+        table.setBorder(0);
         table.setCellspacing(0);
         table.setCellpadding(2);
 
@@ -523,7 +523,6 @@ public class BookingOverview extends TravelManager {
           table.add(availableText,7,row);
           table.add(hotelPickupText,8,row);
 
-      ++row;
           idegaTimestamp currentStamp = new idegaTimestamp(view_date);
           int seats = tour.getTotalSeats();
           int assigned = 0;
@@ -539,24 +538,16 @@ public class BookingOverview extends TravelManager {
           bookedTextBold.setText(Integer.toString(booked));
           availableTextBold.setText(Integer.toString(available));
 
-          if (tour.getHotelPickup()) {
-              try {
-                  HotelPickupPlace place = ((HotelPickupPlace[]) service.findRelated(HotelPickupPlace.getStaticInstance(HotelPickupPlace.class)))[0];
-                  hotelPickupTextBold.setText(place.getName());
-              }catch (Exception e){e.printStackTrace(System.err);}
-          }else {
-              hotelPickupTextBold.setText("");
-          }
-
+          ++row;
           table.add(dateTextBold,1,row);
           table.add(nameTextBold,2,row);
           table.add(countTextBold,3,row);
+          table.setAlignment(3,row,"center");
           table.add(assignedTextBold,4,row);
           table.add(inqTextBold,5,row);
           table.add(bookedTextBold,6,row);
           table.add(availableTextBold,7,row);
-          table.add(hotelPickupTextBold,8,row);
-
+          //table.add(hotelPickupTextBold,8,row);
 
           table.setColor(3,row,NatBusiness.backgroundColor);
           table.setColor(4,row,NatBusiness.ORANGE);
@@ -566,9 +557,64 @@ public class BookingOverview extends TravelManager {
           table.setColor(8,row,NatBusiness.backgroundColor);
 
 
+          Text Tname;
+          Text Temail;
+          Text Thotel = (Text) super.theSmallBoldText.clone();
+          Text Tbooked;
+
+          is.idega.travel.data.Booking[] bookings = tsb.getBookings(this.service.getID(), currentStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
+          for (int i = 0; i < bookings.length; i++) {
+              ++row;
+              if (tour.getHotelPickup()) {
+                  try {
+
+                      HotelPickupPlace place = new HotelPickupPlace(bookings[i].getHotelPickupPlaceID());
+                      Thotel = (Text) super.theSmallBoldText.clone();
+                      Thotel.setText("&nbsp;&nbsp;"+place.getName());
+                  }catch (Exception e){Thotel.setText("");}
+              }else {
+                  Thotel.setText("");
+              }
+
+              Tname = (Text) super.theSmallBoldText.clone();
+                Tname.setText("&nbsp;&nbsp;"+bookings[i].getName());
+              Temail = (Text) super.theSmallBoldText.clone();
+                Temail.setText(bookings[i].getEmail());
+              Tbooked = (Text) super.theSmallBoldText.clone();
+                Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
+
+              table.mergeCells(1,row,2, row);
+              table.mergeCells(3,row,5, row);
+              table.add(Tname,1,row);
+              table.add(Temail,3,row);
+              table.setAlignment(3,row,"left");
+              table.add(Tbooked,6,row);
+              table.add(Thotel,8,row);
+
+
+              table.setColor(1,row,NatBusiness.RED);
+              table.setColor(3,row,NatBusiness.RED);
+              table.setColor(6,row,NatBusiness.RED);
+              table.setColor(7,row,NatBusiness.LIGHTGREEN);
+              table.setColor(8,row,NatBusiness.backgroundColor);
+          }
+
+        ++row;
+        table.mergeCells(1,row,6,row);
+        availableTextBold.setText(Integer.toString(available));
+        table.setColor(1,row,NatBusiness.LIGHTGREEN);
+        table.setColor(7,row,NatBusiness.LIGHTGREEN);
+        table.setColor(8,row,NatBusiness.backgroundColor);
+        Text Tavail = (Text) super.theSmallBoldText.clone();
+          Tavail.setText(iwrb.getLocalizedString("travel.available_seats","Available seats"));
+        table.add(Tavail,1,row);
+        table.add(availableTextBold,7,row);
+
+
+
     table.setColumnAlignment(1,"left");
     table.setColumnAlignment(2,"left");
-    table.setColumnAlignment(3,"center");
+//    table.setColumnAlignment(3,"center");
     table.setColumnAlignment(4,"center");
     table.setColumnAlignment(5,"center");
     table.setColumnAlignment(6,"center");

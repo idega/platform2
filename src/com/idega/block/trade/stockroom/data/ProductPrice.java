@@ -76,7 +76,7 @@ public class ProductPrice extends GenericEntity{
   }
 
   public float getPrice() {
-    float returner = 0;
+/*    float returner = 0;
     try {
       if (this.getPriceType() == PRICETYPE_PRICE) {
         returner = getFloatColumnValue(getColumnNamePrice());
@@ -94,6 +94,8 @@ public class ProductPrice extends GenericEntity{
         sql.printStackTrace(System.err);
     }
     return returner;
+*/
+    return getFloatColumnValue(getColumnNamePrice());
 
   }
 

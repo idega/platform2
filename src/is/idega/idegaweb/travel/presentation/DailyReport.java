@@ -14,6 +14,8 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
 import java.sql.SQLException;
 
+import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.travel.data.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -27,6 +29,18 @@ public class DailyReport extends TravelManager {
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
+
+  private Supplier supplier;
+  private Product product;
+  private Service service;
+  private Tour tour;
+  private Timeframe timeframe;
+
+  private idegaTimestamp stamp;
+
+  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+
+
 
   public DailyReport() {
   }
@@ -52,6 +66,31 @@ public class DailyReport extends TravelManager {
   public void initialize(ModuleInfo modinfo) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
+
+      supplier = super.getSupplier();
+
+      String productId = modinfo.getParameter(Product.getProductEntityName());
+      try {
+        if (productId == null) {
+          productId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
+        }else {
+          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
+        }
+        if (productId != null) {
+          product = new Product(Integer.parseInt(productId));
+          service = tsb.getService(product);
+          tour = tsb.getTour(product);
+          timeframe = tsb.getTimeframe(product);
+        }
+      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+          snfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+          tfnfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+          tnfe.printStackTrace(System.err);
+      }catch (SQLException sql) {sql.printStackTrace(System.err);}
+
+      stamp = getFromIdegaTimestamp(modinfo);
   }
 
   public void displayForm(ModuleInfo modinfo) {
@@ -59,19 +98,24 @@ public class DailyReport extends TravelManager {
       Form form = new Form();
       Table topTable = getTopTable(modinfo);
         form.add(topTable);
-      Table table = getContentTable(modinfo);
       ShadowBox sb = new ShadowBox();
+            sb.setWidth("90%");
         form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-        sb.add(getContentHeader(modinfo));
-        sb.add(table);
+        if (product != null) {
+            sb.setAlignment("center");
+            sb.add(getContentHeader(modinfo));
+          Table table = getContentTable(modinfo);
+            sb.add(table);
 
-      Paragraph par = new Paragraph();
-        par.setAlign("right");
-        par.add(new PrintButton("TEMP-PRENTA"));
-        sb.add(par);
+          Paragraph par = new Paragraph();
+            par.setAlign("right");
+            par.add(new PrintButton("TEMP-PRENTA"));
+            sb.add(par);
 
+        }
+        else {
+          sb.add("T ekkert product valið");
+        }
 
       int row = 0;
       add(Text.getBreak());
@@ -154,7 +198,6 @@ public class DailyReport extends TravelManager {
       table.setWidth("95%");
 
 
-      idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
 
       String mode = modinfo.getParameter("mode");
       if (mode== null) mode="";
@@ -166,10 +209,10 @@ public class DailyReport extends TravelManager {
           headerText.addToText(" : ");
 
       Text timeText = (Text) theBoldText.clone();
-          timeText.setText(fromStamp.getLocaleDate(modinfo));
+          timeText.setText(stamp.getLocaleDate(modinfo));
           timeText.setFontColor(NatBusiness.textColor);
       Text nameText = (Text) theBoldText.clone();
-          nameText.setText("Flippedý flopp");
+          nameText.setText(product.getName());
 
 
       table.setColumnAlignment(1,"left");
@@ -200,8 +243,6 @@ public class DailyReport extends TravelManager {
       String fourWidth = "90";
       String fiveWidth = "100";
 
-
-      idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
 
       Text nameHText = (Text) theSmallBoldText.clone();
           nameHText.setText(iwrb.getLocalizedString("travel.name","Name"));
@@ -252,19 +293,24 @@ public class DailyReport extends TravelManager {
 
       table.setBorderColor(NatBusiness.textColor);
 
-      for (int i = 0; i < 6; i++) {
+      is.idega.travel.data.Booking[] bookings = tsb.getBookings(product.getID(),stamp);
+      for (int i = 0; i < bookings.length; i++) {
           row++;
           table.setRowColor(row,NatBusiness.backgroundColor);
           nameText = (Text) smallText.clone();
-            nameText.setText("Whacky D");
+            nameText.setText(bookings[i].getName());
+          bookedText = (Text) smallText.clone();
+            bookedText.setText(Integer.toString(bookings[i].getTotalCount()));
 
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
-
-
+          if (bookings[i].getAttendance() != 0) {
+            attTextBox.setContent(Integer.toString(bookings[i].getAttendance()));
+          }
 
           table.add(nameText,1,row);
 
+          table.add(bookedText,3,row);
           table.add(attTextBox,4,row);
 
       }
@@ -308,18 +354,6 @@ public class DailyReport extends TravelManager {
           totalTable.setColumnAlignment(5,"center");
 
           totalTable.add(totalHText,1,1);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

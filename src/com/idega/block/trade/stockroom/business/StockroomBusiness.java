@@ -67,7 +67,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
     if(cat.getType().equals(PriceCategory.PRICETYPE_PRICE)){
       ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' order by "+ProductPrice.getColumnNamePriceDate());
+      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE +" order by "+ProductPrice.getColumnNamePriceDate());
       if(result != null && result.size() > 0){
         return ((ProductPrice)result.get(0)).getPrice();
       }else{
@@ -75,13 +75,15 @@ public class StockroomBusiness /* implements SupplyManager */ {
       }
     }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
       ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' order by "+ProductPrice.getColumnNamePriceDate());
+      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT+" order by "+ProductPrice.getColumnNamePriceDate());
+      System.err.println("SQL : select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT+" order by "+ProductPrice.getColumnNamePriceDate());
       float disc = 0;
       if(result != null && result.size() > 0){
         disc = ((ProductPrice)result.get(0)).getPrice();
       }
+
       float pr = this.getPrice(productId,cat.getParentId(),currencyId,time);
-      return pr - pr*disc;
+      return pr - pr*((100-disc) /100);
     }else{
       throw new ProductPriceException();
     }

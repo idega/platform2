@@ -43,14 +43,13 @@ public class Booking extends GenericEntity{
     addAttribute(getHotelPickupPlaceIDColumnName(),"Hotel pick-up staður",true,true,Integer.class,"many_to_one",HotelPickupPlace.class);
     addAttribute(getDateOfBookingColumnName(), "Hvenær bókun á sér stað", true, true, java.sql.Timestamp.class);
     addAttribute(getPostalCodeColumnName(), "Póstnúmer", true, true, String.class);
+    addAttribute(getAttendanceColumnName(), "Mæting", true, true, Integer.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
-    addAttribute(getProductPriceIDColumnName(), "product price id", true, true, Integer.class, "many-to-one",ProductPrice.class);
-    addAttribute(getParentIdColumnName(), "parent_id", true, true, Integer.class, "many-to-one",Booking.class);
   }
 
   public void setDefaultValues() {
       this.setIsValid(true);
-      this.setParentId(0);
+      this.setAttendance(0);
   }
 
 
@@ -59,7 +58,7 @@ public class Booking extends GenericEntity{
     return getBookingTableName();
   }
   public String getName(){
-    return getNameColumnName();
+    return getStringColumnValue(getNameColumnName());
   }
 
   public void setName(String name){
@@ -167,6 +166,14 @@ public class Booking extends GenericEntity{
     setColumn(getPostalCodeColumnName(), code);
   }
 
+  public void setAttendance(int attendance) {
+    setColumn(getAttendanceColumnName(), attendance);
+  }
+
+  public int getAttendance() {
+    return getIntColumnValue(getAttendanceColumnName());
+  }
+
   public boolean getIsValid() {
     return getBooleanColumnValue(getIsValidColumnName());
   }
@@ -175,24 +182,8 @@ public class Booking extends GenericEntity{
     setColumn(getIsValidColumnName(), isValid);
   }
 
-  public ProductPrice getProductPrice() throws SQLException{
-    return new ProductPrice(getProductPriceId());
-  }
-
-  public int getProductPriceId() {
-    return getIntColumnValue(getProductPriceIDColumnName());
-  }
-
-  public void setProductPriceId(int id) {
-    setColumn(getProductPriceIDColumnName(), id);
-  }
-
-  public void setParentId(int bookingId) {
-    setColumn(getParentIdColumnName(), bookingId);
-  }
-
-  public int getParentId() {
-    return getIntColumnValue(getParentIdColumnName());
+  public BookingEntry[] getBookingEntries() throws SQLException {
+    return (BookingEntry[]) (BookingEntry.getStaticInstance(BookingEntry.class).findAllByColumn(BookingEntry.getBookingIDColumnName(), this.getID()));
   }
 
   public static String getBookingTableName(){return "TB_BOOKING";}
@@ -202,17 +193,13 @@ public class Booking extends GenericEntity{
   public static String getCityColumnName() {return "CITY";}
   public static String getAddressColumnName() {return "ADDRESS";}
   public static String getBookingDateColumnName() {return "BOOKING_DATE";}
-  public static String getTotalCountColumnName() {return "TOTAL_COUNT";}
   public static String getBookingTypeIDColumnName() {return "BOOKING_TYPE_ID";}
+  public static String getTotalCountColumnName() {return "TOTAL_COUNT";}
   public static String getServiceIDColumnName() {return "TB_SERVICE_ID";}
   public static String getCountryColumnName() {return "COUNTRY";}
   public static String getHotelPickupPlaceIDColumnName() {return "TB_HOTEL_PICKUP_PLACE_ID";}
   public static String getDateOfBookingColumnName() {return "DATE_OF_BOOKING";}
   public static String getPostalCodeColumnName() {return "POSTAL_CODE";}
+  public static String getAttendanceColumnName() {return "ATTENDANCE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
-  public static String getProductPriceIDColumnName() {return "SR_PRODUCT_PRICE_ID";}
-  public static String getParentIdColumnName() {return "PARENT_ID";}
-
-
-
 }

@@ -159,12 +159,12 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   /**
    * @todo createTourService
    */
-  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String pickupPlace, idegaTimestamp pickupTime, int[] activeDays, Integer numberOfSeats) throws Exception {
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
 
       boolean isError = false;
 
       /**
-       * @todo handle isError
+       * @todo handle isError og pickupTime
        */
       if (timeframe == null) isError = true;
       if (activeDays.length == 0) isError = true;
@@ -182,25 +182,17 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
         arrivalAddress.setStreetName(arrivalAt);
         arrivalAddress.insert();
-
+/*
       Address hotelPickupAddress = new Address();
         hotelPickupAddress.setAddressTypeID(hotelPickupAddressTypeId);
         hotelPickupAddress.setStreetName(pickupPlace);
         hotelPickupAddress.insert();
-
+*/
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
-      int[] hotelPickupPlaceIds = new int[0];
-
-      if (pickupPlace != null)
-      if (!pickupPlace.equals("")) {
-        HotelPickupPlace hpp = new HotelPickupPlace();
-          hpp.setName(pickupPlace);
-          hpp.setAddress(hotelPickupAddress);
-          hpp.insert();
-
-        hotelPickupPlaceIds = new int[1];
-        hotelPickupPlaceIds[0] = hpp.getID();
+      int[] hotelPickupPlaceIds = new int[pickupPlaceIds.length];
+      for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
+        hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
       }
 
       int serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
@@ -217,10 +209,10 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
           if(hotelPickupPlaceIds.length > 0){
             for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
+              if (hotelPickupPlaceIds[i] != -1)
               service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
             }
             tour.setHotelPickup(true);
-            tour.setHotelPickupTime(pickupTime.getTimestamp());
           }else{
             tour.setHotelPickup(false);
           }
@@ -328,7 +320,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public Product[] getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
-      Product[] products ={};
+      Product[] products = {};
 
       try {
           /**
@@ -338,21 +330,22 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           if (tempProducts.length > 0) {
 
               Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
-              Service service = (Service) Service.getStaticInstance(Service.class);
+              Product product = (Product) Product.getStaticInstance(Product.class);
+              Service tService = (Service) Service.getStaticInstance(Service.class);
 
               String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Service.class);
               String Ttable = Timeframe.getTimeframeTableName();
-              String Stable = Service.getServiceTableName();
+              String Ptable = Product.getProductEntityName();
 
 
               StringBuffer timeframeSQL = new StringBuffer();
-                timeframeSQL.append("SELECT "+Stable+".* FROM "+Stable+", "+Ttable+", "+middleTable);
+                timeframeSQL.append("SELECT "+Ptable+".* FROM "+Ptable+", "+Ttable+", "+middleTable);
                 timeframeSQL.append(" WHERE ");
                 timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
                 timeframeSQL.append(" AND ");
-                timeframeSQL.append(Stable+"."+service.getIDColumnName()+" = "+middleTable+"."+service.getIDColumnName());
+                timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+tService.getIDColumnName());
                   timeframeSQL.append(" AND ");
-                  timeframeSQL.append(middleTable+"."+service.getIDColumnName()+" in (");
+                  timeframeSQL.append(middleTable+"."+tService.getIDColumnName()+" in (");
                   for (int i = 0; i < tempProducts.length; i++) {
                     if (i == 0) {
                       timeframeSQL.append(tempProducts[i].getID());
@@ -361,7 +354,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
                     }
                   }
                   timeframeSQL.append(")");
-
                 timeframeSQL.append(" AND ");
                 timeframeSQL.append("(");
                 timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
@@ -370,13 +362,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
                 timeframeSQL.append(" OR ");
                 timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
                 timeframeSQL.append(")");
+                timeframeSQL.append(" AND ");
+                timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
                 timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
 
-              Service[] services = (Service[]) (new Service()).findAll(timeframeSQL.toString());
-              products = new Product[services.length];
-              for (int i = 0; i < products.length; i++) {
-                products[i] = new Product(services[i].getID());
-              }
+              products = (Product[]) (new Product()).findAll(timeframeSQL.toString());
           }
 
 
@@ -428,9 +418,65 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static HotelPickupPlace[] getHotelPickupPlaces(Service service) {
     HotelPickupPlace[] returner = null;
     try {
-        returner = (HotelPickupPlace[]) service.findRelated(HotelPickupPlace.getStaticInstance(HotelPickupPlace.class));
+        HotelPickupPlace hp = (HotelPickupPlace) HotelPickupPlace.getStaticInstance(HotelPickupPlace.class);
+
+        StringBuffer buffer = new StringBuffer();
+          buffer.append("select h.* from ");
+          buffer.append(service.getServiceTableName()+" s,");
+          buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,HotelPickupPlace.class)+" smh, ");
+          buffer.append(HotelPickupPlace.getHotelPickupPlaceTableName() +" h ");
+          buffer.append(" WHERE ");
+          buffer.append("s."+service.getIDColumnName()+" = "+service.getID());
+          buffer.append(" AND ");
+          buffer.append("s."+service.getIDColumnName()+" = smh."+service.getIDColumnName());
+          buffer.append(" AND ");
+          buffer.append(" smh."+hp.getIDColumnName()+" = h."+hp.getIDColumnName());
+          buffer.append(" AND ");
+          buffer.append(HotelPickupPlace.getDeletedColumnName() +" = 'N'");
+          buffer.append(" ORDER BY "+HotelPickupPlace.getNameColumnName());
+
+
+        returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
     }catch (SQLException sql) {
         sql.printStackTrace(System.err);
+    }
+    return returner;
+  }
+
+  public static HotelPickupPlace[] getHotelPickupPlaces(Supplier supplier) {
+    HotelPickupPlace[] returner = {};
+    try {
+        HotelPickupPlace hp = (HotelPickupPlace) HotelPickupPlace.getStaticInstance(HotelPickupPlace.class);
+
+        StringBuffer buffer = new StringBuffer();
+          buffer.append("select h.* from ");
+          buffer.append(supplier.getSupplierTableName()+" s,");
+          buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,HotelPickupPlace.class)+" smh, ");
+          buffer.append(HotelPickupPlace.getHotelPickupPlaceTableName() +" h ");
+          buffer.append(" WHERE ");
+          buffer.append("s."+supplier.getIDColumnName()+" = "+supplier.getID());
+          buffer.append(" AND ");
+          buffer.append("s."+supplier.getIDColumnName()+" = smh."+supplier.getIDColumnName());
+          buffer.append(" AND ");
+          buffer.append(" smh."+hp.getIDColumnName()+" = h."+hp.getIDColumnName());
+          buffer.append(" AND ");
+          buffer.append(HotelPickupPlace.getDeletedColumnName() +" = 'N'");
+          buffer.append(" ORDER BY "+HotelPickupPlace.getNameColumnName());
+
+
+        returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
+    }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+    }
+    return returner;
+  }
+
+  public static PriceCategory[] getPriceCategories(int supplierId) {
+    PriceCategory[] returner = {};
+    try {
+      returner = (PriceCategory[]) PriceCategory.getStaticInstance(PriceCategory.class).findAllByColumn(PriceCategory.getColumnNameSupplierId(),Integer.toString(supplierId), PriceCategory.getColumnNameIsValid(), "Y");
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
     }
     return returner;
   }
@@ -537,14 +583,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return prices;
   }
 
-  public int BookBySupplier(int serviceId, int productPriceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(serviceId, productPriceId, hotelPickupPlaceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
+  public int BookBySupplier(int serviceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
+    return Book(serviceId, hotelPickupPlaceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
   }
 
-  public int Book(int serviceId, int productPriceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+  public int Book(int serviceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
     Booking booking = new Booking();
       booking.setServiceID(serviceId);
-      booking.setProductPriceId(productPriceId);
       booking.setAddress(address);
       booking.setBookingDate(date.getTimestamp());
       booking.setBookingTypeID(bookingType);
@@ -558,6 +603,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       booking.setName(name);
       booking.setPostalCode(postalCode);
       booking.setTelephoneNumber(telephoneNumber);
+//      booking.setProductPriceId(productPriceId);
       booking.setTotalCount(totalCount);
     booking.insert();
 
@@ -611,9 +657,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  /**
-   * @todo Finna betri leið
-   */
   public int getNumberOfTours(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
     int returner = 0;
     try {
@@ -628,21 +671,57 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       toTemp.addDays(1);
       int daysBetween = toStamp.getDaysBetween(fromStamp, toTemp);
 
-      daysBetween = daysBetween -+ (8 - fromDayOfWeek + toDayOfWeek);
+      if (fromStamp.getWeekOfYear() != toTemp.getWeekOfYear()) {
+          daysBetween = daysBetween - (8 - fromDayOfWeek + toDayOfWeek);
 
-      for (int i = 0; i < daysOfWeek.length; i++) {
-          if (daysOfWeek[i]  >= fromDayOfWeek) {
-            ++counter;
+          for (int i = 0; i < daysOfWeek.length; i++) {
+              if (daysOfWeek[i]  >= fromDayOfWeek) {
+                ++counter;
+              }
+              if (daysOfWeek[i] <= toDayOfWeek) {
+                ++counter;
+              }
           }
-          if (daysOfWeek[i] <= toDayOfWeek) {
-            ++counter;
+
+          counter += ( (daysBetween / 7) * daysOfWeek.length );
+
+      }else {
+          for (int i = 0; i < daysOfWeek.length; i++) {
+              if ((daysOfWeek[i]  >= fromDayOfWeek) && (daysOfWeek[i] <= toDayOfWeek)) {
+                ++counter;
+              }
           }
       }
-
-      counter += counter + ( (daysBetween / 7) * daysOfWeek.length );
-
       returner = counter;
+
     }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+  public Booking[] getBookings(int serviceId, idegaTimestamp stamp) {
+    return getBookings(serviceId,stamp,-1);
+  }
+
+  public Booking[] getBookings(int serviceId, idegaTimestamp stamp, int bookingTypeId) {
+    Booking[] returner = {};
+    StringBuffer sql = new StringBuffer();
+    try {
+        sql.append("Select * from "+Booking.getBookingTableName());
+        sql.append(" where ");
+        sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+        sql.append(" and ");
+        sql.append(Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+        if (bookingTypeId != -1) {
+          sql.append(" and ");
+          sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingTypeId);
+        }
+
+        returner = (Booking[]) (new Booking()).findAll(sql.toString());
+    }catch (Exception e) {
+        System.err.println(sql.toString());
         e.printStackTrace(System.err);
     }
 

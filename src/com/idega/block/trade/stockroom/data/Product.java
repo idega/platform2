@@ -39,7 +39,7 @@ public class Product extends GenericEntity {
   }
 
   public void delete() throws SQLException {
-      List prices = EntityFinder.findAllByColumn(ProductPrice.getStaticInstance(ProductPrice.class),ProductPrice.getColumnNameProductId(), this.getID() );
+/*      List prices = EntityFinder.findAllByColumn(ProductPrice.getStaticInstance(ProductPrice.class),ProductPrice.getColumnNameProductId(), this.getID() );
       if (prices != null) {
           ProductPrice price;
           for (int i = 0; i < prices.size(); i++) {
@@ -49,6 +49,13 @@ public class Product extends GenericEntity {
       }
 
       super.delete();
+      */
+      this.setIsValid(false);
+      this.update();
+  }
+
+  public void setDefaultValues() {
+    this.setIsValid(true);
   }
 
   public String getEntityName() {

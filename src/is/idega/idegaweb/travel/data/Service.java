@@ -27,48 +27,22 @@ public class Service extends GenericEntity{
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Product.class);
     addAttribute(getArrivalTimeColumnName(), "Arrival time", true, true, Timestamp.class);
     addAttribute(getDepartureTimeColumnName(), "Departure time", true, true, Timestamp.class);
-//    addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
-//    addAttribute(getHotelPickupPlaceIDColumnName(),"Hotel pick-up staður",true,true,Integer.class,"many_to_one",HotelPickupPlace.class);
-//    addAttribute(getAddressIDColumnName(),"Heimilisfang",true,true, Integer.class,"many-to-one",Address.class);
+    addAttribute(getIsValidColumnName(), "is valid", true, true, Boolean.class);
 
     this.addManyToManyRelationShip(HotelPickupPlace.class, "TB_SERVICE_HOTEL_PICKUP_PLACE");
     this.addManyToManyRelationShip(Address.class, "TB_SERVICE_IC_ADDRESS");
     this.addManyToManyRelationShip(Timeframe.class ,"TB_SERVICE_TIMEFRAME");
   }
 
-  /**
-   * @deprecated
-   */
+  public void setDefaultValues() {
+    setColumn(getIsValidColumnName(),true);
+  }
+
   public void delete() throws SQLException {
-      HotelPickupPlace[] hpp = (HotelPickupPlace[]) this.findRelated(HotelPickupPlace.getStaticInstance(HotelPickupPlace.class));
-      for (int i = 0; i < hpp.length; i++) {
-          hpp[i].removeFrom(this);
-          hpp[i].delete();
-      }
-
-      Address[] add = (Address[]) this.findRelated(Address.getStaticInstance(Address.class));
-      for (int i = 0; i < add.length; i++) {
-        add[i].removeFrom(this);
-        add[i].delete();
-      }
-
-      Timeframe[] tf = (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
-      for (int i = 0; i < tf.length; i++) {
-        tf[i].removeFrom(this);
-        tf[i].delete();
-      }
-
-      /**
-       * @todo delete Tour
-       */
-
-      ServiceDay.deleteService(this.getID());
-
-      Product product = new Product(this.getID());
-
-      super.delete();
+      setColumn(getIsValidColumnName(),false);
+      this.update();
+      Product product = this.getProduct();
       product.delete();
-
   }
 
   public Product getProduct()  {
@@ -142,10 +116,7 @@ public class Service extends GenericEntity{
   public static String getServiceTableName(){return "TB_SERVICE";}
   public static String getArrivalTimeColumnName() {return "ARRIVAL_TIME";}
   public static String getDepartureTimeColumnName() {return "DEPARTURE_TIME";}
-//  public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
-//  public static String getHotelPickupPlaceIDColumnName() {return "TB_HOTEL_PICKUP_PLACE_ID";}
-//  public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
-
+  public static String getIsValidColumnName() {return "IS_VALID";}
 
 
 

@@ -31,6 +31,8 @@ public class ServiceDesigner extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
+  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+
   private Supplier supplier;
   private Service service;
 
@@ -39,6 +41,7 @@ public class ServiceDesigner extends TravelManager {
   private String PriceCategorySave = "save_categories";
   private String ServiceSessionAttribute = "service_designer_service_id";
 
+  private static Boolean priceCategoryCreation;
 
   public ServiceDesigner() {
   }
@@ -53,13 +56,6 @@ public class ServiceDesigner extends TravelManager {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
-
-      Window window = new Window("gimmi",PriceCategoryDesigner.class,TravelWindow.class);
-
-      Link link = new Link(window);
-        link.setText("gimmi");
-
-        add(link);
 
       if (supplier != null) {
 
@@ -310,43 +306,20 @@ public class ServiceDesigner extends TravelManager {
       ++row;
       Text hotelPickupText = (Text) theBoldText.clone();
           hotelPickupText.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
+      SelectionBox hotels = new SelectionBox(tsb.getHotelPickupPlaces(this.supplier));
+        hotels.setName("hotelPickupId");
 
-      Table hotelPickupFixTable = new Table(7,2);
-        hotelPickupFixTable.setCellpadding(0);
-        hotelPickupFixTable.setCellspacing(1);
-        hotelPickupFixTable.setColumnAlignment(1,"center");
-        hotelPickupFixTable.setColumnAlignment(2,"center");
-        hotelPickupFixTable.setColumnAlignment(3,"center");
-
-
-      Text yesText = (Text) smallText.clone();
-        yesText.setText(iwrb.getLocalizedString("travel.yes","yes"));
-      Text noText = (Text) smallText.clone();
-        noText.setText(iwrb.getLocalizedString("travel.no","no"));
-      Text addressText = (Text) smallText.clone();
-        addressText.setText(iwrb.getLocalizedString("travel.address_long","Address"));
-      Text timeText = (Text) smallText.clone();
-        timeText.setText(iwrb.getLocalizedString("travel.time","Time"));
-
-
-
-      hotelPickupFixTable.add(yesText,1,1);
-      hotelPickupFixTable.add(noText,3,1);
-      hotelPickupFixTable.add(hotelPickupYes,1,2);
-      hotelPickupFixTable.add(hotelPickupNo,3,2);
+      Link alink = new Link();
+        alink.setText("T-pickupPlaceDesigner");
+        alink.setWindowToOpen(HotelPickupPlaceDesigner.class);
 
       table.add(hotelPickupText,1,row);
-      table.add(hotelPickupFixTable,2,row);
+      table.add(hotels,2,row);
+      table.add(alink,2,row);
 
-      hotelPickupFixTable.add(addressText,5,1);
-      hotelPickupFixTable.add(hotelPickup,5,2);
-      hotelPickupFixTable.add(timeText,7,1);
-      hotelPickupFixTable.add(hotelPickupTime,7,2);
+      table.setVerticalAlignment(1,row,"top");
+      table.setVerticalAlignment(2,row,"top");
 
-      hotelPickupFixTable.setVerticalAlignment(1,1,"bottom");
-      hotelPickupFixTable.setVerticalAlignment(3,1,"bottom");
-      hotelPickupFixTable.setVerticalAlignment(5,1,"bottom");
-      hotelPickupFixTable.setVerticalAlignment(7,1,"bottom");
 
 
       ++row;
@@ -391,16 +364,14 @@ public class ServiceDesigner extends TravelManager {
       String departureTime = modinfo.getParameter("departure_time");
       String arrivalAt = modinfo.getParameter("arrival_at");
       String arrivalTime = modinfo.getParameter("arrival_time");
-      String hotelPickup = modinfo.getParameter("hotel_pickup");
-      String hotelPickupAddress = modinfo.getParameter("hotel_pickup_address");
-      String hotelPickupTime = modinfo.getParameter("hotel_pickup_time");
+      String[] hotelPickup = modinfo.getParameterValues("hotelPickupId");
 
       String numberOfSeats = modinfo.getParameter("number_of_seats");
-
+/*
       if (hotelPickup != null) {
         if (hotelPickup.equals("N")) hotelPickupAddress = "";
       }
-
+*/
       boolean yearly = false;
       if (activeYearly != null) {
         if (activeYearly.equals("Y")) yearly = true;
@@ -438,12 +409,12 @@ public class ServiceDesigner extends TravelManager {
       if (arrivalTime != null) {
         arrivalStamp = new idegaTimestamp("2001-01-01 "+arrivalTime);
       }
-
+/*
       idegaTimestamp hotelPickupTimeStamp = null;
       if (hotelPickupTime != null) {
         hotelPickupTimeStamp = new idegaTimestamp("2001-01-01 "+hotelPickupTime);
       }
-
+*/
       int[] tempDays = new int[7];
       int counter = 0;
         if (allDays != null) {
@@ -468,10 +439,13 @@ public class ServiceDesigner extends TravelManager {
       System.arraycopy(tempDays,0,activeDays,0,counter);
 
       try {
-        TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-          tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-          int serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays, iNumberOfSeats);
-          setService(modinfo,serviceId);
+        if ( this.priceCategoryCreation == null ) {
+          TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+            tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
+            int serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+            setService(modinfo,serviceId);
+        }
+
         priceCategoryCreation(modinfo);
 
 
@@ -504,7 +478,7 @@ public class ServiceDesigner extends TravelManager {
 
 
   private void priceCategoryCreation(ModuleInfo modinfo) {
-
+      this.priceCategoryCreation = new Boolean(true);
       if (this.getService(modinfo) != null) {
 
           ShadowBox sb = new ShadowBox();
@@ -546,13 +520,9 @@ public class ServiceDesigner extends TravelManager {
             table.setWidth("95%");
             int row = 1;
 
-          TextInput name;
-          TextInput description;
-          DropdownMenu type;
-          TextArea extraInfo;
-          BooleanInput onlineCategory;
+          DropdownMenu toClone = new DropdownMenu(tsb.getPriceCategories(this.supplier.getID()),"price_category_id");
+          DropdownMenu categories;
           TextInput priceDiscount;
-          DropdownMenu discountOfMenu;
 
 
 
@@ -560,87 +530,43 @@ public class ServiceDesigner extends TravelManager {
 
           Text catName = (Text) theText.clone();
             catName.setText("T - nafn");
-          Text catDesc = (Text) theText.clone();
-            catDesc.setText("T - description");
-          Text catOnline = (Text) theText.clone();
-            catOnline.setText("T - netbokun");
-          Text catType = (Text) theText.clone();
-            catType.setText("T - type");
-          Text catExtraInfo = (Text) theText.clone();
-            catExtraInfo.setText("T - exrtaInfo");
           Text priceDiscountText = (Text) theText.clone();
             priceDiscountText.setText("T - Price / Discount");
-          Text discountOfText = (Text) theText.clone();
-            discountOfText.setText("T - Discount of");
 
           table.setColor(1,row,NatBusiness.backgroundColor);
-          table.mergeCells(1,row,5,row);
+          table.mergeCells(1,row,3,row);
+
+          Link link = new Link();
+            link.setText("t PriceCategoryDesigner");
+            link.setWindowToOpen(PriceCategoryDesigner.class);
+
+            table.add(link,1,row);
+            table.setAlignment(1,row,"right");
+
 
           for (int i = 1; i <= iHowMany; i++) {
-              counter = (Text) theBoldText.clone();
-                counter.setText("t - verðliður #"+i);
-              name = new TextInput("price_name");
-              description = new TextInput("price_description");
-              type = new DropdownMenu("price_type");
-                type.addMenuElement(PriceCategory.PRICETYPE_PRICE,"Verð");
-                type.addMenuElement(PriceCategory.PRICETYPE_DISCOUNT,"Afsláttur");
-              extraInfo = new TextArea("price_extra_info");
-                extraInfo.setWidth(60);
-                extraInfo.setHeight(5);
-              onlineCategory = new BooleanInput("price_online");
-                onlineCategory.setSelected(true);
               priceDiscount = new TextInput("price_discount");
                 priceDiscount.setAsNotEmpty("T - verður að skrá verð eða afslátt á allt verðliði");
 
-              discountOfMenu = new DropdownMenu("discount_of");
-                  for (int j = 1; j < i; j++) {
-                    discountOfMenu.addMenuElement(j,"T-Verðliði "+j);
-                  }
+              categories = (DropdownMenu) toClone.clone();
 
               ++row;
-              table.mergeCells(1,row,1,row+2);
-              table.add(counter,1,row);
-              table.setVerticalAlignment(1,row,"top");
-
               table.add(catName,2,row);
-              table.add(name,3,row);
-              table.add(catOnline,4,row);
-              table.add(onlineCategory,5,row);
-
-              ++row;
-              table.add(catDesc,2,row);
-              table.add(description,3,row);
-              table.add(catType,4,row);
-              if (i != 1) {
-                table.add(type,5,row);
-              }else {
-                table.add("T - Verð",5,row);
-                table.add(new HiddenInput("price_type",PriceCategory.PRICETYPE_PRICE),5,row);
-              }
-
-              ++row;
-              table.add(catExtraInfo,2,row);
-              table.add(Text.getBreak(),2,row);
-              table.add(extraInfo,2,row);
-              table.mergeCells(2,row,5,row);
+              table.add(categories,3,row);
 
               ++row;
               table.add(priceDiscountText,2,row);
               table.add(priceDiscount,3,row);
-              if (i != 1) {
-                table.add(discountOfText,4,row);
-                table.add(discountOfMenu,5,row);
-              }else {
-                table.add(new HiddenInput("discount_of","0"),5,row);
-              }
 
               ++row;
-              table.setColor(1,row,NatBusiness.backgroundColor);
-              table.mergeCells(1,row,5,row);
+              table.mergeCells(1,row,3,row);
+              table.setColor(1,row, NatBusiness.backgroundColor);
 
           }
 
-          table.add(new SubmitButton("T - save",this.ServiceAction, this.PriceCategorySave),1,row);
+          table.setAlignment(1,row,"right");
+          table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.ServiceAction, this.PriceCategorySave),1,row);
+
 
           if (iHowMany > 0) {
             SubmitButton savePrice = new SubmitButton(this.ServiceAction, this.PriceCategorySave);
@@ -656,44 +582,29 @@ public class ServiceDesigner extends TravelManager {
   }
 
   private void priceCategorySave(ModuleInfo modinfo) {
-      String[] name =   (String[]) modinfo.getParameterValues("price_name");
-      String[] desc =   (String[]) modinfo.getParameterValues("price_description");
-      String[] type =   (String[]) modinfo.getParameterValues("price_type");
-      String[] info =   (String[]) modinfo.getParameterValues("price_extra_info");
-      String[] online = (String[]) modinfo.getParameterValues("price_online");
-
       String[] priceDiscount = (String[]) modinfo.getParameterValues("price_discount");
-      String[] discountOf = (String[]) modinfo.getParameterValues("discount_of");
+      String[] priceCategoryIds = (String[]) modinfo.getParameterValues("price_category_id");
 
       Service service = this.getService(modinfo);
-      TravelStockroomBusiness sb = TravelStockroomBusiness.getNewInstance();
 
       try {
-        if (name != null) {
+        if (priceDiscount != null) {
           int priceCategoryId = 0;
-          int[] categoryIds = new int[name.length];
-          int parentId;
-          boolean bOnline;
-          for (int i = 0; i < name.length; i++) {
-              if (online[i].equals("Y")) {
-                  bOnline = true;
-              }else {
-                bOnline = false;
-              }
 
-              if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
-                parentId = categoryIds[Integer.parseInt(discountOf[i])-1];
-                priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline, parentId);
-                sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
-              }else if (type[i].equals(PriceCategory.PRICETYPE_PRICE)) {
-                priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline);
-                sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
-              }
+                    PriceCategory pCategory;
+          for (int i = 0; i < priceDiscount.length; i++) {
+                priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
+              pCategory = new PriceCategory(priceCategoryId);
 
-              categoryIds[i] = priceCategoryId;
+              if (pCategory.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+                tsb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
+              }else if (pCategory.getType().equals(PriceCategory.PRICETYPE_PRICE)) {
+                tsb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
+              }
           }
         }
         this.removeService(modinfo);
+        this.priceCategoryCreation = null;
 
       }catch (Exception e) {
         e.printStackTrace(System.err);
