@@ -351,7 +351,6 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	  	GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
 	  	List gr = gGroup.getAllGroupsContainingUser(user);
 	    if(gr != null){
-    		System.out.println("StockroomBusiness : gr.size() = "+ gr.size());
     		SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 	      Iterator iter = gr.iterator();
 	      while (iter.hasNext()) {
