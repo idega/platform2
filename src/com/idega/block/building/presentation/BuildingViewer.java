@@ -140,7 +140,10 @@ public void setApartmentTypeWindowClass(Class windowClass){
       Image moreImage = iwrb_.getImage("/building/more.gif");
       Image mapImage = iwrb_.getImage("/building/map.gif");
 
-      Link complexLink = new Link(moreImage,iwc.getRequestURI());
+
+      // What genius made this ??
+      // Link complexLink = new Link(moreImage,iwc.getRequestURI());
+      Link complexLink = new Link(moreImage);
         complexLink.addParameter(PARAMETER_STRING,iComplexId);
 
       Link locationLink = new Link(mapImage);

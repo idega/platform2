@@ -21,4 +21,8 @@ public class CampusBuildings extends Block {
     add(fin);
   }
 
+  public String getBundleIdentifier(){
+    return "is.idega.idegaweb.campus";
+  }
+
 }
