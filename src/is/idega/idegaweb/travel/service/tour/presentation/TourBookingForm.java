@@ -310,8 +310,10 @@ public class TourBookingForm extends TravelManager {
           if (super.user != null) {
             ++row;
             List users = null;
-            if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
-            if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
+//            if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
+//            if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
+            if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
+            if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
             if (users == null) users = com.idega.util.ListUtil.getEmptyList();
             usersDrop = new DropdownMenu(users, "ic_user");
             usersDrop.setSelectedElement(Integer.toString(super.userId));

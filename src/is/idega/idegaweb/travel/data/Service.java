@@ -30,7 +30,7 @@ import com.idega.block.trade.stockroom.data.Product;
 
 
 
-public class Service extends Product{
+public class Service extends GenericEntity{
 
   private Product product;
 

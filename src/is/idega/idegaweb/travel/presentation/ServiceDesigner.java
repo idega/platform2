@@ -7,6 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.text.data.TxText;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -158,7 +159,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  private void priceCategoryCreation(IWContext iwc) {
+  private void priceCategoryCreation(IWContext iwc) throws SQLException {
       this.priceCategoryCreation = new Boolean(true);
       if (this.getService(iwc) != null) {
         ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
@@ -175,6 +176,18 @@ public class ServiceDesigner extends TravelManager {
             table.setColor(super.WHITE);
             table.setCellspacing(1);
             int row = 1;
+
+          Product product = new Product(this.service.getID());
+          com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
+          if (product.getText() != null) {
+            System.err.println("Text != null");
+            System.err.println("TextID = "+product.getText().getID());
+            tc.setValue(product.getText());
+          }else {
+            System.err.println("Text == null");
+          }
+
+          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
 
           PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
           TextInput priceDiscount;
@@ -193,6 +206,9 @@ public class ServiceDesigner extends TravelManager {
             priceDiscountText.setText(iwrb.getLocalizedString("travel.price_discount","Price / Discount"));
             priceDiscountText.setFontColor(super.WHITE);
 
+
+          table.add(tc,1,row);
+          ++row;
 
           table.add(catName,1,row);
           table.add(priceDiscountText,2,row);
@@ -282,6 +298,7 @@ public class ServiceDesigner extends TravelManager {
       String[] priceCategoryIds = (String[]) iwc.getParameterValues(this.parameterProductCategoryId);
 
       String[] productPriceIds = (String[]) iwc.getParameterValues(this.parameterProductPriceId);
+      String text_id = iwc.getParameter("le_text_id");
 
       Service service = this.getService(iwc);
 
@@ -289,6 +306,12 @@ public class ServiceDesigner extends TravelManager {
         if (priceDiscount != null) {
           int priceCategoryId = 0;
           int productPriceId = -1;
+
+          Product product = new Product(service.getID());
+          if (text_id != null && !text_id.equals("")) {
+            TxText text = new TxText(Integer.parseInt(text_id));
+            text.addTo(product);
+          }
 
           ProductPrice.clearPrices(service.getID());
 

@@ -593,5 +593,14 @@ public class ResellerManager {
     }
   }
 
+  public static List getUsersIncludingSubResellers(Reseller reseller) {
+    Iterator childs = ResellerManager.getResellerChilds(reseller, Reseller.getColumnNameName());
+    List users = getUsers(reseller);
+
+    while (childs.hasNext()) {
+      users.addAll(getUsers((Reseller) childs.next()));
+    }
+    return users;
+  }
 
 }

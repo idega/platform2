@@ -216,13 +216,13 @@ public class TourDesigner extends TravelManager {
       Text imgText = (Text) theBoldText.clone();
           imgText.setText(iwrb.getLocalizedString("travel.image","Image"));
 
-      table.add(descText,1,row);
-      table.add(description, 2,row);
+//      table.add(descText,1,row);
+//      table.add(description, 2,row);
       table.setVerticalAlignment(1,row,"top");
       table.setVerticalAlignment(2,row,"top");
 
-      ++row;
-      table.add(locales, 2, row);
+//      ++row;
+//      table.add(locales, 2, row);
       ++row;
 
       ImageInserter imageInserter = new ImageInserter("design_image_id");
@@ -509,7 +509,6 @@ public class TourDesigner extends TravelManager {
       String sTourId = iwc.getParameter(this.parameterIsUpdate);
       int tourId = -1;
       if (sTourId != null) tourId = Integer.parseInt(sTourId);
-
 
       String name = iwc.getParameter("name_of_trip");
       String number = iwc.getParameter("number");

@@ -182,12 +182,22 @@ public class ServiceOverview extends TravelManager {
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
         //Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(iwc), this.getToIdegaTimestamp(iwc));
+
         Product[] products = tsb.getProducts(supplier.getID());
 
+
         Table contentTable;
+        is.idega.idegaweb.travel.presentation.ServiceViewer sv = new is.idega.idegaweb.travel.presentation.ServiceViewer();
+          sv.setSupplier(supplier);
+          sv.setZebraColors("#FFFFFF","#CCCCCC");
+        //table.add(sv);
+
         for (int i = 0; i < products.length; i++) {
           try {
             contentTable = getProductInfoTable(iwc,iwrb,products[i]);
+            is.idega.idegaweb.travel.presentation.ServiceViewer sv1 = new is.idega.idegaweb.travel.presentation.ServiceViewer();
+              sv1.setService(new Service(products[i].getID()));
+            //table.add(sv1);
 
             ++row;
             table.mergeCells(1,row,5,row);

@@ -267,4 +267,20 @@ public class SupplierManager {
     }
   }
 
+  public static List getUsersIncludingResellers(Supplier supplier) {
+    List users = getUsers(supplier);
+    if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+//    System.err.println("Users.size() : "+users.size());
+    Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
+    while (resellers.hasNext()) {
+      users.addAll(ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next()));
+//    System.err.println("...Users.size() : "+users.size());
+    }
+    return users;
+  }
+/*
+  public static Supplier getSupplier(ICUser user) {
+    return null;
+  }
+*/
 } // Class SupplierManager

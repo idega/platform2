@@ -271,6 +271,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
     }
   }
 
+
   public static int getUserResellerId(User user) throws RuntimeException, SQLException{
     com.idega.core.data.GenericGroup gGroup = new GenericGroup();
     List gr = gGroup.getAllGroupsContainingUser(user);
