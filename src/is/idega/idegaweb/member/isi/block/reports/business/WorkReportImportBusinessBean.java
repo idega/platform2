@@ -80,6 +80,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	private static int SHEET_BOARD_PART = 0;
 	private static int SHEET_ACCOUNT_PART = 1;
 	private static int SHEET_MEMBER_PART = 2;
+	private static int SHEET_LOOKUP_PART = 3;
 
 	private WorkReportGroupHome workReportGroupHome;
 	private WorkReportClubAccountRecordHome workReportClubAccountRecordHome;
@@ -548,7 +549,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 		System.out.println("Creating new files");
 		try {
-			Collection clubs = this.getClubGroupsForRegionUnionGroup(this.getGroupBusiness().getGroupByGroupID(regionalUnionId));
+			Group regUn = getGroupBusiness().getGroupByGroupID(regionalUnionId);
+			Collection clubs = getClubGroupsForRegionUnionGroup(regUn);
 			System.out.println("Got clubs");
 
 			Iterator it = clubs.iterator();
@@ -569,9 +571,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				if (export != null) {
 					HSSFWorkbook workbook = getExcelWorkBookFromFileId(templateId);
 
-					updateWorkbookWithLastYear(workbook, club, year);
-
 					String number = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+					updateWorkbookWithLastYear(workbook, club, year, regUn, number);
+
 					StringBuffer fileName = new StringBuffer();
 					if (number != null && !"".equals(number)) {
 						fileName.append(number);
@@ -633,7 +635,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		}
 	}
 
-	private void updateWorkbookWithLastYear(HSSFWorkbook workbook, Group club, int year) {
+	private void updateWorkbookWithLastYear(HSSFWorkbook workbook, Group club, int year, Group regUn, String clubNumb) {
 		try {
 			WorkReport rep = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(((Integer) club.getPrimaryKey()).intValue(), year - 1);
 			if (rep != null) {
@@ -651,7 +653,66 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						name.setCellValue(memb.getName());
 						ssn.setCellValue(memb.getPersonalId());
 					}
+					
+					HSSFRow r2 = memberSheet.getRow((short)0);
+					HSSFCell c2 = r2.getCell((short)1);
+					c2.setCellValue(club.getName());
 				}
+			}
+			
+			HSSFSheet board = workbook.getSheetAt(SHEET_BOARD_PART);
+			HSSFRow r = board.getRow((short)0);
+			HSSFCell c = r.getCell((short)2);
+			c.setCellValue(club.getName());
+			c = r.getCell((short)5);
+			String tmp = c.getStringCellValue();
+			c.setCellValue(tmp + " " + year);
+	
+			r = board.getRow((short)1);
+			c = r.getCell((short)2);
+			c.setCellValue(regUn.getAbbrevation());
+			if (clubNumb != null) { 
+				c = r.getCell((short)5);
+				c.setCellValue(clubNumb);
+			}
+			
+			r = board.getRow((short)33);
+			c = r.getCell((short)2);
+			c.setCellValue(club.getName());
+			c = r.getCell((short)5);
+			tmp = c.getStringCellValue();
+			c.setCellValue(tmp + year);
+	
+			r = board.getRow((short)34);
+			c = r.getCell((short)2);
+			c.setCellValue(regUn.getAbbrevation());
+			if (clubNumb != null) { 
+				c = r.getCell((short)5);
+				c.setCellValue(clubNumb);
+			}
+			
+			HSSFSheet account = workbook.getSheetAt(SHEET_ACCOUNT_PART);
+			r = board.getRow((short)0);
+			c = r.getCell((short)2);
+			tmp = c.getStringCellValue();
+			c.setCellValue(tmp + " " + year);
+			c = r.getCell((short)9);
+			c.setCellValue(club.getName());
+							
+			r = board.getRow((short)30);
+			c = r.getCell((short)9);
+			c.setCellValue(club.getName());
+			
+			HSSFSheet lookup = workbook.getSheetAt(SHEET_LOOKUP_PART);
+			//this.getGroupBusiness().
+			Collection leagues = getAllLeagueGroups();
+			Iterator it = leagues.iterator();
+			int rowNr = 1;
+			while (it.hasNext()) {
+				Group league = (Group)it.next();
+				r = lookup.getRow((short)rowNr++);
+				c = r.getCell((short)0);
+				c.setCellValue(league.getAbbrevation()+"-"+league.getName());
 			}
 		}
 		catch (RemoteException e) {
