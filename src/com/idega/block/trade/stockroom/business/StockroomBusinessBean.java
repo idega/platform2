@@ -314,21 +314,25 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 
 
   public  int getUserSupplierId(User user) throws RuntimeException, SQLException{
-    com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
-    List gr = gGroup.getAllGroupsContainingUser(user);
-    if(gr != null){
-      Iterator iter = gr.iterator();
-      while (iter.hasNext()) {
-        GenericGroup item = (GenericGroup)iter.next();
-        if(item.getGroupType().equals(((SupplierStaffGroup)com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
-          IDOLegacyEntity[] supp = ((Supplier)com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameGroupID(),item.getID());
-          if(supp != null && supp.length > 0){
-            return supp[0].getID();
-          }
-        }
-      }
-    }
-    throw new RuntimeException("Does not belong to any supplier");
+  	try {
+	  	GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
+	  	List gr = gGroup.getAllGroupsContainingUser(user);
+	    if(gr != null){
+	      Iterator iter = gr.iterator();
+	      while (iter.hasNext()) {
+	        GenericGroup item = (GenericGroup)iter.next();
+	        if(item.getGroupType().equals(((SupplierStaffGroup) SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
+	          IDOLegacyEntity[] supp = ((Supplier) SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(SupplierBMPBean.getColumnNameGroupID(),item.getID());
+	          if(supp != null && supp.length > 0){
+	            return supp[0].getID();
+	          }
+	        }
+	      }
+	    }
+	    throw new RuntimeException("Does not belong to any supplier");
+  	} catch (IDOLookupException e) {
+  		throw new RuntimeException("Does not belong to any supplier");
+  	}
   }
 
   public  int getUserSupplierId(IWContext iwc) throws RuntimeException, SQLException {
@@ -371,7 +375,27 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 
 
   public  int getUserResellerId(User user) throws RuntimeException, SQLException{
-    com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
+	try {
+		GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
+		List gr = gGroup.getAllGroupsContainingUser(user);
+		if(gr != null){
+		  Iterator iter = gr.iterator();
+		  while (iter.hasNext()) {
+				GenericGroup item = (GenericGroup)iter.next();
+				if(item.getGroupType().equals(((ResellerStaffGroup) ResellerStaffGroupBMPBean.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
+				  IDOLegacyEntity[] reseller = ((Reseller) ResellerBMPBean.getStaticInstance(Reseller.class)).findAllByColumn(ResellerBMPBean.getColumnNameGroupID(),item.getID());
+				  if(reseller != null && reseller.length > 0){
+					return reseller[0].getID();
+				  }
+				}
+		  }
+		}
+		throw new RuntimeException("Does not belong to any supplier");
+	} catch (IDOLookupException e) {
+		throw new RuntimeException("Does not belong to any supplier");
+	}
+	
+	/*com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
     List gr = gGroup.getAllGroupsContainingUser(user);
     if(gr != null){
       Iterator iter = gr.iterator();
@@ -386,6 +410,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
       }
     }
     throw new RuntimeException("Does not belong to any reseller");
+    */
   }
 
   public  int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
