@@ -10,6 +10,8 @@ public interface InvoiceStrings {
 	String ADJUSTMENT_SIGNATURE_KEY = PREFIX + "adjustment_signature";
 	String AMOUNT_DEFAULT = "Belopp";
 	String AMOUNT_KEY = PREFIX + "amount";
+	String PAYMENT_AMOUNT_DEFAULT = "Utb. belopp";
+	String PAYMENT_AMOUNT_KEY = PREFIX + "payment_amount";
 	String BANKGIRO_DEFAULT = "Bankgiro";
 	String BANKGIRO_KEY = PREFIX + "bankgiro";
 	String CANCEL_DEFAULT = "Avbryt";
@@ -18,9 +20,9 @@ public interface InvoiceStrings {
 	String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
 	String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
 	String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
-	String CHECK_AMOUNT_LIST_SENT_DEFAULT = "Check amount list has been sent";
+	String CHECK_AMOUNT_LIST_SENT_DEFAULT = "Checkbeloppslistan har skickats";
 	String CHECK_AMOUNT_LIST_SENT_KEY = PREFIX + "check_amount_list_sent";
-	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT = "Check amount list has been sent to all concerning parties";
+	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT = "Checkbeloppslistan har skickats till alla berörda parter";
 	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_KEY = PREFIX + "check_amount_list_sent_to_all_parties";
 	String CHECK_PERIOD_DEFAULT = "Checkperiod";
 	String CHECK_PERIOD_KEY = PREFIX + "check_period";
@@ -54,6 +56,7 @@ public interface InvoiceStrings {
 	String NEW_KEY = PREFIX + "new";
 	String NOTE_DEFAULT = "Anmärkning";
 	String NOTE_KEY = PREFIX + "note";
+	String NO_MAIL_SENT_SINCE_NO_PAYMENT_RECORDS_KEY = PREFIX + "no_mail_sent_since_no_payment_records";
 	String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
 	String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
 	String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
@@ -71,8 +74,6 @@ public interface InvoiceStrings {
 	String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
 	String PERIOD_DEFAULT = "Period";
 	String PERIOD_KEY = PREFIX + "period";
-	String PIECE_AMOUNT_2_DEFAULT = "Á-pris";
-	String PIECE_AMOUNT_2_KEY = PREFIX + "piece_amount_2";
 	String PIECE_AMOUNT_DEFAULT = "Styckepris";
 	String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
 	String PLACEMENT_DEFAULT = "Placering";
@@ -81,6 +82,8 @@ public interface InvoiceStrings {
 	String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
 	String POSTGIRO_DEFAULT = "Postgiro";
 	String POSTGIRO_KEY = PREFIX + "postgiro";
+	String PRICE_PER_MONTH_DEFAULT = "Pris/mån";
+	String PRICE_PER_MONTH_KEY = PREFIX + "price_per_month";
 	String PRINT_DATE_DEFAULT = "Utskriftsdatum";
 	String PRINT_DATE_KEY = PREFIX + "print_date";
 	String PROVIDER_CONFIRM_DEFAULT = "Anordnarattest";

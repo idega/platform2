@@ -81,7 +81,13 @@ public class SendIFSFiles extends AccountingBlock {
 		table.setCellpadding (getCellpadding ());
 		table.setCellspacing (getCellspacing ());
 		table.setWidth (Table.HUNDRED_PERCENT);
-		table.setColumns (filesMaps.size ());
+		final int columnCount = filesMaps.size ();
+		table.setColumns (columnCount);
+		final int percentageInt = 100 / columnCount;
+		final String percentageString = percentageInt + "%";
+		for (int i = 1; i <= columnCount; i++) {
+			table.setColumnWidth (i, percentageString);
+		}
 		add (table);
 		int col = 0;
 		for (Iterator i = filesMaps.keySet ().iterator (); i.hasNext ();) {

@@ -11,11 +11,11 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -66,19 +66,23 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
- * Last modified: $Date: 2004/01/20 20:15:42 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/21 10:47:17 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
 		= FontFactory.getFont (FontFactory.HELVETICA, 9);
+	private final static Font SANSSERIFBOLD_FONT
+		= FontFactory.getFont (FontFactory.HELVETICA_BOLD, 11);
 	private static final NumberFormat integerFormatter
 		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
 	private static final SimpleDateFormat periodFormatter
 		= new SimpleDateFormat ("yyMM");
+	private static final SimpleDateFormat yearAndMonthFormatter
+		= new SimpleDateFormat ("yyyy-MM");
 	private static final SimpleDateFormat dateAndTimeFormatter
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private static final Color LIGHT_BLUE = new Color (0xf4f4f4);
@@ -93,8 +97,11 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		final Map result = new TreeMap ();
 		final Map filesSentByEmail = new TreeMap ();
 		final Map filesSentByPapermail = new TreeMap ();
+		final Map noMailSentSinceNoPaymentRecords = new TreeMap ();
 		result.put (FILES_SENT_BY_EMAIL_KEY, filesSentByEmail);
 		result.put (FILES_SENT_BY_PAPERMAIL_KEY, filesSentByPapermail);
+		result.put (NO_MAIL_SENT_SINCE_NO_PAYMENT_RECORDS_KEY,
+								noMailSentSinceNoPaymentRecords);
 
 		try {
 			SchoolCategory schoolCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(schoolCategoryPK);
@@ -114,7 +121,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				Iterator schoolIter = schools.iterator();
 				while (schoolIter.hasNext()) {
 					school = (School) schoolIter.next();
-					File file = createExternalCheckAmountList (iwc, schoolCategory, school);
+					File file;
+					try {
+						file = createExternalCheckAmountList (iwc, schoolCategory, school);
+					} catch (NoPaymentRecordsFoundException e) {
+						noMailSentSinceNoPaymentRecords.put (school.getName (),
+																						 new Integer (-1));
+						continue;
+					}
 					SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 					Collection headmasters = sub.getHeadmasters(school);
 					Collection assheadmasters = sub.getAssistantHeadmasters(school);
@@ -160,7 +174,13 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 						for (Iterator i = emails.iterator(); i.hasNext();) {
 							email = (Email) i.next();
 							if (mBusiness.getIfCanSendEmail()) {
-								mBusiness.sendMessage(email.getEmailAddress(), iwrb.getLocalizedString( CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT)+" - "+school.getName(), "", file);
+								mBusiness.sendMessage
+										(email.getEmailAddress(),
+										 iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY,
+																						 CHECK_AMOUNT_LIST_DEFAULT) + " - "
+										 +school.getName() + " "
+										 + yearAndMonthFormatter.format (new java.util.Date ()), "",
+										 file);
 							}
 						}
 						filesSentByEmail.put (school.getName (), new Integer (-1));					
@@ -181,14 +201,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	}
 
 	private File createExternalCheckAmountList (IWContext iwc, SchoolCategory schoolCategory, School school) throws Exception {
-		FileOutputStream fileOut;
-		File file = new File (getTitle (school.getPrimaryKey()) + ".pdf");
-		fileOut = new FileOutputStream(file);
-		
-		Document outerDocument = PDFTest.getLetterDocumentTemplate();
-		PdfWriter writer = PdfWriter.getInstance(outerDocument, fileOut);
-		outerDocument.open();
-		
+
+		// find payment records
 		PaymentHeaderHome phHome = (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
 		PaymentRecordHome prHome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 		Collection paymentHeaders = phHome.findBySchoolAndSchoolCategoryPKAndStatus(school.getPrimaryKey(), schoolCategory.getPrimaryKey(), "L");
@@ -200,6 +214,17 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				records = (PaymentRecord []) recordCollection.toArray (records);
 			}
 		}
+		if (0 >= records.length) {
+			throw new NoPaymentRecordsFoundException ();
+		}
+
+		// create pdf file
+		FileOutputStream fileOut;
+		File file = new File (getTitle (school.getPrimaryKey()) + ".pdf");
+		fileOut = new FileOutputStream(file);
+		Document outerDocument = PDFTest.getLetterDocumentTemplate();
+		PdfWriter writer = PdfWriter.getInstance(outerDocument, fileOut);
+		outerDocument.open();
 		DocumentBusiness docBus = (DocumentBusiness) IBOLookup.getServiceInstance(iwc, DocumentBusiness.class);
 		outerDocument.newPage();
 		String countryText = "";
@@ -207,14 +232,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				&& !school.getCountry ().getName ().equals ("Sweden")) {
 			countryText = school.getCountry().getName();
 		}
-		String sAddrString = school.getName()+"\n"+school.getSchoolAddress()+"\n"+school.getSchoolZipCode()+" "+school.getSchoolZipArea()+"\n"+countryText;
-		docBus.createDefaultLetterHeader( outerDocument, sAddrString, writer);
+		docBus.createDefaultLetterHeader (outerDocument, getAddressString (school),
+																			writer);
 		
 		// add content to document
 		final PdfPTable outerTable = new PdfPTable (1);
 		outerTable.setWidthPercentage (100f);
 		outerTable.getDefaultCell ().setBorder (0);
-		addPhrase (outerTable, "\n\n" + localize
+		addBoldPhrase (outerTable, "\n\n" + localize
 							 (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT)  + "\n\n");
 		final PdfPTable headerTable	= getExternalHeaderTable (schoolCategory);
 		outerTable.addCell (headerTable);
@@ -225,10 +250,28 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		final PdfPTable summaryTable = getSummaryTable(records, false);
 		outerTable.addCell (summaryTable);
 		outerDocument.add (outerTable);        
+
+		// close and return document
 		outerDocument.close();
 		writer.close();
 		fileOut.close();
 		return file;
+	}
+
+	private String getAddressString (final School school) {
+		final StringBuffer result = new StringBuffer ();
+		final String street = school.getSchoolAddress ();
+		final String zip = school.getSchoolZipCode ();
+		final String city = school.getSchoolZipArea ();
+		final String country = school.getCountry() != null
+				? school.getCountry().getName() : null;
+		result.append (school.getName() + '\n');
+		result.append ((null != street ? street : "") + '\n');
+		result.append (null != zip ? zip + " " : "");
+		result.append (null != city ? city : "");
+		result.append (null != country && !country.equals ("Sweden")
+									 ? '\n' + country : "");
+		return result.toString ();
 	}
 
 	private PdfPTable getExternalHeaderTable (final SchoolCategory category) {
@@ -266,8 +309,9 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			final PdfPTable outerTable = new PdfPTable (1);
 			outerTable.setWidthPercentage (100f);
 			outerTable.getDefaultCell ().setBorder (0);
-			addPhrase (outerTable, localize (CHECK_AMOUNT_LIST_KEY,
-																			 CHECK_AMOUNT_LIST_DEFAULT)  + "\n\n");
+			addBoldPhrase (outerTable,
+										 localize (CHECK_AMOUNT_LIST_KEY,
+															 CHECK_AMOUNT_LIST_DEFAULT)  + "\n\n");
 			final PdfPTable headerTable	= getHeaderTable
 					(schoolCategoryId, providerId, startPeriod, endPeriod, true);
 			outerTable.addCell (headerTable);
@@ -310,8 +354,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
 				 { PLACEMENT_KEY, PLACEMENT_DEFAULT },
 				 { NUMBER_OF_KEY, NUMBER_OF_DEFAULT },
-				 { PIECE_AMOUNT_2_KEY, PIECE_AMOUNT_2_DEFAULT },
-				 { AMOUNT_KEY, AMOUNT_DEFAULT },
+				 { PRICE_PER_MONTH_KEY, PRICE_PER_MONTH_DEFAULT },
+				 { PAYMENT_AMOUNT_KEY, PAYMENT_AMOUNT_DEFAULT },
 				 { NOTE_KEY, NOTE_DEFAULT }};
 		final float [] externalColWidth
 				= new float [] {1.0f, 5.0f, 1.0f, 1.2f, 1.4f};
@@ -501,6 +545,11 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 																					SANSSERIF_FONT)));
 	}
 	
+	private void addBoldPhrase (final PdfPTable table, final String string) {
+		table.addCell (new Phrase (new Chunk (null != string ? string : "",
+																					SANSSERIFBOLD_FONT)));
+	}
+	
 	private static float mmToPoints (final float mm) {
 		return mm*72/25.4f;
 	}
@@ -558,5 +607,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		final IWBundle bundle
 				= app.getBundle (AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER);
 		return bundle.getResourceBundle (app.getSettings ().getDefaultLocale ());
+	}
+
+	private static class NoPaymentRecordsFoundException extends Exception {
 	}
 }
