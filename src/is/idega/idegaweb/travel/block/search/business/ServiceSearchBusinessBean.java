@@ -223,11 +223,11 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return list;
 	}
 
-	public Collection sortProducts(Collection productIdsToSort, PriceCategory priceCat) {
+	public Collection sortProducts(Collection productIdsToSort, PriceCategory priceCat, IWTimestamp bookingDate) {
 		try {
 			//if (productComparator == null) {
 			ProductComparator	productComparator = new ProductComparator(ProductComparator.PRICE);
-				productComparator.setPriceCategoryValues(priceCat, -1, IWTimestamp.getTimestampRightNow());
+				productComparator.setPriceCategoryValues(priceCat, -1, bookingDate);
 			//}
 			/** Gera betra */
 			Collection tmp = getInstanceCollectionFromPKS(productIdsToSort);

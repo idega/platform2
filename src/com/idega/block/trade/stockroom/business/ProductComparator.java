@@ -1,7 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -12,6 +11,7 @@ import java.util.Vector;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
@@ -38,10 +38,12 @@ public class ProductComparator implements Comparator {
   private int localeId = -1;
   private int sortBy;
   private StockroomBusiness stockroomBusiness;
+	private ProductBusiness productBusiness;
 
   private PriceCategory priceCategoryToSortBy;
   private int currencyId;
-  private Timestamp time;
+  private IWTimestamp time;
+  private IWContext iwc;
 
   public ProductComparator() {
     this(1);
@@ -54,6 +56,7 @@ public class ProductComparator implements Comparator {
   public ProductComparator(int toSortBy, int localeId) {
       sortBy = toSortBy;
       this.localeId = localeId;
+      iwc = IWContext.getInstance();
   }
 
   public void sortBy(int toSortBy) {
@@ -154,8 +157,18 @@ public class ProductComparator implements Comparator {
 	      if (price1 != null) pr1 = price1.getPrice();
       	if (price2 != null) pr2 = price2.getPrice();
 			} else {
+				Timeframe timeframe = getProductBusiness().getTimeframe(p1, time, -1);
+				int timeframeId1 = -1;
+				if (timeframe != null) {
+					timeframeId1 = timeframe.getID();
+				}
+				timeframe = getProductBusiness().getTimeframe(p2, time, -1);
+				int timeframeId2 = -1;
+				if (timeframe != null) {
+					timeframeId2 = timeframe.getID();
+				}				
 				try {
-					pr1 = getStockroomBusiness().getPrice(-1, p1.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
+					pr1 = getStockroomBusiness().getPrice(-1, p1.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, IWTimestamp.getTimestampRightNow(), timeframeId1, -1);
 					System.out.println("[ProductComparator] : price for p1 = "+pr1+" ("+p1.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p1.getID()+")");
 				}
 				catch (ProductPriceException e) {
@@ -166,7 +179,7 @@ public class ProductComparator implements Comparator {
 					e.printStackTrace();
 				}
 				try {
-					pr2 = getStockroomBusiness().getPrice(-1, p2.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
+					pr2 = getStockroomBusiness().getPrice(-1, p2.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, IWTimestamp.getTimestampRightNow(), timeframeId2, -1);
 					System.out.println("[ProductComparator] : price for p2 = "+pr2+" ("+p2.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p2.getID()+")");
 				}
 				catch (ProductPriceException e) {
@@ -287,8 +300,19 @@ public class ProductComparator implements Comparator {
       throw new RuntimeException(re.getMessage());
     }
   }
+  
+  private ProductBusiness getProductBusiness() {
+		try {
+		  if (productBusiness == null) {
+			productBusiness = (ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
+		  }
+		  return productBusiness;
+		}catch (RemoteException re) {
+		  throw new RuntimeException(re.getMessage());
+		}
+  }
 
-	public void setPriceCategoryValues(PriceCategory priceCategory, int currencyId, Timestamp time) {
+	public void setPriceCategoryValues(PriceCategory priceCategory, int currencyId, IWTimestamp time) {
 		this.priceCategoryToSortBy = priceCategory;
 		this.currencyId = currencyId;
 		this.time = time;

@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
+import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -75,7 +76,7 @@ public class HotelSearch extends AbstractSearchForm {
 					roomTypeIds[i] = sRoomType[i];
 				}
 			}
-			
+		
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
 
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
@@ -88,7 +89,7 @@ public class HotelSearch extends AbstractSearchForm {
 
 			System.out.println("Before : ");
 			showCollectionContent(coll);
-			coll = getSearchBusiness(iwc).sortProducts(coll, priceCat);
+			coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate));
 			System.out.println("After : ");
 			showCollectionContent(coll);
 
