@@ -234,10 +234,10 @@ public class SchoolClassMemberComparator implements Comparator {
 				System.err.println("[SchoolClassMemberComparator] Could not find Gender");
 				e.printStackTrace(System.err);
 			}
-			catch (RemoteException e) {
+/*			catch (RemoteException e) {
 				System.err.println("[SchoolClassMemberComparator] Could not access Gender");
 				e.printStackTrace(System.err);
-			}
+			}*/
 		}
 		return femaleID == genderID;
 	}
