@@ -2,7 +2,7 @@
 package is.idega.idegaweb.golf.templates;
 
 
-import is.idega.idegaweb.golf.templates.page.JmoduleWindowModuleWindow;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,7 +30,7 @@ private MenuBar Menu;
 public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
-	public void setWindow(JmoduleWindowModuleWindow window){
+	public void setWindow(GolfWindow window){
           setPage(window);
 	}
 	
@@ -45,7 +45,7 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
               URI = request.getRequestURI();
            }
 
-            setPage(new JmoduleWindowModuleWindow());
+            setPage(new GolfWindow());
   /*
             Menu = new MenuBar();
             MenuBar();
@@ -61,36 +61,36 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
 	public void add(PresentationObject objectToAdd){
-          ((JmoduleWindowModuleWindow)getPage()).add(objectToAdd);
+          ((GolfWindow)getPage()).add(objectToAdd);
 	}
 
 
 
 
         public void addToFileMenu(String ItemName, String Url){
-          ((JmoduleWindowModuleWindow)getWindow()).addToFileMenu(ItemName, Url);
+          ((GolfWindow)getWindow()).addToFileMenu(ItemName, Url);
         }
 
 
         public void addToAddOnsMenu(String ItemName, String Url){
-          ((JmoduleWindowModuleWindow)getWindow()).addToAddOnsMenu(ItemName, Url);
+          ((GolfWindow)getWindow()).addToAddOnsMenu(ItemName, Url);
         }
 
         public void addToToolsMenu(String ItemName, String Url){
-          ((JmoduleWindowModuleWindow)getWindow()).addToToolsMenu(ItemName, Url);
+          ((GolfWindow)getWindow()).addToToolsMenu(ItemName, Url);
         }
 
         public void addToOptionsMenu(String ItemName, String Url){
-          ((JmoduleWindowModuleWindow)getWindow()).addToOptionsMenu(ItemName, Url);
+          ((GolfWindow)getWindow()).addToOptionsMenu(ItemName, Url);
         }
 
         public void addToHelpMenu(String ItemName, String Url){
-          ((JmoduleWindowModuleWindow)getWindow()).addToHelpMenu(ItemName, Url);
+          ((GolfWindow)getWindow()).addToHelpMenu(ItemName, Url);
         }
 
 
         public MenuBar getMenu(){
-          return ((JmoduleWindowModuleWindow)getWindow()).getMenu();
+          return ((GolfWindow)getWindow()).getMenu();
         }
 
         public boolean isAdmin(IWContext modinfo)throws Exception{

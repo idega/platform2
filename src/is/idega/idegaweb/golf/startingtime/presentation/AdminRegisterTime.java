@@ -10,7 +10,7 @@ import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import is.idega.idegaweb.golf.startingtime.data.TeeTimeHome;
-import is.idega.idegaweb.golf.templates.page.JmoduleWindowModuleWindow;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -48,7 +48,7 @@ import com.idega.util.text.TextSoap;
  * @version 1.0
  */
 
-public class AdminRegisterTime extends JmoduleWindowModuleWindow {
+public class AdminRegisterTime extends GolfWindow {
 
   private TeeTimeBusiness business;
   private Form myForm;

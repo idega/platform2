@@ -8,7 +8,7 @@ import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
-import is.idega.idegaweb.golf.templates.page.JmoduleWindowModuleWindow;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class RegisterTime extends JmoduleWindowModuleWindow {
+public class RegisterTime extends GolfWindow {
 
   private TeeTimeBusiness business;
   private DropdownMenu unionDropdown;
