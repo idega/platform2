@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.2 2003/08/20 11:59:39 anders Exp $
+ * $Id: VATEditor.java,v 1.3 2003/08/20 15:07:08 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -8,6 +8,8 @@
  *
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
+
+import java.sql.Date;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -22,14 +24,15 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/20 11:59:39 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/20 15:07:08 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VATEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
+	private final static int ACTION_SEARCH = 1;
 	
 	private final static String PARAMETER_PREFIX = "cacc_vat_"; 
 
@@ -48,10 +51,10 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_MAIN_ACTIVITY = KEY_PREFIX + "main_activity";
 	private final static String KEY_SCHOOL = KEY_PREFIX + "school";
 	private final static String KEY_SEARCH = KEY_PREFIX + "search";
+	private final static String KEY_ERROR_DATE_FORMAT = KEY_PREFIX + "error_date_format";
 
 	/**
-	 * Handles all of the blocks presentation.
-	 * @param iwc user/session context 
+	 * @see com.idega.presentation.Block#main()
 	 */
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -61,6 +64,9 @@ public class VATEditor extends AccountingBlock {
 			switch (action) {
 				case ACTION_DEFAULT :
 					viewDefaultForm(iwc);
+					break;
+				case ACTION_SEARCH :
+					viewSearchResult(iwc);
 					break;
 			}
 		}
@@ -74,17 +80,44 @@ public class VATEditor extends AccountingBlock {
 	 * on the POST parameters in the specified context.
 	 */
 	private int parseAction(IWContext iwc) {
-		return ACTION_DEFAULT;
+		int action = ACTION_DEFAULT;
+		
+		if (iwc.isParameterSet(PARAMETER_SEARCH)) {
+			action = ACTION_SEARCH;
+		}
+
+		return action;
 	}
 
 	/*
-	 * Adds the default form to the block.
+	 * Views the default application form.
 	 */	
 	private void viewDefaultForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
 		app.setTitle(localize(KEY_TITLE, "Momssats"));
 		app.setSearchPanel(getSearchPanel());
-		app.setMainPanel(getVATList());
+		app.setMainPanel(getVATList(null));
+		app.setButtonPanel(getButtonPanel());
+		add(app);
+	}
+
+	/*
+	 * Views the search result.
+	 */	
+	private void viewSearchResult(IWContext iwc) {
+		String errorMessage = null;
+		String periodFrom = iwc.getParameter(PARAMETER_PERIOD_FROM);
+		Date from = parseDate(periodFrom);
+		if (from == null) {
+			errorMessage = KEY_ERROR_DATE_FORMAT;
+		} else {
+			errorMessage = formatDate(from, 4) + " " + formatDate(from, 6) + " " + formatDate(from, 8);
+		}
+		
+		ApplicationForm app = new ApplicationForm();
+		app.setTitle(localize(KEY_TITLE, "Momssats"));
+		app.setSearchPanel(getSearchPanel());
+		app.setMainPanel(getVATList(errorMessage));
 		app.setButtonPanel(getButtonPanel());
 		add(app);
 	}
@@ -92,7 +125,7 @@ public class VATEditor extends AccountingBlock {
 	/*
 	 * Returns the VATList
 	 */
-	private ListTable getVATList() {
+	private Table getVATList(String errorMessage) {		
 		ListTable list = new ListTable(5);
 		list.setHeader(localize(KEY_PERIOD, "Period"), 1);
 		list.setHeader(localize(KEY_DESCRIPTION, "Benämning"), 2);
@@ -115,8 +148,18 @@ public class VATEditor extends AccountingBlock {
 		list.add("6");
 		list.add("Ut");
 		list.add("Privat");
-		
-		return list;
+
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+	
+		if (errorMessage != null) {
+			table.add(getErrorText(errorMessage), 1, 1);
+			table.add(list, 1, 2);	
+		} else {
+			table.add(list, 1, 1);
+		}
+		return table;
 	}
 	
 	/*
@@ -141,5 +184,5 @@ public class VATEditor extends AccountingBlock {
 		table.add(getFormTextInput(PARAMETER_PERIOD_TO, "", 80), 3, 2);
 		table.add(getFormButton(PARAMETER_SEARCH, KEY_SEARCH, "Sök"), 5, 2);
 		return table;
-	}
+	}	
 }
