@@ -468,6 +468,20 @@ public class BuildingFinder {
     return L;
 
   }
+
+  public static List listOfBuildingImageFiles(int iComplexId){
+    try {
+      String sql = "select distinct f.* from ic_file f, bu_building  b where  b.ic_image_id = f.ic_file_id and b.bu_complex_id = "+iComplexId;
+     //System.err.println(sql);
+      return EntityFinder.findAll(com.idega.core.data.ICFile.getStaticInstance(com.idega.core.data.ICFile.class),sql);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+
+  }
+
   public static int countApartmentsInTypeAndComplex(int typeId,int cmplxId){
     StringBuffer sql = new StringBuffer("select count(*) ");
     sql.append(" from bu_apartment a,bu_floor f,bu_building b,bu_complex c,bu_aprt_type t ");

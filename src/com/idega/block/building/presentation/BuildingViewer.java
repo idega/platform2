@@ -107,11 +107,15 @@ public void setApartmentTypeWindowClass(Class windowClass){
       String infoText = complex[a].getInfo();
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
-      List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
+      //List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
+      List L = BuildingFinder.listOfBuildingImageFiles(iComplexId);
       if(L!=null){
-       ICFile file = new ICFile(((Building)L.get(0)).getImageId());
+       //ICFile file = new ICFile(((Building)L.get(0)).getImageId());
         ImageSlideShow slide = new ImageSlideShow();
-        slide.setFileFolder(file);
+        //slide.setFileFolder(file);
+        slide.setWidth(imageMaxSize);
+        slide.setAlt(complex[a].getName());
+        slide.setFiles(L);
         complexTable.add(slide,3,2);
         /*
        Image buildingImage = new Image(((Building)L.get(0)).getImageId());
@@ -221,6 +225,8 @@ public void setApartmentTypeWindowClass(Class windowClass){
         typeImage = iwrb_.getImage("/building/default.jpg");
       else{
         ImageSlideShow slide =  new ImageSlideShow();
+        slide.setWidth(imageMaxSize);
+        slide.setAlt(types[a].getName());
         slide.setFileId( types[a].getImageId());
         typeImage = slide;
 
