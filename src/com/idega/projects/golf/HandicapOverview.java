@@ -19,6 +19,7 @@ import java.io.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.news.data.*;
@@ -40,6 +41,10 @@ protected IWBundle iwb;
 private String member_id;
 private boolean isAdmin = false;
 
+//Bjarni added this boolean and color String 14.08.01
+private boolean isDefaultColors = true;
+private String teeTextColor;
+
 private int year = 0;
 private int month = 0;
 private int day = 0;
@@ -56,6 +61,20 @@ private boolean noIcons = false;
 
 private String headerColor = "#336660";
 private String headerTextColor = "#FFFFFF";
+
+private Text headerText = new Text();  //Bjarni added 14.08.01
+private Text tableText = new Text();
+private Link textLink = new Link();
+
+{  //headerText and tableText and textLink properties initialized.
+  headerText.setFontSize(1);
+  headerText.setFontColor(headerTextColor);
+
+  tableText.setFontSize(1);
+
+  textLink.setFontSize(1);
+}
+
 
   public HandicapOverview() {
   }
@@ -119,73 +138,67 @@ private String headerTextColor = "#FFFFFF";
 			myTable.setRowAlignment(1,"center");
 			myTable.setRowVerticalAlignment(1,"bottom");
 
-			Text dags = new Text(iwrb.getLocalizedString("handicap.date","Date"));
-				dags.setFontColor(headerTextColor);
-				dags.setFontSize("1");
+
+                        Text dags;
+                        dags = ((Text) this.headerText.clone());
+                        dags.setText(iwrb.getLocalizedString("handicap.date","Date"));
         if ( noIcons ) {
           dags.setBold();
         }
-			Text vollur = new Text(iwrb.getLocalizedString("handicap.course","Course"));
-				vollur.setFontColor(headerTextColor);
-				vollur.setFontSize("1");
+			Text vollur;
+                        vollur = ( (Text) this.headerText.clone());
+                        vollur.setText(iwrb.getLocalizedString("handicap.course","Course"));
         if ( noIcons ) {
           vollur.setBold();
         }
-			Text mot = new Text(iwrb.getLocalizedString("handicap.tournament","Tournament"));
-				mot.setFontColor(headerTextColor);
-				mot.setFontSize("1");
+			Text mot;
+                        mot = ( (Text) this.headerText.clone());
+                        mot.setText(iwrb.getLocalizedString("handicap.tournament","Tournament"));
         if ( noIcons ) {
           mot.setBold();
         }
-			Text teigar = new Text(iwrb.getLocalizedString("handicap.tees","Tees"));
-				teigar.setFontColor(headerTextColor);
-				teigar.setFontSize("1");
+			Text teigar;
+                        teigar = ( (Text) this.headerText.clone());
+                        teigar.setText(iwrb.getLocalizedString("handicap.tees","Tees"));
         if ( noIcons ) {
           teigar.setBold();
         }
-			Text vaegi = new Text(iwrb.getLocalizedString("handicap.slope","Slope/CR"));
-				vaegi.setFontColor(headerTextColor);
-				vaegi.setFontSize("1");
+			Text vaegi = ( (Text) this.headerText.clone());
+                        vaegi.setText(iwrb.getLocalizedString("handicap.slope","Slope/CR"));
         if ( noIcons ) {
           vaegi.setBold();
         }
-			Text leikforgjof = new Text(iwrb.getLocalizedString("handicap.course_handicap","Course"));
+			Text leikforgjof = ( (Text) this.headerText.clone());
+                        leikforgjof.setText(iwrb.getLocalizedString("handicap.course_handicap","Course"));
         leikforgjof.addBreak();
         leikforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase","handicap"));
-				leikforgjof.setFontColor(headerTextColor);
-				leikforgjof.setFontSize("1");
         if ( noIcons ) {
           leikforgjof.setBold();
         }
-			Text punktar = new Text(iwrb.getLocalizedString("handicap.points","Points"));
-				punktar.setFontColor(headerTextColor);
-				punktar.setFontSize("1");
+			Text punktar = ( (Text) headerText.clone());
+                        punktar.setText(iwrb.getLocalizedString("handicap.points","Points"));
         if ( noIcons ) {
           punktar.setBold();
         }
-			Text mismunur = new Text(iwrb.getLocalizedString("handicap.difference","Difference"));
-				mismunur.setFontColor(headerTextColor);
-				mismunur.setFontSize("1");
+			Text mismunur = ( (Text) headerText.clone());
+                        mismunur.setText(iwrb.getLocalizedString("handicap.difference","Difference"));
         if ( noIcons ) {
           mismunur.setBold();
         }
-			Text grunnforgjof = new Text(iwrb.getLocalizedString("handicap.handicap","Handicap"));
-				grunnforgjof.setFontColor(headerTextColor);
-				grunnforgjof.setFontSize("1");
+			Text grunnforgjof = ( (Text) headerText.clone());
+                        grunnforgjof.setText(iwrb.getLocalizedString("handicap.handicap","Handicap"));
         if ( noIcons ) {
           grunnforgjof.setBold();
         }
-			Text ny_grunnforgjof = new Text(iwrb.getLocalizedString("handicap.new","New"));
+			Text ny_grunnforgjof = ( (Text) headerText.clone());
+                        ny_grunnforgjof.setText(iwrb.getLocalizedString("handicap.new","New"));
         ny_grunnforgjof.addBreak();
         ny_grunnforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase","handicap"));
-				ny_grunnforgjof.setFontColor(headerTextColor);
-				ny_grunnforgjof.setFontSize("1");
         if ( noIcons ) {
           ny_grunnforgjof.setBold();
         }
-			Text skor = new Text(iwrb.getLocalizedString("handicap.scorecard","Scorecard"));
-				skor.setFontColor(headerTextColor);
-				skor.setFontSize("1");
+			Text skor = ( (Text) headerText.clone());
+                        skor.setText(iwrb.getLocalizedString("handicap.scorecard","Scorecard"));
         if ( noIcons ) {
           skor.setBold();
         }
@@ -209,12 +222,12 @@ private String headerTextColor = "#FFFFFF";
 		for ( int a = 0; a < scoreCards.length; a++ ) {
 
       idegaTimestamp date = new idegaTimestamp(scoreCards[a].getScorecardDate());
-      Text date2 = new Text(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
-              date2.setFontSize("1");
+      Text date2 = ((Text) tableText.clone());
+      date2.setText(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
 
       Window deleteWindow = new Window(iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),400,220,"/handicap/handicap_delete.jsp?");
 
-      Link eyda = new Link(iwb.getImage("shared/trash.gif",iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),9,13),deleteWindow);
+/*Mynd-Link*/      Link eyda = new Link(iwb.getImage("shared/trash.gif",iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),9,13),deleteWindow);
               eyda.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
       if ( scoreCards[a].getHandicapCorrection().equals("N") ) {
@@ -292,57 +305,66 @@ private String headerTextColor = "#FFFFFF";
       String grunn2 = TextSoap.singleDecimalFormat(String.valueOf(grunn));
       String ny_grunn3 = TextSoap.singleDecimalFormat(String.valueOf(ny_grunn));
 
-			Text field_name2 = new Text(field_name);
-				field_name2.setFontSize("1");
-      Link fieldLink = new Link(field_name2,"/clubs/field.jsp");
+			/*Text field_name2 = new Text(field_name);
+				field_name2.setFontSize("1");*/
+      Link fieldLink = ((Link) textLink.clone());
+      fieldLink.setText(field_name);
+      fieldLink.setURL("/clubs/field.jsp");
+        fieldLink.setFontSize("1");
         fieldLink.addParameter("field_id",field.getID());
         fieldLink.addParameter("union_id",field.getUnionID());
-			Text tournament_id2 = new Text(tournament_name);
+		/*Text tournament_id2 = new Text(tournament_name);
 				if ( tournament_name == null ) {
 					tournament_id2 = new Text("");
 				}
-				tournament_id2.setFontSize("1");
-			Text slope2 = new Text(String.valueOf((int) Math.rint(slope))+"&nbsp;/&nbsp;"+cr);
-				slope2.setFontSize("1");
-			Text leik_forgjof2 = new Text(String.valueOf(leik_forgjof));
-				leik_forgjof2.setFontSize("1");
-      Text realLeikForgjof = new Text();
+				tournament_id2.setFontSize("1");*/
+			Text slope2 = ((Text) tableText.clone());
+                        slope2.setText(String.valueOf((int) Math.rint(slope))+"&nbsp;/&nbsp;"+cr);
+			Text leik_forgjof2 = ((Text) tableText.clone());
+                        leik_forgjof2.setText(String.valueOf(leik_forgjof));
+      Text realLeikForgjof = (Text) tableText.clone();
         if ( showRealHandicap ) {
           realLeikForgjof.setText(""+realPlayHandicap);
         }
-        realLeikForgjof.setFontSize(1);
-			Text heildarpunktar2 = new Text(String.valueOf(heildarpunktar));
-				heildarpunktar2.setFontSize("1");
-      Text realHeildarPunktar = new Text();
+			Text heildarpunktar2 = ((Text) tableText.clone());
+                        heildarpunktar2.setText(String.valueOf(heildarpunktar));
+      Text realHeildarPunktar = (Text) tableText.clone();
         if ( showRealHandicap ) {
           realHeildarPunktar.setText(""+realPoints);
         }
-        realHeildarPunktar.setFontSize(1);
-			Text mispunktar = new Text(String.valueOf(heildarpunktar - grunn_punktar));
-				mispunktar.setFontSize("1");
-      Text realMisPunktar = new Text();
+			Text mispunktar = ((Text) tableText.clone());
+                        mispunktar.setText(String.valueOf(heildarpunktar - grunn_punktar));
+      Text realMisPunktar = (Text) tableText.clone();
         if ( showRealHandicap ) {
           realMisPunktar.setText(""+String.valueOf(realPoints - grunn_punktar));
         }
-        realMisPunktar.setFontSize(1);
-			Text grunn3 = new Text(grunn2);
-				grunn3.setFontSize("1");
-      Text realGrunn = new Text();
+			Text grunn3 = ((Text) tableText.clone());
+                        grunn3.setText(grunn2);
+      Text realGrunn = (Text) tableText.clone();
         if ( showRealHandicap ) {
           realGrunn.setText(TextSoap.singleDecimalFormat(String.valueOf(realHandicap)));
         }
         realGrunn.setFontSize(1);
-			Text ny_grunn2 = new Text(ny_grunn3);
+			Text ny_grunn2 = ((Text) tableText.clone());
+                        ny_grunn2.setText(ny_grunn3);
         ny_grunn2.setFontSize("1");
-			Text tee_text = new Text(tee_name);
+			Text tee_text = ((Text) tableText.clone());
+                        tee_text.setText(tee_name);
 				tee_text.setFontSize(1);
-				tee_text.setFontColor(getTeeColor(teeColorID));
+
+                                //Bjarni addded this if-sentance 14.08.01
+                                if (isDefaultColors) tee_text.setFontColor(getTeeColor(teeColorID));
+                                else tee_text.setFontColor(teeTextColor);
 
 			myTable.setRowVerticalAlignment(a+3,"middle");
                         myTable.add(date2,1,a+3);
 			myTable.add(fieldLink,2,a+3);
 			if ( tournament_name != null ) {
-				Link tournamentLink = new Link(tournament_id2,"/tournament/tournamentinfo.jsp");
+        				//Link tournamentLink = new Link(tournament_name, "/tournament/tournamentinfo.jsp");
+                                        Link tournamentLink = ((Link) textLink.clone());
+                                          tournamentLink.setText(tournament_name);
+                                          tournamentLink.setURL("/tournament/tournamentinfo.jsp");
+                                          tournamentLink.setFontSize(1);
           tournamentLink.addParameter("tournament_id",tournament.getID());
         myTable.add(tournamentLink,3,a+3);
 			}
@@ -398,16 +420,16 @@ private String headerTextColor = "#FFFFFF";
 			Window updateWindow = new Window(iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),600,600,"/handicap/handicap.jsp?");
 			Window updateWindow2 = new Window(iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),600,350,"/handicap/handicap_statistics.jsp?");
 
-			Link tengill = new Link(iwb.getImage("shared/eye.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);
+/*MYNDA LINKUR*/		Link tengill = new Link(iwb.getImage("shared/eye.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);  //
         if ( noIcons ) {
-          tengill = new Link(iwb.getImage("shared/eye2.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);
+          tengill = new Link(iwb.getImage("shared/eye2.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);  //
         }
 				tengill.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
-			Link update = new Link(iwb.getImage("shared/pad.gif",iwrb.getLocalizedString("handicap.update_scorecard","Change scorecard"),11,13),updateWindow);
+			Link update = new Link(iwb.getImage("shared/pad.gif",iwrb.getLocalizedString("handicap.update_scorecard","Change scorecard"),11,13),updateWindow);  //
 				update.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
-			Link update2 = new Link(iwb.getImage("shared/pad.gif",iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),11,13),updateWindow2);
+			Link update2 = new Link(iwb.getImage("shared/pad.gif",iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),11,13),updateWindow2);  //
 				update2.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
 			myTable.add(tengill,11,a+3);
@@ -437,12 +459,12 @@ private String headerTextColor = "#FFFFFF";
         myTable.mergeCells(2,a+3,8,a+3);
         myTable.setRowAlignment(a+3,"center");
 
-        Text updateText = new Text("- "+iwrb.getLocalizedString("handicap.handicap_correction","Handicap correction")+" -");
-          updateText.setFontSize(1);
-        Text handicapBefore = new Text(TextSoap.singleDecimalFormat((double)scoreCards[a].getHandicapBefore()));;
-          handicapBefore.setFontSize(1);
-        Text handicapAfter = new Text(TextSoap.singleDecimalFormat((double)scoreCards[a].getHandicapAfter()));
-          handicapAfter.setFontSize(1);
+        Text updateText = ((Text) tableText.clone());
+        updateText.setText("- "+iwrb.getLocalizedString("handicap.handicap_correction","Handicap correction")+" -");
+        Text handicapBefore = ((Text) tableText.clone());
+        handicapBefore.setText(TextSoap.singleDecimalFormat((double)scoreCards[a].getHandicapBefore()));;
+        Text handicapAfter = ((Text) tableText.clone());
+        handicapAfter.setText(TextSoap.singleDecimalFormat((double)scoreCards[a].getHandicapAfter()));
 
         myTable.add(date2,1,a+3);
         myTable.add(updateText,2,a+3);
@@ -469,7 +491,7 @@ private String headerTextColor = "#FFFFFF";
 
     Window recalculate = new Window(iwrb.getLocalizedString("handicap.recalculate","Recalculate"),350,200,"/handicap/recalculate.jsp?");
 
-    Link recalculateLink = new Link(iwrb.getImage("buttons/update.gif",iwrb.getLocalizedString("handicap.update_handicap","Update handicap"),76,19),recalculate);
+/*MYNDA LINKUR*/  Link recalculateLink = new Link(iwrb.getImage("buttons/update.gif",iwrb.getLocalizedString("handicap.update_handicap","Update handicap"),76,19),recalculate);  //
             recalculateLink.addParameter("member_id",member_id);
 
     myTable.mergeCells(1,rows,11,rows);
@@ -562,12 +584,12 @@ private String headerTextColor = "#FFFFFF";
           skoda = new SubmitButton(iwrb.getImage("getOverview.gif"));
         }
 
-				Text fra = new Text(iwrb.getLocalizedString("handicap.from","From")+": ");
+				Text fra = ( (Text) headerText.clone());
+                                fra.setText(iwrb.getLocalizedString("handicap.from","From")+": ");
 					fra.setBold();
-					fra.setFontColor(headerTextColor);
-				Text til = new Text(iwrb.getLocalizedString("handicap.to","To")+": ");
+				Text til = ( (Text) headerText.clone());
+                                til.setText(iwrb.getLocalizedString("handicap.to","To")+": ");
 					til.setBold();
-					til.setFontColor(headerTextColor);
 				Text strik = new Text("&nbsp;");
 				Text bil = new Text("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 
@@ -690,6 +712,29 @@ private String headerTextColor = "#FFFFFF";
 
     public void setHeaderTextColor(String headerTextColor) {
       this.headerTextColor=headerTextColor;
+      headerText.setFontColor(headerTextColor);
+    }
+
+    //Bjarni added these methood 14.08.01
+    public void setTeeTextColor(String teeTextColor){
+      isDefaultColors = false;
+      this.teeTextColor = teeTextColor;
+    }
+
+    /*public setDefaultTeeTextColor(){
+      isDefaultColors = true;
+    }*/
+
+    public void setHeaderTextProperties(Text textToClonePropertiesFrom){
+      this.headerText = textToClonePropertiesFrom;
+    }
+
+    public void setTableTextProperties(Text textToClonePropertiesFrom){
+      this.tableText = textToClonePropertiesFrom;
+    }
+
+    public void setTextLinkProperties(Link linkToClonePropertiesFrom){
+      this.textLink = linkToClonePropertiesFrom;
     }
 
     public void noIcons() {
