@@ -40,17 +40,18 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	public static final int USER_TYPE_IB_COORDINATOR = SchoolUserBMPBean.USER_TYPE_IB_COORDINATOR;
 	public static final int USER_TYPE_STUDY_AND_WORK_COUNCEL = SchoolUserBMPBean.USER_TYPE_STUDY_AND_WORK_COUNCEL;
 	
-	public SchoolUser addUser(School school, User user, int userType) throws RemoteException, CreateException, FinderException {
-		return addUser (school, user, userType, true, false);
+	public SchoolUser addUser(School school, User user, int userType, boolean isEconomicalResponsible) throws RemoteException, CreateException, FinderException {
+		return addUser (school, user, userType, true, false, isEconomicalResponsible);
 	}
 	
-	public SchoolUser addUser(School school, User user, int userType, boolean showInContacts, boolean main_headmaster) throws RemoteException, CreateException, FinderException {
+	public SchoolUser addUser(School school, User user, int userType, boolean showInContacts, boolean main_headmaster, boolean isEconomicalResponsible) throws RemoteException, CreateException, FinderException {
 			SchoolUser sUser = getSchoolUserHome().create();
 			sUser.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
 			sUser.setUserId(((Integer) user.getPrimaryKey()).intValue());
 			sUser.setUserType(userType);
 			sUser.setShowInContact(showInContacts);
 			sUser.setMainHeadmaster(main_headmaster);
+			sUser.setIsEconomicalResponsible (isEconomicalResponsible);
 			sUser.store();
 		
 			setUserGroups(school, user, userType);
@@ -58,7 +59,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			return sUser;
 		}
 
-	public SchoolUser updateSchUser(School school, User user, int userType, boolean showInContacts) throws RemoteException, FinderException {
+	public SchoolUser updateSchUser(School school, User user, int userType, boolean showInContacts, boolean isEconomicalResponsible) throws RemoteException, FinderException {
 			//SchoolUser sUser = getSchoolUserHome().findByPrimaryKey(user.getPrimaryKey().intValue());
 			Object id = null;
 			SchoolUser sUser = null;
@@ -70,6 +71,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				//sUser.setUserId(((Integer) user.getPrimaryKey()).intValue());
 				//sUser.setUserType(userType);
 				sUser.setShowInContact(showInContacts);
+				sUser.setIsEconomicalResponsible (isEconomicalResponsible);
 				sUser.store();		
 				setUserGroups(school, user, userType);
 			}			
@@ -78,20 +80,20 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 
 	public SchoolUser addTeacher(School school, User user) throws RemoteException, CreateException, FinderException {
-		return addUser(school, user, USER_TYPE_TEACHER);	
+		return addUser(school, user, USER_TYPE_TEACHER,false);	
 	}
 
 	public SchoolUser addHeadmaster(School school, User user) throws RemoteException, CreateException, FinderException {
-		SchoolUser sUser = addUser(school, user, USER_TYPE_HEADMASTER);
+		SchoolUser sUser = addUser(school, user, USER_TYPE_HEADMASTER,false);
 		return sUser;
 	}
 
 	public SchoolUser addAssistantHeadmaster(School school, User user) throws RemoteException, CreateException, FinderException {
-		return addUser(school, user, USER_TYPE_ASSISTANT_HEADMASTER);	
+		return addUser(school, user, USER_TYPE_ASSISTANT_HEADMASTER,false);	
 	}
 
 	public SchoolUser addWebAdmin(School school, User user) throws RemoteException, CreateException, FinderException {
-		return addUser(school, user, USER_TYPE_WEB_ADMIN);	
+		return addUser(school, user, USER_TYPE_WEB_ADMIN,false);	
 	}
 
 	public void setUserGroups(School school, User user, int userType) throws RemoteException, FinderException {

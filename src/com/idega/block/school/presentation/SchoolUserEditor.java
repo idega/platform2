@@ -22,6 +22,7 @@ import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
+import com.idega.block.school.data.SchoolUserHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.EmailHome;
@@ -30,6 +31,7 @@ import com.idega.core.contact.data.PhoneHome;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -100,6 +102,7 @@ public class SchoolUserEditor extends Block {
 	private String PARAMETER_DELTE_USER = "sue_dls";
 	private String PARAMETER_EDIT_SCH_DEP = "sue_edsd";
 	private String PARAMETER_DELETE_SCH_DEP = "sue_dlsd";
+	private static final String PARAMETER_IS_ECONOMICAL_RESP = "sue_is_economical_responsible";
 
 	private Text TEXT_NORMAL;
 	private Text TEXT_TITLE;
@@ -238,11 +241,12 @@ private Table schoolUsersTable(IWContext iwc, School school, boolean addSubmitBu
 		Table contTable = new Table();
 		int cRow = 1;
 			Table tableUf = this.getUserForm(iwc, school);
-			contTable.add(tableUf, 1, cRow);
+			contTable.add(tableUf, 1, cRow++);
 		
+			contTable.setColor(1, cRow, "#c7c7c7");
+			contTable.setHeight(1, cRow++, "1");
+
 		try {
-			
-			//int cRow = 0;
 			Collection suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
 
 			if (suTypes != null && !suTypes.isEmpty()) {
@@ -267,7 +271,9 @@ private Table schoolUsersTable(IWContext iwc, School school, boolean addSubmitBu
 											  
 							int userId = ((Integer) hm.getPrimaryKey()).intValue();
 							if (userId == userToEdit) {
+								table.setHeight (row++, 3);
 								row = insertEditableUserIntoTable(table, hm, Integer.parseInt(userType[2]), row);
+								table.setHeight (row++, 6);
 							}else {
 								row = insertUserIntoTable(table, hm, row);
 							}
@@ -278,96 +284,6 @@ private Table schoolUsersTable(IWContext iwc, School school, boolean addSubmitBu
 			} else {
 				cRow = 1;	
 			}
-/*
-			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.headmaster","Headmaster")), 1, 1);
-			Collection users = getSchoolUserBusiness(iwc).getHeadmasters(school);
-			if (users != null && users.size() > 0) {
-				Iterator iter = users.iterator();
-				Table table = new Table();
-				int row = 1;
-				while (iter.hasNext()) {
-					User hm = uHome.findByPrimaryKey(iter.next());
-					int userId = ((Integer) hm.getPrimaryKey()).intValue();
-					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_HEADMASTER, row);
-					}else {
-						row = insertUserIntoTable(table, hm, row);
-					}
-				}
-				contTable.add(table, 1, 2);
-			}
-
-			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant headmaster")), 1, 3);
-			users = getSchoolUserBusiness(iwc).getAssistantHeadmasters(school);
-			if (users != null && users.size() > 0) {
-				Iterator iter = users.iterator();
-				Table table = new Table();
-				int row = 1;
-				while (iter.hasNext()) {
-					User hm = uHome.findByPrimaryKey(iter.next());
-					int userId = ((Integer) hm.getPrimaryKey()).intValue();
-					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER, row);
-					}else {
-						row = insertUserIntoTable(table, hm, row);
-					}
-//						row = insertUserIntoTable(table, row, hm);
-				}
-				contTable.add(table, 1, 4);
-			}
-
-			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.web_administrators","Web administrators")), 1, 5);
-			users = getSchoolUserBusiness(iwc).getWebAdmins(school);
-			if (users != null && users.size() > 0) {
-				Iterator iter = users.iterator();
-				Table table = new Table();
-				int row = 1;
-				while (iter.hasNext()) {
-					User hm = uHome.findByPrimaryKey(iter.next());
-					int userId = ((Integer) hm.getPrimaryKey()).intValue();
-					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN, row);
-					}else {
-						row = insertUserIntoTable(table, hm, row);
-					}
-//						row = insertUserIntoTable(table, row, hm);
-				}
-				contTable.add(table, 1, 5);
-			}
-				
-			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.teachers","Teachers")), 1, 6);
-			users = getSchoolUserBusiness(iwc).getTeachers(school);
-			if (users != null && users.size() > 0) {
-				Iterator iter = users.iterator();
-				Table table = new Table();
-				int row = 1;
-				while (iter.hasNext()) {
-					User hm = uHome.findByPrimaryKey(iter.next());
-					int userId = ((Integer) hm.getPrimaryKey()).intValue();
-					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_TEACHER, row);
-					}else {
-						row = insertUserIntoTable(table, hm, row);
-					}
-//						row = insertUserIntoTable(table, row, hm);
-				}
-				contTable.add(table, 1, 7);
-			}
-			*/
-			/** ATH SETJA USERA I GROUPUR, SEM HAEGT ER AD SETJA IB_PAGE_ID A.... EKKI GLEYMA THESSU */
-			/** VIRKAR !!! HURRA  
-			String rui = iwc.getParameter("repp_user_id");
-			contTable.add("rui : " +rui , 1, 7);
-			UserChooser uc = new UserChooser("repp_user_id");
-			uc.setValidUserPks(users);
-			contTable.add(uc, 1, 7);
-			*/
-						
-			/** Empty User field */
-			/*Table table = this.getUserForm(iwc, school);
-
-			contTable.add(table, 1, cRow);
-*/
 			if (addSubmitButton) {
 				++cRow;
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save","Save"), PARAMETER_ACTION, ACTION_UPDATE);
@@ -461,7 +377,9 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 									contTable.add(tMainHeadmaster, 1, 9);
 								
 									if (userId == userToEdit) {
+										table.setHeight (rowMHM++, 3);
 										rowMHM = insertEditableHighschUserIntoTable(tableMHM, hm, Integer.parseInt(userType[2]), rowMHM, show);
+										table.setHeight (rowMHM++, 6);
 									}else {
 										rowMHM = insertHighschUserIntoTable(tableMHM, hm, rowMHM, show);
 									}
@@ -469,7 +387,9 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 								}
 								else {
 									if (userId == userToEdit) {
+										table.setHeight (row++, 3);
 										row = insertEditableHighschUserIntoTable(table, hm, Integer.parseInt(userType[2]), row, show);
+										table.setHeight (row++, 6);
 									}else {
 										row = insertHighschUserIntoTable(table, hm, row, show);
 									}
@@ -918,12 +838,25 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 		if (row >= mRow && row >= mobRow) {
 			++row;
 		}else if (mobRow >= row && mobRow >= mRow) {
-			row = mobRow + 1;
+			row = mobRow;
 		}else {
-			row = mRow + 1;
+			row = mRow;
 		}
 							
+		table.setHeight (row++, 6);
+		addIsEconomicalResponsibleCheckBox (table, row++, hm);
+		magnifyTableRows (table, uRow, row);
+
 		return row;
+	}
+
+	private void magnifyTableRows (final Table table, final int startRow, final int endRow) {
+		for (int i = startRow; i < endRow; i++) {
+			table.setRowColor (i, "#d0daea");
+		}
+		table.setCellpadding (0);
+		table.setCellspacing (0);
+		table.setWidth (Table.HUNDRED_PERCENT);
 	}
 
 	private int insertUserIntoTable(Table table, User hm, int row) {
@@ -994,7 +927,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;
 		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
 		String sid = PARAMETER_SCHOOL_USER_ID;
-
+		
 		Collection emails;
 		Collection phones;
 		int uRow = row;
@@ -1051,12 +984,49 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 							this.setTextInputStyle(pPhone);
 							table.add(pPhone, 5, row);
 		//					this.addLeft(_iwrb.getLocalizedString("school.add_phone","Add Phone"), pPhone, true);
-							if (row >= mRow) {
-								++row;
-							}else {
-								row = mRow + 1;
+							if (row < mRow) {
+								row = mRow;
 							}
+							table.setHeight (row++, 6);
+							addIsEconomicalResponsibleCheckBox (table, row++, hm);
+							magnifyTableRows (table, uRow, row);
+
 		return row;
+	}
+
+	private void addIsEconomicalResponsibleCheckBox (final Table table, final int row, final User user) {
+
+		boolean isEconomicalResponsible = false;
+		if (null != user) {
+			try {
+				final Collection users = getSchoolUserHome ().findByUser (user);
+				if (null != users && !users.isEmpty ()) {
+					final SchoolUser schoolUser = (SchoolUser) users.iterator ().next ();
+					isEconomicalResponsible = schoolUser.isEconomicalResponsible ();
+				}
+			} catch (Exception e) {
+				e.printStackTrace ();
+			}
+		}
+		final String parameterKey = getIsEconomicalResponsibleKey (user);
+		final CheckBox isEconomicalResponsibleButton
+				= new CheckBox (parameterKey, "true");
+		isEconomicalResponsibleButton.setChecked (isEconomicalResponsible);	
+		table.mergeCells (1, row, table.getColumns (), row);
+		table.add (isEconomicalResponsibleButton, 1, row);
+		table.add (Text.getNonBrakingSpace (), 1, row);
+		table.add (getTextNormal (_iwrb.getLocalizedString (PARAMETER_IS_ECONOMICAL_RESP, PARAMETER_IS_ECONOMICAL_RESP)), 1, row);
+	}
+
+	private static String getIsEconomicalResponsibleKey (final User user) {
+		return getIsEconomicalResponsibleKey (null == user ? ""
+																					: user.getPrimaryKey () + "");
+	}
+
+	private static String getIsEconomicalResponsibleKey (final String postFix) {
+		final String result = PARAMETER_IS_ECONOMICAL_RESP
+				+ (null == postFix || 0 == postFix.length () ? "" : '_' + postFix);
+		return result;
 	}
 
 	/**
@@ -1091,10 +1061,6 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
-//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_HEADMASTER , _iwrb.getLocalizedString("headmaster","Headmaster"));
-//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER , _iwrb.getLocalizedString("assistant_headmaster","Assistant headmaster"));
-//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN, _iwrb.getLocalizedString("web_administrator","Web administrator"));
-//			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_TEACHER , _iwrb.getLocalizedString("teacher","Teacher"));
 		
 		TextInput pName = new TextInput(name);
 		TextInput pEmail = new TextInput(email);
@@ -1116,6 +1082,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 		table.add(tPhone, 4, 1);
 		table.add(pPhone, 4, 2);
 
+		addIsEconomicalResponsibleCheckBox (table, 5, null);
 
 		return table;
 	}
@@ -1260,6 +1227,8 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 			table.mergeCells(1, 3, 3, 3);
 			table.mergeCells(1, 5, 7, 5);
 
+			addIsEconomicalResponsibleCheckBox (table, 8, null);
+
 			return table;
 		}
 		
@@ -1398,7 +1367,10 @@ private Table getDepartmentForm() {
 						}
 					}else {
 						getUserBusiness(iwc).updateUser(user, name, "", "", null, null, null, null, null, (Integer) priGroup.getPrimaryKey());
-						getSchoolUserBusiness(iwc).updateSchUser(school, user, iUserType, showcontactEdit);
+						final String parameterKey = getIsEconomicalResponsibleKey (hId);
+						final boolean isEconomicalResponsible = Boolean.valueOf
+								(iwc.getParameter (parameterKey)).booleanValue ();
+						getSchoolUserBusiness(iwc).updateSchUser(school, user, iUserType, showcontactEdit, isEconomicalResponsible);
 
 						try {
 							getSchoolUserBusiness(iwc).setUserGroups(school, user, iUserType);
@@ -1492,9 +1464,9 @@ private Table getDepartmentForm() {
 			}
 			
 			if (headmaster != null && !headmaster.equals("") && priGroup != null) {
+				final String parameterKey = getIsEconomicalResponsibleKey ("");
+				final boolean isEconomicalResponsible = Boolean.valueOf (iwc.getParameter (parameterKey)).booleanValue ();
 				User user = getUserBusiness(iwc).createUser(headmaster, "","", ((Integer)priGroup.getPrimaryKey()).intValue());
-//				getSchoolUserBusiness(iwc).addWebAdmin(school, user);
-//				getSchoolBusiness(iwc).addHeadmaster(school, user);
 				
 				if (hmEmail != null && !hmEmail.equals("")) {
 					Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
@@ -1521,9 +1493,9 @@ private Table getDepartmentForm() {
 				
 				SchoolUser schUsr;
 				if (_highSchoolCategory) {
-					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, showcontact, main_headmaster);
+					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, showcontact, main_headmaster, isEconomicalResponsible);
 				}else {
-					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
+					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, isEconomicalResponsible);
 				}
 
 				postSaveNew(school, user, iUserType);
@@ -1812,4 +1784,8 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
 		}
   	
 	}	
+
+	private static SchoolUserHome getSchoolUserHome () throws IDOLookupException {
+		return (SchoolUserHome) IDOLookup.getHome (SchoolUser.class);
+	}
 }
