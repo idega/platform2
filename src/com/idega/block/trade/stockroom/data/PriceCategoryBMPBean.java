@@ -44,6 +44,7 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
     addAttribute(getColumnNameCountAsPerson(), "count as person", true, true, Boolean.class);
     /** added 20.11.2002 by gimmi */
     addAttribute(getColumnNameVisibility(), "visibility", true, true, Integer.class);
+    addAttribute(getColumnNameKey(), "key", true, true, String.class);
 
     this.addManyToManyRelationShip(Address.class);
     this.addTreeRelationShip();
@@ -122,6 +123,14 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
   public int getParentId(){
     return getIntColumnValue(getColumnNameParentId());
   }
+  
+  public void setKey(String key) {
+  	setColumn(getColumnNameKey(), key);
+  }
+  
+  public String getKey() {
+  	return getStringColumnValue(getColumnNameKey());
+  }
 
   public void setCountAsPerson(boolean countAsPerson) {
     setColumn(getColumnNameCountAsPerson(), countAsPerson);
@@ -170,6 +179,6 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
   public static String getColumnNameCountAsPerson() {return "COUNT_AS_PERSON";}
   public static String getPriceCategoryTableName() {return "SR_PRICE_CATEGORY";}
 	public static String getColumnNameVisibility() {return "PRICE_VISIBILITY";}
-
+	public static String getColumnNameKey() { return "CATEGORY_KEY";}
 }
 
