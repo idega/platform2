@@ -459,7 +459,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			Table addressTable = new Table(3, 8);
 			addressTable.setCellpaddingAndCellspacing(0);
 			Text sNameText = new Text(_iwrb.getLocalizedString("school.address", "Address"));
-			Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
+			//Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
 			Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area code"));
 			Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip area"));
 			Text sPhoneText = new Text(_iwrb.getLocalizedString("school.phone","Phone"));

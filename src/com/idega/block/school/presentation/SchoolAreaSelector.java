@@ -93,8 +93,8 @@ public class SchoolAreaSelector extends Block {
 
 private void drawHighSchoolList(IWContext iwc) throws RemoteException {
 			SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
-			SchoolArea sArea;
-			int iAreaId;
+			//SchoolArea sArea;
+			//int iAreaId;
 		
 			Collection coll;
 			SchoolCategory highSchoolCategory = sb.getCategoryHighSchool();

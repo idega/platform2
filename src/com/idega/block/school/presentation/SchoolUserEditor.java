@@ -589,9 +589,6 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 
 private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) throws RemoteException {
 		
-		int uRow;
-		int mRow;
-		int mobRow;
 		table.setWidth(2, "5");
 		table.setWidth(4, "5");
 		table.setWidth(6, "5");
@@ -599,7 +596,6 @@ private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) t
 		//table.setWidth(10, "5");
 		//table.setWidth(12, "5");
 
-		uRow = row;
 		String schDepId = schDep.getPrimaryKey().toString();
 		
 		String phone = schDep.getDepartmentPhone();
@@ -657,13 +653,13 @@ private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) t
 			String sdid = PARAMETER_SCHOOL_DEPARTMENT_ID;
 
 			
-			int uRow = row;
-			int mRow;
-			int mobRow;
+			//int uRow = row;
+			//int mRow;
+			//int mobRow;
 		
 			String schDepId = schDep.getPrimaryKey().toString();
-			String department = schDep.getDepartment();
-			String phone = schDep.getDepartmentPhone();
+			//String department = schDep.getDepartment();
+			//String phone = schDep.getDepartmentPhone();
 			
 			HiddenInput inp = new HiddenInput(sdid, schDepId);
 			//HiddenInput dphInp = new HiddenInput(PARAMETER_SCHOOL_DEPARTMENT_PHONE+"_"+hmId, Integer.toString(userType));
@@ -819,7 +815,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
 		String smobilephone = PARAMETER_SCHOOL_USER_MOBILEPHONE;
 		String sid = PARAMETER_SCHOOL_USER_ID;
-		String schDepId = PARAMETER_SCHOOL_DEPARTMENT_ID;
+		//String schDepId = PARAMETER_SCHOOL_DEPARTMENT_ID;
 
 		Collection emails;
 		Collection phones;
@@ -889,13 +885,13 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 					TextInput pPhone;
 				if (phone.getPhoneTypeId() != mobilePhoneType) {
 					pPhone = new TextInput(sphone+"_"+hmId+"_"+phone.getPrimaryKey(), phone.getNumber());
-					String adsad = phone.getNumber();
+					//String adsad = phone.getNumber();
 					this.setTextInputStyle(pPhone);
 					table.add(pPhone, 7, row);
 					++row;
 				} else if (phone.getPhoneTypeId() == mobilePhoneType){
 					pPhone = new TextInput(smobilephone+"_"+hmId+"_"+phone.getPrimaryKey(), phone.getNumber());
-					String adsad = phone.getNumber();
+					//String adsad = phone.getNumber();
 					this.setTextInputStyle(pPhone);
 					table.add(pPhone, 9, mobRow);
 					++mobRow;
@@ -1127,8 +1123,8 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 			String email = PARAMETER_SCHOOL_USER_EMAIL;
 			String phone = PARAMETER_SCHOOL_USER_TELEPHONE;
 			String mobilephone = PARAMETER_SCHOOL_USER_MOBILEPHONE;
-			String school_department = PARAMETER_SCHOOL_DEPARTMENT;
-			String school_department_phone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
+			//String school_department = PARAMETER_SCHOOL_DEPARTMENT;
+			//String school_department_phone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
 			String showcontact = PARAMETER_SCHOOL_SHOW_CONTACT;
 			String mainheadmaster = PARAMETER_SCHOOL_MAIN_HEADMASTER;
 			
@@ -1275,12 +1271,12 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 			table.setAlignment(3, 1, "right");
 			//Malin departement = Enhet
 			Text tPhone = getTextNormal(_iwrb.getLocalizedString("school.phone","Phone"));
-			Text tDepartment = getTextTitle(_iwrb.getLocalizedString("school.department","Department"));
+			//Text tDepartment = getTextTitle(_iwrb.getLocalizedString("school.department","Department"));
 			Text tDepartmentName = getTextNormal(_iwrb.getLocalizedString("school.department_name","Department name"));
-			Text tDepartment2 = getTextNormal(_iwrb.getLocalizedString("school.department","Department"));
+			//Text tDepartment2 = getTextNormal(_iwrb.getLocalizedString("school.department","Department"));
 			Text tCreateDepm = getTextTitle(_iwrb.getLocalizedString("school.create_department","Create new department"));
-			Text tAddPerson = getTextTitle(_iwrb.getLocalizedString("school.add_person","Add new person"));
-			Text tShowinContactlist = getTextNormal(_iwrb.getLocalizedString("school.show_in_contactl","Show in contactlist"));
+			//Text tAddPerson = getTextTitle(_iwrb.getLocalizedString("school.add_person","Add new person"));
+			//Text tShowinContactlist = getTextNormal(_iwrb.getLocalizedString("school.show_in_contactl","Show in contactlist"));
 	
 			
 				
@@ -1553,7 +1549,7 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 public void deleteDepartment(IWContext iwc, School school) throws FinderException, RemoteException {
 		String depmId = iwc.getParameter(PARAMETER_DELETE_SCH_DEP);
 		if (depmId != null) {
-			String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);		
+			//String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);		
 			
 			
 			SchoolDepartmentHome schoolDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
@@ -1586,19 +1582,19 @@ public boolean updateDepartment(IWContext iwc, School school) throws RemoteExcep
 		String sdid = iwc.getParameter(PARAMETER_SCHOOL_DEPARTMENT_ID);
 		//String idid = iwc.getParameter(sdid);
 		////int school_id = PARAMETER_SCHOOL_ID;
-		String dep_upd = iwc.getParameter(ACTION_UPDATE_DEPM);
+		//String dep_upd = iwc.getParameter(ACTION_UPDATE_DEPM);
 		
 		/** Updating departments */
 		//try {
 				
 			if (sdid != null) {						
-				SchoolDepartmentHome schoolDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
+				/*SchoolDepartmentHome schoolDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
 				SchoolDepartment schDep;
 				try {
 					schDep = schoolDepHome.findByPrimaryKey(new Integer(sdid));
 				}catch (Exception e) {
 				 	return false;
-				}
+				}*/
 
 				
 				String departmentname  = iwc.getParameter(sdepartmentname + "_" + sdid);
