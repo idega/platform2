@@ -252,16 +252,27 @@ public class Member extends com.idega.data.genericentity.Member {
 
   public void setMainUnion(int iUnionId) throws SQLException {
 
-    UnionMemberInfo[] unies = (UnionMemberInfo[]) (new UnionMemberInfo()).findAllByColumn("member_id",this.getID());
+    UnionMemberInfo info = new UnionMemberInfo();
 
-    for (int i = 0; i < unies.length; i++) {
-      if( unies[i].getID()!= iUnionId )
-        unies[i].setMembershipType("sub");
-      else {
-        unies[i].setMembershipType("main");
-        unies[i].setMemberStatus("A");
+    UnionMemberInfo[] unies = (UnionMemberInfo[]) info.findAllByColumn("member_id",this.getID());
+    if(unies.length>0){
+      for (int i = 0; i < unies.length; i++) {
+        if( unies[i].getID()!= iUnionId )
+          unies[i].setMembershipType("sub");
+        else {
+          unies[i].setMembershipType("main");
+          unies[i].setMemberStatus("A");
+        }
+        unies[i].update();
       }
-      unies[i].update();
+    }
+    else{
+      info.setMemberStatus('A');
+      info.setMembershipType("main");
+      info.setRegistrationDate(com.idega.util.idegaTimestamp.RightNow().getSQLDate());
+      info.setUnionID(iUnionId);
+      info.setMemberID(this.getID());
+      info.insert();
     }
   }
 
@@ -527,9 +538,9 @@ public class Member extends com.idega.data.genericentity.Member {
     super.insert();
   };
 
-    public void insertStartData(){
-      //Administrator member created in LoginTable
+  public void insertStartData(){
+    //Administrator member created in LoginTable
 
-    }
+  }
 
 }

@@ -15,7 +15,7 @@ import com.idega.core.ICTreeNode;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class Union extends GenericEntity implements idegaTreeNode,ICTreeNode{
+public class Union extends TreeableEntity implements idegaTreeNode,ICTreeNode{
 
         public static String sClassName = "com.idega.projects.golf.entity.Union";
 
@@ -40,6 +40,11 @@ public class Union extends GenericEntity implements idegaTreeNode,ICTreeNode{
                       addManyToManyRelationShip("com.idega.projects.golf.entity.Group","union_group");
 
 	}
+
+        //Fix for the union_tree table so that the addChild() function in TreeableEntity works
+        public void addTreeRelationShip(){
+          EntityControl.addManyToManyRelationShip(this,this,"union_tree");
+        }
 
 	public String getEntityName(){
 		return "union_";
@@ -215,7 +220,7 @@ public int getChildCount(){
  * Returns the index of node in the receivers children.
  */
 public int getIndex(idegaTreeNode node){
-  return this.getID();
+  return ((Union)node).getID();
 }
 
 /**

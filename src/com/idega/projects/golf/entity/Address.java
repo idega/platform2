@@ -115,6 +115,7 @@ public class Address extends GolfEntity{
 		return getIntColumnValue("country_id");
 	}
 
+
 	public void setCountryId(Integer country_id){
 		setColumn("country_id",country_id);
 	}
