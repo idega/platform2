@@ -18,7 +18,6 @@ import com.idega.io.MemoryInputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.CalendarMonth;
-import com.idega.util.CalendarMonth;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -53,11 +52,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/20 23:18:26 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/22 12:20:36 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
