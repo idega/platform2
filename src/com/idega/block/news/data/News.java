@@ -25,7 +25,7 @@ public class News extends GenericEntity{
     addAttribute(getNewsDateColumnName(), "Date", true, true, java.sql.Timestamp.class);
     addAttribute(getAuthorColumnName(), "Author", true, true, String.class);
     addAttribute(getSourceColumnName(), "Source", true, true, String.class);
-    addAttribute(getDaysShownColumnName(), "Days shown", true, true, String.class);
+    addAttribute(getDaysShownColumnName(), "Days shown", true, true, Integer.class);
   }
   public String getEntityName(){
     return getNewsTableName();
