@@ -1,6 +1,7 @@
 package com.idega.block.datareport.business;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.FileUtil;
@@ -262,6 +264,29 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       }
       return null;
     }
+  }    
+  
+  public JasperDesign getDesignFromBundle(IWBundle bundle, String layoutXMLFileName) {
+	FileInputStream inputStream = null;
+  	try {
+	  inputStream = new FileInputStream(new File(bundle.getRealPathWithFileNameString(layoutXMLFileName)));
+
+	  JasperDesign design = JasperManager.loadXmlDesign(inputStream);
+	  inputStream.close();
+	  return design;
+	}
+	catch (Exception ex)  {
+	  System.err.println("[JasperReportBusiness]: File could not be read");
+	  ex.printStackTrace(System.err);
+	  try {
+	  	if(inputStream!=null){
+	  		inputStream.close();
+	  	}
+	  }
+	  catch (IOException streamEx)  {
+	  }
+	  return null;
+	}
   }    
 
   private ICFile getFile(int fileId)  {
