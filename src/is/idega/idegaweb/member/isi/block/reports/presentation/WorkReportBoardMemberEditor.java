@@ -428,8 +428,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       member.setEmail(value.toString());
     }
     else if (pathShortKey.equals(LEAGUE)) {
-      String oldWorkGroupName = valueContainer.getPreviousValue().toString();
-      String newWorkGroupName = valueContainer.getValue().toString();
+      // special case, sometimes there is not a previous value
+      Object previousValue = valueContainer.getPreviousValue();
+      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
+      String newWorkGroupName = value.toString();
       int year = getYear();
       try {
         workReportBusiness.changeWorkReportGroupOfMember(oldWorkGroupName, year, newWorkGroupName, year, member);
