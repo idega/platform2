@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultPlacementHelper.java,v 1.4 2005/03/09 19:53:56 laddi Exp $
+ * $Id: DefaultPlacementHelper.java,v 1.5 2005/03/09 20:24:26 laddi Exp $
  * Created on 5.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- * Last modified: $Date: 2005/03/09 19:53:56 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/09 20:24:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DefaultPlacementHelper implements PlacementHelper {
 
@@ -86,12 +86,6 @@ public class DefaultPlacementHelper implements PlacementHelper {
 		if (contract != null) {
 			IWTimestamp contractDate = new IWTimestamp(contract.getValidFromDate());
 			if (iLog != null) {
-				if (contract.getTerminatedDate() == null && iLog.getEndDate() != null) {
-					IWTimestamp logEndDate = new IWTimestamp(iLog.getEndDate());
-					logEndDate.addDays(1);
-					return logEndDate.getDate();
-				}
-				
 				IWTimestamp logDate = new IWTimestamp(iLog.getStartDate());
 				if (logDate.isLaterThan(contractDate)) {
 					logDate.addDays(1);

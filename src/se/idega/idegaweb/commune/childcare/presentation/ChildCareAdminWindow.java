@@ -1016,31 +1016,28 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 		if (deadlinePeriod != null && deadlinePeriod.getFirstTimestamp() != null) {
-
-			// deadline has passed
-
 			if (helper.hasDeadlinePassed()) {
-//				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 				if (rejectionDate != null)
 					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " + format.format(rejectionDate.getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			}
 			// still within deadline
 			else {
-//				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
 				if (rejectionDate != null)
 					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " +  format.format(rejectionDate.getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			}
-
 		}
 		else {
 			dateInput.setDate(stamp.getDate());
-//			dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
 			if (rejectionDate != null)
 				dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " + format.format(rejectionDate.getDate()));
 		}
-		dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));
+		if (helper.hasEarliestPlacementDate()) {
+			IWTimestamp date = new IWTimestamp(helper.getEarliestPlacementDate());
+			dateInput.setEarliestPossibleDate(date.getDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));
+			dateInput.setDate(date.getDate());
+		}
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
