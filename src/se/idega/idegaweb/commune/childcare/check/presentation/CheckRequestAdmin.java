@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.childcare.check.presentation;
 
 import is.idega.block.family.business.FamilyLogic;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -449,7 +450,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 			subject.append(" ");
 			subject.append(child.getName());
 		}
-		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check has been granted");
+		Object[] arguments = { child.getName() };
+		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check for {0} has been granted");
+		body = MessageFormat.format(body, arguments);
 		
 		try {
 			getCheckBusiness(iwc).approveCheck(check, subject.toString(), body, iwc.getCurrentUser());
@@ -476,7 +479,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 			subject.append(" ");
 			subject.append(child.getName());
 		}
-		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body", "Your check has been denied");
+		Object[] arguments = { child.getName() };
+		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body", "Your check for {0} has been denied");
+		body = MessageFormat.format(body, arguments);
 		getCheckBusiness(iwc).retrialCheck(check, subject.toString(), body, iwc.getCurrentUser());
 
 		viewCheckList(iwc);
