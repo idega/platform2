@@ -12,6 +12,7 @@ import com.idega.data.query.Column;
 import com.idega.data.query.CountColumn;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
+import com.idega.data.query.SumColumn;
 import com.idega.data.query.Table;
 
 
@@ -241,6 +242,17 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		SelectQuery query = new SelectQuery(table);
 		Column column = new Column(table, "scorecard_date");
 		query.addColumn(new CountColumn(table, this.getIDColumnName()));
+		query.addCriteria(new MatchCriteria(table, "member_id", MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(column, true));
+		return this.idoGetNumberOfRecords(query.toString());
+  }
+
+  public int ejbHomeGetSumPointsByMember(int member) throws IDOException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		Column column = new Column(table, "scorecard_date");
+		query.addColumn(new SumColumn(table, "total_points"));
 		query.addCriteria(new MatchCriteria(table, "member_id", MatchCriteria.EQUALS, member));
 		query.addCriteria(new MatchCriteria(column, true));
 		return this.idoGetNumberOfRecords(query.toString());

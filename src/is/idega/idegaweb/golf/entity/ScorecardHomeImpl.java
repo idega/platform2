@@ -52,5 +52,12 @@ public int getCountRoundsPlayedByMember(int p0)throws com.idega.data.IDOExceptio
 	return theReturn;
 }
 
+public int getSumPointsByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ScorecardBMPBean)entity).ejbHomeGetSumPointsByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }

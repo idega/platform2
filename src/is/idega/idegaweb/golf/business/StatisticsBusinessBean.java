@@ -102,7 +102,19 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 		return null;
 	}
 	
-	public double getNumberOnFairwayByMember(int member){
+	public int getNumberOnFairwayByMember(int member){
+		try {
+			return getHome().getNumberOnFairwayByMember(member);
+		}
+		catch (IDOException ie) {
+			return 0;
+		}
+		catch (IDOLookupException e) {
+			return 0;
+		}
+	}
+	
+	public double getFairwayAverageByMember(int member){
 		double fairwayPercent = 0;
 		try {			
 			int totalCount = getHome().getCountFairwaysByMember(member);
@@ -115,7 +127,19 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 		return fairwayPercent;
 	}
 
-	public double getNumberOnGreenByMember(int member){
+	public int getNumberOnGreenByMember(int member) {
+		try {
+			return getHome().getNumberOnGreenByMember(member);
+		}
+		catch (IDOException ie) {
+			return 0;
+		}
+		catch (IDOLookupException e) {
+			return 0;
+		}
+	}
+	
+	public double getOnGreenAverageByMember(int member){
 		double greenPercent = 0;
 		try {
 			int totalCount = getHome().getCountOnGreenByMember(member);
@@ -208,6 +232,17 @@ public class StatisticsBusinessBean extends IBOServiceBean implements Statistics
 	public int getSumOfStrokesByMember(int member) {
 		try {
 			return getStrokesHome().getSumOfStrokesByMember(member);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (IDOException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public int getSumOfPointsByMember(int member) {
+		try {
+			return getScorecardHome().getSumPointsByMember(member);
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (IDOException e) {

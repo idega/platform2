@@ -24,6 +24,9 @@ public class HandicapMemberStatistics extends GolfBlock {
 
 	private boolean iShowHoleStatistics = true;
 	private boolean iShowTotalStatistics = false;
+	private boolean iShowRegisteredStatistics = false;
+	
+	private boolean iShowInfo = false;
 	
 	private StatisticsBusiness statBusiness;
 	String iMemberID;
@@ -57,6 +60,9 @@ public class HandicapMemberStatistics extends GolfBlock {
 		else if (iShowTotalStatistics) {
 			getTotalStatistics(iwc);
 		}
+		else if (iShowRegisteredStatistics) {
+			getRegisteredStatistics(iwc);
+		}
 	}
 	
 	private void getHoleStatistics(IWContext iwc) throws RemoteException {
@@ -80,7 +86,7 @@ public class HandicapMemberStatistics extends GolfBlock {
 			averageDoubleBogeys = (double) doubleBogeys / (double) totalStrokes;
 		}
 
-		Table table = new Table(3, 6);
+		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -117,16 +123,22 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.add(getSmallText(statBusiness.getPercentText(averageDoubleBogeys)), 3, row);
 		table.setRowStyleClass(row++, getLightRowClass());
 		
+		if (iShowInfo) {
+			table.mergeCells(1, row, 3, row);
+			table.setCellpadding(1, row, 4);
+			table.add(getText(localize("handicap.hole_statistics_info", "The statistics shows information calculated from every scorecard entered in the database for the golfer.")), 1, row);
+		}
+		
 		add(table);
 	}
 	
 	private void getTotalStatistics(IWContext iwc) throws RemoteException {
 		int strokes = statBusiness.getSumOfStrokesByMember(Integer.parseInt(iMemberID));
-		int putts = statBusiness.getSumOfPuttsByMember(Integer.parseInt(iMemberID));
+		int points = statBusiness.getSumOfPointsByMember(Integer.parseInt(iMemberID));
 		int holesPlayed = statBusiness.getNumberOfHolesPlayedByMember(Integer.parseInt(iMemberID));
 		int roundsPlayed = statBusiness.getNumberOfRoundsByMember(Integer.parseInt(iMemberID));
 
-		Table table = new Table(2, 5);
+		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -140,13 +152,8 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.add(getSmallText(String.valueOf(strokes)), 2, row);
 		table.setRowStyleClass(row++, getLightRowClass());
 
-		table.add(getSmallText(localize("handicap.putts", "Putts")), 1, row);
-		if (putts > 0) {
-			table.add(getSmallText(String.valueOf(putts)), 2, row);
-		}
-		else {
-			table.add(getSmallText("-"), 2, row);
-		}
+		table.add(getSmallText(localize("handicap.points", "Points")), 1, row);
+		table.add(getSmallText(String.valueOf(points)), 2, row);
 		table.setRowStyleClass(row++, getDarkRowClass());
 
 		table.add(getSmallText(localize("handicap.holes_played_total", "Holes played")), 1, row);
@@ -157,6 +164,75 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.add(getSmallText(String.valueOf(roundsPlayed)), 2, row);
 		table.setRowStyleClass(row++, getDarkRowClass());
 
+		if (iShowInfo) {
+			table.mergeCells(1, row, 2, row);
+			table.setCellpadding(1, row, 4);
+			table.add(getText(localize("handicap.total_statistics_info", "The statistics shows information calculated from every scorecard entered in the database for the golfer.")), 1, row);
+		}
+		
+		add(table);
+	}
+	
+	private void getRegisteredStatistics(IWContext iwc) throws RemoteException {
+		int fairways = statBusiness.getNumberOnFairwayByMember(Integer.parseInt(iMemberID));
+		int greens = statBusiness.getNumberOnGreenByMember(Integer.parseInt(iMemberID));
+		int putts = statBusiness.getSumOfPuttsByMember(Integer.parseInt(iMemberID));
+		
+		double averageFairways = statBusiness.getFairwayAverageByMember(Integer.parseInt(iMemberID));
+		double averageGreens = statBusiness.getOnGreenAverageByMember(Integer.parseInt(iMemberID));
+		double averagePutts = statBusiness.getPuttAverageByMember(Integer.parseInt(iMemberID));
+
+		Table table = new Table();
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+		int row = 1;
+		
+		table.add(getSmallHeader(localize("handicap.count", "Count")), 2, row);
+		table.add(getSmallHeader(localize("handicap.average_of_total", "Total")), 3, row);
+		table.setRowStyleClass(row++, getHeaderRowClass());
+		
+		table.add(getSmallText(localize("handicap.fairways", "Fairways")), 1, row);
+		if (fairways > 0) {
+			table.add(getSmallText(String.valueOf(fairways)), 2, row);
+			table.add(getSmallText(statBusiness.getPercentText(averageFairways)), 3, row);
+		}
+		else {
+			table.add(getSmallText("-"), 2, row);
+			table.add(getSmallText("-"), 3, row);
+		}
+		table.setRowStyleClass(row++, getLightRowClass());
+
+		table.add(getSmallText(localize("handicap.green_in_regulation", "GIR")), 1, row);
+		if (fairways > 0) {
+			table.add(getSmallText(String.valueOf(greens)), 2, row);
+			table.add(getSmallText(statBusiness.getPercentText(averageGreens)), 3, row);
+		}
+		else {
+			table.add(getSmallText("-"), 2, row);
+			table.add(getSmallText("-"), 3, row);
+		}
+		table.setRowStyleClass(row++, getDarkRowClass());
+
+		table.add(getSmallText(localize("handicap.putts", "Putts")), 1, row);
+		if (fairways > 0) {
+			table.add(getSmallText(String.valueOf(putts)), 2, row);
+			table.add(getSmallText(statBusiness.getPercentText(averagePutts)), 3, row);
+		}
+		else {
+			table.add(getSmallText("-"), 2, row);
+			table.add(getSmallText("-"), 3, row);
+		}
+		table.setRowStyleClass(row++, getLightRowClass());
+		
+		if (iShowInfo) {
+			table.mergeCells(1, row, 3, row);
+			table.setCellpadding(1, row, 4);
+			table.add(getText(localize("handicap.registered_statistics_info", "The statistics shows information entered manually by user.")), 1, row);
+		}
+		
 		add(table);
 	}
 	
@@ -175,6 +251,7 @@ public class HandicapMemberStatistics extends GolfBlock {
 	public void setShowHoleStatistics(boolean showHoleStatistics) {
 		iShowHoleStatistics = showHoleStatistics;
 		iShowTotalStatistics = !showHoleStatistics;
+		iShowRegisteredStatistics = !showHoleStatistics;
 	}
 	
 	/**
@@ -183,5 +260,22 @@ public class HandicapMemberStatistics extends GolfBlock {
 	public void setShowTotalStatistics(boolean showTotalStatistics) {
 		iShowTotalStatistics = showTotalStatistics;
 		iShowHoleStatistics = !showTotalStatistics;
+		iShowRegisteredStatistics = !showTotalStatistics;
+	}
+	
+	/**
+	 * @param showRegisteredStatistics The iShowRegisteredStatistics to set.
+	 */
+	public void setShowRegisteredStatistics(boolean showRegisteredStatistics) {
+		iShowRegisteredStatistics = showRegisteredStatistics;
+		iShowTotalStatistics = !showRegisteredStatistics;
+		iShowHoleStatistics = !showRegisteredStatistics;
+	}
+	
+	/**
+	 * @param showInfo The iShowInfo to set.
+	 */
+	public void setShowInfo(boolean showInfo) {
+		iShowInfo = showInfo;
 	}
 }

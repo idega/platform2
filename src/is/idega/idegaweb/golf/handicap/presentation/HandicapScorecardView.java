@@ -138,10 +138,10 @@ public class HandicapScorecardView extends GolfWindow {
 				int length = tee.getIntColumnValue("tee_length");
 				total_length += length;
 
-				int par = tee.getIntColumnValue("par");
+				int par = stroke[a].getHolePar();
 				total_par += par;
 
-				int handicap = (int) tee.getHandicap();
+				int handicap = stroke[a].getHoleHandicap();
 
 				int strokes = stroke[a].getStrokeCount();
 				String strokes2 = String.valueOf(strokes);

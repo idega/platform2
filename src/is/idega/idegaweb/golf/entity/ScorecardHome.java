@@ -9,5 +9,6 @@ public interface ScorecardHome extends com.idega.data.IDOHome
  public Scorecard findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public Scorecard findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
  public int getCountRoundsPlayedByMember(int p0)throws com.idega.data.IDOException;
+ public int getSumPointsByMember(int p0)throws com.idega.data.IDOException;
 
 }
