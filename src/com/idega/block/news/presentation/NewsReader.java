@@ -440,12 +440,14 @@ public class NewsReader extends Block implements IWBlock{
 			if(locText!=null){
         sNewsBody =  locText.getBody();
 			}
-			Text newsBody = new Text(sNewsBody);
+
 
 			// shortening newstext
 			if(!showAll && sNewsBody.length() >= numberOfLetters){
 				sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
 			}
+
+			Text newsBody = new Text(sNewsBody);
 
 			if( showAll ) {
 					T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
