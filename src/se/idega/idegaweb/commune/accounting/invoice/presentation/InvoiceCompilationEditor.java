@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/10/31 13:47:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/03 10:09:21 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -41,9 +41,11 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
 public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PREFIX = "cacc_invcmp_";
 
+    private static final String ADJUSTMENT_DATE_DEFAULT = "Justeringsdag";
     private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
-    private static final String ADJUSTMENT_DATE_DEFAULT = "Justerings.dag";
-    private static final String CREATION_DATE_DEFAULT = "Skapande.dag";
+    private static final String AMOUNT_DEFAULT = "Belopp";
+    private static final String AMOUNT_KEY = PREFIX + "amount";
+    private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
@@ -56,14 +58,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
+    private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
+    private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
     private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
     private static final String JOURNAL_ENTRY_DATE_KEY = PREFIX + "journal_entry_date";
     private static final String LAST_NAME_DEFAULT = "Efternamn";
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
+    private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
+    private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
+    private static final String REMARK_DEFAULT = "Anmärkning";
+    private static final String REMARK_KEY = PREFIX + "remark";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SSN_DEFAULT = "Personnummer";
@@ -78,7 +86,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
 
-    private static final String ACTION_KEY = PREFIX + "action_key";
+
+  private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1;
 
@@ -108,7 +117,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 
-        displayRedText (null, "<p>Denna funktion är inte färdig. Bland annat så återstår:<ol><li>klicka på underlag i listan och gå till visa underlag<li>skapa manuell faktura ifrån 'visa underlagslista'<li>ta bort en faktura från listan - bara manuella<li>klicka på faktureringsrad och se detaljer<li>skapa justeringsrad till en faktura<li>se faktureringsunderlag i pdf<li>tillåt inte negativt taxbelopp mm<li>uppdatera totalbelopp och momsersättning vid justering</ol>\n\n");
+        displayRedText (null, "<p>Denna funktion är inte färdig. Bland annat så återstår:<ol><li>skapa manuell faktura ifrån 'visa underlagslista'<li>ta bort en faktura från listan - bara manuella<li>klicka på faktureringsrad och se detaljer<li>skapa justeringsrad till en faktura<li>se faktureringsunderlag i pdf<li>tillåt inte negativt taxbelopp mm<li>uppdatera totalbelopp och momsersättning vid justering</ol>\n\n");
 	}
 	
 	private int parseAction (final IWContext context) {
@@ -144,7 +153,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
-        int row = 1;
+        int row = 2;
+        addOperationFieldDropdown (table, row++); 
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText(table, (null != period ? periodFormatter.format (period)
@@ -178,10 +188,24 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallHeader (table, col++, row, JOURNAL_ENTRY_DATE_KEY,
                         JOURNAL_ENTRY_DATE_DEFAULT, ":");
         addSmallText(table, getFormattedDate (header.getDateJournalEntry ()),
-                     col++, row);
+                     col++, row++);
+ 		final InvoiceRecord [] records
+		        = business.getInvoiceRecordsByInvoiceHeader (header);
+        table.mergeCells (1, row, table.getColumns (), row);            
+        if (0 < records.length) {
+            table.add (getInvoiceRecordListTable (context, records), 1,
+                       row++);
+        } else {
+            table.add (new Text ("no records found for this header"), 1, row++);
+        }
 
+        final Form form = new Form ();
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        final Table outerTable = createTable (1);
+        outerTable.add (form, 1, 1);
         add (createMainTable (INVOICE_COMPILATION_KEY,
-                              INVOICE_COMPILATION_DEFAULT, table));
+                              INVOICE_COMPILATION_DEFAULT, outerTable));
     }
 
     /**
@@ -192,12 +216,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private void showCompilationList (final IWContext context)
         throws RemoteException, FinderException {
         final UserSearcher searcher = createSearcher ();
-        final Table table = createTable (1);
-        int row = 1;
-        table.add (getUserSearcherFormTable (context, searcher), 1, row++);
-        table.add (getPeriodFormTable (context), 1, row++);
+        final Table table = createTable (6);
+        setColumnWidthsEqual (table);
+        int row = 2;
+        addOperationFieldDropdown (table, row++);
+        addUserSearcherForm (table, row++, context, searcher);
+        table.mergeCells (2, row, table.getColumns () - 1, row);
+        addPeriodForm (table, row, context);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
-                                    SEARCH_KEY, SEARCH_DEFAULT), 1, row++);
+                                    SEARCH_KEY, SEARCH_DEFAULT),
+                   table.getColumns (), row++);
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             final User userFound = searcher.getUser ();
@@ -211,7 +239,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             final InvoiceHeader [] headers = business
                     .getInvoiceHeadersByCustodianOrChild (userFound, fromPeriod,
                                                           toPeriod);
-            
+            table.mergeCells (1, row, table.getColumns (), row);            
             if (0 < headers.length) {
                 table.add (getInvoiceCompilationListTable (context, headers), 1,
                            row++);
@@ -238,10 +266,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
                  { INVOICE_RECEIVER_KEY, INVOICE_RECEIVER_DEFAULT },
                  { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT }};
-        final Table table = createTable(columnNames.length);
+        final Table table = createTable (columnNames.length);
         table.setColumns (columnNames.length);
         int row = 1;
-        table.setRowColor(row, getHeaderColor());
+        table.setRowColor(row, getHeaderColor ());
         for (int i = 0; i < columnNames.length; i++) {
             addSmallHeader (table, i + 1, row, columnNames [i][0],
                             columnNames [i][1]);
@@ -257,9 +285,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
-            final InvoiceHeader header = headers [i];
 			showInvoiceHeaderOnARow (table, row++, invoiceBusiness, userHome,
-                                    header);
+                                     headers [i]);
         }
         
        return table;
@@ -288,6 +315,60 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.add (totalAmount + "", col++, row);
 	}
 
+    private Table getInvoiceRecordListTable
+        (final IWContext context, final InvoiceRecord [] records)
+        throws RemoteException, FinderException {
+
+        // set up header row
+        final String [][] columnNames =
+                {{ SSN_KEY, SSN_DEFAULT },
+                 { FIRST_NAME_KEY, FIRST_NAME_DEFAULT },
+                 { INVOICE_TEXT_KEY, INVOICE_TEXT_DEFAULT },
+                 { NUMBER_OF_DAYS_KEY, NUMBER_OF_DAYS_DEFAULT },
+                 { AMOUNT_KEY, AMOUNT_DEFAULT },
+                 { REMARK_KEY, REMARK_DEFAULT }};
+        final Table table = createTable (columnNames.length);
+        table.setColumns (columnNames.length);
+        int row = 1;
+        table.setRowColor(row, getHeaderColor ());
+        for (int i = 0; i < columnNames.length; i++) {
+            addSmallHeader (table, i + 1, row, columnNames [i][0],
+                            columnNames [i][1]);
+        }
+        row++;
+
+        // get some business objects
+        final InvoiceBusiness invoiceBusiness = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+
+        // show each invoice header in a row
+        for (int i = 0; i < records.length; i++) {
+			showInvoiceRecordOnARow (table, row++, invoiceBusiness,
+                                     records [i]);
+        }
+        
+       return table;
+    }
+
+	private void showInvoiceRecordOnARow
+        (final Table table, final int row, final InvoiceBusiness business,
+         final InvoiceRecord record) throws RemoteException {
+		int col = 1;
+		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+		                   : getZebraColor2 ());
+        final User child = business.getChildByInvoiceRecord (record);
+        if (null != child) {
+            table.add (child.getPersonalID (), col++, row);
+            table.add (child.getFirstName (), col++, row);
+        } else {
+            col += 2;
+        }
+		table.add (record.getInvoiceText (), col++, row);
+		table.add (record.getDays () + "", col++, row);
+		table.add (record.getAmount () + "", col++, row);
+		table.add (record.getNotes (), col++, row);
+	}
+
 	/**
 	 * Returns a styled table with content placed properly
 	 *
@@ -301,55 +382,44 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         mainTable.setCellpadding (getCellpadding ());
         mainTable.setCellspacing (getCellspacing ());
         mainTable.setWidth (Table.HUNDRED_PERCENT);
-        mainTable.setRowColor (1, getHeaderColor ());
-        mainTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER) ;
-        addSmallHeader (mainTable, 1, 1,  headerKey, headerDefault);
-        final Table operationTable = new Table ();
-        operationTable.setCellpadding (getCellpadding ());
-        operationTable.setCellspacing (getCellspacing ());
-        operationTable.setColumns (2);
-        addSmallHeader (operationTable, 1, 1, MAIN_ACTIVITY_KEY,
-                        MAIN_ACTIVITY_DEFAULT, ":");
-        String operationalField = getSession ().getOperationalField();
-        operationalField = operationalField == null ? "" : operationalField;
-        operationTable.add (new OperationalFieldsMenu (), 2, 1);
-        mainTable.add (operationTable, 1, 2);
-        mainTable.add (content, 1, 3);
+        int row = 1;
+        mainTable.setRowColor (row, getHeaderColor ());
+        mainTable.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER) ;
+        addSmallHeader (mainTable, 1, row++,  headerKey, headerDefault);
+        mainTable.add (content, 1, row++);
         return mainTable;
     }
 
-    Table getUserSearcherFormTable
-        (final IWContext context, final UserSearcher searcher)
-        throws RemoteException {
-        final Table table = createTable (6);
-        table.add (new HiddenInput (USERSEARCHER_ACTION_KEY), 1, 1);
+    void addUserSearcherForm
+        (final Table table, final int row, final IWContext context,
+         final UserSearcher searcher) throws RemoteException {
+        int col = 1;
+        table.add (new HiddenInput (USERSEARCHER_ACTION_KEY), col, row);
         try {
             searcher.process (context);
         } catch (final FinderException dummy) {
             // do nothing, it's ok that none was found
         }
-        int col = 1;
-        addSmallHeader (table, col++, 1, SSN_KEY, SSN_DEFAULT, ":");
+        addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
         table.add (getUserSearcherInput
-                   (context, USERSEARCHER_PERSONALID_KEY), col++, 1);
-        addSmallHeader (table, col++, 1, FIRST_NAME_KEY,  FIRST_NAME_DEFAULT,
+                   (context, USERSEARCHER_PERSONALID_KEY), col++, row);
+        addSmallHeader (table, col++, row, FIRST_NAME_KEY,  FIRST_NAME_DEFAULT,
                         ":");
         table.add (getUserSearcherInput
-                   (context, USERSEARCHER_FIRSTNAME_KEY), col++, 1);
-        addSmallHeader (table, col++, 1, LAST_NAME_KEY, LAST_NAME_DEFAULT,
+                   (context, USERSEARCHER_FIRSTNAME_KEY), col++, row);
+        addSmallHeader (table, col++, row, LAST_NAME_KEY, LAST_NAME_DEFAULT,
                         ":");
         table.add (getUserSearcherInput
-                   (context, USERSEARCHER_LASTNAME_KEY), col++, 1);
-        return table;
+                   (context, USERSEARCHER_LASTNAME_KEY), col++, row);
     }
 
-    Table getPeriodFormTable (final IWContext context) {
-        final Table table = createTable (3);
+    void addPeriodForm (final Table table, final int row,
+                        final IWContext context) {
         int col = 1;
-        addSmallHeader (table, col++, 1, PERIOD_KEY, PERIOD_DEFAULT);
-        table.add (getUserSearcherInput (context, FROM_PERIOD_KEY), col++, 1);
-        table.add (getUserSearcherInput (context, TO_PERIOD_KEY), col++, 1);
-        return table;
+        addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT);
+        table.add (getUserSearcherInput (context, FROM_PERIOD_KEY), col, row);
+        table.add (new Text (" - "), col, row);
+        table.add (getUserSearcherInput (context, TO_PERIOD_KEY), col, row);
     }
 
     private TextInput getUserSearcherInput (final IWContext context,
@@ -419,6 +489,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                          (action, localize (key, defaultName)));
     }
 
+    private void addOperationFieldDropdown
+        (final Table table, final int row) throws RemoteException {
+        int col = 1;
+        addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
+                        MAIN_ACTIVITY_DEFAULT, ":");
+        String operationalField = getSession ().getOperationalField();
+        operationalField = operationalField == null ? "" : operationalField;
+        table.mergeCells (col, row, table.getColumns (), row);
+        table.add (new OperationalFieldsMenu (), col++, row);
+    }
+
     private UserSearcher createSearcher () {
         final UserSearcher searcher = new UserSearcher ();
         searcher.setOwnFormContainer (false);
@@ -457,12 +538,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private static void setColumnWidthsEqual (final Table table) {
         final int columnCount = table.getColumns ();
-        System.err.println ("ColumnCont = " + columnCount);
         final int percentageInt = 100 / columnCount;
         final String percentageString = percentageInt + "%";
         for (int i = 1; i <= columnCount; i++) {
             table.setColumnWidth (i, percentageString);
-            System.err.println (i + " " + percentageString);
         }
     }
 
@@ -484,6 +563,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                    final InvoiceBusiness business) {
  		final InvoiceRecord [] records
 		        = business.getInvoiceRecordsByInvoiceHeader (header);
+        return getTotalAmount (records);
+    }
+
+    private long getTotalAmount (final InvoiceRecord [] records) {
 		long totalAmount = 0;
 		for (int j = 0; j < records.length; j++) {
 		    totalAmount += records[j].getAmount ();

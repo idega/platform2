@@ -8,6 +8,14 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -20,24 +28,18 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOException;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/10/30 15:53:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/03 10:09:21 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -191,6 +193,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
         }
         return null == collection ? new InvoiceRecord [0]
                 : (InvoiceRecord []) collection.toArray (new InvoiceRecord [0]);
+    }
+
+    public User getChildByInvoiceRecord (final InvoiceRecord record)
+        throws RemoteException {
+        final ChildCareContractHome contractHome = (ChildCareContractHome)
+                IDOLookup.getHome (ChildCareContract.class);
+        try {
+            final ChildCareContract contract = contractHome
+                    .findApplicationByContract (record.getContractId ());
+            return null != contract ? contract.getChild () : null;
+        } catch (final FinderException e) {
+            return null;
+        }
     }
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException

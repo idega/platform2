@@ -14,4 +14,5 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
     se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome () throws java.rmi.RemoteException;
  se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader [] getInvoiceHeadersByCustodianOrChild (com.idega.user.data.User user, java.util.Date fromPeriod, java.util.Date toPeriod);
  se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord [] getInvoiceRecordsByInvoiceHeader (se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader header);
+ com.idega.user.data.User getChildByInvoiceRecord (se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord record) throws java.rmi.RemoteException;
 }
