@@ -55,6 +55,7 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 
   private int _state = ForumBusiness.FORUM_TOPICS;
   private int _initialState = ForumBusiness.FORUM_TOPICS;
+  private int _openLevel = 0;
   private Table _myTable;
 
   private boolean _styles = true;
@@ -446,7 +447,7 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
       tree.setColumns(2);
       tree.setParallelExtraColumns(3);
       tree.setFirstLevelNodes(threads);
-      tree.setNestLevelAtOpen(0);
+      tree.setNestLevelAtOpen(_openLevel);
       tree.setToShowTreeIcons(false);
       tree.setWidth("100%");
       tree.setExtraColumnWidth(1,"150");
@@ -529,9 +530,19 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
       link.addParameter(ForumBusiness.PARAMETER_THREAD_ID,_threadID);
       link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
       table.add(link,1,1);
+      table.add(Text.NON_BREAKING_SPACE, 1, 1);
+
+			Link previousLink = new Link(_iwrb.getLocalizedString("previous_threads","Previous"));
+			previousLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+			previousLink.addParameter(ForumBusiness.PARAMETER_STATE,ForumBusiness.FORUM_THREADS);
+			previousLink.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD,(_firstThread - _numberOfThreads));
+			previousLink.addParameter(ForumBusiness.PARAMETER_LAST_THREAD,(_lastThread - _numberOfThreads));
+			previousLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID,_threadID);
+			previousLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
+			table.add(previousLink,1,1);
     }
     if ( hasNext ) {
-      Link link = new Link(_iwb.getImage("shared/next.gif"));
+      Link link = new Link(_iwb.getImage("shared/next.gif","Next"));
       link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
       link.addParameter(ForumBusiness.PARAMETER_STATE,ForumBusiness.FORUM_THREADS);
       link.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD,(_firstThread + _numberOfThreads));
@@ -539,6 +550,16 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
       link.addParameter(ForumBusiness.PARAMETER_THREAD_ID,_threadID);
       link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
       table.add(link,2,1);
+			table.add(Text.NON_BREAKING_SPACE, 2, 1);
+
+			Link nextLink = new Link(_iwrb.getLocalizedString("next_threads"));
+			nextLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+			nextLink.addParameter(ForumBusiness.PARAMETER_STATE,ForumBusiness.FORUM_THREADS);
+			nextLink.addParameter(ForumBusiness.PARAMETER_FIRST_THREAD,(_firstThread + _numberOfThreads));
+			nextLink.addParameter(ForumBusiness.PARAMETER_LAST_THREAD,(_lastThread + _numberOfThreads));
+			nextLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID,_threadID);
+			nextLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
+			table.add(nextLink,2,1);
     }
 
     return table;
@@ -816,6 +837,10 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
   public void setTextStyle(String style) {
     _textStyle = style;
   }
+
+	public void setDefaultOpenLevel(int openLevel) {
+		_openLevel = openLevel;
+	}
 
   public void setLinkStyles(String style,String hoverStyle) {
     _linkStyle = style;
