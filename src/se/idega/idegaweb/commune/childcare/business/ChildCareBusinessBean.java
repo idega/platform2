@@ -906,7 +906,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		IWTimestamp fromDate = new IWTimestamp(newDate);
 
 		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-		List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+		List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 	
 			ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 			int fileID = ((Integer)contractFile.getPrimaryKey()).intValue();
@@ -1353,17 +1353,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				terminationDate.addDays(-1);
 				terminateContract(application.getContractFileId(), terminationDate.getDate());
 			}
-			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
-						List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-						if(buffers !=null && buffers.size() == 2){
-							String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
-							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
+			
+			boolean hasBankId = false;
+			try{
+				hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner().getID());
+			}catch(SQLException ex){
+				//ignore
+			}
+						
+			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
+			ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);
+						List  pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractTxtURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+						List  txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+						if(pdfBuffers !=null && pdfBuffers.size() == 1 && txtBuffers !=null && txtBuffers.size() == 1){
+							String contractText = txtHandler.bufferToString((MemoryFileBuffer)txtBuffers.get(0));
+							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)pdfBuffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
 							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),validFrom,null,"C",contractText);
 							int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 							contractFile.addTo(Contract.class,contractID);
 			
-			
+		
 						application.setContractId(contractID);
 						application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
 			
@@ -1651,8 +1661,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
 	}
-	
+
 	protected HashMap getTagMap(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean isChange) throws RemoteException {
+		return getTagMap(application, locale, validFrom, isChange, "...");
+	}
+	
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean isChange, String emptyCareTimeValue) throws RemoteException {
 		HashMap map = new HashMap();
 		User child = application.getChild();
 		User parent1 = application.getOwner();
@@ -1714,26 +1728,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
      
 
-		boolean hasBankId = false;
-		try{
-			hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner().getID());
-		}catch(SQLException ex){
-			//ignore
-		}
-		//todo (roar) remove code
-		System.out.println("hasBankId:" + hasBankId);
-		
-	
+//		boolean hasBankId = false;
+//		try{
+//			hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner().getID());
+//		}catch(SQLException ex){
+//			//ignore
+//		}
+//		//todo (roar) remove code
+//		System.out.println("hasBankId:" + hasBankId);
 		     
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
 		if (application.getCareTime() != -1 && !isChange)
 			peer.setContent(String.valueOf(application.getCareTime()));
-		else if (hasBankId){
-			//todo (roar) remove code
-			System.out.println("Adding care-time tag");
-			peer.setContent("<care-time/>");
-		} else
-			peer.setContent("....");
+//		else if (hasBankId){
+//			//todo (roar) remove code
+//			System.out.println("Adding care-time tag");
+//			peer.setContent("<care-time/>");
+//		} 
+		else
+			peer.setContent(emptyCareTimeValue);
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "careTimeChange");
@@ -1787,9 +1800,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
    return map;          
 	}
 	
-	public String getXMLContractURL(IWBundle iwb, Locale locale){
-		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_contract.xml";
+	public String getXMLContractTxtURL(IWBundle iwb, Locale locale){
+		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_contract_txt.xml";
 	}
+	
+	public String getXMLContractPdfURL(IWBundle iwb, Locale locale){
+		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_contract.xml";
+	}	
 	
 	/*public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -2513,7 +2530,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 	
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
-			List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 			if(buffers !=null && buffers.size() == 2){
 				String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
 				ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
