@@ -74,11 +74,11 @@ public class RunBMPBean extends GenericEntity implements Run{
   	    return getIntColumnValue(getColumnNameRunDistanceGroupID());
   	  }
 
-  	  public double getRunTime(){
-  			return getDoubleColumnValue(getColumnNameRunTime());
+  	  public int getRunTime(){
+  			return getIntColumnValue(getColumnNameRunTime());
   		}
-  	  public double getChipTime() {
-  	    return getDoubleColumnValue(getColumnNameChipTime());
+  	  public int getChipTime() {
+  	    return getIntColumnValue(getColumnNameChipTime());
   	  }
   	  public int getUserID() {
   	    return getIntColumnValue(getColumnNameUserID());
@@ -92,11 +92,11 @@ public class RunBMPBean extends GenericEntity implements Run{
   	  public String getRunGroupName() {
   	      return getStringColumnValue(getColumnNameRunGroupName());
   	  }
-  	  public double getBestTime() {
-  	      return getDoubleColumnValue(getColumnNameBestTime());
+  	  public int getBestTime() {
+  	      return getIntColumnValue(getColumnNameBestTime());
   	  }
-  	  public double getGoalTime() {
-  	      return getDoubleColumnValue(getColumnNameGoalTime());
+  	  public int getGoalTime() {
+  	      return getIntColumnValue(getColumnNameGoalTime());
   	  }
   	  //SET
   	  public void setRunTypeGroupID(int runTypeGroupID) {

@@ -6,14 +6,14 @@ public interface Run extends com.idega.data.IDOEntity{
     		public int getRunTypeGroupID();
     	  public int getRunYearGroupID();
     	  public int getRunDistanceGroupID();
-    	  public double getRunTime();
-    	  public double getChipTime();
+    	  public int getRunTime();
+    	  public int getChipTime();
     	  public int getUserID();
     	  public String getChipNumber();
     	  public String getTShirtSize();
     	  public String getRunGroupName();
-    	  public double getBestTime();
-    	  public double getGoalTime();
+    	  public int getBestTime();
+    	  public int getGoalTime();
 
     	  public void setRunTypeGroupID(int runType);
     	  public void setRunYearGroupID(int runYear);
