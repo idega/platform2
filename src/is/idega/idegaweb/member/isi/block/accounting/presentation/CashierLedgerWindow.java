@@ -42,49 +42,34 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 
 			public PresentationObject getPresentationObject(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
 				User user = (User) entity;		
-//				CalendarLedger ledger = null;
-//				Collection groups = null;
-//				boolean isInGroup = false;
+				CalendarLedger ledger = null;
+				Collection groups = null;
+				boolean isInGroup = false;
 				
 				PresentationObject text = browser.getDefaultConverter().getPresentationObject(entity, path, browser, iwc);
-//				Integer userID = (Integer) user.getPrimaryKey();
-//				try {
-//					ledger = getCalendarBusiness(iwc).getLedgerByUserID(userID.intValue());//getLedger(ledgerID.intValue());
-//					groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
-//				}catch(Exception e) {
-//					e.printStackTrace();
-//				}
-//				Iterator groupIter = groups.iterator();
-//				//go through the groupIDs to see if the user is in the ledgerGroup
-//				while(groupIter.hasNext()) {
-//					Group g = (Group) groupIter.next();
+				Integer userID = (Integer) user.getPrimaryKey();
+				try {
+					groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				Iterator groupIter = groups.iterator();
+				//go through the groupIDs to see if the user is in the ledgerGroup
+				while(groupIter.hasNext()) {
+					Group g = (Group) groupIter.next();
+//					int ledgerID = getCalendarBusiness(iwc).getLedgerIDByName(g.getName()+"_ledger");
+//					ledger = getCalendarBusiness(iwc).getLedger(ledgerID);
 //					Integer groupID = (Integer) g.getPrimaryKey();
 //					if(groupID.intValue() == ledger.getGroupID()) {
 //						isInGroup = true;
 //					}
-//				}
-//				Link aLink = new Link(text);
-//				if(isInGroup == false) {
-//					aLink.setStyleClass("errorMessage");
-//				}
-//				else {
-//					if(user.getMetaData(NEW_USER_IN_LEDGER) != null) {
-//						user.removeMetaData(NEW_USER_IN_LEDGER);
-//						user.setMetaData(NEW_USER_IN_LEDGER,"");
-//						try {
-//							user.updateMetaData();
-//						}catch(Exception e) {
-//							e.printStackTrace();
-//						}												
-////						user.store();
-//					}				
-//					aLink.setStyleClass("styledLinkUnderline");
-//				}
+				}
 				Link aLink = new Link(text);
-				aLink.setStyleClass("errorMessage");
-				aLink.setWindowToOpen(UserPropertyWindow.class);
-				aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
-				
+				if(isInGroup == false) {
+					aLink.setStyleClass("errorMessage");
+					aLink.setWindowToOpen(UserPropertyWindow.class);
+					aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
+				}
 				return aLink;
 			}
 		};
