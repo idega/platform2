@@ -1,7 +1,5 @@
 package com.idega.user;
 
-import com.idega.block.cal.presentation.AttendantChooser;
-import com.idega.block.cal.presentation.CalPropertyWindow;
 import com.idega.block.staff.presentation.StaffApplication;
 import com.idega.development.presentation.DeveloperHomepageGenerator;
 import com.idega.idegaweb.IWBundle;
@@ -10,9 +8,7 @@ import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.app.ToolbarElement;
 import com.idega.user.app.UserApplication;
 import com.idega.user.block.homepage.presentation.HomePageGenerator;
-import com.idega.user.presentation.GroupChooser;
 import com.idega.user.presentation.MassMovingWindowPlugin;
-import com.idega.user.presentation.UserPropertyWindow;
 
 /**
  * <p>Title: idegaWeb</p>
