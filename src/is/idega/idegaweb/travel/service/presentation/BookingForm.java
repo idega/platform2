@@ -888,6 +888,7 @@ public abstract class BookingForm extends TravelManager{
 		form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
 		form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
 		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
+		form.addParameter(parameterOnlineBooking, "true");
 		formTable.setBorder(0);
 		Supplier supplier = product.getSupplier();
 		
@@ -923,7 +924,6 @@ public abstract class BookingForm extends TravelManager{
 		formTable.add(personalInfoTable, 1, row++);
 		formTable.setRowHeight(row++, "10");
 		formTable.add(creditCardInfoTable, 1, row++);
-		
 		return form;
 	}
 	
@@ -2859,13 +2859,13 @@ public abstract class BookingForm extends TravelManager{
 		return addressId;
 	}
 	
-	public Form getFormMaintainingAllParameters(IWContext iwc) {
+	public Form getFormMaintainingAllParameters(IWContext iwc)  throws RemoteException {
 		return getFormMaintainingAllParameters(iwc, true);
 	}
-	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) {
+	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) throws RemoteException  {
 		return getFormMaintainingAllParameters(iwc, withBookingAction, false);
 	}
-	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction, boolean withSAction) {
+	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction, boolean withSAction) throws RemoteException {
 		Form form = new Form();
 		form.maintainParameter("surname");
 		form.maintainParameter("lastname");
@@ -2909,8 +2909,22 @@ public abstract class BookingForm extends TravelManager{
 		}else if (sOnline != null && sOnline.equals("false")) {
 			onlineOnly = false;
 		}
+		List addresses;
+		try {
+			addresses = _product.getDepartureAddresses(false);
+		}catch (IDOFinderException ido) {
+			ido.printStackTrace(System.err);
+			addresses = new Vector();
+		}
+		int addressId = getAddressIDToUse(iwc, addresses);
 		
-		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, onlineOnly);
+		Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
+		int timeframeId = -1;
+		if (tFrame != null) {
+			timeframeId = tFrame.getID();
+		}
+
+		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, timeframeId, addressId, onlineOnly);
 		for (int i = 0; i < pPrices.length; i++) {
 			form.maintainParameter("priceCategory"+pPrices[i].getID());
 		}
@@ -3898,7 +3912,7 @@ public abstract class BookingForm extends TravelManager{
 		return usersDrop;
 	}
 	
-	private Form getFieldErrorForm(IWContext iwc) {
+	private Form getFieldErrorForm(IWContext iwc) throws RemoteException {
 		Form form = getFormMaintainingAllParameters(iwc, false, true);
 		Table table = new Table();
 		table.setColor(super.WHITE);
@@ -3930,7 +3944,7 @@ public abstract class BookingForm extends TravelManager{
 		return form;		
 	}
 	
-	private Form getTooManyForm(IWContext iwc) {
+	private Form getTooManyForm(IWContext iwc)  throws RemoteException {
 		Form form = getFormMaintainingAllParameters(iwc, false, true);
 		Table table = new Table();
 		table.setColor(super.WHITE);
@@ -4304,12 +4318,11 @@ public abstract class BookingForm extends TravelManager{
 		table.add(tmpTable, 1, row);
 		
 		
-		
 		return table;
 	}
 	
 	
-	public Form getErrorForm(IWContext iwc, int error) {
+	public Form getErrorForm(IWContext iwc, int error) throws RemoteException {
 		switch (error) {
 			case errorTooMany :
 				return getTooManyForm(iwc);
