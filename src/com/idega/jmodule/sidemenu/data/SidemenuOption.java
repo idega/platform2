@@ -27,7 +27,7 @@ public class SidemenuOption extends GenericEntity{
 
 
 
-                //this.addManyToManyRelationShip(com.idega.builder.data.IBEntity.class,"sidemenu_option_ib_entity");
+                this.addManyToManyRelationShip(com.idega.builder.data.IBEntity.class,"sidemenu_option_ib_entity");
                 this.addManyToManyRelationShip(SidemenuModule.class,"sidemenu_sidemenu_option");
         }
 
