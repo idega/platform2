@@ -684,7 +684,7 @@ public class CalendarEntryCreator extends Form{
 			
 		}
 		String s = iwc.getParameter(saveButtonParameterName);
-		if(s != null) {
+		if(s != null && !displayingTimeConflict) {
 			entry = null;
 		}
 		
