@@ -90,7 +90,11 @@ public class IFSFileCreationThread extends Thread {
 	private float inCommuneSum = 0;
 	private NumberFormat numberFormat = null;
 	private String deviationString = "";
-
+	
+	private final static int FILE_TYPE_OWN_POSTING = 1;
+	private final static int FILE_TYPE_DOUBLE_POSTING = 2;
+	private final static int FILE_TYPE_KOMMUN = 3;
+	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
 
 	/*
@@ -380,7 +384,6 @@ public class IFSFileCreationThread extends Thread {
 		phAll.addAll(phOutsideCommune);
 		phAll.addAll(phInCommune);
 		try {
-			createPaymentSigningFilesExcel(phInCommune, fileName6 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), false);
 			createPaymentSigningFilesExcel(phAll, fileName5 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", " + executionDate.getDateString("yyyy-MM-dd"), true);
 		}
 		catch (IOException e3) {
@@ -403,7 +406,8 @@ public class IFSFileCreationThread extends Thread {
 			}
 
 			try {
-				createPaymentFilesExcel(rec, fileName3 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), true);
+				createPaymentFilesExcel(rec, fileName3 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), FILE_TYPE_DOUBLE_POSTING);
+				createPaymentFilesExcel(rec, fileName6 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), FILE_TYPE_KOMMUN);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
@@ -592,7 +596,7 @@ public class IFSFileCreationThread extends Thread {
 				e2.printStackTrace();
 			}
 			try {
-				createPaymentFilesExcel(recOutside, fileName4 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", övriga anordnare, " + executionDate.getDateString("yyyy-MM-dd"), false);
+				createPaymentFilesExcel(recOutside, fileName4 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", övriga anordnare, " + executionDate.getDateString("yyyy-MM-dd"), FILE_TYPE_OWN_POSTING);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
@@ -1713,14 +1717,20 @@ public class IFSFileCreationThread extends Thread {
 		return iRec.getChildCareContract() == null || iRec.getChildCareContract().getApplication() == null || iRec.getChildCareContract().getApplication().getCheck() == null;
 	}
 
-	private void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean doublePosting) throws IOException {
+	private void createPaymentFilesExcel(Collection data, String fileName, String headerText, int fileType) throws IOException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35, 25 };
 			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text", "Anordnare" };
+			int[] kommunColumnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 10, 35, 25 };
+			String[] kommunColumnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Placeringar", "Belopp", "Text", "Anordnare" };
+			if (fileType == FILE_TYPE_KOMMUN) {
+				columnWidths = kommunColumnWidths;
+				columnNames = kommunColumnNames;
+			}
 			createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
-			short cellNumber;
+			
 			//			HSSFHeader header = sheet.getHeader();
 			//		    header.setLeft(headerText);
 			//			header.setRight("Sida "+HSSFHeader.page());
@@ -1737,36 +1747,38 @@ public class IFSFileCreationThread extends Thread {
 				if (pRec.getTotalAmount() != 0.0f) {
 					amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
 					totalAmount += amount;
-					cellNumber = 0;
-					numberOfRecords++;
-					row = sheet.createRow(rowNumber++);
-					row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));
-					short loopTillEndOfPostingFields = (short) (cellNumber + 8);
-					for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
-						row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
-					cell = row.createCell(cellNumber++);
-					cell.setCellValue(getNumberFormat().format(amount));
-					cell.setCellStyle(getStyleAlignRight());
-					row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
-					row.createCell(cellNumber++).setCellValue(school.getName());
-					if (doublePosting) {
-						cellNumber = 0;
+					if (fileType == FILE_TYPE_OWN_POSTING || fileType == FILE_TYPE_DOUBLE_POSTING) {
 						numberOfRecords++;
-						row = sheet.createRow(rowNumber++);
-						row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));
-						for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
-							row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getDoublePosting(), columnNames[i]));
-						cell = row.createCell(cellNumber++);
-						cell.setCellValue(getNumberFormat().format(-1 * amount));
-						cell.setCellStyle(getStyleAlignRight());
-						row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
-						row.createCell(cellNumber++).setCellValue(school.getName());
+						rowNumber = createPaymentLine(columnNames, sheet, rowNumber, amount, pb, pRec, school, pRec.getOwnPosting(), fileType);
+					}
+					if (fileType == FILE_TYPE_DOUBLE_POSTING || fileType == FILE_TYPE_KOMMUN) {
+						numberOfRecords++;
+						rowNumber = createPaymentLine(columnNames, sheet, rowNumber, -1 * amount, pb, pRec, school, pRec.getDoublePosting(), fileType);
 					}
 				}
 			}
 			sheet.createRow(rowNumber += 2).createCell(row.getFirstCellNum()).setCellValue(numberOfRecords + " bokföringsposter,   Kreditbelopp totalt:  - " + getNumberFormat().format(totalAmount) + ",   Debetbelopp totalt: " + getNumberFormat().format(totalAmount));
 			saveExcelWorkBook(fileName, wb);
 		}
+	}
+
+	private short createPaymentLine(String[] columnNames, HSSFSheet sheet, short rowNumber, float amount, PostingBusiness pb, PaymentRecord pRec, School school, String postingString, int fileType) throws RemoteException {
+		short cellNumber = 0;
+		row = sheet.createRow(rowNumber++);
+		row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));
+		short loopTillEndOfPostingFields = (short) (cellNumber + 8);
+		for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
+			row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(postingString, columnNames[i]));
+		if (fileType == FILE_TYPE_KOMMUN) {
+			cell = row.createCell(cellNumber++);
+			cell.setCellValue(pRec.getPlacements());
+		}
+		cell = row.createCell(cellNumber++);
+		cell.setCellValue(getNumberFormat().format(amount));
+		cell.setCellStyle(getStyleAlignRight());
+		row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+		row.createCell(cellNumber++).setCellValue(school.getName());
+		return rowNumber;
 	}
 
 	private void createInvoiceSigningFilesExcel(String fileName, String headerText, boolean signingFooter) throws IOException, IDOException {
