@@ -102,7 +102,7 @@ public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindAllBySchoolTypeAndManagementTypes(int schoolTypeId, Collection managementTypes) throws javax.ejb.FinderException {
+	public Collection ejbFindAllBySchoolTypeCityAndManagementTypes(int schoolTypeId, String city, Collection managementTypes) throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select distinct a.* ");
 		sql.append(" from sch_school_area a,sch_school s,sch_school_type t,sch_school_sch_school_type m ");
 		sql.append(" where a.sch_school_area_id = s.sch_school_area_id ");
@@ -110,6 +110,7 @@ public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 		sql.append(" and s.sch_school_id = m.sch_school_id ");
 		sql.append(" and t.sch_school_type_id = ");
 		sql.append(schoolTypeId);
+		sql.append(" and ").append(CITY).append(" = '").append(city).append("'");
 		if (managementTypes != null && !managementTypes.isEmpty()) {
 			sql.append(" and s.management_type in (");
 			Iterator it = managementTypes.iterator();
@@ -122,6 +123,7 @@ public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 			}
 			sql.append(")");
 		}
+		sql.append(" order by a.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}

@@ -7,7 +7,7 @@ public interface SchoolAreaHome extends com.idega.data.IDOHome
  public SchoolArea findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolTypeAndCity(int p0,java.lang.String p1)throws javax.ejb.FinderException;
- public java.util.Collection findAllBySchoolTypeAndManagementTypes(int p0,java.util.Collection p1)throws javax.ejb.FinderException;
+ public java.util.Collection findAllBySchoolTypeCityAndManagementTypes(int p0,java.lang.String p1,java.util.Collection p2)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolTypes(java.util.Collection p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllSchoolAreas()throws javax.ejb.FinderException;
  public SchoolArea findSchoolAreaByAreaName(java.lang.String p0)throws javax.ejb.FinderException;
