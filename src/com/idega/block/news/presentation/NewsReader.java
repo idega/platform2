@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.79 2002/03/14 13:01:07 aron Exp $
+ * $Id: NewsReader.java,v 1.80 2002/03/18 22:11:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -328,8 +328,9 @@ public class NewsReader extends CategoryBlock implements IWBlock {
         T.add(getNewsOverViewTable(newsHelper,locale,iwc),1,row++);
       }
     }
+
     else{
-      T.add(new Text(iwrb.getLocalizedString("no_news","No News")));
+     // T.add(new Text(iwrb.getLocalizedString("no_news","No News")));
     }
 
     return T;
