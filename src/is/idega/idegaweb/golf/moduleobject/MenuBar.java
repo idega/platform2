@@ -4,7 +4,7 @@ package is.idega.idegaweb.golf.moduleobject;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
-import com.idega.presentation.ui.InterfaceObjectContainer;
+import com.idega.presentation.ui.InterfaceObject;
 
 
 
@@ -26,7 +26,7 @@ import com.idega.presentation.ui.InterfaceObjectContainer;
 
 
 
-public class MenuBar extends InterfaceObjectContainer {
+public class MenuBar extends InterfaceObject {
 
 
 
@@ -530,5 +530,10 @@ public class MenuBar extends InterfaceObjectContainer {
 
 
 
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.ui.InterfaceObject#handleKeepStatus(com.idega.presentation.IWContext)
+	 */
+	public void handleKeepStatus(IWContext iwc) {
+	}
 } // Class MenuBar
 

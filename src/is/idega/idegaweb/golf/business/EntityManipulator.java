@@ -19,6 +19,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.idega.data.IDOLegacyEntity;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.DateInput;
@@ -26,7 +27,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.IntegerInput;
-import com.idega.presentation.ui.InterfaceObjectContainer;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
@@ -43,7 +44,7 @@ import com.idega.presentation.ui.Window;
 
 */
 
-public class EntityManipulator extends InterfaceObjectContainer{
+public class EntityManipulator extends InterfaceObject {
 
 
 
@@ -675,5 +676,11 @@ public List getColumnValueRange(String columnName){
 
 
 
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.ui.InterfaceObject#handleKeepStatus(com.idega.p
+ntext)
+	 */
+	public void handleKeepStatus(IWContext iwc) {
+	}
 }
 
