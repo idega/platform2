@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.33 2001/08/09 19:02:18 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.34 2001/08/09 19:04:50 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -119,7 +119,7 @@ public class GolfMainJSPModulePage extends MainPage {
    // leftTable.add(getHoleView(),1,1);
 
     //leftTable.addBreak(1,1);
-    leftTable.add(Languages(),1,2);
+    leftTable.add(Languages(),1,1);
 
     HeaderTable sponsorBox = Sponsors();
     sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
