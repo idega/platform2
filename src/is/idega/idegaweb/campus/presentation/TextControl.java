@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.4 2001/12/19 17:43:45 aron Exp $
+ * $Id: TextControl.java,v 1.5 2002/02/05 13:46:20 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -94,9 +94,10 @@ public class TextControl extends Block {
       T.setAlignment(2,1,"center");
       T.setVerticalAlignment(1,1,"top");
       T.setVerticalAlignment(2,1,"top");
+      int numberOfTexts = 14;
 
     try {
-      for ( int a = 5; a < 13; a++ ) {
+      for ( int a = 5; a < numberOfTexts; a++ ) {
         try {
           TxText text = new TxText(a);
         }
@@ -112,7 +113,7 @@ public class TextControl extends Block {
           texti.setEnableDelete(false);
 
           T.add(texti,1,1);
-          if ( a + 1 < 13 ) {
+          if ( a + 1 < numberOfTexts ) {
             T.addBreak(1,1);
           }
       }
