@@ -193,7 +193,7 @@ public class CommuneForum extends Forum {
 					if (iter.hasNext())
 						fileTable.add(formatText(","+Text.NON_BREAKING_SPACE, _textStyle), 3, 1);
 				}
-				fileTable.add(formatText(Text.BREAK, _headingStyle), 1, row);
+				//fileTable.add(formatText(Text.BREAK, _headingStyle), 1, row);
 			}
 			table.add(fileTable, 1, row++);
 			return ++row;
