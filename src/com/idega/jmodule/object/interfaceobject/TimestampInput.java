@@ -1,5 +1,5 @@
 /*
- * $Id: TimestampInput.java,v 1.3 2001/06/26 23:27:08 tryggvil Exp $
+ * $Id: TimestampInput.java,v 1.4 2001/06/27 00:42:00 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ public TimestampInput(String name){
 	super.add(theMonth);
 	super.add(theYear);
 
-
+        super.add(textInFront);
 	//super.add(new Text("klukkan"));
 
 	super.add(theHour);
@@ -358,7 +358,7 @@ public TimestampInput(String name){
         textInFront.setText(iwrb.getLocalizedString(THETIME_KEY));
 
         String emptyString = "";
-        theDay.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.YEAR_KEY));
+        theDay.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.DAY_KEY));
         theMonth.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.MONTH_KEY));
         theYear.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.YEAR_KEY));
         theHour.addMenuElementFirst(emptyString,iwrb.getLocalizedString(TimeInput.HOUR_KEY));
