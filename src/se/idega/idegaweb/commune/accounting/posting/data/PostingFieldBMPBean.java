@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.2 2003/08/20 16:38:09 joakim Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.3 2003/08/28 13:15:48 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -26,9 +26,8 @@ import com.idega.data.IDOQuery;
 
 public class PostingFieldBMPBean extends GenericEntity implements PostingField, IDOLegacyEntity
 {
-	private static final String ENTITY_NAME = "cp_posting_field";
+	private static final String ENTITY_NAME = "cacc_posting_field";
 
-//	private static final String COLUMN_KONTERING_ID = "posting_field_id";
 	private static final String COLUMN_CP_POSTING_STRING_ID = "cp_posting_string_id";
 	private static final String COLUMN_ORDER_NR = "order_nr";
 	private static final String COLUMN_FIELD_TITLE = "field_title";
