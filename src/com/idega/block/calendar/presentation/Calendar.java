@@ -425,21 +425,27 @@ public class Calendar extends CategoryBlock implements Builderaware {
 				localeStrings = CalendarFinder.getInstance().getEntryStrings(entry, _iLocaleID);
 
 				if (localeStrings != null) {
-					if (localeStrings[0] != null)
-						headlineText = getStyleText(localeStrings[0],headlineStyleName);
+					if (localeStrings[0] != null) {
+						headlineText = new Text(localeStrings[0]);
+						headlineText.setStyle(headlineStyleName);
+					}
 					else
 						headlineText = null;
 
-					if (localeStrings[1] != null)
-						bodyText = getStyleText(localeStrings[1],bodyStyleName);
+					if (localeStrings[1] != null) {
+						bodyText = new Text(localeStrings[1]);
+						bodyText.setStyle(bodyStyleName);
+					}
 					else
 						bodyText = null;
 				}
 				int row = 1;
 				if (headlineText != null) {
 					stamp = new IWTimestamp(entry.getDate());
-					Text dateText = getStyleText(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), _dateStyle, _timeStyle), dateStyleName);
-					Text category = getStyleText(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()), categoryStyleName);
+					Text dateText = new Text(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), _dateStyle, _timeStyle));
+					dateText.setStyle(dateStyleName);
+					Text category = new Text(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()));
+					category.setStyle(categoryStyleName);
 					dateTable.add(dateText, 1, 1);
 					if (_showCategory)
 						dateTable.add(category, 2, 1);
