@@ -219,4 +219,11 @@ public class EntryReportBMPBean implements EntryReport{
     return sql.toString();
   }
 
+	/**
+	 * @see com.idega.data.IDOEntityBean#getAttributes()
+	 */
+	public Collection getAttributes() {
+		return null;
+	}
+
 }
