@@ -9,7 +9,6 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.xml.XmlPeer;
@@ -27,7 +26,7 @@ public class CommuneUserTagMap extends HashMap {
 	public CommuneUserTagMap(IWApplicationContext iwac, User user) {
 		super();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, iwac.getApplicationSettings().getDefaultLocale());
-		UserBusiness ub = getUserBusiness(iwac);
+		CommuneUserBusiness ub = getUserBusiness(iwac);
 
 		XmlPeer peer = new XmlPeer(ElementTags.ITEXT, CommuneUserTags.USERLETTER);
 		put(peer.getAlias(), peer);
@@ -93,16 +92,12 @@ public class CommuneUserTagMap extends HashMap {
 
 	}
 
-	private Address getUserMailReceiveAddress(UserBusiness ub, User user) throws RemoteException {
-		int userID = ((Integer) user.getPrimaryKey()).intValue();
-		Address addr = ub.getUserAddressByAddressType(userID, ub.getAddressHome().getAddressType2());
-		if (addr == null) {
-			addr = ub.getUsersMainAddress(userID);
-		}
-		else if (addr.getStreetName() == null) {
-			addr = ub.getUsersMainAddress(userID);
-		}
-		return addr;
+	private Address getUserMailReceiveAddress(CommuneUserBusiness ub, User user) throws RemoteException {
+		try {
+            return ub.getPostalAddress(user);
+        } catch (Exception e) {
+           throw new RemoteException(e.getMessage());
+        }
 	}
 
 	private CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) {
