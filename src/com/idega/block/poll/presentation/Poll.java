@@ -10,6 +10,7 @@ import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.block.IBBlock;
 import com.idega.block.poll.data.*;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.block.poll.business.*;
@@ -21,7 +22,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
 
 
-public class Poll extends JModuleObject{
+public class Poll extends JModuleObject implements IBBlock{
 
 private boolean _isAdmin;
 private int _pollID;
@@ -221,6 +222,21 @@ private boolean _showCollection;
     _showVotes = true;
     _showCollection = true;
     _pollID = -1;
+  }
+
+  public boolean deleteBlock(int ICObjectInstanceId) {
+    PollEntity poll = PollFinder.getObjectInstanceFromID(ICObjectInstanceId);
+    if ( poll != null ) {
+      try {
+        poll.delete();
+        return true;
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    }
+
+    return false;
   }
 
   public String getBundleIdentifier(){

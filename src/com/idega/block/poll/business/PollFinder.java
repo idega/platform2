@@ -68,4 +68,19 @@ public class PollFinder {
 
     }
   }
+
+  public static PollEntity getObjectInstanceFromID(int ICObjectInstanceID){
+    try {
+      List L = EntityFinder.findRelated(PollEntity.getStaticInstance(PollEntity.class),new ICObjectInstance(ICObjectInstanceID));
+      if(L!= null){
+        return (PollEntity) L.get(0);
+      }
+      else
+        return null;
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
 }
