@@ -107,6 +107,9 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 		textInput.setAsNotEmpty(localize("forum.must_fill_in_name", "Name must be set."));
 		textInput.setContent(category.getName());
 		
+		table.add(getSmallHeader(localize("forum.name", "Name")+":"), 1, row);
+		table.add(textInput, 2, row++);
+
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_DESCRIPTION));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
 		textArea.setRows(5);
@@ -123,8 +126,8 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 			dateInput.setDate(new IWTimestamp().getDate());
 		dateInput.setAsNotEmpty(localize("forum.must_fill_in_date", "Date must be set."));
 
-		table.add(getSmallHeader(localize("forum.invalidation_date", "Invalidation date")+":"), 1, row++);
-		table.add(dateInput, 1, row++);
+		table.add(getSmallHeader(localize("forum.close_date", "Close date")+":"), 1, row);
+		table.add(dateInput, 2, row++);
 
 		SubmitButton save = (SubmitButton) getStyledInterface(new SubmitButton(localize("save", "Save"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
 		CloseButton close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
