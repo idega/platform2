@@ -192,7 +192,7 @@ private idegaTimestamp dateAfter;
 
         out.close();
 
-        this.getParentPage().setToRedirect("/excel?&dir="+file,1);
+        this.getParentPage().setToRedirect("/servlet/Excel?&dir="+file,1);
 
       }
     }
