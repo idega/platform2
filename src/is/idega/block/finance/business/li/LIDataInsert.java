@@ -30,11 +30,6 @@ import org.exolab.castor.xml.ValidationException;
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
-import com.idega.util.IWTimestamp;
 
 
 
@@ -42,7 +37,7 @@ import com.idega.util.IWTimestamp;
  * @author birna
  *
  */
-public class LIDataInsert extends Window implements InvoiceDataInsert {
+public class LIDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	
 	private static String POST_METHOD = "https://b2b.fbl.is/lib2b.dll?processXML";
 	private static String SIGN_IN_SCHEMA = "https://b2b.fbl.is/schema/LI_Innskra.xsd";
@@ -59,7 +54,7 @@ public class LIDataInsert extends Window implements InvoiceDataInsert {
 	private String emptyString = new String();
 	private String zeroString = new String();
 	
-	public LIDataInsert() {
+/*	public LIDataInsert() {
 		setWidth(500);
 		setHeight(500);
 	}
@@ -86,7 +81,7 @@ public class LIDataInsert extends Window implements InvoiceDataInsert {
 		}
 
 		add(f);
-	}
+	}*/
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.InvoiceDataInsert#insertData(int, int)
