@@ -406,6 +406,18 @@ public class ResultsCollector {
     return(0);
   }
 
+  public Vector getStrokes() {
+    return strokes_;
+  }
+
+  public Vector getPoints() {
+    return points_;
+  }
+
+  public Vector getPar() {
+    return par_;
+  }
+
   public double getRealLastNine() {
     return(realLastNine_);
   }

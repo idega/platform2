@@ -167,16 +167,15 @@ private Table resultTable;
   }
 
   private void getOuterTable() {
-    outerTable = new Table(1,2);
+    outerTable = new Table(1,3);
       outerTable.setWidth("100%");
       outerTable.setCellpadding(3);
       outerTable.setCellspacing(3);
-      outerTable.setHeight("100%");
-      outerTable.setHeight(2,"100%");
       outerTable.setVerticalAlignment(1,2,"top");
 
     getFormTable();
     getResultsTable();
+    getHoleByHole();
 
     outerTable.add(formTable,1,1);
     outerTable.add(resultTable,1,2);
@@ -281,7 +280,6 @@ private Table resultTable;
         resultTable.setCellpadding(0);
         resultTable.setCellspacing(0);
         resultTable.setWidth("100%");
-        resultTable.setHeight("100%");
         resultTable.setVerticalAlignment(1,1,"top");
 
       if ( showAllGroups || showAllGenders ) {
@@ -393,6 +391,62 @@ private Table resultTable;
     }
 
     return tournamentType;
+  }
+
+  private void getHoleByHole() {
+    try {
+      if ( tournamentGroupID != -1 ) {
+        int tournamentRoundID = 0;
+        Window scoreWindow = new Window("Gluggi",796,600,"/tournament/holeview.jsp");
+          scoreWindow.setMenubar(true);
+          scoreWindow.setResizable(true);
+        Image scoreImage = new Image("http://clarke.idega.is/takki1.swt?type=gif&texti="+iwrb.getLocalizedString("tournament.hole_by_hole","HOLE BY HOLE"),"",145,19);
+        Link scoreLink = new Link(scoreImage,scoreWindow);
+          scoreLink.addParameter("tournamentID",tournamentID);
+          scoreLink.addParameter("tournamentGroupID",tournamentGroupID);
+
+        if ( tournament.getNumberOfRounds() == 1 && sortBy == ResultComparator.TOTALSTROKES ) {
+          TournamentRound[] rounds = tournament.getTournamentRounds();
+          if ( rounds.length > 0 ) {
+            tournamentRoundID = rounds[0].getID();
+          }
+          scoreLink.addParameter("tournamentRoundID",tournamentRoundID);
+
+          if ( tournamentRoundID != 0 ) {
+            outerTable.setAlignment(1,3,"right");
+            outerTable.add(scoreLink,1,3);
+          }
+        }
+        else if ( tournament.getNumberOfRounds() > 1 && sortBy == ResultComparator.TOTALSTROKES ) {
+          if ( tournamentRounds != null ) {
+            tournamentRoundID = tournamentRounds[tournamentRounds.length-1];
+            scoreLink.addParameter("tournamentRoundID",tournamentRoundID);
+
+            if ( tournamentRoundID != 0 ) {
+              outerTable.setAlignment(1,3,"right");
+              outerTable.add(scoreLink,1,3);
+            }
+          }
+          else {
+            System.out.println("Trying 2");
+            idegaTimestamp date = new idegaTimestamp();
+            TournamentRound[] rounds = (TournamentRound[]) TournamentRound.getStaticInstance("com.idega.projects.golf.entity.TournamentRound").findAll("select * from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_date = '"+date.getSQLDate()+"'");
+            if ( rounds.length > 0 ) {
+              tournamentRoundID = rounds[0].getID();
+            }
+            scoreLink.addParameter("tournamentRoundID",tournamentRoundID);
+
+            if ( tournamentRoundID != 0 ) {
+              outerTable.setAlignment(1,3,"right");
+              outerTable.add(scoreLink,1,3);
+            }
+          }
+        }
+      }
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
   }
 
   public void addHiddenInput(String name, String value) {
