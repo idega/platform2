@@ -364,6 +364,14 @@ public class Timesheet extends JModuleObject{
     initialize(modinfo);
 
 
+    if (isAdmin) {
+      Link prodMan = new Link("Verkefnastjórinn");
+        prodMan.setWindowToOpen(com.idega.block.projectmanager.presentation.ProjectAdminWindow.class);
+      add(prodMan);
+      add("<br>");
+    }
+
+
     URI = modinfo.getRequestURI();
 
           String sIsPrintable = modinfo.getParameter("i_timesheet_printable");
@@ -392,7 +400,7 @@ public class Timesheet extends JModuleObject{
           String temp_member_id = modinfo.getParameter("i_timesheet_member_id");
           if (temp_member_id != null) {
               try {
-                  if (isAdministrator(modinfo) ) {
+                  if (isAdmin ) {
                       user = new User(Integer.parseInt(temp_user_id));
                       this.user_id = user.getID();
                   }
@@ -2337,7 +2345,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
       }
       private void reportHourPrProjectAll(ModuleInfo modinfo) throws Exception {
 
-          if (isAdministrator(modinfo) ) {
+          if (isAdmin) {
               String project_id = modinfo.getParameter("i_timesheet_project_id");
               int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
                     String dags1 = (ar+"-"+manudur+"-01");

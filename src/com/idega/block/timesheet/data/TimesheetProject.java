@@ -28,14 +28,6 @@ public class TimesheetProject extends Project {
   }
 
   public void insertStartData() {
-      try {
-        TimesheetProject proj = new TimesheetProject();
-          proj.setName("Default project");
-          proj.setValid(true);
-        proj.insert();
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
   }
 
 }
