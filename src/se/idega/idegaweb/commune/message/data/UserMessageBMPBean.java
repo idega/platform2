@@ -80,4 +80,8 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
     return super.ejbFindAllCasesByUser(user);
   }
  
+	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException,java.rmi.RemoteException{
+		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
+	}
+ 
 }

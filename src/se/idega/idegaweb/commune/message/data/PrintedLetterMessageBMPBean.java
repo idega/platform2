@@ -193,6 +193,10 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		return super.ejbFindAllCasesByUser(user);
 	}
 
+	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException,java.rmi.RemoteException{
+		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
+	}
+
 	public Collection ejbFindAllUnPrintedLetters() throws FinderException, java.rmi.RemoteException {
 		return super.ejbFindAllCasesByStatus(super.getCaseStatusOpen());
 	}

@@ -149,6 +149,10 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		return super.ejbFindAllCasesByUser(user);
 	}
 	
+	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException,java.rmi.RemoteException{
+		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
+	}
+
 	public Collection ejbFindPrintedMessages()throws FinderException,RemoteException{
 		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusReady()));
 	}
