@@ -85,13 +85,7 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 			if (productCatalog.hasEditPermission()) {
 				table.add(productCatalog.getProductEditorLink(product), 1, row);
 			}
-			if (productCatalog._productIsLink && productCatalog._productLinkPage != null) {
-				Link link = new Link(productCatalog.getText(product.getProductName(iwc.getCurrentLocaleId())));
-				link.setPage(productCatalog._productLinkPage);
-				table.add(link, 1, row);
-			} else {
-				table.add(productCatalog.getText(product.getProductName(iwc.getCurrentLocaleId())) ,1, row);
-			}
+			table.add(productCatalog.getNamePresentationObject(product), 1, row);
 			for (int i = 0; i < metadata.length; i++) {
 				key = metadata[i];
 				if (key != null) {
