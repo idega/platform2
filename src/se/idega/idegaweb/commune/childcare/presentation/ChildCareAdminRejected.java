@@ -38,6 +38,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			Table table = new Table(1, 3);
 			table.setCellpadding(0);
 			table.setCellspacing(0);
+			table.setWidth(getWidth());
 			table.setHeight(2, 12);
 			
 			table.add(getNavigationForm(), 1, 1);
@@ -101,6 +102,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			IWCalendar placementDate;
 			IWCalendar rejectDate;
 			SubmitButton activateApplication;
+			int numberOfChildren = applications.size();
 				
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -154,6 +156,10 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
+			
+			table.setHeight(row++, 6);
+			table.mergeCells(1, row, table.getColumns(), row);
+			table.add(getSmallText(localize("child_care.number_of_rejected_applications", "Number of rejected applications: ") + String.valueOf(numberOfChildren)), 1, row);
 		}
 			
 		return form;
