@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.22 2004/04/07 07:35:16 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.23 2005/04/06 08:26:17 anna Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,16 +10,17 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.account.data.AccountApplication;
-
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -237,5 +238,18 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		IDOQuery query = idoQuery();
 			query.appendSelectCountFrom(this);
 		return this.idoGetNumberOfRecords(query);	
+	}
+	
+	public int ejbHomeGetCount(String personalID, String status) throws IDOException {
+		Table table = new Table(this);
+		Table pCase = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addJoin(table, pCase);
+		query.addCriteria(new MatchCriteria(table, SSN, MatchCriteria.EQUALS, personalID));
+		query.addCriteria(new MatchCriteria(pCase, "case_status", MatchCriteria.EQUALS, status));
+
+		return idoGetNumberOfRecords(query);
 	}
 }
