@@ -11,6 +11,8 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserSearcher;
+import com.idega.util.IWTimestamp;
+
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -36,10 +38,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/11/03 10:07:16 $ by $Author: gimmi $
+ * Last modified: $Date: 2004/11/18 12:59:50 $ by $Author: malin $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -87,6 +89,15 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	private static final String TERMINATIONDATE_DEFAULT = "Avslutningsdatum";
 	private static final String TERMINATIONDATE_KEY
 		= PREFIX + "terminationDate";
+	private static final String EMPTYTERMINATIONDATE_DEFAULT = "You have to set the termination date!";
+	private static final String EMPTYTERMINATIONDATE_KEY
+	= PREFIX + "emptyTerminationDate";
+	private static final String EARLIESTTERMINATIONDATE_DEFAULT = "Earliest possible placement date is";
+	private static final String EARLIESTTERMINATIONDATE_KEY
+	= PREFIX + "earlyTerminationDate";
+	private static final String EARLIESTTERMINATIONDATE2_DEFAULT = "Please contact the Kundvalsgruppen if you need to delete a placement.";
+	private static final String EARLIESTTERMINATIONDATE2_KEY
+	= PREFIX + "early2TerminationDate";
 	private static final String TOOMANYSTUDENTSFOUND_DEFAULT
 		= "För många träffar för att visas. Försök begränsa sökningen.";
 	private static final String TOOMANYSTUDENTSFOUND_KEY
@@ -448,11 +459,53 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			final Text terminationDateHeader = new Text
 					(localize (TERMINATIONDATE_KEY, TERMINATIONDATE_DEFAULT) + ':');
 			terminationDateHeader.setBold ();
-			final TextInput terminationDateInput = (TextInput) getStyledInterface
+			/*final TextInput terminationDateInput = (TextInput) getStyledInterface
 					(new TextInput (TERMINATIONDATE_KEY));
 			terminationDateInput.setLength (10);
-			terminationDateInput.setContent
-					(shortDateFormatter.format(new Date (System.currentTimeMillis ())));
+			*/
+						
+			final DateInput terminationDateInput = (DateInput) getStyledInterface
+			(new DateInput (TERMINATIONDATE_KEY));
+			terminationDateInput.setAsNotEmpty(localize(EMPTYTERMINATIONDATE_KEY, EMPTYTERMINATIONDATE_DEFAULT));
+		
+			IWTimestamp today = new IWTimestamp();
+			IWTimestamp todayCompare = new IWTimestamp();
+			IWTimestamp registerDate = new IWTimestamp(student.getRegisterDate());
+			IWTimestamp earliestPossiblePlacementDate = null;
+			boolean early2Contact = false;
+			if (today.isEarlierThan(registerDate)){
+				registerDate.addDays(1);
+				earliestPossiblePlacementDate = new IWTimestamp(registerDate);
+				early2Contact = true;
+			}
+			else if (today.isLaterThan(registerDate)){
+				todayCompare.addWeeks(-2);
+				if (todayCompare.isEarlierThan(registerDate)){
+					registerDate.addDays(1);
+					earliestPossiblePlacementDate= registerDate;
+					early2Contact = true;
+				}
+				else {
+					today.addWeeks(-2);
+					earliestPossiblePlacementDate = today; 
+				}
+			}
+			else { //same day
+				today.addDays(1);
+				earliestPossiblePlacementDate = today; 
+				early2Contact = true;
+			}
+							
+			if (early2Contact){
+				terminationDateInput.setEarliestPossibleDate(earliestPossiblePlacementDate.getDate(), localize(EARLIESTTERMINATIONDATE_KEY, EARLIESTTERMINATIONDATE_DEFAULT) + ": " + new IWTimestamp(earliestPossiblePlacementDate).getLocaleDate(context.getCurrentLocale(), IWTimestamp.SHORT)+ " " + localize(EARLIESTTERMINATIONDATE2_KEY, EARLIESTTERMINATIONDATE2_DEFAULT));	
+			}
+			else {
+				terminationDateInput.setEarliestPossibleDate(earliestPossiblePlacementDate.getDate(), localize(EARLIESTTERMINATIONDATE_KEY, EARLIESTTERMINATIONDATE_DEFAULT) + ": " + new IWTimestamp(earliestPossiblePlacementDate).getLocaleDate(context.getCurrentLocale(), IWTimestamp.SHORT));
+			}
+			
+			
+			//terminationDateInput.setContent
+			//		(shortDateFormatter.format(new Date (System.currentTimeMillis ())));
 			final Text notesHeader = new Text (localize (NOTES_KEY, NOTES_DEFAULT)
 																				 + ":");
 			notesHeader.setBold ();
