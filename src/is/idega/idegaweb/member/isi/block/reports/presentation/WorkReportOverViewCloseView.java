@@ -123,7 +123,13 @@ public class WorkReportOverViewCloseView extends Block {
     form.add(pres);
 
     add(form);
-		add(new PrintButton(iwrb.getLocalizedImageButton("workreportsender.print","print")));
+	addBreak();
+    add(new PrintButton(iwrb.getLocalizedImageButton("workreportsender.print","print")));
+	Link backLink = new Link(iwrb.getLocalizedString("workreportmultieditor.back_button","back"));
+	backLink.setAsImageButton(true);			
+	backLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW);
+	add(backLink);
+	
   }
 
 	private String parseAction(IWContext iwc) throws RemoteException{
