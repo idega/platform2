@@ -2689,7 +2689,19 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				log.store();
 			}
 			catch (FinderException fe) {
-				log(fe);
+				try {
+					SchoolClassMemberLog log = getSchoolClassMemberLogHome().create();
+					log.setUserPlacing(performer);
+					log.setUserTerminating(performer);
+					log.setSchoolClass(schoolClass);
+					log.setSchoolClassMember(member);
+					log.setStartDate(new IWTimestamp(member.getRemovedDate()).getDate());
+					log.setEndDate(endDate);
+					log.store();
+				}
+				catch (CreateException ce) {
+					log(ce);
+				}
 			}
 		}
 		else {
