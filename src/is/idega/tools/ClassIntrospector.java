@@ -155,4 +155,8 @@ public class ClassIntrospector {
     return shortName;
   }
 
+  public Class[] getImplementedInterfaces(){
+    return sourceClass.getInterfaces();
+  }
+
 }

@@ -74,6 +74,13 @@ public class EJBWizardClassCreator {
       // -- interface declaration --
       codeString+="\npublic interface ";
       codeString+=getRemoteName()+ " extends "+getRemoteInterfaceSuperInterface();
+      Class[] superInterfaces = this.introspector.getImplementedInterfaces();
+      if(superInterfaces!=null){
+        for (int i = 0; i < superInterfaces.length; i++) {
+          codeString+=superInterfaces[i].getName();
+        }
+
+      }
       codeString+="\n";
       codeString+="{\n";
 
