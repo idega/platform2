@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.6 2005/02/15 07:44:49 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.7 2005/02/15 10:23:11 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/15 07:44:49 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/15 10:23:11 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -236,8 +236,7 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				School school = group.getSchool();
 				SchoolType schoolType = group.getSchoolType(); 
 
-				if (contract.getValidFromDate().compareTo(from) >= 0 ||
-						(contract.getTerminatedDate() != null && (contract.getTerminatedDate().compareTo(from) >= 0))) {
+				if (isContractInInterval(contract, from, to)) {
 					s += getTaxekatLine(user, school, group, schoolType, placementFromDate, contract.getCareTime(), contract.getValidFromDate(), contract.getTerminatedDate());
 					s += "\r\n";						
 				} else {
@@ -268,6 +267,26 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 			throw new ChildCareExportException(KEY_PLACEMENT_SEARCH_ERROR, DEFAULT_PLACEMENT_SEARCH_ERROR);			
 		}
 		return s;
+	}
+
+	/*
+	 * Returns true if the specified contract has dates within specified date interval.
+	 */
+	private boolean isContractInInterval(ChildCareContract c, Date from, Date to) {
+		Date cFrom = c.getValidFromDate();
+		Date cTo = c.getTerminatedDate();
+		
+		if (cFrom.compareTo(from) >= 0 && cFrom.compareTo(to) <= 0) {
+			return true;
+		}
+		
+		if (cTo != null) {
+			if (cTo.compareTo(from) >= 0 && cTo.compareTo(to) <= 0) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/*
