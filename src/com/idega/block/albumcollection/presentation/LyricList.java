@@ -33,11 +33,11 @@ public class LyricList extends Block {
     lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
 
 
-    Link updateLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
+    updateLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
     updateLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
     updateLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
 
-    Link deleteLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
+    deleteLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
     deleteLyricLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
     deleteLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
 
