@@ -35,6 +35,8 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
@@ -70,6 +72,8 @@ import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolUser;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
@@ -1077,7 +1081,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 		}
 		catch (FinderException fe) {
-			logError(fe.getMessage());
+			application.setContractId(null);
+			application.setContractFileId(null);
+			try {
+				changeCaseStatus(application, getCaseStatusDeleted().getStatus(), performer);
+			}
+			catch (RemoteException e) {
+				logError(e.getMessage());
+			}
 		}
 		catch (RemoteException re) {
 			logError(re.getMessage());
@@ -2730,6 +2741,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			ChildCareApplication application = childcareContract.getApplication();
 			
+			removeInvoiceRecords(childcareContract);
 			childcareContract.remove();
 			verifyApplication(application, performer);
 			contract.remove();
@@ -2747,6 +2759,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 		return true;
+	}
+	
+	private void removeInvoiceRecords(ChildCareContract contract) throws RemoveException {
+		try {
+			InvoiceBusiness business = (InvoiceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), InvoiceBusiness.class);
+			Collection records = business.findInvoiceRecordsByContract(contract);
+			Iterator iter = records.iterator();
+			while (iter.hasNext()) {
+				InvoiceRecord element = (InvoiceRecord) iter.next();
+				element.remove();
+			}
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+		catch (FinderException fe) {
+			//Nothing found, which is OK...
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 	
 	public void addMissingGrantedChecks() {
