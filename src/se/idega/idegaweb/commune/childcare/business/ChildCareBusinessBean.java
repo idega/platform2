@@ -752,6 +752,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		IWTimestamp beforeDate = new IWTimestamp();
 		beforeDate.addMonths(-monthsInQueue);
 		
+		IWTimestamp stamp = new IWTimestamp();
 		Collection applications = getApplicationsInQueueBeforeDate(providerID, beforeDate.getDate());
 		
 		UserTransaction transaction = getSessionContext().getUserTransaction();
@@ -767,10 +768,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
-				application.setLastReplyDate(lastReplyDate.getDate());
-				changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
-				
-				sendMessageToParents(application, subject, body, true);
+				if (hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate())) {
+					application.setLastReplyDate(lastReplyDate.getDate());
+					changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
+					
+					sendMessageToParents(application, subject, body, true);
+				}
 			}
 			
 			transaction.commit();
@@ -787,6 +790,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		
 		return false;
+	}
+	
+	private boolean hasActiveApplications(int childID, String caseCode, Date activeDate) {
+		String[] caseStatus = { getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
+		try {
+			return getChildCareApplicationHome().getNumberOfApplicationsByStatusAndActiveDate(childID, caseStatus, caseCode, activeDate) > 0;
+		}
+		catch (IDOException ie) {
+			return false;
+		}
 	}
 	
 	public boolean removePendingFromQueue(User performer) {
