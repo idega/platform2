@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.1 2003/08/18 11:42:26 anders Exp $
+ * $Id: ListTable.java,v 1.2 2003/08/18 14:44:34 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import java.util.List;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -23,20 +24,18 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/18 11:42:26 $
+ * Last modified: $Date: 2003/08/18 14:44:34 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class ListTable extends Table {
+public class ListTable extends PresentationObjectContainer {
 
 	private int cols = 0;
-	private List rowList = null;
-	private List bottomRowList = null;
-	private PresentationObject[] headerRow = null;
-	private PresentationObject[] tempRow = null;
-	private int tempCol = 0;
+	private int col = 1;
+	private int row = 2;
 	private CommuneBlock cb = null;
+	private Table table = null;
 
 	/**
 	 * Constructs a ListTable with the specified number of columns.
@@ -44,13 +43,11 @@ public class ListTable extends Table {
 	public ListTable(CommuneBlock cb, int cols) {
 		this.cb = cb;
 		this.cols = cols;
-		headerRow = new PresentationObject[cols];
-		rowList = new ArrayList();
-		bottomRowList = new ArrayList();
-		tempRow = new PresentationObject[cols];
-		setWidth(cb.getWidth());
-		setCellpadding(cb.getCellpadding());
-		setCellspacing(cb.getCellspacing());
+		this.table = new Table();
+		table.setWidth(cb.getWidth());
+		table.setCellpadding(cb.getCellpadding());
+		table.setCellspacing(cb.getCellspacing());
+		super.add(table);
 	}
 
 	/**
@@ -58,10 +55,11 @@ public class ListTable extends Table {
 	 * @param headerText the header text label to set
 	 * @param col the header column for the label 
 	 */
-	public void setHeader(String headerText,int col){
+	public void setHeader(String headerText, int col) {
 		// Check boundaries, null?
 		Text t = cb.getSmallHeader(headerText);
-		headerRow[col-1] = t;
+		table.add(t, col, 1);
+		table.setRowColor(1, cb.getHeaderColor());
 	}
 
 	/**
@@ -69,46 +67,10 @@ public class ListTable extends Table {
 	 * @param po the header label object to set
 	 * @param col the header column for the label 
 	 */
-	public void setHeader(PresentationObject po,int col){
+	public void setHeader(PresentationObject po, int col) {
 		// Check boundaries, null?
-		headerRow[col-1] = po;
+		table.add(po, col, 1);
 	}
-
-	/**
-	 * Adds a row with presentation objects.
-	 * @param rowObjects the row of objects to add
-	 */
-	public void addRow(PresentationObject[] rowObjects){
-		// Check boundaries, null?
-		rowList.add(rowObjects);
-	}
-
-	/**
-	 * Adds a row with text objects with default list font style.
-	 * @param rowText the text strings for the row
-	 */
-	public void addRow(String[] rowTexts){
-		// Check boundaries, null?
-		PresentationObject[] rowObjects = new Text[this.cols];
-		for(int i=0; i<cols; i++){
-			String s = rowTexts[i];
-			if(s!=null){
-				Text t = cb.getSmallText(rowTexts[i]);
-				rowObjects[i] = t;
-			}
-		}
-		addRow(rowObjects);
-  	}
-
-	/**
-	 * Adds a row with presentation objects at the bottom of the list.
-	 * The background color for bottom rows will not be set (clear).
-	 * @param rowObjects the presentation objects for the row
-	 */
-	public void addBottomRow(PresentationObject[] rowObjects){
-		// Check boundaries, null
-		bottomRowList.add(rowObjects);
-  	}
 
 	/**
 	 * Adds a presentation object at the current row and column.
@@ -116,14 +78,9 @@ public class ListTable extends Table {
 	 * are automatically wrapped when the current column is full.
 	 * @param po the presentation object to add
 	 */
-	public void add(PresentationObject po){
-		tempRow[tempCol] = po;
-		tempCol++;
-		if(tempCol==cols){
-			addRow(tempRow);
-			tempCol = 0;
-			tempRow = new PresentationObject[this.cols];
-		}
+	public void add(PresentationObject po) {
+		table.add(po, col, row);
+		skip();
 	}
 
 	/**
@@ -143,14 +100,17 @@ public class ListTable extends Table {
 	 * are automatically wrapped when the current column is full.
 	 */
 	public void skip(){
-		tempCol++;
-		if(tempCol==cols){
-			addRow(tempRow);
-			tempCol = 0;
-			tempRow = new PresentationObject[this.cols];
+		col++;
+		if (col > cols) {
+			col = 1;
+			row++;
+			if(row%2==0){
+				table.setRowColor(row, cb.getZebraColor1());
+			} else {
+				table.setRowColor(row, cb.getZebraColor2());
+			}
 		}
 	}
-
 
 	/**
 	 * Adds (skips) an empty cell to the list.
@@ -163,52 +123,4 @@ public class ListTable extends Table {
 	  		skip();
 		}
 	}
-
-	/**
-	 * Builds the entire list table.
-	 * This method must be called for the items in the list to appear.
-	 *
-	 */
-	public void build() {
-		int rows = 1 + rowList.size();
-		int cols = this.cols;
-		
-		for(int col=1; col<=cols; col++){
-			PresentationObject po = headerRow[col-1];
-			if(po!=null){
-				this.add(po,col,1);
-	  		}
-		}
-
-		this.setRowColor(1, cb.getHeaderColor());
-
-		for(int row=2; row<=rows; row++){
-			PresentationObject[] rowObjects = (PresentationObject[])rowList.get(row-2);
-	  		for(int col=1; col<=cols; col++){
-				PresentationObject po = rowObjects[col-1];
-				if(po!=null){
-		  			this.add(po,col,row);
-				}
-				if(row%2==0){
-					this.setRowColor(row, cb.getZebraColor1());
-				} else {
-					this.setRowColor(row, cb.getZebraColor2());
-				}
-	  		}
-		}
-
-		Iterator iter = bottomRowList.iterator();
-		int row = rows+1;
-		while(iter.hasNext()){
-			PresentationObject[] rowObjects = (PresentationObject[])iter.next();
-			for(int col=1; col<=cols; col++){
-				PresentationObject po = rowObjects[col-1];
-				if(po!=null){
-					this.add(po,col,row);
-				}
-			}
-			row++;
-		}
-	}
 }
-
