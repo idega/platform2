@@ -16,11 +16,11 @@ import com.idega.data.IDOQuery;
  */
 public class SchoolManagementTypeBMPBean extends GenericEntity implements SchoolManagementType {
 
-	public static final String ENTITY_NAME = "sch_management_type";
+	public static final String ENTITY_NAME = "SCH_MANAGEMENT_TYPE";
 
-	public static final String COLUMN_MANAGEMENT_TYPE = "management_type";
-	public static final String COLUMN_NAME = "management_type_name";
-	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
+	public static final String COLUMN_MANAGEMENT_TYPE = "MANAGEMENT_TYPE";
+	public static final String COLUMN_NAME = "MANAGEMENT_TYPE_NAME";
+	public static final String COLUMN_LOCALIZED_KEY = "LOCALIZED_KEY";
 	
 	public static final String TYPE_COMMUNE = "COMMUNE";
 	public static final String TYPE_PRIVATE = "PRIVATE";
