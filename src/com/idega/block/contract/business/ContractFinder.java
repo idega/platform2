@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.7 2002/10/15 15:16:54 palli Exp $
+ * $Id: ContractFinder.java,v 1.8 2003/05/21 13:56:36 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.block.contract.business;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -450,5 +451,21 @@ public abstract class ContractFinder
 			ex.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static Collection findContractsByUserId(int userId) {
+		try {
+			System.out.println("findContractsByUserId");
+			return EntityFinder.findAllByColumnOrdered(
+				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),
+				com.idega.block.contract.data.ContractBMPBean.getColumnNameUserId(),
+				userId,
+				com.idega.block.contract.data.ContractBMPBean.getColumnNameValidFrom());
+		}
+		catch (SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;			
 	}
 }
