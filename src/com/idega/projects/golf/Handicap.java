@@ -49,23 +49,23 @@ private double grunn;
 
           double haekkun = 0.0;
 
-          if (grunn <= 4.4) {
+          if (grunn < 4.5) {
               haekkun = 0.1;
           }
 
-          else if ((grunn > 4.4) && (grunn <= 11.4)) {
+          else if ((grunn >= 4.5) && (grunn < 11.5)) {
               haekkun = 0.2;
           }
 
-          else if ((grunn > 11.4) && (grunn <= 18.4)) {
+          else if ((grunn >= 11.5) && (grunn < 18.5)) {
               haekkun = 0.3;
           }
 
-          else if ((grunn > 18.4) && (grunn <= 26.4)) {
+          else if ((grunn >= 18.5) && (grunn < 26.5)) {
               haekkun = 0.4;
           }
 
-          else if (grunn > 26.4) {
+          else if (grunn >= 26.5) {
               haekkun = 0.5;
           }
 
@@ -75,31 +75,31 @@ private double grunn;
 
         private void handicapIncrease(double breyting) {
 
-            if (grunn <= 4.4) {
+            if (grunn < 4.5) {
                 if ( breyting < -1.0 ) {
                         grunn += 0.1;
                 }
             }
 
-            else if ((grunn > 4.4) && (grunn <= 11.4)) {
+            else if ((grunn >= 4.5) && (grunn < 11.5)) {
                 if ( breyting < -2.0 ) {
                         grunn += 0.1;
                 }
             }
 
-            else if ((grunn > 11.4) && (grunn <= 18.4)) {
+            else if ((grunn >= 11.5) && (grunn < 18.5)) {
                 if ( breyting < -3.0 ) {
                         grunn += 0.1;
                 }
             }
 
-            else if ((grunn > 18.4) && (grunn <= 26.4)) {
+            else if ((grunn >= 18.5) && (grunn < 26.5)) {
                 if ( breyting < -4.0 ) {
                         grunn += 0.1;
                 }
             }
 
-            else if (grunn > 26.4) {
+            else if (grunn >= 26.5) {
                 if ( breyting < -5.0 ) {
                         grunn += 0.2;
                 }

@@ -58,6 +58,7 @@ public class UpdateHandicap {
             int field_id = 0;
             int tournamentRoundID = 0;
             boolean isTournament = false;
+            float modifier = -1;
 
             double grunn = (double) memberInfo.getFirstHandicap();
             int tee_id = 0;
@@ -98,6 +99,7 @@ public class UpdateHandicap {
                         }
                         float tournamentPlayHandicap = (float) leikForgjof.getLeikHandicap(slope,course_rating,field_par);
                         Tournament tournament = round.getTournament();
+                        modifier = tournament.getTournamentType().getModifier();
                         if ( member.getGender().equalsIgnoreCase("m") ) {
                           if ( tournamentPlayHandicap > tournament.getMaxHandicap() ) {
                             tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getMaxHandicap());
@@ -108,8 +110,12 @@ public class UpdateHandicap {
                             tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getFemaleMaxHandicap());
                           }
                         }
+                        if ( modifier != -1 ) {
+                          int modified = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
+                          int modifiedHandicap = Math.round((float) modified * modifier);
+                          tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,modifiedHandicap);
+                        }
                         leikForgjof = new Handicap((double) tournamentHandicap);
-
                       }
 
                     leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);

@@ -341,15 +341,34 @@ private String gender = null;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
+      System.out.println("Getting all: "+new idegaTimestamp().getTimestampRightNow().toString());
       DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"total_points");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
       }
 
+      System.out.println("Getting scores: "+new idegaTimestamp().getTimestampRightNow().toString());
       for ( int a = 0; a < numberOfGolfers; a++ ) {
 
         Text memberName = new Text(strokesScores[a].getName());
+          memberName.setFontSize(1);
+        Text abbrevationText = new Text(strokesScores[a].getAbbrevation());
+          abbrevationText.setFontSize(1);
+        Text playedText = new Text("");
+          int holesPlayed = strokesScores[a].getHolesPlayed();
+          if ( holesPlayed == 18 ) {
+            playedText.setText("F");
+          }
+          else if ( holesPlayed == 0 ) {
+            playedText.setText("");
+          }
+          else {
+            playedText.setText(Integer.toString(holesPlayed));
+          }
+          playedText.setFontSize(1);
+        Text totalText = new Text(Integer.toString(strokesScores[a].getTotalPoints()));
+          totalText.setFontSize(1);
 
         Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
 
@@ -358,31 +377,79 @@ private String gender = null;
                 seeScores.addParameter("tournament_id",tournament_id);
                 seeScores.addParameter("tournament_group_id",strokesScores[a].getTournamentGroupID());
 
+        TournamentParticipants[] rounds = TournamentController.getTournamentParticipants("member_id",Integer.toString(strokesScores[a].getMemberID())+" and tournament_id = "+tournament_id,"round_number");
+
+        int c = 4;
+        int d = 4;
+        for ( int b = 0; b < rounds.length; b++ ) {
+          try {
+            String[] frontNine = com.idega.data.SimpleQuerier.executeStringQuery("select sum(point_count) from stroke st,tee t where st.tee_id = t.tee_id and scorecard_id = "+rounds[b].getScorecardID()+" and hole_number <= 9");
+            String[] backNine = com.idega.data.SimpleQuerier.executeStringQuery("select sum(point_count) from stroke st,tee t where st.tee_id = t.tee_id and scorecard_id = "+rounds[b].getScorecardID()+" and hole_number > 9");
+            if ( frontNine.length > 0 ) {
+              Text frontNineText = new Text(frontNine[0]);
+                frontNineText.setFontSize(1);
+              myTable.add(frontNineText,c,a+3);
+              c++;
+            }
+            if ( backNine.length > 0 ) {
+              Text backNineText = new Text(backNine[0]);
+                backNineText.setFontSize(1);
+              myTable.add(backNineText,c,a+3);
+              c++;
+            }
+          }
+          catch (Exception e) {
+            e.printStackTrace(System.err);
+          }
+          Text totalPointsText = new Text(Integer.toString(rounds[b].getTotalPoints()));
+            totalPointsText.setFontSize(1);
+          myTable.add(totalPointsText,c,a+3);
+          c++;
+
+          if ( a == 0 ) {
+            Text roundText = new Text("Hringur "+(b+1));
+              roundText.setFontSize(1);
+            Text frontNineText = new Text("F9");
+              frontNineText.setFontSize(1);
+            Text backNineText = new Text("S9");
+              backNineText.setFontSize(1);
+            Text allText = new Text("Samt");
+              allText.setFontSize(1);
+
+            myTable.mergeCells(d,1,(d+2),1);
+            myTable.add(roundText,d,1);
+            myTable.add(frontNineText,d,2);
+            d++;
+            myTable.add(backNineText,d,2);
+            d++;
+            myTable.add(allText,d,2);
+            d++;
+          }
+        }
+
+        Text placeText = new Text(Integer.toString(a+1));
+          placeText.setFontSize(1);
+
         if ( a == 0 ) {
-          myTable.add((a+1)+"",1,a+2);
+          myTable.add(placeText,1,a+3);
         }
 
         else {
           if ( strokesScores[a].getTotalPoints() != strokesScores[a-1].getTotalPoints() ) {
-            myTable.add((a+1)+"",1,a+2);
+            myTable.add(placeText,1,a+3);
           }
         }
 
-        int difference = strokesScores[a].getDifference();
-        String out_differ = "E";
-          if ( difference == 0 ) { out_differ = "E"; }
-          else if ( difference < 0 ) { out_differ = String.valueOf(difference); }
-          else if ( difference > 0 ) { out_differ = "+"+String.valueOf(difference); }
-
-        myTable.add(seeScores,2,a+2);
-        myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getTotalPoints()+"",4,a+2);
+        myTable.add(seeScores,2,a+3);
+        myTable.add(abbrevationText,3,a+3);
+        myTable.add(playedText,c,a+3);
+        myTable.add(totalText,c+1,a+3);
       }
+      System.out.println("Getting scores: "+new idegaTimestamp().getTimestampRightNow().toString());
 
-      myTable.add(positionText,1,1);
-      myTable.add(memberText,2,1);
-      myTable.add(unionText,3,1);
-      myTable.add(pointsText,4,1);
+      myTable.add(positionText,1,2);
+      myTable.add(memberText,2,2);
+      myTable.add(unionText,3,2);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");
