@@ -360,7 +360,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.repaint();
       repaint();
 
-
   }
 
   public void cycle(){
@@ -523,15 +522,16 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       }
   }
 
-/*
+
   public void update(Graphics g){
     super.repaint();
+    //super.paintAll(g);
   }
 
   public void paint(Graphics g){
   //use the update method
   }
-*/
+
 
 
   /**Start the applet*/
