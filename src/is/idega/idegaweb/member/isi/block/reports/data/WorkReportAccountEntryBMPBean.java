@@ -34,7 +34,7 @@ public class WorkReportAccountEntryBMPBean extends GenericEntity {
     addManyToOneRelationship(COLUMN_NAME_WR_ID,WorkReport.class);
     addManyToOneRelationship(COLUMN_NAME_WR_ACCOUNT_KEY_ID, WorkReportAccountKey.class);
     addManyToOneRelationship(COLUMN_NAME_GROUP_ID, Group.class);
-    addAttribute(COLUMN_NAME_AMOUNT,"amount of the item defined by the account id",true,true, Double.class);
+    addAttribute(COLUMN_NAME_AMOUNT,"amount of the item defined by the account id",true,true, Float.class);
   }
   
   public String getEntityName() {
@@ -87,6 +87,14 @@ public class WorkReportAccountEntryBMPBean extends GenericEntity {
   
   public void setGroupID(int groupID) {
     setColumn(COLUMN_NAME_GROUP_ID, groupID);
+  }
+
+  public double getAmount() {
+    return getDoubleColumnValue(COLUMN_NAME_AMOUNT);
+  }
+  
+  public void setAmount(double amount)  {
+    setColumn(COLUMN_NAME_AMOUNT, amount);
   }
 
   public Collection ejbFindAllWorkReportAccountEntriesByWorkReportId(int reportId) throws FinderException{
