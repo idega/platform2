@@ -48,7 +48,7 @@ public class MessageSessionBean extends IBOSessionBean implements MessageSession
 			if(property!=null)
 				return Boolean.valueOf(property).booleanValue();
 		}
-		return true;
+		return false;
 	}
 
 	public boolean getIfUserPreferesMessageInMessageBox(){
