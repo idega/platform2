@@ -511,6 +511,10 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 
   private Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String dateColumn) throws FinderException, RemoteException{
     Collection returner = null;
+
+    if (serviceIds.length == 0) {
+      return null;
+    }
     StringBuffer sql = new StringBuffer();
 
 
