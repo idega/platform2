@@ -27,7 +27,7 @@ public void doGet( HttpServletRequest _req, HttpServletResponse _res) throws IOE
 }
 
 public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IOException{
-  //IWMainApplication iwma = IWMainApplication.getIWMainApplication(getServletContext());
+
   Connection conn = null;
   Statement Stmt;
   ResultSet RS;
@@ -46,9 +46,9 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
     if( imageId!=null){
 
       app = getApplication();
-      String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",Integer.parseInt(imageId), app ,"image_value");
+     // String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",Integer.parseInt(imageId), app ,"image_value");
 
-      if( URIString == null ){
+    //  if( URIString == null ){
         conn = (ImageEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity")).getConnection();
 
         if( conn!=null ){
@@ -94,14 +94,14 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
       }
 
 
-    }
-    else { //Stream from a file
+   //}
+   // else { //Stream from a file
 
-      java.io.File file = new File(app.getApplicationRealPath()+URIString);
-      file.getC
+  //    java.io.File file = new File(app.getApplicationRealPath()+URIString);
+  //    file.getC
 
 
-    }
+  //  }
   }
 
 
