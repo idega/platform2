@@ -19,9 +19,12 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -45,6 +48,10 @@ public class ClubInformationTab extends UserGroupTab {
 
 	private static final String TAB_NAME = "cit_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Information";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "club_information_tab";
+	
 
 	private TextInput _numberField;
 	private TextInput _ssnField;
@@ -154,9 +161,9 @@ public class ClubInformationTab extends UserGroupTab {
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, iwrb.getLocalizedString("clubinformationtab.single_division_club","Single division"));
 		}
 		else {
-			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB,iwrb.getLocalizedString("clubinformationtab.multi_division_club","Multi divisional"));//fjšlgreinafŽlag
-			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB,  iwrb.getLocalizedString("clubinformationtab.single_division_club","Single division"));//sŽrgreinafŽlag
-			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB,  iwrb.getLocalizedString("clubinformationtab.club_with_no_players","No players"));//fŽlag ‡n i?kennda
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB,iwrb.getLocalizedString("clubinformationtab.multi_division_club","Multi divisional"));//fjï¿½lgreinafï¿½lag
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB,  iwrb.getLocalizedString("clubinformationtab.single_division_club","Single division"));//sï¿½rgreinafï¿½lag
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB,  iwrb.getLocalizedString("clubinformationtab.club_with_no_players","No players"));//fï¿½lag ï¿½n i?kennda
 			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName, IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB);
 		}
 		_makeField.setSelectedElement(make);
@@ -240,7 +247,7 @@ public class ClubInformationTab extends UserGroupTab {
 	public void lineUpFields() {
 		empty();
 
-		Table t = new Table(2, 10);
+		Table t = new Table(2, 11);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
@@ -263,6 +270,8 @@ public class ClubInformationTab extends UserGroupTab {
 		t.add(_inOperationField, 2, 9);
 		t.add(_usingMemberSystemText, 1, 10);
 		t.add(_usingMemberSystemField, 2, 10);
+		Help help = getHelpButton();
+		t.add(help,1,11);
 
 		add(t);
 	}
@@ -467,5 +476,16 @@ public class ClubInformationTab extends UserGroupTab {
 			throw new RuntimeException(rme.getMessage());
 		}
 		return business;
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 }

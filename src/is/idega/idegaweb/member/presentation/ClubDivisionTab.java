@@ -17,9 +17,12 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
@@ -42,6 +45,10 @@ public class ClubDivisionTab extends UserGroupTab {
 	
 	private static final String TAB_NAME = "cdiv_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Division";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "club_division_tab";
+	
 	
 	private TextInput _numberField;
 	private TextInput _ssnField;
@@ -140,7 +147,7 @@ public class ClubDivisionTab extends UserGroupTab {
 	public void initializeFields() {
 		_numberField = new TextInput(_numberFieldName);
 		_ssnField = new TextInput(_ssnFieldName);
-//		_ssnField.setAsIcelandicSSNumber("Vartöluprófun stemmir ekki");
+//		_ssnField.setAsIcelandicSSNumber("Vartï¿½luprï¿½fun stemmir ekki");
 		_foundedField = new DateInput(_foundedFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);	
 		
@@ -181,7 +188,7 @@ public class ClubDivisionTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 5);
+		Table t = new Table(2, 6);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
@@ -192,6 +199,8 @@ public class ClubDivisionTab extends UserGroupTab {
 		t.add(_connectionToSpecialField, 2, 4);
 		t.add(_boardGroupText, 1, 5);
 		t.add(_boardGroupField, 2, 5);
+		Help help = getHelpButton();
+		t.add(help,1,6);
 
 		add(t);
 	}
@@ -336,6 +345,17 @@ public class ClubDivisionTab extends UserGroupTab {
 			throw new RuntimeException(rme.getMessage());
 		}
 		return business;
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 	
 }

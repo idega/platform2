@@ -11,12 +11,14 @@ import java.util.Hashtable;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -34,6 +36,10 @@ public class ClubPlayerTab extends UserGroupTab {
 
 	private static final String TAB_NAME = "cplay_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Player";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "club_player_tab";
+	
 
 	private Text _unionField;
 	private TextInput _cplayField;
@@ -143,18 +149,18 @@ public class ClubPlayerTab extends UserGroupTab {
 			IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_unionText = new Text(iwrb.getLocalizedString(_unionFieldName, "Sérsamband") + ":");
+		_unionText = new Text(iwrb.getLocalizedString(_unionFieldName, "Sï¿½rsamband") + ":");
 		_cplayText = new Text(iwrb.getLocalizedString(_cplayFieldName, "Flokkur") + ":");
 		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Heiti flokks") + ":");
 		_competitionText = new Text(iwrb.getLocalizedString(_competitionFieldName, "Keppendamerking") + ":");
-		_coachesText = new Text(iwrb.getLocalizedString(_coachesFieldName, "Þjálfarar") + ":");
+		_coachesText = new Text(iwrb.getLocalizedString(_coachesFieldName, "ï¿½jï¿½lfarar") + ":");
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 5);
+		Table t = new Table(2, 6);
 		t.add(_unionText, 1, 1);
 		t.add(_unionField, 2, 1);
 		t.add(_cplayText, 1, 2);
@@ -165,6 +171,8 @@ public class ClubPlayerTab extends UserGroupTab {
 		t.add(_competitionField, 2, 4);
 		t.add(_coachesText, 1, 5);
 		t.add(_coachesField, 2, 5);
+		Help help = getHelpButton();
+		t.add(help,1,6);
 
 		add(t);
 	}
@@ -264,5 +272,16 @@ public class ClubPlayerTab extends UserGroupTab {
 		catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 }
