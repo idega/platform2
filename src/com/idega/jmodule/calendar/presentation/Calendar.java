@@ -1175,6 +1175,8 @@ private String DatastoreType;
 		if ((i==1) && ((m + j) == 9))
 			break;
 
+		if ((i % 2)== 0) cellColor="#666699";
+		else cellColor="#9999CC";
 
 		double hoursToday=0;
 
