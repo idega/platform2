@@ -67,6 +67,8 @@ public class ServiceViewer extends Window {
   private Text boldText;
   private boolean showBuyButton = true;
   private boolean showMoreButton = true;
+  private boolean listView = false;
+
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
@@ -113,6 +115,7 @@ public class ServiceViewer extends Window {
     }
     else if( sSupplier!=null ){//multi view
       try {
+        listView = true;
         supplier = new Supplier(Integer.parseInt(sSupplier));
       }
       catch (Exception ex) {
@@ -133,7 +136,7 @@ public class ServiceViewer extends Window {
     try {
       int[] dagur = ServiceDay.getDaysOfWeek(serv.getID());
 
-      if( dagur.length == 7 ){
+      if( (dagur.length == 7) && (!listView) ){
         depart.append("Every day at ");/**localize**/
       }
       else{
@@ -401,7 +404,9 @@ public class ServiceViewer extends Window {
 
     for (int j = 0; j < prices.length; j++) {
       try {
-        if (j>0) price.append(Text.NON_BREAKING_SPACE);
+        if ((j>0)){
+           price.append(Text.BREAK);
+        }
         currency = new Currency(prices[j].getCurrencyId());
         price.append(prices[j].getPriceCategory().getName());
         price.append(Text.NON_BREAKING_SPACE);

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Hashtable; //synchronized
 import java.util.HashMap;//unsynchronized
 import java.util.ArrayList;//unsynchronized
+import java.util.Iterator;
 
 /**
  * Title:        is.idega.idegaweb.tracker.business.TrackerBusiness
@@ -35,6 +36,8 @@ public class TrackerBusiness {
   private static Map referers;
   private static Map agents;
   private static Map domain;
+
+  private static int totalHits = 0;
 
   public TrackerBusiness() {
   }
@@ -60,7 +63,6 @@ public class TrackerBusiness {
     int pageId = getCurrentPageId(iwc);
     if(pageId!=-1){
       PageStatistics page = new PageStatistics();
-
       page.setPageId(pageId);
       page.setPreviousPageId(pageId);/**@todo this shit here**/
       page.setLocale(ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
@@ -74,7 +76,8 @@ public class TrackerBusiness {
       }
 
       pageLog.add(page);
-      pages.put(String.valueOf(page.getPageId()),pageLog);
+      pages.put(iwc.getSession().getId(),pageLog);
+      totalHits++;
     }
 
 
@@ -134,10 +137,19 @@ public class TrackerBusiness {
     return hits;
   }
 
-  public static int getTotalPageHits(){
+  public static int getTotalHits(){
+    return totalHits;
+  }
+
+  public static int getTotalSessions(){
     int hits = 0;
     if(pages!=null){
       hits = pages.size();
+      Iterator iter = pages.entrySet().iterator();
+      while (iter.hasNext()) {
+        String item = (String) iter.next();
+        hits+=((ArrayList)pages.get(item)).size();
+      }
     }
     return hits;
   }
