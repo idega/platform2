@@ -13,6 +13,13 @@ public class SchoolTypeHomeImpl extends com.idega.data.IDOFactory implements Sch
  }
 
 
+public java.util.Collection findAllByCategory(java.lang.String p0,boolean p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllByCategory(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllByCategory(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllByCategory(p0);

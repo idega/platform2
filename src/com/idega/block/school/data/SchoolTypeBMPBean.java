@@ -123,6 +123,15 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     return super.idoFindAllIDsByColumnBySQL(SCHOOLCATEGORY,category);
   }
 
+	public Collection ejbFindAllByCategory(String category, boolean showFreetimeTypes) throws javax.ejb.FinderException {
+		IDOQuery query = this.idoQueryGetSelect();
+		query.appendWhereEqualsQuoted(SCHOOLCATEGORY,category);
+		if (!showFreetimeTypes) {
+			query.appendAnd().appendLeftParenthesis().appendEquals(this.IS_FREETIME_TYPE, false).appendOr().append(IS_FREETIME_TYPE).appendIsNull().appendRightParenthesis();
+		}
+		return super.idoFindPKsByQuery(query);
+	}
+
 	/**
 	 *	Finds one SchoolType from a typeKey.
 	 *	@throws javax.ejb.FinderException if no SchoolType is found.	

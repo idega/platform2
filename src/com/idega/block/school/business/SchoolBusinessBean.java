@@ -1076,9 +1076,13 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public Collection findAllSchoolTypesInCategory(String Category) {
+		return findAllSchoolTypesInCategory(Category, true);
+	}
+	
+	public Collection findAllSchoolTypesInCategory(String Category, boolean showFreetimeTypes) {
 		try {
 			SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-			return shome.findAllByCategory(Category);
+			return shome.findAllByCategory(Category, showFreetimeTypes);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
