@@ -75,7 +75,7 @@ public class AdministratorReports extends Reports {
     String action = iwc.getParameter(ACTION);
     if (action == null) action = "";
     
-    if (action.equals(PARAMETER_ONLINE_REPORT) && _report != null) {
+    if (action.equals(PARAMETER_ONLINE_REPORT) && _report == null) {
       _report = new OnlineBookingReport(iwc);
     }
 
