@@ -5,30 +5,16 @@
 package is.idega.idegaweb.marathon.business;
 
 import is.idega.idegaweb.marathon.presentation.UserRunTab;
-import java.awt.event.ActionListener;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.EJBHome;
-import javax.ejb.EJBObject;
-import javax.ejb.Handle;
 import javax.ejb.RemoveException;
-import javax.ejb.SessionContext;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBOService;
+
 import com.idega.business.IBOServiceBean;
-import com.idega.core.accesscontrol.business.AccessController;
-import com.idega.data.IDOHome;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;

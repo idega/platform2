@@ -1,12 +1,12 @@
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.presentation.UserRunTab;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
+
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
