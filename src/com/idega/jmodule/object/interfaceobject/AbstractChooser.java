@@ -23,9 +23,8 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
 
   private static final String chooserText = "abstractchooser.buttonText";
 
-  public static final String DEFAULT_CHOOSER_PARAMETER = "iw_chooser_par";
+  //public static final String DEFAULT_CHOOSER_PARAMETER = "iw_chooser_par";
   static final String CHOOSER_SELECTION_PARAMETER="iw_chooser_sel_par";
-  public String chooserParameter=DEFAULT_CHOOSER_PARAMETER;
 
   static final String DISPLAYSTRING_PARAMETER = "chooser_displaystring";
   static final String VALUE_PARAMETER = "chooser_value";
@@ -36,6 +35,8 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
   static final String SCRIPT_PREFIX_PARAMETER="iw_chooser_prefix";
   static final String SCRIPT_SUFFIX_PARAMETER="iw_chooser_suffix";
 
+  public String chooserParameter=VALUE_PARAMETER;
+  public String displayInputName=DISPLAYSTRING_PARAMETER;
   private boolean addForm=true;
   private Form form = null;
   private Image buttonImage = null;
@@ -51,6 +52,20 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
 
   public void setChooserParameter(String parameterName){
     this.chooserParameter=parameterName;
+    if(this.displayInputName==this.DISPLAYSTRING_PARAMETER){
+      this.displayInputName=parameterName+"_displaystring";
+    }
+  }
+
+  public void setName(String name){
+    this.displayInputName=name;
+    if(this.chooserParameter==this.VALUE_PARAMETER){
+      this.chooserParameter=name+"_chooser";
+    }
+  }
+
+  public String getName(){
+    return displayInputName;
   }
 
 
@@ -71,9 +86,8 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
 
   public ModuleObject getTable(ModuleInfo modinfo,IWBundle bundle){
     Table table = new Table(2,1);
-    TextInput input = new TextInput(DISPLAYSTRING_PARAMETER);
-    String valueParameterName = "";
-    Parameter value = new Parameter(VALUE_PARAMETER,"");
+    TextInput input = new TextInput(displayInputName);
+    Parameter value = new Parameter(getChooserParameter(),"");
     table.add(value);
     table.add(new Parameter(VALUE_PARAMETER_NAME,value.getName()));
     //GenericButton button = new GenericButton("chooserbutton",bundle.getResourceBundle(modinfo).getLocalizedString(chooserText,"Choose"));
