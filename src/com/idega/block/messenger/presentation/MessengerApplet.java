@@ -42,7 +42,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private String sessionId;
   private String userId;
   private String userName;
-  private String userListVersion = "0";
+  private String userListVersion = "v.0";
   private String servletURL;
   private URL hostURL;
   private String resourceURL;
@@ -60,7 +60,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private Image offscreenImage;
   private Graphics offscr;
   private long checkTimer = 5000;
-  private long tm;
   private long threadSleep = 50;
 
   private Packet packetToServlet;
@@ -68,7 +67,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   /**Construct the applet*/
   public MessengerApplet() {
-    setBackground(Color.white);
+    setBackground(Color.red);
   }
 
 
@@ -81,6 +80,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
+
+      System.out.println(getCodeBase().getProtocol()+getCodeBase().getHost());
 
       try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
@@ -100,17 +101,18 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   public void run(){
-    tm = System.currentTimeMillis();
 
     while(runThread){
       repaint();
 
       //message checking is done in another thread
      try {//keep the wait insync with the performance of the machine it is on
-      	tm += threadSleep;
-        t.sleep(Math.max(0, tm - System.currentTimeMillis()));
+        t.sleep(checkTimer);
       }
-      catch (InterruptedException e) { ; }
+      catch (InterruptedException e) {
+        e.printStackTrace(System.err);
+        System.out.println("MessageApplet : Problem in the main thread");
+      }
     }
   }
 
@@ -120,41 +122,39 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
    * Iterate over the vector of Messages and display
    */
   private void dispatchMessagesToDialogs(Vector MessageVector){
-      Enumeration enum = MessageVector.elements();
+    Enumeration enum = MessageVector.elements();
 
-      Message aMessage = null;
+    Message aMessage = null;
 
-      while (enum.hasMoreElements()){
+    while (enum.hasMoreElements()){
 
-        aMessage = (Message) enum.nextElement();
+      aMessage = (Message) enum.nextElement();
 
-        MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
+      MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
 
-        if( messageDialog == null ) { //create a new dialog
+      if( messageDialog == null ) { //create a new dialog
 
-          if( logoLabel != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logoLabel);
-          else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
-
-
-          Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-          messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
-          messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-
-          dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
-
-          messageDialog.addActionListener(this);
-
-          messageDialog.setVisible(true);
+        if( logoLabel != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logoLabel);
+        else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
 
 
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
+        messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
-        }
-        else {
-          messageDialog.setVisible(true);
-          messageDialog.addMessage(aMessage);
-        }
+        dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
+
+        messageDialog.addActionListener(this);
+
+        messageDialog.setVisible(true);
 
       }
+      else {
+        messageDialog.setVisible(true);
+        messageDialog.addMessage(aMessage);
+      }
+
+    }
   }
 
   public void getMessagesFromDialog(MessageDialog dialog){
@@ -184,8 +184,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         // connect to the servlet
         System.out.println("Connecting to servlet...");
         URL servlet = new URL(hostURL,servletURL);
-        // System.out.println("SERVLET URL! :"+hostURL+servletURL);
-
 
         servletConnection = servlet.openConnection();
         System.out.println("Connected");
@@ -199,7 +197,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
         // Specify the content type that we will send binary data
         servletConnection.setRequestProperty("Content-Type", "application/octet-stream");
-
        //servletConnection.setRequestProperty("Connection", "Keep-Alive");
 
       }
@@ -244,7 +241,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         System.out.println("Sending Complete.");
       }
 
-      packetToServlet = null;    }
+      packetToServlet = null;
+
+    }
     catch (IOException e){
         System.out.println(e.getMessage());
         e.printStackTrace(System.err);
@@ -537,12 +536,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   /**Start the applet*/
   public void start() {
+    runThread = true;
+
     if ( t == null ){
       t = new Thread(this);
       t.start();
     }
-
-    runThread = true;
 
     if(cycler==null){
      cycler = new MessageListener(this,checkTimer);
