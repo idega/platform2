@@ -23,6 +23,11 @@ import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 
 public class Box extends Block implements Builderaware {
+
+	private static final String _DEFAULT_ICON_PREFIX = "icfileicons/ui/iw/";
+	private static final String _DEFAULT_ICON_SUFFIX = ".gif";
+
+	private boolean _showMimeType;
 	private boolean _showFileSize;
 	private int _boxID = -1;
 	private int _boxCategoryID = -1;
@@ -414,10 +419,18 @@ public class Box extends Block implements Builderaware {
 						
 						if (_showFileSize) {
 							ICFile file = links[b].getFile();
+							;
 							Text fileSize = new Text(file.getFileSize().toString());
 							fileSize.setStyle(_name);
-							table.setWidth(column++, linkRow, 5);
+							table.setWidth(column++, linkRow, 12);
+							table.setAlignment(column, linkRow, Table.HORIZONTAL_ALIGN_RIGHT);
 							table.add(fileSize, column++, linkRow);
+							
+							if (_showMimeType) {
+								Image mimetype = _iwb.getImage(_DEFAULT_ICON_PREFIX+file.getMimeType()+_DEFAULT_ICON_SUFFIX);
+								table.setWidth(column++, linkRow, 12);
+								table.add(mimetype, column++, linkRow);
+							}
 						}
 
 						if (_isAdmin) {
@@ -687,6 +700,13 @@ public class Box extends Block implements Builderaware {
 	 */
 	public void setShowFileSize(boolean b) {
 		_showFileSize = b;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowMimeType(boolean b) {
+		_showMimeType = b;
 	}
 
 }
