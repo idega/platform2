@@ -11,10 +11,23 @@ import com.idega.block.tpos.business.TPosException;
  * @version 1.0
  */
 public class TPosClient {
+  public static final String TPOS_USER_ID = "tpos_userid";
+  public static final String TPOS_PASSWD = "tpos_passwd";
+  public static final String TPOS_MERCHANT_ID = "tpos_merchantid";
+  public static final String TPOS_LOCATION_ID = "tpos_locationid";
+  public static final String TPOS_POS_ID = "tpos_posid";
+  public static final String TPOS_KEY_RECEIVE_PASSWD = "tpos_keyreceivepasswd";
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.tpos";
   private TPOS3Client _client = null;
   private IWBundle _iwb = null;
   private IWResourceBundle _iwrb = null;
+
+  private String _userId = null;
+  private String _passwd = null;
+  private String _merchantId = null;
+  private String _locationId = null;
+  private String _posId = null;
+  private String _receivePasswd = null;
 
   /**
    *
@@ -37,6 +50,12 @@ public class TPosClient {
     try {
       _client = new TPOS3Client(path);
       _client.setIPSet(2);
+      _userId = _iwb.getProperty(TPOS_USER_ID);
+      _passwd = _iwb.getProperty(TPOS_PASSWD);
+      _merchantId = _iwb.getProperty(TPOS_MERCHANT_ID);
+      _locationId = _iwb.getProperty(TPOS_LOCATION_ID);
+      _posId = _iwb.getProperty(TPOS_POS_ID);
+      _receivePasswd = _iwb.getProperty(TPOS_KEY_RECEIVE_PASSWD);
     }
     catch(Exception e) {
       System.out.println("Got an exception trying to create client");
@@ -44,11 +63,11 @@ public class TPosClient {
   }
 
   public String createNewBatch() {
-    _client.setProperty(TPOS3Client.PN_USERID, "IDEGA");
-    _client.setProperty(TPOS3Client.PN_PASSWORD, "TEST");
-    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
-    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
-    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+    _client.setProperty(TPOS3Client.PN_USERID,_userId);
+    _client.setProperty(TPOS3Client.PN_PASSWORD,_passwd);
+    _client.setProperty(TPOS3Client.PN_MERCHANTID,_merchantId);
+    _client.setProperty(TPOS3Client.PN_LOCATIONID,_locationId);
+    _client.setProperty(TPOS3Client.PN_POSID,_posId);
 
     boolean created = _client.sendNewBatchReq();
     if (!created) {
@@ -65,12 +84,11 @@ public class TPosClient {
   }
 
   public boolean getCACertifycate() {
-    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
-    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
-    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+    _client.setProperty(TPOS3Client.PN_MERCHANTID,_merchantId);
+    _client.setProperty(TPOS3Client.PN_LOCATIONID,_locationId);
+    _client.setProperty(TPOS3Client.PN_POSID,_posId);
 
     boolean valid = _client.sendCACertificateReq();
-//    _client.confirmCACertificate();
 
     if (!valid) {
       System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
@@ -81,11 +99,11 @@ public class TPosClient {
   }
 
   public boolean getKeys() {
-    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
-    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
-    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+    _client.setProperty(TPOS3Client.PN_MERCHANTID,_merchantId);
+    _client.setProperty(TPOS3Client.PN_LOCATIONID,_locationId);
+    _client.setProperty(TPOS3Client.PN_POSID,_posId);
 
-    _client.setProperty(TPOS3Client.PN_KEYRECEIVEPASSWORD, "5JGL64EF");
+    _client.setProperty(TPOS3Client.PN_KEYRECEIVEPASSWORD,_receivePasswd);
 
     boolean valid = _client.sendKeyPairReq();
 
@@ -128,11 +146,11 @@ public class TPosClient {
     _client.setProperty(TPOS3Client.PN_LOCATIONID, "0000000001");
     _client.setProperty(TPOS3Client.PN_POSID, "IDE001001");*/
 
-    _client.setProperty(TPOS3Client.PN_USERID, "IDEGA");
-    _client.setProperty(TPOS3Client.PN_PASSWORD, "TEST");
-    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
-    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
-    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+    _client.setProperty(TPOS3Client.PN_USERID,_userId);
+    _client.setProperty(TPOS3Client.PN_PASSWORD,_passwd);
+    _client.setProperty(TPOS3Client.PN_MERCHANTID,_merchantId);
+    _client.setProperty(TPOS3Client.PN_LOCATIONID,_locationId);
+    _client.setProperty(TPOS3Client.PN_POSID,_posId);
 
     _client.setProperty(TPOS3Client.PN_PAN,cardnumber);
     _client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires+monthExpires);
