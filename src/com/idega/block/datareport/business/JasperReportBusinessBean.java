@@ -383,7 +383,9 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
   		String fieldName =  fieldPart.getName();
   		String localizedFieldName = resourceBundle.getLocalizedString(fieldName, fieldName);
-  		String type = fieldPart.getTypeClass();
+  		//String type = fieldPart.getTypeClass();
+  		//TODO: thi think about that
+  		String type = String.class.getName();
       String displayParameter = getColumnParameter(orderNumber);
       // !!! do not store it with the key field name but with the alias name
       String aliasName = fieldPart.getAliasName();
