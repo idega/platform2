@@ -1852,7 +1852,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//add the data to the collection
 		reportCollection.addAll(leagueStatsMap.values());
 
-		ReportableField[] sortFields = new ReportableField[] {regionalUnionName, leagueString};
+		ReportableField[] sortFields = new ReportableField[] {leagueString};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 	
