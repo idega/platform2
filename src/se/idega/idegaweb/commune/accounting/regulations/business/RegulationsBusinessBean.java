@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.35 2003/10/04 22:43:56 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.36 2003/10/05 11:39:51 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -75,7 +75,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
 	public final static String KEY_ERROR_PARAM_MAIN_OPERATION = "main_op_error";
 	public final static String KEY_ERROR_PARAM_REG_SPEC_EMPTY = "reg_spec_empty";
-
+	public final static String KEY_ERROR_PARAM_OVERLAP = "overlap_error";
+	
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.accounting.presentation.AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER;
 	}
@@ -133,6 +134,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		if (operation.compareTo("0") == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_MAIN_OPERATION, "Huvudverksamhet måste väljas");			
 		}
+
+
 		
 		if (periodeFrom.after(periodeTo)) {
 			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
@@ -187,6 +190,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			}
 		} catch (FinderException e) {
 			r = null;
+		}
+
+		if (isRegulationOverlap(periodeFrom, periodeTo, r)) {
+			throw new RegulationException(KEY_ERROR_PARAM_OVERLAP, "Överlappande perioder");			
 		}
 		
 		try {
@@ -629,6 +636,29 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
+
+	/*
+	 * Checks if dates are in overlap of stored Regulations
+	 * @return true if there is an overlap
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
+	 * @author Kelly
+	 */
+	private boolean isRegulationOverlap(Date from, Date to, Regulation r) {
+
+		try {
+			RegulationHome home = getRegulationHome();
+			if (home.findRegulationOverlap(from, to, r) == null) {
+				return false;				
+			} else {
+				return true;
+			}
+		} catch (RemoteException e) {
+			return false;
+		} catch (FinderException e) {
+			return false;
+		}
+	}	
+
 
 	/**
 	 * Gets all VAT Rules
