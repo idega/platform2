@@ -11,10 +11,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.school.data.SchoolChoice;
-
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolSeason;
 import com.idega.data.IDOCompositPrimaryKeyException;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
@@ -37,7 +34,7 @@ import com.idega.util.ListUtil;
  * @author		2003 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version		1.0
  */
-public class CitizenBMPBean extends UserBMPBean {
+public class CitizenBMPBean extends UserBMPBean implements Citizen {
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOEntity#store()
@@ -46,12 +43,12 @@ public class CitizenBMPBean extends UserBMPBean {
 		super.store();
 	}
 	
-	public Collection ejbFindAllCitizensRegisteredToSchool(SchoolSeason season, Date firstBirthDateInPeriode, Date lastBirthDateInPeriode) throws FinderException, IDOLookupException{
-		//select usr.* from ic_user usr, comm_sch_choice sch where usr.DATE_OF_BIRTH>='2002-03-01' AND usr.DATE_OF_BIRTH<='2002-03-02' and sch.child_id=usr.ic_user_id and sch.SCHOOL_SEASON_ID=season.getPrimaryKey()
+	public Collection ejbFindAllCitizensRegisteredToSchool(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode,Date currentDate) throws FinderException, IDOLookupException{
+		//select usr.* from ic_user usr, sch_class_member sch where usr.DATE_OF_BIRTH>='1993-01-01' AND usr.DATE_OF_BIRTH<='1993-10-02' and sch.ic_user_id=usr.ic_user_id and sch.register_date <='2003-01-23' and (sch.removed_date is null  or sch.removed_date > '2003-01-23')
+
 		try {
 			//preparing
-		  	
-			IDOEntityDefinition schChoiceDef = IDOLookup.getEntityDefinitionForClass(SchoolChoice.class);
+			IDOEntityDefinition schClassMemberDef = IDOLookup.getEntityDefinitionForClass(SchoolClassMember.class);
 			IDOEntityDefinition thisDef = this.getEntityDefinition();
 			  	
 			String[] tables = new String[2];
@@ -61,9 +58,9 @@ public class CitizenBMPBean extends UserBMPBean {
 			//as variable
 			variables[0] = "usr";
 			//table name
-			tables[1] = schChoiceDef.getSQLTableName();
+			tables[1] = schClassMemberDef.getSQLTableName();
 			//as variable
-			variables[1] = "sch";
+			variables[1] = "schcm";
 						  	
 			//constructing query
 			IDOQuery query = idoQuery();
@@ -92,19 +89,38 @@ public class CitizenBMPBean extends UserBMPBean {
 			query.appendAnd();
 			query.append(variables[1]);
 			query.append(".");
-			query.append(schChoiceDef.findFieldByUniqueName(SchoolChoice.FIELD_CHILD).getSQLFieldName());
+			query.append(schClassMemberDef.findFieldByUniqueName(SchoolClassMember.FIELD_MEMBER).getSQLFieldName());
 			query.appendEqualSign();
 			query.append(variables[0]);
 			query.append(".");
 			query.append(thisDef.getPrimaryKeyDefinition().getField().getSQLFieldName());
 			
-			//and sch.SCHOOL_SEASON_ID="season.getPrimaryKey()"
+			
+			
+			//and sch.register_date <='currentDate' 
 			query.appendAnd();
 			query.append(variables[1]);
 			query.append(".");
-			query.append(schChoiceDef.findFieldByUniqueName(SchoolChoice.FIELD_SCHOOL_SEASON).getSQLFieldName());
-			query.appendEqualSign();
-			query.append(season.getPrimaryKey());
+			query.append(schClassMemberDef.findFieldByUniqueName(SchoolClassMember.FIELD_REGISTER_DATE).getSQLFieldName());
+			query.appendLessThanOrEqualsSign();
+			query.append(currentDate);
+				
+			//and (sch.removed_date is null 
+			query.appendAnd();
+			query.appendLeftParenthesis();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(schClassMemberDef.findFieldByUniqueName(SchoolClassMember.FIELD_REMOVED_DATE).getSQLFieldName());
+			query.appendIsNull();
+				
+			//or sch.removed_date > 'currentDate' )
+			query.appendOr();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(schClassMemberDef.findFieldByUniqueName(SchoolClassMember.FIELD_REMOVED_DATE).getSQLFieldName());
+			query.appendGreaterThanSign();
+			query.append(currentDate);
+			query.appendRightParenthesis();
 			  	
 			System.out.println("SQL -> "+this.getClass()+":"+query);
 			return idoFindPKsByQuery(query); 
@@ -114,96 +130,6 @@ public class CitizenBMPBean extends UserBMPBean {
 			return ListUtil.getEmptyList();
 		}
 	}
-	
-
-
-//   WRONG	
-//	public Collection ejbFindAllCitizensRegisteredToChildCare(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateInRegistrationPeriode, Date lastDateInRegistrationPeriode) throws FinderException, IDOLookupException{
-//		//select usr.* from ic_user usr, comm_childcare care where usr.DATE_OF_BIRTH>='2002-03-01' AND usr.DATE_OF_BIRTH<='2002-03-02' and care.child_id=usr.ic_user_id and care.from_date <='lastDate' and (care.REJECTION_DATE is null or care.REJECTION_DATE > 'firstDate' )
-//		try {
-//			//preparing
-//		  	
-//			IDOEntityDefinition childCareAppDef = IDOLookup.getEntityDefinitionForClass(ChildCareApplication.class);
-//			IDOEntityDefinition thisDef = this.getEntityDefinition();
-//			  	
-//			String[] tables = new String[2];
-//			String[] variables = new String[2];
-//			//table name
-//			tables[0] = thisDef.getSQLTableName();
-//			//as variable
-//			variables[0] = "usr";
-//			//table name
-//			tables[1] = childCareAppDef.getSQLTableName();
-//			//as variable
-//			variables[1] = "care";
-//			  	
-//			//constructing query
-//			IDOQuery query = idoQuery();
-//			//select
-//			query.appendSelect();
-//			query.append(variables[0]);
-//			query.append(".* ");
-//			//from
-//			query.appendFrom(tables,variables);
-//			//where
-//			query.appendWhere();
-//			query.append(variables[0]);
-//			query.append(".");
-//			query.append(getColumnNameDateOfBirth());
-//			query.appendGreaterThanOrEqualsSign();
-//			query.append(firstBirthDateInPeriode);
-//			//and
-//			query.appendAnd();
-//			query.append(variables[0]);
-//			query.append(".");
-//			query.append(getColumnNameDateOfBirth());
-//			query.appendLessThanOrEqualsSign();
-//			query.append(lastBirthDateInPeriode);
-//			
-//			// and care.child_id=usr.ic_user_id 
-//			query.appendAnd();
-//			query.append(variables[1]);
-//			query.append(".");
-//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_CHILD_ID).getSQLFieldName());
-//			query.appendEqualSign();
-//			query.append(variables[0]);
-//			query.append(".");
-//			query.append(thisDef.getPrimaryKeyDefinition().getField().getSQLFieldName());
-//		
-//			//and care.from_date <='lastDate' 
-//			query.appendAnd();
-//			query.append(variables[1]);
-//			query.append(".");
-//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_FROM_DATE).getSQLFieldName());
-//			query.appendLessThanOrEqualsSign();
-//			query.append(lastDateInRegistrationPeriode);
-//			
-//			//and (care.REJECTION_DATE is null 
-//			query.appendAnd();
-//			query.appendLeftParenthesis();
-//			query.append(variables[1]);
-//			query.append(".");
-//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_REJECTION_DATE).getSQLFieldName());
-//			query.appendIsNull();
-//			
-//			//or care.REJECTION_DATE > 'firstDate' )
-//			query.appendOr();
-//			query.append(variables[1]);
-//			query.append(".");
-//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_REJECTION_DATE).getSQLFieldName());
-//			query.appendGreaterThanSign();
-//			query.append(firstDateInRegistrationPeriode);
-//			query.appendRightParenthesis();
-//			  	
-//			System.out.println("SQL -> "+this.getClass()+":"+query);
-//			return idoFindPKsByQuery(query); 
-//		  	
-//		} catch (IDOCompositPrimaryKeyException e) {
-//			e.printStackTrace();
-//			return ListUtil.getEmptyList();
-//		}
-//	}
-	
 	
 	
 	public Collection ejbFindCitizensNotAssignedToClassOnGivenDate(Group citizenGroup, Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException, FinderException{
