@@ -80,10 +80,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/27 10:57:35 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 13:08:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -118,6 +118,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
     private static final String EDIT_INVOICE_RECORD_DEFAULT = "Ändra fakturarad";
     private static final String EDIT_INVOICE_RECORD_KEY = PREFIX + "edit_invoice_record";
+    private static final String CUSTODIAN_DEFAULT = "Vårdnadshavare";
+    private static final String CUSTODIAN_KEY = PREFIX + "custodian";
     private static final String EDIT_ROW_DEFAULT = "Ändra rad";
     private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_DEFAULT = "T o m ";
@@ -334,12 +336,26 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 (PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
                  PdfWriter.PageModeUseNone | PdfWriter.FitWindow
                  | PdfWriter.CenterWindow);
-        final String title = "Fakturaunderlag " + headerId;
+        final String title = localize
+                (INVOICE_COMPILATION_KEY,
+                 INVOICE_COMPILATION_DEFAULT) + " " + headerId;
         document.addTitle (title);
         document.addCreationDate ();
         document.open ();
         
         // add content to document
+        final PdfPTable outerTable = new PdfPTable (1);
+        outerTable.setWidthPercentage (100f);
+        outerTable.getDefaultCell ().setBorder (0);
+        addPhrase (outerTable, title);
+        addPhrase (outerTable, "\n");
+        final User custodian = getUser (context,
+                                        new Integer (header.getCustodianId ()));
+        addPhrase (outerTable, localize (CUSTODIAN_KEY, CUSTODIAN_DEFAULT)
+                   + ": " + getUserInfo (custodian) + "\n");
+        addPhrase (outerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": "
+                   + header.getPeriod ());
+        addPhrase (outerTable, "\n");
         final PdfPTable table = new PdfPTable
                 (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
         table.setWidthPercentage (100f);
@@ -352,25 +368,42 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Color lightBlue = new Color (0xf4f4f4);
         for (int i = 0; i < records.length; i++) {
             final InvoiceRecord record = records [i];
-            final User child = business.getChildByInvoiceRecord (record);
-            final String ssn = null != child
-                    ? formatSsn (child.getPersonalID ()) : "";
-            final String firstName = null != child
-                    ? child.getFirstName () : "";
-            table.getDefaultCell().setBackgroundColor
+            table.getDefaultCell ().setBackgroundColor
                     (i % 2 == 0 ? Color.white : lightBlue);
-            addPhrase (table, ssn);
-            addPhrase (table, firstName);
-            addPhrase (table, record.getInvoiceText ());
-            table.getDefaultCell ().setHorizontalAlignment
-                    (Element.ALIGN_RIGHT);
-            addPhrase (table, record.getDays () + "");
-            addPhrase (table, ((long) record.getAmount ()) + "");
-            table.getDefaultCell ().setHorizontalAlignment
-                    (Element.ALIGN_LEFT);
-            addPhrase (table, record.getNotes ());
+            addInvoiceRecordOnAPdfRow (business, table, record);
         }
-        document.add (table);
+        outerTable.addCell (table);
+        addPhrase (outerTable, "\n");
+        addPhrase (outerTable,
+                   localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
+        final PostingField [] fields = getCurrentPostingFields (context);
+        final PdfPTable postingTable = new PdfPTable (fields.length + 1);
+        postingTable.setWidthPercentage (100f);
+        postingTable.getDefaultCell ().setBackgroundColor
+                (new Color (0xd0daea));
+        postingTable.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < fields.length; i++) {
+            addPhrase (postingTable, fields [i].getFieldTitle ());
+        }
+        addPhrase (postingTable, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
+        for (int i = 0; i < records.length; i++) {
+            final InvoiceRecord record = records [i];
+            final String postingString = record.getOwnPosting ();
+            postingTable.getDefaultCell ().setBackgroundColor
+                    (i % 2 == 0 ? Color.white : lightBlue);
+            int offset = 0;
+            for (int j = 0; j < fields.length; j++) {
+                final PostingField field = fields [j];
+                final int endPosition = min (offset + field.getLen (),
+                                             postingString.length ());
+                addPhrase (postingTable, postingString.substring
+                           (offset, endPosition).trim ());
+                offset = endPosition;
+            }
+            addPhrase (postingTable, ((long)record.getAmount ()) + "");
+        }
+        outerTable.addCell (postingTable);
+        document.add (outerTable);
         
         // close and store document
         document.close ();
@@ -382,6 +415,26 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         add (createMainTable (INVOICE_COMPILATION_KEY,
                               INVOICE_COMPILATION_DEFAULT, viewLink));
     }
+
+	private void addInvoiceRecordOnAPdfRow
+        (final InvoiceBusiness business, final PdfPTable table,
+         final InvoiceRecord record) throws RemoteException {
+		final User child = business.getChildByInvoiceRecord (record);
+		final String ssn = null != child
+		        ? formatSsn (child.getPersonalID ()) : "";
+		final String firstName = null != child
+		        ? child.getFirstName () : "";
+		addPhrase (table, ssn);
+		addPhrase (table, firstName);
+		addPhrase (table, record.getInvoiceText ());
+		table.getDefaultCell ().setHorizontalAlignment
+		        (Element.ALIGN_RIGHT);
+		addPhrase (table, record.getDays () + "");
+		addPhrase (table, ((long) record.getAmount ()) + "");
+		table.getDefaultCell ().setHorizontalAlignment
+		        (Element.ALIGN_LEFT);
+		addPhrase (table, record.getNotes ());
+	}
 
 	private static float mmToPoints (final float mm) {
 		return mm*72/25.4f;
