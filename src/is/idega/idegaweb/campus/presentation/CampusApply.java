@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApply.java,v 1.11 2002/03/04 14:45:13 palli Exp $
+ * $Id: CampusApply.java,v 1.12 2002/03/12 22:29:47 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
 
 /**
@@ -43,6 +44,7 @@ public class CampusApply extends PresentationObjectContainer {
 
   public void main(IWContext iwc) {
     IWBundle iwb = getBundle(iwc);
+    IWResourceBundle iwrb = getResourceBundle(iwc);
     Table T = new Table(1,1);
     T.setWidth("100%");
     T.setAlignment(1,1,"center");
@@ -51,7 +53,7 @@ public class CampusApply extends PresentationObjectContainer {
     if(iwc.hasEditPermission(this))
       T.add("Átt þú ekki að skrá umsóknir á öðrum stað "+iwc.getUser().getName()+" !!",1,1);
     else
-      T.add("Opnað verður fyrir umsóknir á vefnum bráðlega",1,1);
+      T.add(iwrb.getLocalizedString("app_opens_soon","The site will be accepting applications online from April 1st 2002"),1,1);
 //      T.add(new CampusApplicationForm(),1,1);
 
     add(T);
