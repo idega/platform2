@@ -37,6 +37,7 @@ private String _width = null;
 private boolean _isSelectedDay = false;
 private int _daysAhead = 7;
 private int _daysBack = 7;
+private int _numberOfShown = 4;
 private String _bodyColor = "#000000";
 private String _headlineColor = "#000000";
 private String _dateColor = "#000000";
@@ -98,16 +99,26 @@ public Calendar(idegaTimestamp timestamp){
     int imageID;
     int ypos = 1;
 
+    int numberOfShown = 0;
+
     CalendarEntry[] entries = null;
     if ( _isSelectedDay ) {
       entries = CalendarFinder.getEntries(_stamp);
+      if ( entries != null )
+        numberOfShown = entries.length;
     }
     else {
       entries = CalendarFinder.getWeekEntries(_stamp,_daysAhead,_daysBack);
+      if ( entries != null) {
+         if ( entries.length > _numberOfShown )
+          numberOfShown = _numberOfShown;
+        else
+          numberOfShown = entries.length;
+      }
     }
 
     if ( entries != null ) {
-      for ( int a = 0; a < entries.length; a++ ) {
+      for ( int a = 0; a < numberOfShown; a++ ) {
         Image typeImage = null;
         localeStrings = CalendarFinder.getEntryStrings(entries[a],_iLocaleID);
         imageID = CalendarFinder.getImageID(entries[a].getEntryTypeID());
@@ -306,6 +317,10 @@ public Calendar(idegaTimestamp timestamp){
 
   public void setWidth(String width) {
     _width = width;
+  }
+
+  public void setNumberOfShown(int numberOfShown) {
+    _numberOfShown = numberOfShown;
   }
 
   public void setDaysAhead(int daysAhead) {
