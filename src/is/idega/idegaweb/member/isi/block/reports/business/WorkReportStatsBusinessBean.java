@@ -3831,8 +3831,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData = addToIntegerCount(membersAnnualChange, regData, mThisYear - mLastYear);
 			int now = ((Integer)regData.getFieldValue(membersThisYear)).intValue();
 			int last = ((Integer)regData.getFieldValue(membersLastYear)).intValue();
-			int change = (last==0)?-1:((100*now)/(last));
-			regData.addData(membersAnnualChangePercent, change==-1?"":Integer.toString(change));
+			int difference = now - last;
+			
+			double change = (
+														((double) difference) /
+														((double) (now>0?now:(difference!=0?difference:1)))
+														) * 100.0
+														* (((difference!=0 && now!=0) && (difference>=now))?1.0:-1.0);
+			
+	//		int change = (last==0)?-1:((100*now)/(last));
+			regData.addData(membersAnnualChangePercent, change==-1?"":Integer.toString((int)change));
 					
 			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
@@ -3843,8 +3851,17 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData = addToIntegerCount(playersAnnualChange, regData, pThisYear - pLastYear);
 			now = ((Integer)regData.getFieldValue(playersThisYear)).intValue();
 			last = ((Integer)regData.getFieldValue(playersLastYear)).intValue();
-			change = (last==0)?-1:((100*now)/(last));
-			regData.addData(playersAnnualChangePercent, change==-1?"":Integer.toString(change));
+			difference = now - last;
+			
+			change = (
+										((double) difference) /
+										((double) (now>0?now:(difference!=0?difference:1)))
+										) * 100.0
+										* (((difference!=0 && now!=0) && (difference>=now))?1.0:-1.0);
+	
+			
+	//		change = (last==0)?-1:((100*now)/(last));
+			regData.addData(playersAnnualChangePercent, change==-1?"":Integer.toString((int)change));
 		}
 
 		Collection regDataCollection = regionalUnionsStatsMap.values();
