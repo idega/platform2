@@ -1,5 +1,5 @@
 /*
- * $Id: BusinessLaunchButton.java,v 1.1 2004/10/18 17:03:33 thomas Exp $
+ * $Id: BusinessLaunchButton.java,v 1.1 2004/10/22 11:21:53 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.school.accounting.presentation;
+package se.idega.idegaweb.commune.school.placement.presentation;
 
 
 import java.rmi.RemoteException;
