@@ -1,14 +1,26 @@
 package is.idega.block.family.business;
 
-import java.util.*;
-
-import javax.ejb.*;
+import is.idega.block.family.data.FamilyData;
+import is.idega.block.family.data.FamilyMember;
+import is.idega.block.family.data.FamilyMemberHome;
 import java.rmi.RemoteException;
-
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserStatusBusiness;
-import com.idega.user.data.*;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.data.GroupRelation;
+import com.idega.user.data.GroupRelationHome;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * Title:        idegaWeb Member User Subsystem
@@ -31,6 +43,15 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
   protected UserHome getUserHome(){
     try{
       return (UserHome)this.getIDOHome(User.class);
+    }
+    catch(RemoteException e){
+      throw new EJBException(e.getMessage());
+    }
+  }
+
+  protected FamilyMemberHome getFamilyMemberHome(){
+    try{
+      return (FamilyMemberHome)this.getIDOHome(FamilyMember.class);
     }
     catch(RemoteException e){
       throw new EJBException(e.getMessage());
@@ -625,4 +646,38 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 		
 	}
 
+	public void setFamilyForUser(String familyiNr, User user) throws RemoteException, CreateException {
+		FamilyMemberHome familyMemberHome = getFamilyMemberHome();
+		FamilyMember familyMember = familyMemberHome.create();
+		familyMember.setFamilyNr(familyiNr);
+		familyMember.setUser(user);
+		familyMember.store();
+	}
+	
+	public FamilyData getFamily(String familyNr) throws RemoteException, FinderException {
+		FamilyData familyData = new FamilyData();
+		FamilyMemberHome familyMemberHome = getFamilyMemberHome();
+		Iterator iter = familyMemberHome.findAllByFamilyNR(familyNr).iterator();
+		while(iter.hasNext()) {
+			FamilyMember familyMember = (FamilyMember)iter.next();
+			switch (familyMember.getRole()){
+				case FamilyMember.FATHER:{
+					familyData.setHusband(familyMember.getUser());
+					break;
+				}
+				case FamilyMember.MOTHER:{
+					familyData.setWife(familyMember.getUser());
+					break;
+				}
+				case FamilyMember.CHILD:{
+					familyData.addChild(familyMember.getUser());
+					break;
+				}
+				default:{
+					System.out.println("Member of family does not have a role! "+familyMember.getUser().getName());
+				}
+			}
+		}
+		return familyData;
+	}
 }

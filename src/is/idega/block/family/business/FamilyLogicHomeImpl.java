@@ -1,6 +1,6 @@
 /*
- * $Id: FamilyLogicHomeImpl.java,v 1.1 2004/08/27 16:15:24 joakim Exp $
- * Created on 27.8.2004
+ * $Id: FamilyLogicHomeImpl.java,v 1.2 2004/09/01 11:14:49 joakim Exp $
+ * Created on 31.8.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2004/08/27 16:15:24 $ by $Author: joakim $
+ *  Last modified: $Date: 2004/09/01 11:14:49 $ by $Author: joakim $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FamilyLogicHomeImpl extends IBOHomeImpl implements FamilyLogicHome {
 

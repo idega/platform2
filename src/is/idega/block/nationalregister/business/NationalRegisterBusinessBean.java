@@ -1,5 +1,6 @@
 package is.idega.block.nationalregister.business;
 
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.block.nationalregister.data.NationalRegisterHome;
 
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.location.data.Country;
@@ -182,10 +184,8 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 				user.store();
 			}
 
-			//TODO (JJ) change this to use the group instead
-//			if(null!=familyId) {
-//				user.setFamilyID(familyId);
-//			}
+			FamilyLogic familyLogic = getFamilyLogic();
+			familyLogic.setFamilyForUser(familyId, user);
 
 //			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 //			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
@@ -291,4 +291,9 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 
 		return home;
 	}
+
+	public FamilyLogic getFamilyLogic() throws RemoteException {
+		return (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
+	}
+
 }

@@ -349,9 +349,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					} catch (CreateException e) {
 						e.printStackTrace();
 					}
-					removeTerminatedRelations(memFamLog, user2, rel2);
+					removeTerminatedRelations(memFamLog, user2, rel2, natRegBus);
 				}
-				removeTerminatedRelations(memFamLog, user, rel1);
+				removeTerminatedRelations(memFamLog, user, rel1, natRegBus);
 				//Debug info
 				rel1.dumpInfo();
 			}
@@ -369,44 +369,56 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	 * @throws RemoveException
 	 * @throws RemoteException
 	 */
-	private void removeTerminatedRelations(FamilyLogicBean memFamLog, User user, Relations rel) throws RemoteException, RemoveException {
+	private void removeTerminatedRelations(FamilyLogicBean memFamLog, User user, Relations rel, NationalRegisterBusiness natRegBus) throws RemoteException, RemoveException {
+//		NationalRegisterBusiness natRegBus;
 		//remove spouse
 		System.out.println("Relations to be removed:");
 		rel.dumpInfo();
 		if(null!=rel.spouse){
-			memFamLog.removeAsSpouseFor(user, rel.spouse);
+			if(null!=natRegBus.getEntryBySSN(rel.spouse.getPersonalID())) {
+				memFamLog.removeAsSpouseFor(user, rel.spouse);
+			}
 		}
 		//Remove from collections
 		Iterator iter = rel.child.iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
-			memFamLog.removeAsChildFor(child, user);
+			if(null!=natRegBus.getEntryBySSN(child.getPersonalID())) {
+				memFamLog.removeAsChildFor(child, user);
+			}
 		}
 		
 		iter = rel.isCustodianFor.iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
-			memFamLog.removeAsCustodianFor(user, child);
+			if(null!=natRegBus.getEntryBySSN(child.getPersonalID())) {
+				memFamLog.removeAsCustodianFor(user, child);
+			}
 		}
 		
 		iter = rel.hasCustodian.iterator();
 		while(iter.hasNext()){
 			User custodian = (User)iter.next();
-			memFamLog.removeAsCustodianFor(custodian,user);
+			if(null!=natRegBus.getEntryBySSN(custodian.getPersonalID())) {
+				memFamLog.removeAsCustodianFor(custodian,user);
+			}
 		}
 		
 		iter = rel.parent.iterator();
 		while(iter.hasNext()){
 			User parent = (User)iter.next();
-			memFamLog.removeAsParentFor(parent,user);
+			if(null!=natRegBus.getEntryBySSN(parent.getPersonalID())) {
+				memFamLog.removeAsParentFor(parent,user);
+			}
 		}
 		
 		iter = rel.sibling.iterator();
 		while(iter.hasNext()){
 			User sibling = (User)iter.next();
-			memFamLog.removeAsSiblingFor(user , sibling);
+			if(null!=natRegBus.getEntryBySSN(sibling.getPersonalID())) {
+				memFamLog.removeAsSiblingFor(user , sibling);
+			}
 		}
-		
 	}
 
 	private void setAsSpouseFor(FamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2)

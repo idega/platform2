@@ -1,6 +1,6 @@
 /*
- * $Id: FamilyLogic.java,v 1.2 2004/08/27 19:22:55 joakim Exp $
- * Created on 27.8.2004
+ * $Id: FamilyLogic.java,v 1.3 2004/09/01 11:14:49 joakim Exp $
+ * Created on 31.8.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,19 +9,23 @@
  */
 package is.idega.block.family.business;
 
+import is.idega.block.family.data.FamilyData;
 import java.rmi.RemoteException;
-import java.util.*;
-import javax.ejb.*;
+import java.util.Collection;
+import java.util.Date;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.*;
+import com.idega.user.data.User;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/08/27 19:22:55 $ by $Author: joakim $
+ *  Last modified: $Date: 2004/09/01 11:14:49 $ by $Author: joakim $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface FamilyLogic {
 
@@ -239,4 +243,15 @@ public interface FamilyLogic {
 	 * @see is.idega.block.family.business.FamilyLogicBean#removeAllFamilyRelationsForUser
 	 */
 	public void removeAllFamilyRelationsForUser(User user) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#setFamilyForUser
+	 */
+	public void setFamilyForUser(String familyiNr, User user) throws RemoteException, CreateException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#getFamily
+	 */
+	public FamilyData getFamily(String familyNr) throws RemoteException, FinderException, java.rmi.RemoteException;
 }
