@@ -487,7 +487,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	/*
 		* Returns the club that is a parent for this group.
 	 */
-	public Group getClubForGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException{
+	public Group getClubForGroup(Group group) throws NoClubFoundException, RemoteException{
 		Collection parents = getGroupBusiness().getParentGroupsRecursive(group);
 
 		if(parents!=null && !parents.isEmpty()){
@@ -501,9 +501,31 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		
 		//if no club is found we throw the exception
-		throw new NoClubFoundException(group.getName());
-		
+		throw new NoClubFoundException(group.getName());		
 	}
+	
+	/**
+	 * A method to find the first Division for a club.
+	 * @param club
+	 * @return
+	 */
+	public Group getDivisionForClub(Group club) throws NoDivisionFoundException, RemoteException {
+		Collection children = club.getChildren();
+		
+		if (children != null && !children.isEmpty()) {
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+					return child;
+				}
+			}
+		}
+		
+		//if no club is found we throw the exception
+		throw new NoDivisionFoundException(club.getName());
+	}
+
 	
 	public String getClubMemberNumberForUser(User user, Group club) throws RemoteException{
 		String id = user.getMetaData(IWMemberConstants.META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX+club.getPrimaryKey().toString());

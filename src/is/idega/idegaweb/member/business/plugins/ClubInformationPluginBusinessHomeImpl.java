@@ -1,8 +1,8 @@
 /*
  * $Id$
- * Created on Dec 7, 2004
+ * Created on Jan 4, 2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -16,7 +16,7 @@ import com.idega.business.IBOHomeImpl;
  * 
  *  Last modified: $Date$ by $Author$
  * 
- * @author <a href="mailto:eiki@idega.com">eiki</a>
+ * @author <a href="mailto:palli@idega.com">palli</a>
  * @version $Revision$
  */
 public class ClubInformationPluginBusinessHomeImpl extends IBOHomeImpl implements ClubInformationPluginBusinessHome {

@@ -13,13 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -236,7 +233,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 					}
 					newGroup.store();
 					//Setting the correct access controls for the group. Set
-					// the owner of the template as the owner of the group, the
+					// the owner of the template as the owner of the group, then
 					// give the current user all permissions for the group.
 					if (templateOwners != null && !templateOwners.isEmpty()) {
 						Iterator owners = templateOwners.iterator();
@@ -255,11 +252,12 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						// group that links to the playerGroup in the league.
 						Group newSpecialPlayerGroup = getGroupBusiness().createGroupUnder(playerGroup.getName(), "",
 								IWMemberConstants.GROUP_TYPE_CLUB_PLAYER, special);
-						newSpecialPlayerGroup.setAlias(playerGroup);
-						//This is a hack to store the connection between the
+						// This is a hack to store the connection between the
 						// copy and the original. Should maybe be replaced with
 						// some metadata.
+						newSpecialPlayerGroup.setAlias(playerGroup);
 						newSpecialPlayerGroup.store();
+						
 						//Setting the correct access controls for the group.
 						// Set the owner of the template as the owner of the
 						// group.
@@ -302,15 +300,14 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * A method that adds a new alias connection between a club/division and a
 	 * league, if some connection already exists in the league.
 	 * 
-	 * @param special A Group object representing the league. @param playerGroup
-	 * A Group object representing the template group being copied. @param
-	 * newGroup The copy of the template group. @param clubName The name of the
-	 * club. @param iwc The idegaWeb context object. @param owners A Collection
-	 * representing the Users that are supposed to be the owners of the created
-	 * aliases.
+	 * @param special A Group object representing the league. 
+	 * @param playerGroup A Group object representing the template group being copied.
+	 * @param newGroup The copy of the template group. 
+	 * @param clubName The name of the club. 
+	 * @param iwc The idegaWeb context object. 
+	 * @param owners A Collection representing the Users that are supposed to be the owners of the created aliases.
 	 * 
-	 * @return Returns true if the connection already exists and then the alias
-	 * is created. False otherwise.
+	 * @return Returns true if the connection already exists and then the alias is created. False otherwise.
 	 */
 	private boolean updateSpecial(Group special, Group playerGroup, Group newGroup, String clubName, IWContext iwc,
 			Collection owners) {
@@ -357,176 +354,14 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * @param special
 	 *            The group under the league tree that the update method was
 	 *            executed from.
-	 * @param iwc
-	 *            The idegaWeb context object.
-	 * 
+
 	 * @return True if all the groups are updated, false otherwise.
 	 */
-	public boolean updateConnectedToSpecial(Group special, IWContext iwc) {
-		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
-			Group child = null;
-			boolean foundIt = false;
-			List children = special.getChildGroups();
-			Iterator it = children.iterator();
-			while (it.hasNext()) {
-				child = (Group) it.next();
-				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
-					foundIt = true;
-					break;
-				}
-			}
-			if (foundIt && child != null) {
-				special = child;
-			}
-		}
-		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
-			List children = special.getChildGroups();
-			Iterator it = children.iterator();
-			while (it.hasNext()) {
-				Group child = (Group) it.next();
-				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE)) {
-					updatePlayerGroupsConnectedTo(child, iwc);
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-
-	/*
-	 * 1. Find all groups conntected to the league 2. Find the club/division 3.
-	 * Go through all division children and match to the player group templates
-	 * 4. If any are missing, create them
-	 */
-	private void addMissingGroupsToClubs(Group league, Group divisionTemplate, IWContext iwc) {
-		try {
-			//Find all clubs connected to league. These just have one division.
-			Collection clubs = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByMetaData(
-					IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, ((Integer) league.getPrimaryKey()).toString());
-			//Find all the division in the other clubs, that are connected to
-			// the league.
-			Collection divisions = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByMetaData(
-					IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION,
-					((Integer) league.getPrimaryKey()).toString());
-			//Find the league club division group. If it's null, just use the
-			// league group.
-			Group leaguePlayerGroup = null;
-			Collection leagueGroups = league.getChildren();
-			if (leagueGroups != null && !leagueGroups.isEmpty()) {
-				Iterator it = leagueGroups.iterator();
-				while (it.hasNext() && leaguePlayerGroup == null) {
-					Group leagueGroup = (Group) it.next();
-					if (leagueGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
-						leaguePlayerGroup = leagueGroup;
-					}
-				}
-			}
-			if (leaguePlayerGroup == null) {
-				leaguePlayerGroup = league;
-			}
-			//Go through all the clubs. Find the division in them, and compare
-			// it to the division template from the league.
-			if (clubs != null && !clubs.isEmpty()) {
-				Iterator it = clubs.iterator();
-				while (it.hasNext()) {
-					Group club = (Group) it.next();
-					Group division = findDivisionForClub(club);
-					if (division != null) {
-						updateDivision(division, divisionTemplate, club, leaguePlayerGroup, iwc);
-					}
-				}
-			}
-			//Go through the divisions. Find the club they belong to and then
-			// compare them to the division template from the league.
-			if (divisions != null && !divisions.isEmpty()) {
-				Iterator it = divisions.iterator();
-				while (it.hasNext()) {
-					Group division = (Group) it.next();
-					Group club = findClubForGroup(division);
-					while (club == null) {
-						updateDivision(division, divisionTemplate, club, leaguePlayerGroup, iwc);
-					}
-				}
-			}
-		}
-		catch (IDOLookupException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private Group findClubForGroup(Group group) {
-		if (group == null) {
-			return null;
-		}
-		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
-			return group;
-		}
-		List parents = group.getParentGroups();
-		if (parents != null && !parents.isEmpty()) {
-			Iterator it = parents.iterator();
-			while (it.hasNext()) {
-				Group parent = (Group) it.next();
-				Group div = findClubForGroup(parent);
-				if (div != null) {
-					return div;
-				}
-			}
-		}
-		return null;
-	}
-
-	private Group findDivisionForClub(Group club) {
-		Collection children = club.getChildren();
-		if (children != null && !children.isEmpty()) {
-			Iterator it = children.iterator();
-			while (it.hasNext()) {
-				Group child = (Group) it.next();
-				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
-					return child;
-				}
-			}
-		}
-		return null;
-	}
-
-	private void updateDivision(Group division, Group divisionTemplate, Group club,
-			Group specialPlayerAliasGroupParent, IWContext iwc) {
-		Collection divisionTemplateGroups = divisionTemplate.getChildren();
-	}
-
-	private void updatePlayerGroupsConnectedTo(Group parent, IWContext iwc) {
-		Collection connected = null;
-		try {
-			connected = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
-			if (connected != null) {
-				Map metadata = parent.getMetaDataAttributes();
-				int parent_id = ((Integer) parent.getPrimaryKey()).intValue();
-				Iterator it = connected.iterator();
-				while (it.hasNext()) {
-					Group conn = (Group) it.next();
-					if (conn.getAliasID() == parent_id) {
-						conn.setName(parent.getName());
-						conn.setMetaDataAttributes(metadata);
-						conn.store();
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (parent.getChildCount() > 0) {
-			List children = parent.getChildGroups();
-			Iterator it = children.iterator();
-			while (it.hasNext()) {
-				Group child = (Group) it.next();
-				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE))
-					updatePlayerGroupsConnectedTo(child, iwc);
-			}
-		}
+	public boolean updateConnectedToSpecial(Group special) {
+		Thread updateThread = new SpecialConnectionUpdateThread(special);
+		updateThread.start();
+		
+		return true;
 	}
 
 	/*

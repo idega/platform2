@@ -119,7 +119,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
         Thread assRoundThread = new AssessmentRoundThread(round,
                 getIWApplicationContext(), Arrays.asList(tariffs));
         assRoundThread.start();
-
+        
         return true;
     }
 

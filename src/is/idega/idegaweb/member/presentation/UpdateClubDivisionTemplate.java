@@ -16,7 +16,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -32,7 +32,7 @@ import com.idega.user.presentation.GroupPropertyWindow;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class UpdateClubDivisionTemplate extends IWAdminWindow {
+public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
 
@@ -93,7 +93,7 @@ public class UpdateClubDivisionTemplate extends IWAdminWindow {
 
 	private boolean updateChildren(IWContext iwc) {
 		try {
-			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group,iwc);
+			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
