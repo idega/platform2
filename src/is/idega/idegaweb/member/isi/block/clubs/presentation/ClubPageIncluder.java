@@ -74,7 +74,7 @@ public class ClubPageIncluder extends PageIncluder {
             if(page!=null) {
                 finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append( page.getPrimaryKey().toString());
             }
-            else {
+            /*else {
 	            //the page the includer is currently on
 	            IWApplicationContext iwac = iwc.getIWMainApplication().getIWApplicationContext();
 	            BuilderService bs;
@@ -84,7 +84,7 @@ public class ClubPageIncluder extends PageIncluder {
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            }
-            }
+            }*/
         }
         
         return finalUrl.toString();
