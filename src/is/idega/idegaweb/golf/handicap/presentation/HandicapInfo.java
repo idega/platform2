@@ -63,10 +63,6 @@ public class HandicapInfo extends GolfBlock {
 
 		this.isAdmin = isAdministrator(modinfo);
 
-		if (!isAdmin) {
-			modinfo.getSession().removeAttribute("member_id");
-		}
-
 		if (modinfo.isParameterSet(GolfConstants.MEMBER_UUID)) {
 			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
 			try {

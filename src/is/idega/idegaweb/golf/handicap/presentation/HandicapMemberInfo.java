@@ -57,10 +57,6 @@ public class HandicapMemberInfo extends GolfBlock {
 		iwb = getBundle();
 		isAdmin = isAdministrator(modinfo);
 
-		if (!isAdmin) {
-			modinfo.getSession().removeAttribute("member_id");
-		}
-
 		if (modinfo.isParameterSet(GolfConstants.MEMBER_UUID)) {
 			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
 			try {
@@ -104,7 +100,12 @@ public class HandicapMemberInfo extends GolfBlock {
 
 		}
 
-		drawTable(modinfo);
+		try {
+			drawTable(modinfo);
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
 		add(table);
 	}
 
@@ -119,7 +120,13 @@ public class HandicapMemberInfo extends GolfBlock {
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 
 		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
-		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+		MemberInfo memberInfo = null;
+		try {
+			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+		}
+		catch (FinderException fe) {
+			throw new FinderException("No handicap found for user with id = " + iMemberID);
+		}
 		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + member.getHandicap()) + 1;
 
 		Text handicap = getBigHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
