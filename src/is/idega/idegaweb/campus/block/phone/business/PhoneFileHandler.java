@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.DateFormat;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -130,8 +131,8 @@ public class PhoneFileHandler {
 	}
 
 	public void process3(File PhoneFile) throws java.rmi.RemoteException {
-		//Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
-		//Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
+		Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
+		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
 		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));
 		// If we can assess something
 		if (M != null && M2 != null) {
@@ -166,12 +167,13 @@ public class PhoneFileHandler {
 					Integer iAccountId;
 					Account eAccount;
 					AccountPhone ap;
-					List accountList;
+					Collection accountList;
 					AccountPhoneEntryHome apeHome = (AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class);
 					boolean foundAccount = false;
 					int listsize;
 					boolean cont = false;
-					while ((line = lin.readLine()) != null) { //&& count != 0){
+					while ((line = lin.readLine()) != null) { 
+						//&& count != 0){
 						//System.err.println();
 						foundAccount = false;
 						cont = false;
@@ -217,14 +219,14 @@ public class PhoneFileHandler {
 									phoneNumbers.put(number, new Integer(1));
 									numberCount++;
 								}
-								Collection accountList = apeHome.findByPhoneNumber(number);
+								accountList = apeHome.findByPhoneNumber(number);
 								//if (M.containsKey(number)) {
-								if(!accounts.isEmpty())
+								if(!accountList.isEmpty()){
 									//accountList = (List) M.get(number);
 									if (accountList != null) {
 										listsize = accountList.size();
-										for (int i = 0; i < listsize; i++) {
-											ap = (AccountPhone) accountList.get(i);
+										for (Iterator iter = accountList.iterator(); iter.hasNext(); ) {
+											 ap = (AccountPhone) iter.next();
 											from = ap.getValidFrom().getTime();
 											IWTimestamp iwstamp = new IWTimestamp(ap.getValidTo().getTime());
 											iwstamp.setHour(23);
@@ -303,7 +305,7 @@ public class PhoneFileHandler {
 					pfi.setFileName(PhoneFile.getName());
 					pfi.setNumberCount(numberCount);
 					pfi.setTotalAmount(totPrice);
-					pfi.insert();
+					pfi.store();
 
 					if (errorCount > 0) {
 						FileWriter out = new FileWriter(new File(PhoneFile.getParentFile(), "e_" + PhoneFile.getName()));
@@ -502,7 +504,7 @@ public class PhoneFileHandler {
 				pfi.setFileName(PhoneFile.getName());
 				pfi.setNumberCount(numberCount);
 				pfi.setTotalAmount(totPrice);
-				pfi.insert();
+				pfi.store();
 	
 		    t.commit();
 	    } catch (Exception e) {
