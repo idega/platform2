@@ -2,11 +2,15 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
 /**
  * A presentation object for dynamic reports to genders. Both,male or female. both is default.
  * 
@@ -17,7 +21,8 @@ public class ReportGeneratorGenderDropDownMenu extends DropdownMenu implements I
 	private static final String MALE = "1"; //same as in workreportmember
 	private static final String FEMALE = "2"; //same as in workreportmember
 	private static final String BOTH = "b";
-
+	private static final String[] ALL = new String[] { MALE, FEMALE };
+	
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private WorkReportBusiness workBiz = null;
 
@@ -52,16 +57,24 @@ public class ReportGeneratorGenderDropDownMenu extends DropdownMenu implements I
 	 *  
 	 */
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
+		Collection genders = null;
 		if (values != null && values.length > 0) {
-			String gender = values[0];
-			if (BOTH.equals(gender)) {
-				return null;
+			if(values.length==1 && values[0].equals(BOTH)) {
+				values = ALL;
 			}
-			else
-				return gender;
+			genders = new ArrayList();
+			
+			for(int i=0; i<values.length; i++) {
+				int age = Integer.parseInt(values[i]);
+				
+				IWTimestamp stamp = IWTimestamp.RightNow();
+				
+				stamp.addYears(-age);
+				
+				genders.add(stamp.toString());
+			}
 		}
-		else
-			return null;
+		return genders;
 	}
 
 	/*
