@@ -563,7 +563,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				return table;
 			}
 		};
-		EntityToPresentationObjectConverter converterParent = new EntityToPresentationObjectConverter() {
+		/*EntityToPresentationObjectConverter converterParent = new EntityToPresentationObjectConverter() {
 			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
 				return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
 			}
@@ -583,7 +583,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					table.add(parents.toString(),1,1);
 				return table;
 			}
-		};
+		};*/
 		
 		
 		
