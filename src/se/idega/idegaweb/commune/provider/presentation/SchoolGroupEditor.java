@@ -389,9 +389,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (groupYears.contains(year))
 				box.setChecked(true);
 			
-			if (useStyleNames) {
-				table.setCellpaddingLeft(1, row, 12);
-			}
 			table.setCellpadding(3, row, 2);
 			table.add(box, 3, row);
 			table.add(Text.getNonBrakingSpace(), 3, row);
@@ -432,9 +429,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (studyPaths.contains(path))
 				box.setChecked(true);
 			
-			if (useStyleNames) {
-				table.setCellpaddingLeft(1, row, 12);
-			}
 			table.setCellpadding(3, row, 2);
 			table.add(box, 3, row);
 			table.add(Text.getNonBrakingSpace(), 3, row);
@@ -469,9 +463,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (a < size) {
 				User teacher = (User) groupTeachers.get(a);
 				chooser.setSelected(teacher);
-			}
-			if (useStyleNames) {
-				table.setCellpaddingLeft(1, row, 12);
 			}
 			table.add(chooser, 3, row++);
 			
