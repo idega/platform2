@@ -96,6 +96,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private Map memberLeaguesMap = null;
   // key: league name, int number of members that belong to that league 
   private SortedMap leagueCountMap = null;
+  private String newMemberMessage = null;
     
   public WorkReportMemberEditor() {
     super();
@@ -110,7 +111,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
       initializeFieldList(iwc);
       IWResourceBundle resourceBundle = getResourceBundle(iwc);
-      String action = parseAction(iwc);
+      String action = parseAction(iwc, resourceBundle);
       Form form = new Form();
       PresentationObject pres = getContent(iwc, resourceBundle, form, action);
       form.maintainParameters(this.getParametersToMaintain());
@@ -158,7 +159,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
   }
   
-  private String parseAction(IWContext iwc) {
+  private String parseAction(IWContext iwc, IWResourceBundle resourceBundle) {
     String action = "";
     // does the user want to cancel something?
     if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
@@ -185,7 +186,21 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
       if (iwc.isParameterSet(SSN)) {
         String personalId = iwc.getParameter(SSN);
-        createWorkReportMember(personalId, iwc);
+        WorkReportMember member = createWorkReportMember(personalId, iwc);
+        if (member != null) {
+          String name = member.getName();
+          String ssn = member.getPersonalId();
+          String ssnMessage = resourceBundle.getLocalizedString("wr_member_editor_ssn", "ssn");
+          StringBuffer buffer = 
+            new StringBuffer(resourceBundle.getLocalizedString("wr_member_editor_new_entry_was_created", "A new entry was created"));
+          buffer.append(": ");
+          buffer.append(name);
+          buffer.append(" ");
+          buffer.append(ssnMessage);
+          buffer.append(": ");
+          buffer.append(ssn);
+          newMemberMessage = buffer.toString();
+        }
       }
     }  
     // does the user want to modify an existing entity? 
@@ -303,6 +318,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
     }
     EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
+    // get new entry message 
+    if (newMemberMessage != null) {
+      Text text = new Text(newMemberMessage);
+      text.setBold();
+      add(text);
+    }
     // get error message
     if (personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
@@ -499,18 +520,20 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   }
   
   // business method: create
-  private void createWorkReportMember(String personalId, IWApplicationContext iwac)  {
+  private WorkReportMember createWorkReportMember(String personalId, IWApplicationContext iwac)  {
     WorkReportMember member = findWorkReportMember(personalId, iwac);
     if (member != null) {
       memberAlreadyExist = true;
-      return;
+      return null;
     }
     try {
       member = getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
       if (member == null) {
         personalIdnotCorrect = true;
       }
-    } catch (CreateException e) {
+      return member;
+    } 
+    catch (CreateException e) {
       System.err.println("[WorkReportDivisionBoardEditor] Could not create new WorkReportDivisionBoard. Message is: "+ e.getMessage());
       e.printStackTrace(System.err);
     }
@@ -521,6 +544,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
     }
+    return null;
   }
 
   private void setValuesOfWorkReportMember(EntityPathValueContainer valueContainer, WorkReportMember member, WorkReportBusiness workReportBusiness, IWApplicationContext iwac)  {

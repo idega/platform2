@@ -119,6 +119,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   }
   
   private boolean personalIdnotCorrect = false;
+  private String newMemberMessage = null;
     
   public WorkReportBoardMemberEditor() {
     super();
@@ -133,7 +134,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     if (this.getWorkReportId() != -1) {
 			//sets this step as bold, if another class calls it this will be overwritten 
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-      String action = parseAction(iwc);
+      String action = parseAction(iwc, resourceBundle);
       Form form = new Form();
       PresentationObject pres = getContent(iwc, resourceBundle, form, action);
       form.maintainParameters(this.getParametersToMaintain());
@@ -142,7 +143,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
   }
   
-  private String parseAction(IWContext iwc) {
+  private String parseAction(IWContext iwc, IWResourceBundle resourceBundle) {
     String action = "";
     // does the user want to cancel something?
     if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
@@ -197,6 +198,20 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         }
       }
       member.store();
+      if (member != null) {
+        String name = member.getName();
+        String ssn = member.getPersonalId();
+        String ssnMessage = resourceBundle.getLocalizedString("wr_member_editor_ssn", "ssn");
+        StringBuffer buffer = 
+          new StringBuffer(resourceBundle.getLocalizedString("wr_member_editor_new_entry_was_created", "A new entry was created"));
+        buffer.append(": ");
+        buffer.append(name);
+        buffer.append(" ");
+        buffer.append(ssnMessage);
+        buffer.append(": ");
+        buffer.append(ssn);
+        newMemberMessage = buffer.toString();
+      }
     }  
     // does the user want to modify an existing entity? 
     if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
@@ -323,6 +338,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         return result;          
       }
     };
+    // get new entry message
+    if (newMemberMessage != null) {
+      Text text = new Text(newMemberMessage);
+      text.setBold();
+      add(text);
+    }
     // get error message
     if (personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
