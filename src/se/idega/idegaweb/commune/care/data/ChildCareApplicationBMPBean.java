@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.5 2004/10/25 15:59:18 aron Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.6 2004/10/26 17:14:20 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -994,7 +994,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.setAsCountQuery(true);
 		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS, providerID));
-		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus));
+		// not in statuses, strange but seems to do it ( aron )
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
 		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
 		return idoGetNumberOfRecords(query);
 	}
@@ -1019,7 +1020,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
 		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
 		query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
-		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus));
+		//		 not in statuses, strange but seems to do it ( aron )
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
 		query.setAsCountQuery(true);
 		return idoGetNumberOfRecords(query);
 	}
