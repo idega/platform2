@@ -107,7 +107,9 @@ public class CreateBIPhoneFile {
 //				bWriter.write(cleaning);
 				bWriter.write('\t');
 
-//				bWriter.write(other);
+				float fOther = Float.parseFloat(other);
+				int iOther = Math.round(fOther);
+				bWriter.write(Integer.toString(iOther));
 				bWriter.write('\t');
 
 				float fPhone = Float.parseFloat(phone);
