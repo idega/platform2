@@ -67,11 +67,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/02/04 15:15:12 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/04 19:22:38 $ by $Author: laddi $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -360,7 +360,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
 
-	private MemoryFileBuffer getInternalCheckAmountListBuffer(final String schoolCategoryId, final Integer providerId, final Date startPeriod, final Date endPeriod) throws RemoteException, DocumentException, FinderException {
+	MemoryFileBuffer getInternalCheckAmountListBuffer(final String schoolCategoryId, final Integer providerId, final Date startPeriod, final Date endPeriod) throws RemoteException, DocumentException, FinderException {
 		PaymentRecord [] records = new PaymentRecord [0];
 		if (null != schoolCategoryId && null != providerId) {
 			records = getInvoiceBusiness ()
