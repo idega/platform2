@@ -68,6 +68,7 @@ public class PageCounter extends Block {
 
     if(showReferers){
       //referers
+      debug("Sorting referers");
       Table refs = new Table();
       int y = 1;
       refs.add("Referer url",1,y);
@@ -84,6 +85,9 @@ public class PageCounter extends Block {
       }
 
      add(refs);
+
+      debug("added referers");
+
      addBreak();
     }
 
