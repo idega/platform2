@@ -147,7 +147,7 @@ public class GolfClubJSPModule extends GolfMainJSPModule{
       a++;
 
       // unions that does not want applications ( umsóknir)
-      if(union_id.equalsIgnoreCase("100") && !isAdmin()){
+      if((union_id.equalsIgnoreCase("100") || union_id.equalsIgnoreCase("84")) && !isAdmin()){
 
       }
       else{
