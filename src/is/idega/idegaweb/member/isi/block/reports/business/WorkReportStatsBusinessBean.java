@@ -2781,7 +2781,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						if(divDataSum==null){//initialize
 							divDataSum = new ReportableData();
 							divDataSum.addData(leagueString, leagueIdentifier);
-							divDataSum.addData(clubName, "Félög með efstudeild");
+							divDataSum.addData(clubName, "Fï¿½lï¿½g meï¿½ efstudeild");
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
@@ -2829,7 +2829,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						if(divDataSum==null){//initialize
 							divDataSum = new ReportableData();
 							divDataSum.addData(leagueString, leagueIdentifier);
-							divDataSum.addData(clubName, "Félög án efstudeildar");
+							divDataSum.addData(clubName, "Fï¿½lï¿½g ï¿½n efstudeildar");
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
@@ -2878,7 +2878,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					if(divDataSum==null){//initialize
 						divDataSum = new ReportableData();
 						divDataSum.addData(leagueString, leagueIdentifier);
-						divDataSum.addData(clubName, "Öll félög");
+						divDataSum.addData(clubName, "ï¿½ll fï¿½lï¿½g");
 						divDataSum.addData(regionalUnionAbbreviation, "samtals");
 						divDataSum.addData(clubType,"");
 
@@ -3432,10 +3432,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
 			int mLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
 			double mChange = (
-			                  ((double) mThisYear) /
-			                  ((double) (mLastYear>0?mLastYear:(mThisYear!=0?mThisYear:1)))
+			                  ((double) (mThisYear - mLastYear) /
+			                  ((double) (mThisYear>0?mThisYear:(((mThisYear - mLastYear)!=0)?(mThisYear - mLastYear):1))))
 			                 ) * 100.0 
-					           * (((mThisYear!=0 && mLastYear!=0) && (mThisYear>=mLastYear))?1.0:-1.0);
+					           * ((((mThisYear-mLastYear)!=0 && mThisYear!=0) && (mThisYear>=mLastYear))?1.0:-1.0);
 			
 			
 			/*new DecimalFormat("##0.#").format( 
@@ -3448,9 +3448,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
 			double pChange = (
 			                  ((double) pThisYear) /
-			                  ((double) (pLastYear>0?pLastYear:(pThisYear!=0?pThisYear:1)))
+			                  ((double) (pLastYear>0?pLastYear:((pThisYear-pLastYear)!=0?(pThisYear-pLastYear):1)))
 			                 ) * 100.0 
-			                   * (((pThisYear!=0 && pLastYear!=0) && (pThisYear>=pLastYear))?1.0:-1.0);
+			                   * ((((pThisYear-pLastYear)!=0 && pThisYear!=0) && (pThisYear>=pLastYear))?1.0:-1.0);
 			
 			regData.addData(membersThisYear, new Integer(mThisYear));
 			regData.addData(membersLastYear, new Integer(mLastYear));
