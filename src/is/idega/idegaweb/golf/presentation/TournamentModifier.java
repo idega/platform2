@@ -2,19 +2,19 @@ package is.idega.idegaweb.golf.presentation;
 
 
 
-import com.idega.jmodule.login.business.AccessControl;
-
-import com.idega.presentation.ui.*;
-
+import is.idega.idegaweb.golf.business.TournamentController;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.moduleobject.GolfDialog;
 
-import is.idega.idegaweb.golf.entity.*;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import is.idega.idegaweb.golf.business.TournamentController;
+import com.idega.jmodule.login.business.AccessControl;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import is.idega.idegaweb.golf.business.EntityUpdater;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 
 
 

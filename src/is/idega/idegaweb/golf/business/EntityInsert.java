@@ -23,7 +23,6 @@ import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.EntityManipulator;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;

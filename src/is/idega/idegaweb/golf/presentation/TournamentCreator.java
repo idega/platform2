@@ -16,6 +16,7 @@ import com.idega.presentation.text.*;
 
 import com.idega.util.IWTimestamp;
 
+import is.idega.idegaweb.golf.business.EntityInsert;
 import is.idega.idegaweb.golf.business.TournamentController;
 
 //import com.idega.jmodule.ModuleEvent;
