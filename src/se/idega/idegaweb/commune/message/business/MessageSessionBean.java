@@ -22,8 +22,12 @@ public class MessageSessionBean extends IBOSessionBean implements MessageSession
 	public static final String USER_PROP_SEND_TO_EMAIL = "msg_send_email";
 	
 	public boolean getIfUserCanReceiveEmails(User user){
-	    Collection emails = user.getEmails();
-	    return emails!=null && !emails.isEmpty() && getIfUserPreferesMessageByEmail();
+	    return hasEmail(user) && getIfUserPreferesMessageByEmail();
+	}
+	
+	private boolean hasEmail(User user) {
+    Collection emails = user.getEmails();
+    return emails != null && !emails.isEmpty();
 	}
 	
 	protected UserProperties getUserPreferences() throws Exception {
@@ -44,9 +48,10 @@ public class MessageSessionBean extends IBOSessionBean implements MessageSession
 	public boolean getIfUserPreferesMessageByEmail(){
 		IWPropertyList propertyList = getUserMessagePreferences();
 		if (propertyList != null) {
-			String property = propertyList.getProperty(USER_PROP_SEND_TO_EMAIL);
-			if(property!=null)
+			String property = propertyList.getProperty(USER_PROP_SEND_TO_EMAIL, String.valueOf(hasEmail(getUserContext().getCurrentUser())));
+			if(property!=null) {
 				return Boolean.valueOf(property).booleanValue();
+			}
 		}
 		return false;
 	}
