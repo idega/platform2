@@ -49,6 +49,7 @@ import com.idega.core.file.data.ICFileHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -56,17 +57,16 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 import com.lowagie.text.BadElementException;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.Font;
-
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -76,7 +76,6 @@ import com.lowagie.text.markup.MarkupTags;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
-
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
@@ -359,6 +358,10 @@ public class DocumentBusinessBean
 			return true;
 
 		return false;
+	}
+	
+	private boolean addTemplateHeader() {
+		return getIWApplicationContext().getApplicationSettings().getDefaultLocale().equals(LocaleUtil.getSwedishLocale());
 	}
 
 	/**
@@ -686,44 +689,48 @@ public class DocumentBusinessBean
 	private PdfTemplate createPasswordLetterTemplate(PdfWriter writer)throws Exception{
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		PdfContentByte cb = writer.getDirectContent();
-		BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-		String mail_zip = iwb.getProperty("commune.mail_zip");
-		String mail_name = iwb.getProperty("commune.mail_name");
 		
 		float tempLength = 511f;
 		float tempHeight = getPointsFromMM(40);
 		PdfTemplate template = cb.createTemplate(tempLength, tempHeight);
-		float convLengt = 100f;
-		float convHeight = 60f;
-		template.rectangle(0f, 0f, convLengt,convHeight);
-		template.moveTo(0f, 0f);
-		template.lineTo(convLengt, convHeight);
-		template.moveTo(convLengt, 0f);
-		template.lineTo(0f,convHeight);
-		template.stroke();
-		template.beginText();
-		template.setFontAndSize(bf, 11f);
-		template.setTextMatrix(5f, 40f);
-		template.showText(mail_name);
 		
-		template.endText();
-		template.beginText();
-		template.setFontAndSize(bf, 11f);
-		template.setTextMatrix(5f, 25f);
-		template.showText(mail_zip);
-		template.endText();
-		
-		Image porto =Image.getInstance(iwb.getResourcesRealPath()+ "/shared/porto_betalt.jpg");
-		porto.scaleAbsolute(60f, 60f);
-		
-		//Image portoA =Image.getInstance(iwb.getResourcesRealPath()+ "/shared/porto_a_logo.jpg");
-		//float Awidth = 2.3f*60f;
-		//portoA.scaleToFit(Awidth,60f);
-		
-		float portoXPos = tempLength-90f;
-		//float portoAXPos = portoXPos-Awidth-5f;
-		template.addImage(porto,60f,0f,0f,60f,portoXPos,0);
-		//template.addImage(portoA,Awidth,0f,0f,60f,portoAXPos,0);
+		if (addTemplateHeader()) {
+			BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+			String mail_zip = iwb.getProperty("commune.mail_zip");
+			String mail_name = iwb.getProperty("commune.mail_name");
+
+			float convLengt = 100f;
+			float convHeight = 60f;
+			template.rectangle(0f, 0f, convLengt,convHeight);
+			template.moveTo(0f, 0f);
+			template.lineTo(convLengt, convHeight);
+			template.moveTo(convLengt, 0f);
+			template.lineTo(0f,convHeight);
+			template.stroke();
+			template.beginText();
+			template.setFontAndSize(bf, 11f);
+			template.setTextMatrix(5f, 40f);
+			template.showText(mail_name);
+			
+			template.endText();
+			template.beginText();
+			template.setFontAndSize(bf, 11f);
+			template.setTextMatrix(5f, 25f);
+			template.showText(mail_zip);
+			template.endText();
+			
+			Image porto =Image.getInstance(iwb.getResourcesRealPath()+ "/shared/porto_betalt.jpg");
+			porto.scaleAbsolute(60f, 60f);
+			
+			//Image portoA =Image.getInstance(iwb.getResourcesRealPath()+ "/shared/porto_a_logo.jpg");
+			//float Awidth = 2.3f*60f;
+			//portoA.scaleToFit(Awidth,60f);
+			
+			float portoXPos = tempLength-90f;
+			//float portoAXPos = portoXPos-Awidth-5f;
+			template.addImage(porto,60f,0f,0f,60f,portoXPos,0);
+			//template.addImage(portoA,Awidth,0f,0f,60f,portoAXPos,0);
+		}
 		
 		return template;
 	}
@@ -731,7 +738,8 @@ public class DocumentBusinessBean
 	//private int createPasswordLetterContent(Document document,PrintedLetterMessage msg,PdfWriter writer,Locale locale) throws Exception{
 	private int createPasswordLetterContent(DocumentPrintContext dpc)throws ContentCreationException{
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
-		//IWResourceBundle iwrb = iwb.getResourceBundle(locale);
+		IWResourceBundle iwrb = iwb.getResourceBundle(getIWApplicationContext().getApplicationSettings().getDefaultLocale());
+		System.out.println("Default locale: " + getIWApplicationContext().getApplicationSettings().getDefaultLocale().toString());
 		String 	sAddrString = "";		
 		PdfContentByte cb = dpc.getPdfWriter().getDirectContent();
 		Document document =dpc.getDocument();
@@ -750,23 +758,37 @@ public class DocumentBusinessBean
 			return ADDRESS_ERROR;
 		}	
 		try {
-			Phrase Ph0 = new Phrase(sAddrString, new Font(Font.HELVETICA, 12, Font.BOLD));
 			ColumnText ct = new ColumnText(cb);
 			float margin = getPointsFromMM(14);
 			float lly = getPointsFromMM(297-22);
 			float ury = lly+60f;
 			float urx = 595f-margin-60f-5f;
 			float llx = 110f+margin;
-			ct.setSimpleColumn(Ph0,llx, lly, urx, ury, 15, Element.ALIGN_LEFT);
+			if (addTemplateHeader()) {
+				Phrase Ph0 = new Phrase(sAddrString, new Font(Font.HELVETICA, 12, Font.BOLD));
+				ct.setSimpleColumn(Ph0,llx, lly, urx, ury, 15, Element.ALIGN_LEFT);
+			}
 			ct.go();
 			
-			document.add(new Paragraph("\n\n\n\n\n\n\n"));
+			if (addTemplateHeader()) {
+				document.add(new Paragraph("\n\n\n\n\n\n\n"));
+			}
 											
 			{
 			
 			User owner = msg.getOwner();
 				HashMap tagmap = new CommuneUserTagMap(getIWApplicationContext(),owner);
 				tagmap.putAll(getMessageTagMap(msg,locale));
+				
+				XmlPeer image = new XmlPeer(ElementTags.IMAGE, "signature");
+				image.addValue("url", iwrb.getImage("signature.gif").getMediaURL(getIWApplicationContext()));
+				tagmap.put(image.getAlias(), image);
+				System.out.println("Image tag: " + image.getTag());
+				
+				XmlPeer date = new XmlPeer(ElementTags.CHUNK, "date");
+				date.setContent(new IWTimestamp().getDateString("dd.MM.yyyy"));
+				tagmap.put(date.getAlias(), date);
+				System.out.println("Date tag: " + date.getTag());
 				
 				String letterUrl =  getXMLLetterUrl(iwb,locale,"password_letter.xml");
 				if(msg.getBody().indexOf("|")>0){
