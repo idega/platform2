@@ -87,7 +87,7 @@ public class EJBWizardClassCreator {
 			codeString += "package " + this.introspector.getPackage() + ";\n\n";
 		}
 		// -- ejb import statement --
-		codeString += "import javax.ejb.*;\n";
+		//codeString += "import javax.ejb.*;\n";
 		// -- interface declaration --
 		codeString += "\npublic interface ";
 		codeString += getRemoteName() + " extends " + getRemoteInterfaceSuperInterface();
