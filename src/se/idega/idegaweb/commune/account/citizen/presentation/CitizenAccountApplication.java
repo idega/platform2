@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/30 10:30:49 $ by $Author: malin $
+ * Last modified: $Date: 2005/04/06 08:31:32 $ by $Author: anna $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.79 $
+ * @version $Revision: 1.80 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -154,6 +154,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_FIELD_NUMERIC_KEY = "caa_field_numeric";
 	private final static String ERROR_NO_INSERT_DEFAULT = "Kunde inte lagra ansökan.";
 	private final static String ERROR_NO_INSERT_KEY = "caa_unable_to_insert";
+	private final static String ERROR_ALREADY_HAS_APPLICATION = "caa_already_has_application";
+	private final static String ERROR_ALREADY_HAS_APPLICATION_DEFAULT = "Citizen already has an account application that hasn't been handled.";
 	
 	private boolean sendUserToHomePage = true;
 	
@@ -221,6 +223,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			}
 			if (user != null && !logins.isEmpty()) {
 				throw new UserHasLoginException ();
+			}
+			if (business.hasAccountApplication(ssn)) {
+				throw new Exception(localize(ERROR_ALREADY_HAS_APPLICATION, ERROR_ALREADY_HAS_APPLICATION_DEFAULT));
 			}
 			if (user == null || !citizenLivesInNacka(iwc, user)) {
 				// unknown or not-living-in-nacka user applies
