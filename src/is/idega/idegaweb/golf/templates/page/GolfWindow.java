@@ -131,6 +131,7 @@ public class GolfWindow extends Window {
   private Table table;
   private Table contentTable;
   private Table mainTable;
+  private Table menuTable;
   
   private Class _golfClassToInstanciate = null;
 
@@ -175,8 +176,18 @@ public class GolfWindow extends Window {
   
   private void constructTable() {
   		table = new Table(1, 7);
+  		table.setAlignment(1,4,Table.HORIZONTAL_ALIGN_CENTER);
   		contentTable = new Table(3, 3);
   		mainTable = new Table(1, 2);
+  		initializeMenuTable();
+  }
+  
+  private void initializeMenuTable() {
+  	menuTable = new Table();
+  	menuTable.setNoWrap();
+  	menuTable.setCellpaddingAndCellspacing(0);
+  	table.emptyCell(1,4);
+  	table.add(menuTable,1,4);
   }
 
   private void initTable(IWContext modinfo) {
@@ -254,6 +265,10 @@ public class GolfWindow extends Window {
   public void add(PresentationObject objectToAdd) {
   		mainTable.add(objectToAdd, 1, 2);
   }
+  
+  public void setContentAreaAlignment(String alignment) {
+  	mainTable.setAlignment(1,2,alignment);
+  }
 
   public void addHeading(String headingText) {
     Text heading = new Text(headingText);
@@ -264,13 +279,31 @@ public class GolfWindow extends Window {
     mainTable.emptyCell(1, 1);
     mainTable.add(heading, 1, 1);
   }
+  
+  public void addMenuLink(Link menuLink) {
+  	int columns = menuTable.getColumns();
+  	if(columns>1){
+	  	Text t = new Text("|");
+	  	t.setStyleClass(getMenuTextStyleClass());  	
+	  	
+	  	menuTable.add(t,columns+1,1);
+	  	menuTable.setCellpaddingLeft(columns+1,1,5);
+	  	menuTable.setCellpaddingRight(columns+1,1,5);
+    }
+  	menuLink.setStyleClass(getMenuLinkStyleClass());
+  	menuTable.add(menuLink,columns+2,1);
+  }
+  
+  public void emptyMenuArea() {
+  	initializeMenuTable();
+  }
 
   public void empty() {
-  		mainTable.emptyCell(1, 2);
+  	mainTable.emptyCell(1, 2);
   }
 
   public void setContentHorizontalAlignment(String align) {
-  		mainTable.setAlignment(1, 2, align);
+  	mainTable.setAlignment(1, 2, align);
   }
 
   public void setContentVerticalAlignment(String align) {
@@ -344,7 +377,7 @@ public class GolfWindow extends Window {
   }
 
   public void _main(IWContext modinfo) throws Exception {
-  		_iwb = getBundle(modinfo);
+  	_iwb = getBundle(modinfo);
     _iwrb = getResourceBundle(modinfo);
     _manager = new IWStyleManager();
     
@@ -411,7 +444,15 @@ public class GolfWindow extends Window {
   	public String getSmallHeaderFontStyle() {
   		return smallHeaderFontStyle;
   	}
-
+  	
+  	public String getMenuTextStyleClass() {
+  		return getStyleName(STYLENAME_TEMPLATE_HEADER);
+  	}
+  	
+  	public String getMenuLinkStyleClass() {
+  		return getStyleName(STYLENAME_TEMPLATE_HEADER_LINK);
+  	}
+  	
   	public String getListHeaderFontStyle() {
   		return listHeaderFontStyle;
   	}
@@ -932,5 +973,10 @@ public class GolfWindow extends Window {
 		public String getErrorRowClass() {
 			return getStyleName(ERROR_ROW_STYLE);
 		}
+		
+		public Link getTemplateHeaderLink(String s) {
+			return getStyleLink(new Link(s), STYLENAME_TEMPLATE_HEADER_LINK);
+		}
+
 		
 }

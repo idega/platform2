@@ -14,7 +14,7 @@ import is.idega.idegaweb.golf.templates.page.GolfWindow;
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class TournamentStartingtimeSetupWindow extends GolfWindow {
+public class TournamentStartingtimeSetupWindow extends TournamentAdministratorWindow {
 
 	/**
 	 * 

@@ -162,12 +162,8 @@ public class ModifyStartingtime extends GolfBlock {
 			if (tournamentRound.getStartingtees() > 1) {
 				displayTee = true;
 			}
-
-			Text tournamentName = getBigHeader(tournament.getName());
-
-			add("<br><center>");
-			add(tournamentName);
-			add("</center><p>");
+			
+			addHeading(tournament.getName());
 
 			DropdownMenu availableGrupNums = getAvailableGrupNums(tournament, tournamentRound);
 			DropdownMenu clonedMenu;
@@ -196,7 +192,7 @@ public class ModifyStartingtime extends GolfBlock {
 					Text startTee = getText(localize("tournament.tee","Tee")+" : " + tee_number);
 					table.add(startTee, 1, row);
 					table.setRowColor(row, "#336661");
-					table.mergeCells(1, row, 5, row);
+					table.mergeCells(1, row, 6, row);
 					table.setAlignment(1, row, "center");
 				}
 
@@ -289,7 +285,7 @@ public class ModifyStartingtime extends GolfBlock {
 
 		++row;
 		table.mergeCells(1, row, 2, row);
-		table.mergeCells(3, row, 5, row);
+		table.mergeCells(3, row, 6, row);
 
 		Link link = getLocalizedLink("tournament.add_teetimes","Add teetimes");
 		link.addParameter("action", "addMember");
@@ -561,7 +557,7 @@ public class ModifyStartingtime extends GolfBlock {
 				table.add(leftOut[i].getName(), 3, row);
 			}
 			++row;
-			table.mergeCells(3, row, 5, row);
+			table.mergeCells(3, row, 6, row);
 			table.setAlignment(3, row, "right");
 			table.add(TournamentController.getAheadButton(modinfo, "", ""), 3, row);
 		}

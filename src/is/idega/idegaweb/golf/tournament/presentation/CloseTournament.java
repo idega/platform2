@@ -10,7 +10,6 @@ import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
-import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class CloseTournament extends TournamentBlock {
 	}
 
 	public void main(IWContext modinfo) throws Exception {
-		super.setAdminView(GolfTournamentAdminDialog.ADMIN_VIEW_FINISH_TOURNAMENT);
+		super.setAdminView(TournamentAdministratorWindow.ADMIN_VIEW_FINISH_TOURNAMENT);
 		iwrb = getResourceBundle();
 
 		String mode = modinfo.getParameter("mode");

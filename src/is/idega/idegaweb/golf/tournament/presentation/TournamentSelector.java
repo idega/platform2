@@ -8,7 +8,6 @@ import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
-import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.data.IDOLookup;
@@ -36,7 +35,7 @@ public class TournamentSelector extends TournamentBlock {
 			super.setTournamentID(modinfo, tournament_id);
 			String clsName = modinfo.getParameter(PARAMETER_CLASS_NAME);
 			if (clsName == null || TournamentAdministratorWindow.class.getName().equals(clsName)) {
-				getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentRegistrationWindow.class)+"&tournament_admin_view="+GolfTournamentAdminDialog.ADMIN_VIEW_REGISTER_MEMBER);
+				getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentRegistrationWindow.class)+"&tournament_admin_view="+TournamentAdministratorWindow.ADMIN_VIEW_REGISTER_MEMBER);
 			}else {
 	      getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(Class.forName(clsName)));
 			}
@@ -58,7 +57,7 @@ public class TournamentSelector extends TournamentBlock {
 		    form.add(table);
 		    form.maintainParameter(PARAMETER_CLASS_NAME);
 
-		    super.setAdminView(GolfTournamentAdminDialog.ADMIN_VIEW_SELECT_TOURNAMENT);
+		    super.setAdminView(TournamentAdministratorWindow.ADMIN_VIEW_SELECT_TOURNAMENT);
 		    add(form);
 		
 			if (isAdmin() || isClubAdmin()) {

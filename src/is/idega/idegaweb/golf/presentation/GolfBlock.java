@@ -5,6 +5,7 @@ package is.idega.idegaweb.golf.presentation;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -733,7 +735,15 @@ public abstract class GolfBlock extends Block {
 		return map;
 	}
 
-
+	public void addHeading(String heading) {
+		Page p = getParentPage();
+		if(p instanceof GolfWindow) {
+			((GolfWindow)p).addHeading(heading);
+		} else {
+			Text tHeading = getBigHeader(heading);
+			add(tHeading);
+		}
+	}
 	
 	
 	

@@ -11,7 +11,7 @@ import com.idega.presentation.text.Text;
  */
 public class TournamentAdministrator extends TournamentBlock {
 	protected boolean tournamentMustBeSet() {
-		return true;
+		return false;
 	}
 
 	public void main(IWContext modinfo) throws Exception {
@@ -26,6 +26,7 @@ public class TournamentAdministrator extends TournamentBlock {
 		add(Text.getBreak());
 	  	add(Text.getBreak());
 	  	add(modinfo.getIWMainApplication().getCoreBundle().getImage("busy.gif"));
+		getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelectorWindow.class) + "&" + PARAMETER_CLASS_NAME + "=" + TournamentSelectorWindow.class.getName());
 	  }
 	  else {
 	    add(getErrorText(localize("tournament.no_permission","No Permission")));

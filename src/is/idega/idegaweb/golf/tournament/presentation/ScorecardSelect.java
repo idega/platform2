@@ -538,7 +538,7 @@ public class ScorecardSelect extends TournamentBlock {
 	}
 
 	protected boolean tournamentMustBeSet() {
-		return false;
+		return true;
 	}
 
 }

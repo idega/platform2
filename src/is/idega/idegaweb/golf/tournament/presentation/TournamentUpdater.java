@@ -3,8 +3,6 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
-
 import com.idega.presentation.IWContext;
 
 /**
@@ -22,7 +20,7 @@ public class TournamentUpdater extends TournamentBlock {
 	    if ( tID < 1) {
 	      getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelectorWindow.class)+"&"+super.PARAMETER_CLASS_NAME+"="+this.getClassName()+"Window");
 	    }else {
-	      getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentCreatorWindow.class)+"&tournament_control_mode=edit&tournament="+tID+"&"+GolfTournamentAdminDialog.ADMIN_VIEW_PARAMETER+"="+GolfTournamentAdminDialog.ADMIN_VIEW_MODIFY_TOURNAMENT);
+	      getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentCreatorWindow.class)+"&tournament_control_mode=edit&tournament="+tID+"&"+TournamentAdministratorWindow.ADMIN_VIEW_PARAMETER+"="+TournamentAdministratorWindow.ADMIN_VIEW_MODIFY_TOURNAMENT);
 	    }
 	    
 	}

@@ -36,7 +36,7 @@ public class GolfTournamentAdminDialog extends GolfBlock {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
-	private String adminView;
+	private String adminView = null;
 
 	public static String ADMIN_VIEW_PARAMETER = "tournament_admin_view";
 

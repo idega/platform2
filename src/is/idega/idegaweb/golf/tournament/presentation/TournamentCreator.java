@@ -21,7 +21,6 @@ import is.idega.idegaweb.golf.entity.TournamentTournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.moduleobject.GolfDialog;
-import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.sql.SQLException;
@@ -74,7 +73,7 @@ public class TournamentCreator extends TournamentBlock {
 
 	public void main(IWContext modinfo)throws Exception{
 		if (isAdmin() || isClubAdmin()) {
-			super.setAdminView(GolfTournamentAdminDialog.ADMIN_VIEW_CREATE_TOURNAMENT);
+			super.setAdminView(TournamentAdministratorWindow.ADMIN_VIEW_CREATE_TOURNAMENT);
 		    try {
 		        checkIfUpdate(modinfo);
 			//initializeButtons(modinfo);
@@ -125,7 +124,7 @@ public class TournamentCreator extends TournamentBlock {
 	        if (sIsUpdate != null) {
 	            if (sIsUpdate.equals("edit")) {
 	              bIsUpdate = true;
-	        			super.setAdminView(GolfTournamentAdminDialog.ADMIN_VIEW_MODIFY_TOURNAMENT);
+	        			super.setAdminView(TournamentAdministratorWindow.ADMIN_VIEW_MODIFY_TOURNAMENT);
 	              remove = false;
 	              String tournament_id = modinfo.getParameter("tournament");
 
