@@ -27,6 +27,7 @@ import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
+import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
@@ -369,11 +370,11 @@ public class HouseHoldViewer extends AccountingBlock {
 				else {
 					table.skip();
 				}
-				Integer siblingOrder = getSiblingOrder(child,children);
-				if (siblingOrder != null) {
-					table.add(getText(siblingOrder.toString()));
-				}
-				else {
+				try {
+					Map siblingOrders = new HashMap ();
+					int siblingOrder = getUserInfoService (iwc).getSiblingOrder (child, siblingOrders, new IWTimestamp (System.currentTimeMillis()));
+					table.add(getText(siblingOrder + ""));
+				} catch (Exception e) {
 					table.skip();
 				}
 				int age = getCalculatedAge(iwc, child);
@@ -632,6 +633,9 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 	private CommuneUserBusiness getUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	private UserInfoService getUserInfoService(IWContext iwc) throws RemoteException {
+		return (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
 	}
 	private AgeBusiness getAgeService(IWContext iwc) throws RemoteException {
 		return (AgeBusiness) IBOLookup.getServiceInstance(iwc, AgeBusiness.class);

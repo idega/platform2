@@ -4,21 +4,34 @@
  */
 package se.idega.idegaweb.commune.accounting.userinfo.business;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOStoreException;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoChildrenFound;
+import is.idega.idegaweb.member.business.NoCohabitantFound;
+import is.idega.idegaweb.member.business.NoCustodianFound;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
+import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiver;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiverHome;
-
-import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOStoreException;
-import com.idega.user.data.User;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 /**
  * UserInfoServiceBean
@@ -82,6 +95,10 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		return (InvoiceReceiverHome) getIDOHome(InvoiceReceiver.class);
 	}
 	
+	public ChildCareContractHome getChildCareContractHome() throws RemoteException {
+		return (ChildCareContractHome) getIDOHome(ChildCareContract.class);
+	}
+	
 	/**
 	 * Returns true if the user with the specified id is an invoice receiver.
 	 * @author Anders Lindman
@@ -105,5 +122,112 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 			userId = ((Integer) user.getPrimaryKey()).intValue();
 		} catch (Exception e) {}
 		return isInvoiceReceiver(userId);
+	}
+
+	public int getSiblingOrder(User child, Map siblingOrders, IWTimestamp startPeriod) throws RemoteException, SiblingOrderException {
+		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		//First see if the child already has been given a sibling order
+		Integer order = (Integer)siblingOrders.get(child.getPrimaryKey());
+		if(order != null)
+		{
+			return order.intValue();	//Sibling order already calculated.
+		}
+	
+		TreeSet sortedSiblings = new TreeSet();		//Container for the siblings that keeps them in sorted order
+		Address childAddress = userBus.getUsersMainAddress(child);
+		if (null == childAddress) {
+			throw new SiblingOrderException (child.getPersonalID() + " " + child.getName () + " has no Address");
+		}
+
+		//Add the child to the sibbling collection right away to make sure it will be in there
+		//This should really happen in the main loop below as well, but this is done since
+		//the realtionships seem to be a bit unreliable
+		sortedSiblings.add(new SortableSibling(child));
+
+		//Gather up a collection of the parents and their cohabitants
+		Collection parents;		//Collection parents only hold the biological parents
+		MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
+		try {
+			parents = familyLogic.getCustodiansFor(child);
+		} catch (NoCustodianFound e1) {
+			throw new SiblingOrderException("No custodians found for the child.");
+		}
+		//Adults hold all the adults that could be living on the same address
+		Collection adults = new ArrayList(parents);
+		Iterator parentIter = parents.iterator();
+		//Itterate through parents
+		while(parentIter.hasNext()){
+			User parent = (User)parentIter.next();
+			try {
+				adults.add(familyLogic.getCohabitantFor(parent));
+			} catch (NoCohabitantFound e) {
+			}
+		}
+
+		//Loop through all adults
+		Iterator adultIter = adults.iterator();
+		while(adultIter.hasNext()){
+			User adult = (User)adultIter.next();
+			Iterator siblingsIter;
+			try {
+				siblingsIter = familyLogic.getChildrenFor(adult).iterator();
+				//Itterate through their kids
+				while(siblingsIter.hasNext())
+				{
+					User sibling = (User) siblingsIter.next();
+			
+					//Check if the sibling has a valid contract of right type
+					try {
+						getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
+						//If kids have same address add to collection
+						Address siblingAddress = userBus.getUsersMainAddress(sibling);
+						if (null == siblingAddress) {
+							throw new SiblingOrderException ("Sibling " + sibling.getPersonalID() + " " + sibling.getName() + " has no Address");
+						}
+						if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&
+							childAddress.getCity().equals(siblingAddress.getCity()) &&
+							childAddress.getStreetAddress().equals(siblingAddress.getStreetAddress())){
+
+							SortableSibling sortableSibling = new SortableSibling(sibling);
+							if(!sortedSiblings.contains(sortableSibling)){
+								sortedSiblings.add(sortableSibling);
+							}
+						}
+					} catch (FinderException e) {
+						//If sibling don't have a childcare contract we just ignore it
+					} catch (NullPointerException e) {
+						//If sibling doesn't have an address or contract, it won't be counted in the sibling order
+						e.printStackTrace ();
+						String childName = child.getPersonalID() + " " + child.getName () + (child.getPrimaryKey ().equals (sibling.getPrimaryKey ()) ? "" : " or " + sibling.getPersonalID() + " " + sibling.getName ());
+						throw new SiblingOrderException (childName + " probably has missing fields in address");
+					}
+				}
+			} catch (RemoteException e2) {
+				e2.printStackTrace();
+				throw new SiblingOrderException (child.getName() + " invoice.DBError");
+			} catch (NoChildrenFound e) {
+				e.printStackTrace();
+				throw new SiblingOrderException (child.getName() + " invoice.NoChildrenFound");
+			}
+		}
+	
+		//Store the sorting order
+		Iterator sortedIter = sortedSiblings.iterator();
+		int orderNr = 1;
+		while(sortedIter.hasNext()){
+			SortableSibling sortableSibling = (SortableSibling)sortedIter.next();
+			siblingOrders.put(sortableSibling.getSibling().getPrimaryKey(),new Integer(orderNr));
+			log("Added child "+sortableSibling.getSibling()+" as sibling "+orderNr+" out of "+sortedSiblings.size());
+			orderNr++;
+		}
+	
+		//Look up the order of the child that started the whole thing
+		order = (Integer)siblingOrders.get(child.getPrimaryKey());
+		if(order != null)
+		{
+			return order.intValue();
+		}
+		//This should really never happen
+		throw new SiblingOrderException("Could not find the sibling order.");
 	}
 }

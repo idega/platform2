@@ -300,6 +300,8 @@ public abstract class BillingThread extends Thread{
 			System.out.println("About to enter a batch run error to header "+batchRunLogger.getPrimaryKey()+"  "+related+"  "+desc+"  "+errorOrder);
 			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
 			error.setBatchRunID(((Integer)batchRunLogger.getPrimaryKey()).intValue());
+			if (related.length () > 990) related = related.substring (1, 990);
+			if (desc.length () > 990) desc = desc.substring (1, 990);
 			error.setRelated(related);
 			error.setDescription(desc);
 			error.setOrder(errorOrder);

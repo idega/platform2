@@ -46,6 +46,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 
@@ -262,6 +263,7 @@ public class InvoiceChildcareThread extends BillingThread{
 
  					totalSum = postingDetail.getAmount()*placementTimes.getMonths();
 					int siblingOrder = getSiblingOrder(contract);
+					//int siblingOrder = getSiblingOrder(contract, siblingOrders);
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 							new Integer(siblingOrder)));
 					log.info(" Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
@@ -409,11 +411,12 @@ public class InvoiceChildcareThread extends BillingThread{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
 					}
 				} catch (SiblingOrderException e) {
+					//} catch (UserInfoService.SiblingOrderException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotGetSiblingOrder");
+						createNewErrorMessage(errorRelated + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.CouldNotGetSiblingOrder");
+						createNewErrorMessage(contract.getChild().getName() + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
 					}
 				}
 				catch (MissingFlowTypeException e) {
@@ -676,6 +679,12 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @param contract
 	 * @return the sibling order for the child connected to the contract
 	 */
+	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, UserInfoService.SiblingOrderException, IDOLookupException, RemoteException, CreateException{
+			User contractChild = contract.getChild ();	
+			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
+			return userInfo.getSiblingOrder(contractChild, siblingOrders, startPeriod);
+	}
+
 	private int getSiblingOrder(ChildCareContract contract) throws EJBException, SiblingOrderException, IDOLookupException, RemoteException, CreateException{
 		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 	
