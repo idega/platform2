@@ -38,22 +38,23 @@ public class MemberOverview extends Block {
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
+		User user = iwc.getCurrentUser();
 		_iwrb = getResourceBundle(iwc);
-		_data = new MemberGroupData(getUser());
+		_data = new MemberGroupData(user);
 		Text regText = new Text(_iwrb.getLocalizedString("member_overview_registration", "Skraningar"));
 		add(regText);
 		add(getMemberRegistrationStatus());
 		addBreak();
 		Text histText = new Text(_iwrb.getLocalizedString("member_overview_history", "Saga"));
 		add(histText);
-		add(getMemberHistory());
+		add(getMemberHistory(user));
 	}
 	
-	public PresentationObject getMemberHistory() {
+	public PresentationObject getMemberHistory(User user) {
 		Collection history = null;
 		int rows = 0;
 		try {
-			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUser().getID(),"GROUP_PARENT");
+			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(user.getID(),"GROUP_PARENT");
 			rows = history.size();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -114,20 +115,8 @@ public class MemberOverview extends Block {
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	
-	private User getUser() {
-		if(_user==null) {
-			try {
-				_user = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(_userId);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 		
-		return _user;
-	}
-	
-	private Integer _userId = new Integer(338609);
-	private User _user = null;
+	//private Integer _userId = new Integer(338609);
+	//private User _user = null;
 	private MemberGroupData _data = null;
 }
