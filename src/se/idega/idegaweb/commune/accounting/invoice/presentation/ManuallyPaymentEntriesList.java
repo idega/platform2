@@ -357,9 +357,31 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			pay.setDateCreated(new Date(System.currentTimeMillis()));
 	
 			int vatType = new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
-			pay.setVATType(vatType);
+			pay.setVATRuleRegulation(vatType);
 	//		inv.setVATType(vatType);
 			
+/*
+		}
+		pay.setTotalAmount(amountPrMonth);
+		
+		pay.setNotes(iwc.getParameter(PAR_REMARK));
+		pay.setPaymentText(iwc.getParameter(PAR_PLACING));
+		pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+		pay.setDateCreated(new Date(System.currentTimeMillis()));
+
+//			pay.setUser(getUser(iwc));
+		int vatRuleRegulationId= new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
+		pay.setVATRuleRegulation(vatRuleRegulationId);
+		inv.setVATRuleRegulation(vatRuleRegulationId);
+		
+		try{
+			PostingBlock p = new PostingBlock(iwc);			
+			pay.setOwnPosting(p.getOwnPosting());
+			pay.setDoublePosting(p.getDoublePosting());
+		} catch (PostingParametersException e) {
+			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getDefaultText()));
+		}	
+*/
 			try{
 				PostingBlock p = new PostingBlock(iwc);	
 				String ownPosting = p.getOwnPosting();
@@ -377,6 +399,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getDefaultText()));
 			}	
 		}// END: if(errorMessages.isEmpty())
+
 	
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, errorMessages);	
@@ -444,7 +467,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 		Collection vatTypes = new ArrayList();
 		try {
-			vatTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRules();			
+			vatTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRuleRegulations();			
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		}	

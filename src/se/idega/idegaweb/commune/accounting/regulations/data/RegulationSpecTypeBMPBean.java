@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecTypeBMPBean.java,v 1.14 2003/10/10 01:33:48 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.15 2004/01/06 14:03:14 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,16 +24,17 @@ import com.idega.data.IDOLookup;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.MainRuleBMPBean#
  * <p>
  * 
- * $Id: RegulationSpecTypeBMPBean.java,v 1.14 2003/10/10 01:33:48 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.15 2004/01/06 14:03:14 tryggvil Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class RegulationSpecTypeBMPBean extends GenericEntity implements RegulationSpecType {
 	
-	private static final String ENTITY_NAME = "cacc_reg_spec_type";
-	private static final String COLUMN_REG_SPEC_TYPE = "reg_spec_type";
-	private static final String COLUMN_MAIN_RULE_ID = "main_rule_id";
+	public static final String ENTITY_NAME = "cacc_reg_spec_type";
+	public static final String COLUMN_REG_SPEC_TYPE_ID = ENTITY_NAME+"_ID";
+	public static final String COLUMN_REG_SPEC_TYPE = "reg_spec_type";
+	public static final String COLUMN_MAIN_RULE_ID = "main_rule_id";
 
 	public String getEntityName() {
 		return ENTITY_NAME;

@@ -12,7 +12,8 @@ public class PostingDetail {
 	private String term;
 	private float amount;
 	private float vat;
-	private int vatRegulationID;
+	private int vatRuleRegulationID=-1;
+	private VATRegulation vatRegulation;
 	private String ruleSpecType;
 	private int orderID;
 	
@@ -25,16 +26,19 @@ public class PostingDetail {
 			setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
 		}
 		setTerm(regularPaymentEntry.getPlacing());
-		setVat(regularPaymentEntry.getVAT());
-		setVatRegulationID(regularPaymentEntry.getVatRuleId());
+		setVATPercent(regularPaymentEntry.getVAT());
+		int vatRuleRegulationId= regularPaymentEntry.getVatRuleRegulationId();
+		if(vatRuleRegulationId!=-1){
+			setVatRuleRegulationId(vatRuleRegulationId);
+		}
 		setOrderID(99);	//TODO (JJ) Check with Lotta if she want somethng else here...
 	}
 	
-	public PostingDetail(String t, float a, float v, int vID, String rst){
+	public PostingDetail(String t, float amount, float vatPercent, int vatRuleRegulationID, String rst){
 		term = t;
-		amount = a;
-		vat = v;
-		vatRegulationID = vID;
+		this.amount = amount;
+		vat = vatPercent;
+		this.vatRuleRegulationID = vatRuleRegulationID;
 		ruleSpecType = rst;
 	}
 	
@@ -54,20 +58,20 @@ public class PostingDetail {
 		term = string;
 	}
 
-	public float getVat() {
+	public float getVATPercent() {
 		return vat;
 	}
 
-	public void setVat(float f) {
+	public void setVATPercent(float f) {
 		vat = f;
 	}
 
-	public int getVatRegulationID() {
-		return vatRegulationID;
+	public int getVatRuleRegulationId() {
+		return vatRuleRegulationID;
 	}
 
-	public void setVatRegulationID(int i) {
-		vatRegulationID = i;
+	public void setVatRuleRegulationId(int i) {
+		vatRuleRegulationID = i;
 	}
 
 	public String getRuleSpecType() {
@@ -84,6 +88,20 @@ public class PostingDetail {
 
 	public void setOrderID(int i) {
 		orderID = i;
+	}
+
+	/**
+	 * @return Returns the vatRegulation.
+	 */
+	public VATRegulation getVATRegulation() {
+		return vatRegulation;
+	}
+
+	/**
+	 * @param vatRegulation The vatRegulation to set.
+	 */
+	public void setVATRegulation(VATRegulation vatRegulation) {
+		this.vatRegulation = vatRegulation;
 	}
 
 }

@@ -40,7 +40,7 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 				regularPayment();
 				System.out.println("Done with Payment loop");
 				//VAT
-				calcVAT();
+				//calcVAT();
 				System.out.println("Done with VAT loop");
 				batchRunLoggerDone();
 			}else{

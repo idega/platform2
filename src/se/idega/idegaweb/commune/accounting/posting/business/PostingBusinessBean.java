@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.53 2004/01/05 13:43:50 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.54 2004/01/06 14:03:14 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -833,7 +833,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			doublePosting = generateString(doublePosting, categoryPosting.getCounterAccount(), date);
 			validateString(doublePosting,date);
 		}catch(NullPointerException ex){
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			throw new PostingException("postingException.missing_parameter_value", "[Not localized NullPointerException]"); 
 		}catch(RemoteException ex){
 			ex.printStackTrace();

@@ -37,8 +37,8 @@ import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -46,6 +46,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
@@ -61,6 +62,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
@@ -79,7 +81,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
 	
 
-	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
+	private static String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
 	private static final String KEY_OPERATIONAL_FIELD = "operational_field";
 	private static final String KEY_AMOUNT_PR_MONTH = "amount_pr_month";
@@ -107,6 +109,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_EDIT = "edit";
 	private static final String KEY_DELETE = "delete";	
 	private static final String KEY_SCH_TYPE = "school_type";	
+	
+	private static final String LOC_KEY_SELECT=LOCALIZER_PREFIX+"select";
 	
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
@@ -412,7 +416,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}
 		
 		entry.setUser(getUser(iwc));
-		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+		entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
 		
 		try{
 			PostingBlock p = new PostingBlock(iwc);			
@@ -486,9 +490,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		t1.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, 1);
 		
-		Collection vatTypes = new ArrayList();
+		Collection vatRuleRegulations = new ArrayList();
 		try {
-			vatTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRules();			
+			vatRuleRegulations = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRuleRegulations();			
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		}	
@@ -503,7 +507,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		form.maintainParameter(PAR_SELECTED_PROVIDER);
 
 	
-		form.add(getDetailPanel(iwc, entry, vatTypes, errorMessages));
+		form.add(getDetailPanel(iwc, entry, vatRuleRegulations, errorMessages));
 		
 		t1.add(form, 1, 2);
 		add(t1);
@@ -832,7 +836,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
-		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRuleId(),  "getVATRule", 1, row++);
+		
+		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRuleRegulationId(),  "getName", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
@@ -972,11 +977,20 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				return _reg != null ? _reg.getVATEligible().floatValue() : getFloatValue(PAR_VAT_PR_MONTH);
 			}
 		
-			public VATRule getVatRule() {
-				return null;
+			public Regulation getVatRuleRegulation() {
+				Regulation vatRule = null;
+				try{
+					RegulationHome rhome = (RegulationHome) IDOLookup.getHome(Regulation.class);
+					vatRule = rhome.findByPrimaryKey(new Integer(getVatRuleRegulationId()));
+				}catch(IDOLookupException ex){
+					ex.printStackTrace(); 
+				}catch(FinderException ex){
+					ex.printStackTrace(); 
+				}				
+				return vatRule;
 			}
 		
-			public int getVatRuleId() {
+			public int getVatRuleRegulationId() {
 				return getIntValue(PAR_VAT_TYPE);
 			}
 		
@@ -1003,6 +1017,19 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public int getSchoolTypeId(){
 				return getIntValue(PAR_SCH_TYPE);				
 			}
+			
+			public SchoolType getSchoolType() {
+				SchoolType stype = null;
+				try{
+					SchoolTypeHome sh = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+					stype = sh.findByPrimaryKey(new Integer(getSchoolTypeId()));
+				}catch(IDOLookupException ex){
+					ex.printStackTrace(); 
+				}catch(FinderException ex){
+					ex.printStackTrace(); 
+				}				
+				return stype;
+			} 
 			
 			String getValue(String parameter){
 				return _iwc == null || _iwc.getParameter(parameter) == null ? "" : _iwc.getParameter(parameter);
@@ -1039,7 +1066,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void setSchoolId(int schoolId) {}
 			public void setAmount(float amount) {}
 			public void setVAT(float vat) {}
-			public void setVatRuleId(int vatRuleId) {}
+			public void setVatRuleRegulationId(int vatRuleId) {}
 			public void setNote(String note) {}
 			public void setOwnPosting(String ownPosting) {}
 			public void setDoublePosting(String doublePosting) {}
@@ -1053,20 +1080,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public boolean isIdentical(EJBLocalObject arg0) throws EJBException {return false;}
 			public int compareTo(Object arg0) {return 0;}
 
-			public void setRegSpecType(RegulationSpecType p0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			public void setRegSpecTypeId(int p0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			public void setVatRule(VATRule p0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void setRegSpecType(RegulationSpecType p0) {}
+			public void setRegSpecTypeId(int p0) {}
+			public void setVatRuleRegulation(Regulation p0) {}
 		};
 	}
 	
@@ -1099,6 +1115,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private Table addDropDownLocalized(Table table, String parameter, String key, Collection options, int selected, String method, int col, int row) {
 		DropdownMenu dropDown = getDropdownMenuLocalized(parameter, options, method);
 		dropDown.setSelectedElement(selected);
+		String selectString = this.getResourceBundle().getLocalizedString(LOC_KEY_SELECT,"Select:");
+		dropDown.addFirstOption(new SelectOption(selectString,""));
 		return addWidget(table, key, dropDown, col, row);		
 	}
 	

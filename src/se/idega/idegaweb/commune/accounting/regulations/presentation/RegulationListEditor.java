@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.21 2003/10/29 10:18:38 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.22 2004/01/06 14:03:14 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.21 2003/10/29 10:18:38 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.22 2004/01/06 14:03:14 tryggvil Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -503,8 +503,8 @@ public class RegulationListEditor extends AccountingBlock {
 		if (r != null && hasNoError()) {
 			vatYesNoID = r.getVATEligible() != null ? r.getVATEligible().intValue() :
 					 Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_VAT_ELIGIBLE));	
-			vatRulePK = Integer.parseInt(r.getVATRegulation() != null ? 
-					r.getVATRegulation().getPrimaryKey().toString() : 
+			vatRulePK = Integer.parseInt(r.getVATRuleRegulation() != null ? 
+					r.getVATRuleRegulation().getPrimaryKey().toString() : 
 					(String) _pMap.get(PARAM_SELECTOR_VAT_RULE));
 			specCalcPK = Integer.parseInt(r.getSpecialCalculation() != null ? 
 					r.getSpecialCalculation().getPrimaryKey().toString() : 
@@ -602,9 +602,9 @@ public class RegulationListEditor extends AccountingBlock {
 		
 		DropdownMenu menu = null;
 		try {
+				Collection vatRules = getRegulationBusiness(iwc).findAllVATRuleRegulations();
 				menu = (DropdownMenu) getStyledInterface(
-				getDropdownMenuLocalized(name, getRegulationBusiness(iwc).findAllVATRules(), 
-				"getLocalizationKey"));
+				getDropdownMenuLocalized(name,vatRules,"getLocalizationKey"));
 			menu.addMenuElementFirst("0", localize(KEY_MENU_VAT_RULE_HEADER, "Välj momsregel"));
 			menu.setSelectedElement(refIndex);
 		} catch (Exception e) {

@@ -13,6 +13,8 @@ import com.idega.util.IWTimestamp;
 import java.sql.Date;
 import java.util.Collection;
 import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
@@ -49,7 +51,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
 	public static final String COLUMN_OWN_POSTING = "own_posting";
 	public static final String COLUMN_DOUBLE_POSTING = "double_posting";
-	public static final String COLUMN_VAT_TYPE = "vat_type";
+	//public static final String COLUMN_VAT_TYPE = "vat_type";
+	public static final String COLUMN_VAT_RULE_REGULATION_ID = "VAT_RULE_REGULATION_ID";
 	public static final String COLUMN_CHILDCARE_CONTRACT_ID = "comm_childcare_archive_id";
 
 	public String getEntityName() {
@@ -76,8 +79,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
-		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
-
+		//addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
+		addManyToOneRelationship(COLUMN_VAT_RULE_REGULATION_ID,Regulation.class);
+		
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_RECORD_ID, PaymentRecord.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_CLASS_MEMBER_ID, SchoolClassMember.class);
@@ -178,10 +182,6 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public String getDoublePosting() {
 		return getStringColumnValue(COLUMN_DOUBLE_POSTING);
 	}
-	public int getVATType() {
-		return getIntColumnValue(COLUMN_VAT_TYPE);
-	}
-
 	public ChildCareContract getChildCareContract () {
 		return (ChildCareContract) getColumnValue (COLUMN_CHILDCARE_CONTRACT_ID);
 	}
@@ -276,9 +276,27 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setDoublePosting(String s) {
 		setColumn(COLUMN_DOUBLE_POSTING, s);
 	}
+	/*
+	public int getVATType() {
+		return getIntColumnValue(COLUMN_VAT_TYPE);
+	}
+	
 	public void setVATType(int i) {
 		setColumn(COLUMN_VAT_TYPE, i);
 	}
+	*/
+	public int getVATRuleRegulationId() {
+		return getIntColumnValue(COLUMN_VAT_RULE_REGULATION_ID);
+	}
+	public void setVATRuleRegulation(int regulationId) {
+		setColumn(COLUMN_VAT_RULE_REGULATION_ID, regulationId);
+	}
+	public Regulation getVATRuleRegulation() {
+		return (Regulation)getColumnValue(COLUMN_VAT_RULE_REGULATION_ID);
+	}
+	public void setVATRuleRegulation(Regulation regulation) {
+		setColumn(COLUMN_VAT_RULE_REGULATION_ID, regulation);
+	}	
 	public void setChildCareContract (final ChildCareContract contract) {
 		setColumn (COLUMN_CHILDCARE_CONTRACT_ID, contract);
 	}

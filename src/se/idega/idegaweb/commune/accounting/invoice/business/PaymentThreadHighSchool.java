@@ -38,7 +38,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool{
 				//Create all the billing info derrived from the regular payments
 				regularPayment();
 				//VAT
-				calcVAT();
+				//calcVAT();
 				batchRunLoggerDone();
 			}else{
 				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");

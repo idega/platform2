@@ -64,8 +64,8 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 
@@ -73,11 +73,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/02 14:52:02 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/06 14:03:14 $ by $Author: tryggvil $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.54 $
+ * @version $Revision: 1.55 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -607,7 +607,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		if (null != paymentText) record.setPaymentText (paymentText);
 		if (null != note) record.setNotes (note);
 		record.setRuleSpecType (regulationSpecType);
-		record.setVATType (vatRule.intValue ());
+		record.setVATRuleRegulation (vatRule.intValue ());
 		
 		// store updated record
 		record.store ();
@@ -659,12 +659,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final PresentationObject doublePostingForm = getPostingParameterForm
 				(context, DOUBLE_POSTING_KEY, record.getDoublePosting ());
 		map.put (DOUBLE_POSTING_KEY, doublePostingForm);
-		final DropdownMenu vatRuleDropdown = getLocalizedDropdown
-				(business.getAllVatRules ());
+		final DropdownMenu vatRuleDropdown = getLocalizedDropdownForVAT
+				(business.getAllVATRuleRegulations());
 		map.put (VAT_RULE_KEY, vatRuleDropdown);
-		final int vatRuleId = record.getVATType ();
-		if (0 < vatRuleId) {
-			vatRuleDropdown.setSelectedElement (vatRuleId + "");
+		final int vatRuleRegulationId = record.getVATRuleRegulationId();
+		if (0 < vatRuleRegulationId) {
+			vatRuleDropdown.setSelectedElement (vatRuleRegulationId + "");
 		}
 		try {
 			final PaymentHeader header = getPaymentHeader (context);
@@ -722,12 +722,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 									roundAmount (record.getTotalAmountVAT ()));
 		final String ruleSpecType = record.getRuleSpecType ();
 		addSmallText (map, REGULATION_SPEC_TYPE_KEY,  ruleSpecType, ruleSpecType);
-		if (0 < record.getVATType ()) {
+		if (0 < record.getVATRuleRegulationId ()) {
 			final InvoiceBusiness business = getInvoiceBusiness (context);
-			final VATRule rule = business.getVatRule (record.getVATType ());
-			final String ruleName = rule.getVATRule ();
-			map.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
-																										 ruleName)));
+			final Regulation vatRule = business.getVATRuleRegulation(record.getVATRuleRegulationId ());
+			final String ruleName = vatRule.getLocalizationKey();
+			map.put (VAT_RULE_KEY, getSmallText (localize (ruleName,ruleName)));
 		}
 		
 		try {
@@ -1561,6 +1560,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return mainTable;
 	}
 	
+	/*
 	private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
 		final DropdownMenu dropdown = (DropdownMenu)
 				getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
@@ -1571,7 +1571,22 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 															 localize (ruleName, ruleName));
 		}
 		return dropdown;
-	}
+	}*/
+	
+	private DropdownMenu getLocalizedDropdownForVAT (final Collection  rules) {
+		final DropdownMenu dropdown = (DropdownMenu)
+		getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
+		for(Iterator iter = rules.iterator();iter.hasNext();){
+			//for (int i = 0; i < rules.length; i++) {
+			Regulation rule = (Regulation)iter.next();
+			//final VATRule rule = rules [i];
+			final String ruleName = rule.getName();
+			final Object ruleId = rule.getPrimaryKey ();
+			dropdown.addMenuElement (ruleId + "",
+					localize (ruleName, ruleName));
+		}
+		return dropdown;
+	}  
 	
 	private DropdownMenu getLocalizedDropdown
 		(final RegulationSpecType [] types) {

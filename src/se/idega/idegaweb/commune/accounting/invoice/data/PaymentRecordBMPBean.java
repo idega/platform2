@@ -6,6 +6,8 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
@@ -38,7 +40,8 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	private static final String COLUMN_RULE_SPEC_TYPE = "rule_spec_type";
 	private static final String COLUMN_OWN_POSTING = "own_posting";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
-	private static final String COLUMN_VAT_TYPE = "vat_type";
+	//private static final String COLUMN_VAT_TYPE = "vat_type";
+	private static final String COLUMN_VAT_RULE_REGULATION_ID="VAT_RULE_REGULATION_ID";
 	private static final String COLUMN_ORDER_ID = "order_id";
 	
 	public String getEntityName() {
@@ -63,10 +66,11 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.String.class, 255);
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
-		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
+		//addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
 
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_HEADER, PaymentHeader.class);
+		addManyToOneRelationship(COLUMN_VAT_RULE_REGULATION_ID, Regulation.class);
 	}
 	public int getPaymentHeader() {
 		return getIntColumnValue(COLUMN_PAYMENT_HEADER);
@@ -119,13 +123,29 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	public String getDoublePosting() {
 		return getStringColumnValue(COLUMN_DOUBLE_POSTING);
 	}
+	/*
 	public int getVATType() {
 		return getIntColumnValue(COLUMN_VAT_TYPE);
 	}
+	public void setVATType(int i) {
+		setColumn(COLUMN_VAT_TYPE, i);
+	}
+	*/
+	public Regulation getVATRuleRegulation() {
+		return (Regulation)getColumnValue(COLUMN_VAT_RULE_REGULATION_ID);
+	}	
+	public int getVATRuleRegulationId() {
+		return getIntColumnValue(COLUMN_VAT_RULE_REGULATION_ID);
+	}
+	public void setVATRuleRegulation(int regulationId) {
+		setColumn(COLUMN_VAT_RULE_REGULATION_ID, regulationId);
+	}
+	public void setVATRuleRegulation(Regulation vatRegulation) {
+		setColumn(COLUMN_VAT_RULE_REGULATION_ID, vatRegulation);
+	}	
 	public int getOrderId() {
 		return getIntColumnValue(COLUMN_ORDER_ID);
 	}
-
 
 	public void setPaymentHeader(int i) {
 		setColumn(COLUMN_PAYMENT_HEADER, i);
@@ -180,9 +200,6 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 	public void setDoublePosting(String s) {
 		setColumn(COLUMN_DOUBLE_POSTING, s);
-	}
-	public void setVATType(int i) {
-		setColumn(COLUMN_VAT_TYPE, i);
 	}
 	public void setOrderId(int i) {
 		setColumn(COLUMN_ORDER_ID, i);
@@ -264,7 +281,25 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendAndEqualsQuoted(COLUMN_RULE_SPEC_TYPE,ruleSpecType);
 		sql.appendAndEqualsQuoted(COLUMN_PAYMENT_TEXT,text);
 		return (Integer)idoFindOnePKByQuery(sql);
-	}	
+	}
+
+	/**
+	 * Finds a payment record for the given posting strings and regulation which is a VAT rule regulation
+	 * @param ownPostingString
+	 * @param doublePostingString 
+	 * @param vatRuleRegulation a Regulation of type VAT (Moms)
+	 * @param month The month to find in.
+	 * @return
+	 * @throws FinderException if none was found
+	 */
+	public Integer ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(String ownPostingString,String doublePostingString,Regulation vatRuleRegulation,String text,CalendarMonth month) throws FinderException {
+		IDOQuery sql = idoQueryFindByMonth(month);
+		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
+		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
+		sql.appendAndEquals(COLUMN_VAT_RULE_REGULATION_ID,vatRuleRegulation.getPrimaryKey().toString());
+		sql.appendAndEqualsQuoted(COLUMN_PAYMENT_TEXT,text);
+		return (Integer)idoFindOnePKByQuery(sql);
+	}		
 	
 	/**
 	 * Gets a Collection of payment records for the specified month and all categories
@@ -390,6 +425,36 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
 		return idoGetNumberOfRecords(sql);
 	}
+
+	/**
+	 * Gets tottal amount paid for the given category and period
+	 * @param schoolCategoryID
+	 * @param period
+	 * @return
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(PaymentHeader ph,CalendarMonth month,Regulation vatRuleRegulation) throws IDOException {
+		/*IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);*/
+		//int pHeaderId = ((Number)ph.getPrimaryKey()).intValue();
+		IWTimestamp start = month.getFirstTimestamp();
+		IWTimestamp end = month.getLastTimestamp();
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select sum("+COLUMN_TOT_AMOUNT_VAT+") from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhereEqualsQuoted("h.cacc_payment_header_id", ph.getPrimaryKey().toString());
+		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("h.period").appendLessThanOrEqualsSign().append(end.getDate());
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+		sql.appendAnd().appendWhereEqualsQuoted("r."+COLUMN_VAT_RULE_REGULATION_ID,vatRuleRegulation.getPrimaryKey().toString());
+		return idoGetNumberOfRecords(sql);
+	}	
+	
 	
 	/**
 	 * Gets tottal amount paid for the given category and period

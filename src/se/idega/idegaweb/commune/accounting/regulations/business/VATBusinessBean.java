@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.15 2003/10/13 09:24:02 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.16 2004/01/06 14:03:14 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,17 +21,20 @@ import com.idega.util.IWTimestamp;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.business.IBOLookupException;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/13 09:24:02 $ by $Author: anders $
+ * Last modified: $Date: 2004/01/06 14:03:14 $ by $Author: tryggvil $
  *
  * @author Anders Lindman
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -396,5 +399,47 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			localizationKey = sc.getLocalizedKey();
 		} catch (Exception e) {}
 		return localizationKey;
+	}
+	
+	public float getVATPercentForRegulation(Regulation normalRegulation)throws VATException{
+		return getVATRegulationFromRegulation(normalRegulation).getVATPercent();
+	}
+	
+	public VATRegulation getVATRegulationFromRegulation(Regulation normalRegulation)throws VATException{
+		Regulation vatRuleRegulation = normalRegulation.getVATRuleRegulation();
+		return getVATRegulationFromVATRuleRegulation(vatRuleRegulation);
+	}
+	
+	protected VATRegulation getVATRegulationFromVATRuleRegulation(Regulation vatRuleRegulation)throws VATException{
+		try {
+			RegulationsBusiness regBus = getRegulationsBusiness();
+			Collection conditions;
+			conditions = regBus.findAllConditionsByRegulation(vatRuleRegulation);
+			for (Iterator iter = conditions.iterator(); iter.hasNext();) {
+				Condition element = (Condition) iter.next();
+				//Check if the condition is of type VAT (Moms)
+				String conditionId = Integer.toString(element.getConditionID());
+				if(conditionId.equals(RuleTypeConstant.CONDITION_ID_VAT)){
+					//The integer in interval i in this case a reference to a VATRegulation
+					int interval = element.getIntervalID();
+					return getVATRegulationHome().findByPrimaryKey(new Integer(interval));
+				}
+			}
+		}
+		catch (FinderException e) {
+			throw new VATException("vatbusiness_exception_occurred","Exception occurred when finding VAT",e);
+		}
+		catch (RemoteException e) {
+			throw new VATException("vatbusiness_exception_occurred","Exception occurred when finding VAT",e);
+		}
+		throw new VATException("vatbusiness_no_vat_found","No VATRegulation Found for Regulation");
+	}
+
+	/**
+	 * @return
+	 */
+	private RegulationsBusiness getRegulationsBusiness() throws IBOLookupException {
+		RegulationsBusiness business = (RegulationsBusiness)getServiceInstance(RegulationsBusiness.class);
+		return business;
 	}
 }

@@ -67,7 +67,6 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
@@ -85,10 +84,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/03 20:17:59 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/06 14:03:12 $ by $Author: tryggvil $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.105 $
+ * @version $Revision: 1.106 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -563,7 +562,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																 (placementId.intValue ());
 		if (null != regSpecTypeId) record.setRegSpecTypeId
 																	 (regSpecTypeId.intValue ());
-		if (null != vatRule) record.setVATType (vatRule.intValue ());
+		if (null != vatRule) record.setVATRuleRegulation(vatRule.intValue ());
 		record.setRuleText (ruleText);
 		
 		// store updated record
@@ -645,7 +644,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
 									(business.getAllRegulationSpecTypes ()));
 			inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
-									(business.getAllVatRules ()));
+									(business.getAllVATRuleRegulations()));
 			inputs.put (OWN_POSTING_KEY, getPostingParameterForm
 									(context, OWN_POSTING_KEY));
 			inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
@@ -728,9 +727,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				(context, DOUBLE_POSTING_KEY, record.getDoublePosting ());
 		inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
 		final DropdownMenu vatRuleDropdown = getLocalizedDropdown
-				(business.getAllVatRules ());
+				(business.getAllVATRuleRegulations());
 		inputs.put (VAT_RULE_KEY, vatRuleDropdown);
-		final int vatRuleId = record.getVATType ();
+		final int vatRuleId = record.getVATRuleRegulationId();
 		if (0 < vatRuleId) {
 			vatRuleDropdown.setSelectedElement (vatRuleId + "");
 		}
@@ -790,9 +789,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			addSmallText (details, REGULATION_SPEC_TYPE_KEY,
 										localize (typeName, typeName));
 		}
-		if (0 < record.getVATType ()) {
-			final VATRule rule = business.getVatRule (record.getVATType ());
-			final String ruleName = rule.getVATRule ();
+		if (0 < record.getVATRuleRegulationId()) {
+			final Regulation vatRuleRegulation = business.getVATRuleRegulation(record.getVATRuleRegulationId());
+			final String ruleName = vatRuleRegulation.getName ();
 			details.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
 																												 ruleName)));
 		}
@@ -1000,23 +999,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final RegulationSpecType regSpecType = regulation.getRegSpecType ();
 		final Integer regSpecTypeId
 				= (Integer) regSpecType.getPrimaryKey ();
-		final VATRule vatRule = regulation.getVATRegulation ();
+		final Regulation vatRuleRegulation = regulation.getVATRuleRegulation();
 		final SchoolCategory category = header.getSchoolCategory ();
 		final RegulationsBusiness regulationsBusiness
 				= getRegulationsBusiness (context);
 		final SchoolType schoolType
 				= regulationsBusiness.getSchoolType (regulation);
 		final PostingBusiness postingBusiness = getPostingBusiness (context);
-		inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,
-																									 regulationName));
+		inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,regulationName));
 		final StringBuffer invoiceText1 = new StringBuffer ();
 		final StringBuffer invoiceText2 = new StringBuffer ();
 		fillInvoiceTextBuffers(invoiceText1, invoiceText2, header, provider,
 													 placement, regulationName, regSpecType);
-		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput (INVOICE_TEXT_KEY,
-																											invoiceText1 + ""));
-		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput (INVOICE_TEXT2_KEY,
-																											 invoiceText2 + ""));
+		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput (INVOICE_TEXT_KEY,invoiceText1 + ""));
+		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput (INVOICE_TEXT2_KEY,invoiceText2 + ""));
 		inputs.put (PIECE_AMOUNT_KEY, new HiddenInput
 								(PIECE_AMOUNT_KEY, regulation.getAmount () + ""));
 		inputs.put (ORDER_ID_KEY, new HiddenInput
@@ -1027,7 +1023,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
 		            (business.getAllRegulationSpecTypes (), regSpecType));
 		inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
-		            (business.getAllVatRules (), vatRule));
+		            (business.getAllVATRuleRegulations(), vatRuleRegulation));
 		String [] paymentPostings = null;
 		try {
 			paymentPostings = postingBusiness.getPostingStrings
@@ -2381,20 +2377,21 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				: ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
 	}
 	
-	private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
-		return getLocalizedDropdown (rules, null);
+	private DropdownMenu getLocalizedDropdown (final Collection vatRuleRegulations) {
+		return getLocalizedDropdown (vatRuleRegulations, null);
 	}
 	
-	private DropdownMenu getLocalizedDropdown
-		(final VATRule [] rules, final VATRule defaultRule) {
+	private DropdownMenu getLocalizedDropdown(final Collection vatRuleRegulations, final Regulation defaultRule) {
 		final DropdownMenu dropdown = (DropdownMenu)
 				getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
 		final Object defaultRuleId = null != defaultRule
 				? defaultRule.getPrimaryKey () : null;
-		for (int i = 0; i < rules.length; i++) {
-			final VATRule rule = rules [i];
-			final String ruleName = rule.getVATRule ();
-			final Object ruleId = rule.getPrimaryKey ();
+		//for (int i = 0; i < vatRuleRegulations.length; i++) {
+		for (Iterator iter = vatRuleRegulations.iterator(); iter.hasNext();) {
+			Regulation vatRuleRegulation = (Regulation) iter.next();
+			//final Regulation vatRuleRegulation = vatRuleRegulations [i];
+			final String ruleName = vatRuleRegulation.getName();
+			final Object ruleId = vatRuleRegulation.getPrimaryKey();
 			dropdown.addMenuElement (ruleId + "",
 															 localize (ruleName, ruleName));
 			if (null != defaultRuleId && defaultRuleId.equals (ruleId)) {

@@ -13,13 +13,14 @@ public interface RegularPaymentEntry extends com.idega.data.IDOEntity
  public int getRegSpecTypeId();
  public com.idega.block.school.data.School getSchool();
  public int getSchoolId();
+ public com.idega.block.school.data.SchoolType getSchoolType();
  public int getSchoolTypeId();
  public java.sql.Date getTo();
  public com.idega.user.data.User getUser();
  public int getUserId();
  public float getVAT();
- public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule();
- public int getVatRuleId();
+ public se.idega.idegaweb.commune.accounting.regulations.data.Regulation getVatRuleRegulation();
+ public int getVatRuleRegulationId();
  public void setAmount(float p0);
  public void setDoublePosting(java.lang.String p0);
  public void setFrom(java.sql.Date p0);
@@ -33,6 +34,6 @@ public interface RegularPaymentEntry extends com.idega.data.IDOEntity
  public void setTo(java.sql.Date p0);
  public void setUser(com.idega.user.data.User p0);
  public void setVAT(float p0);
- public void setVatRule(se.idega.idegaweb.commune.accounting.regulations.data.VATRule p0);
- public void setVatRuleId(int p0);
+ public void setVatRuleRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0);
+ public void setVatRuleRegulationId(int p0);
 }

@@ -37,9 +37,9 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -379,7 +379,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		}		
 		entry.setRegSpecTypeId(((Integer) regSpecType.getPrimaryKey()).intValue());
 		entry.setChild(user);
-		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
+		entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
 		
 
 		try{
@@ -486,10 +486,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 			
 	private void handleEditAction(IWContext iwc, RegularInvoiceEntry entry, User user, Map errorMessages){
-		Collection regTypes = new ArrayList(), vatTypes = new ArrayList();
+		Collection regTypes = new ArrayList(), vatRuleRegulations = new ArrayList();
 		try {
 			regTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllRegulationSpecTypes();
-			vatTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRules();
+			vatRuleRegulations = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRuleRegulations();
 		} catch (RegulationException e1) {
 			e1.printStackTrace();
 		} catch (RemoteException e1) {
@@ -506,7 +506,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
 		
-		form.add(getDetailPanel(iwc, user, entry, regTypes, vatTypes, errorMessages));
+		form.add(getDetailPanel(iwc, user, entry, regTypes, vatRuleRegulations, errorMessages));
 		
 		add(form);
 	}
@@ -768,7 +768,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_PERIODE_NEGATIVE)), 2, row++);			
 		}
 				
-		table.add(getLocalizedLabel(KEY_PERIODE, "Periode:"), 1, row);
+		table.add(getLocalizedLabel(KEY_PERIODE, "Period:"), 1, row);
 		TextInput fromInput = getTextInput(PAR_FROM, KEY_FROM);
 		fromInput.setContent(formatDate(entry.getFrom(), 4));
 		fromInput.setLength(4);
@@ -812,7 +812,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		}
 		
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
-		addDropDownLocalized(table, PAR_VAT_RULE, KEY_VAT_RULE, vatTypes, entry.getVatRuleId(),  "getVATRule", 1, row++);
+		addDropDownLocalized(table, PAR_VAT_RULE, KEY_VAT_RULE, vatTypes, entry.getVatRuleRegulationId(),  "getName", 1, row++);
 
 		if (errorMessages.get(ERROR_POSTING) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_POSTING)), 2, row++);			
@@ -924,15 +924,30 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public float getVAT() {
 				return _reg != null ? _reg.getVATEligible().floatValue() : getFloatValue(PAR_VAT_PR_MONTH);
 			}
-		
+			/*
 			public VATRule getVatRule() {
 				return null;
 			}
-		
 			public int getVatRuleId() {
 				return getIntValue(PAR_VAT_RULE);
 			}
-		
+			*/
+			public int getVatRuleRegulationId() {
+				return getIntValue(PAR_VAT_RULE);
+			}
+			public Regulation getVatRuleRegulation() {
+				Regulation vatRuleRegulation = null;
+				try{
+					RegulationHome rhome = (RegulationHome) IDOLookup.getHome(Regulation.class);
+					vatRuleRegulation = rhome.findByPrimaryKey(new Integer(getVatRuleRegulationId()));
+				}catch(IDOLookupException ex){
+					ex.printStackTrace(); 
+				}catch(FinderException ex){
+					ex.printStackTrace(); 
+				}
+				return vatRuleRegulation;	
+			}			
+			
 			public String getNote() {
 				return getValue(PAR_REMARK) != null ? getValue(PAR_REMARK) : "";
 			}
@@ -987,8 +1002,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public void setSchoolCategoryId(String schoolCategoryId) {}			
 			public void setAmount(float amount) {}
 			public void setVAT(float vat) {}
-			public void setVatRule(VATRule vatRule) {}
-			public void setVatRuleId(int vatRuleId) {}
+			//public void setVatRule(VATRule vatRule) {}
+			//public void setVatRuleId(int vatRuleId) {}
+			public void setVatRuleRegulation(Regulation vatRuleRegulation) {}
+			public void setVatRuleRegulationId(int vatRuleRegulationId) {}
 			public void setNote(String note) {}
 			public void setOwnPosting(String ownPosting) {}
 			public void setDoublePosting(String doublePosting) {}

@@ -111,7 +111,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				//Create all the billing info derrived from the regular payments
 				regularPayment();
 				//VAT
-				calcVAT();
+				//calcVAT();
 				batchRunLoggerDone();
 			}else{
 				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
@@ -328,6 +328,8 @@ public class InvoiceChildcareThread extends BillingThread{
 						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
 					log.info("About to create payment record check");
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
+					PaymentRecord vatPaymentRecord = createVATPaymentRecord(paymentRecord, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+
 					log.info("created payment record, Now creating invoice record");
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
@@ -667,7 +669,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							createNewErrorMessage(errorRelated,"invoice.SumLessThanZeroForRegularInvoiceRecord");
 						}
 						invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
-						invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
+						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry.getVatRuleRegulationId());
 						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
 	
 						invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
@@ -842,8 +844,9 @@ public class InvoiceChildcareThread extends BillingThread{
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
 				try {
-					createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
 					log.info("Regular Payment" + errorRelated);
+					createVATPaymentRecord(paymentRecord,school,regularPaymentEntry.getSchoolType(),null);
 				} catch (IDOLookupException e) {
 					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
 					e.printStackTrace();
@@ -1052,8 +1055,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
 		invoiceRecord.setAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths()));
-		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVat()*placementTimes.getMonths()));
-		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
+		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVATPercent()*placementTimes.getMonths()));
+		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
 		errorRelated.append("Order ID = "+postingDetail.getOrderID(),1);

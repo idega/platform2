@@ -24,7 +24,7 @@ public interface RegulationsBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllSchoolYearIntervals() throws java.rmi.RemoteException;
  public java.util.Collection findAllSiblingValues() throws java.rmi.RemoteException;
  public java.util.Collection findAllSpecialCalculationTypes() throws java.rmi.RemoteException;
- public java.util.Collection findAllVATRules() throws java.rmi.RemoteException;
+ public java.util.Collection findAllVATRuleRegulations() throws java.rmi.RemoteException;
  public java.lang.Object findConditionByRegulationAndIndex(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.Regulation findRegulation(int p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType  findRegulationSpecType(int p0) throws java.rmi.RemoteException;

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.26 2004/01/05 13:01:24 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.27 2004/01/06 14:03:14 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.26 2004/01/05 13:01:24 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.27 2004/01/06 14:03:14 tryggvil Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -41,11 +41,13 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "flow_type_id";
 	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
 	private static final String COLUMN_CONDITION_TYPE_ID = "condition_type";
-	private static final String COLUMN_VAT_RULE_ID = "vat_rule_id";
+	//TODO: TL Remove This Column
+	//private static final String COLUMN_VAT_RULE_ID = "vat_rule_id";
 	private static final String COLUMN_SPECIAL_CALCULATION_ID = "special_calc_id";
 	private static final String COLUMN_CONDITION_ORDER = "condition_order";
 	private static final String COLUMN_VAT_ELIGIBLE = "vat_eligible";
 	private static final String COLUMN_MAX_AMOUNT_DISCOUNT = "max_amount_discount";
+	private static final String COLUMN_VAT_RULE_REGULATION_ID = "VAT_RULE_REGULATION_ID";
 
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -74,9 +76,12 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "Regelspecificationstyp", true, true, Integer.class, "many-to-one", RegulationSpecType.class);
 		addAttribute(COLUMN_CONDITION_TYPE_ID, "Condition type relation", true, true, Integer.class, "many-to-one", ConditionType.class);
 		addAttribute(COLUMN_SPECIAL_CALCULATION_ID, "Special calculation relation", true, true, Integer.class, "many-to-one", SpecialCalculationType.class);
-		addAttribute(COLUMN_VAT_RULE_ID, "VAT rule relation", true, true, Integer.class, "many-to-one", VATRule.class);
+		//TODO: TL Remove this column:
+		//addAttribute(COLUMN_VAT_RULE_ID, "VAT rule relation", true, true, Integer.class, "many-to-one", VATRule.class);
 		addAttribute(COLUMN_MAX_AMOUNT_DISCOUNT, "Max amount discount", true, true, java.lang.Float.class);
-
+		addAttribute(COLUMN_VAT_RULE_REGULATION_ID, "VAT rule regulation", true, true, Integer.class, "many-to-one", Regulation.class);
+		
+		
 		setAsPrimaryKey(getIDColumnName(), true);
 
 		setNullable(COLUMN_OPERATION_ID, true);
@@ -84,7 +89,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		setNullable(COLUMN_REG_SPEC_TYPE_ID, true);
 		setNullable(COLUMN_CONDITION_TYPE_ID, true);
 		setNullable(COLUMN_SPECIAL_CALCULATION_ID, true);
-		setNullable(COLUMN_VAT_RULE_ID, true);
+		//setNullable(COLUMN_VAT_RULE_ID, true);
 	}
 
 	public float getDiscount() {
@@ -151,8 +156,8 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return (SpecialCalculationType) getColumnValue(COLUMN_SPECIAL_CALCULATION_ID);
 	}
 
-	public VATRule getVATRegulation() {
-		return (VATRule) getColumnValue(COLUMN_VAT_RULE_ID);
+	public Regulation getVATRuleRegulation() {
+		return (Regulation) getColumnValue(COLUMN_VAT_RULE_REGULATION_ID);
 	}
 
 	public void setPeriodFrom(Date from) {
@@ -250,14 +255,19 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		}
 	}
 
-	public void setVATRegulation(int id) {
+	public void setVATRuleRegulation(int id) {
 		if (id != 0) {
-			setColumn(COLUMN_VAT_RULE_ID, id);
+			setColumn(COLUMN_VAT_RULE_REGULATION_ID, id);
 		}
 		else {
-			removeFromColumn(COLUMN_VAT_RULE_ID);
+			removeFromColumn(COLUMN_VAT_RULE_REGULATION_ID);
 		}
 	}
+	
+	public void setVATRuleRegulation(Regulation regulation) {
+		setColumn(COLUMN_VAT_RULE_REGULATION_ID,regulation);
+	}
+	
 
 	public Collection ejbFindAllRegulations() throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -517,5 +527,29 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return fixedDate.getLastDateOfMonth();
 	}	
 
+	/**
+	 * Finds all Regulations whith given regSpecTypeKey
+	 * @param regSpecTypeKey a refence to a value in the REG_SPEC_TYPE column in table CACC_REG_SPEC_TYPE
+	 * @return
+	 * @throws FinderException if nothing is found
+	 */
+	public Collection ejbFindAllByRegulationSpecType(String regSpecTypeKey) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select r.* from ");
+		sql.append(ENTITY_NAME);
+		sql.append(" r ");
+		//if (regSpecTypeID != -1 || mainRuleId != -1) {
+			sql.append(", cacc_reg_spec_type t ");
+		//}
 
+		//sql.appendWhere("r."+COLUMN_PERIOD_TO);
+		//sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
+		//sql.appendAnd();
+		//sql.append("r."+COLUMN_PERIOD_FROM);
+		//sql.appendLessThanOrEqualsSign().append("'" + to + "'");
+		sql.append(" where t."+RegulationSpecTypeBMPBean.COLUMN_REG_SPEC_TYPE_ID+"=r."+COLUMN_REG_SPEC_TYPE_ID);
+		sql.append(" and t."+RegulationSpecTypeBMPBean.COLUMN_REG_SPEC_TYPE+"='"+regSpecTypeKey+"'");
+		
+		return idoFindPKsByQuery(sql);
+	}
 }

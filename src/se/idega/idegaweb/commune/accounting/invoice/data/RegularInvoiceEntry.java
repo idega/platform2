@@ -22,8 +22,8 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity
  public int getSchoolId();
  public java.sql.Date getTo();
  public float getVAT();
- public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule();
- public int getVatRuleId();
+ public se.idega.idegaweb.commune.accounting.regulations.data.Regulation getVatRuleRegulation();
+ public int getVatRuleRegulationId();
  public void setAmount(float p0);
  public void setChild(com.idega.user.data.User p0);
  public void setCreatedDate(java.sql.Date p0);
@@ -41,6 +41,6 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity
  public void setSchoolId(int p0);
  public void setTo(java.sql.Date p0);
  public void setVAT(float p0);
- public void setVatRule(se.idega.idegaweb.commune.accounting.regulations.data.VATRule p0);
- public void setVatRuleId(int p0);
+ public void setVatRuleRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0);
+ public void setVatRuleRegulationId(int p0);
 }

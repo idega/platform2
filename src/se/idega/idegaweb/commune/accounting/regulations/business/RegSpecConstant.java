@@ -10,7 +10,7 @@ public class RegSpecConstant {
 	public static final String SUBVENTION ="cacc_reg_spec_type.grundsubvention";
 	public static final String CHECKTAXA ="cacc_reg_spec_type.checktaxa";
 	public static final String LAGINKOMSTSKYDD =	"cacc_reg_spec_type.laginkomstskydd";
-	
+	public static final String MOMS =	"cacc_reg_spec_type.moms";
 	public static final String RESOURCE = "cacc_main_rule.resurs";
 
 //Not used

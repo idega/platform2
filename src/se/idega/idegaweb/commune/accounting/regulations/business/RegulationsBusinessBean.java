@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.106 2004/01/03 12:19:29 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.107 2004/01/06 14:03:15 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -51,8 +51,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType;
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
 import se.idega.idegaweb.commune.accounting.resource.data.Resource;
@@ -67,6 +66,7 @@ import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -291,7 +291,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				r.setSpecialCalculation(specialCalculationID.intValue());
 			}
 			if (vatRuleID != null) {
-				r.setVATRegulation(vatRuleID.intValue());
+				r.setVATRuleRegulation(vatRuleID.intValue());
 			}
 			if (changedBy != null) {
 				r.setChangedSign(changedBy);
@@ -1143,27 +1143,20 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all VAT Rules
 	 * 
-	 * @return collection of VAT Rules
+	 * @return collection of Regulations which are of type VAT
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
-	 * @author Kelly
+	 * @author tryggvil
 	 */
-	public Collection findAllVATRules() {
+	public Collection findAllVATRuleRegulations() {
 		try {
-			VATRuleHome home = getVATRuleHome();
-			Collection c = home.findAllVATRules();
-			if (c == null) {
-				VATRule vr = home.create();
-				vr.store();
-			}
-			return home.findAllVATRules();
+			RegulationHome home = this.getRegulationHome();
+			Collection c = home.findAllByRegulationSpecType(RegSpecConstant.MOMS);
+			return c;
 		}
 		catch (RemoteException e) {
 			return null;
 		}
 		catch (FinderException e) {
-			return null;
-		}
-		catch (CreateException e) {
 			return null;
 		}
 	}
@@ -1803,7 +1796,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			//			ret.setVat(32.0f);
 			//			ret.setVatRegulationID(1);
 		}
-
+		//Handle the VAT
+		try {
+			VATBusiness vatBusiness = getVATBusiness();
+			Regulation vatRuleRegulation = reg.getVATRuleRegulation();
+			if(vatRuleRegulation!=null){
+				VATRegulation vatRegulation = vatBusiness.getVATRegulationFromRegulation(reg);
+				ret.setVATPercent(vatRegulation.getVATPercent());
+				ret.setVATRegulation(vatRegulation);
+				int vatRuleRegulationId = ((Number)vatRuleRegulation.getPrimaryKey()).intValue();
+				ret.setVatRuleRegulationId(vatRuleRegulationId);
+			}
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return ret;
 	}
 
@@ -2013,10 +2021,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		return (ConditionTypeHome) com.idega.data.IDOLookup.getHome(ConditionType.class);
 	}
 
-	protected VATRuleHome getVATRuleHome() throws RemoteException {
-		return (VATRuleHome) com.idega.data.IDOLookup.getHome(VATRule.class);
-	}
-
 	protected YesNoHome getYesNoHome() throws RemoteException {
 		return (YesNoHome) com.idega.data.IDOLookup.getHome(YesNo.class);
 	}
@@ -2027,5 +2031,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	protected MainRuleHome getMainRuleHome() throws RemoteException {
 		return (MainRuleHome) com.idega.data.IDOLookup.getHome(MainRule.class);
+	}
+	
+	protected VATBusiness getVATBusiness() throws IBOLookupException{
+		return (VATBusiness)this.getServiceInstance(VATBusiness.class);
 	}
 }

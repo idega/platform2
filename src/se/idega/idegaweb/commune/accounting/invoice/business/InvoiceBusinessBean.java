@@ -7,6 +7,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -42,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
@@ -54,11 +55,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/03 20:17:59 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/06 14:03:15 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.75 $
+ * @version $Revision: 1.76 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -456,16 +457,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		record.setNotes (note);
 		record.setOwnPosting (ownPosting);
 		if (null != checkEndPeriod) record.setPeriodEndCheck(checkEndPeriod);
-		if (null != placementEndPeriod) record.setPeriodEndPlacement
-																				(placementEndPeriod);
-		if (null != checkStartPeriod) record.setPeriodStartCheck
-																			(checkStartPeriod);
-		if (null != placementStartPeriod) record.setPeriodStartPlacement
-																					(placementStartPeriod);
+		if (null != placementEndPeriod) record.setPeriodEndPlacement(placementEndPeriod);
+		if (null != checkStartPeriod) record.setPeriodStartCheck(checkStartPeriod);
+		if (null != placementStartPeriod) record.setPeriodStartPlacement(placementStartPeriod);
 		if (null != regSpecTypeId) {
 			record.setRegSpecTypeId (regSpecTypeId.intValue ());
 		}
-		if (null != vatRule)  record.setVATType (vatRule.intValue ());
+		if (null != vatRule)  record.setVATRuleRegulation (vatRule.intValue ());
 		if (null != providerId) record.setProviderId(providerId.intValue ());
 		if (null != orderId) record.setOrderId(orderId.intValue ());
 		try {
@@ -547,7 +545,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentRecord.setPieceAmount (null != pieceAmount ? pieceAmount.intValue ()
 																	: 0);
 		if (null != vatType) {
-			paymentRecord.setVATType (vatType.intValue ());
+			paymentRecord.setVATRuleRegulation(vatType.intValue ());
 		}
 		paymentRecord.setOwnPosting (ownPosting);
 		paymentRecord.setDoublePosting (doublePosting);
@@ -605,7 +603,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			return new RegulationSpecType [0];
 		}
 	}
-	
+	/*
 	public VATRule [] getAllVatRules () throws RemoteException {
 		try {
 			final Collection collection = getVatRuleHome ().findAllVATRules ();
@@ -624,6 +622,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		} catch (FinderException e) {
 			return null;
 		}
+	}*/
+	
+	public Collection getAllVATRuleRegulations() throws RemoteException{
+		return this.getRegulationsBusiness().findAllVATRuleRegulations();
+	}
+	
+	public Regulation getVATRuleRegulation (int primaryKey) throws RemoteException {
+		//try {
+			Regulation regulation = this.getRegulationsBusiness().findRegulation(primaryKey);
+			return regulation;
+		///} catch (FinderException e) {
+		//	return null;
+		//}
 	}
 	
 	protected RegulationSpecTypeHome getRegulationSpecTypeHome ()
@@ -634,10 +645,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	
 	public MemberFamilyLogic getMemberFamilyLogic () throws RemoteException {
 		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);	
-	}
-	
-	protected VATRuleHome getVatRuleHome () throws RemoteException {
-		return (VATRuleHome) IDOLookup.getHome(VATRule.class);
 	}
 	
 	public PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
@@ -659,5 +666,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	
 	public InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
 		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+	}
+
+	protected RegulationsBusiness getRegulationsBusiness(){
+		try {
+			return (RegulationsBusiness)getServiceInstance(RegulationsBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
 	}
 }

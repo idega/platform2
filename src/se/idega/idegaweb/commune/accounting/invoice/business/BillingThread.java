@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -26,13 +27,17 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.util.ErrorLogger;
@@ -41,6 +46,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -87,24 +93,11 @@ public abstract class BillingThread extends Thread{
 		return BATCH_TEXT;
 	}
 
-	/**
-	 * Finds existing payment reacord or creates a new payment record if needed, 
-	 * and populates the values as needed. It also creates the payment header if needed
-	 *  
-	 * @return the created payment record
-	 * @throws CreateException
-	 * @throws IDOLookupException
-	 */
-	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting, float months, School school) 
-			throws CreateException, IDOLookupException {
-
-		PaymentHeader paymentHeader;
-		PaymentRecord paymentRecord;
-		System.out.println("About to create payment record");
-		//Get the payment header
+	protected PaymentHeader getPaymentHeader(School school)throws CreateException, IDOLookupException{
+		PaymentHeader paymentHeader=null;
 		try {
 			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
-					findBySchoolCategorySchoolPeriod(school,category,calculationDate);
+			findBySchoolCategorySchoolPeriod(school,category,calculationDate);
 		} catch (FinderException e) {
 			//If No header found, create it	
 			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
@@ -120,19 +113,40 @@ public abstract class BillingThread extends Thread{
 			paymentHeader.setPeriod(period.getDate());
 			paymentHeader.store();
 		}
+		return paymentHeader;
+	}
+	
+	/**
+	 * Finds existing payment reacord or creates a new payment record if needed, 
+	 * and populates the values as needed. It also creates the payment header if needed
+	 *  
+	 * @return the created payment record
+	 * @throws CreateException
+	 * @throws IDOLookupException
+	 */
+	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting, float months, School school) 
+			throws CreateException, IDOLookupException {
+
+		//Get the payment header
+		PaymentHeader paymentHeader = getPaymentHeader(school);		
+		PaymentRecord paymentRecord;
+		System.out.println("About to create payment record");
+
 		//Update or create the payment record
-		String ruleText = postingDetail.getTerm();
+		String paymentText = postingDetail.getTerm();
 		String ruleSpecType = postingDetail.getRuleSpecType();
-		
+		float amount = postingDetail.getAmount();
+		float vatPercent = postingDetail.getVATPercent();
+		float vatPercentage = vatPercent/100;
 		try {
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
-			paymentRecord = prechome.findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(ownPosting,doublePosting,ruleSpecType,ruleText,month);
+			paymentRecord = prechome.findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(ownPosting,doublePosting,ruleSpecType,paymentText,month);
 			
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 
-			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+AccountingUtil.roundAmount(postingDetail.getAmount()*months));
-			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+AccountingUtil.roundAmount(postingDetail.getVat()*months));
+			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+AccountingUtil.roundAmount(amount*months));
+			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+AccountingUtil.roundAmount(amount*months*vatPercentage));
 			paymentRecord.store();
 		} catch (FinderException e1) {
 			//It didn't exist, so we create it
@@ -145,21 +159,115 @@ public abstract class BillingThread extends Thread{
 				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
 			}
 			paymentRecord.setPeriod(startPeriod.getDate());
-			paymentRecord.setPaymentText(ruleText);
+			paymentRecord.setPaymentText(paymentText);
 			paymentRecord.setDateCreated(currentDate);
 			paymentRecord.setCreatedBy(BATCH_TEXT);
 			paymentRecord.setPlacements(1);
 			paymentRecord.setPieceAmount(postingDetail.getAmount());
-			paymentRecord.setTotalAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*months));
-			paymentRecord.setTotalAmountVAT(AccountingUtil.roundAmount(postingDetail.getVat()*months));
+			paymentRecord.setTotalAmount(AccountingUtil.roundAmount(amount*months));
+			paymentRecord.setTotalAmountVAT(AccountingUtil.roundAmount(amount*months*vatPercentage));
 			paymentRecord.setRuleSpecType(ruleSpecType);
 			paymentRecord.setOwnPosting(ownPosting);
 			paymentRecord.setDoublePosting(doublePosting);
-			paymentRecord.setVATType(postingDetail.getVatRegulationID());
+			int vatRuleRegulationId=postingDetail.getVatRuleRegulationId();
+			if(vatRuleRegulationId!=-1){
+				paymentRecord.setVATRuleRegulation(vatRuleRegulationId);
+			}
 			paymentRecord.setOrderId (postingDetail.getOrderID());
 			paymentRecord.store();
 		}
 		return paymentRecord;
+	}
+	
+	protected PaymentRecord createVATPaymentRecord(PaymentRecord regularPaymentRecord, School school, SchoolType sType,SchoolYear sYear) 
+	throws CreateException, IDOLookupException {
+		try{
+			Regulation vatRuleRegulation = regularPaymentRecord.getVATRuleRegulation();
+			if(vatRuleRegulation!=null){
+				//Get the payment header
+				PaymentHeader paymentHeader = getPaymentHeader(school);		
+				PaymentRecord paymentRecord;
+				System.out.println("About to create VAT payment record");
+				Provider provider = new Provider(school);
+				String ruleSpecType = RegSpecConstant.MOMS;
+				RegulationSpecType regSpecType;
+				String[] postingStrings=null;
+				try {
+					regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
+					int regSpecTypeId= ((Number)regSpecType.getPrimaryKey()).intValue();
+					int schoolYearId = -1;
+					if(sYear!=null){
+						schoolYearId = ((Number)sYear.getPrimaryKey()).intValue();
+					}
+					postingStrings = this.getPostingBusiness().getPostingStrings(category,sType,regSpecTypeId,provider,startPeriod.getDate(),schoolYearId);
+				}
+				catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (PostingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
+				
+				String ownPosting = postingStrings[0];
+				String doublePosting = postingStrings[1];
+				
+				//Update or create the payment record
+				//String ruleText = postingDetail.getTerm();
+				//String ruleSpecType = postingDetail.getRuleSpecType();
+		
+				String paymentText = vatRuleRegulation.getName();
+				float newamount=regularPaymentRecord.getTotalAmountVAT();
+				float vatAmount=0;
+				//float vatPercent=0;
+				
+				try {
+					PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
+					paymentRecord = prechome.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(ownPosting,doublePosting,vatRuleRegulation,paymentText,month);
+					
+					//If it already exists, just update the changes needed.
+					paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
+		
+					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(paymentRecord.getTotalAmount()+newamount));
+					paymentRecord.setTotalAmountVAT(vatAmount);
+					paymentRecord.store();
+				} catch (FinderException e1) {
+					//It didn't exist, so we create it
+					paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
+					//Set all the values for the payment record
+					paymentRecord.setPaymentHeader(((Integer)paymentHeader.getPrimaryKey()).intValue());
+					if(categoryPosting.getProviderAuthorization()){
+						paymentRecord.setStatus(ConstantStatus.BASE);
+					} else {
+						paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
+					}
+					paymentRecord.setPeriod(startPeriod.getDate());
+					paymentRecord.setPaymentText(paymentText);
+					paymentRecord.setDateCreated(currentDate);
+					paymentRecord.setCreatedBy(BATCH_TEXT);
+					paymentRecord.setPlacements(1);
+					//paymentRecord.setPieceAmount(0);
+					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(newamount));
+					paymentRecord.setTotalAmountVAT(vatAmount);
+					paymentRecord.setRuleSpecType(ruleSpecType);
+					paymentRecord.setOwnPosting(ownPosting);
+					paymentRecord.setDoublePosting(doublePosting);
+					//paymentRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
+					//paymentRecord.setOrderId (postingDetail.getOrderID());
+					paymentRecord.store();
+				}
+				return paymentRecord;
+			}
+		}
+		catch(NullPointerException npe){
+		}
+		return null;
+		
 	}
 	
 	protected InvoiceRecord createInvoiceRecord
@@ -220,36 +328,25 @@ public abstract class BillingThread extends Thread{
 	/**
 	 * Creates the VATpostings for private providers
 	 */
-	protected void calcVAT(){
+	/*protected void calcVAT(){
 		try {
 			Iterator paymentHeaderIter = getPaymentHeaderHome().findBySchoolCategoryAndPeriodForPrivate(category,calculationDate).iterator();
+			Collection vatRuleRegulations = getRegulationsBusiness().findAllVATRuleRegulations();
 			while(paymentHeaderIter.hasNext()){
 				PaymentHeader paymentHeader = (PaymentHeader)paymentHeaderIter.next();
-				Iterator paymentRecordIter;
+				School school = paymentHeader.getSchool();
+				school.getSchoolTypes();
+				Provider provider;
 				try {
-					paymentRecordIter = getPaymentRecordHome().findByPaymentHeader(paymentHeader).iterator();
-					while(paymentRecordIter.hasNext()){
-						PaymentRecord paymentRecord = (PaymentRecord) paymentRecordIter.next();
-						VATRegulation vatRegulation;
-						try {
-							vatRegulation = getVATBusiness().getVATRegulation(paymentRecord.getVATType());
-							float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
-							paymentRecord.setTotalAmountVAT(-vat);
-						} catch (VATException e) {
-							if(errorRelated!=null){
-								createNewErrorMessage(errorRelated.toString(),"invoice.VATError");
-							}else{
-								createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.VATError");
-							}
-							e.printStackTrace();
-						} catch (RemoteException e) {
-							if(errorRelated!=null){
-								createNewErrorMessage(errorRelated.toString(),"invoice.DBError");
-							}else{
-								createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.DBError");
-							}
-							e.printStackTrace();
-						}
+					Iterator vatRuleRegulationsIter = vatRuleRegulations.iterator();
+					while(vatRuleRegulationsIter.hasNext()){
+						Regulation vatRuleRegulation = (Regulation)vatRuleRegulationsIter.next();
+						int amount = getPaymentRecordHome().getTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(paymentHeader,this.month,vatRuleRegulation);
+						RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType();
+						String[] postingsStrings = getPostingBusiness().getPostingStrings(
+								category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
+						
+						
 					}
 				} catch (RemoteException e1) {
 					if(errorRelated!=null){
@@ -258,20 +355,21 @@ public abstract class BillingThread extends Thread{
 						createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError");
 					}
 					e1.printStackTrace();
-				} catch (FinderException e1) {
-					if(errorRelated!=null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.DBError_No_VAT_found");
-					}else{
-						createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError_No_VAT_found");
-					}
-					e1.printStackTrace();
-				}
+				} 
+				//catch (FinderException e1) {
+				//	if(errorRelated!=null){
+				//		createNewErrorMessage(errorRelated.toString(),"invoice.DBError_No_VAT_found");
+				//	}else{
+				//		createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError_No_VAT_found");
+				//	}
+				//	e1.printStackTrace();
+				//}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.severeError","invoice.VATCalculationAborted");
 		}
-	}
+	}*/
 
 	protected PlacementTimes calculateTime(Date start, Date end){
 		IWTimestamp firstCheckDay = new IWTimestamp(start);
