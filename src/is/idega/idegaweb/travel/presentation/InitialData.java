@@ -481,12 +481,13 @@ public class InitialData extends TravelManager {
           passwordText.addToText(":");
 
       int inputSize = 40;
+      String inputSizeStr = "40";
 
       TextInput name = new TextInput("supplier_name");
         name.setSize(inputSize);
       TextArea description = new TextArea("supplier_description");
-        description.setWidth(inputSize);
-        description.setHeight(5);
+        description.setWidth(inputSizeStr);
+        description.setHeight("5");
       TextInput address = new TextInput("supplier_address");
         address.setSize(inputSize);
       TextInput phone = new TextInput("supplier_phone");
@@ -872,12 +873,13 @@ public class InitialData extends TravelManager {
           refNumberText2.setFontColor(super.BLACK);
 
       int inputSize = 40;
+      String inputSizeStr = "40";
 
       TextInput name = new TextInput("reseller_name");
         name.setSize(inputSize);
       TextArea description = new TextArea("reseller_description");
-        description.setWidth(inputSize);
-        description.setHeight(5);
+        description.setWidth(inputSizeStr);
+        description.setHeight("5");
       TextInput address = new TextInput("reseller_address");
         address.setSize(inputSize);
       TextInput phone = new TextInput("reseller_phone");

@@ -126,6 +126,7 @@ public class SupplierManager {
         pCategory.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
         pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
         pCategory.setName("Price");
+        pCategory.setCountAsPerson(true);
         pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
       pCategory.insert();
 

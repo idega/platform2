@@ -212,7 +212,7 @@ public class BookingOverview extends TravelManager {
   }
 
 
-  public Table getTopTable(IWContext iwc) {
+  public Table getTopTable(IWContext iwc) throws RemoteException{
       Table topTable = new Table(5,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -226,7 +226,7 @@ public class BookingOverview extends TravelManager {
           trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
           // new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
         }else if (reseller != null){
-          trip = ResellerManager.getDropdownMenuWithProducts(iwc, reseller.getID());
+          trip = getContractBusiness(iwc).getDropdownMenuWithProducts(iwc, reseller.getID());
         }
 
         trip.addMenuElementFirst(parameterViewAll,iwrb.getLocalizedString("travel.all_products","All products"));
@@ -694,7 +694,7 @@ public class BookingOverview extends TravelManager {
           java.util.List emails;
           // ------------------ ASSIGNED -----------------------
           if (assigned > 0) {
-            Reseller[] resellers = ResellerManager.getResellers(service.getID(), currentStamp);
+            Reseller[] resellers = getContractBusiness(iwc).getResellers(service.getID(), currentStamp);
             for (int i = 0; i < resellers.length; i++) {
               ++row;
 

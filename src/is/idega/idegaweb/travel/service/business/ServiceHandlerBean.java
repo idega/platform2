@@ -104,7 +104,11 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
           System.out.println("Cannot find Voucher for ProductCategory PRODUCT, returning voucher for TOUR");
           return new TourVoucher(booking);
         }
-     }
+      }else {
+        System.out.println("Returning voucher for TOUR, because iter.hasNext() = false");
+      }
+    }else {
+      System.out.println("Returning voucher for TOUR, because coll == null");
     }
     return new TourVoucher(booking);
   }

@@ -228,7 +228,7 @@ public class Booking extends TravelManager {
   }
 
 
-  private Form getTopTable(IWContext iwc) {
+  private Form getTopTable(IWContext iwc) throws RemoteException{
     Form form = new Form();
       Table topTable = new Table(5,1);
         form.add(topTable);
@@ -243,7 +243,7 @@ public class Booking extends TravelManager {
       if (supplier != null) {
         trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplierId);
       }else if (reseller != null) {
-        trip = ResellerManager.getDropdownMenuWithProducts(iwc, resellerId);
+        trip = getContractBusiness(iwc).getDropdownMenuWithProducts(iwc, resellerId);
       }else if (product == null) {
         trip = new DropdownMenu(ProductBusiness.getProducts(iwc, -1));
       }

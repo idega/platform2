@@ -100,12 +100,10 @@ public class Contracts extends TravelManager {
       reseller = super.getReseller();
       tsb  = getTravelStockroomBusiness(iwc);
 
-      //if (supplier != null)
       resellers = getResellers();
 
       if (reseller != null) {
         suppliers = super.getContractBusiness(iwc).getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
-//        suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName() );
       }
 
   }
@@ -122,11 +120,6 @@ public class Contracts extends TravelManager {
 
   public void mainMenu(IWContext iwc) {
       Form form = new Form();
-      /*
-      ShadowBox sb = new ShadowBox();
-        sb.add(form);
-        sb.setWidth("90%");
-      */
 
       form.add(Text.BREAK);
       Table linkTable = new Table(1,1);
@@ -139,9 +132,6 @@ public class Contracts extends TravelManager {
       Link addReseller = new Link(iwrb.getImage("buttons/add.gif"));
         addReseller.addParameter(this.sAction,this.parameterAddReseller);
         linkTable.add(addReseller,1,1);
-
-      //if (supplier != null)
-//      form.add(linkTable);
 
       form.add(Text.BREAK);
 
@@ -172,33 +162,28 @@ public class Contracts extends TravelManager {
 
 
       String theColor = super.GRAY;
-      //if (supplier != null) {
       Reseller tempReseller = null;
 
-        while (resellers.hasNext()) {
-          tempReseller = (Reseller) resellers.next();
-        //}
-        //for (int i = 0; i < resellers.length; i++) {
-            ++row;
-            resName = (Text) theText.clone();
-              resName.setFontColor(super.BLACK);
-              resName.setText(tempReseller.getName());
-            refNum = (Text) theText.clone();
-              refNum.setText(tempReseller.getReferenceNumber());
-              refNum.setFontColor(super.BLACK);
-            assign = new Link(iwrb.getImage("buttons/closer.gif"));
-              assign.addParameter(this.sAction,this.parameterAssignReseller);
-              assign.addParameter(this.parameterResellerId,tempReseller.getID());
+      while (resellers.hasNext()) {
+        tempReseller = (Reseller) resellers.next();
+        ++row;
+        resName = (Text) theText.clone();
+          resName.setFontColor(super.BLACK);
+          resName.setText(tempReseller.getName());
+        refNum = (Text) theText.clone();
+          refNum.setText(tempReseller.getReferenceNumber());
+          refNum.setFontColor(super.BLACK);
+        assign = new Link(iwrb.getImage("buttons/closer.gif"));
+          assign.addParameter(this.sAction,this.parameterAssignReseller);
+          assign.addParameter(this.parameterResellerId,tempReseller.getID());
 
-            table.add(resName,1,row);
-            table.add(refNum,2,row);
-            table.add(assign,3,row);
-            table.setRowColor(row,theColor);
-            table.setAlignment(3,row,"right");
-
-        }
-      //}else
-       if (reseller != null) {
+        table.add(resName,1,row);
+        table.add(refNum,2,row);
+        table.add(assign,3,row);
+        table.setRowColor(row,theColor);
+        table.setAlignment(3,row,"right");
+      }
+      if (reseller != null) {
         if (reseller.getParent() == null) {
           ++row;
           table.setRowColor(row, super.backgroundColor);
@@ -271,8 +256,6 @@ public class Contracts extends TravelManager {
       tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
     }
 
-//    if (reseller != null) tReseller = reseller;
-
     Form form = new Form();
     Table table = new Table();
       table.setAlignment("center");
@@ -292,18 +275,9 @@ public class Contracts extends TravelManager {
       supplier_id = iwc.getParameter(this.parameterSupplierId);
       if (supplier_id == null) {
         supplier_id = "-1";
-      }/*
-      Reseller res = (Reseller) reseller.getParent();
-      if (res == null) {
-        products = ResellerManager.getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
-      }else {
-        products = ResellerManager.getProductsWithContracts(res, reseller.getID(), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
-      }*/
-      products = super.getContractBusiness(iwc).getProductsWithContracts(reseller, com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
-//      products = ResellerManager.getProductsWithContracts(reseller, com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
-      //products = tsb.getProducts(Integer.parseInt(supplier_id));
+      }
+      products = super.getContractBusiness(iwc).getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
     }
-//    System.err.println("products.length = "+products.length);
 
     int[] serviceDays;
     int row = 1;
@@ -352,26 +326,20 @@ public class Contracts extends TravelManager {
           pName.setFontColor(super.BLACK);
 
         table.add(pName,1,row);
-//        table.mergeCells(1,row,3,row);
 
-//          if (supplier != null) {
-            if (super.getContractBusiness(iwc).isActiveContract(tReseller.getID(), products[i].getID()) ) {
-//            if (ResellerManager.isActiveContract( tReseller.getID(), products[i].getID())) {
-//            if (ResellerManager.isActiveContract(supplier.getID() , tReseller.getID(), products[i].getID())) {
-              pIsActive = (Text) theBoldText.clone();
-                pIsActive.setFontColor(BLACK);
-                pIsActive.setText(iwrb.getLocalizedString("travel.active_contract","Active contract"));
-                pIsActive.addToText(Text.NON_BREAKING_SPACE );
-              table.add(pIsActive, 3, row);
-              table.setAlignment(3,row,"right");
-              table.mergeCells(1,row,2,row);
-            }else {
-              table.mergeCells(1,row,3,row);
-            }
-//          }
+        if (super.getContractBusiness(iwc).isActiveContract(tReseller.getID(), products[i].getID()) ) {
+          pIsActive = (Text) theBoldText.clone();
+            pIsActive.setFontColor(BLACK);
+            pIsActive.setText(iwrb.getLocalizedString("travel.active_contract","Active contract"));
+            pIsActive.addToText(Text.NON_BREAKING_SPACE );
+          table.add(pIsActive, 3, row);
+          table.setAlignment(3,row,"right");
+          table.mergeCells(1,row,2,row);
+        }else {
+          table.mergeCells(1,row,3,row);
+        }
 
         if (products[i].getID() == productId) {
-//          table.mergeCells(1,row,3,row);
             form.add(new HiddenInput(this.parameterResellerId , Integer.toString(tReseller.getID())));
             form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
 
@@ -390,7 +358,6 @@ public class Contracts extends TravelManager {
           table.add(temp,4,row);
           table.add(Text.NON_BREAKING_SPACE,4,row);
         }
-        //table.setRowColor(row, super.DARKBLUE);
     }
 
 
@@ -475,7 +442,6 @@ public class Contracts extends TravelManager {
             }catch (Exception e) {
               e.printStackTrace(System.err);
             }
-            //tempDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
             counter = tempDays.length;
           }else {
             if (sundays != null) tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
@@ -488,18 +454,13 @@ public class Contracts extends TravelManager {
           }
 
         ResellerDayHome resDayHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
-//        ResellerDay resDay = resDayHome.findByPrimaryKey(new Integer(resellerId));
         Collection tempToDelete = resDayHome.findResellerDays(reseller, service);
         Iterator iter = tempToDelete.iterator();
         while (iter.hasNext()) {
           ResellerDay item = (ResellerDay) iter.next();
           item.remove();
         }
-/*        ResellerDay[] oldToDelete = (ResellerDay[]) resDay.findAllByColumn(is.idega.idegaweb.travel.data.ResellerDayBMPBean.getColumnNameResellerId() , Integer.toString(resellerId), is.idega.idegaweb.travel.data.ResellerDayBMPBean.getColumnNameServiceId(), Integer.toString(productId));
-        for (int i = 0; i < oldToDelete.length; i++) {
-          oldToDelete[i].delete();
-        }
-*/
+
         ResellerDay resDay;
         int[] activeDays = new int[counter];
         System.arraycopy(tempDays,0,activeDays,0,counter);
@@ -538,7 +499,6 @@ public class Contracts extends TravelManager {
       addTxt.setFontColor(super.WHITE);
 
     try {
-//      Reseller[] tResellers = (Reseller[]) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class)).findAllOrdered(com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
       List tResellers = null;
       if (reseller != null) tResellers = ResellerManager.getResellersAvailable(reseller, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
       if (supplier != null) tResellers = EntityFinder.findAllOrdered(com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class),com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
@@ -558,27 +518,17 @@ public class Contracts extends TravelManager {
           myResellers.remove((Reseller) reseller.getParent());
         }
       }
-      /*int[] resellerIds = new int[myResellers.size()];
-      for (int i = 0; i < resellerIds.length; i++) {
-        resellerIds[i] = ((Reseller) myResellers.get(i)).getID();
-      }*/
-
 
       int row = 1;
-
-//      Link newReseller = new Link(iwrb.getImage("buttons/newreseller.gif"));
-//        newReseller.addParameter(this.sAction,this.parameterNewReseller);
 
       if (reseller != null) {
         if (reseller.getParent() == null) {
           table.mergeCells(1, row, 2, row);
-          //table.add(newReseller,1,row);
           table.setRowColor(row, super.backgroundColor);
           ++row;
         }
       }else if (supplier != null) {
         table.mergeCells(1, row, 2, row);
-        //table.add(newReseller,1,row);
         table.setRowColor(row, super.backgroundColor);
         ++row;
     }
@@ -611,10 +561,7 @@ public class Contracts extends TravelManager {
           if (resId == tempReseller.getID()) {
             box.setChecked(true);
           }
-        }/*
-        for (int j = 0; j < resellerIds.length; j++) {
-          if (resId == resellerIds[j]) box.setChecked(true);
-        }*/
+        }
 
         table.setRowColor(row, super.GRAY);
         table.add(new HiddenInput(this.parameterResellerId,Integer.toString(useReseller.getID())));
@@ -686,7 +633,6 @@ public class Contracts extends TravelManager {
     Reseller tReseller = null;
     if (supplier != null) {
       if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
-      //resellerId = Integer.parseInt(sResellerId);
       tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
     }else if (reseller != null) {
       if (sResellerId != null) {
@@ -743,205 +689,200 @@ public class Contracts extends TravelManager {
 
     Link temp;
 
-            pAlot = new TextInput("alotment");
-              pAlot.setSize(3);
-            pDays = new TextInput("valid");
-              pDays.setSize(3);
-            pDiscount = new TextInput("discount");
-              pDiscount.setSize(3);
+    pAlot = new TextInput("alotment");
+      pAlot.setSize(3);
+    pDays = new TextInput("valid");
+      pDays.setSize(3);
+    pDiscount = new TextInput("discount");
+      pDiscount.setSize(3);
 
-            int[] serviceDays = new int[]{};// = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
-            try {
-              ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-              ServiceDay sDay = sdayHome.create();
-              serviceDays = sDay.getDaysOfWeek(productId);
-            }catch (Exception e) {
-              e.printStackTrace(System.err);
-            }
+    int[] serviceDays = new int[]{};// = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
+    try {
+      ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+      ServiceDay sDay = sdayHome.create();
+      serviceDays = sDay.getDaysOfWeek(productId);
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
 
-          CheckBox allDays = new CheckBox("all_days");
-          CheckBox mondays = new CheckBox("mondays");
-          CheckBox tuesdays = new CheckBox("tuesdays");
-          CheckBox wednesdays = new CheckBox("wednesdays");
-          CheckBox thursdays = new CheckBox("thursdays");
-          CheckBox fridays = new CheckBox("fridays");
-          CheckBox saturdays = new CheckBox("saturdays");
-          CheckBox sundays = new CheckBox("sundays");
+    CheckBox allDays = new CheckBox("all_days");
+    CheckBox mondays = new CheckBox("mondays");
+    CheckBox tuesdays = new CheckBox("tuesdays");
+    CheckBox wednesdays = new CheckBox("wednesdays");
+    CheckBox thursdays = new CheckBox("thursdays");
+    CheckBox fridays = new CheckBox("fridays");
+    CheckBox saturdays = new CheckBox("saturdays");
+    CheckBox sundays = new CheckBox("sundays");
 
-          Table weekdayFixTable = new Table(9,2);
-            weekdayFixTable.setCellpadding(0);
-            weekdayFixTable.setCellspacing(1);
-            weekdayFixTable.setWidth("350");
-            weekdayFixTable.setColumnAlignment(1,"center");
-            weekdayFixTable.setColumnAlignment(2,"center");
-            weekdayFixTable.setColumnAlignment(3,"center");
-            weekdayFixTable.setColumnAlignment(4,"center");
-            weekdayFixTable.setColumnAlignment(5,"center");
-            weekdayFixTable.setColumnAlignment(6,"center");
-            weekdayFixTable.setColumnAlignment(7,"center");
-            weekdayFixTable.setColumnAlignment(8,"center");
-            weekdayFixTable.setColumnAlignment(9,"center");
+    Table weekdayFixTable = new Table(9,2);
+      weekdayFixTable.setCellpadding(0);
+      weekdayFixTable.setCellspacing(1);
+      weekdayFixTable.setWidth("350");
+      weekdayFixTable.setColumnAlignment(1,"center");
+      weekdayFixTable.setColumnAlignment(2,"center");
+      weekdayFixTable.setColumnAlignment(3,"center");
+      weekdayFixTable.setColumnAlignment(4,"center");
+      weekdayFixTable.setColumnAlignment(5,"center");
+      weekdayFixTable.setColumnAlignment(6,"center");
+      weekdayFixTable.setColumnAlignment(7,"center");
+      weekdayFixTable.setColumnAlignment(8,"center");
+      weekdayFixTable.setColumnAlignment(9,"center");
 
-            Text alld = (Text) smallText.clone();
-                alld.setText(iwrb.getLocalizedString("travel.all_days","All"));
-            Text mond = (Text) smallText.clone();
-                mond.setText(iwrb.getLocalizedString("travel.mon","mon"));
-            Text tued = (Text) smallText.clone();
-                tued.setText(iwrb.getLocalizedString("travel.tue","tue"));
-            Text wedd = (Text) smallText.clone();
-                wedd.setText(iwrb.getLocalizedString("travel.wed","wed"));
-            Text thud = (Text) smallText.clone();
-                thud.setText(iwrb.getLocalizedString("travel.thu","thu"));
-            Text frid = (Text) smallText.clone();
-                frid.setText(iwrb.getLocalizedString("travel.fri","fri"));
-            Text satd = (Text) smallText.clone();
-                satd.setText(iwrb.getLocalizedString("travel.sat","sat"));
-            Text sund = (Text) smallText.clone();
-                sund.setText(iwrb.getLocalizedString("travel.sun","sun"));
+    Text alld = (Text) smallText.clone();
+        alld.setText(iwrb.getLocalizedString("travel.all_days","All"));
+    Text mond = (Text) smallText.clone();
+        mond.setText(iwrb.getLocalizedString("travel.mon","mon"));
+    Text tued = (Text) smallText.clone();
+        tued.setText(iwrb.getLocalizedString("travel.tue","tue"));
+    Text wedd = (Text) smallText.clone();
+        wedd.setText(iwrb.getLocalizedString("travel.wed","wed"));
+    Text thud = (Text) smallText.clone();
+        thud.setText(iwrb.getLocalizedString("travel.thu","thu"));
+    Text frid = (Text) smallText.clone();
+        frid.setText(iwrb.getLocalizedString("travel.fri","fri"));
+    Text satd = (Text) smallText.clone();
+        satd.setText(iwrb.getLocalizedString("travel.sat","sat"));
+    Text sund = (Text) smallText.clone();
+        sund.setText(iwrb.getLocalizedString("travel.sun","sun"));
 
+    weekdayFixTable.add(alld,1,1);
+    weekdayFixTable.add(mond,3,1);
+    weekdayFixTable.add(tued,4,1);
+    weekdayFixTable.add(wedd,5,1);
+    weekdayFixTable.add(thud,6,1);
+    weekdayFixTable.add(frid,7,1);
+    weekdayFixTable.add(satd,8,1);
+    weekdayFixTable.add(sund,9,1);
 
-            weekdayFixTable.add(alld,1,1);
-            weekdayFixTable.add(mond,3,1);
-            weekdayFixTable.add(tued,4,1);
-            weekdayFixTable.add(wedd,5,1);
-            weekdayFixTable.add(thud,6,1);
-            weekdayFixTable.add(frid,7,1);
-            weekdayFixTable.add(satd,8,1);
-            weekdayFixTable.add(sund,9,1);
+    weekdayFixTable.add(allDays,1,2);
 
-            weekdayFixTable.add(allDays,1,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY))
+      weekdayFixTable.add(mondays,3,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY))
+    weekdayFixTable.add(tuesdays,4,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY))
+    weekdayFixTable.add(wednesdays,5,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY))
+    weekdayFixTable.add(thursdays,6,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY))
+    weekdayFixTable.add(fridays,7,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY))
+    weekdayFixTable.add(saturdays,8,2);
+    if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY))
+    weekdayFixTable.add(sundays,9,2);
 
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY))
-              weekdayFixTable.add(mondays,3,2);
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY))
-            weekdayFixTable.add(tuesdays,4,2);
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY))
-            weekdayFixTable.add(wednesdays,5,2);
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY))
-            weekdayFixTable.add(thursdays,6,2);
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY))
-            weekdayFixTable.add(fridays,7,2);
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY))
-            weekdayFixTable.add(saturdays,8,2);
-            if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY))
-            weekdayFixTable.add(sundays,9,2);
+    pFrom = new DateInput("from");
+    pTo = new DateInput("to");
 
-            pFrom = new DateInput("from");
-            pTo = new DateInput("to");
+    Table infoTable = new Table();
+      infoTable.setBorder(0);
+      infoTable.setCellspacing(0);
+      infoTable.setWidth("100%");
+      infoTable.setColor(super.backgroundColor);
 
-            Table infoTable = new Table();
-              infoTable.setBorder(0);
-              infoTable.setCellspacing(0);
-              infoTable.setWidth("100%");
-              infoTable.setColor(super.backgroundColor);
-
-            int infoRow = 1;
-
-
-            if (contract != null) {
-                pAlot.setContent(Integer.toString(contract.getAlotment()));
-                pDays.setContent(Integer.toString(contract.getExpireDays()) );
-                pDiscount.setContent(contract.getDiscount());
-                int[] days = {};
-                try {
-                  days = getResellerDayHome().create().getDaysOfWeek(resellerId, productId);
-                }catch (CreateException ce) {
-                  throw new FinderException(ce.getMessage());
-                }
-                for (int j = 0; j < days.length; j++) {
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.MONDAY) mondays.setChecked(true);
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.TUESDAY) tuesdays.setChecked(true);
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.WEDNESDAY) wednesdays.setChecked(true);
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.THURSDAY) thursdays.setChecked(true);
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.FRIDAY) fridays.setChecked(true);
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.SATURDAY) saturdays.setChecked(true);
-                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.SUNDAY) sundays.setChecked(true);
-                }
-
-                infoTable.add(new HiddenInput(this.parameterContractId,contract.getPrimaryKey().toString()));
-            }
+    int infoRow = 1;
 
 
-            try {
-              if (contract == null) {
-                timeframe = tsb.getTimeframe(product);
-                pFrom.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
-                pTo.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
-              }else {
-                pFrom.setDate(new idegaTimestamp(contract.getFrom()).getSQLDate());
-                pTo.setDate(new idegaTimestamp(contract.getTo()).getSQLDate());
-              }
-            }catch (TimeframeNotFoundException tnfe) {
-              tnfe.printStackTrace(System.err);
-              timeframe = null;
-            }catch (ServiceNotFoundException snfe) {
-              snfe.printStackTrace(System.err);
-              timeframe = null;
-            }
+    if (contract != null) {
+      pAlot.setContent(Integer.toString(contract.getAlotment()));
+      pDays.setContent(Integer.toString(contract.getExpireDays()) );
+      pDiscount.setContent(contract.getDiscount());
+      int[] days = {};
+      try {
+        days = getResellerDayHome().create().getDaysOfWeek(resellerId, productId);
+      }catch (CreateException ce) {
+        throw new FinderException(ce.getMessage());
+      }
+      for (int j = 0; j < days.length; j++) {
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.MONDAY) mondays.setChecked(true);
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.TUESDAY) tuesdays.setChecked(true);
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.WEDNESDAY) wednesdays.setChecked(true);
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.THURSDAY) thursdays.setChecked(true);
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.FRIDAY) fridays.setChecked(true);
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.SATURDAY) saturdays.setChecked(true);
+        if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.SUNDAY) sundays.setChecked(true);
+      }
 
+      infoTable.add(new HiddenInput(this.parameterContractId,contract.getPrimaryKey().toString()));
+    }
 
+    try {
+      if (contract == null) {
+        timeframe = tsb.getTimeframe(product);
+        pFrom.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
+        pTo.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
+      }else {
+        pFrom.setDate(new idegaTimestamp(contract.getFrom()).getSQLDate());
+        pTo.setDate(new idegaTimestamp(contract.getTo()).getSQLDate());
+      }
+    }catch (TimeframeNotFoundException tnfe) {
+      tnfe.printStackTrace(System.err);
+      timeframe = null;
+    }catch (ServiceNotFoundException snfe) {
+      snfe.printStackTrace(System.err);
+      timeframe = null;
+    }
 
-            infoTable.add(tDiscount,1,infoRow);
-            infoTable.add(pDiscount,3,infoRow);
-            if (product != null) {
-              Text what = (Text) theText.clone();
-              if (product.getDiscountTypeId() == com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT) {
-                what.setText(" %");
-              }else if (product.getDiscountTypeId() == com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT) {
-                pDiscount.setSize(10);
-                what.setText(" "+((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(tsb.getCurrencyIdForIceland()).getCurrencyAbbreviation());
-              }
-              infoTable.add(what,3,infoRow);
-            }
+    infoTable.add(tDiscount,1,infoRow);
+    infoTable.add(pDiscount,3,infoRow);
+    if (product != null) {
+      Text what = (Text) theText.clone();
+      if (product.getDiscountTypeId() == com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT) {
+        what.setText(" %");
+      }else if (product.getDiscountTypeId() == com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT) {
+        pDiscount.setSize(10);
+        what.setText(" "+((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(tsb.getCurrencyIdForIceland()).getCurrencyAbbreviation());
+      }
+      infoTable.add(what,3,infoRow);
+    }
 
-            ++infoRow;
-            infoTable.add(tNumberOfSeatsPerTour,1,infoRow);
-            infoTable.add(pAlot,3,infoRow);
+    ++infoRow;
+    infoTable.add(tNumberOfSeatsPerTour,1,infoRow);
+    infoTable.add(pAlot,3,infoRow);
 
-            ++infoRow;
-            infoTable.add(tWeekdays,1,infoRow);
-            infoTable.add(weekdayFixTable,3,infoRow);
-            infoTable.mergeCells(3,infoRow,4,infoRow);
+    ++infoRow;
+    infoTable.add(tWeekdays,1,infoRow);
+    infoTable.add(weekdayFixTable,3,infoRow);
+    infoTable.mergeCells(3,infoRow,4,infoRow);
 
-            ++infoRow;
-            infoTable.add(tTimeframe,1,infoRow);
-            infoTable.mergeCells(3,infoRow,4,infoRow);
-            infoTable.add(tfFromText,2,infoRow);
-            infoTable.add(pFrom,3,infoRow);
-            infoTable.add(tfToText,3,infoRow);
-            infoTable.add(pTo,3,infoRow);
+    ++infoRow;
+    infoTable.add(tTimeframe,1,infoRow);
+    infoTable.mergeCells(3,infoRow,4,infoRow);
+    infoTable.add(tfFromText,2,infoRow);
+    infoTable.add(pFrom,3,infoRow);
+    infoTable.add(tfToText,3,infoRow);
+    infoTable.add(pTo,3,infoRow);
 
-            ++infoRow;
-            infoTable.add(tValidUntil,1,infoRow);
-            infoTable.mergeCells(3,infoRow,4,infoRow);
-            infoTable.add(pDays,3,infoRow);
-            infoTable.add(tDaysBefore,3,infoRow);
+    ++infoRow;
+    infoTable.add(tValidUntil,1,infoRow);
+    infoTable.mergeCells(3,infoRow,4,infoRow);
+    infoTable.add(pDays,3,infoRow);
+    infoTable.add(tDaysBefore,3,infoRow);
 
-            ++infoRow;
-            int tResParId = -1;
-            if (tReseller.getParent() != null) {
-              tResParId = tReseller.getParent().getID();
-            }
-            //table.setRowColor(row, theColor);
-            if (supplier != null || ( (tReseller != null && reseller != null) && tResParId == this.reseller.getID())) {
-              if (contract != null) {
-                SubmitButton deleter = new SubmitButton(iwrb.getImage("buttons/delete.gif"), this.sAction, this.paramaterDeleteContract);
-                infoTable.add(deleter,4,infoRow);
-                infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+    ++infoRow;
+    int tResParId = -1;
+    if (tReseller.getParent() != null) {
+      tResParId = tReseller.getParent().getID();
+    }
 
-                SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction,this.parameterSaveProductInfo);
-                infoTable.add(submit,4,infoRow);
-                infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
-              }else {
-                SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
-                infoTable.add(submit,4,infoRow);
-                infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
-              }
-            }
-            infoTable.setAlignment(4,infoRow,"right");
-            //table.mergeCells(1,row,3,row);
-            //table.setRowColor(row, theColor);
-      return infoTable;
+    if (supplier != null || ( (tReseller != null && reseller != null) && tResParId == this.reseller.getID())) {
+      if (contract != null) {
+        SubmitButton deleter = new SubmitButton(iwrb.getImage("buttons/delete.gif"), this.sAction, this.paramaterDeleteContract);
+        infoTable.add(deleter,4,infoRow);
+        infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+
+        SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction,this.parameterSaveProductInfo);
+        infoTable.add(submit,4,infoRow);
+        infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+      }else {
+        SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
+        infoTable.add(submit,4,infoRow);
+        infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+      }
+    }
+    infoTable.setAlignment(4,infoRow,"right");
+
+    return infoTable;
   }
 
   private void deleteContract(IWContext iwc) throws RemoteException, FinderException, RemoveException{

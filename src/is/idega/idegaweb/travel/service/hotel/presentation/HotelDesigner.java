@@ -262,8 +262,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       name.setSize( 40 );
       //name.keepStatusOnAction();
       TextArea description = new TextArea( PARAMETER_DESCRIPTION );
-      description.setWidth( 50 );
-      description.setHeight( 12 );
+      description.setWidth( "50" );
+      description.setHeight( "12" );
       //description.keepStatusOnAction();
       TextInput number = new TextInput( PARAMETER_NUMBER );
       number.setSize( 20 );

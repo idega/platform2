@@ -840,8 +840,8 @@ public class DailyReport extends TravelManager implements Report{
 	servNameLnk.addParameter("dayRepOrderBy",ProductComparator.NAME);
       Link servNumLnk = Reports.getReportLink(servNumTxt);
 	servNumLnk.addParameter("dayRepOrderBy",ProductComparator.NUMBER);
-      Link timeLnk = Reports.getReportLink(timeTxt);
-	timeLnk.addParameter("dayRepOrderBy",ProductComparator.DEPARTURETIME_NAME);
+//      Link timeLnk = Reports.getReportLink(timeTxt);
+//	timeLnk.addParameter("dayRepOrderBy",ProductComparator.DEPARTURETIME_NAME);
 
 //      addParameters(servNameLnk);
 //      addParameters(servNumLnk);
@@ -850,7 +850,7 @@ public class DailyReport extends TravelManager implements Report{
 
       table.add(servNumLnk, 1, row);
       table.add(servNameLnk, 2, row);
-      table.add(timeLnk, 3, row);
+      table.add(timeTxt, 3, row);
       table.add(countTxt, 4, row);
       table.add(priceTxt, 5, row);
       table.setRowColor(row, super.backgroundColor);

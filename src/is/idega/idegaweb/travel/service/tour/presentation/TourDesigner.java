@@ -154,8 +154,8 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       name.setSize( 40 );
       //name.keepStatusOnAction();
       TextArea description = new TextArea( "description" );
-      description.setWidth( 50 );
-      description.setHeight( 12 );
+      description.setWidth( "50" );
+      description.setHeight( "12" );
       //description.keepStatusOnAction();
       TextInput number = new TextInput( "number" );
       number.setSize( 20 );

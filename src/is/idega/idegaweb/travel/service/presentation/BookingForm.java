@@ -209,8 +209,8 @@ public abstract class BookingForm extends TravelManager{
             country.setSize(textInputSizeMd);
             country.keepStatusOnAction();
         TextArea comment = new TextArea("comment");
-            comment.setWidth(textInputSizeLg);
-            comment.setHeight(4);
+            comment.setWidth(Integer.toString(textInputSizeLg));
+            comment.setHeight("4");
             comment.keepStatusOnAction();
 
         DropdownMenu usersDrop = null;
@@ -769,8 +769,8 @@ public abstract class BookingForm extends TravelManager{
             manyDays.setSize(5);
 
           TextArea comment = new TextArea("comment");
-              comment.setWidth(60);
-              comment.setHeight(5);
+              comment.setWidth("60");
+              comment.setHeight("5");
 
           ++row;
           table.mergeCells(1,row,6,row);

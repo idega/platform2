@@ -553,42 +553,49 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public List ejbHomeGetMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException{
     List list = new Vector();
 
-    StringBuffer buff = new StringBuffer();
-      buff.append("SELECT * FROM "+getBookingTableName());
-      buff.append(" WHERE ");
-      buff.append(getNameColumnName()+" = '"+booking.getName()+"'");
-      buff.append(" AND ");
-      buff.append(getAddressColumnName()+" = '"+booking.getAddress()+"'");
-      buff.append(" AND ");
-      buff.append(getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
-      buff.append(" AND ");
-      buff.append(getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
-      buff.append(" AND ");
-      buff.append(getCityColumnName()+" = '"+booking.getCity()+"'");
-      buff.append(" AND ");
-      buff.append(getCountryColumnName()+" = '"+booking.getCountry()+"'");
-      buff.append(" AND ");
-      buff.append(getEmailColumnName()+" = '"+booking.getEmail()+"'");
-      buff.append(" AND ");
-      if (booking.getIsValid()) {
-        buff.append(getIsValidColumnName()+" = 'Y'");
-      }else {
-        buff.append(getIsValidColumnName()+" = 'N'");
-      }
-      buff.append(" AND ");
-      buff.append(getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
-      buff.append(" AND ");
-      buff.append(getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
-      buff.append(" AND ");
-      buff.append(getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
-      buff.append(" AND ");
-      buff.append(getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
-      buff.append(" AND ");
-      buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
-      buff.append(" ORDER BY "+getBookingDateColumnName());
-    //coll = this.idoFindPKsBySQL(buff.toString());
-    list = EntityFinder.getInstance().findAll(GeneralBooking.class, buff.toString());
-/*
+    try {
+      StringBuffer buff = new StringBuffer();
+        buff.append("SELECT * FROM "+getBookingTableName());
+        buff.append(" WHERE ");
+        buff.append(getNameColumnName()+" = '"+booking.getName()+"'");
+        buff.append(" AND ");
+        buff.append(getAddressColumnName()+" = '"+booking.getAddress()+"'");
+        buff.append(" AND ");
+        buff.append(getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
+        buff.append(" AND ");
+        buff.append(getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
+        buff.append(" AND ");
+        buff.append(getCityColumnName()+" = '"+booking.getCity()+"'");
+        buff.append(" AND ");
+        buff.append(getCountryColumnName()+" = '"+booking.getCountry()+"'");
+        buff.append(" AND ");
+        buff.append(getEmailColumnName()+" = '"+booking.getEmail()+"'");
+        buff.append(" AND ");
+        if (booking.getIsValid()) {
+          buff.append(getIsValidColumnName()+" = 'Y'");
+        }else {
+          buff.append(getIsValidColumnName()+" = 'N'");
+        }
+        buff.append(" AND ");
+        buff.append(getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
+        buff.append(" AND ");
+        buff.append(getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
+        buff.append(" AND ");
+        buff.append(getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
+        buff.append(" AND ");
+        buff.append(getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
+        buff.append(" AND ");
+        buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
+        buff.append(" ORDER BY "+getBookingDateColumnName());
+      //coll = this.idoFindPKsBySQL(buff.toString());
+      list = EntityFinder.getInstance().findAll(GeneralBooking.class, buff.toString());
+    }catch (FinderException fe) {
+      System.err.println("[GeneralBookingBMPBean] Error in sql : getting multiple bookings for bookingId : "+booking.getID());
+      fe.printStackTrace(System.err);
+      list.add(booking);
+    }
+
+    /*
     if (list.size() < 2) {
       return list;
     }else {

@@ -92,7 +92,7 @@ public class Reports extends TravelManager {
           _products = ProductBusiness.getProducts(iwc, _supplier.getID());
         }else if (_reseller != null) {
           /** @todo laga kannski til */
-          Product[] repps = ResellerManager.getProductsForReseller(iwc, _reseller.getID());
+          Product[] repps = getContractBusiness(iwc).getProductsForReseller(iwc, _reseller.getID());
           for (int i = 0; i < repps.length; i++) {
             _products.add(repps[i]);
           }

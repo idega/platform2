@@ -172,8 +172,6 @@ public class TravelManager extends Block {
 
         Image iDesign = iwrb.getImage("buttons/design_products.gif");
         Image iMyTrip = iwrb.getImage("buttons/my_products.gif");
-        //Image iDesign = iwrb.getImage("buttons/design_trip.gif");
-        //Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
         Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
         Image iBooking = iwrb.getImage("buttons/booking.gif");
         Image iStatistics = iwrb.getImage("buttons/statistics.gif");
@@ -185,10 +183,8 @@ public class TravelManager extends Block {
 
         if (action.equals(this.parameterServiceDesigner)) {
           iDesign = iwrb.getImage("buttons/design_products_on.gif");
-          //iDesign = iwrb.getImage("buttons/design_trip_on.gif");
         }else if (action.equals(this.parameterServiceOverview)) {
           iMyTrip = iwrb.getImage("buttons/my_products_on.gif");
-          //iMyTrip = iwrb.getImage("buttons/my_trips_on.gif");
         }else if (action.equals(this.parameterBookingOverview)) {
           iOverview = iwrb.getImage("buttons/booking_overview_on.gif");
         }else if (action.equals(this.parameterBooking)) {
@@ -255,6 +251,8 @@ public class TravelManager extends Block {
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
         }else if (reseller!= null) {
+            Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
+              lMyTrip.addParameter(this.sAction,this.parameterServiceOverview);
             Link lBooking = new Link(iBooking,Booking.class);
               lBooking.addParameter(this.sAction,this.parameterBooking);
             table.add(lBooking,1,1);

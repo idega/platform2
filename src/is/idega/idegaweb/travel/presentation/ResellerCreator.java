@@ -179,8 +179,8 @@ public class ResellerCreator extends TravelManager {
       TextInput name = new TextInput("reseller_name");
         name.setSize(inputSize);
       TextArea description = new TextArea("reseller_description");
-        description.setWidth(inputSize);
-        description.setHeight(5);
+        description.setWidth(Integer.toString(inputSize));
+        description.setHeight("5");
       TextInput address = new TextInput("reseller_address");
         address.setSize(inputSize);
       TextInput phone = new TextInput("reseller_phone");

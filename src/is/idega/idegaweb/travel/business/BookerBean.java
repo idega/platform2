@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.util.text.TextSoap;
 import com.idega.business.IBOServiceBean;
 import com.idega.business.IBOLookup;
 import javax.ejb.CreateException;
@@ -61,6 +62,14 @@ public class BookerBean extends IBOServiceBean implements Booker{
     Booking booking = null;
     int returner = bookingId;
 //    Object type = getServiceType(serviceId);
+    address = TextSoap.findAndReplace(address, "'", "´");
+    name = TextSoap.findAndReplace(name, "'", "´");
+    country = TextSoap.findAndReplace(country, "'", "´");
+    city = TextSoap.findAndReplace(city, "'", "´");
+//    email = TextSoap.findAndReplace(email, "'", "´");
+    if (comment != null) {
+      comment = TextSoap.findAndReplace(comment, "'", "´");
+    }
 
     try {
 //      if (type != null)

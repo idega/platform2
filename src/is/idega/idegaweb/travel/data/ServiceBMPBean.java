@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.data;
 
+import java.util.Iterator;
 import java.util.Collection;
 import java.sql.*;
 import com.idega.data.*;
@@ -89,8 +90,31 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
     setColumn(getDepartureTimeColumnName(),timestamp);
   }
 
+  public Collection getAddressesColl() throws IDORelationshipException{
+    return this.idoGetRelatedEntities(Address.class);
+  }
+
+  /**
+   * @deprecated
+   */
   public Address[] getAddresses() throws SQLException  {
-    return (Address[]) this.findRelated(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
+    Address[] addresses = new Address[]{};
+    try {
+      Collection coll =  getAddressesColl();
+      if (coll != null) {
+        addresses = new Address[coll.size()];
+        Iterator iter = coll.iterator();
+        int counter = 0;
+        while (iter.hasNext()) {
+          addresses[counter] = (Address) iter.next();
+          ++counter;
+        }
+      }
+    }catch (IDORelationshipException re){
+      throw new SQLException(re.getMessage());
+    }
+    //return (Address[]) this.findRelated(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
+    return addresses;
   }
 
   public Address getAddress() throws SQLException{
