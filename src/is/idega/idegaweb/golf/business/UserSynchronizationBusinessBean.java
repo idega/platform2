@@ -461,7 +461,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {		
 		init();
 		if (user.getPersonalID() != null) {
-			System.out.print("Synchronizing user : "+user.getPersonalID()+" ("+user.getID()+") ");
+			//System.out.println("Synchronizing user : "+user.getPersonalID()+" ("+user.getID()+") ");
 			Member member = getMemberFromUser(user);
 //			try {
 				synchronizeAddresses(user, member);
@@ -487,12 +487,12 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	 */
 	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 		//if the group is a club then search for the union and update it, create if it does not exist
-		init();
-		Union union = getUnionFromGroup(group);
-		if(union==null){
-			
-			
-		}
+//		init();
+//		Union union = getUnionFromGroup(group);
+//		if(union==null){
+//			
+//			
+//		}
 		
 		
 		
