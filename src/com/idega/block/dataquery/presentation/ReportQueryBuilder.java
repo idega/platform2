@@ -273,16 +273,19 @@ public class ReportQueryBuilder extends Block {
 				if (! expertMode) {
 					displayStep = (step == 1)? 1 : step -1;
 				}
-				String queryName = (userQueryID > 0) ? helper.getUserQuery().getName() : 
-						iwrb.getLocalizedString("step_5_default_queryname", "My query");
-				StringBuffer buffer = new StringBuffer(queryName);
-				buffer.append(" , ");
-				buffer.append(getStepText(iwrb.getLocalizedString("step", "Step") + " " + displayStep));
-				headerTable.add(buffer.toString(), 1, 1);
+				String queryName = (userQueryID > 0) ? helper.getUserQuery().getName() : iwrb.getLocalizedString("step_5_default_queryname", "My query");
+				Text queryNameText = new Text(queryName);
+				queryNameText.setBold();
+				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("step", "Step"));
+				buffer.append(' ').append(displayStep);
+				Text stepText = getStepText(buffer.toString());
+				headerTable.add(stepText, 1, 1);
+				headerTable.setAlignment(1,1, Table.HORIZONTAL_ALIGN_LEFT);
+				headerTable.add(queryNameText, 2, 1);
+				headerTable.setAlignment(2,1, Table.HORIZONTAL_ALIGN_RIGHT);
+				headerTable.mergeCells(1, 2, 2, 2);
 				headerTable.add(getMsgText(getStepMessage()), 1, 2);
-				headerTable.mergeCells(2, 1, 2, 2);
-//				headerTable.add(iwb.getImage("wizard.png"), 2, 1);
-				headerTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+				headerTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_LEFT);
 
 				table.add(headerTable, 1, 1);
 
@@ -1851,7 +1854,7 @@ public class ReportQueryBuilder extends Block {
 		text.setStyleClass(stepFontStyle);
 //		text.setStyle(Text.FONT_FACE_ARIAL);
 //		text.setFontSize(Text.FONT_SIZE_14_HTML_4);
-//		text.setBold();
+		text.setBold();
 		return text;
 	}
 
