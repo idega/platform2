@@ -16,7 +16,6 @@ import com.idega.idegaweb.IWBundle;
  */
 
 public class Messenger extends Block {
-  private static Applet messenger;
   private IWBundle iwb;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.messenger";
   private static String SESSION_ID = "session_id";
@@ -26,8 +25,8 @@ public class Messenger extends Block {
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
 
-  private String width="0";
-  private String height="0";
+  private String width="145";
+  private String height="145";
 
   public Messenger() {
   }
@@ -35,26 +34,24 @@ public class Messenger extends Block {
   public void main(IWContext iwc){
 
     if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
-      if(messenger==null){
-        messenger = new Applet();
-        iwb = getBundle(iwc);
-        messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
-        messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
-        messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
-        messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
-        messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
-        messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
-      }
 
-      Applet myMessenger = (Applet) messenger.clone();
+      Applet messenger = new Applet();
+      iwb = getBundle(iwc);
+      messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
+      messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
+      messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
+      messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
+      messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
+      messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
 
-      myMessenger.setParam(SESSION_ID,iwc.getSession().getId());
-      myMessenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
-      myMessenger.setParam(USER_NAME,com.idega.block.login.business.LoginBusiness.getUser(iwc).getName());
-      myMessenger.setWidth(width);
-      myMessenger.setHeight(height);
+      //user specific
+      messenger.setParam(SESSION_ID,iwc.getSession().getId());
+      messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
+      messenger.setParam(USER_NAME,com.idega.block.login.business.LoginBusiness.getUser(iwc).getName());
+      messenger.setWidth(width);
+      messenger.setHeight(height);
 
-      add(myMessenger);
+      add(messenger);
     }
    // else add("You are not logged on");
   }
