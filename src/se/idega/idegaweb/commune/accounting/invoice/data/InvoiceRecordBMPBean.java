@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
@@ -78,6 +79,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addManyToOneRelationship(COLUMN_PAYMENT_RECORD_ID, PaymentRecord.class);
 		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContract.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
+		addManyToOneRelationship(COLUMN_RULE_SPEC_TYPE, RegulationSpecType.class);
 	}
 	public int getInvoiceHeader() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);
@@ -221,6 +223,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	}
 	public void setRuleSpecType(String s) {
 		setColumn(COLUMN_RULE_SPEC_TYPE, s);
+	}
+	public void setRuleSpecType(RegulationSpecType r) {
+		setColumn(COLUMN_RULE_SPEC_TYPE, r);
 	}
 	public void setOwnPosting(String s) {
 		setColumn(COLUMN_OWN_POSTING, s);
