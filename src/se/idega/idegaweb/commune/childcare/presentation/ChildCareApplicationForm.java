@@ -162,7 +162,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		Collection checks = null;
 		
 		try {
-			checks = getCheckBusiness(iwc).findAllChecksByUser(_user);
+			checks = getCheckBusiness(iwc).findAllApprovedChecksByUser(_user);
 		}
 		catch (RemoteException e) {
 		}

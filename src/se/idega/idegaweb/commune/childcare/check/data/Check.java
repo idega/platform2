@@ -27,10 +27,10 @@ public interface Check extends com.idega.data.IDOEntity,com.idega.block.process.
  public int getCheckFee()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setRule2(boolean p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setRule1(boolean p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getRule5()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setNotes(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getRule4()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean getRule5()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void initializeAttributes() throws java.rmi.RemoteException;
+ public boolean getRule4()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean getRule3()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean getRule2()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean getRule1()throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -40,7 +40,7 @@ public interface Check extends com.idega.data.IDOEntity,com.idega.block.process.
  public java.lang.String getMotherToungueMotherChild()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getMotherToungueFatherChild()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setCheckFee(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String[] getCaseStatusKeys() throws java.rmi.RemoteException;
  public void setChildId(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.String[] getCaseStatusKeys() throws java.rmi.RemoteException;
  public java.lang.String getCaseCodeDescription() throws java.rmi.RemoteException;
 }
