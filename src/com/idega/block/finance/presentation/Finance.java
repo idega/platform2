@@ -6,6 +6,7 @@ import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
+import com.idega.presentation.util.*;
 import com.idega.util.text.*;
 import java.util.*;
 

@@ -24,7 +24,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.util.text.Edit;
+import com.idega.presentation.util.Edit;
 
 
 

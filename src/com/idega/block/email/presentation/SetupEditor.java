@@ -34,7 +34,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.util.text.TextFormat;
+import com.idega.presentation.util.TextFormat;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:

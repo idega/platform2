@@ -5,10 +5,10 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ui.*;
+import com.idega.presentation.util.TextFormat;
 import com.idega.presentation.text.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.util.text.TextFormat;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.business.SchoolBusiness;
 

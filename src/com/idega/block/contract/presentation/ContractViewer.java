@@ -15,7 +15,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.util.text.Edit;
+import com.idega.presentation.util.Edit;
 
 import java.text.DateFormat;
 import java.util.Collection;

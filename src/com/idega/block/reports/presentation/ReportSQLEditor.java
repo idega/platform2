@@ -29,7 +29,7 @@ import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.util.text.Edit;
+import com.idega.presentation.util.Edit;
 
 /**
  * Title:

@@ -35,8 +35,8 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.util.Edit;
 import com.idega.util.IWTimestamp;
-import com.idega.util.text.Edit;
 
 /**
  * Title:
