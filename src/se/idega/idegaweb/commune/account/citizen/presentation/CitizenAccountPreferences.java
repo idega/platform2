@@ -11,6 +11,13 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.Email;
 import com.idega.core.data.EmailHome;
 import com.idega.core.data.Address;
+import com.idega.core.data.AddressHome;
+import com.idega.core.data.AddressType;
+import com.idega.core.data.PostalCode;
+import com.idega.core.data.PostalCodeHome;
+//import com.idega.core.business.AddressBusiness;
+import com.idega.core.data.Phone;
+//import com.idega.core.data.PhoneHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORemoveRelationshipException;
@@ -30,6 +37,8 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.business.IBOLookup;
 
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.message.business.MessageSession;
+import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountSession;
 
 /*
 import com.idega.presentation.ExceptionWrapper;
@@ -70,10 +79,12 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String PARAMETER_EMAIL = "cap_email";
 	private final static String PARAMETER_EMAIL_ID = "cap_email_id";
 	private final static String PARAMETER_PHONE_HOME = "cap_phn_h";
-	private final static String PARAMETER_PHONE_WORK = "cap_phn_h";
+	private final static String PARAMETER_PHONE_WORK = "cap_phn_w";
+	private final static String PARAMETER_CO_ADDRESS_SELECT = "cap_co";
 	private final static String PARAMETER_CO_STREET_ADDRESS = "cap_co_sa";
 	private final static String PARAMETER_CO_POSTAL_CODE = "cap_co_pc";
 	private final static String PARAMETER_CO_CITY = "cap_co_ct";
+	private final static String PARAMETER_MESSAGES_VIA_EMAIL = "cap_m_v_e";
 
 	private final int MIN_PASSWORD_LENGTH = 6;
 	
@@ -96,12 +107,17 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String KEY_CO_CITY = KEY_PREFIX + "co_city";
 	private final static String KEY_MESSAGES_VIA_EMAIL = KEY_PREFIX + "messages_via_email";
 	private final static String KEY_PASSWORD_EMPTY = KEY_PREFIX + "password_empty";
+	private final static String KEY_PASSWORD_REPEATED_EMPTY = KEY_PREFIX + "password_repeated_empty";
 	private final static String KEY_PASSWORDS_NOT_SAME = KEY_PREFIX + "passwords_not_same";
 	private final static String KEY_PASSWORD_INVALID = KEY_PREFIX + "invalid_password";	
 	private final static String KEY_PASSWORD_TOO_SHORT = KEY_PREFIX + "password_too_short";	
 	private final static String KEY_PASSWORD_CHAR_ILLEGAL = KEY_PREFIX + "password_char_illegal";	
 	private final static String KEY_EMAIL_INVALID = KEY_PREFIX + "email_invalid";	
 	private final static String KEY_EMAIL_EMPTY = KEY_PREFIX + "email_empty";	
+	private final static String KEY_CO_STREET_ADDRESS_MISSING = KEY_PREFIX + "co_street_address_missing";	
+	private final static String KEY_CO_POSTAL_CODE_MISSING = KEY_PREFIX + "co_postal_code_missing";	
+	private final static String KEY_CO_CITY_MISSING = KEY_PREFIX + "co_city_missing";	
+	private final static String KEY_PREFERENCES_SAVED = KEY_PREFIX + "preferenced_saved";	
 
 	private final static String DEFAULT_EMAIL = "E-mail";	
 	private final static String DEFAULT_LOGIN = "Login";	
@@ -121,13 +137,21 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String DEFAULT_CO_CITY = "City c/o";		
 	private final static String DEFAULT_MESSAGES_VIA_EMAIL = "I want to get my messages via e-email";		
 	private final static String DEFAULT_PASSWORD_EMPTY = "Password cannot be empty.";		
+	private final static String DEFAULT_PASSWORD_REPEATED_EMPTY = "Repeated password cannot be empty.";		
 	private final static String DEFAULT_PASSWORDS_NOT_SAME = "New passwords not the same.";		
 	private final static String DEFAULT_PASSWORD_INVALID = "Invalid password.";		
 	private final static String DEFAULT_PASSWORD_TOO_SHORT = "Password too short.";		
 	private final static String DEFAULT_PASSWORD_CHAR_ILLEGAL = "Password contains illegal character(s).";		
 	private final static String DEFAULT_EMAIL_INVALID = "Email address invalid.";		
 	private final static String DEFAULT_EMAIL_EMPTY = "Email address cannot be empty.";		
-	
+	private final static String DEFAULT_CO_STREET_ADDRESS_MISSING = "Street address c/o must be entered.";	
+	private final static String DEFAULT_CO_POSTAL_CODE_MISSING = "Postal code c/o must be entered.";	
+	private final static String DEFAULT_CO_CITY_MISSING = "City c/o must be entered.";	
+	private final static String DEFAULT_PREFERENCES_SAVED = "Your preferences has been saved.";	
+
+	public static final String CITIZEN_ACCOUNT_PREFERENCES_PROPERTIES = "citizen_account_preferences";
+	public static final String USER_PROPERTY_USE_CO_ADDRESS = "cap_use_co_address";
+
 	private User user = null;
 		
 	public CitizenAccountPreferences() {
@@ -206,7 +230,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		row++;
 		table.add(getSmallHeader(localize(KEY_ADDRESS, DEFAULT_ADDRESS)), 1, row);
 		Address mainAddress = ub.getUsersMainAddress(user);
-		String addressText = "Stockholm";
+		String addressText = "";
 		if (mainAddress != null) {
 			addressText = mainAddress.getStreetAddress() + ", " + mainAddress.getPostalAddress();
 		}
@@ -226,9 +250,67 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.setCellspacing(getCellspacing());
 		form.add(table);
 		int row = 1;
-		
-		String paramPhoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
 
+		UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+
+		String valueEmail = iwc.getParameter(PARAMETER_EMAIL);
+		if (valueEmail == null) {
+			valueEmail = ub. getUserMail(user).getEmailAddress();
+		}
+		String valueCurrentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD) != null ? iwc.getParameter(PARAMETER_CURRENT_PASSWORD) : "";
+		String valueNewPassword = iwc.getParameter(PARAMETER_NEW_PASSWORD) != null ? iwc.getParameter(PARAMETER_NEW_PASSWORD) : "";
+		String valueNewPasswordRepeated = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) != null ? iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) : "";
+		String valuePhoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
+		if (valuePhoneHome == null) {
+			Phone p = ub.getUserPhone(user.getID(), 0);
+			if (p != null) {
+				valuePhoneHome = p.getNumber();
+			} else {
+				valuePhoneHome = "";
+			}
+		}
+		String valuePhoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
+		if (valuePhoneWork == null) {
+			Phone p = ub.getUserPhone(user.getID(), 1);
+			if (p != null) {
+				valuePhoneWork = p.getNumber();
+			} else {
+				valuePhoneWork = "";
+			}
+		}
+		String valueCOAddressSelect = iwc.getParameter(PARAMETER_CO_ADDRESS_SELECT);
+		Address coAddress = getCOAddress(iwc);
+		String valueCOStreetAddress = iwc.getParameter(PARAMETER_CO_STREET_ADDRESS);
+		if (valueCOStreetAddress == null) {
+			valueCOStreetAddress = coAddress.getStreetAddress();
+			if (valueCOStreetAddress == null) {
+				valueCOStreetAddress = "";
+			}
+		}
+		String valueCOPostalCode = iwc.getParameter(PARAMETER_CO_POSTAL_CODE);
+		if (valueCOPostalCode == null) {
+			PostalCode pc = null;
+			try {
+				pc = coAddress.getPostalCode();
+			} catch (java.sql.SQLException e) {}
+			if (pc != null) {
+				valueCOPostalCode = pc.getPostalCode();
+				if (valueCOPostalCode == null) {
+					valueCOPostalCode = "";
+				}
+			} else {
+				valueCOPostalCode = "";
+			}
+		}
+		String valueCOCity = iwc.getParameter(PARAMETER_CO_CITY);
+		if (valueCOCity == null) {
+			valueCOCity = coAddress.getCity();
+			if (valueCOCity == null) {
+				valueCOCity = "";
+			}
+		}
+		String valueMessagesViaEmail = iwc.getParameter(PARAMETER_MESSAGES_VIA_EMAIL);
+		
 		Text tEmail = getSmallText(localize(KEY_EMAIL, DEFAULT_EMAIL));
 		Text tLogin = getSmallText(localize(KEY_LOGIN, DEFAULT_LOGIN));
 		Text tCurrentPassword = getSmallText(localize(KEY_CURRENT_PASSWORD, DEFAULT_CURRENT_PASSWORD));
@@ -242,20 +324,54 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		Text tCOCity = getSmallText(localize(KEY_CO_CITY, DEFAULT_CO_CITY));
 		Text tMessagesViaEmail = getSmallText(" " + localize(KEY_MESSAGES_VIA_EMAIL, DEFAULT_MESSAGES_VIA_EMAIL));
 //		TextInput tiLogin = (TextInput) getStyledInterface(new TextInput(PARAMETER_LOGIN));		
+		TextInput tiEmail = (TextInput) getStyledInterface(new TextInput(PARAMETER_EMAIL));
+		tiEmail.setValue(valueEmail);		
 		TextInput tiPhoneHome = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_HOME));
-		tiPhoneHome.setValue(paramPhoneHome);		
+		tiPhoneHome.setValue(valuePhoneHome);		
 		TextInput tiPhoneWork = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_WORK));		
+		tiPhoneWork.setValue(valuePhoneWork);		
 		TextInput tiCOStreetAddress = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_STREET_ADDRESS));		
+		tiCOStreetAddress.setValue(valueCOStreetAddress);		
 		TextInput tiCOPostalCode = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_POSTAL_CODE));		
+		tiCOPostalCode.setValue(valueCOPostalCode);		
 		TextInput tiCOCity = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_CITY));		
+		tiCOCity.setValue(valueCOCity);		
 		PasswordInput tiCurrentPassword = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_CURRENT_PASSWORD));	
+		tiCurrentPassword.setValue(valueCurrentPassword);		
 		PasswordInput tiNewPassword = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_NEW_PASSWORD));
+		tiNewPassword.setValue(valueNewPassword);		
 		PasswordInput tiNewPasswordRepeated = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_NEW_PASSWORD_REPEATED));
-		CheckBox cbCOAddressSelect = getCheckBox("","");
-		CheckBox cbMessagesViaEmail = getCheckBox("","");
+		tiNewPasswordRepeated.setValue(valueNewPasswordRepeated);		
+		CheckBox cbCOAddressSelect = getCheckBox(PARAMETER_CO_ADDRESS_SELECT, "true");
+		if (valueCOAddressSelect != null) {
+			cbCOAddressSelect.setChecked(true);
+		} else {
+			if (iwc.getParameter(PARAMETER_FORM_SUBMIT) == null) {
+				try {
+					CitizenAccountSession cas = getCitizenAccountSession(iwc);
+					cbCOAddressSelect.setChecked(cas.getIfUserUsesCOAddress(user));
+				} catch (Exception e) {}
+			} else {
+				cbCOAddressSelect.setChecked(false);
+			}
+		}
+		CheckBox cbMessagesViaEmail = getCheckBox(PARAMETER_MESSAGES_VIA_EMAIL, "true");
+		if (valueMessagesViaEmail != null) {
+			cbMessagesViaEmail.setChecked(true);
+		} else {
+			if (iwc.getParameter(PARAMETER_FORM_SUBMIT) == null) {
+				try {
+					MessageSession messageSession = getMessageSession(iwc);
+					cbMessagesViaEmail.setChecked(messageSession.getIfUserPreferesMessageByEmail(user));
+				} catch (Exception e) {}
+			} else {
+				cbMessagesViaEmail.setChecked(false);
+			}
+		}
 		SubmitButton sbUpdate = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
 		SubmitButton sbCancel = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_CANCEL, DEFAULT_CANCEL), PARAMETER_FORM_SUBMIT, "true"));
 
+/*
 		Collection emails = user.getEmails();
 		try {
 			if (emails != null) {
@@ -279,6 +395,11 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		} catch (FinderException e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
+*/
+		
+		row++;
+		table.add(tEmail, 1, row);
+		table.add(tiEmail, 2, row);
 		
 //		row++;
 //		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
@@ -344,8 +465,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		row++;
 		table.add(sbUpdate, 2, row);
 		table.add(getSmallText(" "), 2, row);
-		table.add(sbCancel, 2, row);
-		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
+//		table.add(sbCancel, 2, row);
+//		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		row++;
 		table.addBreak(1, row);
@@ -354,6 +475,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	}
 	
 	private void updatePreferences(IWContext iwc)  throws Exception {
+		drawPermanentUserInfo(iwc);
+
 		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
 		String login    = loginTable.getUserLogin();
 //		String loginOld = iwc.getParameter(PARAMETER_OLD_LOGIN);
@@ -361,18 +484,31 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String newPassword1 = iwc.getParameter(PARAMETER_NEW_PASSWORD);
 		String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);		
 		String sEmail = iwc.getParameter(PARAMETER_EMAIL);
+		String phoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
+		String phoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
+		String coStreetAddress = iwc.getParameter(PARAMETER_CO_STREET_ADDRESS);
+		String coPostalCode = iwc.getParameter(PARAMETER_CO_POSTAL_CODE);
+		String coCity = iwc.getParameter(PARAMETER_CO_CITY);		
+		boolean useCOAddress = iwc.getParameter(PARAMETER_CO_ADDRESS_SELECT) != null;
+		boolean messagesViaEmail = iwc.getParameter(PARAMETER_MESSAGES_VIA_EMAIL) != null;
 		
 		String errorMessage = null;
 		boolean updatePassword = false;
 		boolean updateEmail = false;
+		boolean updateCOAddress = false;
 		
 		try {
 			if (!LoginDBHandler.verifyPassword(login, currentPassword)) {
 				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
-			if (!newPassword1.equals("") && !newPassword2.equals("")) {
+			
+			// Validate new password
+			if (!newPassword1.equals("") || !newPassword2.equals("")) {
 				if (newPassword1.equals("")) {
 					throw new Exception(localize(KEY_PASSWORD_EMPTY, DEFAULT_PASSWORD_EMPTY));
+				}
+				if (newPassword2.equals("")) {
+					throw new Exception(localize(KEY_PASSWORD_REPEATED_EMPTY, DEFAULT_PASSWORD_REPEATED_EMPTY));
 				}
 				if (!newPassword1.equals(newPassword2)) {
 					throw new Exception(localize(KEY_PASSWORDS_NOT_SAME, DEFAULT_PASSWORDS_NOT_SAME));
@@ -401,56 +537,90 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				updatePassword = true;
 			}
 
-			Email email = getUserEmail(iwc);
-			String oldEmail = email.getEmailAddress();
-			if (sEmail != oldEmail) {
-				if (sEmail.equals("")) {
-					throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
-				}
-				if (sEmail.length() < 6) {
-					throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-				}
-				if (sEmail.indexOf('.') == -1) {
-					throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-				}					
-				if (sEmail.indexOf('@') == -1) {
-					throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-				}					
-				String testEmail = sEmail.toLowerCase();
-				for (int i = 0; i < testEmail.length(); i++) {
-					char c = testEmail.charAt(i);
-					if ((c < 'a') || (c > 'z')) {
-						if ((c != '.') || (c != '@')) {
-							throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-						}
+			// Validate e-mail address
+			if (sEmail.equals("")) {
+				throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
+			}
+			if (sEmail.length() < 6) {
+				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+			}
+			if (sEmail.indexOf('.') == -1) {
+				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+			}					
+			if (sEmail.indexOf('@') == -1) {
+				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+			}					
+			String testEmail = sEmail.toLowerCase();
+			for (int i = 0; i < testEmail.length(); i++) {
+				char c = testEmail.charAt(i);
+				if ((c < 'a') || (c > 'z')) {
+					if ((c != '.') && (c != '@') && ((c < '0') || (c > '9'))) {
+						throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
 					}
 				}
-				updateEmail = true;
+			}
+			updateEmail = true;
+			
+			// Validate c/o-address
+			if (useCOAddress) {
+				if (coStreetAddress.equals("")) {
+					throw new Exception(localize(KEY_CO_STREET_ADDRESS_MISSING, DEFAULT_CO_STREET_ADDRESS_MISSING));
+				}
+				if (coPostalCode.equals("")) {
+					throw new Exception(localize(KEY_CO_POSTAL_CODE_MISSING, DEFAULT_CO_POSTAL_CODE_MISSING));
+				}
+				if (coCity.equals("")) {
+					throw new Exception(localize(KEY_CO_CITY_MISSING, DEFAULT_CO_CITY_MISSING));
+				}
+				updateCOAddress = true;
 			}
 		} catch (Exception e) {
 			errorMessage = e.getMessage();
 		}
-		
 
-				// Check e-mail address ...
-				// Check c/o address ...
 		if (errorMessage != null) {
-			add(getErrorText(errorMessage));
+			add(getErrorText(" " + errorMessage));
 		} else {
 			// Ok to update preferences
+			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+
 			if (updatePassword) {
 				LoginDBHandler.updateLogin(user.getID(), login, newPassword1);
 			}
 			if (updateEmail) {
-				Email email = getUserEmail(iwc);
-				email.setEmailAddress(sEmail);
-				email.store();
+				ub.updateUserMail(user.getID(), sEmail);
+//				Email email = getUserEmail(iwc);
+//				email.setEmailAddress(sEmail);
+//				email.store();
 			}
+			ub.updateUserPhone(user.getID(), 0, phoneHome);
+			ub.updateUserPhone(user.getID(), 1, phoneWork);
+			if (updateCOAddress) {
+				Address coAddress = getCOAddress(iwc);
+				coAddress.setStreetName(coStreetAddress);
+				PostalCode pc = coAddress.getPostalCode();
+				if (pc == null) {
+					PostalCodeHome ph = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+					pc = ph.create();
+				}
+				pc.setPostalCode(coPostalCode);
+				pc.store();
+				coAddress.setPostalCode(pc);
+				coAddress.setCity(coCity);
+				coAddress.store();
+			}
+			MessageSession messageSession = getMessageSession(iwc);
+			messageSession.setIfUserPreferesMessageByEmail(user, messagesViaEmail);
+			CitizenAccountSession cas = getCitizenAccountSession(iwc);
+			cas.setIfUserUsesCOAddress(user, useCOAddress);
 		}
-		drawPermanentUserInfo(iwc);
 		drawForm(iwc);
+		if (errorMessage == null) {
+			add(getLocalizedText(KEY_PREFERENCES_SAVED, DEFAULT_PREFERENCES_SAVED));
+		}
 	}
 	
+/*	
 	private Email getUserEmail(IWContext iwc) {
 		Email email = null;
 		try {
@@ -462,4 +632,40 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		return email;
 	}
+*/
+	
+	private Address getCOAddress(IWContext iwc) {
+		Address coAddress = null;
+		try {
+			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+			AddressHome ah = ub.getAddressHome();
+			AddressType coType = ah.getAddressType2();
+			Collection addresses = user.getAddresses();
+			Iterator iter = addresses.iterator();
+			while (iter.hasNext()) {
+				Address address = (Address) iter.next();
+				int typeID = address.getAddressTypeID();
+				if (typeID == coType.getID()) {
+					return address;
+				}				
+			}
+			// No c/o address found, create one
+			coAddress = ah.create();
+			coAddress.setAddressType(coType);
+			coAddress.store();
+			user.addAddress(coAddress);
+		} catch (Exception e) {
+			super.add(new ExceptionWrapper(e, this));
+		}
+		return coAddress;
+	}
+	
+	private MessageSession getMessageSession(IWContext iwc) throws Exception {
+		return (MessageSession) com.idega.business.IBOLookup.getSessionInstance(iwc, MessageSession.class);
+	}
+	
+	private CitizenAccountSession getCitizenAccountSession(IWContext iwc) throws Exception {
+		return (CitizenAccountSession) com.idega.business.IBOLookup.getSessionInstance(iwc, CitizenAccountSession.class);
+	}
+
 }
