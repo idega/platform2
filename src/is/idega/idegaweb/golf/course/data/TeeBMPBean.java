@@ -142,16 +142,16 @@ public class TeeBMPBean extends GenericEntity implements Tee {
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByCourse(int courseID) throws FinderException {
+	public Collection ejbFindAllByCourse(Object coursePrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
 		return idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindAllByCourse(int courseID, int teeColorID, int genderID) throws FinderException {
+	public Integer ejbFindAllByCourse(Object coursePrimaryKey, Object teeColorPrimaryKey, Object genderPrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
-		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID).appendAndEquals(COLUMN_GENDER_ID, genderID);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey).appendAndEquals(COLUMN_GENDER_ID, genderPrimaryKey);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }

@@ -13,21 +13,21 @@ public class HoleHomeImpl extends com.idega.data.IDOFactory implements HoleHome
  }
 
 
-public java.util.Collection findAllByCourse(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllByCourse(java.lang.Object p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((HoleBMPBean)entity).ejbFindAllByCourse(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllByCourseAndTeeColor(int p0,int p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllByCourseAndTeeColor(java.lang.Object p0,java.lang.Object p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((HoleBMPBean)entity).ejbFindAllByCourseAndTeeColor(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public Hole findHoleByCourseAndTeeColorAndNumber(int p0,int p1,int p2)throws javax.ejb.FinderException{
+public Hole findHoleByCourseAndTeeColorAndNumber(java.lang.Object p0,java.lang.Object p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((HoleBMPBean)entity).ejbFindHoleByCourseAndTeeColorAndNumber(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
@@ -39,7 +39,7 @@ public Hole findHoleByCourseAndTeeColorAndNumber(int p0,int p1,int p2)throws jav
  }
 
 
-public int getCoursePar(int p0,int p1)throws com.idega.data.IDOException{
+public int getCoursePar(java.lang.Object p0,java.lang.Object p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((HoleBMPBean)entity).ejbHomeGetCoursePar(p0,p1);
 	this.idoCheckInPooledEntity(entity);

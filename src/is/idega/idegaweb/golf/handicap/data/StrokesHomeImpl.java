@@ -13,9 +13,9 @@ public class StrokesHomeImpl extends com.idega.data.IDOFactory implements Stroke
  }
 
 
-public java.util.Collection findAllByScorecardID(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllByScorecard(java.lang.Object p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((StrokesBMPBean)entity).ejbFindAllByScorecardID(p0);
+	java.util.Collection ids = ((StrokesBMPBean)entity).ejbFindAllByScorecard(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

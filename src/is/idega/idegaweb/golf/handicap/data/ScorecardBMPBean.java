@@ -56,8 +56,12 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		addAttribute(COLUMN_CAN_INCREASE_HANDICAP, "Can increase handicap", true, true, Boolean.class);
 		addAttribute(COLUMN_CAN_DECREASE_HANDICAP, "Can decrease handicap", true, true, Boolean.class);
 		addAttribute(COLUMN_IS_CORRECTION, "Is handicap correction", true, true, Boolean.class);
+
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_TEE_ID, Tee.class);
+		
+		setNullable(COLUMN_USER_ID, false);
+		setNullable(COLUMN_TEE_ID, false);
 	}
 	
 	//Getters
@@ -155,9 +159,9 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByUser(int userID) throws FinderException {
+	public Collection ejbFindAllByUser(Object userPrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_USER_ID, userID).appendOrderBy(COLUMN_DATE_PLAYED);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_USER_ID, userPrimaryKey).appendOrderBy(COLUMN_DATE_PLAYED);
 		return idoFindPKsByQuery(query);
 	}
 }

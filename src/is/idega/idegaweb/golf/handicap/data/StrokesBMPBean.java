@@ -48,8 +48,12 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		addAttribute(COLUMN_PUTTS, "Putts", true, true, Integer.class);
 		addAttribute(COLUMN_GREEN_IN_REGULATION, "Green in regulation", true, true, Boolean.class);
 		addAttribute(COLUMN_HIT_FAIRWAY, "Fairway hit", true, true, Boolean.class);
+		
 		addManyToOneRelationship(COLUMN_SCORECARD_ID, Scorecard.class);
 		addManyToOneRelationship(COLUMN_HOLE_ID, Hole.class);
+		
+		setNullable(COLUMN_SCORECARD_ID, false);
+		setNullable(COLUMN_HOLE_ID, false);
 	}
 	
 	//Getters
@@ -127,10 +131,10 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByScorecardID(int scorecardID) throws FinderException {
+	public Collection ejbFindAllByScorecard(Object scorecardPrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelect().append("s.*").appendFrom().append(getEntityName()).append(" s,").append(HoleBMPBean.ENTITY_NAME).append(" h");
-		query.appendWhereEquals("s." + COLUMN_HOLE_ID, "h." + COLUMN_HOLE_ID).appendOrderBy("h." + HoleBMPBean.COLUMN_NUMBER);
+		query.appendWhereEquals("s." + COLUMN_HOLE_ID, "h." + COLUMN_HOLE_ID).appendAndEquals(COLUMN_SCORECARD_ID, scorecardPrimaryKey).appendOrderBy("h." + HoleBMPBean.COLUMN_NUMBER);
 		
 		return idoFindPKsByQuery(query);
 	}

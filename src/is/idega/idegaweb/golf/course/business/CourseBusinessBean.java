@@ -14,6 +14,9 @@ import is.idega.idegaweb.golf.course.data.TeeHome;
 
 import java.rmi.RemoteException;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 
@@ -22,7 +25,7 @@ import com.idega.business.IBOServiceBean;
  */
 public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness {
 
-	protected CourseHome getScorecardHome() throws RemoteException {
+	protected CourseHome getCourseHome() throws RemoteException {
 		return (CourseHome) IBOLookup.getServiceInstance(getIWApplicationContext(), Course.class);
 	}
 	
@@ -36,5 +39,48 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 	
 	protected TeeColorHome getTeeColorHome() throws RemoteException {
 		return (TeeColorHome) IBOLookup.getServiceInstance(getIWApplicationContext(), TeeColor.class);
-	}	
+	}
+	
+	public boolean storeCourse(int courseID, int clubID, String courseName, String courseType, int numberOfHoles) throws RemoteException {
+		Course course = null;
+		
+		if (courseID != -1) {
+			try {
+				course = getCourseHome().findByPrimaryKey(new Integer(courseID));
+			}
+			catch (FinderException e) {
+				e.printStackTrace(System.err);
+				return false;
+			}
+		}
+		else {
+			try {
+				course = getCourseHome().create();
+			}
+			catch (CreateException e) {
+				e.printStackTrace(System.err);
+				return false;
+			}
+		}
+		
+		course.setClubID(clubID);
+		course.setCourseName(courseName);
+		course.setCourseType(courseType);
+		course.setNumberOfHoles(numberOfHoles);
+		course.setIsValid(true);
+		course.store();
+		
+		return true;
+	}
+	
+	public void setCourseValidation(int courseID, boolean isValid) throws RemoteException {
+		try {
+			Course course = getCourseHome().findByPrimaryKey(new Integer(courseID));
+			course.setIsValid(isValid);
+			course.store();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -22,6 +22,7 @@ public class CourseBMPBean extends GenericEntity implements Course {
 	public static final String COLUMN_NAME = "course_name";
 	public static final String COLUMN_TYPE = "course_type";
 	public static final String COLUMN_NUMBER_OF_HOLES = "number_of_holes";
+	public static final String COLUMN_VALID = "valid";
 	public static final String COLUMN_CLUB_ID = "club_id";
 	
 	/* (non-Javadoc)
@@ -41,6 +42,7 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		addAttribute(COLUMN_NAME, "The course name", true, true, String.class, 255);
 		addAttribute(COLUMN_TYPE, "The course's type", true, true, String.class, 255);
 		addAttribute(COLUMN_NUMBER_OF_HOLES, "Number of holes", true, true, Integer.class);
+		addAttribute(COLUMN_VALID, "Is valid", true, true, Boolean.class);
 		addOneToOneRelationship(COLUMN_CLUB_ID, Group.class);
 	}
 	
@@ -55,6 +57,10 @@ public class CourseBMPBean extends GenericEntity implements Course {
 
 	public int getNumberOfHoles() {
 		return getIntColumnValue(COLUMN_NUMBER_OF_HOLES);
+	}	
+
+	public boolean getIsValid() {
+		return getBooleanColumnValue(COLUMN_VALID, true);
 	}	
 
 	public int getClubID() {
@@ -78,6 +84,10 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		setColumn(COLUMN_NUMBER_OF_HOLES, numberOfHoles);
 	}	
 
+	public void setIsValid(boolean isValid) {
+		setColumn(COLUMN_VALID, isValid);
+	}	
+
 	public void setClubID(int clubID) {
 		setColumn(COLUMN_CLUB_ID, clubID);
 	}	
@@ -94,9 +104,9 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		return this.idoFindPKsByQuery(query);
 	}
 
-	public Collection ejbFindCoursesByClub(int clubID) throws FinderException {
+	public Collection ejbFindCoursesByClub(Object clubPrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubID);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubPrimaryKey);
 
 		return this.idoFindPKsByQuery(query);
 	}
@@ -108,9 +118,9 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		return this.idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindCourseByClubAndName(int clubID, String name) throws FinderException {
+	public Integer ejbFindCourseByClubAndName(Object clubPrimaryKey, String name) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubID).appendAndEqualsQuoted(COLUMN_NAME, name);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubPrimaryKey).appendAndEqualsQuoted(COLUMN_NAME, name);
 
 		return (Integer) idoFindOnePKByQuery(query);
 	}

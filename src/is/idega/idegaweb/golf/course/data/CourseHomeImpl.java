@@ -20,7 +20,7 @@ public java.util.Collection findAllCourses()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public Course findCourseByClubAndName(int p0,java.lang.String p1)throws javax.ejb.FinderException{
+public Course findCourseByClubAndName(java.lang.Object p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((CourseBMPBean)entity).ejbFindCourseByClubAndName(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -34,7 +34,7 @@ public Course findCourseByName(java.lang.String p0)throws javax.ejb.FinderExcept
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findCoursesByClub(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findCoursesByClub(java.lang.Object p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CourseBMPBean)entity).ejbFindCoursesByClub(p0);
 	this.idoCheckInPooledEntity(entity);

@@ -13,7 +13,7 @@ public class ScorecardHomeImpl extends com.idega.data.IDOFactory implements Scor
  }
 
 
-public java.util.Collection findAllByUser(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllByUser(java.lang.Object p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ScorecardBMPBean)entity).ejbFindAllByUser(p0);
 	this.idoCheckInPooledEntity(entity);
