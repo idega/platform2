@@ -63,6 +63,8 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 12);
+		table.setWidth(3, Table.HUNDRED_PERCENT);
+		table.setWidth(getWidth());
 		int row = 1;
 		
 		table.add(getHeader(localize("export.export_data_mapping_editor", "Export data mapping editor")), 1, row);
@@ -78,6 +80,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 			operationalField.setSelectedElement(_operationalField);
 			
 		table.add(getSmallHeader(localize("export.operational_field", "Operational field") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(operationalField, 3, row++);
 		
 		TextInput journalNumber = getTextInput(PARAMETER_JOURNAL_NUMBER, "", _inputWidth, 255);
@@ -86,6 +89,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.journal_number", "Journal number") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(journalNumber, 3, row++);
 		
 		TextInput account = getTextInput(PARAMETER_ACCOUNT, "", _inputWidth, 255);
@@ -94,6 +98,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.account", "Account") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(account, 3, row++);
 		
 		TextInput counterAccount = getTextInput(PARAMETER_COUNTER_ACCOUNT, "", _inputWidth, 255);
@@ -102,6 +107,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.counter_account", "Counter account") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(counterAccount, 3, row++);
 		
 		TextInput payableAccount = getTextInput(PARAMETER_PAYABLE_ACCOUNT, "", _inputWidth, 255);
@@ -110,6 +116,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.payable_account", "Payable account") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(payableAccount, 3, row++);
 		
 		TextInput customerClaimAccount = getTextInput(PARAMETER_CUSTOMER_CLAIM_ACCOUNT, "", _inputWidth, 255);
@@ -118,6 +125,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.customer_claim_account", "Customer claim account") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(customerClaimAccount, 3, row++);
 		
 		DropdownMenu accountSettlementType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_ACCOUNT_SETTLEMENT_TYPE));
@@ -128,6 +136,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.account_settlement_type", "Account settlement type") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(accountSettlementType, 3, row++);
 		
 		DropdownMenu standardPaymentDay = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_STANDARD_PAYMENT_DAY));
@@ -140,6 +149,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("export.standard_payment_day", "Standard payment day") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		table.add(standardPaymentDay, 3, row++);
 		
 		CheckBox cashFlowIn = getCheckBox(PARAMETER_CASH_FLOW_IN, "true");
