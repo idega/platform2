@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/10/21 13:22:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/21 16:15:02 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -62,7 +62,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String SAVE_DEFAULT = "Spara";
     private static final String SAVE_KEY = PREFIX + "save";
-    private static final String SCHOOL_DEFAULT = "Skola";
+    //private static final String SCHOOL_DEFAULT = "Skola";
     private static final String SCHOOL_KEY = PREFIX + "school";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "ssn";
