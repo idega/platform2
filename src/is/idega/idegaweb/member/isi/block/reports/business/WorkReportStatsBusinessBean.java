@@ -3842,7 +3842,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			                  ((double) (notDone>0?notDone:(done!=0?done:1)))
 			                ) * 100.0 
 			                  * (((done!=0 && notDone!=0) && (done>=notDone))?1.0:-1.0);*/
-			double change = (done+notDone)==0?1.0:(done/(done+notDone));
+			double change = ((notDone==0)?1.0:((double)done)/((double)(done+notDone)))*100.0;
 			regData.addData(percentReportsDone, format.format(change));
 			
 			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
@@ -4175,7 +4175,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				regionalUnionsStatsMap.put(regionalUnionIdentifier, regData);
 				regData.addData(regionalUnionName, regionalUnionIdentifier);
 				regData.addData(orderField, "b");
-				regData.addData(clubName, "");
+				regData.addData(clubName, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
 				regData.addData(memberCount, new Integer(0));
 				regData.addData(playerCount, new Integer(0));
 				regData.addData(memberCountTot, new Integer(0));
@@ -4348,7 +4348,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					leagueStatsMap.put(leagueKey, leagueStatsData);
 					leagueStatsData.addData(leagueString, leagueIdentifier);
 					leagueStatsData.addData(orderField, "b");
-					leagueStatsData.addData(clubName, "");
+					leagueStatsData.addData(clubName, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
 					leagueStatsData.addData(memberCount, new Integer(0));
 					leagueStatsData.addData(playerCount, new Integer(0));
 					leagueStatsData.addData(memberCountTot, new Integer(0));
