@@ -111,7 +111,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					
 					if (contract != null) {
 						created = new IWTimestamp(contract.getCreatedDate());
-						if (application.getFromDate() != null)
+						if (contract.getValidFromDate() != null)
 							validFrom = new IWTimestamp(contract.getValidFromDate());
 						else
 							validFrom = null;
