@@ -8,14 +8,15 @@ package is.idega.idegaweb.member.isi.block.members.presentation;
 
 import is.idega.idegaweb.member.isi.block.members.data.MemberGroupData;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.block.media.presentation.ImageInserter;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -67,10 +68,14 @@ public class MemberOverview extends Block {
 		user.getSystemImageID();
 		
 		int imageId = user.getSystemImageID();
-		ImageInserter image = null;
+		Image image = null;
 		if(imageId != -1) {
-			image = new ImageInserter(_iwrb.getLocalizedString("member_overview_imag_text", "User picture"));
-			image.setImageId(imageId);
+			try {
+				image = new Image(imageId, _iwrb.getLocalizedString("member_overview_imag_text", "User picture"));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			System.out.println("No image found for user " + user.getName());
 		}
