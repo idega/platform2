@@ -2,10 +2,39 @@ package com.idega.block.text.business;
 
 import java.sql.*;
 import com.idega.jmodule.object.ModuleInfo;
-import com.idega.block.text.data.TextModule;
+import com.idega.block.text.data.*;
 import com.idega.util.idegaTimestamp;
 
 public class TextBusiness{
+
+  public static TxText getText(int iTextId){
+    TxText TX = new TxText();
+    if ( iTextId > 0 ) {
+      try {
+       TX = new TxText(iTextId);
+      }
+      catch (SQLException e) {
+        e.printStackTrace();
+        TX = new TxText();
+      }
+    }
+    else {
+      TX =  null;
+    }
+    return TX;
+  }
+
+  public static void deleteText(int iTextId) {
+
+    try {
+      new TxText(iTextId).delete();
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+      System.out.println("Text not deleted");
+    }
+  }
+
 
   public static TextModule getTextModule(ModuleInfo modinfo) {
     int textID = -1;
@@ -35,6 +64,7 @@ public class TextBusiness{
   }
 
   public static void deleteText(ModuleInfo modinfo) {
+
     try {
       TextModule text = getTextModule(modinfo);
       text.delete();
@@ -119,6 +149,85 @@ public class TextBusiness{
         }
       }
     }
+
+  }
+
+
+  public static void saveText(int iTxTextId,int iLocalizedTextId,
+            String sHeadline,String sTitle,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId){
+
+
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try {
+      t.begin();
+      boolean txUpdate = false;
+      boolean locUpdate = false;
+      TxText txText = null;
+      LocalizedText locText = null;
+      if(iTxTextId > 0){
+        txUpdate = true;
+        txText = new TxText(iTxTextId);
+        if(iLocalizedTextId > 0){
+          locUpdate = true;
+          locText = new LocalizedText(iLocalizedTextId);
+        }
+        else{
+          locUpdate = false;
+          locText = new LocalizedText();
+        }
+      }
+      else{
+        txUpdate = false;
+        locUpdate = false;
+        txText = new TxText();
+        locText = new LocalizedText();
+      }
+
+      locText.setHeadline(sHeadline);
+      locText.setBody(sBody);
+      locText.setLocaleId(iLocaleId);
+      locText.setTitle( sTitle);
+      locText.setUpdated(idegaTimestamp.getTimestampRightNow());
+
+      txText.setImageId(iImageId);
+      txText.setIncludeImage(useImage);
+      txText.setUpdated(idegaTimestamp.getTimestampRightNow());
+
+
+      if(txUpdate ){
+        txText.update();
+        if(locUpdate){
+          locText.update();
+        }
+        else if(!locUpdate){
+          locText.setCreated(idegaTimestamp.getTimestampRightNow());
+          locText.insert();
+          locText.addTo(txText);
+        }
+      }
+      else if(!txUpdate){
+        txText.setCreated(idegaTimestamp.getTimestampRightNow());
+        txText.setUserId(iUserId);
+        txText.insert();
+        System.err.println("id : "+txText.getID());
+        locText.setCreated(idegaTimestamp.getTimestampRightNow());
+        locText.insert();
+        locText.addTo(txText);
+
+      }
+      t.commit();
+    }
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+      e.printStackTrace();
+    }
+
 
   }
 }
