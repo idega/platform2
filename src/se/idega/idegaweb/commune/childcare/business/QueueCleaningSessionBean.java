@@ -1,11 +1,11 @@
 /*
- * $Id: QueueCleaningSessionBean.java,v 1.2 2004/12/02 12:39:07 laddi Exp $
+ * $Id: QueueCleaningSessionBean.java,v 1.3 2004/12/14 12:23:18 laddi Exp $
  * Created on 25.11.2004
- *
+ * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+ * 
+ * This software is the proprietary information of Idega hf. Use is subject to
+ * license terms.
  */
 package se.idega.idegaweb.commune.childcare.business;
 
@@ -27,17 +27,17 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 12:39:07 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/14 12:23:18 $ by $Author: laddi $
  * 
- * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:aron@idega.com">aron </a>
+ * @version $Revision: 1.3 $
  */
-public class QueueCleaningSessionBean extends IBOSessionBean  implements QueueCleaningSession{
-    
-    private boolean cleaning = false;
-    
-    public boolean cleanQueueInThread(int providerID, User performer) throws FinderException,RemoteException {
-         cleaning = true;
+public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCleaningSession {
+
+	private boolean cleaning = false;
+
+	public boolean cleanQueueInThread(int providerID, User performer) throws FinderException, RemoteException {
+		cleaning = true;
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(ChildCareConstants.PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(ChildCareConstants.PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
 		int daysToReply = Integer.parseInt(properties.getProperty(ChildCareConstants.PROPERTY_DAYS_TO_REPLY, "30"));
@@ -67,7 +67,7 @@ public class QueueCleaningSessionBean extends IBOSessionBean  implements QueueCl
 					application.setLastReplyDate(lastReplyDate.getDate());
 					service.changeCaseStatus(application, service.getCaseStatusPending().getStatus(), performer);
 
-					service.sendMessageToParents(application, subject, body, letterBody, false); 
+					service.sendMessageToParents(application, subject, body, letterBody, false);
 				}
 			}
 
@@ -85,40 +85,40 @@ public class QueueCleaningSessionBean extends IBOSessionBean  implements QueueCl
 			}
 		}
 
-		
 		return false;
 	}
-    
-    public boolean cleanQueue(int providerID, User performer) {
-	    final int providID = providerID;
-	    final User perf = performer;
-	    if (isStillCleaningQueue()) {
-		    new Thread () {
-				public void run () {
-				    try {
-                        cleanQueueInThread( providID,  perf);
-                    } catch (FinderException e) {
-                        e.printStackTrace();
-                    }
-                    catch(RemoteException r){
-                        r.printStackTrace();
-                    }
+
+	public boolean cleanQueue(int providerID, User performer) {
+		final int providID = providerID;
+		final User perf = performer;
+		if (!isStillCleaningQueue()) {
+			new Thread() {
+
+				public void run() {
+					try {
+						cleanQueueInThread(providID, perf);
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
+					catch (RemoteException r) {
+						r.printStackTrace();
+					}
 				}
-			}.start ();
+			}.start();
 			return true;
-	    }
-	    else
-	        return false;
-	    
-	}
-	
-	public boolean isStillCleaningQueue(){
-	    return cleaning;
-	}
-	
-	public ChildCareBusiness getService() throws RemoteException{
-       return (ChildCareBusiness) getServiceInstance(ChildCareBusiness.class);
+		}
+		else
+			return false;
+
 	}
 
+	public boolean isStillCleaningQueue() {
+		return cleaning;
+	}
+
+	public ChildCareBusiness getService() throws RemoteException {
+		return (ChildCareBusiness) getServiceInstance(ChildCareBusiness.class);
+	}
 
 }
