@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.3 2003/08/19 22:52:17 kjell Exp $
+ * $Id: ButtonPanel.java,v 1.4 2003/08/20 09:03:26 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,15 +20,16 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.builder.data.IBPage;
 
 /**
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/19 22:52:17 $
+ * Last modified: $Date: 2003/08/20 09:03:26 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -56,7 +57,6 @@ public class ButtonPanel extends AccountingBlock {
 	 */
 	public void addButton(String parameter, String label) {
 		GenericButton button = new GenericButton(parameter, label);
-		button.setAsImageButton(true);
 		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
@@ -69,11 +69,28 @@ public class ButtonPanel extends AccountingBlock {
 	 * @param parameter the form parameter name for the button
 	 * @param label the text label for the button
 	 * @param windowClass the class of the window to open when clicked
-	 */
+	 * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
+ 	 */
 	public void addButton(String parameter, String label, Class windowClass) {
 		GenericButton button = new GenericButton(parameter, label);
-		button.setAsImageButton(true);
 		button.setWindowToOpen(windowClass);
+		button = getButton(button);
+		table.add(button, buttonColumn , 1);
+		buttonColumn++;
+		table.setWidth(buttonColumn * COLUMN_WIDTH);
+	}
+
+	/**
+	 * Adds a button to the panel.
+	 * The buttoms are added from left to right.
+	 * @param parameter the form parameter name for the button
+	 * @param label the text label for the button
+	 * @param page an IBPage to be opened when clicked
+	 * @author <a href="http://www.lindman.se">Kjell Lindman</a>
+	 */
+	public void addButton(String parameter, String label, IBPage page) {
+		GenericButton button = new GenericButton(parameter, label);
+		button.setPageToOpen(page);
 		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
