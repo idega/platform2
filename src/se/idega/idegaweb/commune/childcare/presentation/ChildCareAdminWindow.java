@@ -703,7 +703,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		
 		SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
-		schoolClasses.setLayoutVertical(true);
+		//schoolClasses.setLayoutVertical(true);
 		//schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.schooltype", "Type")+":"));
 		//schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.group", "Group")+":"));
 		//schoolClasses.setVerticalSpaceBetween(15);
@@ -736,18 +736,21 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		schoolClasses.getSecondaryDropdown().addMenuElementFirst("-1","");
 		schoolClasses.getSecondaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
 		
-		dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
-		dropdownTable.add(schoolClasses.getSecondaryDropdown(), 2, dropRow++);
+		//dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
+		//dropdownTable.add(schoolClasses.getSecondaryDropdown(), 2, dropRow++);
 		
 		//DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
 		//DropdownMenu schoolTypes = schoolClasses.getPrimaryDropdown();
 		schoolClasses.getPrimaryDropdown().addMenuElementFirst("-1","");
 		schoolClasses.getPrimaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
 		
-		dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
-		dropdownTable.add(schoolClasses.getPrimaryDropdown(), 2, dropRow++);
+		//dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
+		//dropdownTable.add(schoolClasses.getPrimaryDropdown(), 2, dropRow++);
 		//dropdownTable.add(schoolClasses);
 		
+		dropdownTable.add(getSmallText(localize("child_care.school_type_and_school_class", "School type and class")+":"), 1, dropRow);
+		//table.add(mSchoolType, 2, row++);
+		dropdownTable.add(schoolClasses,2,dropRow++);
 		
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
