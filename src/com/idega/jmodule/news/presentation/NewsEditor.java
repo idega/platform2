@@ -55,7 +55,7 @@ public NewsEditor(boolean isAdmin){
 
 private void setSpokenLanguage(ModuleInfo modinfo){
 
-String language2 = modinfo.getRequest().getParameter("language");
+String language2 = modinfo.getParameter("language");
     if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
     if ( language2 != null) language = language2;
 
@@ -101,7 +101,7 @@ public void main(ModuleInfo modinfo)throws Exception{
         this.isAdmin=this.isAdministrator(modinfo);
 
         setSpokenLanguage(modinfo);
-	String mode = modinfo.getRequest().getParameter("mode");
+	String mode = modinfo.getParameter("mode");
 
 
         headlinestring = new Text("<b>"+Lang[1]+"</b>");
@@ -126,7 +126,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 				if( storeNews(modinfo) ) add(feedBack(true));
 				else add(feedBack(false));
 			}
-                        else if( mode.equals("delete") ){ add(deleteNews(modinfo.getRequest().getParameter("news_id"))); }
+                        else if( mode.equals("delete") ){ add(deleteNews(modinfo.getParameter("news_id"))); }
 		}
 
 		//else we are either writing something new or we are updating something we have selected
@@ -203,10 +203,10 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
 
 
 
-		String news_id = modinfo.getRequest().getParameter("news_id");
-		String category_id = modinfo.getRequest().getParameter("category_id");
-		/*String mode = modinfo.getRequest().getParameter("mode");
-		String mode = modinfo.getRequest().getParameter("mode");*/
+		String news_id = modinfo.getParameter("news_id");
+		String category_id = modinfo.getParameter("category_id");
+		/*String mode = modinfo.getParameter("mode");
+		String mode = modinfo.getParameter("mode");*/
 
 	//draw everything first and then if we already selected a news then
 	//fill up the selection boxes with that
@@ -335,12 +335,13 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
         Window insertNewsImageWindow = new Window("Nymynd", 480, 420, "/news/insertimage.jsp?submit=new");
         //Link insertImageLink =  new Link(new Image("/servlet/imageModule?image_id=1"),insertNewsImageWindow);
         //check if we updated the picture
-        String image_session_id = (String) Session.getAttribute("image_id");
+        String image_session_id = (String) modinfo.getSessionAttribute("image_id");
         String image_id = null;
         Table imageTable = new Table(1,2);
         imageTable.setAlignment("center");
 
-        CheckBox includeImg = new CheckBox("includeImage", "Y");
+        //CheckBox includeImg = new CheckBox("includeImage", "Y");
+        HiddenInput includeImg = new HiddenInput("includeImage", "Y");
 
         if(image_session_id != null){
           //debug setja inn nota mynd
@@ -420,120 +421,113 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
 
 }
 
-public boolean storeNews(ModuleInfo modinfo)throws SQLException, IOException
-{
+public boolean storeNews(ModuleInfo modinfo)throws SQLException, IOException{
 
-	HttpServletRequest Request = modinfo.getRequest();
-	HttpServletResponse Response = modinfo.getResponse();
-	HttpSession Session = modinfo.getSession();
-	boolean update=false;
+boolean update=false;
 
-			//debug
-			PrintWriter out = Response.getWriter();
-
-	String news_id = Request.getParameter("news_id");
+String news_id = modinfo.getParameter("news_id");
 //	out.println("newsid :"+news_id);
 
-	if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
-	//	out.println("update :"+update);
+if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
+//	out.println("update :"+update);
 
 
-		//init parameters
-		//first the required ones
+  //init parameters
+  //first the required ones
 
 
-		String newsHeader = Request.getParameter("NewsHeader");
-		//out.println("<br> fyrirsogn: "+newsHeader);
+  String newsHeader = modinfo.getParameter("NewsHeader");
+  //out.println("<br> fyrirsogn: "+newsHeader);
 
-		String newsText = Request.getParameter("NewsText");
+  String newsText = modinfo.getParameter("NewsText");
 
-                newsText = TextSoap.findAndReplace(newsText, "“","\"");
-                newsText = TextSoap.findAndReplace(newsText, "'","´");
+  newsText = TextSoap.findAndReplace(newsText, "“","\"");
+  newsText = TextSoap.findAndReplace(newsText, "'","´");
 
-		//out.println("<br> text: "+newsText);
+  //out.println("<br> text: "+newsText);
 
-		String category_id = Request.getParameter("category_id");
-		//out.println("<br> category_id: "+category_id);
+  String category_id = modinfo.getParameter("category_id");
+  //out.println("<br> category_id: "+category_id);
 
 
-		if( ((newsHeader==null)||(newsHeader.equalsIgnoreCase("")) ) || ((newsText==null)||(newsText.equalsIgnoreCase(""))) || ((category_id==null)||(category_id.equalsIgnoreCase("-1")) )){
-			return false;
-		}
+  if( ((newsHeader==null)||(newsHeader.equalsIgnoreCase("")) ) || ((newsText==null)||(newsText.equalsIgnoreCase(""))) || ((category_id==null)||(category_id.equalsIgnoreCase("-1")) )){
+          return false;
+  }
 
-		News news = null;
-		//make the news object and fill-it up
-		if (update) news = new News(Integer.parseInt(news_id));
-		else news = new News();
+  News news = null;
+  //make the news object and fill-it up
+  if (update) news = new News(Integer.parseInt(news_id));
+  else news = new News();
 
-		news.setHeadline(newsHeader);
+  news.setHeadline(newsHeader);
 
-		news.setText(newsText);
+  news.setText(newsText);
 
-		news.setNewsCategoryId(new Integer(category_id));
+  news.setNewsCategoryId(new Integer(category_id));
 
 /*
-                NewsCategoryAttributes newsattr = new NewsCategoryAttributes();
-                newsattr.setNewsCategoryId(Integer.parseInt(category_id));
-                newsattr.setAttributeName("union_id");
-                newsattr.setAttributeId(Integer.parseInt(union_id));*/
+  NewsCategoryAttributes newsattr = new NewsCategoryAttributes();
+  newsattr.setNewsCategoryId(Integer.parseInt(category_id));
+  newsattr.setAttributeName("union_id");
+  newsattr.setAttributeId(Integer.parseInt(union_id));*/
 
-		//then the optional ones
-		String source = Request.getParameter("source");
-		//out.println("<br> source: "+source);
-		if ( source!=null ) news.setSource(source);
+  //then the optional ones
+  String source = modinfo.getParameter("source");
+  //out.println("<br> source: "+source);
+  if ( source!=null ) news.setSource(source);
 
-		String author = Request.getParameter("author");
-		//out.println("<br> author: "+author);
-		if ( author!=null ) news.setAuthor(author);
+  String author = modinfo.getParameter("author");
+  //out.println("<br> author: "+author);
+  if ( author!=null ) news.setAuthor(author);
 
-		String daysShown = Request.getParameter("daysShown");
-		//out.println("<br> daysShown: "+daysShown);
-		if ( daysShown!=null ) news.setDaysShown(new Integer(daysShown));
-
-
-		String includeImage = Request.getParameter("includeImage");
-		//out.println("<br> includeImage: "+includeImage);
-		if( includeImage!=null ) news.setIncludeImage(includeImage);
-		else news.setIncludeImage("N");
-
-		String image_id = (String) Session.getAttribute("image_id");
-                Session.removeAttribute("image_id");
-
-		//laga a edison
-		//if(image_id == null) image_id="-1";//ef engin mynd
-		if(image_id == null) image_id="-1";//ef engin mynd
-
-		news.setImageId(new Integer(image_id));
-
-		idegaTimestamp date = new idegaTimestamp();
-
-                if (!update) news.setDate( date.getTimestampRightNow());
-
-		//end init params
-
-		//and save or update
-
-		try{
-			if( update ) {
-                          news.update();
-                     //     news.attr.insert();
+  String daysShown = modinfo.getParameter("daysShown");
+  //out.println("<br> daysShown: "+daysShown);
+  if ( daysShown!=null ) news.setDaysShown(new Integer(daysShown));
 
 
-                        }
-                        else
-                        {
-                          news.insert();
-                       //   newsattr.insert();
-                        }
-			//Session.removeAttribute("image_id");
-		}
-		catch(Exception e){
-                    e.printStackTrace();
-                    System.out.println(e.getMessage());
-                    return false;
-		}
+  String includeImage = modinfo.getParameter("includeImage");
+  //out.println("<br> includeImage: "+includeImage);
+  if( includeImage!=null ) news.setIncludeImage(includeImage);
+  else news.setIncludeImage("N");
 
-		return true;
+  String image_id = (String) modinfo.getSessionAttribute("image_id");
+  modinfo.removeSessionAttribute("image_id");
+
+  //laga a edison
+  //if(image_id == null) image_id="-1";//ef engin mynd
+  if(image_id == null) image_id="-1";//ef engin mynd
+
+  news.setImageId(new Integer(image_id));
+
+  idegaTimestamp date = new idegaTimestamp();
+
+  if (!update) news.setDate( date.getTimestampRightNow());
+
+  //end init params
+
+  //and save or update
+
+  try{
+          if( update ) {
+            news.update();
+       //     news.attr.insert();
+
+
+          }
+          else
+          {
+            news.insert();
+         //   newsattr.insert();
+          }
+          //Session.removeAttribute("image_id");
+  }
+  catch(Exception e){
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+      return false;
+  }
+
+  return true;
 }
 
 
@@ -667,7 +661,7 @@ public DropdownMenu newsDropdown(String newsDropdownName, String categoryDropdow
 {
 	//PrintWriter out = modinfo.getResponse().getWriter();
 	DropdownMenu myDropdown = new DropdownMenu(newsDropdownName);
-	String cotgegoryId = modinfo.getRequest().getParameter(categoryDropdownName);
+	String cotgegoryId = modinfo.getParameter(categoryDropdownName);
 
 
 		Statement Stmt = Conn.createStatement();

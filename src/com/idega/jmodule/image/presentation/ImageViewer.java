@@ -19,9 +19,7 @@ import	com.idega.jmodule.object.*;
 import	com.idega.jmodule.object.interfaceobject.*;
 import	com.idega.jmodule.image.data.*;
 import	com.idega.jmodule.image.business.*;
-import	com.idega.data.*;
 import com.idega.util.text.*;
-import com.idega.jmodule.image.business.*;
 import com.oreilly.servlet.MultipartRequest;
 
 
@@ -120,8 +118,8 @@ return values;
 **
 */
 private void setSpokenLanguage(ModuleInfo modinfo){
- String language2 = modinfo.getRequest().getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
+ String language2 = modinfo.getParameter("language");
+    if (language2==null) language2 = ( String ) modinfo.getSessionAttribute("language");
     if ( language2 != null) language = language2;
 }
 
@@ -152,8 +150,8 @@ public void main(ModuleInfo modinfo)throws Exception{
   newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Edit this image");
   newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit this image");
 
-  String imageId = modinfo.getRequest().getParameter("image_id");
-  String imageCategoryId = modinfo.getRequest().getParameter("image_catagory_id");
+  String imageId = modinfo.getParameter("image_id");
+  String imageCategoryId = modinfo.getParameter("image_catagory_id");
 
   outerTable.setColor(1,1,headerFooterColor);
   outerTable.setColor(1,3,headerFooterColor);
@@ -180,11 +178,12 @@ public void main(ModuleInfo modinfo)throws Exception{
 
 
 
-  String edit = modinfo.getRequest().getParameter("edit");
+  String edit = modinfo.getParameter("edit");
 
   if(edit!=null){
     try{
       getEditor(modinfo);
+      add(outerTable);
     }
     catch(Throwable e){
     e.printStackTrace(System.err);
@@ -225,7 +224,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           String sFirst = modinfo.getParameter("iv_first");//browsing from this image
           if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
 
-          String previousCatagory =  (String)modinfo.getSession().getAttribute("image_previous_catagory_id");
+          String previousCatagory =  (String)modinfo.getSessionAttribute("image_previous_catagory_id");
 
           if ( imageCategoryId != null){
 
@@ -234,7 +233,7 @@ public void main(ModuleInfo modinfo)throws Exception{
             }
 
           ImageEntity[] inApplication = (ImageEntity[]) modinfo.getServletContext().getAttribute("image_entities_"+imageCategoryId);
-          modinfo.getSession().setAttribute("image_previous_catagory_id",imageCategoryId);
+          modinfo.setSessionAttribute("image_previous_catagory_id",imageCategoryId);
 
             categoryId = Integer.parseInt(imageCategoryId);
             ImageCatagory category = new ImageCatagory(categoryId);
@@ -557,35 +556,49 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   Form form = new Form();
   form.setMethod("GET");
 
+  form.addAtBeginning(new HiddenInput("edit","true"));
+
   Link delete = new Link(new Image("/pics/jmodules/image/buttons/delete.gif","Delete the image"));
   delete.addParameter("action","delete");
+  delete.addParameter("edit","true");
   toolbarBelow.add(delete,1,1);
 
   Link gray = new Link(new Image("/pics/jmodules/image/buttons/grayscale.gif","Convert the image to grayscale"));
   gray.addParameter("action","Grayscale");
+  gray.addParameter("edit","true");
   toolbarBelow.add(gray,1,1);
   Link emboss = new Link(new Image("/pics/jmodules/image/buttons/emboss.gif","Emboss the image"));
   emboss.addParameter("action","emboss");
+  emboss.addParameter("edit","true");
   toolbarBelow.add(emboss,1,1);
   Link sharpen = new Link(new Image("/pics/jmodules/image/buttons/sharpen.gif","Sharpen the image"));
   sharpen.addParameter("action","sharpen");
+  sharpen.addParameter("edit","true");
   toolbarBelow.add(sharpen,1,1);
   Link invert = new Link(new Image("/pics/jmodules/image/buttons/invert.gif","Invert the image"));
   invert.addParameter("action","Invert");
+  invert.addParameter("edit","true");
   toolbarBelow.add(invert,1,1);
 
   Text widthtext = new Text("Width:<br>");
   widthtext.setFontSize(1);
   toolbarBelow.add(widthtext,1,2);
+//debug
   TextInput widthInput = new TextInput("width",""+handler.getModifiedWidth());
+
   widthInput.setSize(5);
   toolbarBelow.add(widthInput,1,2);
+
   Text heighttext = new Text("Height:<br>");
   heighttext.setFontSize(1);
   toolbarBelow.add(heighttext,2,2);
-  TextInput heightInput = new TextInput("height",""+handler.getModifiedHeight());
+//debug
+ TextInput heightInput = new TextInput("height",""+handler.getModifiedHeight());
+
   heightInput.setSize(5);
   toolbarBelow.add(heightInput,2,2);
+
+
   Text con = new Text("<br>Constrain?");
   con.setFontSize(1);
   toolbarBelow.add(con,3,2);
@@ -596,9 +609,11 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
 
   Link undo = new Link(new Image("/pics/jmodules/image/buttons/undo.gif","Undo the last changes"));
   undo.addParameter("action","undo");
+  undo.addParameter("edit","true");
   toolbarBelow.add(undo,3,1);
   Link save = new Link(new Image("/pics/jmodules/image/buttons/save.gif","Save the Image"));
   save.addParameter("action","save");
+  save.addParameter("edit","true");
   toolbarBelow.add(save,4,1);
 
 /*
@@ -645,6 +660,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   //box.add(new Text("<nobr>"));
   if( handler != null) {
 
+  //debug
     Image myndin = handler.getModifiedImageAsImageObject(modinfo);
     int percent = 100;
     String percent2  = modinfo.getParameter("percent");
@@ -677,9 +693,8 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   toolbarBelow.setAlignment(4,1,"right");
   imageTable.setVerticalAlignment(2,1,"bottom");
 
-  ShadowBox box2 = new ShadowBox();
-  box2.add(imageTable);
-  form.add(box2);
+
+  form.add(imageTable);
 
   return form;
   }
@@ -775,7 +790,7 @@ public void Upload(Connection Conn, ModuleInfo modinfo)throws IOException,SQLExc
   UploadDoneTable.add(category,2,3);
 
   UploadDoneTable.add(new Text("Hér er myndin eins og hún kemur út á vefnum. Veldu aftur ef eitthvað fór úrskeiðis"),1,1);
-  UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSession().getAttribute("image_id")) ),1,2);
+  UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSessionAttribute("image_id")) ),1,2);
 
   UploadDoneTable.add(new SubmitButton("submit","Ný mynd"),1,3);
   UploadDoneTable.add(new SubmitButton("submit","Vista"),1,3);
@@ -831,23 +846,17 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
 
   Connection Conn = null;
 
-
-  String whichButton = getRequest().getParameter("submit");
-
-////
-
-
-  String ImageId = modinfo.getRequest().getParameter("image_id");
-  String image_in_session = (String) modinfo.getSession().getAttribute("image_in_session");
-  ImageHandler handler = (ImageHandler) modinfo.getSession().getAttribute("handler");
-
+  String whichButton = modinfo.getParameter("submit");
+  String ImageId = modinfo.getParameter("image_id");
+  String image_in_session = (String) modinfo.getSessionAttribute("image_in_session");
+  com.idega.jmodule.image.business.ImageHandler handler = (com.idega.jmodule.image.business.ImageHandler) modinfo.getSessionAttribute("handler");
 
   if (image_in_session!=null){
     if (ImageId != null) {
       if( !ImageId.equalsIgnoreCase(image_in_session) ){
-        modinfo.getSession().setAttribute("image_in_session",ImageId);
-        handler = new ImageHandler(Integer.parseInt(ImageId));
-        modinfo.getSession().setAttribute("handler",handler);
+        modinfo.setSessionAttribute("image_in_session",ImageId);
+        handler = new com.idega.jmodule.image.business.ImageHandler(Integer.parseInt(ImageId));
+        modinfo.setSessionAttribute("handler",handler);
 
       }
       ImageBusiness.handleEvent(modinfo,handler);
@@ -861,9 +870,9 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
   }
    else{
     if( ImageId!=null ) {
-      modinfo.getSession().setAttribute("image_in_session",ImageId);
-      handler = new ImageHandler(Integer.parseInt(ImageId));
-      modinfo.getSession().setAttribute("handler",handler);
+      modinfo.setSessionAttribute("image_in_session",ImageId);
+      handler = new com.idega.jmodule.image.business.ImageHandler(Integer.parseInt(ImageId));
+      modinfo.setSessionAttribute("handler",handler);
       ImageBusiness.handleEvent(modinfo,handler);
       outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
     }
@@ -904,8 +913,8 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
           //  myWindow.setParentToReload();
 
             //debug eiki added
-            int imageId = Integer.parseInt((String)modinfo.getSession().getAttribute("image_id"));
-            String[] categories = modinfo.getRequest().getParameterValues("category");
+            int imageId = Integer.parseInt((String)modinfo.getSessionAttribute("image_id"));
+            String[] categories = modinfo.getParameterValues("category");
             ImageBusiness.saveImageToCatagories(imageId,categories);
 
             //debug eiki make this work!
@@ -915,7 +924,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
           }
           // updating
           else{
-            ImageId = (String)modinfo.getSession().getAttribute("image_id");
+            ImageId = (String)modinfo.getSessionAttribute("image_id");
 
             //debug eiki
             if( ImageId!=null){//var til fyrir

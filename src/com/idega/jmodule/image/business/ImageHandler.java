@@ -16,6 +16,7 @@ import oracle.sql.*;
 import oracle.jdbc.driver.*;
 
 import com.idega.data.BlobInputStream;
+import com.idega.util.database.ConnectionBroker;
 import com.idega.data.BlobWrapper;
 import com.idega.jmodule.client.imageModule;
 import com.idega.jmodule.image.data.*;
@@ -34,8 +35,7 @@ import com.idega.servlet.IWCoreServlet;
  * Must seperate reading the image and resizing it for streams in the next version
  */
 
-//public class ImageHandler extends JModule {
-public class ImageHandler extends IWCoreServlet {
+public class ImageHandler{
 
 private PlanarImage originalImage = null;
 private PlanarImage modifiedImage = null;
@@ -52,36 +52,33 @@ private int modifiedWidth = -1;
 private int modifiedHeight = -1;
 private float quality = 0.75f;
 private boolean keepProportions = false;
-private ImageEntity imageInfo = null;
 private int brightness = 30;
 private KernelJAI kernel;
 private float sum = 9.0F;
 
-
-
-public ImageHandler( int imageId ) throws Throwable{
+public ImageHandler( int imageId ) throws Exception{
   getImageFromDatabase(imageId);
   setModifiedImageAsOriginal();
 }
 
-public ImageHandler( String fileName ) throws Throwable{
+public ImageHandler( String fileName ) throws Exception{
   getImageFromFile(fileName);
   setModifiedImageAsOriginal();
 }
 
-public ImageHandler( PlanarImage originalImage, int ParentId ) throws Throwable{
+public ImageHandler( PlanarImage originalImage, int ParentId ) throws Exception{
   setImageId(ParentId);
   setOriginalImage(originalImage);
   setModifiedImageAsOriginal();
 }
 
 //crappy constructor fix this!
-public ImageHandler( ImageEntity imageEntity ) throws Throwable{
+public ImageHandler( ImageEntity imageEntity ) throws Exception{
   getImageFromDatabase( imageEntity.getID() );
   setModifiedImageAsOriginal();
 }
 
-public void getImageFromFile(String fileName) throws Throwable{
+public void getImageFromFile(String fileName) throws Exception{
 
   File f = new File(fileName);
 
@@ -93,45 +90,91 @@ public void getImageFromFile(String fileName) throws Throwable{
 
 }
 
-public void getImageFromDatabase(int imageId) throws Throwable{
-
+private void getImageFromDatabase(int imageId) throws Exception{
   setImageId(imageId);
+  ImageEntity imageInfo = null;
 
-  this.imageInfo = new com.idega.jmodule.image.data.ImageEntity( imageId );
+  System.out.println("ImageHandler: Image id is "+imageId);
+
+  imageInfo = new ImageEntity( imageId );
+  if( imageInfo== null)   System.out.println("ImageHandler: ImageInfo is NULL!");
+  System.out.println(imageInfo.getName());
+
   setContentType( imageInfo.getContentType() );
   setImageName( imageInfo.getName() );
 
-  BlobWrapper wrapper = imageInfo.getImageValue();
-  BlobInputStream inputStream = wrapper.getBlobInputStream();
+ //BlobWrapper wrapper = imageInfo.getImageValue();
+ /*BlobWrapper wrapper = new BlobWrapper(imageInfo,"image_value");
+   if( wrapper== null)   System.out.println("ImageHandler: BlobWrapper is NULL!");
+  BlobInputStream inputStream = wrapper.getBlobInputStream();*/
 
+  Connection Conn = null;
+  Statement Stmt;
+  ResultSet RS;
+  InputStream inputStream = null;
 
+  Conn = imageInfo.getConnection();
+  Stmt = Conn.createStatement();
+  RS = Stmt.executeQuery("select image_value from image where image_id='"+imageId+"'");
 
-  BufferedInputStream bufStream = new BufferedInputStream(inputStream);
-  MemoryCacheSeekableStream memStream = new MemoryCacheSeekableStream(bufStream);
+  while(RS.next()){
+      inputStream = RS.getBinaryStream("image_value");
+  }
 
-  originalImage = JAI.create("stream", memStream);
+  BufferedInputStream bufStream = getBufferedInputStream(inputStream);
+  MemoryCacheSeekableStream memStream = getMemoryCacheSeekableStream(bufStream);
+  originalImage = getPlanarImageFromStream(memStream);
+  System.out.println("ImageHandler: After JAI.create!");
+
   setWidth(originalImage.getWidth());
   setHeight(originalImage.getHeight());
 
   //update the original entity
   //Debug for now...
-  imageInfo.setWidth(""+originalImage.getWidth());
-  imageInfo.setHeight(""+originalImage.getHeight());
+  imageInfo.setWidth(Integer.toString(originalImage.getWidth()));
+  imageInfo.setHeight(Integer.toString(originalImage.getHeight()));
   imageInfo.update();
-  //
 
-  inputStream.close();//closes the blobinputstream and closes misc stmt and connections
+inputStream.close();//closes the blobinputstream and closes misc stmt and connections
+    System.out.println("ImageHandler: Before closing bufferstream");
   bufStream.close();
+    System.out.println("ImageHandler: Before closing memStream");
   memStream.close();
+
+  /*
+  System.out.println("ImageHandler: Before closing inputstream");
+  inputStream.close();//closes the blobinputstream and closes misc stmt and connections
+    System.out.println("ImageHandler: Before closing bufferstream");
+  bufStream.close();
+    System.out.println("ImageHandler: Before closing memStream");
+  memStream.close();
+  if( Stmt!=null ) Stmt.close();
+*/
+
+  if( RS!=null ) RS.close();
+  if( Conn!=null ) imageInfo.freeConnection(Conn);
+
+
+      System.out.println("ImageHandler: DONE!");
 
 }
 
-public void setOriginalImage(PlanarImage originalImage){
+private synchronized BufferedInputStream getBufferedInputStream(InputStream inputStream){
+  return (new BufferedInputStream(inputStream));
+}
 
+private synchronized MemoryCacheSeekableStream getMemoryCacheSeekableStream(BufferedInputStream bufStream){
+  return (new MemoryCacheSeekableStream(bufStream));
+}
+
+private synchronized PlanarImage getPlanarImageFromStream(MemoryCacheSeekableStream memStream){
+  return (JAI.create("stream", memStream));
+}
+
+public void setOriginalImage(PlanarImage originalImage){
   this.originalImage = originalImage;
   setWidth(originalImage.getWidth());
   setHeight(originalImage.getHeight());
-
 }
 
 private void setImageId( int imageId ){
@@ -250,7 +293,7 @@ private void setModifiedImageAttributes(){
 }
 
 
-public void resizeImage() throws Throwable{
+public void resizeImage() throws Exception{
   ParameterBlock pb = new ParameterBlock();
   //pb.addSource(originalImage);
   pb.addSource(getModifiedImage());
@@ -314,7 +357,7 @@ private float getQuality(){
   return this.quality;
 }
 
-public com.idega.jmodule.object.Image getModifiedImageAsImageObject(ModuleInfo modinfo) throws Throwable{
+public com.idega.jmodule.object.Image getModifiedImageAsImageObject(ModuleInfo modinfo) throws Exception{
   writeModifiedImageToFile(modinfo.getServletContext().getRealPath("/")+"/pics/ModifiedImagetemp.jpg");//temporary storage
   //InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
 return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.getImageName(),this.getModifiedWidth(),this.getModifiedHeight());
@@ -322,17 +365,20 @@ return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.get
 }
 
 
-public void writeModifiedImageToDatabase() throws Throwable{
 
-  writeModifiedImageToFile("imagemoduletemp.jpg");//temporary storage
+public void writeModifiedImageToDatabase() throws Exception{
 
-  InputStream input = new FileInputStream("imagemoduletemp.jpg");
+  writeModifiedImageToFile("/pics/imagemoduletemp.jpg");//temporary storage
+
+  //debug change so that more than one can use this at once
+  InputStream input = new FileInputStream("/pics/imagemoduletemp.jpg");
+  ImageEntity entity = new ImageEntity();
 
   Connection Conn = null;
   String dataBaseType = "";
   try{
 
-    Conn = getConnection();
+    Conn = (entity).getConnection();
     dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
     modifiedImageId = getNewImageID(Conn);
     String statement = "insert into image (image_id,image_value,content_type,image_name,from_file,parent_id,width,height) values("+ modifiedImageId +",?,?,?,'N','"+ getImageId() +"',"+ getModifiedWidth() +","+ getModifiedHeight() +")";
@@ -457,12 +503,12 @@ public void writeModifiedImageToDatabase() throws Throwable{
     System.out.println(E.toString());
   }
   finally{
-    freeConnection(Conn);
+   entity.freeConnection(Conn);
   }
 
 }
 
-public void writeModifiedImageToFile(String filename) throws Throwable{
+public void writeModifiedImageToFile(String filename) throws Exception{
 
   if ( filename.equalsIgnoreCase("")) filename = getImageName();
   OutputStream output = new FileOutputStream(filename);
