@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/12 12:59:51 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/12 13:21:20 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -521,7 +521,7 @@ public class ViewpointForm extends CommuneBlock {
 	}
 
 	private void forwardViewpoint (final IWContext context) {
-        Group receiverGroup = null;
+        //Group receiverGroup = null;
         User receiverUser = null;
 		final Table table = new Table ();
 		int row = 1;
@@ -536,10 +536,10 @@ public class ViewpointForm extends CommuneBlock {
             final String loginName = context.getParameter (LOGINNAME_KEY);
             receiverUser = getUserFromLogin (context, loginName);
             if (receiverUser == null) {
-                table.add (getLocalizedString (UNKNOWN_KEY, UNKNOWN_DEFAULT)
+                table.add (new Text(getLocalizedString (UNKNOWN_KEY, UNKNOWN_DEFAULT)
                            + " "  + getLocalizedString
                            (LOGINNAME_KEY, LOGINNAME_DEFAULT).toLowerCase ()
-                           + ": " + (loginName != null ? loginName : ""), 1,
+                           + ": " + (loginName != null ? loginName : "")), 1,
                            row++);
             }
         } else if (null != forwardType && forwardType.equals (SSN_KEY)) {
@@ -556,10 +556,10 @@ public class ViewpointForm extends CommuneBlock {
             }
             if (null == receiverUser) {
                 // unknown ssn
-                table.add (getLocalizedString (UNKNOWN_KEY, UNKNOWN_DEFAULT)
+                table.add (new Text(getLocalizedString (UNKNOWN_KEY, UNKNOWN_DEFAULT)
                            + " " + getLocalizedString
                            (SSN_KEY, SSN_DEFAULT).toLowerCase () + ": "
-                           + (ssn != null ? ssn : ""), 1, row++);
+                           + (ssn != null ? ssn : "")), 1, row++);
             }
         } else if (null != forwardType && forwardType.equals (GROUPNAME_KEY)) {
             // Group name entered
@@ -570,14 +570,14 @@ public class ViewpointForm extends CommuneBlock {
                 final GroupHome groupHome = groupBusiness.getGroupHome ();
                 final Collection groups = groupHome.findGroupsByMetaData
                         ("IC_GROUP_NAME", groupName);
-                table.add (GROUPNAME_DEFAULT + "=" + groupName, 1, row++);
-                table.add (groups.toString (), 1, row++);
+                table.add (new Text(GROUPNAME_DEFAULT + "=" + groupName), 1, row++);
+                table.add (new Text(groups.toString ()), 1, row++);
             } catch (Exception e) {
-                table.add ("Ett fel inträffade", 1, row++);
+                table.add (new Text("Ett fel inträffade"), 1, row++);
                 e.printStackTrace ();
             }
         } else {
-            table.add ("Okänd typ av vidarebefordran", 1, row++);
+            table.add (new Text("Okänd typ av vidarebefordran"), 1, row++);
         }            
 
         try {
@@ -587,15 +587,15 @@ public class ViewpointForm extends CommuneBlock {
                 final ViewpointBusiness viewpointBusiness
                         = getViewpointBusiness(context);
                 viewpointBusiness.registerHandler(viewpointId, receiverUser);
-                table.add (getLocalizedString (VIEWPOINT_KEY, VIEWPOINT_DEFAULT)
+                table.add (new Text(getLocalizedString (VIEWPOINT_KEY, VIEWPOINT_DEFAULT)
                            + " " + viewpointId + " " + getLocalizedString
                            (FORWARDEDTO_KEY, FORWARDEDTO_DEFAULT).toLowerCase ()
-                           + " " + receiverUser.getName (), 1, row++);
+                           + " " + receiverUser.getName ()), 1, row++);
             }
             table.setHeight (row++, 12);
             table.add (getUserHomepageLink (context), 1, row++);
         } catch (Exception e) {
-            table.add ("Ett fel inträffade", 1, row++);
+            table.add (new Text("Ett fel inträffade"), 1, row++);
             e.printStackTrace ();
         }
     }
