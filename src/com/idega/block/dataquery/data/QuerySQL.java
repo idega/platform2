@@ -29,13 +29,15 @@ public class QuerySQL {
   private final String DOT = ".";
   private final String ALIAS_PREFIX = "A_";
   
+  // bean class name (String)
   private Set usedEntities = new HashSet();
-  // source
-  private String sourceEntityTable;
-  // entities
-  private Map entityQueryEntity = new HashMap();
-  // select fields
-  private Map fieldQueryField = new HashMap();
+  
+  // bean class name (String) : (QueryEntityPart)
+  private Map entityQueryEntity= new HashMap();
+  
+  // field name (String) : (QueryFieldPart)
+  private Map fieldNameQueryField = new HashMap();
+  
   private List fieldOrder = new ArrayList();
   // conditions
   private List conditions = new ArrayList();
@@ -68,9 +70,8 @@ public class QuerySQL {
     List displayNames = new ArrayList();
     Iterator fieldOrderIterator = fieldOrder.iterator();
     while (fieldOrderIterator.hasNext())  {
-      String fieldName  = (String) fieldOrderIterator.next();
-      QueryFieldPart field = (QueryFieldPart) fieldQueryField.get(fieldName);
-      String display = field.getDisplay(); 
+      QueryFieldPart queryField = (QueryFieldPart) fieldOrderIterator.next();
+      String display = queryField.getDisplay(); 
       displayNames.add(display);
     }
     return displayNames;
@@ -93,7 +94,7 @@ public class QuerySQL {
     Iterator iterator = entities.iterator();
     while (iterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) iterator.next();
-      String name = queryEntity.getName();
+      String name = queryEntity.getBeanClassName();
       entityQueryEntity.put(name, queryEntity);
     }
   }
@@ -107,8 +108,9 @@ public class QuerySQL {
     while (fieldIterator.hasNext())  {
       QueryFieldPart field = (QueryFieldPart) fieldIterator.next();
       String name = field.getName();
-      fieldQueryField.put(name, field);
-      fieldOrder.add(name);
+      String entity = field.getEntity();
+      fieldNameQueryField.put(name, field);
+      fieldOrder.add(field);
     }
   }
   
@@ -133,35 +135,25 @@ public class QuerySQL {
     // set fields (select clause)
     Iterator fieldIterator = fieldOrder.iterator(); 
     while (fieldIterator.hasNext()) {
-      String name = (String) fieldIterator.next();
-      QueryFieldPart queryField = (QueryFieldPart) fieldQueryField.get(name);
-      String[] columns = queryField.getColumns();
+      QueryFieldPart queryField = (QueryFieldPart) fieldIterator.next();
       String entity = queryField.getEntity();
-      // alias test
+      // test if entity is supported
       if (! entityQueryEntity.containsKey(entity))  {
         throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
       }
-      // note that this entity is used
-	  usedEntities.add(entity);
-      // use alias name
-      String alias = getUniqueAliasName(entity);
-      StringBuffer aliasPlusDot = new StringBuffer(alias);
-      aliasPlusDot.append(DOT);
-      // add alias name to each column
-      int i;
-      for (i=0; i < columns.length ; i++) {
-        String column = columns[i];
-        StringBuffer aliasPlusDotColumn = new StringBuffer();
-        aliasPlusDotColumn.append(aliasPlusDot).append(column);
-        String aliasPlusDotColumnAsString = aliasPlusDotColumn.toString();
-        query.addSelectClause(aliasPlusDotColumnAsString);
-      }
+    	// mark that this entity is used
+    	usedEntities.add(entity);
+   		// create expression
+   		SQLFunctionExpression functionExpression = new SQLFunctionExpression(queryField, this);
+   		if (functionExpression.isValid()) {
+    		query.addSelectClause(functionExpression);
+   		}
     }
     // set conditions (where clause)
     Iterator conditionsIterator = conditions.iterator();
     while (conditionsIterator.hasNext())  {
       QueryConditionPart condition = (QueryConditionPart) conditionsIterator.next();
-      SQLCriterionExpression criterion = createCriterion(condition);
+      SQLCriterionExpression criterion = new SQLCriterionExpression(condition, this);
       if (criterion.isValid()) {
         query.addWhereClause(criterion);
       }
@@ -170,12 +162,12 @@ public class QuerySQL {
     Iterator entityIterator = entityQueryEntity.values().iterator();
     while (entityIterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) entityIterator.next();
-      String table = getTableName(queryEntity.getBeanClassName());
       String entity = queryEntity.getBeanClassName();
       // add only entities that are actually used
       if (usedEntities.contains(entity))  {
         // use alias name
-        String alias = getUniqueAliasName(entity);
+        String alias = getUniqueNameForEntity(entity);
+        String table = getTableName(entity);
         query.addFromClause(table, alias);
       }
     }    
@@ -183,37 +175,7 @@ public class QuerySQL {
   }
       
     
-  private SQLCriterionExpression createCriterion(QueryConditionPart condition) throws IOException {
-
-    String field = condition.getField();
-    QueryFieldPart queryField = (QueryFieldPart) fieldQueryField.get(field);
-    if (queryField == null) {
-      throw new IOException("[QuerySQL] criteria could not be created, field is unknown");
-    }
-    String entity = queryField.getEntity();
-    QueryEntityPart queryEntity = (QueryEntityPart) entityQueryEntity.get(entity);
-    if (queryEntity == null) {
-      throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
-    }
-    // note that this entity is used
-    usedEntities.add(entity);
-    String[] columns = queryField.getColumns();
-    if (columns == null || columns.length != 1) {
-      throw new IOException("[QuerySQL] criteria could not be created, column is unknown");
-    }
-    // get the only one
-    String column = columns[0];
-    String type = condition.getType();
-    String pattern = condition.getPattern();
-    // get columnclass
-    String columnClass = getClassOfColumn(queryEntity.getBeanClassName(), column);
-    SQLCriterionExpression criterion = new SQLCriterionExpression();
-    // use alias name
-    String alias = getUniqueAliasName(entity);
-    criterion.add( alias , column, columnClass, pattern, type);
-    return criterion;
-  }
-  
+ 
   private String getTableName(String beanClassName) {
     // performance improvement
     String tableName = (String) beanClassNameTableNameMap.get(beanClassName);
@@ -228,11 +190,37 @@ public class QuerySQL {
     return GenericEntity.getStaticInstance(beanClassName).getStorageClassName(columnName);
   }
   
-  private String getUniqueAliasName(String beanClassName) {
-    StringBuffer buffer = new StringBuffer(ALIAS_PREFIX);
-    buffer.append(getTableName(beanClassName));
-    return buffer.toString();
+  protected List getUniqueNameForField(QueryFieldPart queryFieldPart)	{
+  	List result = new ArrayList();
+  	if (queryFieldPart == null) 	{
+  		return result;
+  	}
+		String entityName = queryFieldPart.getEntity();
+		String uniqueName = getUniqueNameForEntity(entityName);
+		String[] columns = queryFieldPart.getColumns();
+		for (int i = 0; i < columns.length; i++) {
+			String columnName = columns[i];
+			StringBuffer buffer = new StringBuffer(uniqueName);
+			buffer.append(DOT).append(columnName);
+			String uniqueColumnName = buffer.toString();
+			result.add(uniqueColumnName);
+		}
+		return result;
+  }
+
+  protected List getUniqueNameForField(String fieldName)  {
+    QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(fieldName);
+    return getUniqueNameForField(field);
   }
     
     
+
+	private String getUniqueNameForEntity(String entity)	{
+		String tableName = getTableName(entity);
+		StringBuffer buffer = new StringBuffer(ALIAS_PREFIX);
+		//TODO: thi add something else perhaps the name of that query to handle subqueries
+		// buffer.append....
+		buffer.append(tableName);		
+    return buffer.toString();
+  }				
 }

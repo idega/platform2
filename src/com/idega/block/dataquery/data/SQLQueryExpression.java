@@ -34,7 +34,7 @@ public class SQLQueryExpression {
     fromClauses.add(buffer.toString());
   }
   
-  public void addSelectClause(String clause) {
+  public void addSelectClause(SQLFunctionExpression clause) {
     selectClauses.add(clause);
   }
 
@@ -59,8 +59,8 @@ public class SQLQueryExpression {
     StringBuffer spacing = new StringBuffer(SELECT).append(WHITE_SPACE);
     Iterator select = selectClauses.iterator();
     while (select.hasNext())  {
-      String clause = (String) select.next();
-      expression.append(spacing).append(clause);
+      SQLFunctionExpression clause = (SQLFunctionExpression) select.next();
+      expression.append(spacing).append(clause.toSQLString());
       spacing = whiteSpaceCommaWhiteSpace;
     }
 

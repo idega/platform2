@@ -1,6 +1,7 @@
 package com.idega.block.dataquery.data;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.idega.block.dataquery.business.QueryConditionPart;
@@ -21,8 +22,10 @@ public class SQLCriterionExpression {
   public static final char APOSTROPHE = '\'';
   private static final String INTEGER = Integer.class.getName(); 
   
-  private String firstTable = null;
-  private String firstColumn = null;
+  private QueryConditionPart condition = null;
+  private QuerySQL querySQL = null;
+
+  private String valueField = null;
   private String firstColumnClass = null;
   private String pattern = null;
   private String comparison = null;
@@ -40,19 +43,28 @@ public class SQLCriterionExpression {
     typeSQL.put(QueryConditionPart.TYPE_LEQ, "<=");
   }
      
+	public SQLCriterionExpression(QueryConditionPart condition, QuerySQL querySQL)	{
+		this.condition = condition;
+		this.querySQL = querySQL;
+		initialize();
+	}	
   
-  
-  public void add(String table, String column, String columnClass, String pattern, String type)  {
-    firstTable = table;
-    firstColumn = column;
-    firstColumnClass = columnClass;
-    this.pattern = pattern;
+  private void initialize()	{
+  	String field = condition.getField();
+  	List fieldValueList = querySQL.getUniqueNameForField(field);
+  	if (fieldValueList.size() != 1)	{
+  		// something wrong
+  		return;
+  	}
+  	valueField = (String) fieldValueList.get(0);
+    String type = condition.getType();
     comparison = (String) typeSQL.get(type);
+    pattern = condition.getPattern();
   }
-    
+
   public String toSQLString() {
     StringBuffer expression = 
-      new StringBuffer(firstTable).append(DOT).append(firstColumn).append(WHITE_SPACE);
+      new StringBuffer(valueField).append(WHITE_SPACE);
     expression.append(comparison);
     if (pattern != null)  {
       expression.append(WHITE_SPACE);
@@ -67,8 +79,7 @@ public class SQLCriterionExpression {
   }
   
   public boolean isValid() {
-    return (isValid(firstTable) &&
-            isValid(firstColumn) &&
+    return (isValid(valueField) &&
             isValid(pattern) &&
             isValid(comparison));
   } 
