@@ -71,6 +71,8 @@ public class PublicBooking extends Block  {
   private void init(IWContext iwc) {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
+    super.getParentPage().setExpiryDate("Tue, 20 Aug 1996 14:25:27 GMT");
+    iwc.getResponse().addHeader("Expires","Tue, 20 Aug 1996 14:25:27 GMT");
 
     String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
@@ -87,7 +89,7 @@ public class PublicBooking extends Block  {
       try {
 
         productId = Integer.parseInt(sProductId);
-        product = new Product(productId);
+        product = ProductBusiness.getProduct(productId);
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
@@ -667,6 +669,19 @@ public class PublicBooking extends Block  {
           no.setAttribute("onClick","history.go(-1)");
 
 
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
+      if (ccNumber.length() <5) {
+        table.add(getBoldTextWhite(ccNumber),2,row);
+      }else {
+        for (int i = 0; i < ccNumber.length() -4; i++) {
+          table.add(getBoldTextWhite("*"),2,row);
+        }
+        table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
+
+      }
       if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
         valid = false;
         Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
@@ -787,8 +802,9 @@ public class PublicBooking extends Block  {
         display.addToText(" ( "+e.getErrorNumber()+" )");
       }
       catch (Exception e) {
-        //success = true;
-        //display.addToText("error : success er on");
+        success = true;
+        debug("error : success er on");
+        display.addToText("error : success er on");
         e.printStackTrace(System.err);
       }
 
@@ -797,6 +813,7 @@ public class PublicBooking extends Block  {
           int bookingId = -1;
           TourBookingForm tbf = new TourBookingForm(iwc,product);
           bookingId = tbf.handleInsert(iwc);
+          debug("er her 2b ");
 
           GeneralBooking gBooking = new GeneralBooking(bookingId);
 
