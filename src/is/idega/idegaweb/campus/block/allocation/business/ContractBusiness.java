@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.3 2001/12/05 21:57:25 aron Exp $
+ * $Id: ContractBusiness.java,v 1.4 2001/12/17 00:40:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -72,12 +72,12 @@ public  class ContractBusiness {
         if(newAccount){
           String prefix = iwrb.getLocalizedString("finance","Finance");
           //System.err.println("adding finance account ");
-          AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
+          AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId,1);
         }
         if(newPhoneAccount){
           //System.err.println("adding phone account ");
           String prefix = iwrb.getLocalizedString("phone","Phone");
-          AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
+          AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId,1);
         }
         if(newLogin  && iGroupId > 0){
           //System.err.println("creating login "+login);

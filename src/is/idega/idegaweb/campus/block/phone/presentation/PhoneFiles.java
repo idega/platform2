@@ -15,6 +15,7 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.data.AccountPhoneEntry;
+import com.idega.block.finance.business.FinanceObject;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.Iterator;
  * @version 1.1
  */
 
-public class PhoneFiles extends PresentationObjectContainer {
+public class PhoneFiles extends PresentationObjectContainer implements FinanceObject{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
@@ -43,6 +44,12 @@ public class PhoneFiles extends PresentationObjectContainer {
 
   private String sessConPrm = "sess_con_status";
 
+  public String getKey(){
+    return "phone_files";
+  }
+  public String getValue(){
+    return "Phonefiles";
+  }
   protected void control(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);

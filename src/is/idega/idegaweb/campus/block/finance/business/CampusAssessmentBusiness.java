@@ -120,7 +120,7 @@ public class CampusAssessmentBusiness  {
         while(I.hasNext()){
           ae = (AccountEntry) I.next();
           if(ae.getStatus().equals(ae.statusCreated)){
-            Amount = ae.getPrice();
+            Amount = ae.getTotal();
             Aid = new Integer(ae.getAccountId());
             if( H.containsKey( Aid ) ){
               a = (Account) H.get(Aid);
@@ -472,7 +472,7 @@ public class CampusAssessmentBusiness  {
                 AE.setPrice(totalAmount);
                 AE.update();
                 totals += totalAmount;
-                eFinanceAccount.setBalance(eFinanceAccount.getBalance()+AE.getPrice());
+                eFinanceAccount.setBalance(eFinanceAccount.getBalance()+AE.getTotal());
                 //System.err.print(eFinanceAccount.getBalance());
                 //System.err.print("+"+AE.getPrice());
                 eFinanceAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
@@ -531,7 +531,7 @@ public class CampusAssessmentBusiness  {
     AE.insert();
     if(V!=null)
       V.add(AE);
-    return AE.getPrice();
+    return AE.getTotal();
     /*
     System.err.println("totals before"+totals);
     totals = totals + AE.getPrice();

@@ -252,7 +252,7 @@ public class CampusEntryGroups extends PresentationObjectContainer {
           A = (AccountEntry) L.get(i);
           T.add(Edit.formatText(A.getName()),col++,row);
           T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
-          T.add(Edit.formatText(nf.format(A.getPrice())),col++,row);
+          T.add(Edit.formatText(nf.format(A.getTotal())),col++,row);
           row++;
         }
         T.setWidth("100%");
