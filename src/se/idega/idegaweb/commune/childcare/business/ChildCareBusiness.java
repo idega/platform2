@@ -3,6 +3,20 @@ package se.idega.idegaweb.commune.childcare.business;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService
 {
+	public final static char STATUS_SENT_IN = 'A';
+	public final static char STATUS_PRIORITY = 'B';
+	public final static char STATUS_ACCEPTED = 'C';
+	public final static char STATUS_PARENTS_ACCEPT = 'D';
+	public final static char STATUS_CONTRACT = 'E';
+	public final static char STATUS_READY = 'F';
+	public final static char STATUS_DELETED = 'T';
+	public final static char STATUS_DENIED = 'U';
+	public final static char STATUS_CANCELLED = 'V';
+	public final static char STATUS_MOVED = 'W';
+	public final static char STATUS_NEW_CHOICE = 'X';
+	public final static char STATUS_NOT_ANSWERED = 'Y';
+	public final static char STATUS_REJECTED = 'Z';
+
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public void addMissingGrantedChecks() throws java.rmi.RemoteException;
