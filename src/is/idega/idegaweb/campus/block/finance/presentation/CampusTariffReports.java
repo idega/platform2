@@ -31,7 +31,6 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
@@ -187,9 +186,8 @@ public class CampusTariffReports extends Finance implements Campus{
 
     SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"),"search","true");
     T.addButton(search);
-    Form F = new Form();
-    F.add(T);
-    return F;
+   
+    return T;
   }
 
   public PresentationObject getResult(IWContext iwc)throws java.rmi.RemoteException{
