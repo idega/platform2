@@ -2271,8 +2271,8 @@ public abstract class BookingForm extends TravelManager{
 				PostalCode tpc;
 				if ( to == null ) {
 					postalCodes = new Vector();
-					
-					postalCodes.add(new Integer(from));
+					postalCodes.add(pcHome.findByPostalCodeFromTo(from, from));
+//					postalCodes.add(new Integer(from));
 				} else {
 					postalCodes = pcHome.findByPostalCodeFromTo(from, to);
 				}
