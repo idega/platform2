@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.25 2004/06/24 15:41:16 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.26 2004/06/24 21:15:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,14 +61,14 @@ public class ReferenceNumber extends Block {
 
   public ReferenceNumber() {
     super();
-    
+    setDefaultValues();
   }
 
   public void main(IWContext iwc) throws Exception {
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     
-    setDefaultValues();
+    
 
     referenceImage = iwrb.getLocalizedImageButton("get","Get");
 

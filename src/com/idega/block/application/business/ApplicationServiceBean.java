@@ -45,7 +45,7 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 	
 	
 
-	public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires)
+	public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires,String extra)
 		throws RemoteException {
 
 		try {
@@ -56,6 +56,8 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 			}
 			subject.setExpires(expires);
 			subject.setDescription(sName);
+			if(extra!=null)
+				subject.setExtraAttribute(extra);
 			subject.store();
 
 			return subject;

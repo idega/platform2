@@ -118,6 +118,7 @@ public class ApplicationSubjectMaker extends Block{
     dTable.addTitle(iwrb.getLocalizedString("subjects","Subjects"));
     dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
     dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
 
     if(L != null){
       int a = 2;
@@ -126,7 +127,9 @@ public class ApplicationSubjectMaker extends Block{
 		
         dTable.add(getSubjectLink(AS),1,a);
         dTable.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getLocaleDate(LocaleUtil.getIcelandicLocale())),2,a);
-        dTable.add((getDeleteLink(AS)),3,a);
+        if(AS.getExtraAttribute()!=null)
+        dTable.add(Edit.formatText(AS.getExtraAttribute()),3,a);
+        dTable.add((getDeleteLink(AS)),4,a);
         a++;
       }
     }
@@ -143,16 +146,21 @@ public class ApplicationSubjectMaker extends Block{
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
     ExpireDate.setStyleAttribute("style",Edit.styleAttribute);
     ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
+    TextInput extra = new TextInput("app_subj_extra");
 
     if(subject !=null){
       Description.setContent(subject.getDescription());
       ExpireDate.setDate(subject.getExpires());
+      if(subject.getExtraAttribute()!=null)
+      	extra.setContent(subject.getExtraAttribute());
       dTable.add(new HiddenInput("app_subject_id",subject.getPrimaryKey().toString()));
     }
     dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
     dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
     dTable.add(Description,1,2);
     dTable.add(ExpireDate,2,2);
+    dTable.add(extra,3,2);
     dTable.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save"));
 
     Form F = new Form();
@@ -185,10 +193,11 @@ public class ApplicationSubjectMaker extends Block{
   public void doUpdate(IWContext iwc,ApplicationSubject subject){
     String sDesc= iwc.getParameter("app_subj_desc").trim();
     String sDate = iwc.getParameter("app_subj_xdate");
+    String extra = iwc.getParameter("app_subj_extra");
     Integer id = subject !=null?(Integer)subject.getPrimaryKey():new Integer(-1);
     if(sDesc.length() > 0){
      try {
-		 getApplicationService(iwc).storeApplicationSubject(id,sDesc,new IWTimestamp(sDate).getSQLDate());
+		 getApplicationService(iwc).storeApplicationSubject(id,sDesc,new IWTimestamp(sDate).getSQLDate(),extra);
 	}
 	catch (RemoteException e) {
 		e.printStackTrace();

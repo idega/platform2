@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubjectBMPBean.java,v 1.3 2004/06/05 06:16:42 aron Exp $
+ * $Id: ApplicationSubjectBMPBean.java,v 1.4 2004/06/24 21:15:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ public class ApplicationSubjectBMPBean extends com.idega.data.GenericEntity impl
   private static final String created_ = "created";
   private static final String expires_ = "expires";
   private static final String status_ = "status";
+  private static final String ATTRIBUTE = "INFO_ATTRIBUE";
 
   public ApplicationSubjectBMPBean() {
     super();
@@ -43,6 +44,7 @@ public class ApplicationSubjectBMPBean extends com.idega.data.GenericEntity impl
     addAttribute(created_,"Created",true,true,"java.sql.Date");
     addAttribute(expires_,"Expires",true,true,"java.sql.Date");
     addAttribute(status_,"Status?",true,true,"java.lang.String");
+    addAttribute(ATTRIBUTE,"Status?",true,true,"java.lang.String");
     setMaxLength(description_,255);
     setMaxLength(status_,1);
   }
@@ -101,6 +103,14 @@ public class ApplicationSubjectBMPBean extends com.idega.data.GenericEntity impl
 
   public String getStatus() {
     return((String)getColumnValue(status_));
+  }
+  
+  public void setExtraAttribute(String attribute) {
+    setColumn(ATTRIBUTE,attribute);
+  }
+
+  public String getExtraAttribute() {
+    return((String)getColumnValue(ATTRIBUTE));
   }
   
   public Collection ejbFindAll() throws FinderException{

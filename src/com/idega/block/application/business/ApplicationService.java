@@ -12,6 +12,6 @@ public interface ApplicationService extends com.idega.business.IBOService
  public com.idega.block.application.data.ApplicationSubjectHome getSubjectHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.application.data.ApplicationSubjectInfoHome getSubjectInfoHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean removeApplicationSubject(Integer id) ;
- public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires)
+ public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires, String extra)
 	throws RemoteException ;
 }
