@@ -86,6 +86,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_PRE_SCHOOL = "cc_pre_school";	
 	public static final String PARAMETER_SCHOOL_TYPES = "cc_school_types";	
 	public static final String PARAMETER_EMPLOYMENT_TYPE = "cc_employment_type";
+	public static final String PARAMETER_PLACEMENT_ID = "cc_placement_id";
 	
 	private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
@@ -141,6 +142,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private int _userID = -1;
 	private int _applicationID = -1;
+	private int _placementID = -1;
 	private int _pageID;
 	
 	private IWTimestamp earliestDate;
@@ -231,6 +233,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_APPLICATION_ID);
 		form.maintainParameter(PARAMETER_PAGE_ID);
 		form.maintainParameter(PARAMETER_CONTRACT_ID);
+		form.maintainParameter(PARAMETER_PLACEMENT_ID);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -1364,6 +1367,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_APPLICATION_ID))
 			_applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
 
+		if (iwc.isParameterSet(PARAMETER_PLACEMENT_ID))
+			_placementID = Integer.parseInt(iwc.getParameter(PARAMETER_PLACEMENT_ID));
+
 		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 			
@@ -1519,7 +1525,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private void moveToGroup(IWContext iwc) throws RemoteException {
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
-		getBusiness().moveToGroup(_userID, getSession().getChildCareID(), groupID);
+		getBusiness().moveToGroup(_placementID, groupID);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
