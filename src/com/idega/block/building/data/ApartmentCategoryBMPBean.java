@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.7 2004/06/05 06:41:28 aron Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.8 2004/06/14 15:54:10 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,13 @@ package com.idega.block.building.data;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -68,5 +75,28 @@ public class ApartmentCategoryBMPBean
 			e.printStackTrace();
 			throw new RuntimeException("Error in getApartmentTypes() : " + e.getMessage());
 		}
+	}
+	
+	public Collection ejbFindByComplex(Integer complexID)throws FinderException{
+		Table category = new Table(this,"c");
+		Table type = new Table(ApartmentType.class,"t");
+		Table apartment =new Table(Apartment.class,"a");
+		Table floor =new Table(Floor.class,"f");
+		Table building =new Table(Building.class,"b");
+		SelectQuery query = new SelectQuery(category);
+		query.setAsDistinct(true);
+		query.addColumn(new WildCardColumn(category));
+		try {
+			query.addJoin(type,category);
+			query.addJoin(apartment,type);
+			query.addJoin(apartment,floor);
+			query.addJoin(floor,building);
+		}
+		catch (IDORelationshipException e) {
+			throw new FinderException(e.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(new Column(building,BuildingBMPBean.BU_COMPLEX_ID),MatchCriteria.EQUALS,complexID.intValue() ));
+		query.addOrder(category,this.getIDColumnName(),true);
+		return idoFindPKsBySQL(query.toString());
 	}
 }

@@ -50,16 +50,17 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 	public void initializeAttributes() {
 		addAttribute(COMPLEX_ID,"Complex id",true,true,Integer.class,ONE_TO_ONE,Complex.class);
 		addAttribute(COMPLEX_NAME,"Complex name",String.class);
-		addAttribute(BUILDING_ID,"Building id",true,true,Integer.class,ONE_TO_ONE,Complex.class);
+		addAttribute(BUILDING_ID,"Building id",true,true,Integer.class,ONE_TO_ONE,Building.class);
 		addAttribute(BUILDING_NAME,"Building name",String.class);
-		addAttribute(FLOOR_ID,"Floor id",true,true,Integer.class,ONE_TO_ONE,Complex.class);
+		addAttribute(FLOOR_ID,"Floor id",true,true,Integer.class,ONE_TO_ONE,Floor.class);
 		addAttribute(FLOOR_NAME,"Floor name",String.class);
-		addAttribute(APARTMENT_ID,"Apartment id",true,true,Integer.class,ONE_TO_ONE,Complex.class);
+		addAttribute(APARTMENT_ID,"Apartment id",true,true,Integer.class,ONE_TO_ONE,Apartment.class);
 		addAttribute(APARTMENT_NAME,"Apartment name",String.class);
-		addAttribute(CATEGORY_ID,"Category id",true,true,Integer.class,ONE_TO_ONE,Complex.class);
+		addAttribute(CATEGORY_ID,"Category id",true,true,Integer.class,ONE_TO_ONE,ApartmentCategory.class);
 		addAttribute(CATEGORY_NAME,"Category name",String.class);
-		addAttribute(TYPE_ID,"Type id",true,true,Integer.class,ONE_TO_ONE,Complex.class);
+		addAttribute(TYPE_ID,"Type id",true,true,Integer.class,ONE_TO_ONE,ApartmentType.class);
 		addAttribute(TYPE_NAME,"Type name",String.class);
+		setAsPrimaryKey(APARTMENT_ID,true);
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOView#getCreationSQL()
@@ -87,7 +88,7 @@ public class ApartmentViewBMPBean extends GenericView implements ApartmentView{
 		sql.append(" and f.bu_floor_id = a.bu_floor_id ");
 		sql.append(" and a.bu_aprt_type_id = t.bu_aprt_type_id ");
 		sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id ");
-		return null;
+		return sql.toString();
 	}
 	
 	public Integer getComplexID(){

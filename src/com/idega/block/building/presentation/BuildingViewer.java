@@ -2,6 +2,7 @@ package com.idega.block.building.presentation;
 
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import com.idega.block.building.business.BuildingService;
@@ -141,19 +142,20 @@ public void setApartmentTypeWindowClass(Class windowClass){
        */
       }
 
-      if ( types != null ) {
+      
+      // Find out and present apartment category icons
+      Collection categories = buildingService.getApartmentCategoryHome().findByComplex(iComplexId);
+      if ( categories != null ) {
 
-      	for (Iterator iterator = types.iterator(); iterator.hasNext();) {
-			ApartmentType type = (ApartmentType) iterator.next();
-          ApartmentCategory cat = buildingService.getApartmentCategoryHome().findByPrimaryKey(String.valueOf(type.getApartmentCategoryId()));
-
-          Image image = new Image(cat.getImageId());
-            image.setName("");
-            image.setHorizontalSpacing(4);
-            image.setVerticalSpacing(2);
-          if ( cat.getImageId() != -1 )
-            complexTable.add(image,3,3);
-        }
+      	for (Iterator iterator = categories.iterator(); iterator.hasNext();) {
+      		ApartmentCategory cat = (ApartmentCategory) iterator.next();
+  			Image image = new Image(cat.getImageId());
+  			image.setName("");
+  			image.setHorizontalSpacing(4);
+  			image.setVerticalSpacing(2);
+  			if ( cat.getImageId() != -1 )
+  				complexTable.add(image,3,3);
+      	}
       }
 
 

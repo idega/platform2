@@ -25,7 +25,7 @@ import com.idega.data.IDOStoreException;
  * @author aron 
  * @version 1.0
  */
-public class ApplicationServiceBean extends IBOServiceBean {
+public class ApplicationServiceBean extends IBOServiceBean implements ApplicationService {
 	
 	public ApplicationHome getApplicationHome() throws RemoteException{
 		return (ApplicationHome ) getIDOHome(Application.class);

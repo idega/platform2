@@ -231,6 +231,7 @@ public class ApartmentTypeBMPBean
 	public Collection ejbFindByCategory(Integer categoryID)throws FinderException{
 		Table type =new Table(this);
 		SelectQuery query =new SelectQuery(type);
+		query.addColumn(new WildCardColumn(type));
 		query.addCriteria(new MatchCriteria(type,BU_APRT_CAT_ID,MatchCriteria.EQUALS,categoryID.intValue()));
 		return idoFindPKsBySQL(query.toString());
 	}
@@ -252,9 +253,9 @@ public class ApartmentTypeBMPBean
 		query.setAsDistinct(true);
 		query.addColumn(new WildCardColumn(type));
 		try {
-			query.addJoin(type,apartment);
-			query.addJoin(floor,apartment);
-			query.addJoin(building,floor);
+			query.addJoin(apartment,type);
+			query.addJoin(apartment,floor);
+			query.addJoin(floor,building);
 		}
 		catch (IDORelationshipException e) {
 			throw new FinderException(e.getMessage());

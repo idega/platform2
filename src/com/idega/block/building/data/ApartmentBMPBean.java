@@ -212,32 +212,37 @@ public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBea
 		Table category =new Table(ApartmentCategory.class,"y");
 		Table type = new Table(ApartmentType.class,"t");
 		
+		
 		SelectQuery query =new SelectQuery(apartment);
 		query.addColumn(new WildCardColumn(apartment));
-		
+		query.addJoin(building,BuildingBMPBean.BU_COMPLEX_ID,complex,BuildingBMPBean.BU_COMPLEX_ID);
+		query.addJoin(floor,FloorBMPBean.BU_BUILDING_ID,building,FloorBMPBean.BU_BUILDING_ID);
+		query.addJoin(apartment,BU_FLOOR_ID,floor,BU_FLOOR_ID);
+		query.addJoin(apartment,BU_APRT_TYPE_ID,type,BU_APRT_TYPE_ID);
+		query.addJoin(type,ApartmentTypeBMPBean.BU_APRT_CAT_ID,category,ApartmentTypeBMPBean.BU_APRT_CAT_ID);
 
-		if(complexID !=null ){
+		if(complexID !=null && complexID.intValue()>0){
 			query.addCriteria(new MatchCriteria(building,BuildingBMPBean.BU_COMPLEX_ID,MatchCriteria.EQUALS,complexID.intValue()));
 			if(order)
 				query.addOrder(complex,ComplexBMPBean.NAME,true);
 			
 		}
-		if(buildingID !=null ){
+		if(buildingID !=null && buildingID.intValue()>0 ){
 			query.addCriteria(new MatchCriteria(floor,FloorBMPBean.BU_BUILDING_ID,MatchCriteria.EQUALS,buildingID.intValue()));
 			if(order)
 				query.addOrder(building,BuildingBMPBean.NAME,true);
 		}
-		if(floorID !=null){
+		if(floorID !=null && floorID.intValue()>0){
 			query.addCriteria(new MatchCriteria(apartment,ApartmentBMPBean.BU_FLOOR_ID,MatchCriteria.EQUALS,floorID.intValue()));
 			if(order)
 				query.addOrder(floor,FloorBMPBean.NAME,true);
 		}
-		if(typeID !=null ){
+		if(typeID !=null && typeID.intValue()>0){
 			query.addCriteria(new MatchCriteria(apartment,ApartmentBMPBean.BU_APRT_TYPE_ID,MatchCriteria.EQUALS,typeID.intValue()));
 			if(order)
 				query.addOrder(type,ApartmentTypeBMPBean.NAME,true);
 		}
-		if(categoryID !=null){
+		if(categoryID !=null && categoryID.intValue()>0){
 			query.addCriteria(new MatchCriteria(type,ApartmentTypeBMPBean.BU_APRT_CAT_ID,MatchCriteria.EQUALS,categoryID.intValue()));
 			if(order)
 				query.addOrder(category,ApartmentCategoryBMPBean.NAME,true);

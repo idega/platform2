@@ -113,7 +113,7 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 			SelectQuery query =new SelectQuery(file);
 			query.addColumn(new WildCardColumn(file));
 			query.addJoin(building,file);
-			query.addCriteria(new MatchCriteria(building,IC_IMAGE_ID,MatchCriteria.EQUALS,complexID.intValue()));
+			query.addCriteria(new MatchCriteria(building,BU_COMPLEX_ID,MatchCriteria.EQUALS,complexID.intValue()));
 			return idoGetRelatedEntitiesBySQL(ICFile.class,query.toString());
 		}
 		catch (IDORelationshipException e) {
