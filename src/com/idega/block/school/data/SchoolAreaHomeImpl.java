@@ -13,6 +13,13 @@ public class SchoolAreaHomeImpl extends com.idega.data.IDOFactory implements Sch
  }
 
 
+public SchoolArea findSchoolAreaByAreaName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolAreaBMPBean)entity).ejbFindSchoolAreaByAreaName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolAreaBMPBean)entity).ejbFindAllBySchoolType(p0);

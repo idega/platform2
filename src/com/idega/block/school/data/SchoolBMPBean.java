@@ -84,12 +84,6 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		return getSchoolName();
 	}
 
-	public int getSchoolTypeId() {
-		return this.getIntColumnValue(SCHOOLTYPE);
-	}
-	public void setSchoolTypeId(int id) {
-		this.setColumn(SCHOOLTYPE, id);
-	}
 	public int getSchoolAreaId() {
 		return this.getIntColumnValue(SCHOOLAREA);
 	}
@@ -226,6 +220,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		super.idoAddTo(year);
 	}
 
+	public void addSchoolType(SchoolType type) throws IDOAddRelationshipException {
+		super.idoAddTo(type);
+	}
+	
 	public void addSchoolYearsRemoveOther(int[] ids) {
 		try {
 			super.removeFrom(SchoolYear.class);
@@ -354,6 +352,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	public Collection getImages() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(ICFile.class);
 	}
+	
+	public Collection getSchoolTypes() throws IDORelationshipException {
+		return this.idoGetRelatedEntities(SchoolType.class);
+	}
 
 	public void removeImages() throws IDORelationshipException {
 		this.idoRemoveFrom(ICFile.class);
@@ -367,7 +369,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	public void addImage(ICFile image) throws IDORelationshipException {
 		this.idoAddTo(image);
 	}
-
+	
 	public void setImages(Collection images) throws IDORelationshipException, RemoteException {
 		this.idoRemoveFrom(ICFile.class);
 		if (images != null) {

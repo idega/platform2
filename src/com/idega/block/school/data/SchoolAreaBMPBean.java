@@ -1,6 +1,7 @@
 package com.idega.block.school.data;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,6 +56,14 @@ public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 	public Collection ejbFindAllSchoolAreas() throws javax.ejb.FinderException {
 		return super.idoFindAllIDsBySQL();
 	}
+	
+	public Integer ejbFindSchoolAreaByAreaName(String name) throws javax.ejb.FinderException {
+		IDOQuery sql = new IDOQuery();
+		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEquals(this.NAME,name);
+		
+		return (Integer)super.idoFindOnePKByQuery(sql);
+	}
+
 
 	public Collection ejbFindAllBySchoolType(int type_id) throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("select distinct a.* ");
