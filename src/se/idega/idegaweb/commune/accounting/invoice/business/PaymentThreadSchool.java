@@ -71,11 +71,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/06 12:46:10 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/06 15:33:36 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.115 $
+ * @version $Revision: 1.116 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -324,6 +324,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		final boolean comp_by_agreement = schoolClassMember.getHasCompensationByAgreement();
 		errorRelated.append("Default Commune "+userIsInDefaultCommune);
 		errorRelated.append("Valid group "+placementIsInValidGroup);
+		errorRelated.append("Comp by agreement "+comp_by_agreement);
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)
 				&& !comp_by_agreement) {
