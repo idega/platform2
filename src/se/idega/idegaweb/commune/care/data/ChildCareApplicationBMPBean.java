@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.13 2005/02/03 09:55:45 anders Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.14 2005/02/17 13:35:52 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -688,6 +688,19 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			sql.appendAnd().append("c."+REJECTION_DATE).appendLessThanOrEqualsSign().append(toDate);
 		}
 		sql.appendAnd().append("c."+APPLICATION_STATUS).appendInArrayWithSingleQuotes(applicationStatus);
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+
+		return idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindApplicationsByProviderAndApplicationStatusAndTerminatedDate(int providerID, String[] applicationStatuses, Date terminatedDate) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+		sql.appendAndEquals("c."+PROVIDER_ID, providerID);
+		sql.appendAnd().append("c."+APPLICATION_STATUS).appendInArrayWithSingleQuotes(applicationStatuses);
+		sql.appendAnd().append("c."+REJECTION_DATE).appendLessThanOrEqualsSign().append(terminatedDate);
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
 
 		return idoFindPKsBySQL(sql.toString());

@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareApplication.java,v 1.4 2005/01/18 13:44:24 laddi Exp $
- * Created on 14.1.2005
+ * $Id: ChildCareApplication.java,v 1.5 2005/02/17 13:35:52 laddi Exp $
+ * Created on 17.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/18 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/17 13:35:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
 

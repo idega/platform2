@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareApplicationHomeImpl.java,v 1.4 2005/01/18 13:44:24 laddi Exp $
- * Created on 14.1.2005
+ * $Id: ChildCareApplicationHomeImpl.java,v 1.5 2005/02/17 13:35:52 laddi Exp $
+ * Created on 17.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/18 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/17 13:35:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ChildCareApplicationHomeImpl extends IDOFactory implements ChildCareApplicationHome {
 
@@ -185,6 +185,13 @@ public class ChildCareApplicationHomeImpl extends IDOFactory implements ChildCar
 	public Collection findApplicationsByProviderAndStatus(Integer providerID, String[] applicationStatus, Date fromDateOfBirth, Date toDateOfBirth, Date fromDate, Date toDate) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ChildCareApplicationBMPBean) entity).ejbFindApplicationsByProviderAndStatus(providerID, applicationStatus, fromDateOfBirth, toDateOfBirth, fromDate, toDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findApplicationsByProviderAndApplicationStatusAndTerminatedDate(int providerID, String[] applicationStatuses, Date terminatedDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ChildCareApplicationBMPBean) entity).ejbFindApplicationsByProviderAndApplicationStatusAndTerminatedDate(providerID, applicationStatuses, terminatedDate);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

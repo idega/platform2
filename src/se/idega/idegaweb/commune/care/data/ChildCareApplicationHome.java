@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareApplicationHome.java,v 1.4 2005/01/18 13:44:24 laddi Exp $
- * Created on 14.1.2005
+ * $Id: ChildCareApplicationHome.java,v 1.5 2005/02/17 13:35:52 laddi Exp $
+ * Created on 17.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/18 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/17 13:35:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ChildCareApplicationHome extends IDOHome {
 
@@ -138,6 +138,11 @@ public interface ChildCareApplicationHome extends IDOHome {
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndStatus
 	 */
 	public Collection findApplicationsByProviderAndStatus(Integer providerID, String[] applicationStatus, Date fromDateOfBirth, Date toDateOfBirth, Date fromDate, Date toDate) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndApplicationStatusAndTerminatedDate
+	 */
+	public Collection findApplicationsByProviderAndApplicationStatusAndTerminatedDate(int providerID, String[] applicationStatuses, Date terminatedDate) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndApplicationStatus

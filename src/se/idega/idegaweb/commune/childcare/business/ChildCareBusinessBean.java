@@ -730,10 +730,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public Collection getTerminatedApplicationsByProviderAndApplicationStatus(int providerID, String applicationStatus) {
+		try {
+			IWTimestamp terminatedDate = new IWTimestamp();
+			String[] caseStatus = { applicationStatus };
+			return getChildCareApplicationHome().findApplicationsByProviderAndApplicationStatusAndTerminatedDate(providerID, caseStatus, terminatedDate.getDate());
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public Collection getInactiveApplicationsByProvider(int providerID) {
 		try {
+			IWTimestamp terminatedDate = new IWTimestamp();
 			String[] caseStatus = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusDenied()), String.valueOf(getStatusNotAnswered()), String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut()), String.valueOf(getStatusDeleted()) };
-			return getChildCareApplicationHome().findApplicationsByProviderAndApplicationStatus(providerID, caseStatus);
+			return getChildCareApplicationHome().findApplicationsByProviderAndApplicationStatusAndTerminatedDate(providerID, caseStatus, terminatedDate.getDate());
 		}
 		catch (FinderException e) {
 			e.printStackTrace();

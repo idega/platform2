@@ -110,7 +110,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				
 		Collection applications = null;
 		if (getSession().getStatus() != null) {
-			applications = getBusiness().getApplicationsByProviderAndApplicationStatus(getSession().getChildCareID(), getSession().getStatus());
+			applications = getBusiness().getTerminatedApplicationsByProviderAndApplicationStatus(getSession().getChildCareID(), getSession().getStatus());
 		}
 		else {
 			applications = getBusiness().getInactiveApplicationsByProvider(getSession().getChildCareID());
