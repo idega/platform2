@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/02/20 12:45:12 $ by $Author: laddi $
- * @version $Revision: 1.93 $
+ * Last modified: $Date: 2004/02/20 14:48:50 $ by $Author: laddi $
+ * @version $Revision: 1.94 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -414,22 +414,23 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return this.idoFindPKsByQuery(query);
 	}
-
+	
 	public Integer ejbFindLatestByUserAndSchool(int userID, int schoolID) throws FinderException {
+		return ejbFindLatestByUserAndSchool(userID, schoolID, null);
+	}
+	
+	public Integer ejbFindLatestByUserAndSchool(int userID, int schoolID, Collection schoolTypes) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID);
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		if (schoolTypes != null) {
+			sql.appendAnd().append(this.SCHOOL_TYPE).appendInCollection(schoolTypes);
+		}
 		
-		/*.appendAnd()
-		.appendLeftParenthesis()
-		.append("mb." + REMOVED_DATE + " is null")
-		.appendOr()
-		.append("mb." + REMOVED_DATE)
-		.appendGreaterThanOrEqualsSign()
-		.append("mb." + REGISTER_DATE)
-		.appendRightParenthesis()
-		*/
-		
-		.appendOrderBy(REGISTER_DATE + " desc");
+		sql.appendOrderBy(REGISTER_DATE + " desc");
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
 	
