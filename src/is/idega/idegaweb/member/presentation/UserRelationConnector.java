@@ -277,8 +277,10 @@ public class UserRelationConnector extends Window {
 			row++;
 
 			mainTable.add(Text.getBreak(), 1, row);
-			if(reltype!=null && isRelationshipLegal(iwc,relatedUser, user, reltype) || hasActiveRelations(iwc,relatedUser,user,type,rtype) ){
-				mainTable.add(getActionButton(iwc,relatedUser, user, type,rtype), 1, row++);
+			// show button when the planned relationship is legal
+			// or when asking for a delete
+			if(reltype!=null && (isDetachRequest() ||  isRelationshipLegal(iwc,user,relatedUser,  reltype)) ){
+				mainTable.add(getActionButton(iwc,user,relatedUser,  type,rtype), 1, row++);
 				
 			}
 			else if(processExceptionMessage!=null){
@@ -299,6 +301,13 @@ public class UserRelationConnector extends Window {
 				errorText.setFontColor("#FF0000");
 				mainTable.add(errorText,1,row++);
 			}
+			
+			//  show replacement type if specified
+			String replacementType = getReplacementRelationType(reltype);
+			if(replacementType!=null){
+				// create question and link
+				
+			}			
 			mainTable.add(searcher.getUniqueUserParameter((Integer) relatedUser.getPrimaryKey()));
 		}
 		
@@ -333,6 +342,18 @@ public class UserRelationConnector extends Window {
 		String pattern = (iwrb.getLocalizedString("illegal_relationship_msg","Illegal to add relation of type {0} between  {1} and {2}"));
 		String[] objs = {relationType,roleUser.getFirstName(),victimUser.getFirstName()};
 		return MessageFormat.format(pattern,objs);
+	}
+	
+	
+	/**
+	 * Returns the replacement relation type 
+	 * when the specified type is illegal.
+	 * The specified type relation will be removed
+	 * and the other put type relation created instead
+	 * @return the replacement type else null
+	 */
+	protected String getReplacementRelationType(String relationType){
+		return null;
 	}
 
 	private PresentationObject getActionButton(IWContext iwc,User roleUser, User victimUser, String mainType,String reverseType) {
@@ -406,6 +427,14 @@ public void process(IWContext iwc) throws RemoteException {
 				removeRelation(iwc, (Integer) user.getPrimaryKey(), relatedUserID, type, rtype);
 				Continue = true;
 				break;
+			case PARAM_ATTACH:
+				Continue = false;
+				
+			break;
+			
+			case PARAM_DETACH:
+				Continue = false;
+			break;
 			 default: Continue = false;
 		}}
 		if(Continue){
@@ -421,6 +450,13 @@ public void process(IWContext iwc) throws RemoteException {
 		}}
 	}
 
+}
+
+private boolean isAttachRequest(){
+	return this.action==PARAM_ATTACH;
+}
+private boolean isDetachRequest(){
+	return this.action==PARAM_DETACH;
 }
 
 /**
