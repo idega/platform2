@@ -109,7 +109,7 @@ public class SurveyAnswerBMPBean extends com.idega.data.GenericEntity implements
 		
 		query.appendWhereEquals(COLUMNNAME_QUESTION_ID,question);
 		query.appendAnd();
-		query.append(COLUMNNAME_CREATION_LOCALE);
+		query.append(DELETED_COLUMN);
 		query.appendNOTLike();
 		query.appendWithinSingleQuotes(DELETED);
 
