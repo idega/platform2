@@ -61,9 +61,9 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
   		transactionManager.begin();
   		queryResult = executeSQL(querySQL, connection, temporaryTables, executedSQLStatements);
   		// drop created views 
-  		Iterator iterator = temporaryTables.iterator();
-  		while (iterator.hasNext()) 	{
-  			String tableName = (String) iterator.next();
+  		// delete the view in reverse direction because of dependencies
+  		for (int i = temporaryTables.size() - 1; i > -1 ; i--) {
+  			String tableName = (String) temporaryTables.get(i);
   			dropTemporaryView(tableName,connection, executedSQLStatements);
   		}
   		// finally...done!!

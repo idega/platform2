@@ -228,9 +228,16 @@ public class ReportOverview extends Block {
   	User currentUser = iwc.getCurrentUser();
   	GroupBusiness groupBusiness = getGroupBusiness();
   	UserBusiness userBusiness = getUserBusiness();
+  	//TODO: thi solve problem with the group types
   	String[] groupTypes = 
-			{ "general", "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
 		Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+		// special hack for damaged databases
+		if (topGroup == null) {
+			List groupType = new ArrayList();
+			groupType.add("general");
+			topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
+		}
   	Collection parentGroups = new ArrayList();
   	parentGroups.add(topGroup);
   	try {

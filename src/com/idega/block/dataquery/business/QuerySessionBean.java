@@ -5,7 +5,9 @@
 package com.idega.block.dataquery.business;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ejb.FinderException;
 
@@ -73,9 +75,16 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 		ICFile query =  data.store();
 		User currentUser = getUserContext().getCurrentUser();
 		UserBusiness userBusiness = getUserBusiness();
+		// TODO: thi solve problem with group types
 		String[] groupTypes = 
-			{ "general", "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
 		Group group = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), getUserContext());
+		if (group == null) {
+			List groupType = new ArrayList();
+			groupType.add("general");
+			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType, getUserContext());
+		}
+
 		String groupName = group.getPrimaryKey().toString();
 		if(folderID>0 && query !=null) {
 			String folderName = new StringBuffer(groupName).append("_public").toString();

@@ -666,9 +666,15 @@ public class QueryBuilder extends Block {
 	  	User currentUser = iwc.getCurrentUser();
 	  	GroupBusiness groupBusiness = getGroupBusiness();
 	  	UserBusiness userBusiness = getUserBusiness();
+	  	//TODO: thi solve problems with group types
 	  	String[] groupTypes = 
-				{ "general", "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+				{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
 			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+			if (topGroup == null) {
+				List groupType = new ArrayList();
+				groupType.add("general");
+				topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
+			}
 	  	Collection parentGroups = new ArrayList();
 	  	parentGroups.add(topGroup);
 	  	try {
@@ -1136,9 +1142,11 @@ public class QueryBuilder extends Block {
 		debugParameters(iwc);
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		hasEditPermission = hasEditPermission();
-		hasTemplatePermission = hasPermission(this.PERM_TEMPL_EDIT, this, iwc);
-		hasCreatePermission = hasPermission(this.PERM_CREATE, this, iwc);
+		//TODO thi think about that, ask Aron
+		hasEditPermission = true;
+//		hasEditPermission = hasEditPermission();
+//		hasTemplatePermission = hasPermission(this.PERM_TEMPL_EDIT, this, iwc);
+//		hasCreatePermission = hasPermission(this.PERM_CREATE, this, iwc);
 		control(iwc);
 	}
 	public QueryService getQueryService(IWContext iwc) throws RemoteException {
