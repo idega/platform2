@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.98 2005/04/06 07:13:10 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.99 2005/04/07 09:05:55 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -504,7 +504,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)), 1, 1);
 			return "";
 		}
-		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"), 1, 1);
+		layoutTbl.add(new HiddenInput(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1)), 1, 1);
 		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(childID, _caseCode);
 		Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
@@ -518,7 +518,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		String[] submitName =_showOnlyAfterSchoolCare ? SUBMIT_ANSWER : SUBMIT;
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(submitName)));
-		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
 		
 		int row = 1;
 		layoutTbl.add(placementInfo, 1, row++);
@@ -696,9 +695,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_2);
 
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
-		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_2));
 
-		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"), 1, 1);
+		layoutTbl.add(new HiddenInput(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_2)), 1, 1);
 		layoutTbl.add(appTable, 1, 1);
 		layoutTbl.setHeight(2, 12);
 		layoutTbl.add(cancelBtn, 1, 3);
