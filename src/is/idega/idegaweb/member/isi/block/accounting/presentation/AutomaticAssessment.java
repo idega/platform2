@@ -51,8 +51,6 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 
     protected static final String LABEL_START = "isi_acc_aa_start";
 
-    protected static final String LABEL_END = "isi_acc_aa_end";
-
     protected static final String LABEL_USER = "isi_acc_aa_user";
 
     protected static final String LABEL_INCLUDE_CHILDREN = "isi_acc_aa_incl_children";
@@ -224,8 +222,6 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
         Text labelStart = new Text(iwrb.getLocalizedString(LABEL_START,
                 "Start time"));
         labelStart.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelEnd = new Text(iwrb.getLocalizedString(LABEL_END, "End time"));
-        labelEnd.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
         labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelIncludeChildren = new Text(iwrb.getLocalizedString(
@@ -300,11 +296,10 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
         t.add(labelDiv, 3, row);
         t.add(labelGroup, 4, row);
         t.add(labelStart, 5, row);
-        t.add(labelEnd, 6, row);
-        t.add(labelUser, 7, row);
-        t.add(labelIncludeChildren, 8, row);
-        t.add(labelPaymentDate, 9, row);
-        t.add(labelRunOnDate, 10, row++);
+        t.add(labelUser, 6, row);
+        t.add(labelIncludeChildren, 7, row);
+        t.add(labelPaymentDate, 8, row);
+        t.add(labelRunOnDate, 9, row++);
 
         Collection col = null;
         try {
@@ -342,24 +337,20 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
                     t.add(round.getGroup().getName(), 4, row);
                 IWTimestamp startTime = new IWTimestamp(round.getStartTime());
                 t.add(startTime.getDateString("dd.MM.yyyy HH:mm:ss"), 5, row);
-                if (round.getEndTime() != null) {
-                    IWTimestamp endTime = new IWTimestamp(round.getEndTime());
-                    t.add(endTime.getDateString("dd.MM.yyyy HH:mm:ss"), 6, row);
-                }
-                t.add(round.getExecutedBy().getName(), 7, row);
+                t.add(round.getExecutedBy().getName(), 6, row);
                 CheckBox children = (CheckBox) show.clone();
                 if (round.getIncludeChildren())
                     children.setChecked(true);
-                t.add(children, 8, row);
+                t.add(children, 7, row);
                 if (round.getPaymentDate() != null) {
                     IWTimestamp paymentDate = new IWTimestamp(round
                             .getPaymentDate());
-                    t.add(paymentDate.getDateString("dd.MM.yyyy"), 9, row);
+                    t.add(paymentDate.getDateString("dd.MM.yyyy"), 8, row);
                 }
                 if (round.getRunOnDate() != null) {
                     IWTimestamp runOnDate = new IWTimestamp(round
                             .getRunOnDate());
-                    t.add(runOnDate.getDateString("dd.MM.yyyy"), 10, row);
+                    t.add(runOnDate.getDateString("dd.MM.yyyy"), 9, row);
                 }
                 row++;
             }
