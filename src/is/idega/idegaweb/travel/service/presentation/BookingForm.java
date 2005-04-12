@@ -57,6 +57,7 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOException;
@@ -207,6 +208,7 @@ public abstract class BookingForm extends TravelManager{
 	protected Table currentSearchPart = null;
 	protected int currentSearchPartRow = 1;
 	protected int currentSearchPartColumn = 1;
+	private static int icelandCountryID = -1;
 	public final static String STYLENAME_INQUIRY = "Inquiry";
 	public final static String STYLENAME_INTERFACE = "Interface";
 	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
@@ -2171,8 +2173,9 @@ public abstract class BookingForm extends TravelManager{
 			return (DropdownMenu) staticPostalCode.clone();
 		}
 		
+		
 		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-		Collection coll = pch.findAllOrdererByCode();
+		Collection coll = pch.findAllByCountryIdOrderedByPostalCode( getIcelandicCountryID() );
 		
 		DropdownMenu menu = new DropdownMenu(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
 		if (coll != null && !coll.isEmpty()) {
@@ -2203,6 +2206,14 @@ public abstract class BookingForm extends TravelManager{
 		}
 		staticPostalCode = menu;
 		return menu;
+	}
+	
+	protected int getIcelandicCountryID() throws FinderException, IDOLookupException {
+		if (icelandCountryID < 0) {
+			CountryHome countryHome = (CountryHome) IDOLookup.getHome(Country.class);
+			icelandCountryID = ((Integer) countryHome.findByIsoAbbreviation("IS").getPrimaryKey()).intValue();
+		}
+		return icelandCountryID;
 	}
 	
 	public Collection getPostalCodeIds(IWContext iwc) throws IDOLookupException, FinderException {
