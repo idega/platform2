@@ -94,6 +94,7 @@ public class ServiceSearchEditor extends TravelManager {
 		} else if (action.equals(ACTION_SUPPLIERS)) {
 			suppliers(iwc);
 		} else if (action.equals(ACTION_UPDATE_SUPPLIERS)) {
+			clearCache(iwc);
 			updateSuppliers(iwc);
 			suppliers(iwc);
 		} else if (action.equals(ACTION_CLEAR_CACHE)) {
