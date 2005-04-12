@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenSearcher.java,v 1.1 2005/04/12 09:16:20 anna Exp $
+ * $Id: CitizenSearcher.java,v 1.2 2005/04/12 12:26:20 laddi Exp $
  * Created on 12.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,19 +28,14 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO anna Describe Type CitizenSearcher
  * </p>
- *  Last modified: $Date: 2005/04/12 09:16:20 $ by $Author: anna $
+ *  Last modified: $Date: 2005/04/12 12:26:20 $ by $Author: laddi $
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CitizenSearcher extends UserSearcher {
-	protected Integer processSave(IWContext iwc) {
-		//UserBusiness business = getUserBusiness(iwc);
-		String newUserFirstName = iwc.getParameter(NEW_USER_FIRST_NAME);
-		String newUserMiddleName = iwc.getParameter(NEW_USER_MIDDLE_NAME);
-		String newUserLastName = iwc.getParameter(NEW_USER_LAST_NAME);
-		String newUserPersonalID = iwc.getParameter(NEW_USER_PERSONAL_ID);
-		
+
+	protected Integer processSave(IWContext iwc, String firstName, String middleName, String lastName, String personalID) {
 		GenderHome home = null;
 		try {
 			home = (GenderHome) IDOLookup.getHome(Gender.class);
@@ -51,7 +46,7 @@ public class CitizenSearcher extends UserSearcher {
 		
 		
 		Gender gender = null;
-		if (PIDChecker.getInstance().isFemale(newUserPersonalID)) {
+		if (PIDChecker.getInstance().isFemale(personalID)) {
 			try {
 				gender = home.getFemaleGender();
 			}
@@ -70,10 +65,10 @@ public class CitizenSearcher extends UserSearcher {
 		}
 		
 		//Date dateOfBirth = PIDChecker.getInstance().getDateFromPersonalID(newUserPersonalID);
-		IWTimestamp dateOfBirth = new IWTimestamp(PIDChecker.getInstance().getDateFromPersonalID(newUserPersonalID));
+		IWTimestamp dateOfBirth = new IWTimestamp(PIDChecker.getInstance().getDateFromPersonalID(personalID));
 		
 		try {
-			User user = getUserBusiness(iwc).createUser(newUserFirstName, newUserMiddleName, newUserLastName, newUserPersonalID, gender, dateOfBirth);
+			User user = getUserBusiness(iwc).createUser(firstName, middleName, lastName, personalID, gender, dateOfBirth);
 			return (Integer) user.getPrimaryKey();
 		}
 		catch(RemoteException re) {
