@@ -32,7 +32,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -41,7 +40,6 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Timer;
@@ -179,7 +177,7 @@ public class InitialData extends TravelManager {
 		}else if (super.isSupplierManager()) {
 			menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
 			menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
-//			menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.credidcard_properties","Creditcard Properties"));
+			menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.credidcard_properties","Creditcard Properties"));
 		}
 		menu.setToSubmit();
 		
@@ -347,11 +345,10 @@ public class InitialData extends TravelManager {
 					}
 				}else if (selected.equals(this.parameterTPosProperties)) {
 					try {
-//						CreditCardMerchantEditor tme = new CreditCardMerchantEditor(iwc);
-//						Form form = tme.getTPosMerchantEditorForm(iwc);
-//						form.maintainParameter(this.dropdownView);
-//						add(form);
-						add("Removed");
+						CreditCardMerchantEditor tme = new CreditCardMerchantEditor(iwc);
+						Form form = tme.getTPosMerchantEditorForm(iwc);
+						form.maintainParameter(this.dropdownView);
+						add(form);
 					}catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
@@ -632,20 +629,11 @@ public class InitialData extends TravelManager {
 		PasswordInput passOne = new PasswordInput("supplier_password_one");
 		passOne.setAsNotEmpty("Gimmi flippar");
 		PasswordInput passTwo = new PasswordInput("supplier_password_two");
-
-		Collection suppRoles = new Vector();
-		Collection suppManRoles = new Vector();
 		
 		if (supplier_id != -1) {
 			table.add(new HiddenInput(this.parameterSupplierId,Integer.toString(supplier_id)));
 			
 			lSupplier = ((com.idega.block.trade.stockroom.data.SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplier_id);
-			Group supplierManager = lSupplier.getSupplierManager();
-			suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(supplierManager);
-			suppRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(lSupplier);
-
-			
-			
 			name.setContent(lSupplier.getName());
 			description.setContent(lSupplier.getDescription());
 			
@@ -663,8 +651,6 @@ public class InitialData extends TravelManager {
 					locInp.setSelectedPostalCode(new Integer(iPostalCodeId));
 //					postalCode.setSelectedElement(iPostalCodeId);
 				}
-			} else if (super.isSupplierManager()) {
-				suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(getSupplierManager());
 			}
 			
 			List phones = lSupplier.getHomePhone();
@@ -793,21 +779,6 @@ public class InitialData extends TravelManager {
 			table.setRowColor(row,super.GRAY);
 		}
 		
-		if (super.isSupplierManager()) {
-			table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, ++row);
-			table.setRowColor(row, backgroundColor);
-			table.mergeCells(1, row, 2, row);
-			Iterator suppManRolesIter = suppManRoles.iterator();
-			while (suppManRolesIter.hasNext()) {
-				String role = (String) suppManRolesIter.next();
-				CheckBox box = new CheckBox(role);
-				box.setChecked(suppRoles.contains(role));
-				table.add(box, 1, ++row);
-				table.add(getText(iwrb.getLocalizedString("travel.role."+role, role)), 2, row);
-				table.setRowColor(row, GRAY);
-			}
-		}
-		
 		++row;
 		table.add(Text.NON_BREAKING_SPACE,1,row);
 		table.setRowColor(row,super.GRAY);
@@ -874,7 +845,7 @@ public class InitialData extends TravelManager {
 					pc.setPostalCode(newZip);
 					pc.setCountryID(Integer.parseInt(countryID));
 					pc.store();
-				}
+				}				
 				postalCode = pc.getPrimaryKey().toString();
 			}
 			
@@ -894,6 +865,7 @@ public class InitialData extends TravelManager {
 			if (isUpdate) {
 				Vector phoneIDS = new Vector();
 				Supplier supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
+				
 				Phone ph;
 				List phones = supplier.getPhones(com.idega.core.contact.data.PhoneBMPBean.getHomeNumberID());
 				if (phones != null) {
@@ -956,7 +928,6 @@ public class InitialData extends TravelManager {
 				
 				supplier = getSupplierManagerBusiness(iwc).updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds, orgID);
 				
-				saveRoles(supplier, iwc);
 				
 				add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
 				this.displayForm(iwc);
@@ -1005,8 +976,6 @@ public class InitialData extends TravelManager {
 					supplier.setSupplierManager(getSupplierManager());
 					supplier.store();
 					
-					saveRoles(supplier, iwc);
-					
 					this.displayForm(iwc);
 				}else {
 					if (LoginDBHandler.isLoginInUse(userName)) {
@@ -1034,25 +1003,6 @@ public class InitialData extends TravelManager {
 			//        }
 			sql.printStackTrace(System.err);
 		}
-	}
-	
-	private void saveRoles(Supplier supplier, IWContext iwc) {
-		Group supplierManager = supplier.getSupplierManager();
-		try {
-			Collection suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(supplierManager);
-			
-			if (suppManRoles != null) {
-				Iterator iter = suppManRoles.iterator();
-				while (iter.hasNext()) {
-					String role = (String) iter.next();
-					getSupplierManagerBusiness(iwc).setRole(supplier, role, iwc.isParameterSet(role), iwc);
-				}
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	private Form getResellerCreation(int resellerId) throws SQLException{
