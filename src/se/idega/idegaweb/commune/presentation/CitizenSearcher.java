@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenSearcher.java,v 1.2 2005/04/12 12:26:20 laddi Exp $
+ * $Id: CitizenSearcher.java,v 1.3 2005/04/13 09:09:40 anna Exp $
  * Created on 12.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,14 +28,18 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO anna Describe Type CitizenSearcher
  * </p>
- *  Last modified: $Date: 2005/04/12 12:26:20 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/13 09:09:40 $ by $Author: anna $
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenSearcher extends UserSearcher {
 
-	protected Integer processSave(IWContext iwc, String firstName, String middleName, String lastName, String personalID) {
+	protected Integer processSave(IWContext iwc, String firstName, String middleName, String lastName, String personalID) throws CreateException {
+		if (personalID.length() != 12 || !PIDChecker.getInstance().isValid(personalID, true)) {
+			throw new CreateException(getLocalizedString("not_a_valid_personal_id", "The personal ID is invalid or too short", iwc));
+		}
+		
 		GenderHome home = null;
 		try {
 			home = (GenderHome) IDOLookup.getHome(Gender.class);
@@ -74,10 +78,5 @@ public class CitizenSearcher extends UserSearcher {
 		catch(RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
-		catch(CreateException ce) {
-			System.out.print("This user could not be created!" + ce.getMessage() );
-			return null;
-		}
 	}
-
 }
