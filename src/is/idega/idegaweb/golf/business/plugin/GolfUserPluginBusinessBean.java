@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.6 2004/12/07 18:04:46 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.7 2005/04/13 15:08:53 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/04/13 15:08:53 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -123,7 +123,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 						Group group = (Group) iter.next();
 						String type = group.getGroupType();
 						String name = group.getName();
-						if( name.startsWith("Golf") && (type.equals(IWMemberConstants.GROUP_TYPE_CLUB) || type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE))){
+						if( name.startsWith("Golf") && (type.equals(IWMemberConstants.GROUP_TYPE_CLUB) || type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) || type.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)){
 							showTab = true;
 						}
 					}
