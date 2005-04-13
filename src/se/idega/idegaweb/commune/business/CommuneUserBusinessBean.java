@@ -31,6 +31,7 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.business.AddressBusiness;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressType;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
@@ -117,6 +118,22 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return newUser;
 	}
 
+	public Address updateUsersMainAddressOrCreateIfDoesNotExist(User user, String streetNameAndNumber,
+			PostalCode postalCode, Country country, String city, String province, String poBox, Integer communeID)
+			throws CreateException, RemoteException {
+		if (communeID != null && communeID.intValue() > 0) {
+			if (getDefaultCommune().getPrimaryKey().equals(communeID)) {
+				moveCitizenToCommune(user, new IWTimestamp().getTimestamp(), user);
+			}
+			else {
+				moveCitizenFromCommune(user, new IWTimestamp().getTimestamp(), user);
+			}
+		}
+		AddressType mainAddressType = getAddressHome().getAddressType1();
+		return updateUsersAddressOrCreateIfDoesNotExist(user, streetNameAndNumber, postalCode, country, city, province,
+				poBox, communeID, mainAddressType);
+	}
+	
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname, personalID,
 		 * gender and date of birth where middlename, personalID,gender,dateofbirth

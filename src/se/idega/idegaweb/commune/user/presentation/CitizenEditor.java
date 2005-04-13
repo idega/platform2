@@ -23,11 +23,13 @@ import se.idega.util.PIDChecker;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Commune;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
@@ -51,6 +53,10 @@ public class CitizenEditor extends UserEditor {
 		setBundleIdentifer(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		setShowSeperators(true);
 		setGroupRelationConnectorWindow(CommuneFamilyRelationConnector.class);
+	}
+
+	public UserBusiness getUserService(IWApplicationContext iwac) throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 	}
 
 	/*
