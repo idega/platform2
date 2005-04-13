@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareChildrenInfo.java,v 1.2 2005/03/30 07:57:26 laddi Exp $
+ * $Id: ChildCareChildrenInfo.java,v 1.3 2005/04/13 09:54:19 laddi Exp $
  * Created on 31.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import se.idega.idegaweb.commune.childcare.presentation.admin.ContractEditor;
 import se.idega.idegaweb.commune.childcare.presentation.admin.ContractEditorWindow;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -41,10 +42,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/03/30 07:57:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/13 09:54:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChildCareChildrenInfo extends ChildCareBlock {
 	
@@ -197,7 +198,11 @@ public class ChildCareChildrenInfo extends ChildCareBlock {
 		if (member == null) {
 			return row;
 		}
-		School school = member.getSchoolClass().getSchool();
+		SchoolClass group = member.getSchoolClass();
+		if (group == null) {
+			return row;
+		}
+		School school = group.getSchool();
 		IWTimestamp created = new IWTimestamp(contract.getCreatedDate());
 		IWTimestamp validFrom = new IWTimestamp(contract.getValidFromDate());
 		IWTimestamp validTo = contract.getTerminatedDate() != null ? new IWTimestamp(contract.getTerminatedDate()) : null;

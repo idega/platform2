@@ -1383,29 +1383,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						placement.setSchoolClassId(schoolClassId);
 					}
 					placement.store();
-
-					//Alter start/end dates for log entries connected to placement.
-					try {
-						Collection logs = getSchoolBusiness().getSchoolClassMemberLogHome().findAllBySchoolClassMember(placement);
-						boolean first = true;
-						Iterator iter = logs.iterator();
-						while (iter.hasNext()) {
-							SchoolClassMemberLog element = (SchoolClassMemberLog) iter.next();
-							if (first) {
-								element.setStartDate(lastContract.getValidFromDate());
-								element.store();
-								first = false;
-							}
-							if (!iter.hasNext()) {
-								element.setEndDate(lastContract.getTerminatedDate());
-								element.setSchoolClass(new Integer(placement.getSchoolClassId()));
-								element.store();
-							}
-						}
-					}
-					catch (FinderException fe) {
-						//No logs found
-					}
 				}
 				// create new placement and attach to archive
 				else if (schoolTypeId > 0 && schoolClassId > 0 && placement.getSchoolTypeId() != schoolTypeId) {
@@ -1419,19 +1396,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					lastContract.store();
 					getSchoolBusiness().addToSchoolClassMemberLog(newPlacement, newPlacement.getSchoolClass(), new IWTimestamp(newPlacement.getRegisterDate()).getDate(), null, performer);
 				}
-			}
-			
-			try {
-				SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(placement, lastContract.getTerminatedDate() != null ? lastContract.getTerminatedDate() : lastContract.getValidFromDate());
-				if (schoolClassId != -1) {
-					log.setSchoolClass(new Integer(schoolClassId));
-					log.store();
+				try {
+					SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(placement, lastContract.getTerminatedDate() != null ? lastContract.getTerminatedDate() : lastContract.getValidFromDate());
+					if (schoolClassId != -1) {
+						log.setSchoolClass(new Integer(schoolClassId));
+						log.store();
+					}
 				}
-			}
-			catch (FinderException fe) {
-				//No log entry found...
-			}
+				catch (FinderException fe) {
+					//No log entry found...
+				}
 
+				getSchoolBusiness().alignLogs(placement);
+			}
 		}
 		catch (FinderException fe) {
 			application.setContractId(null);
@@ -1440,6 +1417,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (member != null) {
 				member.setRemovedDate(member.getRegisterDate());
 				member.store();
+				getSchoolBusiness().alignLogs(member);
 			}
 			changeCaseStatus(application, getCaseStatusDeleted().getStatus(), performer);
 		}
@@ -3277,6 +3255,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							SchoolClass oldSchoolClass = oldStudent.getSchoolClass();
 							getSchoolBusiness().addToSchoolClassMemberLog(oldStudent, oldSchoolClass, endDate.getDate(), user);
 						}
+						getSchoolBusiness().alignLogs(oldStudent);
 					}
 					if (oldStudent == null) {
 						oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
@@ -3318,6 +3297,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 									log(fe);
 								}
 							}
+							getSchoolBusiness().alignLogs(student);
 						}
 					}
 					else {
