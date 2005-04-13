@@ -186,8 +186,11 @@ public class CampusContractWriter {
 					ApplicantHome aHome = (ApplicantHome) IDOLookup.getHome(Applicant.class);
 					Applicant A = aHome.findByPrimaryKey(eContract.getApplicantId());
 					fileName = A.getSSN();
-					if (!"".equals(fileName))
-						fileName = A.getFirstName();
+					if ("".equals(fileName)) {
+						Integer primary = (Integer) A.getPrimaryKey();
+						//fileName = A.getFirstName();
+						fileName = primary.toString();
+					}
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
