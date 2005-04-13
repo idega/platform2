@@ -52,7 +52,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report", true, true, Integer.class, "many-to-one", WorkReport.class);
 		addAttribute(COLUMN_NAME_GROUP_ID, "Group id", true, true, Integer.class, "many-to-one", Group.class);
-		addAttribute(COLUMN_NAME_HOME_PAGE, "Home page", true, true, String.class, 40);
+		addAttribute(COLUMN_NAME_HOME_PAGE, "Home page", true, true, String.class, 50);
 		addAttribute(COLUMN_NAME_PERSONAL_ID, "Personal id", true, true, String.class, 10);
 		addAttribute(COLUMN_NAME_STREET_NAME, "Streetname", true, true, String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id", true, true, Integer.class, "many-to-one", PostalCode.class);
