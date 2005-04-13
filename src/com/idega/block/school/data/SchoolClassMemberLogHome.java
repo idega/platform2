@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLogHome.java,v 1.7 2005/03/07 17:02:19 laddi Exp $
- * Created on 7.3.2005
+ * $Id: SchoolClassMemberLogHome.java,v 1.8 2005/04/13 09:53:43 laddi Exp $
+ * Created on 13.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,13 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/03/07 17:02:19 $ by $Author: laddi $
+ * <p>
+ * TODO laddi Describe Type SchoolClassMemberLogHome
+ * </p>
+ *  Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface SchoolClassMemberLogHome extends IDOHome {
 
@@ -40,12 +43,19 @@ public interface SchoolClassMemberLogHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindOpenLogByUserAndSchoolClass
 	 */
-	public SchoolClassMemberLog findOpenLogByUserAndSchoolClass(SchoolClassMember member, SchoolClass schoolClass) throws FinderException;
+	public SchoolClassMemberLog findOpenLogByUserAndSchoolClass(SchoolClassMember member, SchoolClass schoolClass)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindLatestLogByUser
 	 */
 	public SchoolClassMemberLog findLatestLogByUser(SchoolClassMember member) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindClosedLogByUserAndSchoolClass
+	 */
+	public SchoolClassMemberLog findClosedLogByUserAndSchoolClass(SchoolClassMember member, SchoolClass schoolClass)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindByPlacementAndDate
@@ -55,7 +65,8 @@ public interface SchoolClassMemberLogHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindFutureLogByPlacementAndDate
 	 */
-	public SchoolClassMemberLog findFutureLogByPlacementAndDate(SchoolClassMember member, Date date) throws FinderException;
+	public SchoolClassMemberLog findFutureLogByPlacementAndDate(SchoolClassMember member, Date date)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindByPlacementAndEndDate
@@ -70,10 +81,17 @@ public interface SchoolClassMemberLogHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindByPlacementAndDates
 	 */
-	public Collection findByPlacementAndDates(SchoolClassMember member, Date fromDate, Date toDate) throws FinderException;
+	public Collection findByPlacementAndDates(SchoolClassMember member, Date fromDate, Date toDate)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindAllByPlacementAndDates
 	 */
-	public Collection findAllByPlacementAndDates(SchoolClassMember member, Date fromDate, Date toDate) throws FinderException;
+	public Collection findAllByPlacementAndDates(SchoolClassMember member, Date fromDate, Date toDate)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindAllByPlacement
+	 */
+	public Collection findAllByPlacement(SchoolClassMember member) throws FinderException;
 }

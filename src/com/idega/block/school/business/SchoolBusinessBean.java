@@ -2699,17 +2699,25 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			}
 			catch (FinderException fe) {
 				try {
-					SchoolClassMemberLog log = getSchoolClassMemberLogHome().create();
-					log.setUserPlacing(performer);
+					SchoolClassMemberLog log = getSchoolClassMemberLogHome().findClosedLogByUserAndSchoolClass(member, schoolClass);
 					log.setUserTerminating(performer);
-					log.setSchoolClass(schoolClass);
-					log.setSchoolClassMember(member);
-					log.setStartDate(new IWTimestamp(member.getRegisterDate()).getDate());
 					log.setEndDate(endDate);
 					log.store();
 				}
-				catch (CreateException ce) {
-					log(ce);
+				catch (FinderException fex) {
+					try {
+						SchoolClassMemberLog log = getSchoolClassMemberLogHome().create();
+						log.setUserPlacing(performer);
+						log.setUserTerminating(performer);
+						log.setSchoolClass(schoolClass);
+						log.setSchoolClassMember(member);
+						log.setStartDate(new IWTimestamp(member.getRegisterDate()).getDate());
+						log.setEndDate(endDate);
+						log.store();
+					}
+					catch (CreateException ce) {
+						log(ce);
+					}
 				}
 			}
 		}
@@ -2760,4 +2768,45 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return placement != null;
 	}
 
+	public void alignLogs(SchoolClassMember member) {
+		try {
+			Collection logs = getSchoolClassMemberLogHome().findAllByPlacement(member);
+			
+			SchoolClassMemberLog oldLog = null;
+			Date endDate = null;
+			boolean first = true;
+			Iterator iter = logs.iterator();
+			while (iter.hasNext()) {
+				SchoolClassMemberLog log = (SchoolClassMemberLog) iter.next();
+				
+				if (first) {
+					oldLog = log;
+					oldLog.setStartDate(new IWTimestamp(member.getRegisterDate()).getDate());
+					first = false;
+				}
+				else {
+					IWTimestamp startDate = new IWTimestamp(log.getStartDate());
+					startDate.addDays(-1);
+					endDate = startDate.getDate();
+				}
+				
+				if (!iter.hasNext()) {
+					if (member.getRemovedDate() != null) {
+						endDate = new IWTimestamp(member.getRemovedDate()).getDate();
+					}
+					log.setEndDate(endDate);
+					log.setSchoolClass(new Integer(member.getSchoolClassId()));
+					log.store();
+					return;
+				}
+				
+				oldLog.setEndDate(endDate);
+				oldLog.store();
+				oldLog = log;
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+	}
 }

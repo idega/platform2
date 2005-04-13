@@ -4,8 +4,10 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressBMPBean;
 import com.idega.core.location.data.AddressType;
@@ -55,8 +57,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/04/06 16:29:12 $ by $Author: laddi $
- * @version $Revision: 1.135 $
+ *         Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
+ * @version $Revision: 1.136 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1140,7 +1142,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	private Collection _ejbFindBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date, Boolean showNotYetActive) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelect();
-		sql.append("distinct m.*, u.*");
+		sql.append("distinct m.*");
 		sql.appendFrom();
 		sql.append("sch_class_member m left join sch_class_member_log l ");
 		sql.append("on m.sch_class_member_id=l.sch_class_member_id,");
@@ -1158,24 +1160,19 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		if (schoolClassID != -1) {
 			sql.appendAnd();
-			sql.appendLeftParenthesis().appendLeftParenthesis();
 			sql.appendEquals("m.sch_school_class_id", schoolClassID).appendAnd();
-			sql.appendLeftParenthesis();
-			sql.appendEquals("l.sch_school_class_id", schoolClassID).appendOr();
-			sql.append("l.sch_school_class_id is null").appendRightParenthesis();
-			sql.appendRightParenthesis().appendOr();
-			sql.appendEquals("l.sch_school_class_id", schoolClassID);
-			sql.appendRightParenthesis();
-			sql.appendAnd().appendLeftParenthesis().append("l.start_date").appendLessThanOrEqualsSign().append(date);
-			sql.appendOr().append("l.start_date is null").appendRightParenthesis();
-			sql.appendAnd().appendLeftParenthesis().append("l.end_date").appendGreaterThanOrEqualsSign().append(date);
-			sql.appendOr().append("l.end_date is null").appendRightParenthesis();
+			sql.appendEquals("l.sch_school_class_id", "m.sch_school_class_id");
 		}
 		if (showNotYetActive != null) {
 			if (showNotYetActive.booleanValue()) {
 				sql.appendAnd().append("m.register_date").appendGreaterThanSign().append(date);
-			} else {
+				sql.appendAnd().append("l.start_date").appendGreaterThanOrEqualsSign().append(date);
+			}
+			else {
 				sql.appendAnd().append("m.register_date").appendLessThanOrEqualsSign().append(date);
+				sql.appendAnd().append("l.start_date").appendLessThanOrEqualsSign().append(date);
+				sql.appendAnd().appendLeftParenthesis().append("l.end_date").appendGreaterThanOrEqualsSign().append(date);
+				sql.appendOr().append("l.end_date is null").appendRightParenthesis();
 			}
 		}
 		sql.appendAnd().appendLeftParenthesis();
@@ -1779,5 +1776,25 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	
 	public Collection getStudyPaths() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(SchoolStudyPath.class);
+	}
+
+	public void remove() throws RemoveException {
+		try {
+			Collection logs = ((SchoolClassMemberLogHome) IDOLookup.getHome(SchoolClassMemberLog.class)).findAllByPlacement(this);
+			if (!logs.isEmpty()) {
+				Iterator iter = logs.iterator();
+				while (iter.hasNext()) {
+					SchoolClassMemberLog element = (SchoolClassMemberLog) iter.next();
+					element.remove();
+				}
+			}
+		}
+		catch (IDOLookupException ile) {
+			ile.printStackTrace();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		super.remove();
 	}
 }

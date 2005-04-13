@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.12 2005/03/07 16:20:45 laddi Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.13 2005/04/13 09:53:43 laddi Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/03/07 16:20:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
@@ -186,6 +186,18 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
+	public Integer ejbFindClosedLogByUserAndSchoolClass(SchoolClassMember member, SchoolClass schoolClass) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASS, MatchCriteria.EQUALS, schoolClass));
+		query.addOrder(new Order(new Column(table, START_DATE), false));
+		
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+
 	public Integer ejbFindByPlacementAndDate(SchoolClassMember member, Date date) throws FinderException {
 		Table table = new Table(this);
 		
@@ -268,6 +280,17 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		if (toDate != null) {
 			query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESSEQUAL, toDate));
 		}
+		query.addOrder(new Order(new Column(table, START_DATE), false));
+		
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindAllByPlacement(SchoolClassMember member) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
 		query.addOrder(new Order(new Column(table, START_DATE), false));
 		
 		return idoFindPKsByQuery(query);

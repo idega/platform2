@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolBusiness.java,v 1.97 2005/03/20 15:24:14 laddi Exp $
- * Created on 20.3.2005
+ * $Id: SchoolBusiness.java,v 1.98 2005/04/13 09:53:44 laddi Exp $
+ * Created on 13.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -54,10 +54,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO laddi Describe Type SchoolBusiness
  * </p>
- *  Last modified: $Date: 2005/03/20 15:24:14 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/13 09:53:44 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.97 $
+ * @version $Revision: 1.98 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -1093,4 +1093,9 @@ public interface SchoolBusiness extends IBOService {
 	 */
 	public boolean hasActivePlacement(int studentId, int schoolId, SchoolCategory category)
 			throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#alignLogs
+	 */
+	public void alignLogs(SchoolClassMember member) throws java.rmi.RemoteException;
 }
