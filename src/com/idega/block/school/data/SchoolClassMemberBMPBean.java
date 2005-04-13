@@ -57,8 +57,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
- * @version $Revision: 1.136 $
+ *         Last modified: $Date: 2005/04/13 13:38:11 $ by $Author: laddi $
+ * @version $Revision: 1.137 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1142,7 +1142,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	private Collection _ejbFindBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date, Boolean showNotYetActive) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelect();
-		sql.append("distinct m.*");
+		sql.append("distinct m.*,u.*");
 		sql.appendFrom();
 		sql.append("sch_class_member m left join sch_class_member_log l ");
 		sql.append("on m.sch_class_member_id=l.sch_class_member_id,");
