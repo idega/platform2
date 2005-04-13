@@ -120,6 +120,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private String iUpdatedTopicWidth = "100";
 	
 	private boolean iShowForumLinks = true;
+	private boolean userCanEditHisOwnThreads = false;
+	private boolean showForumLinksOnTopOfThreadList = true;	
 
 	public Forum() {
 		setDefaultValues();
@@ -316,7 +318,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			}
 			
 			table.setHeight(1, row++, "20");
-			table.add(getForumLinks(), 1, row++);
+			if(doShowForumLinksOnTopOfThreadList()){
+				table.add(getForumLinks(), 1, row++);
+			}
 
 			updateThreadCount(iwc);
 
@@ -683,7 +687,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			table.add(replyLink, column++, 1);
 		}
 
-		if (thread.getUserID() != -1 && iwc.getUserId() == thread.getUserID() && thread.getChildCount() == 0) {
+		if (getUserCanEditHisOwnThreads() && thread.getUserID() != -1 && iwc.getUserId() == thread.getUserID() && thread.getChildCount() == 0) {
 			ThreadEditLink editLink = new ThreadEditLink(thread);
 			editLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			editLink.setImagePadding(2);
@@ -805,7 +809,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return text;
 	}
 
-	private void setDefaultValues() {
+	public void setDefaultValues() {
 		_width = Table.HUNDRED_PERCENT;
 		_headingColor = "#eeeeee";
 	}
@@ -1040,5 +1044,30 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	
 	public void setShowTopicInCollection(boolean showTopicInCollection) {
 		iShowTopicInCollection = showTopicInCollection;
+	}
+	/**
+	 * @return Returns the userCanEditHisOwnThreads.
+	 */
+	public boolean getUserCanEditHisOwnThreads() {
+		return userCanEditHisOwnThreads;
+	}
+	/**
+	 * @param userCanEditHisOwnThreads The userCanEditHisOwnThreads to set.
+	 */
+	public void setUserCanEditHisOwnThreads(boolean userCanEditHisOwnThreads) {
+		this.userCanEditHisOwnThreads = userCanEditHisOwnThreads;
+	}
+
+	/**
+	 * @return Returns the showForumLinksOnTopOfThreadList.
+	 */
+	public boolean doShowForumLinksOnTopOfThreadList() {
+		return showForumLinksOnTopOfThreadList;
+	}
+	/**
+	 * @param showForumLinksOnTopOfThreadList The showForumLinksOnTopOfThreadList to set.
+	 */
+	public void setToShowForumLinksOnTopOfThreadList(boolean showForumLinksOnTopOfThreadList) {
+		this.showForumLinksOnTopOfThreadList = showForumLinksOnTopOfThreadList;
 	}
 } // Class Forum

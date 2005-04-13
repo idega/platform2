@@ -30,6 +30,9 @@ public class ForumThreadEditor extends IWAdminWindow {
 	private int _localeID = -1;
 	private int _userID = -1;
 	private boolean _isLoggedOn = false;
+	
+	private String someErrorMessage = null;
+	private String errorDetail = null;
 
 	private IWBundle _iwb;
 	private IWResourceBundle _iwrb;
@@ -66,6 +69,8 @@ public class ForumThreadEditor extends IWAdminWindow {
 	}
 
 	private void processForm(IWContext iwc) {
+		someErrorMessage = null;
+		errorDetail = null;
 		if (iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID) != null) {
 			try {
 				_topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
@@ -131,6 +136,14 @@ public class ForumThreadEditor extends IWAdminWindow {
 		}
 
 		if (_parentThreadID != -1) parentThread = forumBusiness.getForumData(_parentThreadID);
+		
+		if(someErrorMessage!=null){
+			addRight(someErrorMessage);
+			if(errorDetail!=null){
+				addRight(errorDetail);
+			}
+		}
+		
 
 		TextInput subject = new TextInput(ForumBusiness.PARAMETER_THREAD_HEADLINE);
 		subject.setLength(24);
@@ -180,10 +193,19 @@ public class ForumThreadEditor extends IWAdminWindow {
 		String body = iwc.getParameter(ForumBusiness.PARAMETER_THREAD_BODY);
 		String name = iwc.getParameter(ForumBusiness.PARAMETER_USER_NAME);
 		String email = iwc.getParameter(ForumBusiness.PARAMETER_USER_EMAIL);
-
-		forumBusiness.saveThread(_topicID, _threadID, _parentThreadID, _userID, name, email, headline, body);
-		setParentToReload();
-		close();
+		
+		if(headline == null || "".equals(headline)) {
+			someErrorMessage = _iwrb.getLocalizedString("cannot_save", "Cannot save");
+			errorDetail = _iwrb.getLocalizedString("headline_is_empty", "Threads headline is empty");
+		} else if ( body == null || "".equals(body)) {
+			someErrorMessage = _iwrb.getLocalizedString("cannot_save", "Cannot save");
+			errorDetail = _iwrb.getLocalizedString("body_is_empty", "Threads body is empty");
+		} else {
+			forumBusiness.saveThread(_topicID, _threadID, _parentThreadID, _userID, name, email, headline, body);
+			setParentToReload();
+			close();
+			
+		}
 	}
 
 	private void close(IWContext iwc) {

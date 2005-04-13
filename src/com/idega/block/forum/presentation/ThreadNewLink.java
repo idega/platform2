@@ -18,8 +18,7 @@ public class ThreadNewLink extends TopicLink {
 	private Image iImage;
 
 	public boolean hasPermission() {
-		//TODO: Fix..
-		return true;//hasAddPermission();
+		return hasAddPermission();
 	}
 
 	public String getLinkName(IWResourceBundle resourceBundle) {

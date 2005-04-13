@@ -7,9 +7,6 @@
 package com.idega.block.forum.presentation;
 
 import java.util.Iterator;
-
-import com.idega.block.category.business.CategoryFinder;
-import com.idega.block.category.data.ICCategory;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.data.ForumData;
 import com.idega.presentation.IWContext;
@@ -27,6 +24,12 @@ public class ForumFlatLayout extends Forum {
 	private int initialHeaderIndent = 10;
 	private int indent = 15;
 	private int _threadID = -1;
+	
+	
+	public void setDefaultValues() {
+		super.setDefaultValues();
+//		setToShowForumLinksOnTopOfThreadList(false);
+	}
 	
 	//finds all threads and their children, displays children (answer to a thread) following their parent (thread)  - ac
 	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread, int depth) {
@@ -167,56 +170,6 @@ public class ForumFlatLayout extends Forum {
 		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		return table;
-	}
-	
-	//overrided from Forum
-	protected void getForumThreads(IWContext iwc, Table table) {
-		int row = 1;
-
-		ICCategory topic = null;
-		if (_topicID != -1)
-			topic = CategoryFinder.getInstance().getCategory(_topicID);
-
-		ForumData thread = null;
-		try {
-			thread = forumBusiness.getForumData(Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID)));
-			_threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
-		}
-		catch (NumberFormatException e) {
-			thread = null;
-		}
-
-		if (topic != null) {
-			if (_showTopicName) {
-				Text topicText = formatText(topic.getName(), HEADER_STYLE);
-				table.setRowColor(row, _headingColor);
-				table.setRowPadding(row, 2);
-				table.add(topicText, 1, row++);
-			}
-			
-			row = addBelowTopic(iwc, topic, table, row);
-
-			if (thread != null && thread.isValid()) {
-				row = displaySelectedForum(iwc, table, row, thread, 0);
-			}
-			
-			table.setHeight(1, row++, "20");
-			//this is the only difference in this overrided method from Forum - removing of getForumLinks()
-			//table.add(getForumLinks(), 1, row++);
-
-			updateThreadCount(iwc);
-
-			ForumData[] threads = forumBusiness.getThreads(topic);
-			ForumData[] someThreads = forumBusiness.getThreads(threads, _firstThread, _lastThread);
-			boolean hasNextThreads = forumBusiness.hasNextThreads(threads, _lastThread);
-			boolean hasPreviousThreads = forumBusiness.hasPreviousThreads(_firstThread);
-
-			table.add(getForumTree(iwc, someThreads), 1, row++);
-
-			if (hasNextThreads || hasPreviousThreads)
-				table.setHeight(row++, 3);
-				table.add(getNextPreviousTable(hasNextThreads, hasPreviousThreads), 1, row);
-		}
 	}
 	
 	private Link formatLink(String string) {

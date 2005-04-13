@@ -12,6 +12,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 
 /**
  * @author Anna
@@ -27,8 +28,11 @@ public abstract class ForumLink extends Block {
 	private boolean showImage = true;
 	private boolean iHasAddPermission = false;
 	private boolean iHasReplyPermission = false;
+	
+	private Boolean hasViewPermission = null;
+	
 
-	public void main(IWContext iwc) {
+	public void main(IWContext iwc) throws Exception {
 		iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
 		iHasAddPermission = hasAddPermission(iwc);
@@ -43,13 +47,38 @@ public abstract class ForumLink extends Block {
 			//topic is not set...
 		}
 	}
+
+	/**
+	 * If this link is added into forum it asks about the forums permissions but not the links.
+	 * So this method looks for the parent and uses that.
+	 * @param permissionType
+	 * @param iwc
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean hasPermission(String permissionType, IWContext iwc) throws Exception {
+		PresentationObject obj = this;
+		PresentationObject tmp = obj;
+		while (tmp != null)
+		{
+			if (tmp instanceof Forum)
+			{
+				obj = tmp;
+				break;
+			}
+			tmp = (PresentationObject) tmp.getParent();
+		}
+		return hasPermission(permissionType, obj, iwc);
+	}
+
 	
-	private boolean hasAddPermission(IWContext iwc) {
-		return iwc.hasPermission(Forum.AddPermission, this);
+	
+	private boolean hasAddPermission(IWContext iwc) throws Exception {
+		return hasPermission(Forum.AddPermission, iwc);
 	}
 	
-	private boolean hasReplyPermission(IWContext iwc) {
-		return iwc.hasPermission(Forum.AddPermission, this);
+	private boolean hasReplyPermission(IWContext iwc) throws Exception {
+		return hasPermission(Forum.AddPermission, iwc);
 	}
 	
 	protected boolean hasReplyPermission() {

@@ -39,4 +39,8 @@ public class ThreadReplyLink extends ThreadLink {
 	public String getMode() {
 		return null;
 	}
+	
+	public boolean hasPermission(){
+		return hasReplyPermission();
+	}
 }
