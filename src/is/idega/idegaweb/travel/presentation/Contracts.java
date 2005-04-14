@@ -896,9 +896,17 @@ public class Contracts extends TravelManager {
 	    infoTable.add(tTimeframe,1,infoRow);
 	    infoTable.mergeCells(3,infoRow,4,infoRow);
 	    infoTable.add(tfFromText,2,infoRow);
-	    infoTable.add(pFrom,3,infoRow);
-	    infoTable.add(tfToText,3,infoRow);
-	    infoTable.add(pTo,3,infoRow);
+		Table timeTable = new Table();
+		timeTable.setCellpaddingAndCellspacing(0);
+		timeTable.add(pFrom, 1, 1);
+		timeTable.add(tfToText, 2, 1);
+		timeTable.add(pTo, 3, 1);
+		timeTable.setCellpaddingLeft(2, 1, "5");
+		timeTable.setCellpaddingRight(2, 1, "5");
+		infoTable.add(timeTable, 3, infoRow);
+//	    infoTable.add(pFrom,3,infoRow);
+//	    infoTable.add(tfToText,3,infoRow);
+//	    infoTable.add(pTo,3,infoRow);
 		}
 
     ++infoRow;
