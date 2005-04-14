@@ -298,7 +298,7 @@ private int insertPlaces(Table table,	PickupPlaceHome pPlaceHome,	Collection col
 		int counter = 0;
 			
 		while (iter.hasNext()) {
-			pPlace = pPlaceHome.findByPrimaryKey(iter.next());
+			pPlace = (PickupPlace) iter.next();
 			++row;
 			++counter;
 			nrTxt = (Text) super.smallText.clone();
