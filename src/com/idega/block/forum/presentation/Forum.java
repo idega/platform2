@@ -484,7 +484,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				return link;
 			}
 			else if (user != null) {
-				Text userText = formatText(user.getName(), INFORMATION_STYLE);
+				Text userText = formatText(user.getName(), TEXT_STYLE);
 				return userText;
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.138 2004/11/03 10:05:20 gimmi Exp $
+ * $Id: NewsReader.java,v 1.139 2005/04/14 14:09:14 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -156,6 +156,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	private boolean setHeadlineLinktToCategoryMainViewerPage = false;
 	private boolean showCategoryInSingleLineView = false;
 	private String moreAndBackStyleClass;
+	private String moreStyleClass;
+	private String backStyleClass;
+	private String CollectionLinkStyleClass = null;	
 
 	public NewsReader() {
 		setCacheable(getCacheKey(), 999999999);//cache indefinately
@@ -546,13 +549,19 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 		Table smallTable = new Table(1, 1);
 		smallTable.setCellpadding(0);
 		smallTable.setCellspacing(0);
-		if (collectionImage != null) {
-			smallTable.add(getCollectionLink(collectionImage, iCollectionCategoryId, iwc), 1, 1);
-		}
-		if (showCollectionText) {
-			Text collText = new Text(iwrb.getLocalizedString("collection", "Collection"));
-			collText = setInformationAttributes(collText);
-			smallTable.add(getCollectionLink(collText, iCollectionCategoryId, iwc), 1, 1);
+		if(CollectionLinkStyleClass != null){
+				Text collText = new Text(iwrb.getLocalizedString("collection", "Collection"));
+				collText.setStyleClass(CollectionLinkStyleClass);
+				smallTable.add(getCollectionLink(collText, iCollectionCategoryId, iwc), 1, 1);
+		} else {
+			if (collectionImage != null) {
+				smallTable.add(getCollectionLink(collectionImage, iCollectionCategoryId, iwc), 1, 1);
+			}
+			if (showCollectionText) {
+				Text collText = new Text(iwrb.getLocalizedString("collection", "Collection"));
+				collText = setInformationAttributes(collText);
+				smallTable.add(getCollectionLink(collText, iCollectionCategoryId, iwc), 1, 1);
+			}
 		}
 		return smallTable;
 	}
@@ -798,7 +807,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
 	private Link getMoreLink(PresentationObject obj, int newsId, IWContext iwc) {
 		Link moreLink = new Link(obj);
-		if (moreAndBackStyleClass != null) {
+		if(moreStyleClass != null){
+			moreLink.setStyle(moreStyleClass);
+		} else if (moreAndBackStyleClass != null) {
 			moreLink.setStyle(moreAndBackStyleClass);
 		}
 		checkFromPage(moreLink);
@@ -835,7 +846,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
 	private Link getBackLink(PresentationObject obj) {
 		Link backLink = new Link(obj);
-		if (moreAndBackStyleClass != null) {
+		if(backStyleClass != null){
+			backLink.setStyle(backStyleClass);
+		} else if (moreAndBackStyleClass != null) {
 			backLink.setStyle(moreAndBackStyleClass);
 		}
 		backLink.setAsBackLink(1);
@@ -1446,5 +1459,41 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	 */
 	public void setMoreAndBackStyleClass(String moreAndBackStyleClass) {
 		this.moreAndBackStyleClass = moreAndBackStyleClass;
+	}
+	/**
+	 * @return Returns the collectionLinkStyleClass.
+	 */
+	public String getCollectionLinkStyleClass() {
+		return CollectionLinkStyleClass;
+	}
+	/**
+	 * @param collectionLinkStyleClass The collectionLinkStyleClass to set.
+	 */
+	public void setCollectionLinkStyleClass(String collectionLinkStyleClass) {
+		CollectionLinkStyleClass = collectionLinkStyleClass;
+	}
+	/**
+	 * @return Returns the backStyleClass.
+	 */
+	public String getBackStyleClass() {
+		return backStyleClass;
+	}
+	/**
+	 * @param backStyleClass The backStyleClass to set.
+	 */
+	public void setBackStyleClass(String backStyleClass) {
+		this.backStyleClass = backStyleClass;
+	}
+	/**
+	 * @return Returns the moreStyleClass.
+	 */
+	public String getMoreStyleClass() {
+		return moreStyleClass;
+	}
+	/**
+	 * @param moreStyleClass The moreStyleClass to set.
+	 */
+	public void setMoreStyleClass(String moreStyleClass) {
+		this.moreStyleClass = moreStyleClass;
 	}
 }
