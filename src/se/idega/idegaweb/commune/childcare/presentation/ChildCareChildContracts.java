@@ -4,16 +4,13 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
-
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
@@ -33,6 +30,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.TimePeriod;
 import com.idega.util.text.Name;
 
 /**
@@ -413,7 +411,15 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			earliestPossibleRemoveDate = t.getDate();
 		} else {
 			PlacementHelper helper = getBusiness().getPlacementHelper(new Integer(getSession().getApplicationID()));
-			earliestPossibleRemoveDate = helper.getEarliestPlacementDate();				
+			TimePeriod period = helper.getValidPeriod();
+			if (period != null) {
+				earliestPossibleRemoveDate = period.getFirstTimestamp().getDate();				
+			}
+			else {
+				IWTimestamp stamp = new IWTimestamp();
+				stamp.addDays(-1);
+				earliestPossibleRemoveDate = stamp.getDate(); 
+			}
 		}
 		return earliestPossibleRemoveDate;
 	}
