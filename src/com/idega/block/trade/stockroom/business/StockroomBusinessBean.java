@@ -430,7 +430,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	      		try {
 	      			Collection coll = rHome.findAllByGroupID( item.getPrimaryKey() );
 	      			if (coll != null && !coll.isEmpty()) {
-	      				return ((Supplier) coll.iterator().next()).getID();
+	      				return ((Reseller) coll.iterator().next()).getID();
 	      			} 
 	      		} catch (FinderException fe) {
 	      			fe.printStackTrace();
