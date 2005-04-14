@@ -465,7 +465,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public int ejbHomeGetFutureContractsCountByApplication(int applicationID, Date date) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
-		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(date);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanOrEqualsSign().append(date);
 		return idoGetNumberOfRecords(sql);
 	}
 

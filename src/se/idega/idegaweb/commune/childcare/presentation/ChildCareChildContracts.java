@@ -389,7 +389,6 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		} else {
 			java.sql.Date earliestPossibleRemoveDate = new java.sql.Date(getEarliestPossibleContractRemoveDate().getTime());
 			IWTimestamp futureDate = new IWTimestamp(earliestPossibleRemoveDate);
-			futureDate.addDays(1);
 			if (getBusiness().getNumberOfFutureContracts(applicationId, futureDate.getDate()) > 0 ||
 					getBusiness().hasFutureLogs(applicationId, futureDate.getDate())) {
 				removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
