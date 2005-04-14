@@ -11,6 +11,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -20,6 +23,7 @@ import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
@@ -54,20 +58,22 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
 	private static final String LOCALIZED_PERSONAL_ID = "UserStatsBusiness.personal_id";
 	private static final String LOCALIZED_GROUP_NAME = "UserStatsBusiness.group_name";
+	private static final String LOCALIZED_GROUP_PATH = "UserStatsBusiness.group_path";
 	private static final String LOCALIZED_USER_STATUS = "UserStatsBusiness.user_status";
-	private static final String LOCALIZED_DATE_OF_BIRTH = "UserStatsBusiness.date_of_birth";
 	private static final String LOCALIZED_STREET_ADDRESS = "UserStatsBusiness.street_address";
 	private static final String LOCALIZED_POSTAL_ADDRESS = "UserStatsBusiness.postal_address";
 	private static final String LOCALIZED_PHONE = "UserStatsBusiness.phone";
+	private static final String LOCALIZED_EMAIL = "UserStatsBusiness.email";
 
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
 	private static final String FIELD_NAME_GROUP_NAME = "group_name";
+	private static final String FIELD_NAME_GROUP_PATH = "group_path";
 	private static final String FIELD_NAME_USER_STATUS = "user_status";
-	private static final String FIELD_NAME_DATE_OF_BIRTH = "date_of_birth";
 	private static final String FIELD_NAME_STREET_ADDRESS = "street_address";
 	private static final String FIELD_NAME_POSTAL_ADDRESS = "postal_address";
 	private static final String FIELD_NAME_PHONE = "phone";
+	private static final String FIELD_NAME_EMAIL = "email";
 	
 	private void initializeBundlesIfNeeded() {
 		if (_iwb == null) {
@@ -105,13 +111,13 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		 reportCollection.addField(groupField);
 		 
+		 ReportableField groupPathField = new ReportableField(FIELD_NAME_GROUP_PATH, String.class);
+		 groupPathField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_PATH, "Group Path"), currentLocale);
+		 reportCollection.addField(groupPathField);
+		 
 		 ReportableField userStatusField = new ReportableField(FIELD_NAME_USER_STATUS, String.class);
 		 userStatusField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_USER_STATUS, "User Status"), currentLocale);
 		 reportCollection.addField(userStatusField);
-		 
-		 ReportableField dateOfBirthField = new ReportableField(FIELD_NAME_DATE_OF_BIRTH, String.class);
-		 dateOfBirthField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_BIRTH, "Date of Birth"), currentLocale);
-		 reportCollection.addField(dateOfBirthField);
 		 
 		 ReportableField streetAddressField = new ReportableField(FIELD_NAME_STREET_ADDRESS, String.class);
 		 streetAddressField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_STREET_ADDRESS, "Street Address"), currentLocale);
@@ -124,6 +130,10 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		 ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, String.class);
 		 phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
 		 reportCollection.addField(phoneField);
+		 
+		 ReportableField emailField = new ReportableField(FIELD_NAME_EMAIL, String.class);
+		 emailField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
+		 reportCollection.addField(emailField);
 		
 		Group group = null;
 		Collection groups = null;
@@ -145,6 +155,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		    e.printStackTrace();
     	}
 			users = getUserBusiness().getUsersBySpecificGroupsUserstatusDateOfBirthAndGender(groups, userStatusesFilter, yearOfBirthFromFilter,  yearOfBirthToFilter,  genderFilter);
+			Collection topNodes = getUserBusiness().getUsersTopGroupNodesByViewAndOwnerPermissions(getUserContext().getCurrentUser(),getUserContext());
+			Map usersByGroups = new TreeMap();
 			Iterator iter = users.iterator();
 			 while (iter.hasNext()) {
 			     User user = (User) iter.next();
@@ -161,12 +173,15 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			   	if (personalID != null && personalID.length() == 10) {
 			 		personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 			 	}
-			   	String dateOfBirthString = null;
-			   	if (user.getDateOfBirth() != null) {
-			   	 dateOfBirthString = new IWTimestamp(user.getDateOfBirth()).getDateString("dd.MM.yy");
+			   	Collection emails =  user.getEmails();
+			   	Email email = null;
+			   	String emailString = null;
+			   	if (!emails.isEmpty()) {
+			   	    email = (Email)emails.iterator().next();
+			   	    emailString = email.getEmailAddress();
 			   	}
-			    Collection addresses = user.getAddresses();
-			    
+			   	
+			   	Collection addresses = user.getAddresses();
 			    Address address = null;
 			    String streetAddressString = null;
 			    String postalAddressString = null;
@@ -202,34 +217,35 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			         }
 			         
 			         String parentGroupName = parentGroup.getName();
-			         
-			         Group pparentGroup = null;
-			         Collection pparentGroupCollection = null;
-			         try {
-				         pparentGroupCollection = getGroupHome().findParentGroups(Integer.parseInt(parentGroup.getPrimaryKey().toString()));
-				     }
-			         catch (FinderException e) {
-				         System.out.println(e.getMessage());
-				     }
-				     if (!pparentGroupCollection.isEmpty()) {
-				         pparentGroup = (Group)pparentGroupCollection.iterator().next();
-				         parentGroupName = parentGroupName+"-"+pparentGroup.getName(); 
-				     }
-				     
+			         String parentGroupPath = getParentGroupPath(parentGroup, topNodes);
 				     // create a new ReportData for each row	    
 			         ReportableData data = new ReportableData();
 				     //	add the data to the correct fields/columns
 				     data.addData(nameField, user.getName() );
 				     data.addData(personalIDField, personalID);
-				     data.addData(groupField, parentGroupName);	     
+				     data.addData(groupField, parentGroupName);
+				     data.addData(groupPathField, parentGroupPath);
 				     data.addData(userStatusField, userStatusString);
-				     data.addData(dateOfBirthField, dateOfBirthString);
+				     data.addData(emailField, emailString);
 				     data.addData(streetAddressField, streetAddressString);
 				     data.addData(postalAddressField, postalAddressString);
 				     data.addData(phoneField, getPhoneNumber(user));
-				     reportCollection.add(data);
-			 	}
-			 }
+				     List statsForGroup = (List) usersByGroups.get(group.getPrimaryKey());
+						if (statsForGroup == null)
+							statsForGroup = new Vector();
+						statsForGroup.add(data);
+						usersByGroups.put(group.getPrimaryKey(), statsForGroup);
+				}
+			}
+			// iterate through the ordered map and ordered lists and add to the final collection
+			Iterator statsDataIter = usersByGroups.keySet().iterator();
+			while (statsDataIter.hasNext()) {
+				
+				List datas = (List) usersByGroups.get(statsDataIter.next());
+				// don't forget to add the row to the collection
+				reportCollection.addAll(datas);
+			}			 	
+			 
     	
     	ReportableField[] sortFields = new ReportableField[] {groupField, nameField, personalIDField };
 		Comparator comparator = new FieldsComparator(sortFields);
@@ -268,6 +284,26 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			}
 		}
 		return phoneNumber;
+    }
+    
+    private String getParentGroupPath(Group group, Collection topNodes) { 
+        Group parentGroup = group;
+        String parentGroupPath = parentGroup.getName();
+	    Collection parentGroupCollection = null;
+	    
+	    while (parentGroup != null && !topNodes.contains(parentGroup)) {
+	        try {
+		         parentGroupCollection = getGroupHome().findParentGroups(Integer.parseInt(parentGroup.getPrimaryKey().toString()));
+		     }
+	        catch (FinderException e) {
+		         System.out.println(e.getMessage());
+		     }
+		     if (!parentGroupCollection.isEmpty()) {
+		         parentGroup = (Group)parentGroupCollection.iterator().next();
+		         parentGroupPath = parentGroup.getName()+"/"+parentGroupPath;
+		     }
+	    }
+    return parentGroupPath;
     }
     
     private GroupHome getGroupHome() {
