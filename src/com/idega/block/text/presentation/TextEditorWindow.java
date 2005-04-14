@@ -179,7 +179,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
     // Form processing
     processForm(iwc,sTextId,sLocTextId, sAttribute);
       if(doView)
-        doViewText(sTextId,sAttribute,chosenLocale,iLocaleId);
+        doViewText(iwc, sTextId,sAttribute,chosenLocale,iLocaleId);
       }
       else {
         noAccess();
@@ -229,7 +229,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
     // end of Form Actions
   }
 
-  private void doViewText(String sTextId,String sAttribute,Locale locale,int iLocaleId){
+  private void doViewText(IWContext iwc, String sTextId,String sAttribute,Locale locale,int iLocaleId){
     ContentHelper contentHelper = null;
     TxText eTxText = null;
     int iTextId = -1;
@@ -245,10 +245,10 @@ public class TextEditorWindow extends AbstractChooserWindow{
       contentHelper = TextFinder.getContentHelper(sAttribute,iLocaleId);
     }
 
-    addLocalizedTextFields(eTxText,contentHelper,iLocaleId,sAttribute,iObjInsId);
+    addLocalizedTextFields(iwc, eTxText,contentHelper,iLocaleId,sAttribute,iObjInsId);
   }
 
-  private void addLocalizedTextFields(TxText txText,ContentHelper contentHelper, int iLocaleId,String sAttribute,int iObjInsId){
+  private void addLocalizedTextFields(IWContext iwc, TxText txText,ContentHelper contentHelper, int iLocaleId,String sAttribute,int iObjInsId){
     LocalizedText locText = null;
     boolean hasTxText = ( txText != null );
     //boolean hasLocalizedText = ( locText != null ) ? true: false;
@@ -324,6 +324,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
           Link edit = ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),((Integer)f.getPrimaryKey()).intValue(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
+		  maintainParameter(iwc, delete);
           delete.addParameter(prmDeleteFile,((Integer)f.getPrimaryKey()).intValue());
           delete.addParameter(prmUsedTextId,txText.getID());
           imageTable.add(edit,2,row);
