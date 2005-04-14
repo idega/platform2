@@ -1368,15 +1368,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Collection contractPlacements = getChildCareContractArchiveHome().findAllBySchoolClassMember(placement);
 				// only allow update when only one contract linked to the classmember
 				// or the one being changed is the first contract
+				if (lastContract.getTerminatedDate() != null) {
+					placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
+					getSchoolBusiness().addToSchoolClassMemberLog(placement, placement.getSchoolClass(), lastContract.getTerminatedDate(), performer);
+				}
+				else {
+					placement.setRemovedDate(null);
+				}
 				if (contractPlacements.size() == 1) {
 					placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
-					if (lastContract.getTerminatedDate() != null) {
-						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
-						getSchoolBusiness().addToSchoolClassMemberLog(placement, placement.getSchoolClass(), lastContract.getTerminatedDate(), performer);
-					}
-					else {
-						placement.setRemovedDate(null);
-					}
 					if (schoolTypeId > 0)
 						placement.setSchoolTypeId(schoolTypeId);
 					if (schoolClassId > 0) {
