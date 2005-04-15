@@ -4025,13 +4025,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			
 			IWTimestamp earliestDate = new IWTimestamp(earliestAllowedRemoveDate);
-			IWTimestamp logStart = new IWTimestamp(log.getStartDate());
 			IWTimestamp contractStart = new IWTimestamp(latestContract.getValidFromDate());
 			
 			boolean removeContract = false;
 			boolean logRemoved = false;
 			
 			if (log != null) {
+				IWTimestamp logStart = new IWTimestamp(log.getStartDate());
 				if (logStart.isLaterThan(contractStart)) {
 					// Only log needs to be removed
 					if (logStart.isLaterThanOrEquals(earliestDate)) {
