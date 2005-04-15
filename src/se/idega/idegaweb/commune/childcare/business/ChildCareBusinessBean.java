@@ -1290,7 +1290,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (application.getContractId() == childcareContract.getContractID()) {
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
 			}
-			verifyApplication(childcareContract, application, null, performer, schoolType, schoolClass);
+			verifyApplication(childcareContract, application, null, performer, schoolType, schoolClass, false);
 			application.store();
 
 			trans.commit();
@@ -1337,11 +1337,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return contractFile;
 	}
 
-	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer) throws RemoteException {
-		verifyApplication(lastContract, application, member, performer, -1, -1);
+	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, boolean removal) throws RemoteException {
+		verifyApplication(lastContract, application, member, performer, -1, -1, removal);
 	}
 
-	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, int schoolTypeId, int schoolClassId) throws RemoteException {
+	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, int schoolTypeId, int schoolClassId, boolean removal) throws RemoteException {
 		try {
 			if (lastContract == null)
 				lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
@@ -1349,7 +1349,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareContract firstContract = getChildCareContractArchiveHome().findFirstContractByApplication(((Integer) application.getPrimaryKey()).intValue());
 
 			application.setFromDate(firstContract.getValidFromDate());
-			application.setRejectionDate(lastContract.getTerminatedDate());
+			if (removal) {
+				lastContract.setTerminatedDate(application.getRejectionDate());
+				lastContract.store();
+			}
+			else {
+				application.setRejectionDate(lastContract.getTerminatedDate());
+			}
 			application.setCareTime(lastContract.getCareTime());
 			application.setContractId(lastContract.getContractID());
 			application.setContractFileId(lastContract.getContractFileID());
@@ -4138,7 +4144,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				member.remove();
 			}
 			
-			verifyApplication(null, application, member, performer);
+			verifyApplication(null, application, member, performer, true);
 
 			if (contract != null) {
 				contract.removeAllFiles();
