@@ -1412,6 +1412,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				catch (FinderException fe) {
 					//No log entry found...
 				}
+				if (removal) {
+					try {
+						SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(placement);
+						placement.setSchoolClassId(log.getSchoolClassID());
+						placement.store();
+					}
+					catch (FinderException fe) {
+						//No log entry found...
+					}
+				}
 
 				getSchoolBusiness().alignLogs(placement);
 			}
