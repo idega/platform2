@@ -4010,31 +4010,34 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication application = getApplication(applicationID);
 			ChildCareContract latestContract = getLatestContractByApplication(applicationID);
 			SchoolClassMember latestMember = latestContract.getSchoolClassMember();
-			
 			SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
+			
+			IWTimestamp earliestDate = new IWTimestamp(earliestAllowedRemoveDate);
+			IWTimestamp logStart = new IWTimestamp(log.getStartDate());
+			IWTimestamp contractStart = new IWTimestamp(latestContract.getValidFromDate());
 			
 			boolean removeContract = false;
 			boolean logRemoved = false;
 			
 			if (log != null) {
-				if (log.getStartDate().compareTo(latestContract.getValidFromDate()) > 0) {
+				if (logStart.isLaterThan(contractStart)) {
 					// Only log needs to be removed
-					if (log.getStartDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+					if (logStart.isLaterThanOrEquals(earliestDate)) {
 						log.remove();
 						logRemoved = true;
 					}
-				} else if (log.getStartDate().compareTo(latestContract.getValidFromDate()) == 0) {
+				} else if (logStart.equals(contractStart)) {
 					// Log start equals contract start, remove both log and contract
-					if (log.getStartDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+					if (logStart.isLaterThanOrEquals(earliestDate)) {
 						log.remove();
 						logRemoved = true;
 						removeContract = true;
 					}
-				} else if (latestContract.getValidFromDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+				} else if (contractStart.isLaterThanOrEquals(earliestDate)) {
 					// Don't remove log, only contract
 					removeContract = true;
 				}
-			} else if (latestContract.getValidFromDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+			} else if (contractStart.isLaterThanOrEquals(earliestDate)) {
 				removeContract = true;
 			}
 			
