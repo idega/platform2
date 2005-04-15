@@ -4106,6 +4106,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 	}
+	
+	public boolean hasContractRelation(SchoolClassMember member) {
+		try {
+			return getChildCareContractArchiveHome().getCountBySchoolClassMember(member) > 0;
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return false;
+		}
+	}
 
 	public boolean removeContract(ChildCareContract childcareContract, User performer) {
 		UserTransaction t = getSessionContext().getUserTransaction();
@@ -4123,6 +4133,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			removeInvoiceRecords(childcareContract);
 			childcareContract.remove();
+
+			if (!hasContractRelation(member)) {
+				member.remove();
+			}
+			
 			verifyApplication(null, application, member, performer);
 
 			if (contract != null) {

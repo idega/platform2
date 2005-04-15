@@ -612,12 +612,6 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	}
 
 	public Collection ejbFindByInvoiceReceiverActiveOrFuture(Integer invoiceReceiverID,Date fromDate)throws FinderException{
-		/*
-		 	select * from comm_childcare_archive a
-		 	where  terminated_date >= '2004-06-01' or terminated_date is null
-		 */
-		// Added by aron@idega.is
-		// Future or active contracts are those not yet terminated or terminated after given date
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(COLUMN_INVOICE_RECEIVER,invoiceReceiverID);
 		query.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
@@ -631,5 +625,11 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCH_CLASS_MEMBER, member);
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE);
 		return idoFindPKsByQuery(sql);
+	}
+	
+	public int ejbHomeGetCountBySchoolClassMember(SchoolClassMember member) throws IDOException {
+    IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(COLUMN_SCH_CLASS_MEMBER, member);
+		return idoGetNumberOfRecords(sql);
 	}
 }
