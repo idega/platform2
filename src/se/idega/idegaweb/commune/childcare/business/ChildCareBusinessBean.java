@@ -4016,7 +4016,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication application = getApplication(applicationID);
 			ChildCareContract latestContract = getLatestContractByApplication(applicationID);
 			SchoolClassMember latestMember = latestContract.getSchoolClassMember();
-			SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
+			SchoolClassMemberLog log = null;
+			try {
+				log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
+			}
+			catch (FinderException fe) {
+				//No log found...
+			}
 			
 			IWTimestamp earliestDate = new IWTimestamp(earliestAllowedRemoveDate);
 			IWTimestamp logStart = new IWTimestamp(log.getStartDate());
@@ -4086,10 +4092,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			if (logRemoved) {
 				// Remove end date on prior log
-				SchoolClassMemberLog priorLog = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
-				if (priorLog != null) {
-					priorLog.setEndDate(application.getRejectionDate());
-					priorLog.store();
+				try {
+					SchoolClassMemberLog priorLog = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
+					if (priorLog != null) {
+						priorLog.setEndDate(application.getRejectionDate());
+						priorLog.store();
+					}
+				}
+				catch (FinderException fe) {
+					//No prior log found...
 				}
 			}			
 
