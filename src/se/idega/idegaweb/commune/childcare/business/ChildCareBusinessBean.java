@@ -4095,7 +4095,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			t.commit();			
 		} catch (Exception e) {
-			log(e);
+			e.printStackTrace();
 			try {
 				t.rollback();
 			} catch (SystemException ex) {
