@@ -81,10 +81,13 @@ public class ClubNavigation extends ClubBlock {
 				case 4 :
 					zipcode_from = 400;
 					zipcode_to = 499;
+					zipcode_from = 510; //Holmavik
+					zipcode_to2 = 510; //Holmavik
 					break;
 				case 5 :
 					zipcode_from = 500;
 					zipcode_to = 599;
+					zipcode_is_not = 510; //Holmavik
 					break;
 				case 6 :
 					zipcode_from = 600;
