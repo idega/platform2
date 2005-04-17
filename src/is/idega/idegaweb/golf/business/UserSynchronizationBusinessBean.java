@@ -513,6 +513,8 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			String uuid = iwc.getParameter(GolfConstants.MEMBER_UUID);
 			String pin = iwc.getParameter(GolfConstants.MEMBER_PIN);
 			String name = iwc.getParameter(GolfConstants.MEMBER_NAME);
+			
+			System.out.println("UserSync: trying to sync : pin:"+pin+ " uuid:"+uuid+" name:"+name+" mainclub:"+main+ " subclubs:"+subs);
 			//do we need gender yet or can it just wait until the ldap replication...
 			
 			if(uuid!=null && pin!=null){

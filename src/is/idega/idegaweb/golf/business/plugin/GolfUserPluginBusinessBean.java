@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.8 2005/04/17 17:47:39 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.9 2005/04/17 20:16:15 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,10 +12,7 @@ package is.idega.idegaweb.golf.business.plugin;
 import is.idega.idegaweb.golf.presentation.GolferTab;
 import is.idega.idegaweb.golf.util.GolfConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -33,14 +30,15 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.FileUtil;
 
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2005/04/17 17:47:39 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/04/17 20:16:15 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -69,28 +67,36 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		String subClubs = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		String mainClub = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		
+		if(subClubs==null){
+			subClubs="";
+		}
+		
+		if(mainClub==null){
+			mainClub="";
+		}
 		String golfURL = "http://www.golf.is/?";
 		
-		String requestToGolf = GolfConstants.SUB_CLUBS_META_DATA_KEY+"="+subClubs
-			+"&"+GolfConstants.MAIN_CLUB_META_DATA_KEY+"="+mainClub
-			+"&"+GolfConstants.MEMBER_UUID+"="+user.getUniqueId()
-			+"&"+GolfConstants.MEMBER_PIN+"="+user.getPersonalID();
-		
-		String encodedURL = URLEncoder.encode(requestToGolf);
-		
-		golfURL+=encodedURL;
-		
+		String requestToGolf = "";
 		try {
-			URL url = new URL(golfURL);
-			URLConnection conn = url.openConnection();
-			conn.connect();
+			requestToGolf = GolfConstants.SUB_CLUBS_META_DATA_KEY+"="+URLEncoder.encode(subClubs,"ISO-8859-1")
+				+"&"+GolfConstants.MAIN_CLUB_META_DATA_KEY+"="+URLEncoder.encode(mainClub,"ISO-8859-1")
+				+"&"+GolfConstants.MEMBER_UUID+"="+URLEncoder.encode(user.getUniqueId(),"ISO-8859-1")
+				+"&"+GolfConstants.MEMBER_PIN+"="+URLEncoder.encode(user.getPersonalID(),"ISO-8859-1")
+				+"&"+GolfConstants.MEMBER_NAME+"="+URLEncoder.encode(user.getName(),"ISO-8859-1");
 		}
-		catch (MalformedURLException e) {
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		
+		golfURL+=requestToGolf;
+		
+		//String html = 
+		//do the request
+		FileUtil.getStringFromURL(golfURL);
+		
+		System.out.println("Syncing with golf.is : "+golfURL);
+		
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
