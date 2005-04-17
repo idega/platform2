@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.7 2005/04/13 15:08:53 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.8 2005/04/17 17:47:39 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,11 @@ package is.idega.idegaweb.golf.business.plugin;
 import is.idega.idegaweb.golf.presentation.GolferTab;
 import is.idega.idegaweb.golf.util.GolfConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +37,10 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2005/04/13 15:08:53 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/04/17 17:47:39 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -60,7 +65,32 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
 	 */
 	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
-		// TODO Auto-generated method stub
+		
+		String subClubs = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+		String mainClub = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+		
+		String golfURL = "http://www.golf.is/?";
+		
+		String requestToGolf = GolfConstants.SUB_CLUBS_META_DATA_KEY+"="+subClubs
+			+"&"+GolfConstants.MAIN_CLUB_META_DATA_KEY+"="+mainClub
+			+"&"+GolfConstants.MEMBER_UUID+"="+user.getUniqueId()
+			+"&"+GolfConstants.MEMBER_PIN+"="+user.getPersonalID();
+		
+		String encodedURL = URLEncoder.encode(requestToGolf);
+		
+		golfURL+=encodedURL;
+		
+		try {
+			URL url = new URL(golfURL);
+			URLConnection conn = url.openConnection();
+			conn.connect();
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
@@ -113,24 +143,10 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 			
 			if(!iwc.isSuperAdmin()){
 				//this might mean not all e.g. division admin might see this tab, if so then add a role like "Golf Admin"
-				boolean showTab = false;
-				UserBusiness userBiz = getUserBusiness();
-				Collection groups = userBiz.getUsersTopGroupNodesByViewAndOwnerPermissions(iwc.getCurrentUser(), iwc);
-				if(groups!=null && !groups.isEmpty()){
-					Iterator iter = groups.iterator();
-					
-					while (iter.hasNext() && !showTab) {
-						Group group = (Group) iter.next();
-						String type = group.getGroupType();
-						String name = group.getName();
-						if( name.startsWith("Golf") && (type.equals(IWMemberConstants.GROUP_TYPE_CLUB) || type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) || type.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)){
-							showTab = true;
-						}
-					}
-					
-					if(showTab){
-						tabs.add(new GolferTab());
-					}
+				boolean showTab = isCurrentUserGolfAdmin(iwc);
+				
+				if(showTab){
+					tabs.add(new GolferTab());
 				}
 			}
 			else{
@@ -141,6 +157,32 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		}
 		return null;
 	}
+
+	/**
+	 * @param iwc
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean isCurrentUserGolfAdmin(IWContext iwc) throws RemoteException {
+		boolean isGolfAdmin = false;
+		UserBusiness userBiz = getUserBusiness();
+		Collection groups = userBiz.getUsersTopGroupNodesByViewAndOwnerPermissions(iwc.getCurrentUser(), iwc);
+		if(groups!=null && !groups.isEmpty()){
+			Iterator iter = groups.iterator();
+			
+			while (iter.hasNext() && !isGolfAdmin) {
+				Group group = (Group) iter.next();
+				String type = group.getGroupType();
+				String name = group.getName();
+				if( (name.startsWith("Golf") || name.startsWith("golf")) && (type.equals(IWMemberConstants.GROUP_TYPE_CLUB) || type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) || type.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)){
+					isGolfAdmin = true;
+					break;
+				}
+			}
+		}
+		return isGolfAdmin;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
 	 */

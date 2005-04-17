@@ -30,6 +30,7 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -232,13 +233,19 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		}
 	}
 	
+	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
-		
 		String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
 		mainUnion = ("".equals(mainUnion))?null:mainUnion;
-		//todo remove the connection to the club
+		
 		String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
 		subUnions = ("".equals(subUnions))?null:subUnions;
+		
+		synchronizeUnion(user,member,mainUnion,subUnions);
+	
+	}
+		
+	private void synchronizeUnion(User user, Member member, String mainUnion, String subUnions) throws RemoteException {
 		
 		//first we deactivate all sub club union member infos, 
 		//otherwise we will miss the changes when only some of the subclubs are removed
@@ -267,8 +274,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				Union sub = getUnionFromAbbreviation(subAbbr);
 				if(sub!=null){
 					try {
-						//this will be corrected later but this also activates only the correct unions
-						unionCorrect.setMainUnion(member,sub.getID());
+						unionCorrect.setMemberActiveInSubUnion(member,sub.getID());
 					}
 					catch (SQLException e) {
 						e.printStackTrace();
@@ -497,6 +503,58 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 //			}
 		}
 	}
+	
+	public void syncUserFromRequest(IWContext iwc){
+		
+		try {
+			init();
+			String subs = iwc.getParameter(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+			String main = iwc.getParameter(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+			String uuid = iwc.getParameter(GolfConstants.MEMBER_UUID);
+			String pin = iwc.getParameter(GolfConstants.MEMBER_PIN);
+			String name = iwc.getParameter(GolfConstants.MEMBER_NAME);
+			//do we need gender yet or can it just wait until the ldap replication...
+			
+			if(uuid!=null && pin!=null){
+				subs = ("".equals(subs))?null:subs;
+				main = ("".equals(main))?null:main;
+				
+				User user = getUserBusiness().getUserByUniqueId(uuid);
+				if(user == null){
+					user = getUserBusiness().getUser(pin);	
+				}
+			
+				if(user==null){
+					user = getUserBusiness().createUserByPersonalIDIfDoesNotExist(name,pin,null,null);
+					user.setUniqueId(uuid);
+					user.store();
+				}
+				
+				if(user!=null){
+					Member member = getMemberFromUser(user);
+					synchronizeUnion(user, member,main,subs);
+				}
+				else{
+					System.err.println(" UserSync: USER IS NULL "+uuid+" "+pin);
+				}
+				
+			}
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
@@ -593,4 +651,9 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public UserBusiness getUserBusiness() throws IBOLookupException{
+		return (UserBusiness)getServiceInstance(UserBusiness.class);
+	}
+	
 }

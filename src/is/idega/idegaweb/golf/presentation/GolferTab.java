@@ -41,8 +41,8 @@ import com.idega.util.ListUtil;
 
 public class GolferTab extends UserTab {
 	
-	private static final String NO_MAIN_CLUB = "   ";
-	private static final String NO_MAIN_CLUB_KEY = "no_m_cl";
+	private static final String NO_MAIN_CLUB = "Inactive golfer";
+	private static final String NO_MAIN_CLUB_KEY = "no.main.club";
 
 	protected static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	protected static final String TAB_NAME = "golfer_info_tab";
@@ -69,6 +69,7 @@ public class GolferTab extends UserTab {
 	public void initializeFieldValues() {}
 
 	public void updateFieldsDisplayStatus() {
+				
 		initializeFields();
 //		get the values and update all the fieldValues
 //		main club
@@ -152,7 +153,7 @@ public class GolferTab extends UserTab {
 			Collection clubs = getGolfUserPluginBusiness().getGolfClubs();
 			if(!clubs.isEmpty()){
 				if(addEmptyValue){
-					noMainClub = new SelectOption(NO_MAIN_CLUB,NO_MAIN_CLUB_KEY);
+					noMainClub = new SelectOption(this.getResourceBundle(IWContext.getInstance()).getLocalizedString(NO_MAIN_CLUB_KEY,NO_MAIN_CLUB),NO_MAIN_CLUB_KEY);
 					noMainClub.setSelected(true);
 					keySelect.addOption(noMainClub);
 				}
@@ -161,6 +162,10 @@ public class GolferTab extends UserTab {
 				while (iter.hasNext()) {
 					Group group = (Group) iter.next();
 					String abbr = group.getAbbrevation();
+					if(abbr==null || "".equals(abbr)){
+						abbr = group.getShortName();
+					}
+					
 					String abbrAndName = abbr+" - "+group.getName();
 					if(abbr!=null){
 						SelectOption option = new SelectOption(abbrAndName,abbr);
@@ -288,8 +293,18 @@ public class GolferTab extends UserTab {
 	public boolean store(IWContext iwc) {
 		User user = getUser();
 		
-		user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubAbbrFromRequest);
+
+		String oldMain = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+		boolean moveOldClubToSubClub = false;
 		
+		if(oldMain!=null && !oldMain.equals(mainClubAbbrFromRequest)){
+			//move the main club to a sub club
+			moveOldClubToSubClub = true;
+		}
+		//set the main club
+		user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubAbbrFromRequest);
+
+				
 		if(subClubsAbbrFromRequest!=null){
 			List abbrList = ListUtil.convertStringArrayToList(subClubsAbbrFromRequest);
 			
@@ -297,6 +312,11 @@ public class GolferTab extends UserTab {
 				abbrList.remove(mainClubAbbrFromRequest);
 			}
 			
+			//we where changing main clubs, set the old as a subclub
+			if(moveOldClubToSubClub && mainClubAbbrFromRequest!=null && !abbrList.contains(oldMain)){
+				abbrList.add(oldMain);
+			}
+				
 			if(abbrList.isEmpty()){
 				//not to null because when we replicate this field it then removes the value on the other server if it is ""
 				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, "");
@@ -306,11 +326,18 @@ public class GolferTab extends UserTab {
 				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
 			}
 		}else{
+			//we where changing main clubs, set the old as a subclub
+			if(moveOldClubToSubClub && mainClubAbbrFromRequest!=null){
+				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,oldMain);
+			}
+			else{
 //			not to null because when we replicate this field it then removes the value on the other server if it is ""
-			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,"");
+				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,"");
+			}
 		}
 		
 		user.store();
+		
 		mainClubAbbrFromRequest = null;
 		subClubsAbbrFromRequest = null;
 		
@@ -331,20 +358,6 @@ public class GolferTab extends UserTab {
 		}
 	}
 
-//	private void setClubMetaData(User user, String clubAbbr, String membership_status) {
-//		if(membership_status.equalsIgnoreCase(MAIN_CLUB_TYPE)){
-//			String abbr = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
-//			if(abbr!=null && !abbr.equals(clubAbbr)){
-//				//move the main club to a sub club
-//				addToSubClubs(abbr,user);
-//				user.setMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY,clubAbbr);
-//			}else{
-//				user.setMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY,clubAbbr);
-//			}
-//		}else{
-//			addToSubClubs(clubAbbr,user);
-//		}
-//	}
 //
 //	/**
 //	 * Adds the club abbreviation string to a list of comma separeted values and stores the new value if needed in metadata 

@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusiness.java,v 1.4 2004/12/07 18:04:46 eiki Exp $
+ * $Id: GolfUserPluginBusiness.java,v 1.5 2005/04/17 17:47:39 eiki Exp $
  * Created on Dec 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOService;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -25,10 +26,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/04/17 17:47:39 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -112,4 +113,9 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#canCreateSubGroup
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
+	
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#isGolfAdmin
+	 */
+	public boolean isCurrentUserGolfAdmin(IWContext iwc) throws RemoteException;
 }

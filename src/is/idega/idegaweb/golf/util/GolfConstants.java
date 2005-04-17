@@ -1,5 +1,5 @@
 /*
- * $Id: GolfConstants.java,v 1.4 2005/02/07 17:29:33 eiki Exp $
+ * $Id: GolfConstants.java,v 1.5 2005/04/17 17:47:39 eiki Exp $
  * Created on Sep 17, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import com.idega.user.data.MetadataConstants;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/07 17:29:33 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/04/17 17:47:39 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  * 
  */
@@ -41,5 +41,9 @@ public interface GolfConstants {
 	public static final String MEMBER_ID = "member_id";
 
 	public static final String MEMBER_UUID = "member_uuid";
+
+	public static final String MEMBER_PIN = "member_pin";
+	
+	public static final String MEMBER_NAME = "member_name";
 	
 }
