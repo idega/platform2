@@ -1266,6 +1266,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			ChildCareApplication application = childcareContract.getApplication();
 
+			Date oldStartDate = childcareContract.getValidFromDate();
 			// possible bug found here, allowing null values for start date, which
 			// should be possible (aron 06.09.2004)
 			if (fromDate != null) {
@@ -1290,7 +1291,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (application.getContractId() == childcareContract.getContractID()) {
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
 			}
-			verifyApplication(childcareContract, application, null, performer, schoolType, schoolClass, false);
+			verifyApplication(childcareContract, application, null, performer, schoolType, schoolClass, false, oldStartDate);
 			application.store();
 
 			trans.commit();
@@ -1337,11 +1338,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return contractFile;
 	}
 
-	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, boolean removal) throws RemoteException {
-		verifyApplication(lastContract, application, member, performer, -1, -1, removal);
+	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, boolean removal, Date startDate) throws RemoteException {
+		verifyApplication(lastContract, application, member, performer, -1, -1, removal, startDate);
 	}
 
-	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, int schoolTypeId, int schoolClassId, boolean removal) throws RemoteException {
+	protected void verifyApplication(ChildCareContract lastContract, ChildCareApplication application, SchoolClassMember member, User performer, int schoolTypeId, int schoolClassId, boolean removal, Date startDate) throws RemoteException {
 		try {
 			if (lastContract == null)
 				lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
@@ -1382,7 +1383,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					placement.setRemovedDate(null);
 				}
 				if (contractPlacements.size() == 1) {
-					placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
+					IWTimestamp oldStart = startDate == null ? new IWTimestamp(placement.getRegisterDate()) : new IWTimestamp(startDate);
+					IWTimestamp placementStart = new IWTimestamp(placement.getRegisterDate());
+					if (oldStart.equals(placementStart)) {
+						placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
+					}
 					if (schoolTypeId > 0)
 						placement.setSchoolTypeId(schoolTypeId);
 					if (schoolClassId > 0) {
@@ -4172,7 +4177,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				member.remove();
 			}
 			
-			verifyApplication(null, application, member, performer, true);
+			verifyApplication(null, application, member, performer, true, null);
 
 			if (contract != null) {
 				contract.removeAllFiles();
