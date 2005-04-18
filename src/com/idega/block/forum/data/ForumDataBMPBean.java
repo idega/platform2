@@ -43,6 +43,8 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
     addAttribute(getColumnNameUserEMail(),"User e-mail",true,true,String.class);
     addAttribute(getColumnNameThreadDate(),"Date",true,true,Timestamp.class);
     addAttribute(getColumnNameNumberOfResponses(),"Responses",true,true,Integer.class);
+    addAttribute(getColumnNameTopParentThreadID(),"Parent thread",true,true,Integer.class);
+    addAttribute(getColumnNameNumberOfSubThreads(),"Sub Threads",true,true,Integer.class);
     addAttribute(getColumnNameValid(),"Valid",true,true,String.class);
     setNullable(getColumnNameUserID(),true);
   }
@@ -59,6 +61,8 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
   public static String getColumnNameUserEMail() { return "USER_EMAIL"; }
   public static String getColumnNameThreadDate() { return "THREAD_DATE"; }
   public static String getColumnNameNumberOfResponses() { return "NUMBER_OF_RESPONSES"; }
+  public static String getColumnNameTopParentThreadID() { return "TOP_PARENT_THREAD_ID";}
+  public static String getColumnNameNumberOfSubThreads() { return "NUMBER_OF_SUB_THREADS"; }
   public static String getColumnNameValid() { return "VALID"; }
 
   public String getEntityName(){
@@ -106,6 +110,14 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
   public int getNumberOfResponses(){
     return getIntColumnValue(getColumnNameNumberOfResponses());
   }
+  
+  public int getTopParentID(){
+    return getIntColumnValue(getColumnNameTopParentThreadID());
+  }
+  
+  public int getNumberOfSubThreads(){
+    return getIntColumnValue(getColumnNameNumberOfSubThreads());
+  }
 
   public boolean isValid(){
     if (((String)getColumnValue(getColumnNameValid())).equals("Y") )
@@ -150,6 +162,14 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
 
   public void setNumberOfResponses(int numberOfResponses){
     setColumn(getColumnNameNumberOfResponses(),numberOfResponses);
+  }
+  
+  public void setTopParentID(int topParentID){
+    setColumn(getColumnNameTopParentThreadID(),topParentID);
+  }
+  
+  public void setNumberOfSubThreads(int numberOfSubThreads){
+    setColumn(getColumnNameNumberOfSubThreads(),numberOfSubThreads);
   }
 
   public void setValid(boolean valid){
@@ -211,6 +231,11 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
     sql.append(this.getColumnNameThreadDate());
     sql.append(" desc");
     return super.idoFindIDsBySQL(sql.toString(),numberOfReturns);
+  }
+  
+  public Collection ejbFindAllTopLevelThreads() throws FinderException {
+    String sql = "select * from "+getEntityTableName()+" where "+this.getColumnNameParentThreadID()+" = -1 and "+this.getColumnNameValid()+" = 'Y' order by "+this.getColumnNameThreadDate()+" desc";
+    return super.idoFindIDsBySQL(sql);
   }
 
 } // class ForumThread

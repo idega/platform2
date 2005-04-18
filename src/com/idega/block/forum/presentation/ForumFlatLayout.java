@@ -161,7 +161,7 @@ public class ForumFlatLayout extends Forum {
 				table.add(formatText(Text.NON_BREAKING_SPACE), 1, row);
 				table.add(nameLink, 1, row);
 				table.add(getUser(topThreads[i]), 2, row);
-				table.add(formatText(Integer.toString(topThreads[i].getNumberOfResponses())),3,row);
+				table.add(formatText(Integer.toString(topThreads[i].getNumberOfSubThreads())),3,row);
 				table.add(getThreadDate(iwc, topThreads[i], Forum.TEXT_STYLE),4,row++);
 			}
 		}

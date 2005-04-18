@@ -94,7 +94,7 @@ public class ForumTree extends AbstractTreeViewer {
 		Link link = formatLink(thread.getThreadSubject());
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-		link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
+		link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
 		link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _id);
 		if (_page != null) link.setPage(_page);
 		return setLinkToOpenOrCloseNode(link, node, isOpen);
@@ -132,7 +132,7 @@ public class ForumTree extends AbstractTreeViewer {
 
 	private PresentationObject getNumberOfResponses(ICTreeNode node) {
 		ForumData thread = (ForumData) node;
-		Text text = formatText(String.valueOf(thread.getNumberOfResponses()));
+		Text text = formatText(String.valueOf(thread.getNumberOfSubThreads()));
 		return text;
 	}
 

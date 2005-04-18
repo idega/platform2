@@ -34,7 +34,7 @@ public abstract class ThreadLink extends ForumLink {
 			Link imageLink = new Link(image);
 			imageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topicID);
 			if (addThreadIDToLink()) {
-				imageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
+				imageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
 			}
 			if (addParentThreadIDToLink()) {
 				imageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
@@ -49,7 +49,7 @@ public abstract class ThreadLink extends ForumLink {
 		Link link = getStyleLink(getLinkName(getResourceBundle()), Forum.LINK_STYLE);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topicID);
 		if (addThreadIDToLink()) {
-			link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
+			link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
 		}
 		if (addParentThreadIDToLink()) {
 			link.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());

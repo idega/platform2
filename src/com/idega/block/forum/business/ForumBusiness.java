@@ -91,6 +91,14 @@ public class ForumBusiness {
 
 			thread.setTopicID(topicID);
 			thread.setParentThreadID(parentThreadID);
+			if(parentThread!=null){
+				int top = parentThread.getTopParentID();
+				if(top == -1){
+					thread.setTopParentID(parentThreadID);
+				} else {
+					thread.setTopParentID(top);
+				}
+			}
 			if (headline != null && headline.length() > 0)
 				thread.setThreadSubject(headline);
 			if (body != null && body.length() > 0)
@@ -108,22 +116,7 @@ public class ForumBusiness {
 				thread.setNumberOfResponses(0);
 			thread.setThreadDate(new IWTimestamp().getTimestampRightNow());
 
-			if (update) {
-				try {
-					thread.update();
-				}
-				catch (SQLException e) {
-					e.printStackTrace(System.err);
-				}
-			}
-			else {
-				try {
-					thread.insert();
-				}
-				catch (SQLException e) {
-					e.printStackTrace(System.err);
-				}
-			}
+			thread.store();
 
 			if (!update && parentThread != null) {
 				parentThread.addChild(thread);
@@ -136,13 +129,15 @@ public class ForumBusiness {
 	}
 
 	public void updateParent(ForumData thread, int increase) {
+		ForumData topParent = null;
+		if(thread.getParentThreadID() == -1 ){
+			topParent = thread;
+			topParent = getForumData(thread.getTopParentID());
+		}
 		thread.setNumberOfResponses(thread.getNumberOfResponses() + increase);
-		try {
-			thread.update();
-		}
-		catch (SQLException e) {
-			e.printStackTrace(System.err);
-		}
+		topParent.setNumberOfSubThreads(topParent.getNumberOfSubThreads()+increase);
+		thread.store();
+		topParent.store();
 	}
 
 	public boolean hasPreviousThreads(int firstThread) {
@@ -168,7 +163,7 @@ public class ForumBusiness {
 		try {
 			if (thread != null) {
 				thread.setValid(false);
-				thread.update();
+				thread.store();
 				if (thread.getParentThreadID() != -1) {
 					ForumData parentThread = getForumData(thread.getParentThreadID());
 					updateParent(parentThread, -1);
@@ -270,4 +265,63 @@ public class ForumBusiness {
 			return null;
 		}
 	}
+	
+	public void updateNumberOfSubThreadsAndResponcesForAllThreads() throws FinderException{
+		ForumDataHome fdHome = (ForumDataHome)IDOLookup.getHomeLegacy(ForumData.class);
+		Collection topLevelThreads = fdHome.findAllTopLevelThreads();
+		for (Iterator iter = topLevelThreads.iterator(); iter.hasNext();) {
+			ForumData thread = (ForumData) iter.next();
+			updateNumberOfSubThreadsAndResponces(thread);
+		}
+	}
+	
+	public void updateNumberOfSubThreadsAndResponces(ForumData topThread){
+		ForumData realTopThread = topThread;
+		int parentID = topThread.getParentThreadID();
+		if( parentID != -1){
+			int  realID = realTopThread.getTopParentID();
+			if(realID != -1){
+				realTopThread = getForumData(realID);
+			} else {
+				System.out.println("[ERROR]: could not update number of sub threads and responces for id : "+ parentID);
+				return;
+			}
+		}
+		int totalSubThreads = 0;
+		Collection childs = realTopThread.getChildren();
+		if(childs != null){
+			for (Iterator iter = childs.iterator(); iter.hasNext();) {
+				ForumData subthread = (ForumData) iter.next();
+				totalSubThreads++;
+				totalSubThreads += recursionOfUpdateNumberOfSubThreadsAndResponces(subthread);
+			}
+			realTopThread.setNumberOfResponses(childs.size());
+		} else {
+			realTopThread.setNumberOfResponses(0);
+		}
+		realTopThread.setNumberOfSubThreads(totalSubThreads);
+		realTopThread.store();
+	}
+	
+	private int recursionOfUpdateNumberOfSubThreadsAndResponces(ForumData topThread){
+		int totalSubThreads = 0;
+		Collection childs = topThread.getChildren();
+		if(childs != null){
+			for (Iterator iter = childs.iterator(); iter.hasNext();) {
+				ForumData subthread = (ForumData) iter.next();
+				if(subthread.isValid()){
+					totalSubThreads++;
+					totalSubThreads += recursionOfUpdateNumberOfSubThreadsAndResponces(subthread);
+				} else {
+					System.out.println("[ERROR]: ForumData#getChildren() does also return invalid childrens");
+				}
+			}
+			topThread.setNumberOfResponses(childs.size());
+		} else {
+			topThread.setNumberOfResponses(0);
+		}
+		topThread.store();
+		return totalSubThreads;
+	}
+	
 }

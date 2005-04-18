@@ -460,14 +460,14 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			link.setPage(_page);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
-		link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
+		link.addParameter(ForumBusiness.PARAMETER_THREAD_ID, String.valueOf(thread.getPrimaryKey()));
 		//link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
 
 		return link;
 	}
 
 	private Text getThreadResponses(ForumData thread) {
-		return formatText("(" + String.valueOf(thread.getNumberOfResponses()) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("replies_lc", "replies") + ")", INFORMATION_STYLE);
+		return formatText("(" + String.valueOf(thread.getNumberOfSubThreads()) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("replies_lc", "replies") + ")", INFORMATION_STYLE);
 	}
 
 	protected PresentationObject getUser(ForumData thread) {
