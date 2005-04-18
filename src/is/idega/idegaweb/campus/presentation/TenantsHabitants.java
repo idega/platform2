@@ -286,13 +286,16 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 		Collections.sort(vector, comparator);
 		Link adminLink = null;
 		int column = 1;
+		String emailPrepend = "<a href=\"";
+		String emailAppend1 = "\">";
+		String emailAppend2 = "</a>";
+		StringBuffer email = null;
 		for (int a = 0; a < vector.size(); a++) {
 			column = 1;
 			HabitantsCollector collected = (HabitantsCollector) vector.get(a);
 			if (isAdmin) {
 				adminLink = new Link(formatText(collected.getName()));
 				adminLink.addParameter(TenantsProfile.getUserParameter(collected.getUserID()));
-				// adminLink.addParameter(CampusFactory.getParameter(CampusFactory.TEN_PROFILE));
 				table.add(adminLink, column++, row);
 			}
 			else {
@@ -302,7 +305,23 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 			table.add(formatText(collected.getApartment()), column++, row);
 			table.add(formatText(collected.getFloor()), column++, row);
 			table.add(formatText(collected.getPhone()), column++, row);
-			table.add(formatText(collected.getEmail()), column++, row);
+			if (isAdmin) {
+				String emailString = collected.getEmail();
+				if (emailString != null && !"".equals(emailString.trim())) {
+					email = new StringBuffer(emailPrepend);
+					email.append(emailString);
+					email.append(emailAppend1);
+					email.append(emailString);
+					email.append(emailAppend2);
+					table.add(new Link(formatText(collected.getEmail()), email.toString()), column++, row);
+				}
+				else {
+					table.add(formatText(collected.getEmail()), column++, row);
+				}
+			}
+			else { 
+				table.add(formatText(collected.getEmail()), column++, row);
+			}
 			row++;
 		}
 
