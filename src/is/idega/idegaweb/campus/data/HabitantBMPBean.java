@@ -18,54 +18,31 @@ import javax.ejb.FinderException;
  * @version 1.
  */
 public class HabitantBMPBean extends com.idega.data.GenericView implements is.idega.idegaweb.campus.data.Habitant {
-	/*
-	 * 
-	 * create view V_HABITANTS (
-	 * 
-	 * IC_USER_ID,
-	 * 
-	 * CAM_CONTRACT_ID ,
-	 * 
-	 * BU_COMPLEX_ID,
-	 * 
-	 * FULL_NAME,
-	 * 
-	 * ADDRESS,
-	 * 
-	 * APARTMENT,
-	 * 
-	 * FLOOR,
-	 * 
-	 * NUMBER)
-	 * 
-	 * as
-	 * 
-	 * select c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name,
-	 * b.name address,
-	 * 
-	 * g.name apartment,f.name floor,p.phone_number number
-	 * 
-	 * from app_applicant a,app_applicant_tree t, cam_contract c,
-	 * 
-	 * bu_building b, bu_floor f, bu_apartment g ,bu_complex x ,cam_phone p
-	 * 
-	 * where a.app_applicant_id = t.child_app_applicant_id
-	 * 
-	 * and g.bu_floor_id = f.bu_floor_id
-	 * 
-	 * and f.bu_building_id = b.bu_building_id
-	 * 
-	 * and t.app_applicant_id = c.app_applicant_id
-	 * 
-	 * and g.bu_apartment_id = c.bu_apartment_id
-	 * 
-	 * and b.bu_complex_id = x.bu_complex_id
-	 * 
-	 * and p.bu_apartment_id = g.bu_apartment_id
-	 * 
-	 * and c.rented = 'Y'
-	 *  
-	 */
+/*
+create view V_HABITANTS (IC_USER_ID,CAM_CONTRACT_ID ,BU_COMPLEX_ID,FULL_NAME,ADDRESS,APARTMENT,FLOOR,NUMBER,EMAIL)
+as
+select c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name,b.name address,g.name apartment,f.name floor,p.phone_number number, e.email
+from app_applicant a,app_applicant_tree t, cam_contract c,
+bu_building b, bu_floor f, bu_apartment g ,bu_complex x ,cam_phone p, v_emails e
+where a.app_applicant_id = t.child_app_applicant_id
+and g.bu_floor_id = f.bu_floor_id
+and f.bu_building_id = b.bu_building_id
+and t.app_applicant_id = c.app_applicant_id
+and g.bu_apartment_id = c.bu_apartment_id
+and b.bu_complex_id = x.bu_complex_id
+and p.bu_apartment_id = g.bu_apartment_id
+and c.ic_user_id = e.ic_user_id
+and c.rented = 'Y'
+
+
+create view v_emails(ic_user_id, email) as 
+select c.ic_user_id, ca.email from cam_contract c, app_application app, cam_application ca
+where c.app_applicant_id = app.app_applicant_id
+and app.app_application_id = ca.app_application_id
+and c.rented = 'Y'
+and app.status = 'C'
+ */
+	
 	public static String getEntityTableName() {
 		return "V_HABITANTS";
 	}
@@ -97,6 +74,9 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 	public static String getColumnNumber() {
 		return "NUMBER";
 	}
+	public static String getColumnEmail() {
+		return "EMAIL";
+	}
 	public HabitantBMPBean() {
 	}
 	public HabitantBMPBean(int id) throws SQLException {
@@ -110,7 +90,8 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 		addAttribute(getColumnAddress(), "Address", true, true, String.class);
 		addAttribute(getColumnApartment(), "Apartment", true, true, String.class);
 		addAttribute(getColumnFloor(), "Floor", true, true, String.class);
-		addAttribute(getColumnNumber(), "Phone number", true, true, String.class);
+		addAttribute(getColumnNumber(), "Phone number", true, true, String.class);		
+		addAttribute(getColumnEmail(), "Email", true, true, String.class);
 		setAsPrimaryKey(getColumnApplicantId(),true);
 	}
 	public String getEntityName() {
@@ -140,6 +121,9 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 	public String getPhoneNumber() {
 		return getStringColumnValue(getColumnNumber());
 	}
+	public String getEmail() {
+		return getStringColumnValue(getColumnEmail());
+	}
 	public void insert() throws SQLException {
 	}
 	public void delete() throws SQLException {
@@ -159,13 +143,14 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 		sql.append(" ADDRESS, ");
 		sql.append(" APARTMENT, ");
 		sql.append(" FLOOR, ");
-		sql.append(" NUMBER) ");
+		sql.append(" NUMBER, ");
+		sql.append(" EMAIL) ");
 		sql.append(" as ");
 		sql.append(" select a.app_applicant_id,c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name, ");
 		sql.append(" b.name address, ");
-		sql.append(" g.name apartment,f.name floor,p.phone_number number ");
+		sql.append(" g.name apartment,f.name floor,p.phone_number number, ca.email ");
 		sql.append(" from app_applicant a,app_applicant_tree t, cam_contract c, ");
-		sql.append(" bu_building b, bu_floor f, bu_apartment g ,bu_complex x ,cam_phone p ");
+		sql.append(" bu_building b, bu_floor f, bu_apartment g ,bu_complex x ,cam_phone p, cam_application ca, app_application app ");
 		sql.append(" where a.app_applicant_id = t.child_app_applicant_id ");
 		sql.append(" and g.bu_floor_id = f.bu_floor_id ");
 		sql.append(" and f.bu_building_id = b.bu_building_id ");
@@ -173,6 +158,8 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 		sql.append(" and g.bu_apartment_id = c.bu_apartment_id ");
 		sql.append(" and b.bu_complex_id = x.bu_complex_id ");
 		sql.append(" and p.bu_apartment_id = g.bu_apartment_id ");
+		sql.append(" and a.app_applicant_id = app.app_applicant_id ");
+		sql.append(" and app.app_application_id = ca.app_application_id ");
 		sql.append(" and c.rented = 'Y' ");
 		return sql.toString();
 	}

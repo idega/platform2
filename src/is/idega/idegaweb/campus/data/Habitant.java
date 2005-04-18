@@ -12,4 +12,5 @@ public interface Habitant extends com.idega.data.IDOLegacyEntity
  public java.lang.String getFullName();
  public java.lang.String getPhoneNumber();
  public int getUserId();
+ public String getEmail();
 }
