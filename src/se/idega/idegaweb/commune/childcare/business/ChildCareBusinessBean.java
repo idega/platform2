@@ -1431,9 +1431,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setContractFileId(null);
 			application.setApplicationStatus(getStatusDeleted());
 			if (member != null) {
-				member.setRemovedDate(member.getRegisterDate());
-				member.store();
-				getSchoolBusiness().alignLogs(member);
+				try {
+					member.remove();
+				}
+				catch (RemoveException re) {
+					member.setRemovedDate(member.getRegisterDate());
+					member.store();
+					getSchoolBusiness().alignLogs(member);
+				}
 			}
 			changeCaseStatus(application, getCaseStatusDeleted().getStatus(), performer);
 		}
