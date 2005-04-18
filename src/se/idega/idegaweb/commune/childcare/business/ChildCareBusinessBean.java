@@ -4107,6 +4107,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (priorLog != null) {
 						priorLog.setEndDate(application.getRejectionDate());
 						priorLog.store();
+						latestMember.setSchoolClassId(priorLog.getSchoolClassID());
+						latestMember.store();
 					}
 				}
 				catch (FinderException fe) {
