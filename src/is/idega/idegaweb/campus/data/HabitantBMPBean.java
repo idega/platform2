@@ -19,9 +19,9 @@ import javax.ejb.FinderException;
  */
 public class HabitantBMPBean extends com.idega.data.GenericView implements is.idega.idegaweb.campus.data.Habitant {
 /*
-create view V_HABITANTS (IC_USER_ID,CAM_CONTRACT_ID ,BU_COMPLEX_ID,FULL_NAME,ADDRESS,APARTMENT,FLOOR,NUMBER,EMAIL)
+create view V_HABITANTS (APP_APPLICANT_ID, IC_USER_ID,CAM_CONTRACT_ID ,BU_COMPLEX_ID,FULL_NAME,ADDRESS,APARTMENT,FLOOR,NUMBER,EMAIL)
 as
-select c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name,b.name address,g.name apartment,f.name floor,p.phone_number number, e.email
+select c.app_applicant_id, c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name,b.name address,g.name apartment,f.name floor,p.phone_number number, e.email
 from app_applicant a,app_applicant_tree t, cam_contract c,
 bu_building b, bu_floor f, bu_apartment g ,bu_complex x ,cam_phone p, v_emails e
 where a.app_applicant_id = t.child_app_applicant_id
