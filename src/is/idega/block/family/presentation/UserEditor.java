@@ -812,6 +812,7 @@ public class UserEditor extends Block {
 		}
 		Table infoTable = new Table();
 		Table addressTable = new Table();
+		addressTable.setColumns(3);
 		int row = 1;
 		addressTable.setCellspacing(4);
 		Address primaryAddress = null;
@@ -824,6 +825,53 @@ public class UserEditor extends Block {
 			deceasedStatus = getUserStatusService(iwc).getDeceasedUserStatus((Integer) user.getPrimaryKey());
 			email = userService.getUserMail(user);
 		}
+		Text tPersonal = new Text(iwrb.getLocalizedString("mbe.personal_id", "Personal ID"));
+		tPersonal.setStyleClass(headerFontStyleName);
+		addressTable.add(tPersonal, 1, row);
+		if(isAllowPersonalIdEdit(user)) {
+			TextInput primaryPersonalIdInput = new TextInput(prm_personal_id);
+			primaryPersonalIdInput.setStyleClass(interfaceStyleName);
+			primaryPersonalIdInput.setLength(streetInputLength);
+			primaryPersonalIdInput.setContent(user.getPersonalID());//does that show a prefilled form? 
+			addressTable.add(primaryPersonalIdInput, 2, row++);
+		}
+		else {
+			Text personal = new Text(user.getPersonalID());
+			personal.setStyleClass(deceasedFontStyleName);
+			addressTable.add(personal, 2, row++);
+		}
+
+		Text tName = new Text(iwrb.getLocalizedString("mbe.name", "Name"));
+		tName.setStyleClass(headerFontStyleName);
+		addressTable.add(tName, 1, row);
+
+		TextInput primaryFirstName = new TextInput(prm_first_name);
+		primaryFirstName.setStyleClass(interfaceStyleName);
+		primaryFirstName.setLength(streetInputLength);
+		if (user != null && user.getFirstName() != null) {
+			primaryFirstName.setContent(user.getFirstName());
+		}
+		
+		TextInput primaryMiddleName = new TextInput(prm_middle_name);
+		primaryMiddleName.setStyleClass(interfaceStyleName);
+		primaryMiddleName.setLength(streetInputLength);
+		if (user != null && user.getMiddleName() != null) {
+			primaryMiddleName.setContent(user.getMiddleName());
+		}
+		
+		TextInput primaryLastName = new TextInput(prm_last_name);
+		primaryLastName.setStyleClass(interfaceStyleName);
+		primaryLastName.setLength(streetInputLength);
+		if (user != null && user.getLastName() != null) {
+			primaryLastName.setContent(user.getLastName());
+		}
+		addressTable.mergeCells(2, row, addressTable.getColumns(), row);
+		addressTable.add(primaryFirstName, 2, row);
+		addressTable.add(Text.getNonBrakingSpace(), 2, row);
+		addressTable.add(primaryMiddleName, 2, row);
+		addressTable.add(Text.getNonBrakingSpace(), 2, row);
+		addressTable.add(primaryLastName, 2, row++);
+
 		if (!isNewUserView()) {
 			// deceased layout section
 			Text tDeceased = new Text(iwrb.getLocalizedString("mbe.deceased", "Deceased"));
