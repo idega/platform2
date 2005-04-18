@@ -286,7 +286,7 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 		Collections.sort(vector, comparator);
 		Link adminLink = null;
 		int column = 1;
-		String emailPrepend = "<a href=\"";
+		String emailPrepend = "<a href=\"mailto:";
 		String emailAppend1 = "\">";
 		String emailAppend2 = "</a>";
 		StringBuffer email = null;
@@ -313,7 +313,7 @@ public class TenantsHabitants extends CampusBlock implements Campus {
 					email.append(emailAppend1);
 					email.append(emailString);
 					email.append(emailAppend2);
-					table.add(new Link(formatText(collected.getEmail()), email.toString()), column++, row);
+					table.add(formatText(email.toString()), column++, row);
 				}
 				else {
 					table.add(formatText(collected.getEmail()), column++, row);
