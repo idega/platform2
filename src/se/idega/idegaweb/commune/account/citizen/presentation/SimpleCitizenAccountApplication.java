@@ -46,12 +46,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/04/01 06:59:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/19 10:43:59 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -148,14 +148,6 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			String phoneWork = iwc.getParameter(PHONE_CELL_KEY).toString();
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			User user = business.getUserIcelandic(ssn);
-			Collection logins = new ArrayList();
-			try {
-				logins.addAll(getLoginTableHome().findLoginsForUser(user));
-			}
-			catch (Exception e) {
-				// no problem, no login found
-			}
-			if (user != null && !logins.isEmpty()) { throw new UserHasLoginException(); }
 			if (user == null) {
 				// unknown or user not in system applies
 				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
@@ -164,22 +156,32 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 				add(new Break(2));
 				viewSimpleApplicationForm(iwc);
 			}
-			if (email != null && email.length() > 0) {
-				if (emailRepeat == null || !email.equals(emailRepeat)) {
-					throw new Exception(localize(ERROR_EMAILS_DONT_MATCH, ERROR_EMAILS_DONT_MATCH_DEFAULT));
-				}
-			}
-			if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
-				// known user applied, but couldn't be submitted
-				throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
-			}
 			else {
-				// known user applied and was submitted
-				if (getResponsePage() != null) {
-					iwc.forwardToIBPage(getParentPage(), getResponsePage());
+				Collection logins = new ArrayList();
+				try {
+					logins.addAll(getLoginTableHome().findLoginsForUser(user));
+				}
+				catch (Exception e) {
+					// no problem, no login found
+				}
+				if (!logins.isEmpty()) { throw new UserHasLoginException(); }
+				if (email != null && email.length() > 0) {
+					if (emailRepeat == null || !email.equals(emailRepeat)) {
+						throw new Exception(localize(ERROR_EMAILS_DONT_MATCH, ERROR_EMAILS_DONT_MATCH_DEFAULT));
+					}
+				}
+				if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
+					// known user applied, but couldn't be submitted
+					throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
 				}
 				else {
-					add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
+					// known user applied and was submitted
+					if (getResponsePage() != null) {
+						iwc.forwardToIBPage(getParentPage(), getResponsePage());
+					}
+					else {
+						add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
+					}
 				}
 			}
 		}
