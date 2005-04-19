@@ -42,6 +42,7 @@ import com.idega.data.IDOStoreException;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
@@ -88,7 +89,7 @@ import com.idega.util.text.Name;
  * @author <a href="mailto:aron@idega.is"> Aron Birkir
  * @version 1.0
  */
-public class UserEditor extends Block {
+public class UserEditor extends Block implements IWPageEventListener {
 
 	private static final String prm_coaddress_country_id = "co_country_id";
 
@@ -409,6 +410,7 @@ public class UserEditor extends Block {
 		Form form = new Form();
 		form.setOnSubmit("return checkInfoForm()");
 		form.add(mainTable);
+		form.setEventListener(UserEditor.class);
 		add(form);
 	}
 
@@ -1182,8 +1184,6 @@ public class UserEditor extends Block {
 		initUser(iwc);
 		initRelationTypes(iwc);
 		setNewUserView(isNewUserView(iwc));
-		if (iwc.isParameterSet(PRM_SAVE))
-			saveUser(iwc);
 	}
 
 	protected Commune getCommune(IWContext iwc, User user) {
@@ -1544,6 +1544,8 @@ public class UserEditor extends Block {
 					// TODO use some userbusiness to inform any services that want to know
 					// about a deceased user
 				}
+				
+				getUserSession(iwc).setUser(user);
 			}
 			catch (NumberFormatException e) {
 				e.printStackTrace();
@@ -2173,5 +2175,18 @@ public class UserEditor extends Block {
 
 	public void setShowDefaultCommuneOption(boolean flag) {
 		this.showDefaultCommuneOption = flag;
+	}
+
+	public boolean actionPerformed(IWContext iwc) throws IWException {
+		if (iwc.isParameterSet(PRM_SAVE)) {
+			try {
+				saveUser(iwc);
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+			return true;
+		}
+		return false;
 	}
 }
