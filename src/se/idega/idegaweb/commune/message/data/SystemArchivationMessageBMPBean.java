@@ -37,6 +37,10 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		return "MSG_SYSTEM_ARCH_MESSAGE";
 	}
 	
+	public boolean isPrinted() {
+		return this.getCaseStatus().equals(getCaseStatusReady());
+	}
+
 	public void initializeAttributes()
 	{
 		addGeneralCaseRelation();

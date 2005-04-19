@@ -133,6 +133,10 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	public String getMessageType() {
 		return this.getStringColumnValue(COLUMN_MESSAGE_TYPE);
 	}
+	
+	public boolean isPrinted() {
+		return this.getCaseStatus().equals(getCaseStatusReady());
+	}
 
 	public void setMessageType(String type) {
 		this.setColumn(COLUMN_MESSAGE_TYPE, type);

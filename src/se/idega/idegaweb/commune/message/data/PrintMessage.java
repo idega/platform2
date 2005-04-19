@@ -23,5 +23,5 @@ public interface PrintMessage extends Message {
 	public void setMessageBulkData(int p0);
  	public int getMessageDataFileID();
 	public int getMessageBulkDataFileID();
- 	
+ 	public boolean isPrinted();
 }

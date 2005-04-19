@@ -533,10 +533,17 @@ public class PrintMessageViewer extends CommuneBlock {
 		//int bulkId;
 		while (iter.hasNext() && count <= ccu) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
-	
+			boolean isPrinted = msg.isPrinted();
+			
 			Link link = new Link(msg.getSubject());
-			link.addParameter(PARAM_VIEW_MESSAGE, "true");
-			link.addParameter(PARAM_MESSAGE_ID, msg.getNodeID());
+			if (isPrinted && msg.getMessageDataFileID() > 0) {
+				link.setFile(msg.getMessageData());
+				link.setTarget(Link.TARGET_NEW_WINDOW);
+			}
+			else {
+				link.addParameter(PARAM_VIEW_MESSAGE, "true");
+				link.addParameter(PARAM_MESSAGE_ID, msg.getNodeID());
+			}
 			unPrintedLetterDocs.add(link);
 			unPrintedLetterDocs.add(String.valueOf(msg.getNodeID()));
 	
@@ -546,6 +553,9 @@ public class PrintMessageViewer extends CommuneBlock {
 	
 			CheckBox box =
 				new CheckBox(PRM_U_CHK, msg.getPrimaryKey().toString());
+			if (isPrinted) {
+				box.setDisabled(true);
+			}
 			uForm.addParameter(PARAM_LETTER_TYPE, currentType);
 			unPrintedLetterDocs.add(box);
 			count++;
