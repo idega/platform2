@@ -267,11 +267,16 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			catch (RemoteException e) {
 			}
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
-				PlacementHelper helper = getPlacementHelper((Integer) application.getPrimaryKey());
-				java.util.Date earliestDate = helper.getEarliestPlacementDate();
-				Date date = null;
-				if (earliestDate != null) {
-					date = new Date(earliestDate.getTime());
+				Date date = application.getFromDate();
+				try {
+					PlacementHelper helper = getPlacementHelper((Integer) application.getPrimaryKey());
+					java.util.Date earliestDate = helper.getEarliestPlacementDate();
+					if (earliestDate != null) {
+						date = new Date(earliestDate.getTime());
+					}
+				}
+				catch (Exception e) {
+					log(e);
 				}
 				if (application.getFromDate() == null) {
 					continue;
