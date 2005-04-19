@@ -611,15 +611,17 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	
 	public Collection ejbFindAllLettersBySchool(int providerID, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
 		com.idega.data.IDOQuery sql = idoQuery();
-		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_sch_choice c";
+		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_sch_choice c, comm_childcare cc";
 		if (ssn != null && ! ssn.equals("")){
 			sqlFrom += ", ic_user u";
 		}
 			
 		sql.appendSelectAllFrom(sqlFrom);
 		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
-		sql.appendAndEquals("p.parent_case_id", "c.comm_sch_choice_id");
-		sql.appendAndEquals("c.school_id", providerID);
+		sql.appendAnd().appendLeftParenthesis().appendLeftParenthesis().appendEquals("p.parent_case_id", "c.comm_sch_choice_id");
+		sql.appendAndEquals("c.school_id", providerID).appendRightParenthesis();
+		sql.appendOr().appendLeftParenthesis().appendEquals("p.parent_case_id", "cc.comm_childcare_id");
+		sql.appendAndEquals("cc.provider_id", providerID).appendRightParenthesis().appendRightParenthesis();
 		if (ssn != null && ! ssn.equals("")){
 			sql.appendAndEquals("p.user_id", "u.ic_user_id");
 			sql.appendAnd().append("u.personal_id").appendLike().appendWithinSingleQuotes( ssn);
