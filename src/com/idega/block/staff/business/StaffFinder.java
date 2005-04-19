@@ -3,6 +3,7 @@ package com.idega.block.staff.business;
 
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -145,27 +146,7 @@ public class StaffFinder {
 
 
   public static List getGroups(IWContext iwc) {
-
-    try {
-
-      List allGroups = UserGroupBusiness.getAllGroups(iwc);
-
-      if ( allGroups != null ) {
-
-        allGroups.remove(iwc.getAccessController().getPermissionGroupAdministrator());
-
-      }
-
-      return allGroups;
-
-    }
-
-    catch (Exception e) {
-
-      return null;
-
-    }
-
+    return getAllGroups(iwc);
   }
 
 
@@ -201,25 +182,25 @@ public class StaffFinder {
 
 
   public static List getAllGroups(IWContext iwc) {
-
     List groups = UserGroupBusiness.getAllGroups(iwc);
+		List filteredList = new ArrayList();
 
     if ( groups != null ) {
-
       try {
-
         groups.remove(iwc.getAccessController().getPermissionGroupAdministrator());
-
       }
-
       catch (Exception e) {}
-
-      return groups;
-
+			
+			Iterator iter = groups.iterator();
+			while (iter.hasNext()) {
+				GenericGroup element = (GenericGroup) iter.next();
+				if (element.getGroupType().equalsIgnoreCase("general")) {
+					filteredList.add(element);
+				}
+			}
+      return filteredList;
     }
-
     return null;
-
   }
 
 
