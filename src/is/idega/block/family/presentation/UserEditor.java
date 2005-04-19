@@ -245,6 +245,12 @@ public class UserEditor extends Block implements IWPageEventListener {
 	private int nameInputLength = 25;
 
 	private int personalIdInputLength = 15;
+	
+	private int firstNameInputLength = 10;
+	
+	private int middleNameInputLength = 10;
+	
+	private int lastNameInputLength = 15;
 
 	private int streetInputLength = 30;
 
@@ -849,21 +855,21 @@ public class UserEditor extends Block implements IWPageEventListener {
 
 		TextInput primaryFirstName = new TextInput(prm_first_name);
 		primaryFirstName.setStyleClass(interfaceStyleName);
-		primaryFirstName.setLength(streetInputLength);
+		primaryFirstName.setLength(firstNameInputLength);
 		if (user != null && user.getFirstName() != null) {
 			primaryFirstName.setContent(user.getFirstName());
 		}
 		
 		TextInput primaryMiddleName = new TextInput(prm_middle_name);
 		primaryMiddleName.setStyleClass(interfaceStyleName);
-		primaryMiddleName.setLength(streetInputLength);
+		primaryMiddleName.setLength(middleNameInputLength);
 		if (user != null && user.getMiddleName() != null) {
 			primaryMiddleName.setContent(user.getMiddleName());
 		}
 		
 		TextInput primaryLastName = new TextInput(prm_last_name);
 		primaryLastName.setStyleClass(interfaceStyleName);
-		primaryLastName.setLength(streetInputLength);
+		primaryLastName.setLength(lastNameInputLength);
 		if (user != null && user.getLastName() != null) {
 			primaryLastName.setContent(user.getLastName());
 		}
