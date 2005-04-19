@@ -135,7 +135,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public boolean isPrinted() {
-		return this.getCaseStatus().equals(getCaseStatusReady());
+		return this.getCaseStatus().getStatus().equals(getCaseStatusReady());
 	}
 
 	public void setMessageType(String type) {
