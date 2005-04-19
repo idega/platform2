@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenSearcher.java,v 1.4 2005/04/13 12:19:12 anna Exp $
+ * $Id: CitizenSearcher.java,v 1.5 2005/04/19 07:50:55 laddi Exp $
  * Created on 12.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,13 +26,17 @@ import com.idega.user.presentation.UserSearcher;
  * <p>
  * TODO anna Describe Type CitizenSearcher
  * </p>
- *  Last modified: $Date: 2005/04/13 12:19:12 $ by $Author: anna $
+ *  Last modified: $Date: 2005/04/19 07:50:55 $ by $Author: laddi $
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CitizenSearcher extends UserSearcher {
 
+	public CitizenSearcher() {
+		super();
+	}
+	
 	protected Integer processSave(IWContext iwc, String firstName, String middleName, String lastName, String personalID) throws CreateException {
 		if (personalID.length() != 12 || !PIDChecker.getInstance().isValid(personalID, true)) {
 			throw new CreateException(getLocalizedString("not_a_valid_personal_id", "The personal ID is invalid or too short", iwc));
