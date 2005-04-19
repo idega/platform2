@@ -1,5 +1,5 @@
 /*
- * $Id: UserInfo.java,v 1.1 2005/02/16 11:11:27 laddi Exp $
+ * $Id: UserInfo.java,v 1.2 2005/04/19 11:49:33 laddi Exp $
  * Created on 31.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/02/16 11:11:27 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/19 11:49:33 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class UserInfo extends Block {
 
@@ -59,11 +59,13 @@ public class UserInfo extends Block {
 				
 				table.add(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()), 1, 1);
 				
-				Text lastName = new Text(user.getLastName());
-				lastName.setBold(true);
-				
-				table.add(lastName, 2, 1);
-				table.add(", " + user.getFirstName() + " " + user.getMiddleName(), 2, 1);
+				table.add(user.getLastName() + ", ", 2, 1);
+				Text firstName = new Text(user.getFirstName());
+				firstName.setBold();
+				table.add(firstName, 2, 1);
+				if (user.getMiddleName() != null) {
+					table.add(" " + user.getMiddleName(), 2, 1);
+				}
 				
 				LoginTable lt = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
 				if (lt != null && iAccountImage != null) {
