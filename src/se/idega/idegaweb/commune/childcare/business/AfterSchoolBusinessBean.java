@@ -296,7 +296,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 						PrintedLetterMessage message = ((PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class)).create();
 						message.setOwner(application.getOwner());
 						message.setParentCase(application);
-						message.setSubject("");
+						message.setSubject(getLocalizedString("after_school_care_contract_pdf", "After school care contract"));
 						message.setBody("");
 						message.setMessageData(contractFile);
 						message.store();
