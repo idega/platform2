@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenSearcher.java,v 1.6 2005/04/19 08:23:46 laddi Exp $
+ * $Id: CitizenSearcher.java,v 1.7 2005/04/19 11:10:40 laddi Exp $
  * Created on 12.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,6 +11,7 @@ package se.idega.idegaweb.commune.presentation;
 
 import java.rmi.RemoteException;
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 import com.idega.business.IBOLookup;
@@ -26,16 +27,20 @@ import com.idega.user.presentation.UserSearcher;
  * <p>
  * TODO anna Describe Type CitizenSearcher
  * </p>
- *  Last modified: $Date: 2005/04/19 08:23:46 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/19 11:10:40 $ by $Author: laddi $
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CitizenSearcher extends UserSearcher {
 
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 	}
+	
+	public void process(IWContext iwc, boolean save) throws FinderException, RemoteException {
+		super.process(iwc, save);
+	}	
 	
 	protected Integer processSave(IWContext iwc, String firstName, String middleName, String lastName, String personalID) throws CreateException {
 		if (personalID.length() != 12 || !PIDChecker.getInstance().isValid(personalID, true)) {
