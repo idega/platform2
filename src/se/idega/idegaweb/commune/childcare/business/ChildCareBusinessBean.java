@@ -5085,7 +5085,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		ChildCareApplication application = getApplication(applicationID.intValue());
 		ChildCareContract contract = getLatestContractByApplication(applicationID.intValue());
 		SchoolClassMemberLog log = null;
-		if (contract != null)
+		if (contract != null && contract.getSchoolClassMemberId() > 0)
 			log = getLatestPlacementLogByContract(contract);
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 		String className = bundle.getProperty(PLACEMENT_HELPER, DefaultPlacementHelper.class.getName());
