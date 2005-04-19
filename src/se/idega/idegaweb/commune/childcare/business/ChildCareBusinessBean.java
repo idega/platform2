@@ -2168,7 +2168,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	}
 
-	public boolean assignContractToApplication(int applicationID, int oldArchiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) {
+	public ICFile assignContractToApplication(int applicationID, int oldArchiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) {
 		return assignContractToApplication(applicationID, -1, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, false, -1, -1);
 	}
 
@@ -2239,7 +2239,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}		
 	}
 	
-	public boolean assignContractToApplication(int applicationID, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
+	public ICFile assignContractToApplication(int applicationID, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
@@ -2301,8 +2301,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 
 			boolean hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
-
-			if (createNew && createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId)) {
+			ICFile contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
+			if (createNew && contractFile != null) {
 				if (changeStatus) {
 					application.setApplicationStatus(getStatusContract());
 					changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
@@ -2318,6 +2318,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.store();
 
 			transaction.commit();
+			return contractFile;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -2327,10 +2328,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			catch (SystemException ex) {
 				ex.printStackTrace();
 			}
-			return false;
+			return null;
 		}
-
-		return true;
 	}
 
 	/**
@@ -2360,7 +2359,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	}
 
-	private boolean createContractContentToApplication(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
+	private ICFile createContractContentToApplication(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
 		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
 		ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);
 		try {
@@ -2379,7 +2378,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 				application.setContractId(contractID);
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
-				return true;
+				return contractFile;
 			}
 		}
 		catch (IBOLookupException e) {
@@ -2403,7 +2402,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 
 	private String breakString(String page, int maxLineLength) {
@@ -2446,18 +2445,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean assignContractToApplication(String ids[], User user, Locale locale) {
-		boolean done = false;
-
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignContractToApplication(Integer.parseInt(id), -1, null, null, -1, user, locale, false, false, -1, -1);
-				if (!done)
-					return done;
+				assignContractToApplication(Integer.parseInt(id), -1, null, null, -1, user, locale, false, false, -1, -1);
 			}
 		}
 
-		return done;
+		return true;
 	}
 
 	public boolean assignApplication(int id, User user, String subject, String body) {
