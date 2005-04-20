@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.14 2005/02/17 13:35:52 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.15 2005/04/20 11:51:56 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -821,6 +821,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID,childID);
 		sql.appendAndEquals(PROVIDER_ID, providerID);
 		sql.appendAnd().append(APPLICATION_STATUS).appendInArrayWithSingleQuotes(status);
+		sql.appendOrderByDescending(REGISTER_DATE);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
