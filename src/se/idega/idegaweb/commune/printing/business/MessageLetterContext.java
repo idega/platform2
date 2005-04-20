@@ -1,5 +1,5 @@
 /*
- * $Id: MessageLetterContext.java,v 1.1 2004/11/04 20:34:48 aron Exp $
+ * $Id: MessageLetterContext.java,v 1.2 2005/04/20 14:32:08 malin Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.business.NoUserAddressException;
 import se.idega.idegaweb.commune.message.data.Message;
 
@@ -27,10 +27,16 @@ import com.idega.block.pdf.business.PrintingContextImpl;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressHome;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.PostalCode;
+import com.idega.core.location.data.PostalCodeHome;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -38,10 +44,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 20:34:48 $ by $Author: aron $
+ *  Last modified: $Date: 2005/04/20 14:32:08 $ by $Author: malin $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MessageLetterContext extends PrintingContextImpl {
     
@@ -59,17 +65,49 @@ public class MessageLetterContext extends PrintingContextImpl {
         props.put("iwb",getBundle(iwuc));
         props.put("iwrb",getResourceBundle(iwuc));
         
+        IWApplicationContext iwac = iwuc.getApplicationContext();
+        
         User user = msg.getOwner();
         props.put("user",user);
         Address address = null;
+       
         try {
             CommuneUserBusiness userBuiz = getUserService(iwuc.getApplicationContext());
-            address = userBuiz.getPostalAddress(user);
-        } catch (RemoteException e) {
+            address = userBuiz.getPostalAddress(user);            
+          } catch (RemoteException e) {
             e.printStackTrace();
-        } catch (NoUserAddressException e) {
+          } catch (NoUserAddressException e) {
+          	if (address == null){
+          		try {
+          			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+          			AddressHome ah = ub.getAddressHome();
+          			AddressType adType = ah.getAddressType1();
+          			Address tempAddress = null;
+          			tempAddress = ah.create();
+          			tempAddress.setAddressType(adType);
+          			tempAddress.setCity("");
+          			
+          			tempAddress.setStreetName("");
+          			tempAddress.setStreetNumber("");
+          			
+          			PostalCode pc = tempAddress.getPostalCode();
+          			if (pc == null) {
+          				PostalCodeHome ph = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+          				pc = ph.create();
+          			}
+          			pc.setPostalCode("");
+          			tempAddress.setPostalCode(pc);          		
+          			address = tempAddress;
+          			
+          		}
+          		catch(Exception ex ){
+          			ex.printStackTrace();
+          		}
+          	}
+          } catch (Exception e) {
             e.printStackTrace();
-        }
+          }
+         
         props.put("address",address);
         props.put("msg",msg);
         addDocumentProperties(props);
