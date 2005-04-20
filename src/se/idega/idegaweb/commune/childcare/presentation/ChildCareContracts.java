@@ -159,8 +159,8 @@ public class ChildCareContracts extends ChildCareBlock {
 				while (iter.hasNext()) {
 					column = 1;
 					student = (SchoolClassMember) iter.next();
-					if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) )
-						continue;
+					/*if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) )
+						continue;*/
 				
 					child = student.getStudent();
 				
