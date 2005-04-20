@@ -1265,7 +1265,7 @@ public class UserEditor extends Block implements IWPageEventListener {
 			user = userService.getUser(userID);
 			try {
 				// user part
-				if (isNewValue(iwc, prm_personal_id) || isNewValue(iwc, prm_first_name) || isNewValue(iwc, prm_middle_name) || isNewValue(iwc, prm_last_name) || isNewValue(iwc, prm_primary_group_id) || isRemovedValue(iwc, prm_middle_name)) {
+				if (isNewValue(iwc, prm_personal_id) || isNewValue(iwc, prm_first_name) || isNewValue(iwc, prm_middle_name, true) || isNewValue(iwc, prm_last_name) || isNewValue(iwc, prm_primary_group_id) || isRemovedValue(iwc, prm_middle_name)) {
 					String pid = user.getPersonalID(), first = user.getFirstName(), middle = user.getMiddleName(), last = user.getLastName();
 					Integer groupID = null;
 					boolean legalState = false;
@@ -1303,7 +1303,7 @@ public class UserEditor extends Block implements IWPageEventListener {
 						first = iwc.getParameter(prm_first_name);
 						legalState |= true;
 					}
-					if (isNewValue(iwc, prm_middle_name)) {
+					if (isNewValue(iwc, prm_middle_name, true)) {
 						middle = iwc.getParameter(prm_middle_name);
 						legalState |= true;
 					}
@@ -1671,10 +1671,17 @@ public class UserEditor extends Block implements IWPageEventListener {
 	private Parameter getOldParameter(String pName, String pValue) {
 		return new Parameter(pName + prm_old_value_suffix, pValue);
 	}
-
+	
 	private boolean isNewValue(IWContext iwc, String pName) {
+		return isNewValue(iwc, pName, false);
+	}
+
+	private boolean isNewValue(IWContext iwc, String pName, boolean allowEmpty) {
 		if (iwc.isParameterSet(pName + prm_old_value_suffix) && iwc.isParameterSet(pName)) {
 			return !iwc.getParameter(pName + prm_old_value_suffix).equals(iwc.getParameter(pName));
+		}
+		if (allowEmpty) {
+			return true;
 		}
 		return iwc.isParameterSet(pName);
 	}
