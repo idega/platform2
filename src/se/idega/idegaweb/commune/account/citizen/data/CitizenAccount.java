@@ -9,6 +9,7 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
 	final static String PUT_CHILDREN_IN_NACKA_SCHOOL_KEY = "caa_put_children_in_nacka";
 	final static String PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY = "caa_put_children_in_nacka_childcare";
 	final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
+	final static String MAKE_KOMVUX_APPLICATION_KEY = "caa_make_komvux_application";
 
     String getCaseCodeDescription ();
     String getCaseCodeKey ();

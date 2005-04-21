@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.26 2004/06/09 07:01:27 malin Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.27 2005/04/21 12:29:55 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -43,11 +43,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/06/09 07:01:27 $ by $Author: malin $
+ * Last modified: $Date: 2005/04/21 12:29:55 $ by $Author: malin $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -281,7 +281,9 @@ public class CitizenAccountAdmin extends CommuneBlock {
                 	|| applicant.getApplicationReason().equals
                 	(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)
 					|| applicant.getApplicationReason().equals
-					(CitizenAccount.MOVING_TO_NACKA_KEY)) {
+					(CitizenAccount.MOVING_TO_NACKA_KEY)
+                	|| applicant.getApplicationReason().equals
+					(CitizenAccount.MAKE_KOMVUX_APPLICATION_KEY)) {
                     try {
                         final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
                         Commune commune = business.findCommuneByCommunePK(new Integer(capc.getCurrentCommuneId()));

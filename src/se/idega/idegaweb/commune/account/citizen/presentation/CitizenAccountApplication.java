@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/04/06 08:31:32 $ by $Author: anna $
+ * Last modified: $Date: 2005/04/21 12:29:55 $ by $Author: malin $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.80 $
+ * @version $Revision: 1.81 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -65,8 +65,12 @@ public class CitizenAccountApplication extends CommuneBlock {
 	
 	final static String APPLICATION_REASON_DEFAULT = "Orsak till ansökan om medborgarkonto";
 	final static String APPLICATION_REASON_KEY = "caa_application_reason";
+	final static String KOMVUX_APPLICATION_INFO_DEFAULT = "You have choosen to apply for komvux";
+	final static String KOMVUX_APPLICATION_INFO_KEY = "caa_komvux_appli_info";
 	final static String CHILDREN_COUNT_DEFAULT = "Antal barn i familjen";
 	final static String CHILDREN_COUNT_KEY = "caa_children_count";
+	final static String CHILDREN_COUNT_INFO_DEFAULT = "For komvux, enter 0";
+	final static String CHILDREN_COUNT_INFO_KEY = "caa_children_count_info";
 	private final static String CHILDREN_DEFAULT = "Barn i familjen";
 	private final static String CHILDREN_KEY = "caa_children";
 	private final static String CITY_DEFAULT = "Postort";
@@ -111,6 +115,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String PROPERTY_TYPE_KEY = "caa_property_type";
 	private final static String PUT_CHILDREN_IN_NACKA_SCHOOL_DEFAULT = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
 	private final static String PUT_CHILDREN_IN_NACKA_CHILDCARE_DEFAULT = "Jag vill ha plats för mitt barn i barnomsorgen i Nacka kommun";
+	private final static String MAKE_KOMVUX_APPLICATION_DEFAULT = "I want to apply for Komvux";
 	final static String SSN_DEFAULT = "Personnummer";
 	final static String SSN_KEY = "caa_ssn";
 	private final static String CAREOF_DEFAULT = "c/o";
@@ -158,6 +163,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String ERROR_ALREADY_HAS_APPLICATION_DEFAULT = "Citizen already has an account application that hasn't been handled.";
 	
 	private boolean sendUserToHomePage = true;
+	private int _numberOfReasons = 3;
 	
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -312,16 +318,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getSingleInput(iwc, CIVIL_STATUS_KEY, 20, true), 3, row++);
 		
 		table.setHeight(row++, 6);
-		table.mergeCells(1, row, 3, row);
+		table.mergeCells(1, row, 4, row);
 		table.add(getHeader(HAS_COHABITANT_KEY, HAS_COHABITANT_DEFAULT), 1, row++);
-		table.mergeCells(1, row, 3, row);
-		table.add(getRadioButton(HAS_COHABITANT_KEY, YES_KEY, YES_DEFAULT, true), 1, row++);
-		table.mergeCells(1, row, 3, row);
-		table.add(getRadioButton(HAS_COHABITANT_KEY, NO_KEY, NO_DEFAULT, false), 1, row++);
+		table.mergeCells(1, row, 4, row);
+		table.add(getRadioButton(HAS_COHABITANT_KEY, YES_KEY, YES_DEFAULT, false), 1, row++);
+		table.mergeCells(1, row, 4, row);
+		table.add(getRadioButton(HAS_COHABITANT_KEY, NO_KEY, NO_DEFAULT, true), 1, row++);
 		
 		table.setHeight(row++, 6);
 		table.add(getHeader(CHILDREN_COUNT_KEY, CHILDREN_COUNT_DEFAULT), 1, row);
-		table.add(getSingleInputNumeric(iwc, CHILDREN_COUNT_KEY, 2, true), 3, row++);
+		table.add(getSingleInputNumeric(iwc, CHILDREN_COUNT_KEY, 2, true), 3, row);
+		table.add(getLocalizedText(CHILDREN_COUNT_INFO_KEY, CHILDREN_COUNT_INFO_DEFAULT), 3, row++);
 		
 		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 3, row);
@@ -330,8 +337,16 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.MOVING_TO_NACKA_KEY, MOVING_TO_NACKA_DEFAULT, true), 1, row++);
 		table.mergeCells(1, row, 3, row);
 		table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY, PUT_CHILDREN_IN_NACKA_SCHOOL_DEFAULT, false), 1, row++);
-		table.mergeCells(1, row, 3, row);
-		table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY, PUT_CHILDREN_IN_NACKA_CHILDCARE_DEFAULT, false), 1, row++);
+		if (_numberOfReasons >=3){
+			table.mergeCells(1, row, 3, row);
+			table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY, PUT_CHILDREN_IN_NACKA_CHILDCARE_DEFAULT, false), 1, row++);	
+		}
+		if (_numberOfReasons >=4){
+			table.mergeCells(1, row, 3, row);
+			table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.MAKE_KOMVUX_APPLICATION_KEY, MAKE_KOMVUX_APPLICATION_DEFAULT, false), 1, row++);
+		}
+		
+		
 		
 		table.setHeight(row++, 12);
 		
@@ -378,7 +393,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			row = addPutChildrenInNackaSchoolInputs(iwc, table, row);
 		} else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)) {
 			row = addPutChildrenInNackaChildcareInputs(iwc, table, row);
-		}
+		} else if (applicationReason.equals(CitizenAccount.MAKE_KOMVUX_APPLICATION_KEY)) {
+			row = addKomvuxApplictionInputs(iwc, table, row);
+		}	
 		
 		table.setHeight(row++, 12);
 		table.add(getSubmitButton(UNKNOWN_CITIZEN_FORM_2_SUBMIT_KEY, UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT), 1, row);
@@ -392,6 +409,20 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 3, row);
 		table.add(putChildrenInNackaHeader, 1, row++);
+		table.add(getHeader(CURRENT_KOMMUN_KEY, CURRENT_KOMMUN_DEFAULT), 1, row);
+		DropdownMenu communes = getCommuneDropdownMenu(iwc, CURRENT_KOMMUN_KEY, null);
+		table.add(communes, 3, row++);
+		return row;
+	}
+	
+	private int addKomvuxApplictionInputs(final IWContext iwc, final Table table, int row) {
+		// applicant wants start komvux
+		final Text komvuxApplicationHeader = getLocalizedHeader(CitizenAccount.MAKE_KOMVUX_APPLICATION_KEY, MAKE_KOMVUX_APPLICATION_DEFAULT);
+		table.setHeight(row++, 6);
+		table.mergeCells(1, row, 3, row);
+		table.add(komvuxApplicationHeader, 1, row++);
+		table.mergeCells(1, row, 3, row);
+		table.add(getLocalizedText(KOMVUX_APPLICATION_INFO_KEY, KOMVUX_APPLICATION_INFO_DEFAULT), 1, row++);
 		table.add(getHeader(CURRENT_KOMMUN_KEY, CURRENT_KOMMUN_DEFAULT), 1, row);
 		DropdownMenu communes = getCommuneDropdownMenu(iwc, CURRENT_KOMMUN_KEY, null);
 		table.add(communes, 3, row++);
@@ -550,8 +581,11 @@ public class CitizenAccountApplication extends CommuneBlock {
 			// store info about children
 			if (null != applicationId && childrenCount > 0) {
 				insertChildren(childrenCount, applicationId, parameters, business);
-			}			
+			}	
+			
 			String currentCommune = parameters.get(CURRENT_KOMMUN_KEY).toString();
+			
+			
 			int communeId = 0;
 			try {
 				communeId = Integer.valueOf(currentCommune).intValue();
@@ -564,7 +598,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 								 && (applicationReason.equals
 										 (CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY)
 										 || applicationReason.equals
-										 (CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY))) {
+										 (CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)
+										 || applicationReason.equals
+										 (CitizenAccount.MAKE_KOMVUX_APPLICATION_KEY))) {
 				if (communeId > 0) {
 					business.insertPutChildren(applicationId, parameters.get
 																		 (CURRENT_KOMMUN_KEY).toString());
@@ -674,7 +710,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			mandatoryParameterNames.add(CURRENT_KOMMUN_KEY);
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
 		} else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) ||
-						 applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)) {
+						 applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)
+						 ||
+						 applicationReason.equals(CitizenAccount.MAKE_KOMVUX_APPLICATION_KEY)) {
 			mandatoryParameterNames.add(CURRENT_KOMMUN_KEY);
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
 		}
@@ -1017,5 +1055,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			e.printStackTrace ();
 			return null;
 		}
+	}
+	
+	public void setNumberOfReasons(int number) {
+		_numberOfReasons = number;
 	}
 }
