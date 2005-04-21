@@ -59,6 +59,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.text.Name;
 
 /**
  * @author gimmi
@@ -1441,7 +1442,7 @@ public class SchoolUserEditor extends Block {
 				User user;
 				user = userHome.findByPrimaryKey(new Integer(hId));
 
-				String name = iwc.getParameter(sname + "_" + hId);
+				Name name = new Name(iwc.getParameter(sname + "_" + hId));
 				sUserType = iwc.getParameter(PARAMETER_SCHOOL_USER_TYPE + "_" + hId);
 				iUserType = Integer.parseInt(sUserType);
 
@@ -1456,7 +1457,7 @@ public class SchoolUserEditor extends Block {
 					}
 				}
 				else {
-					getUserBusiness(iwc).updateUser(user, name, "", "", null, null, null, null, null, (Integer) priGroup.getPrimaryKey());
+					getUserBusiness(iwc).updateUser(user, name.getFirstName(), name.getMiddleName(), name.getLastName(), null, null, null, null, null, (Integer) priGroup.getPrimaryKey());
 					final String parameterKey = getIsEconomicalResponsibleKey(hId);
 					final boolean isEconomicalResponsible = Boolean.valueOf(iwc.getParameter(parameterKey)).booleanValue();
 					getSchoolUserBusiness(iwc).updateSchUser(school, user, iUserType, showcontactEdit, isEconomicalResponsible);
@@ -1546,7 +1547,7 @@ public class SchoolUserEditor extends Block {
 			}
 
 			/** Adding headmaster */
-			String headmaster = iwc.getParameter(sname);
+			Name headmaster = new Name(iwc.getParameter(sname));
 			String hmEmail = iwc.getParameter(semail);
 			String hmPhone = iwc.getParameter(sphone);
 			String hmMobile = iwc.getParameter(smobilephone);
@@ -1559,7 +1560,7 @@ public class SchoolUserEditor extends Block {
 			if (headmaster != null && !headmaster.equals("") && priGroup != null) {
 				final String parameterKey = getIsEconomicalResponsibleKey("");
 				final boolean isEconomicalResponsible = Boolean.valueOf(iwc.getParameter(parameterKey)).booleanValue();
-				User user = getUserBusiness(iwc).createUser(headmaster, "", "", ((Integer) priGroup.getPrimaryKey()).intValue());
+				User user = getUserBusiness(iwc).createUser(headmaster.getFirstName(), headmaster.getMiddleName(), headmaster.getLastName(), ((Integer) priGroup.getPrimaryKey()).intValue());
 
 				if (hmEmail != null && !hmEmail.equals("")) {
 					Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
