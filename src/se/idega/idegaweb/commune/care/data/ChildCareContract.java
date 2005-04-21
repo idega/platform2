@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContract.java,v 1.6 2005/04/15 10:58:46 laddi Exp $
- * Created on 15.4.2005
+ * $Id: ChildCareContract.java,v 1.7 2005/04/21 15:04:03 laddi Exp $
+ * Created on 21.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO laddi Describe Type ChildCareContract
  * </p>
- *  Last modified: $Date: 2005/04/15 10:58:46 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/21 15:04:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface ChildCareContract extends IDOEntity {
 

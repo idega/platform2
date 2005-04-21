@@ -1371,6 +1371,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			// update school class member with correct dates
 			SchoolClassMember placement = lastContract.getSchoolClassMember();
+			IWTimestamp oldStart = startDate == null ? new IWTimestamp(placement.getRegisterDate()) : new IWTimestamp(startDate);
+			IWTimestamp placementStart = new IWTimestamp(placement.getRegisterDate());
 			if (placement != null) {
 				Collection contractPlacements = getChildCareContractArchiveHome().findAllBySchoolClassMember(placement);
 				// only allow update when only one contract linked to the classmember
@@ -1382,9 +1384,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				else {
 					placement.setRemovedDate(null);
 				}
+				
 				if (contractPlacements.size() == 1) {
-					IWTimestamp oldStart = startDate == null ? new IWTimestamp(placement.getRegisterDate()) : new IWTimestamp(startDate);
-					IWTimestamp placementStart = new IWTimestamp(placement.getRegisterDate());
 					if (oldStart.equals(placementStart)) {
 						placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
 					}
@@ -2188,6 +2189,26 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		} catch (Exception e) {}
 		
 		return isOnlyGroupChange;
+	}
+	
+	public boolean isGroupChange(int applicationId, Date validFrom, int schoolClassID) {
+		boolean isGroupChange = true;
+
+		try {
+			ChildCareContract archive = getContractByApplicationAndDate(applicationId, validFrom);
+			SchoolClassMember member = archive.getSchoolClassMember();
+			
+			int oldSchoolClassId = member.getSchoolClassId();
+			
+			if (schoolClassID == oldSchoolClassId) {
+				isGroupChange = false;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return isGroupChange;
 	}
 	
 	public void changeGroup(int applicationId, Date validFrom, int schoolClassId, User user) {

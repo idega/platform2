@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.7 2005/04/15 10:58:46 laddi Exp $
- * Created on 15.4.2005
+ * $Id: ChildCareContractHomeImpl.java,v 1.8 2005/04/21 15:04:03 laddi Exp $
+ * Created on 21.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.util.TimePeriod;
  * <p>
  * TODO laddi Describe Type ChildCareContractHomeImpl
  * </p>
- *  Last modified: $Date: 2005/04/15 10:58:46 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/21 15:04:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareContractHome {
 
@@ -168,6 +168,13 @@ public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareCo
 				maxNumberOfContracts);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public ChildCareContract findLatestNotByApplication(int applicationID, Date startDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ChildCareContractBMPBean) entity).ejbFindLatestNotByApplication(applicationID, startDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public ChildCareContract findFirstContractByApplication(int applicationID) throws FinderException {

@@ -1978,7 +1978,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (!getBusiness().isTryingToChangeSchoolTypeButNotSchoolClass(oldArchiveId, schoolTypeId, schoolClassId)) {
 			if (getBusiness().isSchoolClassBelongingToSchooltype(schoolClassId, schoolTypeId)) {
 				if (getBusiness().isOnlyGroupChange(_applicationID, childCareTime, validFrom.getDate(), schoolTypeId)) {
-					getBusiness().changeGroup(_applicationID, validFrom.getDate(), schoolClassId, iwc.getCurrentUser());
+					if (getBusiness().isGroupChange(_applicationID, validFrom.getDate(), schoolClassId)) {
+						getBusiness().changeGroup(_applicationID, validFrom.getDate(), schoolClassId, iwc.getCurrentUser());
+					}
+					else {
+						getParentPage().setAlertOnLoad(localize("child_care.no_changes_discarding", "No changes have been made, discarding..."));
+					}
 				} else {
 					getBusiness().assignContractToApplication(_applicationID, oldArchiveId, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false, true, schoolTypeId, schoolClassId);
 				}

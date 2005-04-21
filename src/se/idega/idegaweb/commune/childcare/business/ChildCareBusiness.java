@@ -580,6 +580,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 			throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isGroupChange
+	 */
+	public boolean isGroupChange(int applicationId, Date validFrom, int schoolClassID) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#changeGroup
 	 */
 	public void changeGroup(int applicationId, Date validFrom, int schoolClassId, User user)

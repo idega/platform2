@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContractHome.java,v 1.7 2005/04/15 10:58:46 laddi Exp $
- * Created on 15.4.2005
+ * $Id: ChildCareContractHome.java,v 1.8 2005/04/21 15:04:03 laddi Exp $
+ * Created on 21.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.util.TimePeriod;
  * <p>
  * TODO laddi Describe Type ChildCareContractHome
  * </p>
- *  Last modified: $Date: 2005/04/15 10:58:46 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/21 15:04:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface ChildCareContractHome extends IDOHome {
 
@@ -124,6 +124,11 @@ public interface ChildCareContractHome extends IDOHome {
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindLatestByApplication
 	 */
 	public Collection findLatestByApplication(int applicationID, int maxNumberOfContracts) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindLatestNotByApplication
+	 */
+	public ChildCareContract findLatestNotByApplication(int applicationID, Date startDate) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindFirstContractByApplication
