@@ -1131,7 +1131,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				placementDate = new IWTimestamp(application.getFromDate());
 			}
 
-			boolean canCancel = getBusiness().canCancelContract(((Integer) application.getPrimaryKey()).intValue());
+			boolean canCancel = getBusiness().canCancelContract(((Integer) application.getPrimaryKey()).intValue(), application.getRequestedCancelDate());
 
 			if (canCancel) {
 				IWTimestamp placementDatePlusTwoDays = new IWTimestamp(placementDate);
@@ -1232,47 +1232,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						form.setToDisableOnSubmit(cancelContract, true);
 						table.add(cancelContract, 1, row);
 						table.add(Text.getNonBrakingSpace(), 1, row);
-						
-						/*GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
-						showForm.setFileToOpen(application.getCancelFormFileID());
-						table.add(showForm, 1, row);
-						table.add(Text.getNonBrakingSpace(), 1, row);
-						*/
 					}
-					
 				}
 				IWTimestamp stampNow = new IWTimestamp();
 				stampNow.addDays(-1);
 				
-//				PlacementHelper helper = getPlacementHelper();
-//				TimePeriod deadlinePeriod = null;
-//				deadlinePeriod = helper.getValidPeriod();
-
 				DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
-//				if (deadlinePeriod != null && deadlinePeriod.getFirstTimestamp() != null) {
-//					DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
-//
-//					// deadline has passed
-//					if (helper.hasDeadlinePassed()) {
-//						dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
-//						dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
-//					}
-//					// still within deadline
-//					else {
-//						if (placementDate != null && placementDate.isLaterThan(deadlinePeriod.getFirstTimestamp())) {
-//							today.addDays(2);
-//							dateInput.setEarliestPossibleDate(today.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
-//							dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
-//						}
-//						else {
-//							dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
-//							dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
-//						}
-//					}
-//				}
-//				else {
-//					dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
-//				}
 				dateInput.setEarliestPossibleDate(earliestTerminationDate.getDate(), earliestPossibleMessage);
 				dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 				dateInput.keepStatusOnAction(true);
@@ -1280,19 +1245,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				if (application.getRequestedCancelDate() != null) {
 					dateInput.setDate(application.getRequestedCancelDate());
 				}
-
-//				table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);
-//				table.add(dateInput, 1, row++);
-//				if (helper.hasDeadlinePassed())
-//					table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
-
-//				SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
-//				if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
-//					form.addParameter(PARAMETER_METHOD, METHOD_CANCEL_CONTRACT);
-//				}
-//				form.setToDisableOnSubmit(cancelContract, true);
-//				table.add(cancelContract, 1, row);
-//				table.add(Text.getNonBrakingSpace(), 1, row);
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
 				IWTimestamp stampNow = new IWTimestamp();

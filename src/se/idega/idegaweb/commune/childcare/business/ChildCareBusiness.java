@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 19.4.2005 laddi Exp $
- * Created on 19.4.2005
+ * $Id: ChildCareBusiness.java 1.1 21.4.2005 laddi Exp $
+ * Created on 21.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -1088,7 +1088,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#canCancelContract
 	 */
-	public boolean canCancelContract(int applicationID) throws java.rmi.RemoteException;
+	public boolean canCancelContract(int applicationID, Date endDate) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getNumberOfContractsForApplication
@@ -1099,6 +1099,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasFutureContracts
 	 */
 	public boolean hasFutureContracts(int applicationID) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasFutureContracts
+	 */
+	public boolean hasFutureContracts(int applicationID, Date date) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasActiveContract

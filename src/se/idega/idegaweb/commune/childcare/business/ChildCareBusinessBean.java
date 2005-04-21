@@ -4342,10 +4342,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getActivePlacement(childID) != null;
 	}
 
-	public boolean canCancelContract(int applicationID) {
+	public boolean canCancelContract(int applicationID, Date endDate) {
 		int numberOfContracts = getNumberOfContractsForApplication(applicationID);
 		if (numberOfContracts > 1) {
-			if (hasFutureContracts(applicationID))
+			if (hasFutureContracts(applicationID, endDate))
 				return false;
 		}
 		return true;
@@ -4361,7 +4361,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean hasFutureContracts(int applicationID) {
-		int numberOfContracts = getNumberOfFutureContracts(applicationID);
+		return hasFutureContracts(applicationID, null);
+	}
+
+	public boolean hasFutureContracts(int applicationID, Date date) {
+		int numberOfContracts = getNumberOfFutureContracts(applicationID, date != null ? date : new IWTimestamp().getDate());
 		if (numberOfContracts > 0)
 			return true;
 		return false;
