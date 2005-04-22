@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.6 2003/10/15 09:23:41 staffan Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.7 2005/04/22 08:10:45 malin Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,6 +19,8 @@ import javax.ejb.RemoveException;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathGroup;
+import com.idega.block.school.data.SchoolStudyPathGroupHome;
 import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
@@ -26,10 +28,10 @@ import com.idega.block.school.data.SchoolTypeHome;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/15 09:23:41 $ by $Author: staffan $
+ * Last modified: $Date: 2005/04/22 08:10:45 $ by $Author: malin $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
@@ -61,6 +63,13 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	protected SchoolStudyPathHome getSchoolStudyPathHome() throws RemoteException {
 		return (SchoolStudyPathHome) com.idega.data.IDOLookup.getHome(SchoolStudyPath.class);
 	}	
+	
+	/**
+	 * Return study path home. 
+	 */	
+	protected SchoolStudyPathGroupHome getSchoolStudyPathGroupHome() throws RemoteException {
+		return (SchoolStudyPathGroupHome) com.idega.data.IDOLookup.getHome(SchoolStudyPathGroup.class);
+	}
 
 	/**
 	 * Return school type home. 
@@ -125,6 +134,36 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	}	
 	
 	/**
+	 * Finds all study path groups .
+	 * @return collection of study path groups
+	 */
+	public Collection findAllStudyPathGroups() {
+		try {
+			SchoolStudyPathGroupHome home = getSchoolStudyPathGroupHome();
+			return home.findAllStudyPathGroups();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+	
+	/**
+	 * Finds all study path groups .
+	 * @return collection of study path groups
+	 */
+	public SchoolStudyPathGroup findStudyPathGroupByID(int groupId) {
+		try {
+			SchoolStudyPathGroupHome home = getSchoolStudyPathGroupHome();
+			return home.findByPrimaryKey((new Integer (groupId)));			
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+	
+	/**
 	 * Saves a study path object.
 	 * Creates a new persistent object if nescessary.
 	 * @param code the study path code
@@ -135,7 +174,7 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			String studyPathId,
 			String operation,
 			String studyPathCode,
-			String description) throws StudyPathException {
+			String description, String points, String studypathgroup) throws StudyPathException {
 
 		// Operation
 		Integer operationId = null;
@@ -144,6 +183,25 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		} else {
 			operationId = new Integer(operation);
 		}
+		
+		//points
+		Integer integerPoints = null;
+		int intPoints = -1;
+		if (points.equals(""))
+			points = null;
+		if (points != null)
+			integerPoints = (new Integer (points));
+		if (integerPoints != null)
+			intPoints = integerPoints.intValue();
+		//StudyPathGroup
+		Integer integerStudyPathGroupId = null;
+		int intStudyPathGroupId = -1;
+		if (studypathgroup.equals(""))
+			studypathgroup = null;
+		if (studypathgroup != null)
+			integerStudyPathGroupId = (new Integer (studypathgroup));
+		if (integerStudyPathGroupId != null)
+			intStudyPathGroupId= integerStudyPathGroupId.intValue();
 		
 		// Study path code
 		String s = studyPathCode.trim().toUpperCase();
@@ -186,12 +244,16 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			sp.setCode(studyPathCode);
 			sp.setSchoolTypeId(operationId);
 			sp.setDescription(description);
+			sp.setPoints(intPoints);
+			sp.setStudyPathGroupID(intStudyPathGroupId);
 			sp.store();
 		} catch (RemoteException e) { 
 			throw new StudyPathException(KEY_CANNOT_SAVE_STUDY_PATH, DEFAULT_CANNOT_SAVE_STUDY_PATH);
 		} catch (CreateException e) { 
 			throw new StudyPathException(KEY_CANNOT_SAVE_STUDY_PATH, DEFAULT_CANNOT_SAVE_STUDY_PATH);
 		}		
+		
+		
 	}
 	
 	/**

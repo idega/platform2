@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.9 2003/10/13 13:16:02 anders Exp $
+ * $Id: StudyPathEditor.java,v 1.10 2005/04/22 08:11:00 malin Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.rmi.RemoteException;
 
+import javax.ejb.FinderException;
+
 import com.idega.presentation.IWContext;
 
 import com.idega.presentation.Table;
@@ -23,6 +25,8 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 
 import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathGroup;
+
 import com.idega.block.school.data.SchoolType;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -36,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 /** 
  * This idegaWeb block that handles study paths for schools.
  * <p>
- * Last modified: $Date: 2003/10/13 13:16:02 $ by $Author: anders $
+ * Last modified: $Date: 2005/04/22 08:11:00 $ by $Author: malin $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -54,6 +58,8 @@ public class StudyPathEditor extends AccountingBlock {
 
 	private final static String PARAMETER_STUDY_PATH_CODE = PP + "study_path_code";
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
+	private final static String PARAMETER_POINTS = PP + "points";
+	private final static String PARAMETER_STUDY_PATH_GROUP = PP + "study_path_group";
 	private final static String PARAMETER_OPERATION = PP + "operation";
 	private final static String PARAMETER_STUDY_PATH_ID = PP + "study_path_id";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
@@ -71,7 +77,10 @@ public class StudyPathEditor extends AccountingBlock {
 	private final static String KEY_STUDY_PATH_CODE = KP + "study_path_code";
 	private final static String KEY_DESCRIPTION = KP + "description";
 	private final static String KEY_OPERATION = KP + "operation";
-	private final static String KEY_OPERATION_SELECTOR_HEADER = KP + "operation_selector_header"; 
+	private final static String KEY_OPERATION_SELECTOR_HEADER = KP + "operation_selector_header";
+	private final static String KEY_STUDY_PATH_GROUP_SELECTOR_HEADER = KP + "study_path_group_selector_header";
+	private final static String KEY_STUDY_PATH_GROUP = KP + "study_path_group";
+	private final static String KEY_POINTS = KP + "points";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_CANCEL = KP + "cancel";
@@ -152,7 +161,7 @@ public class StudyPathEditor extends AccountingBlock {
 	 * Handles the new action for this block.
 	 */
 	private void handleNewAction(IWContext iwc) {
-		add(getStudyPathForm(iwc, "-1", getParameter(iwc, PARAMETER_OPERATION), "", "", null, true));
+		add(getStudyPathForm(iwc, "-1", getParameter(iwc, PARAMETER_OPERATION), "", "", null, true, "", ""));
 	}
 
 	/*
@@ -169,7 +178,7 @@ public class StudyPathEditor extends AccountingBlock {
 					sp.getCode(),
 					sp.getDescription(),
 					null,
-					false)
+					false, new Integer(sp.getPoints()).toString(), new Integer(sp.getStudyPathGroupID()).toString())
 			);
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
@@ -190,7 +199,9 @@ public class StudyPathEditor extends AccountingBlock {
 					iwc.getParameter(PARAMETER_STUDY_PATH_ID),
 					iwc.getParameter(PARAMETER_OPERATION),
 					iwc.getParameter(PARAMETER_STUDY_PATH_CODE),
-					iwc.getParameter(PARAMETER_DESCRIPTION));
+					iwc.getParameter(PARAMETER_DESCRIPTION),
+					iwc.getParameter(PARAMETER_POINTS),
+					iwc.getParameter(PARAMETER_STUDY_PATH_GROUP));
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -206,7 +217,9 @@ public class StudyPathEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_STUDY_PATH_CODE),
 					getParameter(iwc, PARAMETER_DESCRIPTION),
 					errorMessage,
-					!iwc.isParameterSet(PARAMETER_EDIT))
+					!iwc.isParameterSet(PARAMETER_EDIT),
+					getParameter(iwc, PARAMETER_POINTS),
+					getParameter(iwc, PARAMETER_STUDY_PATH_GROUP))
 			);
 		} else {
 			handleDefaultAction(iwc);
@@ -286,10 +299,27 @@ public class StudyPathEditor extends AccountingBlock {
 			Iterator iter = studyPaths.iterator();
 			while (iter.hasNext()) {
 				SchoolStudyPath sp = (SchoolStudyPath) iter.next();
+				int spgID = sp.getStudyPathGroupID();
+				SchoolStudyPathGroup spg = null;
+				try {
+					spg = getStudyPathBusiness(iwc).findStudyPathGroupByID(spgID);	
+				}
+				catch (RemoteException re){
+					log (re);
+				}
+				
 				Link l = getSmallLink(sp.getCode());
+				int points = -1;
+				points = sp.getPoints();
+				String sPoints = "";
+				if (points != -1)
+					sPoints = ", " + (new Integer (points)).toString();
+				String localizedKey = "";
+				if (spg != null && localizedKey != null && localizedKey.equals(""))
+					localizedKey = ", " + getLocalizedText(spg.getLocalizationKey(), spg.getLocalizationKey());
 				l.addParameter(PARAMETER_STUDY_PATH_ID, sp.getPrimaryKey().toString());
 				list.add(l);
-				list.add(sp.getDescription());
+				list.add(sp.getDescription() + sPoints + localizedKey);
 
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna studieväg")));
 				edit.addParameter(PARAMETER_STUDY_PATH_ID, sp.getPrimaryKey().toString());
@@ -332,7 +362,7 @@ public class StudyPathEditor extends AccountingBlock {
 			String studyPathCode,
 			String description,
 			String errorMessage,
-			boolean isNew) {
+			boolean isNew, String points, String studypathgroup) {
 		ApplicationForm app = new ApplicationForm(this);
 		if (isNew) {
 			app.setLocalizedTitle(KEY_TITLE_ADD, "Skapa ny studieväg");
@@ -340,17 +370,26 @@ public class StudyPathEditor extends AccountingBlock {
 			app.setLocalizedTitle(KEY_TITLE_EDIT, "Redigera studieväg");
 		}
 		
+		if (points.equals("-1"))
+			points = "";
+		
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		int row = 1;
 		table.add(getLocalizedLabel(KEY_OPERATION, "Verksamhet"), 1, row);
 		table.add(getOperationDropdownMenu(iwc, PARAMETER_OPERATION, operation), 2, row++);
-		table.add(getLocalizedLabel(KEY_STUDY_PATH_CODE, "Kod"), 1, row);
-		table.add(getTextInput(PARAMETER_STUDY_PATH_CODE, studyPathCode, 50), 2, row++);
 		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Beskrivning"), 1, row);
 		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, row++);
-
+		table.add(getLocalizedLabel(KEY_STUDY_PATH_CODE, "Kod"), 1, row);
+		table.add(getTextInput(PARAMETER_STUDY_PATH_CODE, studyPathCode, 50), 2, row++);
+	
+		table.add(getLocalizedLabel(KEY_POINTS, "Points"), 1, row);
+		table.add(getTextInput(PARAMETER_POINTS, points, 50), 2, row++);
+			
+		table.add(getLocalizedLabel(KEY_STUDY_PATH_GROUP, "Study path group"), 1, row);
+		table.add(getStudyPathGroupsDropdownMenu(iwc, PARAMETER_STUDY_PATH_GROUP, studypathgroup), 2, row++);
+		
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
@@ -403,6 +442,31 @@ public class StudyPathEditor extends AccountingBlock {
 		}
 		return menu;	
 	}
+	
+	/*
+	 * Returns a DropdownMenu for study path groups. 
+	 */
+	private DropdownMenu getStudyPathGroupsDropdownMenu(IWContext iwc, String parameter, String studypathgroup) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(KEY_STUDY_PATH_GROUP_SELECTOR_HEADER, "Choose study path group"));
+		try {
+			Collection c = getStudyPathBusiness(iwc).findAllStudyPathGroups();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					SchoolStudyPathGroup stpg = (SchoolStudyPathGroup) iter.next();
+					String id = stpg.getPrimaryKey().toString();
+					menu.addMenuElement(id, localize(stpg.getLocalizationKey(), stpg.getLocalizationKey()));
+				}
+				if (studypathgroup != null) {
+					menu.setSelectedElement(studypathgroup);
+				}
+			}		
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		return menu;	
+	}
 
 	/*
 	 * Returns a study path business object
@@ -410,4 +474,6 @@ public class StudyPathEditor extends AccountingBlock {
 	private StudyPathBusiness getStudyPathBusiness(IWContext iwc) throws RemoteException {
 		return (StudyPathBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, StudyPathBusiness.class);
 	}	
+	
+	
 }

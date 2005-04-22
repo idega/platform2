@@ -1,17 +1,29 @@
+/*
+ * Created on 2005-apr-22
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 package se.idega.idegaweb.commune.accounting.school.business;
 
 
-public class StudyPathBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements StudyPathBusinessHome
-{
- protected Class getBeanInterfaceClass(){
-  return StudyPathBusiness.class;
- }
 
+import com.idega.business.IBOHomeImpl;
 
- public StudyPathBusiness create() throws javax.ejb.CreateException{
-  return (StudyPathBusiness) super.createIBO();
- }
+/**
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+public class StudyPathBusinessHomeImpl extends IBOHomeImpl implements
+		StudyPathBusinessHome {
+	protected Class getBeanInterfaceClass() {
+		return StudyPathBusiness.class;
+	}
 
-
+	public StudyPathBusiness create() throws javax.ejb.CreateException {
+		return (StudyPathBusiness) super.createIBO();
+	}
 
 }
