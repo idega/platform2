@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 21.4.2005 laddi Exp $
- * Created on 21.4.2005
+ * $Id: ChildCareBusiness.java 1.1 22.4.2005 laddi Exp $
+ * Created on 22.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -349,7 +349,8 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#placeApplication
 	 */
 	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID,
-			int schoolTypeID, int employmentTypeID, User user, Locale locale) throws java.rmi.RemoteException;
+			int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#alterValidFromDate
@@ -1144,6 +1145,18 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasActivePlacementNotWithProvider
 	 */
 	public boolean hasActivePlacementNotWithProvider(int childID, int providerID) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasFutureActivePlacementsNotWithProvider
+	 */
+	public boolean hasFutureActivePlacementsNotWithProvider(int childID, int providerID, Date date)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getFirstFuturePlacementNotWithProvider
+	 */
+	public ChildCareApplication getFirstFuturePlacementNotWithProvider(int childID, int providerID, Date date)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasTerminationInFutureNotWithProvider

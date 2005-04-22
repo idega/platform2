@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareApplicationHome.java,v 1.5 2005/02/17 13:35:52 laddi Exp $
- * Created on 17.2.2005
+ * $Id: ChildCareApplicationHome.java,v 1.6 2005/04/22 11:40:39 laddi Exp $
+ * Created on 22.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -11,10 +11,7 @@ package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
-
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.data.IDOException;
@@ -23,10 +20,13 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/17 13:35:52 $ by $Author: laddi $
+ * <p>
+ * TODO laddi Describe Type ChildCareApplicationHome
+ * </p>
+ *  Last modified: $Date: 2005/04/22 11:40:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface ChildCareApplicationHome extends IDOHome {
 
@@ -67,17 +67,20 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllCasesByProviderAndStatus
 	 */
-	public Collection findAllCasesByProviderAndStatus(int providerId, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findAllCasesByProviderAndStatus(int providerId, String caseStatus, int numberOfEntries,
+			int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllCasesByProviderAndNotInStatus
 	 */
-	public Collection findAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries,
+			int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllCasesByProviderAndNotInStatus
 	 */
-	public Collection findAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate,
+			String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllCasesByProviderStatus
@@ -87,7 +90,8 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllByAreaAndApplicationStatus
 	 */
-	public Collection findAllByAreaAndApplicationStatus(Object areaID, String[] applicationStatus, String caseCode, Date queueDate, Date placementDate, boolean firstHandOnly) throws FinderException;
+	public Collection findAllByAreaAndApplicationStatus(Object areaID, String[] applicationStatus, String caseCode,
+			Date queueDate, Date placementDate, boolean firstHandOnly) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindAllCasesByProviderStatusNotRejected
@@ -117,57 +121,68 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndStatus
 	 */
-	public Collection findApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode) throws FinderException;
+	public Collection findApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndStatus
 	 */
-	public Collection findApplicationsByProviderAndStatus(int providerID, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findApplicationsByProviderAndStatus(int providerID, String caseStatus, int numberOfEntries,
+			int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndStatus
 	 */
-	public Collection findApplicationsByProviderAndStatus(int providerID, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findApplicationsByProviderAndStatus(int providerID, String[] caseStatus, int numberOfEntries,
+			int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndStatus
 	 */
-	public Collection findApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode,
+			int numberOfEntries, int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndStatus
 	 */
-	public Collection findApplicationsByProviderAndStatus(Integer providerID, String[] applicationStatus, Date fromDateOfBirth, Date toDateOfBirth, Date fromDate, Date toDate) throws FinderException;
+	public Collection findApplicationsByProviderAndStatus(Integer providerID, String[] applicationStatus,
+			Date fromDateOfBirth, Date toDateOfBirth, Date fromDate, Date toDate) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndApplicationStatusAndTerminatedDate
 	 */
-	public Collection findApplicationsByProviderAndApplicationStatusAndTerminatedDate(int providerID, String[] applicationStatuses, Date terminatedDate) throws FinderException;
+	public Collection findApplicationsByProviderAndApplicationStatusAndTerminatedDate(int providerID,
+			String[] applicationStatuses, Date terminatedDate) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndApplicationStatus
 	 */
-	public Collection findApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses) throws FinderException;
+	public Collection findApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndApplicationStatus
 	 */
-	public Collection findApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses, String caseCode) throws FinderException;
+	public Collection findApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses,
+			String caseCode) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndApplicationStatus
 	 */
-	public Collection findApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses, String caseCode, int numberOfEntries, int startingEntry) throws FinderException;
+	public Collection findApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses,
+			String caseCode, int numberOfEntries, int startingEntry) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndApplicationStatus
 	 */
-	public ChildCareApplication findApplicationByChildAndApplicationStatus(int childID, String[] applicationStatuses) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndApplicationStatus(int childID, String[] applicationStatuses)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByChildAndApplicationStatus
 	 */
-	public Collection findApplicationsByChildAndApplicationStatus(int childID, String[] applicationStatuses) throws FinderException;
+	public Collection findApplicationsByChildAndApplicationStatus(int childID, String[] applicationStatuses)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsWithoutPlacing
@@ -177,27 +192,32 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndChoiceNumber
 	 */
-	public ChildCareApplication findApplicationByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndChoiceNumber(User child, int choiceNumber)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndChoiceNumber
 	 */
-	public ChildCareApplication findApplicationByChildAndChoiceNumber(int childID, int choiceNumber) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndChoiceNumber(int childID, int choiceNumber)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndChoiceNumberWithStatus
 	 */
-	public ChildCareApplication findApplicationByChildAndChoiceNumberWithStatus(int childID, int choiceNumber, String caseStatus) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndChoiceNumberWithStatus(int childID, int choiceNumber,
+			String caseStatus) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndChoiceNumberInStatus
 	 */
-	public ChildCareApplication findApplicationByChildAndChoiceNumberInStatus(int childID, int choiceNumber, String[] caseStatus) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndChoiceNumberInStatus(int childID, int choiceNumber,
+			String[] caseStatus) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndChoiceNumberNotInStatus
 	 */
-	public ChildCareApplication findApplicationByChildAndChoiceNumberNotInStatus(int childID, int choiceNumber, String[] caseStatus) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndChoiceNumberNotInStatus(int childID, int choiceNumber,
+			String[] caseStatus) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChild
@@ -212,7 +232,8 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndProviderAndStatus
 	 */
-	public ChildCareApplication findApplicationByChildAndProviderAndStatus(int childID, int providerID, String[] status) throws FinderException;
+	public ChildCareApplication findApplicationByChildAndProviderAndStatus(int childID, int providerID, String[] status)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindNewestApplication
@@ -232,12 +253,14 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndNotInStatus
 	 */
-	public Collection findApplicationByChildAndNotInStatus(int childID, String[] caseStatus, String caseCode) throws FinderException;
+	public Collection findApplicationByChildAndNotInStatus(int childID, String[] caseStatus, String caseCode)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationByChildAndInStatus
 	 */
-	public Collection findApplicationByChildAndInStatus(int childID, String[] caseStatus, String caseCode) throws FinderException;
+	public Collection findApplicationByChildAndInStatus(int childID, String[] caseStatus, String caseCode)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindActiveApplicationByChild
@@ -247,7 +270,8 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindActiveApplicationByChildAndStatus
 	 */
-	public ChildCareApplication findActiveApplicationByChildAndStatus(int childID, String[] caseStatus) throws FinderException;
+	public ChildCareApplication findActiveApplicationByChildAndStatus(int childID, String[] caseStatus)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfActiveApplications
@@ -262,7 +286,8 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfApplicationsByStatusAndActiveDate
 	 */
-	public int getNumberOfApplicationsByStatusAndActiveDate(int childID, String[] caseStatus, String caseCode, Date activeDate) throws IDOException;
+	public int getNumberOfApplicationsByStatusAndActiveDate(int childID, String[] caseStatus, String caseCode,
+			Date activeDate) throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndDate
@@ -277,7 +302,8 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsByProviderAndBeforeDate
 	 */
-	public Collection findApplicationsByProviderAndBeforeDate(int providerID, Date date, String[] caseStatus) throws FinderException;
+	public Collection findApplicationsByProviderAndBeforeDate(int providerID, Date date, String[] caseStatus)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfApplications
@@ -312,12 +338,26 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfApplicationsForChildNotInStatus
 	 */
-	public int getNumberOfApplicationsForChildNotInStatus(int childID, String[] caseStatus, String caseCode) throws IDOException;
+	public int getNumberOfApplicationsForChildNotInStatus(int childID, String[] caseStatus, String caseCode)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfApplicationsForChildInStatus
 	 */
-	public int getNumberOfApplicationsForChildInStatus(int childID, String[] caseStatus, String caseCode) throws IDOException;
+	public int getNumberOfApplicationsForChildInStatus(int childID, String[] caseStatus, String caseCode)
+			throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfApplicationsForChildInStatusNotWithProvider
+	 */
+	public int getNumberOfApplicationsForChildInStatusNotWithProvider(int childID, int providerID, Date date,
+			String[] caseStatus) throws IDOException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindFutureApplicationForChildInStatusNotWithProvider
+	 */
+	public ChildCareApplication findFutureApplicationForChildInStatusNotWithProvider(int childID, int providerID,
+			Date date, String[] caseStatus) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfPlacedApplications
@@ -327,7 +367,8 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNumberOfApplications
 	 */
-	public int getNumberOfApplications(int providerID, String[] caseStatus, int sortBy, Date fromDate, Date toDate) throws IDOException;
+	public int getNumberOfApplications(int providerID, String[] caseStatus, int sortBy, Date fromDate, Date toDate)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetPositionInQueue
@@ -342,12 +383,14 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetPositionInQueueByDate
 	 */
-	public int getPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus) throws IDOException;
+	public int getPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetPositionInQueueByDate
 	 */
-	public int getPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus) throws IDOException;
+	public int getPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetQueueSizeNotInStatus
@@ -357,17 +400,20 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetQueueSizeInStatus
 	 */
-	public int getQueueSizeInStatus(int providerID, String[] applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException;
+	public int getQueueSizeInStatus(int providerID, String[] applicationStatus, Date from, Date to,
+			boolean isOnlyFirstHand) throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetBruttoQueueSizeInStatus
 	 */
-	public int getBruttoQueueSizeInStatus(int providerID, String[] applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException;
+	public int getBruttoQueueSizeInStatus(int providerID, String[] applicationStatus, Date from, Date to,
+			boolean isOnlyFirstHand) throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNettoQueueSizeInStatus
 	 */
-	public int getNettoQueueSizeInStatus(int providerID, String[] applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException;
+	public int getNettoQueueSizeInStatus(int providerID, String[] applicationStatus, Date from, Date to,
+			boolean isOnlyFirstHand) throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetQueueSizeInStatus
@@ -377,17 +423,20 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetQueueSizeInStatus
 	 */
-	public int getQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException;
+	public int getQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetBruttoQueueSizeInStatus
 	 */
-	public int getBruttoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException;
+	public int getBruttoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to,
+			boolean isOnlyFirstHand) throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNettoQueueSizeInStatus
 	 */
-	public int getNettoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException;
+	public int getNettoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to,
+			boolean isOnlyFirstHand) throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetQueueSizeByAreaNotInStatus
@@ -407,21 +456,24 @@ public interface ChildCareApplicationHome extends IDOHome {
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetQueueByProviderAndChoiceNumber
 	 */
-	public int getQueueByProviderAndChoiceNumber(int providerID, int choiceNumber, String status, Date from, Date to) throws IDOException;
+	public int getQueueByProviderAndChoiceNumber(int providerID, int choiceNumber, String status, Date from, Date to)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetNettoQueueByProviderAndChoiceNumber
 	 */
-	public int getNettoQueueByProviderAndChoiceNumber(int providerID, int choiceNumber, String status, Date from, Date to) throws IDOException;
+	public int getNettoQueueByProviderAndChoiceNumber(int providerID, int choiceNumber, String status, Date from, Date to)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbHomeGetBruttoQueueByProviderAndChoiceNumber
 	 */
-	public int getBruttoQueueByProviderAndChoiceNumber(int providerID, int choiceNumber, String status, Date from, Date to) throws IDOException;
+	public int getBruttoQueueByProviderAndChoiceNumber(int providerID, int choiceNumber, String status, Date from, Date to)
+			throws IDOException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#ejbFindApplicationsInSchoolAreaByStatus
 	 */
-	public Collection findApplicationsInSchoolAreaByStatus(int schoolAreaID, String[] statuses, int choiceNumber) throws FinderException;
-
+	public Collection findApplicationsInSchoolAreaByStatus(int schoolAreaID, String[] statuses, int choiceNumber)
+			throws FinderException;
 }

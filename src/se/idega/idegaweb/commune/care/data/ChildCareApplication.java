@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareApplication.java,v 1.5 2005/02/17 13:35:52 laddi Exp $
- * Created on 17.2.2005
+ * $Id: ChildCareApplication.java,v 1.6 2005/04/22 11:40:39 laddi Exp $
+ * Created on 22.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,10 +10,7 @@
 package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
-
-
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
-
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
@@ -23,10 +20,13 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/17 13:35:52 $ by $Author: laddi $
+ * <p>
+ * TODO laddi Describe Type ChildCareApplication
+ * </p>
+ *  Last modified: $Date: 2005/04/22 11:40:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
 
@@ -434,5 +434,4 @@ public interface ChildCareApplication extends IDOEntity, Case {
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#isActive
 	 */
 	public boolean isActive();
-
 }

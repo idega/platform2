@@ -438,12 +438,19 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	}
 
 	public int ejbHomeGetNumberOfActiveNotWithProvider(int childID, int providerID) throws IDOException {
+		return ejbHomeGetNumberOfActiveNotWithProvider(childID, providerID, null);
+	}
+	
+	public int ejbHomeGetNumberOfActiveNotWithProvider(int childID, int providerID, Date date) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(*) from ").append(this.getEntityName()).append(" a, comm_childcare c");
 		sql.appendWhereEquals("a."+COLUMN_APPLICATION_ID, "c.comm_childcare_id");
 		sql.appendAndEquals("a." + COLUMN_CHILD_ID, childID);
 		sql.appendAnd().append("c.provider_id").appendNOTEqual().append(providerID);
 		sql.appendAnd().append(COLUMN_TERMINATED_DATE).append(" is null");
+		if (date != null) {
+			sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(date);
+		}
 		return idoGetNumberOfRecords(sql);
 	}
 

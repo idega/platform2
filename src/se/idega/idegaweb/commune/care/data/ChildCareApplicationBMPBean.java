@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.16 2005/04/20 12:13:05 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.17 2005/04/22 11:40:39 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1033,6 +1033,31 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 
 		return idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetNumberOfApplicationsForChildInStatusNotWithProvider(int childID, int providerID, Date date, String[] caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
+		sql.appendAnd().append("c." + FROM_DATE).appendGreaterThanSign().append(date);
+
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	public Integer ejbFindFutureApplicationForChildInStatusNotWithProvider(int childID, int providerID, Date date, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select * from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
+		sql.appendAnd().append("c." + FROM_DATE).appendGreaterThanSign().append(date);
+		sql.appendOrderBy(FROM_DATE);
+
+		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
 	public int ejbHomeGetNumberOfPlacedApplications(int childID, int providerID, String[] caseStatus) throws IDOException {

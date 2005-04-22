@@ -1105,16 +1105,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, User user, Locale locale) {
+	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
 		UserTransaction t = super.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
+			if (terminationDate != null) {
+				application.setRejectionDate(terminationDate.getDate());
+			}
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());
-				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), null, user);
+				IWTimestamp endDate = application.getRejectionDate() != null ? new IWTimestamp(application.getRejectionDate()) : null;
+				SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), endDate != null ? endDate.getTimestamp() : null, ((Integer) user.getPrimaryKey()).intValue(), null);
+				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), endDate != null ? endDate.getDate() : null, user);
 				sendMessageToParents(application, subject, body);
 			}
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
@@ -1203,7 +1207,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, int schoolTypeID, int schoolClassID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
-		application.setApplicationStatus(getStatusReady());
+		if (application.getRejectionDate() != null) {
+			application.setApplicationStatus(getStatusCancelled());
+		}
+		else {
+			application.setApplicationStatus(getStatusReady());
+		}
 		int oldFileID = application.getContractFileId();
 		IWTimestamp fromDate = new IWTimestamp(newDate);
 
@@ -1215,7 +1224,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		application.setContractFileId(fileID);
 		application.setFromDate(newDate);
-		changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
+		if (application.getRejectionDate() != null) {
+			changeCaseStatus(application, getCaseStatusCancelled().getStatus(), user);
+		}
+		else {
+			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
+		}
 		addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), employmentTypeID, -1, user, false, -1, -1, null);
 		application.store();
 		try {
@@ -1268,7 +1282,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			Date oldStartDate = childcareContract.getValidFromDate();
 			// possible bug found here, allowing null values for start date, which
-			// should be possible (aron 06.09.2004)
+			// shouldn't be possible (aron 06.09.2004)
 			if (fromDate != null) {
 				childcareContract.setValidFromDate(fromDate);
 			}
@@ -4468,6 +4482,30 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (IDOException e) {
 			return false;
+		}
+	}
+
+	public boolean hasFutureActivePlacementsNotWithProvider(int childID, int providerID, Date date) {
+		try {
+			String[] status = { getCaseStatusReadyString(), getCaseStatusCancelledString() };
+			int numberOfPlacings = getChildCareApplicationHome().getNumberOfApplicationsForChildInStatusNotWithProvider(childID, providerID, date, status);
+			if (numberOfPlacings > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
+	}
+
+	public ChildCareApplication getFirstFuturePlacementNotWithProvider(int childID, int providerID, Date date) {
+		try {
+			String[] status = { getCaseStatusReadyString(), getCaseStatusCancelledString() };
+			return getChildCareApplicationHome().findFutureApplicationForChildInStatusNotWithProvider(childID, providerID, date, status);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 

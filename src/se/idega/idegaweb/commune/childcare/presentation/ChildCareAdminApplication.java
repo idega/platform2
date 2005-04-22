@@ -497,9 +497,16 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 					
 				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
-				    disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.active_placement_at_other_provider","Has an active placement at other provider"));
-					table.add(disabledCreateContract, 3, 1);
-					dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
+				  if (getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate())) {
+						table.add(changeDate, 3, 1);
+						table.add(createContract, 5, 1);
+						dateWarning = localize("child_care.child_has_future_active_contract", "Child has an active future contract");
+				  }
+				  else {
+						disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.active_placement_at_other_provider","Has an active placement at other provider"));
+						table.add(disabledCreateContract, 3, 1);
+						dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
+				  }
 				}
 				else {
 					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {

@@ -121,6 +121,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	public static final String PARAMETER_EARLIEST_DATE = "cc_earliest_date";
 
+	public static final String PARAMETER_TERMINATION_DATE = "cc_termination_date";
+
 	public static final String PARAMETER_CONTRACT_ID = "cc_contract_id";
 
 	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";
@@ -869,6 +871,22 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			}
 		}
 
+		if (getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate())) {
+			ChildCareApplication futureApplication = getBusiness().getFirstFuturePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate());
+			if (futureApplication != null) {
+				IWTimestamp futureStartDate = new IWTimestamp(futureApplication.getFromDate());
+				futureStartDate.addDays(-1);
+				IWTimestamp startDate = new IWTimestamp(application.getFromDate());
+				startDate.addDays(1);
+
+				table.add(getSmallHeader(localize("child_care.termination_date", "Termination date") + ":"), 1, row);
+				DateInput termination = (DateInput) getStyledInterface(new DateInput(PARAMETER_TERMINATION_DATE));
+				termination.setLatestPossibleDate(futureStartDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+				termination.setEarliestPossibleDate(startDate.getDate(), localize("child_care.start_and_end_dates_overlap", "You can not choose a termination date the same as the start date."));
+				termination.setAsNotEmpty(localize("child_care.must_choose_termination_date", "You have to choose a termination date"));
+				table.add(termination, 1, row++);
+			}
+		}
 		/* *******restricting the classes being chosen */
 		Collection types = null;
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
@@ -2014,7 +2032,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
 
 		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), -1, schoolTypeId, schoolClassId, iwc.getCurrentLocale(), iwc.getCurrentUser());
-		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
@@ -2155,10 +2173,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int employmentType = -1;
 		if (iwc.isParameterSet(PARAMETER_EMPLOYMENT_TYPE))
 			employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		IWTimestamp endDate = iwc.isParameterSet(PARAMETER_TERMINATION_DATE) ? new IWTimestamp(iwc.getParameter(PARAMETER_TERMINATION_DATE)) : null;
 
 		String subject = localize("child_care.placing_subject", "Your child placed in child care.");
 		String body = localize("child_care.placing_body", "{0} has been placed in a group at {1}.");
-		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, typeID, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, typeID, employmentType, endDate, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		close();

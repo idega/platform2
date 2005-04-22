@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.8 2005/04/21 15:04:03 laddi Exp $
- * Created on 21.4.2005
+ * $Id: ChildCareContractHomeImpl.java,v 1.9 2005/04/22 11:40:39 laddi Exp $
+ * Created on 22.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.util.TimePeriod;
  * <p>
  * TODO laddi Describe Type ChildCareContractHomeImpl
  * </p>
- *  Last modified: $Date: 2005/04/21 15:04:03 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/22 11:40:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareContractHome {
 
@@ -202,6 +202,14 @@ public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareCo
 	public int getNumberOfActiveNotWithProvider(int childID, int providerID) throws IDOException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		int theReturn = ((ChildCareContractBMPBean) entity).ejbHomeGetNumberOfActiveNotWithProvider(childID, providerID);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public int getNumberOfActiveNotWithProvider(int childID, int providerID, Date date) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((ChildCareContractBMPBean) entity).ejbHomeGetNumberOfActiveNotWithProvider(childID, providerID,
+				date);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}

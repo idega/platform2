@@ -313,10 +313,14 @@ public class ContractEditor extends ChildCareBlock {
 				// e3.printStackTrace();
 			}
 			if (previousContract != null) {
-				from.setEarliestPossibleDate(previousContract.getTerminatedDate(), localize("child_care.date_warning.start_earlier_than_previous_termination", "You can not choose a start date earlier than previous termination date."));
+				IWTimestamp previous = new IWTimestamp(previousContract.getTerminatedDate());
+				previous.addDays(1);
+				from.setEarliestPossibleDate(previous.getDate(), localize("child_care.date_warning.start_earlier_than_previous_termination", "You can not choose a start date earlier than previous termination date."));
 			}
 			if (nextContract != null) {
-				cancelled.setLatestPossibleDate(nextContract.getValidFromDate(), localize("child_care.date_warning.termination_later_than_nex_startdate", "You can not choose a termination date later than next start date"));
+				IWTimestamp next = new IWTimestamp(nextContract.getValidFromDate());
+				next.addDays(-1);
+				cancelled.setLatestPossibleDate(next.getDate(), localize("child_care.date_warning.termination_later_than_nex_startdate", "You can not choose a termination date later than next start date"));
 			}
 
 			InterfaceObject careTime = null;
