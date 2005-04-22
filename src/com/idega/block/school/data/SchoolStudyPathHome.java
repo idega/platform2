@@ -1,23 +1,108 @@
+/*
+ * Created on 2005-apr-21
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 package com.idega.block.school.data;
 
+import java.util.Collection;
 
-public interface SchoolStudyPathHome extends com.idega.data.IDOHome
-{
- public SchoolStudyPath create() throws javax.ejb.CreateException;
- public SchoolStudyPath findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAllByIDs(java.lang.String[] p0)throws javax.ejb.FinderException;
- public java.util.Collection findAllStudyPaths()throws javax.ejb.FinderException;
- public java.util.Collection findAllStudyPathsByCodeLength(int p0)throws javax.ejb.FinderException;
- public SchoolStudyPath findByCode(java.lang.String p0)throws javax.ejb.FinderException;
- public SchoolStudyPath findByCodeAndSchoolType(java.lang.String p0,int p1)throws javax.ejb.FinderException;
- public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolAndSchoolCategory(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolType(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolTypes(java.lang.String[] p0)throws javax.ejb.FinderException;
- public java.util.Collection findBySchoolTypes(java.util.Collection p0)throws javax.ejb.FinderException;
- public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0,java.util.Collection p1)throws javax.ejb.FinderException;
- public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0)throws com.idega.data.IDORelationshipException,javax.ejb.FinderException;
- public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0,java.lang.Object p1)throws javax.ejb.FinderException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
+import com.idega.data.IDORelationshipException;
+
+/**
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+public interface SchoolStudyPathHome extends IDOHome {
+	public SchoolStudyPath create() throws javax.ejb.CreateException;
+
+	public SchoolStudyPath findByPrimaryKey(Object pk)
+			throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindAllStudyPaths
+	 */
+	public Collection findAllStudyPaths() throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindAllStudyPathsByCodeLength
+	 */
+	public Collection findAllStudyPathsByCodeLength(int codeLength)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindByCode
+	 */
+	public SchoolStudyPath findByCode(String code) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindByCodeAndSchoolType
+	 */
+	public SchoolStudyPath findByCodeAndSchoolType(String code, int schoolTypeId)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindStudyPaths
+	 */
+	public Collection findStudyPaths(School school)
+			throws IDORelationshipException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindStudyPaths
+	 */
+	public Collection findStudyPaths(School school, Object schoolTypePK)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindStudyPaths
+	 */
+	public Collection findStudyPaths(School school, Collection schoolTypePKs)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolType
+	 */
+	public Collection findBySchoolType(int schoolTypeId) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolTypes
+	 */
+	public Collection findBySchoolTypes(String[] schoolTypeIDs)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolTypes
+	 */
+	public Collection findBySchoolTypes(Collection schoolTypes)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolCategory
+	 */
+	public Collection findBySchoolCategory(SchoolCategory schoolCategory)
+			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchoolAndSchoolCategory
+	 */
+	public Collection findBySchoolAndSchoolCategory(School school,
+			SchoolCategory schoolCategory) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindBySchool
+	 */
+	public Collection findBySchool(School school) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#ejbFindAllByIDs
+	 */
+	public Collection findAllByIDs(String[] studyPathIDs)
+			throws FinderException;
 
 }

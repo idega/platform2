@@ -24,6 +24,9 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	private static String COLUMN_SCHOOL_CATEGORY   = "SCH_SCHOOL_CATEGORY_ID";
 	private static String COLUMN_IS_VALID      = "IS_VALID";
 	private static String COLUMN_LOCALIZED_KEY = "LOCALIZED_KEY";
+	private static String COLUMN_POINTS = "POINTS";
+	private static String COLUMN_STUDY_PATH_GROUP_ID = "STUDY_PATH_GROUP_ID";
+	
 	
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -36,10 +39,12 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		addAttribute(COLUMN_DESCRIPTION, "description, ", true, true, String.class);
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
 		addAttribute(COLUMN_LOCALIZED_KEY, "localized key", String.class);
+		addAttribute(COLUMN_POINTS, "points", Integer.class);
 		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE, SchoolType.class);
 		this.addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY, SchoolCategory.class);
 		this.addManyToManyRelationShip(School.class, "sch_school_study_path");
+		this.addManyToOneRelationship(COLUMN_STUDY_PATH_GROUP_ID, SchoolStudyPathGroup.class);
 	}
 
 	public void setDefaultValues() {
@@ -102,6 +107,22 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
   		setColumn(COLUMN_IS_VALID, isValid);
   }
 
+  public int getPoints() {
+	return getIntColumnValue(COLUMN_POINTS);
+}
+
+public void setPoints(int points) {
+	setColumn(COLUMN_POINTS, points);
+}
+
+public int getStudyPathGroupID() {
+	return getIntColumnValue(COLUMN_STUDY_PATH_GROUP_ID);
+}
+
+public void setStudyPathGroupID(int study_path_group) {
+	setColumn(COLUMN_STUDY_PATH_GROUP_ID, study_path_group);
+}
+  
 	public void remove() {
 		setIsValid(false);
 		this.store();

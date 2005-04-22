@@ -1,25 +1,141 @@
+/*
+ * Created on 2005-apr-21
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 package com.idega.block.school.data;
 
+import java.util.Collection;
 
-public interface SchoolStudyPath extends com.idega.data.IDOEntity
-{
- public void addSchool(com.idega.block.school.data.School p0)throws com.idega.data.IDOAddRelationshipException;
- public void addSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDOAddRelationshipException;
- public java.lang.String getCode();
- public java.lang.String getDescription();
- public java.lang.String getLocalizedKey();
- public com.idega.block.school.data.SchoolType getSchoolCategory();
- public java.lang.Object getSchoolCategoryPK();
- public com.idega.block.school.data.SchoolType getSchoolType();
- public int getSchoolTypeId();
- public java.util.Collection getSchools()throws com.idega.data.IDORelationshipException;
- public boolean isValid();
- public void removeAllSchools()throws com.idega.data.IDORemoveRelationshipException;
- public void removeSchool(com.idega.block.school.data.School p0)throws com.idega.data.IDORemoveRelationshipException;
- public void setCode(java.lang.String p0);
- public void setDescription(java.lang.String p0);
- public void setIsValid(boolean p0);
- public void setLocalizedKey(java.lang.String p0);
- public void setSchoolCategory(java.lang.Object p0);
- public void setSchoolTypeId(java.lang.Object p0);
+
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+
+/**
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+public interface SchoolStudyPath extends IDOEntity {
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getCode
+	 */
+	public String getCode();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setCode
+	 */
+	public void setCode(String code);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getDescription
+	 */
+	public String getDescription();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setDescription
+	 */
+	public void setDescription(String description);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getLocalizedKey
+	 */
+	public String getLocalizedKey();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setLocalizedKey
+	 */
+	public void setLocalizedKey(String localizedKey);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getSchoolType
+	 */
+	public SchoolType getSchoolType();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getSchoolTypeId
+	 */
+	public int getSchoolTypeId();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setSchoolTypeId
+	 */
+	public void setSchoolTypeId(Object schoolTypeId);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getSchoolCategory
+	 */
+	public SchoolType getSchoolCategory();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getSchoolCategoryPK
+	 */
+	public Object getSchoolCategoryPK();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setSchoolCategory
+	 */
+	public void setSchoolCategory(Object schoolCategory);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#isValid
+	 */
+	public boolean isValid();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setIsValid
+	 */
+	public void setIsValid(boolean isValid);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getPoints
+	 */
+	public int getPoints();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setPoints
+	 */
+	public void setPoints(int points);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getStudyPathGroup
+	 */
+	public int getStudyPathGroupID();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#setStudyPathGroup
+	 */
+	public void setStudyPathGroupID(int study_path_group);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#addSchool
+	 */
+	public void addSchool(School school) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#addSchoolYear
+	 */
+	public void addSchoolYear(SchoolYear year)
+			throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#removeSchool
+	 */
+	public void removeSchool(School school)
+			throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#getSchools
+	 */
+	public Collection getSchools() throws IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolStudyPathBMPBean#removeAllSchools
+	 */
+	public void removeAllSchools() throws IDORemoveRelationshipException;
+
 }
