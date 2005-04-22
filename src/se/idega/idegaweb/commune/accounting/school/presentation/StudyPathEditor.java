@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.10 2005/04/22 08:11:00 malin Exp $
+ * $Id: StudyPathEditor.java,v 1.11 2005/04/22 12:03:57 malin Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.text.Link;
 
 import com.idega.block.school.data.SchoolStudyPath;
@@ -40,10 +41,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 /** 
  * This idegaWeb block that handles study paths for schools.
  * <p>
- * Last modified: $Date: 2005/04/22 08:11:00 $ by $Author: malin $
+ * Last modified: $Date: 2005/04/22 12:03:57 $ by $Author: malin $
  *
  * @author Anders Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -88,7 +89,9 @@ public class StudyPathEditor extends AccountingBlock {
 	private final static String KEY_DELETE = KP + "delete";
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
-	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
+	private final static String KEY_BUTTON_DELETE = KP + "button_delete";
+	
+	private final static String MESSAGE_INTEGER = KP + "must_be_number";
 
 	/**
 	 * @see com.idega.presentation.Block#main()
@@ -385,7 +388,9 @@ public class StudyPathEditor extends AccountingBlock {
 		table.add(getTextInput(PARAMETER_STUDY_PATH_CODE, studyPathCode, 50), 2, row++);
 	
 		table.add(getLocalizedLabel(KEY_POINTS, "Points"), 1, row);
-		table.add(getTextInput(PARAMETER_POINTS, points, 50), 2, row++);
+		TextInput textPoints = getTextInput(PARAMETER_POINTS, points, 50);
+		textPoints.setAsIntegers(getLocalizedText(MESSAGE_INTEGER, "Please set a valid number").toString());
+		table.add(textPoints, 2, row++);
 			
 		table.add(getLocalizedLabel(KEY_STUDY_PATH_GROUP, "Study path group"), 1, row);
 		table.add(getStudyPathGroupsDropdownMenu(iwc, PARAMETER_STUDY_PATH_GROUP, studypathgroup), 2, row++);
