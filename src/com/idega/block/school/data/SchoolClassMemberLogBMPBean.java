@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.13 2005/04/13 09:53:43 laddi Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.14 2005/04/22 12:25:42 laddi Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/22 12:25:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
@@ -286,12 +286,31 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 	}
 
 	public Collection ejbFindAllByPlacement(SchoolClassMember member) throws FinderException {
+		return ejbFindAllByPlacement(member, null);
+	}
+	
+	public Collection ejbFindAllByPlacement(SchoolClassMember member, Date beforeDate) throws FinderException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
-		query.addOrder(new Order(new Column(table, START_DATE), false));
+		if (beforeDate != null) {
+			query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESS, beforeDate));
+		}
+		query.addOrder(new Order(new Column(table, START_DATE), true));
+		
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindAllByPlacementWithStartDateLaterThanDate(SchoolClassMember member, Date startDate) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.GREATER, startDate));
+		query.addOrder(new Order(new Column(table, START_DATE), true));
 		
 		return idoFindPKsByQuery(query);
 	}

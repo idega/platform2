@@ -2770,7 +2770,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public void alignLogs(SchoolClassMember member) {
 		try {
-			Collection logs = getSchoolClassMemberLogHome().findAllByPlacement(member);
+			Date placementEndDate = member.getRemovedDate() != null ? new IWTimestamp(member.getRemovedDate()).getDate() : null;
+			Collection logs = getSchoolClassMemberLogHome().findAllByPlacement(member, placementEndDate);
 			
 			SchoolClassMemberLog oldLog = null;
 			Date endDate = null;
@@ -2803,6 +2804,20 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				oldLog.setEndDate(endDate);
 				oldLog.store();
 				oldLog = log;
+			}
+			
+			if (endDate != null) {
+				Collection futureLogs = getSchoolClassMemberLogHome().findAllByPlacementWithStartDateLaterThanDate(member, placementEndDate);
+				Iterator iterator = futureLogs.iterator();
+				while (iterator.hasNext()) {
+					SchoolClassMemberLog element = (SchoolClassMemberLog) iterator.next();
+					try {
+						element.remove();
+					}
+					catch (RemoveException re) {
+						re.printStackTrace();
+					}
+				}
 			}
 		}
 		catch (FinderException fe) {

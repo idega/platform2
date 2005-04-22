@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLogHomeImpl.java,v 1.8 2005/04/13 09:53:43 laddi Exp $
- * Created on 13.4.2005
+ * $Id: SchoolClassMemberLogHomeImpl.java,v 1.9 2005/04/22 12:25:42 laddi Exp $
+ * Created on 22.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.data.IDOFactory;
  * <p>
  * TODO laddi Describe Type SchoolClassMemberLogHomeImpl
  * </p>
- *  Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/22 12:25:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolClassMemberLogHome {
 
@@ -125,6 +125,22 @@ public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolCl
 	public Collection findAllByPlacement(SchoolClassMember member) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolClassMemberLogBMPBean) entity).ejbFindAllByPlacement(member);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByPlacement(SchoolClassMember member, Date beforeDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberLogBMPBean) entity).ejbFindAllByPlacement(member, beforeDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByPlacementWithStartDateLaterThanDate(SchoolClassMember member, Date startDate)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberLogBMPBean) entity).ejbFindAllByPlacementWithStartDateLaterThanDate(
+				member, startDate);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLogHome.java,v 1.8 2005/04/13 09:53:43 laddi Exp $
- * Created on 13.4.2005
+ * $Id: SchoolClassMemberLogHome.java,v 1.9 2005/04/22 12:25:42 laddi Exp $
+ * Created on 22.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.data.IDOHome;
  * <p>
  * TODO laddi Describe Type SchoolClassMemberLogHome
  * </p>
- *  Last modified: $Date: 2005/04/13 09:53:43 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/22 12:25:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface SchoolClassMemberLogHome extends IDOHome {
 
@@ -94,4 +94,15 @@ public interface SchoolClassMemberLogHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindAllByPlacement
 	 */
 	public Collection findAllByPlacement(SchoolClassMember member) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindAllByPlacement
+	 */
+	public Collection findAllByPlacement(SchoolClassMember member, Date beforeDate) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#ejbFindAllByPlacementWithStartDateLaterThanDate
+	 */
+	public Collection findAllByPlacementWithStartDateLaterThanDate(SchoolClassMember member, Date startDate)
+			throws FinderException;
 }
