@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenSearcher.java,v 1.7 2005/04/19 11:10:40 laddi Exp $
+ * $Id: CitizenSearcher.java,v 1.8 2005/04/25 07:53:00 laddi Exp $
  * Created on 12.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,7 +17,10 @@ import se.idega.util.PIDChecker;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.data.IDOLookupException;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserSearcher;
@@ -27,21 +30,34 @@ import com.idega.user.presentation.UserSearcher;
  * <p>
  * TODO anna Describe Type CitizenSearcher
  * </p>
- *  Last modified: $Date: 2005/04/19 11:10:40 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/25 07:53:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
-public class CitizenSearcher extends UserSearcher {
+public class CitizenSearcher extends UserSearcher implements IWPageEventListener {
 
-	public void main(IWContext iwc) throws Exception {
-		super.main(iwc);
+	public boolean actionPerformed(IWContext iwc) throws IWException {
+		try {
+			process(iwc, true);
+			return true;
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
-	
-	public void process(IWContext iwc, boolean save) throws FinderException, RemoteException {
-		super.process(iwc, save);
-	}	
-	
+
+	protected Class getListenerClass() {
+		return CitizenSearcher.class;
+	}
+
 	protected Integer processSave(IWContext iwc, String firstName, String middleName, String lastName, String personalID) throws CreateException {
 		if (personalID.length() != 12 || !PIDChecker.getInstance().isValid(personalID, true)) {
 			throw new CreateException(getLocalizedString("not_a_valid_personal_id", "The personal ID is invalid or too short", iwc));
