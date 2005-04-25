@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.17 2005/04/22 11:40:39 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.18 2005/04/25 13:08:36 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1041,7 +1041,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
+		sql.appendAnd().append("c." + PROVIDER_ID).appendNOTEqual().append(providerID);
 		sql.appendAnd().append("c." + FROM_DATE).appendGreaterThanSign().append(date);
 
 		return idoGetNumberOfRecords(sql);
@@ -1053,7 +1053,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
+		sql.appendAnd().append("c." + PROVIDER_ID).appendNOTEqual().append(providerID);
 		sql.appendAnd().append("c." + FROM_DATE).appendGreaterThanSign().append(date);
 		sql.appendOrderBy(FROM_DATE);
 
