@@ -244,7 +244,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 				Iterator it = tariff.iterator();
 				while (it.hasNext()) {
 					ClubTariff entry = (ClubTariff) it.next();
-					tariffInput.addMenuElement(entry.getPrimaryKey().toString(), entry.getText());
+					tariffInput.addMenuElement(entry.getPrimaryKey().toString(), entry.getText()+" ("+entry.getTariffType()+")");
 					if (selectedTariff == null) {
 						selectedTariff = entry.getPrimaryKey().toString();
 						try {
