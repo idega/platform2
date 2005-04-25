@@ -1149,7 +1149,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				placementDate = new IWTimestamp(application.getFromDate());
 			}
 
-			boolean canCancel = getBusiness().canCancelContract(((Integer) application.getPrimaryKey()).intValue(), application.getRequestedCancelDate());
+			boolean canCancel = true;//getBusiness().canCancelContract(((Integer) application.getPrimaryKey()).intValue(), application.getRequestedCancelDate());
 
 			if (canCancel) {
 				IWTimestamp placementDatePlusTwoDays = new IWTimestamp(placementDate);
@@ -1166,20 +1166,28 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				PlacementHelper helper = getPlacementHelper();
 				TimePeriod deadlinePeriod = null;
 				deadlinePeriod = helper.getValidPeriod();
+				earliestTerminationDate = new IWTimestamp(helper.getEarliestPlacementDate());
 
+				DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 				if (deadlinePeriod != null && deadlinePeriod.getFirstTimestamp() != null) {
 					if (helper.hasDeadlinePassed()) {
 						if (deadlinePeriod.getFirstTimestamp().isLaterThan(earliestTerminationDate)) {
 							earliestTerminationDate = deadlinePeriod.getFirstTimestamp();
-							DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 							earliestPossibleMessage = localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate());							
 						}
-					} else {
+						else {
+							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is " + format.format(earliestTerminationDate.getDate()));
+						}
+					}
+					else {
 						IWTimestamp twoDaysAfterToday = new IWTimestamp();
 						twoDaysAfterToday.addDays(2);
 						if (twoDaysAfterToday.isLaterThan(earliestTerminationDate)) {
 							earliestTerminationDate = twoDaysAfterToday;
 							earliestPossibleMessage = localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen");
+						}
+						else {
+							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is " + format.format(earliestTerminationDate.getDate()));
 						}
 					}
 				}
@@ -1210,7 +1218,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					
 					if (application.getRequestedCancelDate() != null) {
 						dateInput.setDate(application.getRequestedCancelDate());
-					}			
+					}
+					else {
+						dateInput.setDate(earliestTerminationDate.getDate());
+					}
 					
 					table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);					
 					table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
