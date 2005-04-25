@@ -61,6 +61,8 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
     protected static final String LABEL_INFO = "isi_acc_dcrw_info";
 
     protected static final String LABEL_USER = "isi_acc_dcrw_user";
+    
+    protected static final String LABEL_PERSONAL_ID = "isi_acc_dcrw_personal_id";
 
     protected static final String LABEL_AMOUNT = "isi_acc_dcrw_amount";
 
@@ -76,7 +78,7 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
 
     public CreditCardPluginReceiptWindow() {
         setHeight(600);
-        setWidth(400);
+        setWidth(600);
         setResizable(true);
         setScrollbar(true);
     }
@@ -131,6 +133,8 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
         labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
         labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelPersonalID = new Text(iwrb.getLocalizedString(LABEL_PERSONAL_ID, "Personal ID"));
+        labelPersonalID.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
         labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
@@ -145,11 +149,12 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
         t.add(labelDiv, 1, row);
         t.add(labelGroup, 2, row);
         t.add(labelUser, 3, row);
-        t.add(labelInfo, 4, row);
-        t.setAlignment(5, row, "RIGHT");
-        t.add(labelAmount, 5, row);
+        t.add(labelPersonalID, 4, row);
+        t.add(labelInfo, 5, row);
         t.setAlignment(6, row, "RIGHT");
-        t.add(labelAmountPaid, 6, row);
+        t.add(labelAmount, 6, row);
+        t.setAlignment(7, row, "RIGHT");
+        t.add(labelAmountPaid, 7, row);
         row++;
 
         NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
@@ -196,25 +201,26 @@ public class CreditCardPluginReceiptWindow extends StyledIWAdminWindow {
                             t.add(info.getGroup().getName(), 2, row);
                         }
                         t.add(info.getUser().getName(), 3, row);
+                        t.add(info.getUser().getPersonalID(), 4,row);
                         if (info.getInfo() != null) {
-                            t.add(info.getInfo(), 4, row);
+                            t.add(info.getInfo(), 5, row);
                         }
                         t
                                 .add(nf.format(info.getAmount().doubleValue()),
-                                        5, row);
-                        t.setAlignment(5, row, "RIGHT");
-                        t.add(nf.format(info.getAmountPaid()), 6, row);
+                                        6, row);
                         t.setAlignment(6, row, "RIGHT");
+                        t.add(nf.format(info.getAmountPaid()), 7, row);
+                        t.setAlignment(7, row, "RIGHT");
                         sum += info.getAmountPaid();
                         row++;
                     }
                 }
-                t.mergeCells(1, row, 6, row);
+                t.mergeCells(1, row, 7, row);
                 t.add("<hr>", 1, row++);
-                t.setAlignment(5, row, "RIGHT");
-                t.add(labelSum, 5, row);
-                t.add(nf.format(sum), 6, row);
                 t.setAlignment(6, row, "RIGHT");
+                t.add(labelSum, 6, row);
+                t.add(nf.format(sum), 7, row);
+                t.setAlignment(7, row, "RIGHT");
             }
 
             if (club != null) {
