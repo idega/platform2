@@ -2798,7 +2798,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					log.setEndDate(endDate);
 					log.setSchoolClass(new Integer(member.getSchoolClassId()));
 					log.store();
-					return;
+					break;
 				}
 				
 				oldLog.setEndDate(endDate);
