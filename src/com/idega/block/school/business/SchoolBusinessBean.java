@@ -2807,7 +2807,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			}
 			
 			if (endDate != null) {
-				Collection futureLogs = getSchoolClassMemberLogHome().findAllByPlacementWithStartDateLaterThanDate(member, placementEndDate);
+				Collection futureLogs = getSchoolClassMemberLogHome().findAllByPlacementWithStartDateLaterThanOrEqualToDate(member, placementEndDate);
 				Iterator iterator = futureLogs.iterator();
 				while (iterator.hasNext()) {
 					SchoolClassMemberLog element = (SchoolClassMemberLog) iterator.next();
