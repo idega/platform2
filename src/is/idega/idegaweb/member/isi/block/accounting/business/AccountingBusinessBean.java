@@ -622,6 +622,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
                     entry.setDivision(info.getDivision());
                     entry.setGroup(info.getGroup());
                     entry.setAmount(info.getAmount());
+                    entry.setInfo(info.getInfo());
                     entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
                     entry.setStatusCreated();
                     entry.setTypePayment();
@@ -742,6 +743,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
                     entry.setDivision(info.getDivision());
                     entry.setGroup(info.getGroup());
                     entry.setAmount(info.getAmount());
+                    entry.setInfo(info.getInfo());
                     entry.setDateOfEntry(firstPayment.getTimestamp());
                     entry.setStatusCreated();
                     entry.setTypePayment();
@@ -846,7 +848,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
                         PaymentInfo paymentInfo = new PaymentInfo(entry
                                 .getUser(), entry.getClub(), entry
                                 .getDivision(), entry.getGroup(), (int) entry.getItemPrice()
-                                .doubleValue());
+                                .doubleValue(), info.getInfo());
                         groups.put(entry.getGroup(), paymentInfo);
                     }
 
@@ -879,7 +881,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
                     } else {
                         PaymentInfo paymentInfo = new PaymentInfo(entry
                                 .getUser(), entry.getClub(), entry
-                                .getDivision(), entry.getGroup(), (int) amount);
+                                .getDivision(), entry.getGroup(), (int) amount, info.getInfo());
                         groups.put(entry.getGroup(), paymentInfo);
                     }
 

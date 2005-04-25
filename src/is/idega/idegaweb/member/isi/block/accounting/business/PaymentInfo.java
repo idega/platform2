@@ -24,13 +24,15 @@ class PaymentInfo {
     private Group division = null;
     private Group group = null;
     private int amount = 0;
+    private String info = null;
     
-    public PaymentInfo(User user, Group club, Group division, Group group, int amount) {
+    public PaymentInfo(User user, Group club, Group division, Group group, int amount, String info) {
         this.user = user;
         this.club = club;
         this.division = division;
         this.group = group;
         this.amount = amount;
+        this.info = info;
     }
     
     /**
@@ -92,5 +94,17 @@ class PaymentInfo {
      */
     public void setGroup(Group group) {
         this.group = group;
+    }
+    /**
+     * @return Returns the info.
+     */
+    public String getInfo() {
+        return info;
+    }
+    /**
+     * @param info The info to set.
+     */
+    public void setInfo(String info) {
+        this.info = info;
     }
 }
