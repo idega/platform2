@@ -1408,7 +1408,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (schoolClassId > 0) {
 						placement.setSchoolClassId(schoolClassId);
 					}
-					placement.store();
 				}
 				// create new placement and attach to archive
 				else if (schoolTypeId > 0 && schoolClassId > 0 && placement.getSchoolTypeId() != schoolTypeId) {
@@ -1416,12 +1415,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					lastContract.setSchoolClassMember(newPlacement);
 					if (lastContract.getTerminatedDate() != null) {
 						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
-						placement.store();
 						getSchoolBusiness().addToSchoolClassMemberLog(placement, placement.getSchoolClass(), lastContract.getTerminatedDate(), performer);
 					}
 					lastContract.store();
 					getSchoolBusiness().addToSchoolClassMemberLog(newPlacement, newPlacement.getSchoolClass(), new IWTimestamp(newPlacement.getRegisterDate()).getDate(), null, performer);
 				}
+				placement.store();
 				try {
 					SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(placement, lastContract.getTerminatedDate() != null ? lastContract.getTerminatedDate() : lastContract.getValidFromDate());
 					if (schoolClassId != -1) {
