@@ -509,7 +509,13 @@ public class RegisterNewMember extends GolfBlock {
 	public void form(Member member) throws IOException, SQLException, FinderException {
 
 		MemberInfoHome miHome = (MemberInfoHome) IDOLookup.getHome(MemberInfo.class);
-		MemberInfo mInfo = miHome.findByMember(member);
+		
+		MemberInfo mInfo;
+		try {
+			mInfo = miHome.findByMember(member);
+		}
+		catch (FinderException e1) {
+		}
 		Address[] address = member.getAddress();
 		Phone[] phone = member.getPhone();
 
