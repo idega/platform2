@@ -510,7 +510,7 @@ public class RegisterNewMember extends GolfBlock {
 
 		MemberInfoHome miHome = (MemberInfoHome) IDOLookup.getHome(MemberInfo.class);
 		
-		MemberInfo mInfo;
+		MemberInfo mInfo = null;
 		try {
 			mInfo = miHome.findByMember(member);
 		}
