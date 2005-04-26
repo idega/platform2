@@ -1163,7 +1163,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					earliestPossibleMessage = localize("school.date_before_placement_date_not_allowed", "You can not choose a date earlier than the placement date plus two date.");
 				}
 
-				PlacementHelper helper = getPlacementHelper();
+				PlacementHelper helper = getPlacementHelper(application);
 				TimePeriod deadlinePeriod = null;
 				deadlinePeriod = helper.getValidPeriod();
 				earliestTerminationDate = new IWTimestamp(helper.getEarliestPlacementDate());
@@ -2353,6 +2353,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private PlacementHelper getPlacementHelper() throws RemoteException {
 		return getBusiness().getPlacementHelper(new Integer(_applicationID));
+	}
+	
+	private PlacementHelper getPlacementHelper(ChildCareApplication application) throws RemoteException {
+		return getBusiness().getPlacementHelper(application);
 	}
 	
 	protected DropdownMenu getCareTimeMenu(String parameter) {

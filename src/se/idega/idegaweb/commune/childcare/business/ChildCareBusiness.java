@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 22.4.2005 laddi Exp $
- * Created on 22.4.2005
+ * $Id: ChildCareBusiness.java 1.1 26.4.2005 laddi Exp $
+ * Created on 26.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -1304,6 +1304,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getPlacementHelper
 	 */
 	public PlacementHelper getPlacementHelper(Integer applicationID) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getPlacementHelper
+	 */
+	public PlacementHelper getPlacementHelper(ChildCareApplication application) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#setUserAsDeceased

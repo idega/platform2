@@ -2283,7 +2283,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (validFrom == null)
 				validFrom = new IWTimestamp(application.getFromDate());
 			int oldArchiveID = archiveID;
-			if (oldArchiveID <= 0) {
+			if (oldArchiveID <= 0 && (application.getApplicationStatus() == getStatusReady() || application.getApplicationStatus() == getStatusCancelled())) {
 				ChildCareContract con = getLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());// getLatestContract(application.getChildId());
 				oldArchiveID = con != null ? ((Integer) con.getPrimaryKey()).intValue() : -1;
 
@@ -5146,6 +5146,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public PlacementHelper getPlacementHelper(Integer applicationID) {
 		ChildCareApplication application = getApplication(applicationID.intValue());
 		ChildCareContract contract = getLatestContractByApplication(applicationID.intValue());
+		return getPlacementHelper(application, contract);
+	}
+	
+	public PlacementHelper getPlacementHelper(ChildCareApplication application) {
+		ChildCareContract contract = getLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
+		return getPlacementHelper(application, contract);
+	}
+	
+	private PlacementHelper getPlacementHelper(ChildCareApplication application, ChildCareContract contract) {
 		SchoolClassMemberLog log = null;
 		if (contract != null && contract.getSchoolClassMemberId() > 0)
 			log = getLatestPlacementLogByContract(contract);
