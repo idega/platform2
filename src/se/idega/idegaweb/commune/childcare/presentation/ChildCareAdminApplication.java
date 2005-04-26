@@ -568,8 +568,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 					else {
 						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
-						//if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
-						if (getBusiness().hasActiveApplication(getSession().getChildID())){
+						if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID()) && !getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate())){
 							placeInGroup.setDisabled(true);	
 							dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 						}
