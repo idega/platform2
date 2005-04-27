@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.20 2005/03/20 11:00:20 eiki Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.21 2005/04/27 13:33:42 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import com.idega.util.text.Name;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -281,7 +281,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 					int minutes = info.getMeetingDuration() % 60;
 					int amount = info.getAmount();
 					
-					participants.append(name.getName(locale)).append("\t");
+					participants.append(name.getName(locale)).append("\t\t\t\t");
 					if (participant.getPersonalID() != null) {
 						participants.append(PersonalIDFormatter.format(participant.getPersonalID(), locale));
 					}
