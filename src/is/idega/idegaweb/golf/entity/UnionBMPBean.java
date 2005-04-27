@@ -687,7 +687,7 @@ public List getTournamentGroupsRecursive(){
                             try {
                                 code = Integer.parseInt(RS.getString("code"));
                             }
-                            catch (NumberFormatException n) {}
+                            catch (NumberFormatException n) {n.printStackTrace();}
                             if ( ((code >= zipcodeFrom1) && (code <= zipcodeTo1)) ||  ((code >= zipcodeFrom2) && (code <= zipcodeTo2))) {
                                 if ((code != zipcodeIsNot1) && (code != zipcodeIsNot2)) {
                                     if(vector==null){
