@@ -1796,6 +1796,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//each age and create a row and insert into an ordered map by league
 		//then insert into the final report collection.
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		Map leaguesByRegionalUnion = new TreeMap();
 		Map leagueStatsMap = new TreeMap();
 		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
 	
@@ -1807,6 +1808,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
 			
+			leagueStatsMap = (Map) leaguesByRegionalUnion.get(regionalUnionIdentifier);
+			if (leagueStatsMap == null) {
+			    leagueStatsMap = new TreeMap();
+			}
 			try {
 				Collection leagues = report.getLeagues();
 				Iterator iterator = leagues.iterator();
@@ -1821,9 +1826,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					String leagueIdentifier = getLeagueIdentifier(league);
 					//fetch the stats or initialize
 					ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
+					System.out.println("initialize");
 					if(leagueStatsData==null){//initialize
 						leagueStatsData = new ReportableData();
 						leagueStatsData.addData(regionalUnionName, regionalUnionIdentifier);
+						System.out.println(regionalUnionIdentifier);
 						leagueStatsData.addData(leagueString, leagueIdentifier);
 						leagueStatsData.addData(womenUnderAgeLimit, new Integer(0));
 						leagueStatsData.addData(womenOverOrEqualAgeLimit, new Integer(0));
@@ -1855,7 +1862,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					leagueStatsMap.put(leagueKey,leagueStatsData);
 				
 				}
-			
+				leaguesByRegionalUnion.put(regionalUnionIdentifier, leagueStatsMap);
 			}
 			catch (IDOException e) {
 				e.printStackTrace();
@@ -1864,9 +1871,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 	
 		//add the data to the collection
-		reportCollection.addAll(leagueStatsMap.values());
+		Iterator regionsIter = leaguesByRegionalUnion.keySet().iterator();
+		while (regionsIter.hasNext()) {		
+			// don't forget to add the row to the collection
+			reportCollection.addAll(((Map)leaguesByRegionalUnion.get(regionsIter.next())).values());
+		}
 
-		ReportableField[] sortFields = new ReportableField[] {leagueString};
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionName, leagueString};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 	
