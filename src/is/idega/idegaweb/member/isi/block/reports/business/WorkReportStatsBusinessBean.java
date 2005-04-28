@@ -1826,11 +1826,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					String leagueIdentifier = getLeagueIdentifier(league);
 					//fetch the stats or initialize
 					ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
-					System.out.println("initialize");
 					if(leagueStatsData==null){//initialize
 						leagueStatsData = new ReportableData();
 						leagueStatsData.addData(regionalUnionName, regionalUnionIdentifier);
-						System.out.println(regionalUnionIdentifier);
 						leagueStatsData.addData(leagueString, leagueIdentifier);
 						leagueStatsData.addData(womenUnderAgeLimit, new Integer(0));
 						leagueStatsData.addData(womenOverOrEqualAgeLimit, new Integer(0));
