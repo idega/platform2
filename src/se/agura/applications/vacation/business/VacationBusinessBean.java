@@ -336,7 +336,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 					from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT),
 					parish != null ? parish.getName() : "xxx", hoursAndDays.toString(), vacationComment,
 					created.getLocaleDate(locale, IWTimestamp.SHORT), metadata.toString(), logBuffer.toString(),
-					supervisor != null ? supervisor.getName() : "-" };
+					supervisor != null ? supervisor.getName() : "-", String.valueOf(vacation.getOrdinaryWorkingHours()) };
 			sendMessage(
 					email,
 					cc,
@@ -344,7 +344,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 					MessageFormat.format(
 							getLocalizedString(
 									"vacation_application.accepted_body",
-									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5},\nAttested by:\t {11}\n\nThe vacation period is:\nfrom\t {3} to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
+									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5},\nAttested by:\t {11}\n\nOrdinary working hours:\t {12}\n\nThe vacation period is:\nfrom\t {3} to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
 							arguments), attachment);
 		}
 	}
