@@ -51,6 +51,7 @@ public class TournamentList extends GolfBlock {
 	private IWResourceBundle iwrb;
 	
 	public static final String PRM_UNION_ID = "union_id";
+	private static final String CACHE_KEY = "tournementList";
 
 	private IWBundle iwb;
 
@@ -60,6 +61,20 @@ public class TournamentList extends GolfBlock {
 
 	public TournamentList() {
 		this(null);
+	}
+	
+	public String getCacheKey() {
+		return CACHE_KEY;
+	}
+
+	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+		String unionID = iwc.getParameter("union_id");
+		String locale  = iwc.getParameter("view");
+		IWTimestamp startStamp = getStartStamp(iwc);
+		IWTimestamp endStamp = getEndStamp(iwc);
+		String localeString = getResourceBundle().getLocale().getCountry();
+		
+		return "tournament_table_union_id_" + unionID + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString();
 	}
 
 	public TournamentList(String view) {
@@ -211,10 +226,10 @@ public class TournamentList extends GolfBlock {
 			localeString = iwrb.getLocale().getCountry();
 		}
 
-		Object tableObject = modinfo.getApplicationAttribute("tournament_table_union_id_" + union_id + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString());
-		if (tableObject != null) {
-			table = (Table) tableObject;
-		}
+//		Object tableObject = modinfo.getApplicationAttribute("tournament_table_union_id_" + union_id + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString());
+//		if (tableObject != null) {
+//			table = (Table) tableObject;
+//		}
 
 		if (table == null) {
 			tournaments = getTournaments(modinfo, union_id, view);
