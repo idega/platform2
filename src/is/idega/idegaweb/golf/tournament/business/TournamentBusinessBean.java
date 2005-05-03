@@ -23,17 +23,13 @@ import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentBox;
+import is.idega.idegaweb.golf.tournament.presentation.TournamentList;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentStartingtimeList;
-
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
@@ -170,25 +166,31 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		return (!(finished || ongoing));
 	}
 
-	public void removeTournamentTableApplicationAttribute(IWContext modinfo) {
-		Enumeration enumer = modinfo.getServletContext().getAttributeNames();
-		String myString = "";
-		List v = new Vector();
-		while (enumer.hasMoreElements()) {
-			v.add(enumer.nextElement());
-		}
-		Iterator iter = v.iterator();
-		while (iter.hasNext()) {
-			myString = (String) iter.next();
-			if (myString.indexOf("tournament_table_union_id_") != -1) {
-				modinfo.removeApplicationAttribute(myString);
-			}
-			else if (myString.indexOf("tournament_dropdownmenu_ordered_by_union_clubadmin") != -1) {
-				modinfo.removeApplicationAttribute(myString);
-			}
-		}
-
-		removeTournamentBoxApplication(modinfo);
+	public void removeTournamentTableApplicationAttribute(IWContext iwc) {
+//		Enumeration enumer = modinfo.getServletContext().getAttributeNames();
+//		String myString = "";
+//		List v = new Vector();
+//		while (enumer.hasMoreElements()) {
+//			v.add(enumer.nextElement());
+//		}
+//		Iterator iter = v.iterator();
+//		while (iter.hasNext()) {
+//			myString = (String) iter.next();
+//			if (myString.indexOf("tournament_table_union_id_") != -1) {
+//				modinfo.removeApplicationAttribute(myString);
+//			}
+//			else if (myString.indexOf("tournament_dropdownmenu_ordered_by_union_clubadmin") != -1) {
+//				modinfo.removeApplicationAttribute(myString);
+//			}
+//		}
+//
+//		removeTournamentBoxApplication(modinfo);
+		
+		
+		//Gimmi and eiki: changed to block caching!
+		
+		iwc.getIWMainApplication().getIWCacheManager().invalidateCache(TournamentList.CACHE_KEY);
+		
 	}
 
 	public void removeTournamentBoxApplication(IWContext modinfo) {
@@ -606,7 +608,6 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 	}
 
 	public List getMembersInStartingGroup(Tournament tournament, TournamentRound tournamentRound, int startingGroupNumber) {
-		int fieldId = tournament.getFieldId();
 		List members = new Vector();
 		try {
 			members = com.idega.data.EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), "SELECT member.* FROM member,STARTINGTIME, TOURNAMENT_ROUND_STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.tournament_round_id = " + tournamentRound.getID() + " AND TOURNAMENT_ROUND_STARTINGTIME.startingtime_id = startingtime.startingtime_id AND member.member_id = startingtime.member_id AND grup_num =" + startingGroupNumber + " AND field_id=" + tournament.getFieldId());
