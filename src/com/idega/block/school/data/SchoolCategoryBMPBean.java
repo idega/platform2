@@ -28,6 +28,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	public static final String CATEGORY_HIGH_SCHOOL = "HIGH_SCHOOL";
 	public static final String CATEGORY_COLLEGE = "COLLEGE";
 	public static final String CATEGORY_UNIVERSITY = "UNIVERSITY";
+	public static final String CATEGORY_ADULT_EDUCATION = "ADULT_EDUCATION";
 	public static final String CATEGORY_PREFIX = "school_category.";
 	
 	/* (non-Javadoc)
@@ -135,6 +136,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 		return (String) idoFindOnePKByQuery(query);
 	}
 	
+		
 	public String ejbFindHighSchoolCategory() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_HIGH_SCHOOL);
@@ -155,6 +157,14 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 		
 		return (String) idoFindOnePKByQuery(query);
 	}
+	
+	public String ejbFindAdultEducationCategory() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_ADULT_EDUCATION);
+		
+		return (String) idoFindOnePKByQuery(query);
+	}
+	
 
 	public String ejbFindMusicSchoolCategory() throws FinderException {
 		IDOQuery query = idoQuery();

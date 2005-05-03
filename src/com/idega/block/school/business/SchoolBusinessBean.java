@@ -95,6 +95,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	private static SchoolCategory iSchoolCategoryCollege;
 	private static SchoolCategory iSchoolCategoryUniversity;
 	private static SchoolCategory iSchoolCategoryMusicSchool;
+	private static SchoolCategory iSchoolCategoryAdultEducation;
 
 	public final static String PROPERTY_NAME_REJECT_STUDENT_MESSAGE = "reject_student_message";
 	public final static String PROPERTY_NAME_GROUP_OFFER_MESSAGE = "group_offer_body";
@@ -312,7 +313,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 		return iSchoolCategoryUniversity;
 	}
+	public SchoolCategory getCategoryAdultEducation() {
+		if (iSchoolCategoryAdultEducation == null) {
+			try {
+				iSchoolCategoryAdultEducation = getSchoolCategoryHome().findAdultEducationCategory();
+			}
+			catch (FinderException e) {
+				iSchoolCategoryAdultEducation = null;
+			}
+		}
 
+		return iSchoolCategoryAdultEducation;
+	}
 	public Collection getSchoolManagementTypes() {
 		try {
 			return getSchoolManagementTypeHome().findAllManagementTypes();
