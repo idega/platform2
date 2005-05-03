@@ -47,7 +47,7 @@ public class TournamentList extends GolfBlock {
 	private IWResourceBundle iwrb;
 	
 	public static final String PRM_UNION_ID = "union_id";
-	private static final String CACHE_KEY = "tournementList";
+	public static final String CACHE_KEY = "tournementList";
 
 	private IWBundle iwb;
 
