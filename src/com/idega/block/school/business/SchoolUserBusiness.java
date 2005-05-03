@@ -1,41 +1,242 @@
+/*
+ * Created on 2005-maj-03
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
 package com.idega.block.school.business;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
 
-public interface SchoolUserBusiness extends com.idega.business.IBOService
-{
- public com.idega.block.school.data.SchoolUser addAssistantHeadmaster(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUser addHeadmaster(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUser addTeacher(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUser addUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2,boolean p3,boolean p4, boolean p5)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUser addUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2,boolean p3)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUser addWebAdmin(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getAssistantHeadmasters(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getHeadmasters(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getMainHeadmasters(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.business.SchoolBusiness getSchoolBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getSchoolCategory(com.idega.block.school.data.School p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolHome getSchoolHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getSchoolTypeCategories(com.idega.block.school.data.School p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolTypeHome getSchoolTypeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUserHome getSchoolUserHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getSchoolUserTypes(com.idega.block.school.data.School p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getSchools(com.idega.user.data.User p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getTeacherUserIds(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getTeacherUserIds(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getTeachers(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getTeachers(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.user.data.UserHome getUserHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getUserIds(com.idega.block.school.data.School p0,int p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean getUserMainHeadmaster(com.idega.user.data.User p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean getUserShowInContact(com.idega.user.data.User p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getUsers(com.idega.block.school.data.School p0,int p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getUsersByDepartm(com.idega.block.school.data.School p0,int p1,int p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getUsersByDepartm(com.idega.block.school.data.School p0,int p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getUsersByMainHeadMaster(com.idega.block.school.data.School p0,int p1,boolean p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
-	java.util.Collection getEconomicalResponsibles(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getWebAdmins(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public void removeUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2,com.idega.user.data.User p3)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void removeUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,com.idega.user.data.User p2)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void setUserGroups(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolUser updateSchUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2,boolean p3,boolean p4)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.block.school.data.SchoolUser;
+import com.idega.block.school.data.SchoolUserHome;
+import com.idega.business.IBOService;
+import com.idega.data.IDORelationshipException;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+
+/**
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+public interface SchoolUserBusiness extends IBOService {
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#addUser
+	 */
+	public SchoolUser addUser(School school, User user, int userType,
+			boolean isEconomicalResponsible) throws RemoteException,
+			CreateException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#addUser
+	 */
+	public SchoolUser addUser(School school, User user, int userType,
+			boolean showInContacts, boolean main_headmaster,
+			boolean isEconomicalResponsible) throws RemoteException,
+			CreateException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#updateSchUser
+	 */
+	public SchoolUser updateSchUser(School school, User user, int userType,
+			boolean showInContacts, boolean isEconomicalResponsible)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#addTeacher
+	 */
+	public SchoolUser addTeacher(School school, User user)
+			throws RemoteException, CreateException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#addHeadmaster
+	 */
+	public SchoolUser addHeadmaster(School school, User user)
+			throws RemoteException, CreateException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#addAssistantHeadmaster
+	 */
+	public SchoolUser addAssistantHeadmaster(School school, User user)
+			throws RemoteException, CreateException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#addWebAdmin
+	 */
+	public SchoolUser addWebAdmin(School school, User user)
+			throws RemoteException, CreateException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#setUserGroups
+	 */
+	public void setUserGroups(School school, User user, int userType)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#removeUser
+	 */
+	public void removeUser(School school, User user, int userType,
+			User currentUser) throws FinderException, RemoteException,
+			RemoveException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#removeUser
+	 */
+	public void removeUser(School school, User user, User currentUser)
+			throws FinderException, RemoteException, RemoveException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getTeachers
+	 */
+	public Collection getTeachers(int schoolID) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getTeacherUserIds
+	 */
+	public Collection getTeacherUserIds(int schoolID) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getTeachers
+	 */
+	public Collection getTeachers(School school) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getTeacherUserIds
+	 */
+	public Collection getTeacherUserIds(School school) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getHeadmasters
+	 */
+	public Collection getHeadmasters(School school) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getMainHeadmasters
+	 */
+	public Collection getMainHeadmasters(School school) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getAssistantHeadmasters
+	 */
+	public Collection getAssistantHeadmasters(School school)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getWebAdmins
+	 */
+	public Collection getWebAdmins(School school) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getEconomicalResponsibles
+	 */
+	public Collection getEconomicalResponsibles(School school)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUsers
+	 */
+	public Collection getUsers(School school, int userType)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUsersByDepartm
+	 */
+	public Collection getUsersByDepartm(School school, int userType,
+			int departmentID) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUsersByDepartm
+	 */
+	public Collection getUsersByDepartm(School school, int departmentID)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUsersByMainHeadMaster
+	 */
+	public Collection getUsersByMainHeadMaster(School school, int userType,
+			boolean main_headmaster) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUserShowInContact
+	 */
+	public boolean getUserShowInContact(User user) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUserMainHeadmaster
+	 */
+	public boolean getUserMainHeadmaster(User user) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUserIds
+	 */
+	public Collection getUserIds(School school, int userType)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchools
+	 */
+	public Collection getSchools(User user) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolTypeCategories
+	 */
+	public Collection getSchoolTypeCategories(School school)
+			throws IDORelationshipException, RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolUserTypes
+	 */
+	public Collection getSchoolUserTypes(School school)
+			throws IDORelationshipException, RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolCategory
+	 */
+	public String getSchoolCategory(School school) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolTypeHome
+	 */
+	public SchoolTypeHome getSchoolTypeHome() throws RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getUserHome
+	 */
+	public UserHome getUserHome() throws RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolUserHome
+	 */
+	public SchoolUserHome getSchoolUserHome() throws RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolHome
+	 */
+	public SchoolHome getSchoolHome() throws RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolUserBusinessBean#getSchoolBusiness
+	 */
+	public SchoolBusiness getSchoolBusiness() throws RemoteException;
+
 }

@@ -279,8 +279,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		 */
 	public boolean getUserShowInContact(User user) throws RemoteException, FinderException {
 			//Collection schUsers = getSchoolUserHome().findBySchoolAndUser(school, user);
-			//borde ev göras om lite eftersom det skulle kunna finnas flera school users på en user
-		Collection schUsers = getSchoolUserHome().findByUser(user);
+			//should be changed since there could be more than one school user on one user
+			Collection schUsers = getSchoolUserHome().findByUser(user);
 			Iterator iter = schUsers.iterator();
 			boolean show = true;
 			while (iter.hasNext()) {
@@ -349,6 +349,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		boolean CHILDCARE = false;
 		boolean HIGH_SCHOOL = false; 
 		boolean MUSIC_SCHOOL = false; 
+		boolean ADULT_EDUCATION = false;
 		
 		if (sTypes != null && !sTypes.isEmpty() ) {
 			Iterator iter = sTypes.iterator();
@@ -360,7 +361,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				String strChildcare = getSchoolBusiness().getChildCareSchoolCategory();
 				String strHighschool = getSchoolBusiness().getHighSchoolSchoolCategory();
 				String strMusicschool = getSchoolBusiness().getCategoryMusicSchool().getCategory();
-
+				String strAdultEducation = getSchoolBusiness().getCategoryAdultEducation().getCategory();
 				if (sCat != null && sCat.equals(strElementary)){
 					SCHOOL = true;
 				}else if (sCat != null && sCat.equals(strChildcare)) {
@@ -369,6 +370,9 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 					HIGH_SCHOOL = true;
 				}else if (sCat != null && sCat.equals(strMusicschool)) {
 					MUSIC_SCHOOL = true;
+				}
+				else if (sCat != null && sCat.equals(strAdultEducation)){
+					ADULT_EDUCATION = true;
 				}
 			}
 		}
@@ -385,6 +389,9 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 		if (MUSIC_SCHOOL){
 			coll.add(getSchoolBusiness().getCategoryMusicSchool().getCategory());
+		}
+		if (ADULT_EDUCATION){
+			coll.add(getSchoolBusiness().getCategoryAdultEducation().getCategory());
 		}
 		
 		return coll;
