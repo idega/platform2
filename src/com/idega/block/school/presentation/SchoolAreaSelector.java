@@ -48,6 +48,7 @@ public class SchoolAreaSelector extends Block {
 	private int _spaceBeforeExpanded = 2;
 	private boolean _isHighSchool = false;
 	private boolean _showSchoolArea = true;
+	private boolean _communeSchools = true;
 	
 	private IWResourceBundle iwrb = null;
 
@@ -107,9 +108,13 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 			
 			if (_isHighSchool) {
 				coll = sb.findAllSchoolsByCategory(highSchoolCategory.getCategory());
-			}  else {
+			}  else if (_schoolTypeId == -1){
 				coll = sb.findAllSchoolsByCategory(elementarySchoolCategory.getCategory());
-			}			
+			}	else {
+				coll = sb.findAllSchoolsByType(_schoolTypeId);	
+			}
+			
+			
 			
 			School school;
 			int iSchoolId;
@@ -119,8 +124,12 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 
 			int row = 0;
 			int col = 1;
+			Collection collSchools = null;
 			
-			Collection collSchools = sb.getHomeCommuneSchools(coll);
+			if (_communeSchools)
+				collSchools = sb.getHomeCommuneSchools(coll);
+			else
+				collSchools = coll;
 			Iterator iter = collSchools.iterator(); //collSchools = collection with all schools for a specific category and the home commune
 			Hashtable hash = new Hashtable();
 			while (iter.hasNext()) {
@@ -369,4 +378,9 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 	public boolean getShowSchoolArea(){
 		return _showSchoolArea;	
 	}
+	
+	public void setShowOnlyCommuneSchools(boolean communeSchools){
+		_communeSchools = communeSchools;	
+	}
+	
 }
