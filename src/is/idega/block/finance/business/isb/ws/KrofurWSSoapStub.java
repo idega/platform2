@@ -9,6 +9,8 @@ package is.idega.block.finance.business.isb.ws;
 
 import javax.xml.soap.SOAPException;
 import net.vitale.filippo.axis.handlers.WsseClientHandler;
+import org.apache.axis.enum.Style;
+import org.apache.axis.enum.Use;
 import org.apache.axis.message.MessageElement;
 
 public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.idega.block.finance.business.isb.ws.KrofurWSSoap {
@@ -30,32 +32,32 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setName("StofnaKrofu");
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "krafa"), new javax.xml.namespace.QName("http://ws.isb.is", "Krafa"), is.idega.block.finance.business.isb.ws.Krafa.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[0] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("EndurvekjaKrofu");
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "krafa"), new javax.xml.namespace.QName("http://ws.isb.is", "Krafa"), is.idega.block.finance.business.isb.ws.Krafa.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[1] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("FellaKrofu");
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "krafa"), new javax.xml.namespace.QName("http://ws.isb.is", "Krafa"), is.idega.block.finance.business.isb.ws.Krafa.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[2] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("BreytaKrofu");
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "krafa"), new javax.xml.namespace.QName("http://ws.isb.is", "Krafa"), is.idega.block.finance.business.isb.ws.Krafa.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[3] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -64,8 +66,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "decimal"));
         oper.setReturnClass(java.math.BigDecimal.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "StofnaKrofubunkaResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[4] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -74,8 +76,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfUppreiknudKrafa"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfUppreiknudKrafa.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaKrofubunkasvarResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[5] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -89,8 +91,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfGreidsla"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfGreidsla.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaGreidslurKrafnaTimabilResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[6] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -102,8 +104,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfGreidsla"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfGreidsla.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaGreidslurKrafnaResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[7] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -116,8 +118,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfGreidsla"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfGreidsla.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaGreidsluKrofuResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[8] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -132,8 +134,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfUppreiknudKrafa"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfUppreiknudKrafa.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaKrofurResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[9] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -146,8 +148,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "UppreiknudKrafa"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.UppreiknudKrafa.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaKrofuResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         oper.setReturnHeader(true);
         _operations[10] = oper;
         
@@ -158,8 +160,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "decimal"));
         oper.setReturnClass(java.math.BigDecimal.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "StofnaKrofuskraResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[11] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -167,16 +169,16 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "tegund"), new javax.xml.namespace.QName("http://ws.isb.is", "TegundKrofuskra"), is.idega.block.finance.business.isb.ws.TegundKrofuskra.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "bunkanumer"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "decimal"), java.math.BigDecimal.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[12] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("SaekjaKrofuupplysingaskra");
         oper.addParameter(new javax.xml.namespace.QName("http://ws.isb.is", "tegundFyrirspurnar"), new javax.xml.namespace.QName("http://ws.isb.is", "TegundKrofufyrirspurnar"), is.idega.block.finance.business.isb.ws.TegundKrofufyrirspurnar.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[13] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -187,8 +189,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfBeingreidslubeidni"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfBeingreidslubeidni.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaAllarBeingreidslubeidnirResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[14] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -200,8 +202,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfBeingreidslubeidni"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfBeingreidslubeidni.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaBeingreidslubeidnirResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[15] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -213,8 +215,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfBeingreidslubeidni"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfBeingreidslubeidni.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaBeingreidslubeidnaHreyfingarResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[16] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
@@ -225,8 +227,8 @@ public class KrofurWSSoapStub extends org.apache.axis.client.Stub implements is.
         oper.setReturnType(new javax.xml.namespace.QName("http://ws.isb.is", "ArrayOfBeingreidslubeidni"));
         oper.setReturnClass(is.idega.block.finance.business.isb.ws.ArrayOfBeingreidslubeidni.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://ws.isb.is", "SaekjaAllarBeingreidslubeidnaHreyfingarResult"));
-        oper.setStyle(org.apache.axis.enum.Style.WRAPPED);
-        oper.setUse(org.apache.axis.enum.Use.LITERAL);
+        oper.setStyle(Style.WRAPPED);
+        oper.setUse(Use.LITERAL);
         _operations[17] = oper;
 
     }
