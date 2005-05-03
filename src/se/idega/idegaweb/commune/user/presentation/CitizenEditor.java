@@ -108,7 +108,7 @@ public class CitizenEditor extends UserEditor {
 			row++;
 
 			// cohabitant handling
-			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.cohabitant", "Cohabitant")), 1, row);
+			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.cohabitant", "Cohabitant")), 1, row++);
 			User cohabitant = null;
 			try {
 				cohabitant = familyService.getCohabitantFor(this.user);
