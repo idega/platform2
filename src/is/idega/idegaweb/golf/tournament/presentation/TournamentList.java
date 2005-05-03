@@ -9,15 +9,12 @@ package is.idega.idegaweb.golf.tournament.presentation;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Tournament;
-import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 import is.idega.idegaweb.golf.tournament.even.TournamentEventListener;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -35,7 +32,6 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -69,16 +65,16 @@ public class TournamentList extends GolfBlock {
 
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String unionID = iwc.getParameter("union_id");
-		String locale  = iwc.getParameter("view");
+		String view  = iwc.getParameter("view");
 		IWTimestamp startStamp = getStartStamp(iwc);
 		IWTimestamp endStamp = getEndStamp(iwc);
-		String localeString = getResourceBundle().getLocale().getCountry();
 		
-		return "tournament_table_union_id_" + unionID + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString();
+		return "tournament_table_union_id_" + unionID + "_view_" + view + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString();
 	}
 
 	public TournamentList(String view) {
 		this.view = view;
+		setCacheable(getCacheKey(),0);
 	}
 
 	public void main(IWContext modinfo) throws SQLException, RemoteException {
@@ -97,7 +93,6 @@ public class TournamentList extends GolfBlock {
 		form.setEventListener(TournamentEventListener.class);
 
 		IWTimestamp now = IWTimestamp.RightNow();
-		IWCalendar dagatalid = new IWCalendar();
 
 		DateInput startDate = (DateInput) getStyledInterface(new DateInput(getTournamentSession(modinfo).getParameterNameStartDate()));
 		startDate.setYearRange(2000, now.getYear());
@@ -221,16 +216,6 @@ public class TournamentList extends GolfBlock {
 
 		Table table = null;
 
-		String localeString = "";
-		if (iwrb.getLocale() != null) {
-			localeString = iwrb.getLocale().getCountry();
-		}
-
-//		Object tableObject = modinfo.getApplicationAttribute("tournament_table_union_id_" + union_id + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString());
-//		if (tableObject != null) {
-//			table = (Table) tableObject;
-//		}
-
 		if (table == null) {
 			tournaments = getTournaments(modinfo, union_id, view);
 
@@ -264,8 +249,6 @@ public class TournamentList extends GolfBlock {
 
 					String t_union_id;
 					IWTimestamp start;
-					IWTimestamp end;
-					TournamentRound tRound;
 
 					Image closedImage = iwb.getImage("shared/tournament/lock_closed.gif", iwrb.getLocalizedString("tournament.closed_tournament", "Closed tournament"));
 					closedImage.setToolTip(iwrb.getLocalizedString("tournament.closed_tournament", "Closed tournament"));
@@ -369,7 +352,7 @@ public class TournamentList extends GolfBlock {
 					table.setColumnAlignment(5, "center");
 					table.setColumnAlignment(7, "center");
 
-					modinfo.setApplicationAttribute("tournament_table_union_id_" + union_id + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString(), table);
+					//modinfo.setApplicationAttribute("tournament_table_union_id_" + union_id + "_view_" + view + "_locale_" + localeString + "_startTime_" + startStamp.toSQLDateString() + "_endTime_" + endStamp.toSQLDateString(), table);
 
 				}
 				else {
