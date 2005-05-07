@@ -1,11 +1,11 @@
 /*
- * $Id: ReferenceNumber.java,v 1.26 2004/06/24 21:15:32 aron Exp $
- *
+ * $Id: ReferenceNumber.java,v 1.27 2005/05/07 17:10:47 palli Exp $
+ * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega hf. Use is subject to
+ * license terms.
+ * 
  */
 package com.idega.block.application.presentation;
 
@@ -23,293 +23,303 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 /**
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * @author <a href="mailto:palli@idega.is">Pall Helgason </a>
  * @version 1.0
  */
 public class ReferenceNumber extends Block {
-  public static final String CAM_REF_NUMBER = "cam_ref_number";
-  public static final int LAYOUT_VERTICAL = 1;
-  public static final int LAYOUT_HORIZONTAL = 2;
-  public static final int LAYOUT_STACKED = 3;
 
-  private int inputLength = 10;
-  private int layout = -1;
-  private int pageId;
-  private int referenceTextSize;
+	public static final String CAM_REF_NUMBER = "cam_ref_number";
 
-  private String backgroundImageUrl = null;
-  private String referenceWidth = "";
-  private String referenceHeight = "";
-  private String referenceText;
-  private String colour = "";
-  private String referenceTextColour;
-  private String styleAttribute = "font-size: 10pt";
-  private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
-  private String submitButtonAlignment;
-  private boolean hasHelpButton = false;
+	public static final int LAYOUT_VERTICAL = 1;
 
-  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
+	public static final int LAYOUT_HORIZONTAL = 2;
 
-  private Table outerTable;
+	public static final int LAYOUT_STACKED = 3;
 
-  private Form myForm;
+	private int inputLength = 10;
 
-  private Image referenceImage;
+	private int layout = -1;
 
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+	private int pageId;
 
-  public ReferenceNumber() {
-    super();
-    setDefaultValues();
-  }
+	private int referenceTextSize;
 
-  public void main(IWContext iwc) throws Exception {
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    
-    
+	private String backgroundImageUrl = null;
 
-    referenceImage = iwrb.getLocalizedImageButton("get","Get");
+	private String referenceWidth = "";
 
-    referenceText = iwrb.getLocalizedString("referenceNumber","Referencenumber");
-    setup();
+	private String referenceHeight = "";
 
-    outerTable.add(myForm);
-    add(outerTable);
-  }
+	private String referenceText;
 
-  private void setup() {
-    Table referenceTable = new Table(1,2);
-    referenceTable.setBorder(0);
-    referenceTable.setWidth(referenceWidth);
-    referenceTable.setHeight(referenceHeight);
-    if (!colour.equals("")) {
-      referenceTable.setColor(colour);
-    }
-    referenceTable.setCellpadding(0);
-    referenceTable.setCellspacing(0);
-    if(!"".equals(backgroundImageUrl))
-    referenceTable.setBackgroundImage(new Image(backgroundImageUrl));
+	private String colour = "";
 
-    HelpButton helpButton = new HelpButton(iwrb.getLocalizedString("help_headline","Reference number"),iwrb.getLocalizedString("help","Help"));
+	private String referenceTextColour;
 
-    Text referenceTexti = new Text(referenceText);
-    if (referenceTextSize != -1) {
-      referenceTexti.setFontSize(referenceTextSize);
-    }
+	private String styleAttribute = "font-size: 10pt";
 
-    if (referenceTextColour != null) {
-      referenceTexti.setFontColor(referenceTextColour);
-    }
+	private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
 
-    referenceTexti.setFontStyle(textStyles);
+	private String submitButtonAlignment;
 
-    Table inputTable;
+	private boolean hasHelpButton = false;
 
-    TextInput reference = new TextInput(CAM_REF_NUMBER);
-    reference.setMarkupAttribute("style",styleAttribute);
-    reference.setSize(inputLength);
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 
-    switch (layout) {
-      case LAYOUT_HORIZONTAL:
-        inputTable = new Table(3,2);
-        inputTable.setBorder(0);
-        if (!(colour.equals(""))) {
-          inputTable.setColor(colour);
-        }
-        inputTable.setCellpadding(0);
-        inputTable.setCellspacing(0);
-        inputTable.setAlignment(2,1,"right");
-        inputTable.setAlignment(2,2,"right");
-        inputTable.setWidth("100%");
+	private Table outerTable;
 
-        inputTable.add(referenceTexti,2,1);
-        inputTable.add(reference,2,2);
-        inputTable.setAlignment(2,1,"right");
-        inputTable.setAlignment(2,2,"right");
+	private Form myForm;
 
-        referenceTable.add(inputTable,1,1);
-        break;
+	private String submitButtonText = null;
 
-      case LAYOUT_VERTICAL:
-        inputTable = new Table(3,3);
-        inputTable.setBorder(0);
-        if (!(colour.equals(""))) {
-          inputTable.setColor(colour);
-        }
-        inputTable.setCellpadding(0);
-        inputTable.setCellspacing(0);
-        inputTable.mergeCells(1,2,3,2);
-        inputTable.addText("",1,2);
-        inputTable.setHeight(2,"10");
-        inputTable.setAlignment(1,1,"right");
-        inputTable.setAlignment(1,3,"right");
+	protected IWResourceBundle iwrb;
 
-        inputTable.add(referenceTexti,1,1);
-        inputTable.add(reference,3,1);
+	protected IWBundle iwb;
 
-        referenceTable.add(inputTable,1,1);
-        break;
+	public ReferenceNumber() {
+		super();
+		setDefaultValues();
+	}
 
-      case LAYOUT_STACKED:
-        inputTable = new Table(1,2);
-        inputTable.setBorder(0);
-        inputTable.setCellpadding(0);
-        inputTable.setCellspacing(0);
-        inputTable.addText("",1,2);
-        inputTable.setHeight(1,"2");
-        if (!(colour.equals(""))) {
-          inputTable.setColor(colour);
-        }
-        inputTable.setAlignment(1,1,"left");
-        inputTable.setAlignment(1,2,"left");
+	public void main(IWContext iwc) throws Exception {
+		iwb = getBundle(iwc);
+		iwrb = getResourceBundle(iwc);
 
-        inputTable.add(referenceTexti,1,1);
-        inputTable.add(reference,1,2);
+		submitButtonText = iwrb.getLocalizedString("get", "Get");
 
-        referenceTable.setAlignment(1,1,"center");
-        referenceTable.add(inputTable,1,1);
-        break;
-    }
+		referenceText = iwrb.getLocalizedString("referenceNumber", "Referencenumber");
+		setup();
 
-    Table submitTable = new Table(1,1);
-    if (hasHelpButton) {
-      submitTable = new Table(2,1);
-    }
-    submitTable.setBorder(0);
-    if (!colour.equals("")) {
-      submitTable.setColor(colour);
-    }
-    submitTable.setRowVerticalAlignment(1,"middle");
-    if (!hasHelpButton) {
-      submitTable.setAlignment(1,1,submitButtonAlignment);
-    }
-    else {
-      submitTable.setAlignment(2,1,"right");
-    }
-    submitTable.setWidth("100%");
+		outerTable.add(myForm);
+		add(outerTable);
+	}
 
-    if (!hasHelpButton) {
-      submitTable.add(new SubmitButton(referenceImage,"tengja"),1,1);
-    }
-    else {
-      submitTable.add(new SubmitButton(referenceImage,"tengja"),2,1);
-      submitTable.add(helpButton,1,1);
-    }
+	private void setup() {
+		Table referenceTable = new Table(1, 2);
+		referenceTable.setBorder(0);
+		referenceTable.setWidth(referenceWidth);
+		referenceTable.setHeight(referenceHeight);
+		if (!colour.equals("")) {
+			referenceTable.setColor(colour);
+		}
+		referenceTable.setCellpadding(0);
+		referenceTable.setCellspacing(0);
+		if (!"".equals(backgroundImageUrl))
+			referenceTable.setBackgroundImage(new Image(backgroundImageUrl));
 
-    referenceTable.add(submitTable,1,2);
-    myForm.add(referenceTable);
-    if(pageId > 0){
-      myForm.setPageToSubmitTo(pageId);
-    }
-  }
+		HelpButton helpButton = new HelpButton(iwrb.getLocalizedString("help_headline", "Reference number"),
+				iwrb.getLocalizedString("help", "Help"));
 
-  public String getBundleIdentifier() {
-    return(IW_BUNDLE_IDENTIFIER);
-  }
+		Text referenceTexti = new Text(referenceText);
+		if (referenceTextSize != -1) {
+			referenceTexti.setFontSize(referenceTextSize);
+		}
 
-  public void setHelpButton(boolean usehelp){
-    hasHelpButton = usehelp;
-  }
+		if (referenceTextColour != null) {
+			referenceTexti.setFontColor(referenceTextColour);
+		}
 
-  public void addHelpButton() {
-    hasHelpButton = true;
-  }
+		referenceTexti.setFontStyle(textStyles);
 
-  public void setLayout(int layout) {
-    this.layout = layout;
-  }
+		Table inputTable;
 
-  private void setDefaultValues() {
-    referenceWidth = "148";
-    referenceHeight = "89";
-    submitButtonAlignment = "center";
-    layout = LAYOUT_VERTICAL;
+		TextInput reference = new TextInput(CAM_REF_NUMBER);
+		reference.setMarkupAttribute("style", styleAttribute);
+		reference.setSize(inputLength);
 
-    outerTable = new Table();
-    outerTable.setCellpadding(0);
-    outerTable.setCellspacing(0);
+		switch (layout) {
+			case LAYOUT_HORIZONTAL:
+				inputTable = new Table(3, 2);
+				inputTable.setBorder(0);
+				if (!(colour.equals(""))) {
+					inputTable.setColor(colour);
+				}
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				inputTable.setAlignment(2, 1, "right");
+				inputTable.setAlignment(2, 2, "right");
+				inputTable.setWidth("100%");
 
-    myForm = new Form();
-    //myForm.setEventListener(ReferenceNumberHandler.class.getName());
-    myForm.add(new HiddenInput("cam_fact_view","50"));
-    myForm.setMethod("post");
-    //_myForm.maintainAllParameters();
-  }
+				inputTable.add(referenceTexti, 2, 1);
+				inputTable.add(reference, 2, 2);
+				inputTable.setAlignment(2, 1, "right");
+				inputTable.setAlignment(2, 2, "right");
 
-  public void setVertical() {
-    layout = LAYOUT_VERTICAL;
-  }
+				referenceTable.add(inputTable, 1, 1);
+				break;
 
-  public void setHorizontal() {
-    layout = LAYOUT_HORIZONTAL;
-  }
+			case LAYOUT_VERTICAL:
+				inputTable = new Table(3, 3);
+				inputTable.setBorder(0);
+				if (!(colour.equals(""))) {
+					inputTable.setColor(colour);
+				}
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				inputTable.mergeCells(1, 2, 3, 2);
+				inputTable.addText("", 1, 2);
+				inputTable.setHeight(2, "10");
+				inputTable.setAlignment(1, 1, "right");
+				inputTable.setAlignment(1, 3, "right");
 
-  public void setStacked() {
-    layout = LAYOUT_STACKED;
-  }
+				inputTable.add(referenceTexti, 1, 1);
+				inputTable.add(reference, 3, 1);
 
-  public void setStyle(String styleAttribute) {
-    this.styleAttribute = styleAttribute;
-  }
+				referenceTable.add(inputTable, 1, 1);
+				break;
 
-  public void setInputLength(int inputLength) {
-    this.inputLength = inputLength;
-  }
+			case LAYOUT_STACKED:
+				inputTable = new Table(1, 2);
+				inputTable.setBorder(0);
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				inputTable.addText("", 1, 2);
+				inputTable.setHeight(1, "2");
+				if (!(colour.equals(""))) {
+					inputTable.setColor(colour);
+				}
+				inputTable.setAlignment(1, 1, "left");
+				inputTable.setAlignment(1, 2, "left");
 
-  public void setReferenceTextSize(int size) {
-    referenceTextSize = size;
-  }
+				inputTable.add(referenceTexti, 1, 1);
+				inputTable.add(reference, 1, 2);
 
-  public void setReferenceTextColor(String color) {
-    referenceTextColour = color;
-  }
+				referenceTable.setAlignment(1, 1, "center");
+				referenceTable.add(inputTable, 1, 1);
+				break;
+		}
 
-  public void setColor(String color) {
-    colour = color;
-  }
+		Table submitTable = new Table(1, 1);
+		if (hasHelpButton) {
+			submitTable = new Table(2, 1);
+		}
+		submitTable.setBorder(0);
+		if (!colour.equals("")) {
+			submitTable.setColor(colour);
+		}
+		submitTable.setRowVerticalAlignment(1, "middle");
+		if (!hasHelpButton) {
+			submitTable.setAlignment(1, 1, submitButtonAlignment);
+		}
+		else {
+			submitTable.setAlignment(2, 1, "right");
+		}
+		submitTable.setWidth("100%");
 
-  public void setHeight(String height) {
-    referenceHeight = height;
-  }
+		if (!hasHelpButton) {
+			submitTable.add(new SubmitButton(submitButtonText, "tengja"), 1, 1);
+		}
+		else {
+			submitTable.add(new SubmitButton(submitButtonText, "tengja"), 2, 1);
+			submitTable.add(helpButton, 1, 1);
+		}
 
-  public void setWidth(String width) {
-    referenceWidth = width;
-  }
+		referenceTable.add(submitTable, 1, 2);
+		myForm.add(referenceTable);
+		if (pageId > 0) {
+			myForm.setPageToSubmitTo(pageId);
+		}
+	}
 
-  public void setBackgroundImageUrl(String url) {
-    backgroundImageUrl = url;
-  }
+	public String getBundleIdentifier() {
+		return (IW_BUNDLE_IDENTIFIER);
+	}
 
-  public void setSubmitButtonAlignment(String alignment) {
-    submitButtonAlignment = alignment;
-  }
+	public void setHelpButton(boolean usehelp) {
+		hasHelpButton = usehelp;
+	}
 
-  public void setTextStyle(String styleAttribute){
-    textStyles=styleAttribute;
-  }
+	public void addHelpButton() {
+		hasHelpButton = true;
+	}
 
-  public void setPage(com.idega.core.builder.data.ICPage page){
-    pageId = page.getID();
-  }
+	public void setLayout(int layout) {
+		this.layout = layout;
+	}
 
-  public synchronized Object clone() {
-    ReferenceNumber obj = null;
-    try {
-      obj = (ReferenceNumber)super.clone();
-      if(outerTable!=null)
-        obj.outerTable = (Table)outerTable.clone();
-      if(referenceImage!=null)
-        obj.referenceImage = (Image)referenceImage.clone();
-      if(myForm!=null)
-        obj.myForm = (Form)myForm.clone();
+	private void setDefaultValues() {
+		referenceWidth = "148";
+		referenceHeight = "89";
+		submitButtonAlignment = "center";
+		layout = LAYOUT_VERTICAL;
 
+		outerTable = new Table();
+		outerTable.setCellpadding(0);
+		outerTable.setCellspacing(0);
 
-    }
-    catch(Exception ex) {
-      ex.printStackTrace(System.err);
-    }
-    return obj;
-  }
+		myForm = new Form();
+		myForm.add(new HiddenInput("cam_fact_view", "50"));
+		myForm.setMethod("post");
+	}
+
+	public void setVertical() {
+		layout = LAYOUT_VERTICAL;
+	}
+
+	public void setHorizontal() {
+		layout = LAYOUT_HORIZONTAL;
+	}
+
+	public void setStacked() {
+		layout = LAYOUT_STACKED;
+	}
+
+	public void setStyle(String styleAttribute) {
+		this.styleAttribute = styleAttribute;
+	}
+
+	public void setInputLength(int inputLength) {
+		this.inputLength = inputLength;
+	}
+
+	public void setReferenceTextSize(int size) {
+		referenceTextSize = size;
+	}
+
+	public void setReferenceTextColor(String color) {
+		referenceTextColour = color;
+	}
+
+	public void setColor(String color) {
+		colour = color;
+	}
+
+	public void setHeight(String height) {
+		referenceHeight = height;
+	}
+
+	public void setWidth(String width) {
+		referenceWidth = width;
+	}
+
+	public void setBackgroundImageUrl(String url) {
+		backgroundImageUrl = url;
+	}
+
+	public void setSubmitButtonAlignment(String alignment) {
+		submitButtonAlignment = alignment;
+	}
+
+	public void setTextStyle(String styleAttribute) {
+		textStyles = styleAttribute;
+	}
+
+	public void setPage(com.idega.core.builder.data.ICPage page) {
+		pageId = page.getID();
+	}
+
+	public synchronized Object clone() {
+		ReferenceNumber obj = null;
+		try {
+			obj = (ReferenceNumber) super.clone();
+			if (outerTable != null)
+				obj.outerTable = (Table) outerTable.clone();
+			if (myForm != null)
+				obj.myForm = (Form) myForm.clone();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		return obj;
+	}
 }

@@ -1,11 +1,11 @@
 /*
- * $Id: PersonalNumberSearch.java,v 1.7 2005/05/07 17:04:52 palli Exp $
- *
+ * $Id: PersonalNumberSearch.java,v 1.8 2005/05/07 17:10:30 palli Exp $
+ * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega hf. Use is subject to
+ * license terms.
+ * 
  */
 package is.idega.idegaweb.campus.presentation;
 
@@ -22,295 +22,314 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 /**
- * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @author <a href="mailto:aron@idega.is">Aron Birkir </a>
  * @version 1.0
  */
 public class PersonalNumberSearch extends Block {
-  public static final String PERSONAL_NUMBER = "cam_personal_number";
-  public static final int LAYOUT_VERTICAL = 1;
-  public static final int LAYOUT_HORIZONTAL = 2;
-  public static final int LAYOUT_STACKED = 3;
 
-  private int inputLength = 10;
-  private int maxInputLength = -1;
-  private int layout = -1;
-  private int pageId;
-  private int numberTextSize;
+	public static final String PERSONAL_NUMBER = "cam_personal_number";
 
-  private String backgroundImageUrl = "";
-  private String numberWidth = "";
-  private String numberHeight = "";
-  private String numberText;
-  private String colour = "";
-  private String numberTextColour;
-  private String styleAttribute = "font-size: 10pt";
-  private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
-  private String submitButtonAlignment;
-  private String submitButtonText = null;
-  private boolean hasHelpButton = false;
+	public static final int LAYOUT_VERTICAL = 1;
 
+	public static final int LAYOUT_HORIZONTAL = 2;
 
-  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
+	public static final int LAYOUT_STACKED = 3;
 
-  private Table outerTable;
+	private int inputLength = 10;
 
-  private Form myForm;
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+	private int maxInputLength = -1;
 
-  public PersonalNumberSearch() {
-    super();
-    setDefaultValues();
-  }
+	private int layout = -1;
 
-  public void main(IWContext iwc) throws Exception {
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
+	private int pageId;
 
-    //_numberImage = _iwrb.getLocalizedImageButton("get","Get");
+	private int numberTextSize;
 
-    numberText = iwrb.getLocalizedString("personal_number","Kennitala");
-    submitButtonText = iwrb.getLocalizedString("get", "Get");
-    setup();
+	private String backgroundImageUrl = "";
 
-    outerTable.add(myForm);
-    add(outerTable);
-  }
+	private String numberWidth = "";
 
-  private void setup() {
-    Table numberTable = new Table(1,2);
-    numberTable.setBorder(0);
-    numberTable.setWidth(numberWidth);
-    numberTable.setHeight(numberHeight);
-    if (!colour.equals("")) {
-      numberTable.setColor(colour);
-    }
-    numberTable.setCellpadding(0);
-    numberTable.setCellspacing(0);
-    //if(!"".equals(_backgroundImageUrl))
-    numberTable.setBackgroundImage(new Image(backgroundImageUrl));
+	private String numberHeight = "";
 
-    HelpButton helpButton = new HelpButton(iwrb.getLocalizedString("help_headline","Personal number"),iwrb.getLocalizedString("personal_number_help","Help"));
+	private String numberText;
 
-    Text numberTexti = new Text(numberText);
-    if (numberTextSize != -1) {
-      numberTexti.setFontSize(numberTextSize);
-    }
+	private String colour = "";
 
-    if (numberTextColour != null) {
-      numberTexti.setFontColor(numberTextColour);
-    }
+	private String numberTextColour;
 
-    numberTexti.setFontStyle(textStyles);
+	private String styleAttribute = "font-size: 10pt";
 
-    Table inputTable;
+	private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
 
-    TextInput number = new TextInput(PERSONAL_NUMBER);
-    number.setMarkupAttribute("style",styleAttribute);
-    number.setSize(inputLength);
-    if (maxInputLength > 0)
-      number.setMaxlength(maxInputLength);
+	private String submitButtonAlignment;
 
-    switch (layout) {
-      case LAYOUT_HORIZONTAL:
-        inputTable = new Table(3,2);
-        inputTable.setBorder(0);
-        if (!(colour.equals(""))) {
-          inputTable.setColor(colour);
-        }
-        inputTable.setCellpadding(0);
-        inputTable.setCellspacing(0);
-        inputTable.setAlignment(2,1,"right");
-        inputTable.setAlignment(2,2,"right");
-        inputTable.setWidth("100%");
+	private String submitButtonText = null;
 
-        inputTable.add(numberTexti,2,1);
-        inputTable.add(number,2,2);
-        inputTable.setAlignment(2,1,"right");
-        inputTable.setAlignment(2,2,"right");
+	private boolean hasHelpButton = false;
 
-        numberTable.add(inputTable,1,1);
-        break;
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
 
-      case LAYOUT_VERTICAL:
-        inputTable = new Table(3,3);
-        inputTable.setBorder(0);
-        if (!(colour.equals(""))) {
-          inputTable.setColor(colour);
-        }
-        inputTable.setCellpadding(0);
-        inputTable.setCellspacing(0);
-        inputTable.setHorizontalAlignment("center");
-        inputTable.mergeCells(1,2,3,2);
-        inputTable.addText("",1,2);
-        inputTable.setHeight(2,"10");
-        inputTable.setAlignment(1,1,"right");
-        inputTable.setAlignment(1,3,"right");
+	private Table outerTable;
 
-        inputTable.add(numberTexti,1,1);
-        inputTable.add(number,3,1);
+	private Form myForm;
 
-        numberTable.add(inputTable,1,1);
-        break;
+	protected IWResourceBundle iwrb;
 
-      case LAYOUT_STACKED:
-        inputTable = new Table(1,2);
-        inputTable.setBorder(0);
-        inputTable.setCellpadding(0);
-        inputTable.setCellspacing(0);
-        inputTable.setHorizontalAlignment("center");
-        inputTable.addText("",1,2);
-        inputTable.setHeight(1,"2");
-        if (!(colour.equals(""))) {
-          inputTable.setColor(colour);
-        }
-        inputTable.setAlignment(1,1,"left");
-        inputTable.setAlignment(1,2,"left");
+	protected IWBundle iwb;
 
-        inputTable.add(numberTexti,1,1);
-        inputTable.add(number,1,2);
+	public PersonalNumberSearch() {
+		super();
+		setDefaultValues();
+	}
 
-        numberTable.add(inputTable,1,1);
-        break;
-    }
+	public void main(IWContext iwc) throws Exception {
+		iwb = getBundle(iwc);
+		iwrb = getResourceBundle(iwc);
 
-    Table submitTable = new Table(1,1);
-    if (hasHelpButton) {
-      submitTable = new Table(2,1);
-    }
-    submitTable.setBorder(0);
-    if (!colour.equals("")) {
-      submitTable.setColor(colour);
-    }
-    submitTable.setRowVerticalAlignment(1,"middle");
-    if (!hasHelpButton) {
-      submitTable.setAlignment(1,1,submitButtonAlignment);
-    }
-    else {
-      submitTable.setAlignment(2,1,"right");
-    }
-    submitTable.setWidth("100%");
+		// _numberImage = _iwrb.getLocalizedImageButton("get","Get");
 
-    if (!hasHelpButton) {
-      submitTable.add(new SubmitButton(submitButtonText,"commit"),1,1);
-    }
-    else {
-      submitTable.add(new SubmitButton(submitButtonText,"commit"),2,1);
-      submitTable.add(helpButton,1,1);
-    }
+		numberText = iwrb.getLocalizedString("personal_number", "Kennitala");
+		submitButtonText = iwrb.getLocalizedString("get", "Get");
+		setup();
 
-    numberTable.add(submitTable,1,2);
-    myForm.add(numberTable);
-    if(pageId > 0){
-      myForm.setPageToSubmitTo(pageId);
-    }
-  }
+		outerTable.add(myForm);
+		add(outerTable);
+	}
 
-  public String getBundleIdentifier() {
-    return(IW_BUNDLE_IDENTIFIER);
-  }
+	private void setup() {
+		Table numberTable = new Table(1, 2);
+		numberTable.setBorder(0);
+		numberTable.setWidth(numberWidth);
+		numberTable.setHeight(numberHeight);
+		if (!colour.equals("")) {
+			numberTable.setColor(colour);
+		}
+		numberTable.setCellpadding(0);
+		numberTable.setCellspacing(0);
+		// if(!"".equals(_backgroundImageUrl))
+		numberTable.setBackgroundImage(new Image(backgroundImageUrl));
 
-  public void setHelpButton(boolean usehelp){
-    hasHelpButton = usehelp;
-  }
+		HelpButton helpButton = new HelpButton(iwrb.getLocalizedString("help_headline", "Personal number"),
+				iwrb.getLocalizedString("personal_number_help", "Help"));
 
-  public void addHelpButton() {
-    hasHelpButton = true;
-  }
+		Text numberTexti = new Text(numberText);
+		if (numberTextSize != -1) {
+			numberTexti.setFontSize(numberTextSize);
+		}
 
-  public void setLayout(int layout) {
-    this.layout = layout;
-  }
+		if (numberTextColour != null) {
+			numberTexti.setFontColor(numberTextColour);
+		}
 
-  private void setDefaultValues() {
-    numberWidth = "148";
-    numberHeight = "89";
-    submitButtonAlignment = "center";
-    layout = LAYOUT_VERTICAL;
+		numberTexti.setFontStyle(textStyles);
 
-    outerTable = new Table();
-    outerTable.setCellpadding(0);
-    outerTable.setCellspacing(0);
-    outerTable.setHorizontalAlignment("left");
+		Table inputTable;
 
-    myForm = new Form();
-    myForm.setMethod("post");
-  }
+		TextInput number = new TextInput(PERSONAL_NUMBER);
+		number.setMarkupAttribute("style", styleAttribute);
+		number.setSize(inputLength);
+		if (maxInputLength > 0)
+			number.setMaxlength(maxInputLength);
 
-  public void setVertical() {
-    layout = LAYOUT_VERTICAL;
-  }
+		switch (layout) {
+			case LAYOUT_HORIZONTAL:
+				inputTable = new Table(3, 2);
+				inputTable.setBorder(0);
+				if (!(colour.equals(""))) {
+					inputTable.setColor(colour);
+				}
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				inputTable.setAlignment(2, 1, "right");
+				inputTable.setAlignment(2, 2, "right");
+				inputTable.setWidth("100%");
 
-  public void setHorizontal() {
-    layout = LAYOUT_HORIZONTAL;
-  }
+				inputTable.add(numberTexti, 2, 1);
+				inputTable.add(number, 2, 2);
+				inputTable.setAlignment(2, 1, "right");
+				inputTable.setAlignment(2, 2, "right");
 
-  public void setStacked() {
-    layout = LAYOUT_STACKED;
-  }
+				numberTable.add(inputTable, 1, 1);
+				break;
 
-  public void setStyle(String styleAttribute) {
-    this.styleAttribute = styleAttribute;
-  }
+			case LAYOUT_VERTICAL:
+				inputTable = new Table(3, 3);
+				inputTable.setBorder(0);
+				if (!(colour.equals(""))) {
+					inputTable.setColor(colour);
+				}
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				inputTable.setHorizontalAlignment("center");
+				inputTable.mergeCells(1, 2, 3, 2);
+				inputTable.addText("", 1, 2);
+				inputTable.setHeight(2, "10");
+				inputTable.setAlignment(1, 1, "right");
+				inputTable.setAlignment(1, 3, "right");
 
-  public void setInputLength(int inputLength) {
-    this.inputLength = inputLength;
-  }
+				inputTable.add(numberTexti, 1, 1);
+				inputTable.add(number, 3, 1);
 
-  public void setMaxInputLength(int inputLength) {
-    maxInputLength = inputLength;
-  }
+				numberTable.add(inputTable, 1, 1);
+				break;
 
-  public void setnumberTextSize(int size) {
-    numberTextSize = size;
-  }
+			case LAYOUT_STACKED:
+				inputTable = new Table(1, 2);
+				inputTable.setBorder(0);
+				inputTable.setCellpadding(0);
+				inputTable.setCellspacing(0);
+				inputTable.setHorizontalAlignment("center");
+				inputTable.addText("", 1, 2);
+				inputTable.setHeight(1, "2");
+				if (!(colour.equals(""))) {
+					inputTable.setColor(colour);
+				}
+				inputTable.setAlignment(1, 1, "left");
+				inputTable.setAlignment(1, 2, "left");
 
-  public void setnumberTextColor(String color) {
-    numberTextColour = color;
-  }
+				inputTable.add(numberTexti, 1, 1);
+				inputTable.add(number, 1, 2);
 
-  public void setColor(String color) {
-    colour = color;
-  }
+				numberTable.add(inputTable, 1, 1);
+				break;
+		}
 
-  public void setHeight(String height) {
-    numberHeight = height;
-  }
+		Table submitTable = new Table(1, 1);
+		if (hasHelpButton) {
+			submitTable = new Table(2, 1);
+		}
+		submitTable.setBorder(0);
+		if (!colour.equals("")) {
+			submitTable.setColor(colour);
+		}
+		submitTable.setRowVerticalAlignment(1, "middle");
+		if (!hasHelpButton) {
+			submitTable.setAlignment(1, 1, submitButtonAlignment);
+		}
+		else {
+			submitTable.setAlignment(2, 1, "right");
+		}
+		submitTable.setWidth("100%");
 
-  public void setWidth(String width) {
-    numberWidth = width;
-  }
+		if (!hasHelpButton) {
+			submitTable.add(new SubmitButton(submitButtonText, "commit"), 1, 1);
+		}
+		else {
+			submitTable.add(new SubmitButton(submitButtonText, "commit"), 2, 1);
+			submitTable.add(helpButton, 1, 1);
+		}
 
-  public void setBackgroundImageUrl(String url) {
-    backgroundImageUrl = url;
-  }
+		numberTable.add(submitTable, 1, 2);
+		myForm.add(numberTable);
+		if (pageId > 0) {
+			myForm.setPageToSubmitTo(pageId);
+		}
+	}
 
-  public void setSubmitButtonAlignment(String alignment) {
-    submitButtonAlignment = alignment;
-  }
+	public String getBundleIdentifier() {
+		return (IW_BUNDLE_IDENTIFIER);
+	}
 
-  public void setTextStyle(String styleAttribute){
-    textStyles=styleAttribute;
-  }
+	public void setHelpButton(boolean usehelp) {
+		hasHelpButton = usehelp;
+	}
 
-  public void setPage(com.idega.core.builder.data.ICPage page){
-    pageId = ((Integer)page.getPrimaryKey()).intValue();
-  }
+	public void addHelpButton() {
+		hasHelpButton = true;
+	}
 
-  public synchronized Object clone() {
-    PersonalNumberSearch obj = null;
-    try {
-      obj = (PersonalNumberSearch)super.clone();
-      if(outerTable!=null)
-        obj.outerTable = (Table)outerTable.clone();
-      if(myForm!=null)
-        obj.myForm = (Form)myForm.clone();
+	public void setLayout(int layout) {
+		this.layout = layout;
+	}
 
+	private void setDefaultValues() {
+		numberWidth = "148";
+		numberHeight = "89";
+		submitButtonAlignment = "center";
+		layout = LAYOUT_VERTICAL;
 
-    }
-    catch(Exception ex) {
-      ex.printStackTrace(System.err);
-    }
-    return obj;
-  }
+		outerTable = new Table();
+		outerTable.setCellpadding(0);
+		outerTable.setCellspacing(0);
+		outerTable.setHorizontalAlignment("left");
+
+		myForm = new Form();
+		myForm.setMethod("post");
+	}
+
+	public void setVertical() {
+		layout = LAYOUT_VERTICAL;
+	}
+
+	public void setHorizontal() {
+		layout = LAYOUT_HORIZONTAL;
+	}
+
+	public void setStacked() {
+		layout = LAYOUT_STACKED;
+	}
+
+	public void setStyle(String styleAttribute) {
+		this.styleAttribute = styleAttribute;
+	}
+
+	public void setInputLength(int inputLength) {
+		this.inputLength = inputLength;
+	}
+
+	public void setMaxInputLength(int inputLength) {
+		maxInputLength = inputLength;
+	}
+
+	public void setnumberTextSize(int size) {
+		numberTextSize = size;
+	}
+
+	public void setnumberTextColor(String color) {
+		numberTextColour = color;
+	}
+
+	public void setColor(String color) {
+		colour = color;
+	}
+
+	public void setHeight(String height) {
+		numberHeight = height;
+	}
+
+	public void setWidth(String width) {
+		numberWidth = width;
+	}
+
+	public void setBackgroundImageUrl(String url) {
+		backgroundImageUrl = url;
+	}
+
+	public void setSubmitButtonAlignment(String alignment) {
+		submitButtonAlignment = alignment;
+	}
+
+	public void setTextStyle(String styleAttribute) {
+		textStyles = styleAttribute;
+	}
+
+	public void setPage(com.idega.core.builder.data.ICPage page) {
+		pageId = ((Integer) page.getPrimaryKey()).intValue();
+	}
+
+	public synchronized Object clone() {
+		PersonalNumberSearch obj = null;
+		try {
+			obj = (PersonalNumberSearch) super.clone();
+			if (outerTable != null)
+				obj.outerTable = (Table) outerTable.clone();
+			if (myForm != null)
+				obj.myForm = (Form) myForm.clone();
+
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		return obj;
+	}
 }
