@@ -4,40 +4,30 @@ import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.access.LoginTableHome;
 import is.idega.idegaweb.golf.entity.Address;
-import is.idega.idegaweb.golf.entity.AddressHome;
-import is.idega.idegaweb.golf.entity.Country;
-import is.idega.idegaweb.golf.entity.CountryHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.MemberInfoHome;
 import is.idega.idegaweb.golf.entity.Phone;
-import is.idega.idegaweb.golf.entity.PhoneHome;
-import is.idega.idegaweb.golf.entity.ZipCode;
-import is.idega.idegaweb.golf.entity.ZipCodeHome;
-
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.util.text.Name;
 
 /**
  * @author gimmi
@@ -90,10 +80,7 @@ public class RegisterNewMember extends GolfBlock {
 				}
 			}
 			else if (action.equals("submitted")) {
-				String membr_id = iwc.getParameter("member_id");
-				String[] address_id = iwc.getParameterValues("address_id");
-				String[] zipcode_id = iwc.getParameterValues("zipcode_id");
-				update(iwc, member, address_id, zipcode_id);
+				update(iwc, member);
 			}
 			else if (action.equals("afram")) {
 				verifyPassword(iwc);
@@ -207,13 +194,10 @@ public class RegisterNewMember extends GolfBlock {
 		return false;
 	}
 
-	public void update(IWContext iwc, Member member, String[] addressIDs, String[] zipcodeIDs) throws SQLException, FinderException, IDOLookupException, CreateException {
+	public void update(IWContext iwc, Member member) throws SQLException, FinderException, IDOLookupException, CreateException {
 
 		String login = iwc.getParameter("login");
 		String personalID = iwc.getParameter("social_security_number");
-
-		String[] phoneIDs = iwc.getParameterValues("phone_id");
-		String[] phoneCountryIDs = iwc.getParameterValues("phone_country_id");
 
 		boolean isLoginValid = true;
 		boolean updateLogin = false;
@@ -248,54 +232,6 @@ public class RegisterNewMember extends GolfBlock {
 				catch (FinderException ignore) {
 				}
 
-				String name = iwc.getParameter("first_name");
-				if (name == null) {
-					name = "";
-				}
-				Name userName = new Name(name);
-
-				String[] street = iwc.getParameterValues("street");
-				String[] zipcode = iwc.getParameterValues("zipcode");
-				String[] country_id = iwc.getParameterValues("country_id");
-				String email = iwc.getParameter("email");
-				if (email == null) {
-					email = "";
-				}
-
-				member.setFirstName(userName.getFirstName());
-				member.setMiddleName(userName.getMiddleName());
-				member.setLastName(userName.getLastName());
-				member.setSocialSecurityNumber(personalID);
-				member.setEmail(email);
-
-				/////--------------Siminn----------///////////////////////
-				String[] siminn = iwc.getParameterValues("phone");
-				PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
-				if (phoneIDs == null) {
-					String simiString = (String) siminn[0];
-					if (!(siminn[0].equals(""))) {
-						Phone phone = pHome.create();
-						phone.setNumber(siminn[0]);
-						phone.setCountryId(new Integer(Integer.parseInt(phoneCountryIDs[0])));
-						phone.store();
-						phone.addTo(member);
-					}
-				}
-				else {
-					for (int kill = 0; kill < phoneIDs.length; kill++) {
-						String simiString = (String) siminn[kill];
-						if (!(siminn[kill].equals(""))) {
-							Phone phone = pHome.findByPrimaryKey(Integer.parseInt(phoneIDs[kill]));
-							//Phone phone = new Phone(Integer.parseInt(phone_id[kill]));
-							phone.setNumber(siminn[kill]);
-							if (phoneCountryIDs != null) {
-								phone.setCountryId(new Integer(Integer.parseInt(phoneCountryIDs[kill])));
-							}
-							phone.update();
-						}
-					}
-				}
-				////////////////////////// Siminn buinn
 
 				///////-------------Login-----------////////////////////////////////
 				if (updateLogin) {
@@ -317,66 +253,6 @@ public class RegisterNewMember extends GolfBlock {
 				}
 				//////////////////////////////// Login buid
 
-				member.update();
-
-				///////////////-------------Card------------////////////////////////
-				/*
-				 * if (isCardValid) { Card[] cardLength = (Card[])member.findReverseRelated(new Card()); if (cardLength.length > 0 ) { idegaTimestamp idegaTime = new idegaTimestamp(); idegaTime.setDate(1); idegaTime.setMonth(Integer.parseInt(cc_month)-1); idegaTime.setYear(Integer.parseInt(cc_year)+2000); cardLength[0].setCardNumber(creditcard_number); cardLength[0].setExpireDate(idegaTime.getSQLDate()); cardLength[0].update(); } else { Card card = new Card(); idegaTimestamp idegaTime = new idegaTimestamp(); idegaTime.setDate(1); idegaTime.setMonth(Integer.parseInt(cc_month)-1); idegaTime.setYear(Integer.parseInt(cc_year)+2000); card.setCardNumber(creditcard_number); card.setExpireDate(idegaTime.getSQLDate()); card.insert(); card.addTo(member); } }
-				 */
-				/////////////////////////////////////// Card buid
-
-				/////////-----------Address-----------/////////////////////////
-				boolean zipcodeVilla = false;
-				AddressHome aHome = (AddressHome) IDOLookup.getHome(Address.class);
-				ZipCodeHome zHome = (ZipCodeHome) IDOLookup.getHome(ZipCode.class);
-				if (addressIDs != null) {
-					for (int g = 0; g < addressIDs.length; g++) {
-						try {
-							int zipcodeInt = Integer.parseInt(zipcode[g]);
-						}
-						catch (NumberFormatException n) {
-							zipcodeVilla = true;
-						}
-
-						if (!(zipcodeVilla)) {
-							Address address = aHome.findByPrimaryKey(Integer.parseInt(addressIDs[g]));
-							address.setStreet(street[g]);
-							//address.setStreetNumber(street_number[g]);
-							if (country_id != null) {
-								address.setCountryId(Integer.parseInt(country_id[g]));
-							}
-							ZipCode code = zHome.findByCode(zipcode[g]);
-							//ZipCode[] zipcode_arr = (ZipCode[])(new ZipCode()).findAllByColumn("code",zipcode[g]);
-							address.setZipcodeId(code.getID());
-							address.update();
-						}
-					}
-				}
-
-				if (addressIDs == null) {
-					try {
-						int zipcodeInt = Integer.parseInt(zipcode[0]);
-					}
-					catch (NumberFormatException n) {
-						zipcodeVilla = true;
-					}
-					if (!(zipcodeVilla)) {
-						Address address = aHome.create();
-						if (street[0] != null) address.setStreet(street[0]);
-						//if (street_number[0] != null)
-						//address.setStreetNumber(street_number[0]);
-						if (country_id[0] != null) address.setCountryId(Integer.parseInt(country_id[0]));
-
-						if (zipcode[0] != null) {
-							ZipCode code = zHome.findByCode(zipcode[0]);
-							//ZipCode[] zipcode_arr = (ZipCode[])(new ZipCode()).findAllByColumn("code",zipcode[0]);
-							address.setZipcodeId(code.getID());
-						}
-						address.store();
-						address.addTo(member);
-					}
-				}
-				//////////////////////////// Address buid
 
 				////////-------Handicap-----------//////////////////
 				String handicap = iwc.getParameter("handicap");
@@ -417,13 +293,11 @@ public class RegisterNewMember extends GolfBlock {
 				if (villa) {
 					VillaIInnslaetti(personalID, "handicap");
 				}
-				if (zipcodeVilla) {
-					VillaIInnslaetti(personalID, "zipcode");
-				}
+				
 				////////////////////////////////////// Handicap buid
 
 				//	bool ean villa= false;
-				if ((!(villa)) && (!(zipcodeVilla))) {
+				if (!villa) {
 					completed(iwc, member);
 				}
 
@@ -471,19 +345,10 @@ public class RegisterNewMember extends GolfBlock {
 
 		myTable.add(getHeader(localize("input_error", "Input error")), 1, 1);
 		if (comment.equals("pass")) {
-			myTable.add(getText(localize("passwords_not_the_save", "Passwords were not the save")), 1, 3);
+			myTable.add(getText(localize("passwords_not_the_same", "Passwords were not the same")), 1, 3);
 		}
 		else if (comment.equals("login")) {
 			myTable.add(getText(localize("login_in_use", "Login is in use")), 1, 3);
-		}
-		else if (comment.equals("zipcode")) {
-			myTable.add(getText(localize("incorrect_zip_code", "Incorrect zip code")), 1, 3);
-		}
-		else if (comment.equals("login2")) {
-			myTable.add(getText(localize("registration_failed", "Registration failed")), 1, 3);
-		}
-		else if (comment.equals("wrong_ssn")) {
-			myTable.add(getText(localize("incorrect_pid", "Incorrect personal id")), 1, 3);
 		}
 		else if (comment.equals("wrong_password")) {
 			myTable.add(getText(localize("incorrect_password", "Incorrect password")), 1, 3);
@@ -539,188 +404,26 @@ public class RegisterNewMember extends GolfBlock {
 			socialSecurityNumber = "";
 		}
 
-		TextInput name = (TextInput) getStyledSmallInterface(new TextInput("first_name", fullName));
+		Text name = getText(fullName);
 		myTable.add(new HiddenInput("social_security_number", socialSecurityNumber), 1, 1);
 
 		myTable.add(getHeader(localize("name", "Name")), 1, row);
 		myTable.add(name, 2, row++);
 
-		////////-----------Address--------------////////////////////////////////////////////////
-		if (address.length == 0) {
-			TextInput gata = (TextInput) getStyledSmallInterface(new TextInput("street", ""));
-			TextInput postnumer = (TextInput) getStyledSmallInterface(new TextInput("zipcode", ""));
-			postnumer.setSize(3);
-			postnumer.setMaxlength(3);
-			DropdownMenu land = (DropdownMenu) getStyledSmallInterface(new DropdownMenu("country_id"));
-			CountryHome cHome = (CountryHome) IDOLookup.getHome(Country.class);
-			try {
-				Collection coll = cHome.findAll();
-				if (coll != null && coll.isEmpty()) {
-					Iterator iter = coll.iterator();
-					Country country;
-					while (iter.hasNext()) {
-						country = (Country) iter.next();
-						land.addMenuElement(country.getID(), country.getName());
-					}
-				}
-			}
-			catch (FinderException e) {
-			}
-
-			myTable.add(getHeader(localize("street", "Street")), 1, row);
-			myTable.add(gata, 2, row++);
-			myTable.add(getHeader(localize("zip_code", "Zip Code")), 1, row);
-			myTable.add(postnumer, 2, row++);
-			myTable.add(getHeader(localize("country", "Country")), 1, row);
-			myTable.add(land, 2, row++);
-		}
-
-		int address_id_int;
-		int zipcode_id_int;
-		String street_str;
-		String zipcode_str;
-
-		for (int j = 0; j < address.length; j++) {
-			address_id_int = address[j].getID();
-			zipcode_id_int = address[j].getZipcodeId();
-			street_str = address[j].getStreet();
-			if (street_str == null) street_str = "";
-			try {
-				ZipCodeHome zHome = (ZipCodeHome) IDOLookup.getHome(ZipCode.class);
-				ZipCode zipcode = zHome.findByPrimaryKey(zipcode_id_int);
-				zipcode_str = zipcode.getCode();
-				if (zipcode_str == null) {
-					zipcode_str = "";
-				}
-			}
-			catch (Exception e) {
-				zipcode_str = "";
-				e.printStackTrace();
-			}
-			try {
-				myTable.add(new HiddenInput("address_id", Integer.toString(address_id_int)), 1, 1);
-				myTable.add(new HiddenInput("zipcode_id", Integer.toString(zipcode_id_int)), 1, 1);
-			}
-			catch (Exception e) {
-			}
-
-			TextInput gata = (TextInput) getStyledSmallInterface(new TextInput("street", street_str));
-			TextInput postnumer = (TextInput) getStyledSmallInterface(new TextInput("zipcode", zipcode_str));
-			postnumer.setSize(3);
-			postnumer.setMaxlength(3);
-			DropdownMenu land = (DropdownMenu) getStyledSmallInterface(new DropdownMenu("country_id"));
-			CountryHome cHome = (CountryHome) IDOLookup.getHome(Country.class);
-			try {
-				Collection coll = cHome.findAll();
-				if (coll != null && coll.isEmpty()) {
-					Iterator iter = coll.iterator();
-					Country country;
-					while (iter.hasNext()) {
-						country = (Country) iter.next();
-						land.addMenuElement(country.getID(), country.getName());
-					}
-				}
-			}
-			catch (FinderException e) {
-			}
-
-			land.setSelectedElement(Integer.toString(address[j].getCountryId()));
-			myTable.add(getHeader(localize("street", "Street")), 1, row);
-			myTable.add(gata, 2, row++);
-			myTable.add(getHeader(localize("zip_code", "Zip Code")), 1, row);
-			myTable.add(postnumer, 2, row++);
-			myTable.add(getHeader(localize("country", "Country")), 1, row);
-			myTable.add(land, 2, row++);
-		}
-		///////////////////////////////////////////////////////////// Address endar
-
-		//////------------Phone----------/////////////////////////////////////////////////////
-		for (int org = 0; org < phone.length; org++) {
-			myTable.add(new HiddenInput("phone_id", Integer.toString(phone[org].getID())), 1, 1);
-
-			TextInput simi = (TextInput) getStyledSmallInterface(new TextInput("phone", phone[org].getNumber()));
-			simi.setSize(10);
-			simi.setMaxlength(10);
-
-			DropdownMenu land = (DropdownMenu) getStyledSmallInterface(new DropdownMenu("phone_country_id"));
-			CountryHome cHome = (CountryHome) IDOLookup.getHome(Country.class);
-			try {
-				Collection coll = cHome.findAll();
-				if (coll != null && coll.isEmpty()) {
-					Iterator iter = coll.iterator();
-					Country country;
-					while (iter.hasNext()) {
-						country = (Country) iter.next();
-						land.addMenuElement(country.getID(), country.getName());
-					}
-				}
-			}
-			catch (FinderException e) {
-			}
-
-			myTable.add(getHeader(localize("telephone_number", "Telephone number")), 1, row);
-			myTable.add(simi, 2, row++);
-			myTable.add(getHeader(localize("country", "Country")), 1, row);
-			myTable.add(land, 2, row++);
-		}
-		if (phone.length == 0) {
-			TextInput simi = (TextInput) getStyledSmallInterface(new TextInput("phone", ""));
-			simi.setSize(10);
-			simi.setMaxlength(10);
-
-			DropdownMenu land = (DropdownMenu) getStyledSmallInterface(new DropdownMenu("phone_country_id"));
-			CountryHome cHome = (CountryHome) IDOLookup.getHome(Country.class);
-			try {
-				Collection coll = cHome.findAll();
-				if (coll != null && coll.isEmpty()) {
-					Iterator iter = coll.iterator();
-					Country country;
-					while (iter.hasNext()) {
-						country = (Country) iter.next();
-						land.addMenuElement(country.getID(), country.getName());
-					}
-				}
-			}
-			catch (FinderException e) {
-			}
-
-			myTable.add(getHeader(localize("telephone_number", "Telephone number")), 1, row);
-			myTable.add(simi, 2, row++);
-			myTable.add(getHeader(localize("country", "Country")), 1, row);
-			myTable.add(land, 2, row++);
-		}
-		///////////////////////////////////////////////////////// Phone endar
-
-		row = 1;
 		
 		//////----------Handicap------------/////////////////////////////////////////////////////////
 		if (mInfo == null) {
-			myTable.add(getHeader(localize("handicap", "Handicap")), 3, row);
+			myTable.add(getHeader(localize("handicap", "Handicap")), 1, row);
 			TextInput handicap = (TextInput) getStyledSmallInterface(new TextInput("handicap", ""));
 			handicap.setSize(4);
-			myTable.add(handicap, 4, row++);
+			myTable.add(handicap, 2, row++);
 		}
 		else if (mInfo != null) {
-			myTable.add(getHeader(localize("handicap", "Handicap")), 3, row);
-			myTable.add(getText(Float.toString(mInfo.getFirstHandicap())), 4, row);
-			myTable.add(new HiddenInput("handicap", Float.toString(mInfo.getFirstHandicap())), 4, row++);
+			myTable.add(getHeader(localize("handicap", "Handicap")), 1, row);
+			myTable.add(getText(Float.toString(mInfo.getFirstHandicap())), 2, row);
+			myTable.add(new HiddenInput("handicap", Float.toString(mInfo.getFirstHandicap())), 2, row++);
 		}
 		//////////////////////////////////////////////////////////////// Handicap endar
-
-		//////--------Emil------------//////////////////////////////////////////////////////
-		String e_mail = member.getEmail();
-
-		myTable.add(getHeader(localize("email", "Email")), 3, row);
-
-		if (e_mail == null) {
-			TextInput email = (TextInput) getStyledSmallInterface(new TextInput("email"));
-			myTable.add(email, 4, row++);
-		}
-		else {
-			TextInput email = (TextInput) getStyledSmallInterface(new TextInput("email", e_mail));
-			myTable.add(email, 4, row++);
-		}
-		//////////////////////////////////////////////////////////// Emil endar
 
 		////////------Login / Password-----------//////////////////////////////////////////////////////////
 		LoginTable lTable = null;
@@ -735,27 +438,27 @@ public class RegisterNewMember extends GolfBlock {
 		if (lTable != null) {
 			TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login", lTable.getUserLogin()));
 			PasswordInput password = (PasswordInput) getStyledSmallInterface(new PasswordInput("password", lTable.getUserPassword()));
-			myTable.add(getHeader(localize("user_name", "User name")), 3, row);
-			myTable.add(login, 4, row++);
-			myTable.add(getHeader(localize("password", "Password")), 3, row);
-			myTable.add(password, 4, row++);
+			myTable.add(getHeader(localize("user_name", "User name")), 1, row);
+			myTable.add(login, 2, row++);
+			myTable.add(getHeader(localize("password", "Password")), 1, row);
+			myTable.add(password, 2, row++);
 		}
 		else {
 			TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login"));
 			PasswordInput password = (PasswordInput) getStyledSmallInterface(new PasswordInput("password"));
-			myTable.add(getHeader(localize("user_name", "User name")), 3, row);
-			myTable.add(login, 4, row++);
-			myTable.add(getHeader(localize("password", "Password")), 3, row);
-			myTable.add(password, 4, row++);
+			myTable.add(getHeader(localize("user_name", "User name")), 1, row);
+			myTable.add(login, 2, row++);
+			myTable.add(getHeader(localize("password", "Password")), 1, row);
+			myTable.add(password, 2, row++);
 		}
 		PasswordInput password2 = (PasswordInput) getStyledSmallInterface(new PasswordInput("password2"));
-		myTable.add(getHeader(localize("retype_password", "Retype password")), 3, row);
-		myTable.add(password2, 4, row++);
+		myTable.add(getHeader(localize("retype_password", "Retype password")), 1, row);
+		myTable.add(password2, 2, row++);
 		//////////////////////////////////////////////////////////////////// Login/Password endar
 
 		row = myTable.getRows() + 1;
 		SubmitButton submit = new SubmitButton(localize("save", "Save"));
-		myTable.mergeCells(1, row, 4, row);
+		myTable.mergeCells(1, row, 2, row);
 		myTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		myTable.add(submit, 1, row);
 		myTable.add(new HiddenInput("action", "submitted"), 1, 1);
