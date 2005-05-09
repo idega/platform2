@@ -9,11 +9,9 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -52,7 +50,6 @@ public class UserHistoryList extends Page {
 		//eventList.setShowUser(false);
 		try {
 			Iterator iter = null;
-			int row = 1;
 			if (history != null || status != null) {
 				int size = 0;
 				if (history != null)
@@ -82,8 +79,9 @@ public class UserHistoryList extends Page {
 
 							IWTimestamp from = new IWTimestamp(rel.getInitiationDate());
 							IWTimestamp to = null;
-							if (rel.getTerminationDate() != null)
+							if (rel.getTerminationDate() != null){
 								to = new IWTimestamp(rel.getTerminationDate());
+							}
 							doneBy = rel.getCreatedBy();
 							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedToGroup,getGroupName(rel.getGroup()),doneBy!=null?doneBy.getName():"",""));//rel.getPrimaryKey().toString()));
 							if(to!=null){
@@ -106,12 +104,17 @@ public class UserHistoryList extends Page {
 
 							IWTimestamp from = new IWTimestamp(stat.getDateFrom());
 							IWTimestamp to = null;
-							if (stat.getDateTo() != null)
+							if (stat.getDateTo() != null){
 								to = new IWTimestamp(stat.getDateTo());
+							}
 							doneBy = stat.getCreatedBy();
-							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedStatus,getGroupName(stat.getGroup()),doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey())));
-							if(to!=null)
-							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedStatus,getGroupName(stat.getGroup()),doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey())));
+							
+							//this doubles the entry, one for active and then for inactive
+							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedStatus,getGroupName(stat.getGroup()),doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey(),stat.getStatus().getStatusKey())));
+							
+							if(to!=null){
+							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedStatus,getGroupName(stat.getGroup()),doneBy!=null?doneBy.getName():"",comUserBundle.getLocalizedString(stat.getStatus().getStatusKey(),stat.getStatus().getStatusKey())));
+							}
 							
 							/*
 							table.add(getGroupName(stat.getGroup()), 1, row);
@@ -138,6 +141,7 @@ public class UserHistoryList extends Page {
 			table.setWidth("100%");
 		}*/
 
+		
 		return eventList;
 	}
 
@@ -170,7 +174,7 @@ public class UserHistoryList extends Page {
 		return name;
 	}
 	
-	private class EventListEntry implements EventEntry{
+	public class EventListEntry implements EventEntry {
 	    
 	    private Date date;
 	    private String type,source,user,event;
@@ -217,6 +221,29 @@ public class UserHistoryList extends Page {
         public String getEvent() {
             return event;
         }
+		
+		public boolean equals(Object obj){
+			boolean theSame = false;
+			EventEntry entry = ((EventEntry)obj);
+			theSame = entry.getDate().equals(this.getDate());
+			if(theSame){
+				theSame = entry.getEvent().equals(this.getEvent());
+			}
+			
+			if(theSame){
+				theSame = entry.getSource().equals(this.getSource());
+			}
+			
+			if(theSame){
+				theSame = entry.getType().equals(this.getType());
+			}
+			
+			if(theSame){
+				theSame = entry.getUser().equals(this.getUser());
+			}
+			
+			return theSame;
+		}
 	    
 	}
 }

@@ -161,7 +161,7 @@ public class UserStatusTab extends UserTab {
 		if (status != null) {
 			if (status.size() > 0) {
 				final IWResourceBundle iwrb = getResourceBundle(iwc);
-				_statusField.addOption(new SelectOption(" "," "));
+				_statusField.addOption(new SelectOption(" ",-1));
 				
 				
 				final Collator collator = Collator.getInstance(iwc.getLocale());
@@ -277,7 +277,7 @@ public class UserStatusTab extends UserTab {
 		try {
 			String status = (String)fieldValues.get(_statusFieldName);
 			System.out.println("Store: status = " + status);
-			if (status != null && !status.equals(" ") && !status.equals("")) {
+			if (status != null) {
 				int user_id = this.getUserId();
 				int group_id = this.getGroupID();
 				int status_id = Integer.parseInt(status);
