@@ -509,17 +509,19 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 
 	public void syncUserFromRequest(IWContext iwc) {
 		try {
-			init();
+
 			String subs = iwc.getParameter(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 			String main = iwc.getParameter(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 			String uuid = iwc.getParameter(GolfConstants.MEMBER_UUID);
 			String pin = iwc.getParameter(GolfConstants.MEMBER_PIN);
 			String name = iwc.getParameter(GolfConstants.MEMBER_NAME);
-			System.out.println("UserSync: trying to sync : pin:" + pin + " uuid:" + uuid + " name:" + name
-					+ " mainclub:" + main + " subclubs:" + subs);
 			// do we need gender yet or can it just wait until the ldap
 			// replication...
 			if (uuid != null && pin != null) {
+				init();
+				System.out.println("UserSync: trying to sync : pin:" + pin + " uuid:" + uuid + " name:" + name
+						+ " mainclub:" + main + " subclubs:" + subs);
+				
 				subs = ("".equals(subs)) ? null : subs;
 				main = ("".equals(main)) ? null : main;
 				User user = null;
