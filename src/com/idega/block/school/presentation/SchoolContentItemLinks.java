@@ -8,11 +8,13 @@ import javax.ejb.FinderException;
 
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolUser;
 import com.idega.core.contact.data.Email;
 //import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
 //import com.idega.core.contact.data.PhoneHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -205,6 +207,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			table.add(getText(activity), 1, row);
 		}
 		boolean isSchool = isElementarySchool();
+		boolean isAdultEducation = isAdultEducation();
 
 		try {
 			Collection hmUsers = getSchoolUserBusiness(_iwc).getHeadmasters(_school);
@@ -229,34 +232,81 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 					row = insertUser(table, row, user);
 				}
 				useBreak = true;
+			
+			
+			
 			}
 		} catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
-		try {
-			Collection hmUsers = getSchoolUserBusiness(_iwc).getAssistantHeadmasters(_school);
-			if (hmUsers != null && !hmUsers.isEmpty()) {
-//			int headmasterId = _school.getHeadmasterUserId();
-//			if (headmasterId > 0 ) {
-				if (useBreak) {
-					++row;
-					table.setHeight(row, _spaceBetween);
-					++row;
-				}
-				if (isSchool) {
-					table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
-				} else {
-					table.add(getHeader(_iwrb.getLocalizedString("school.childcare_assistant_manager","Assistant Manager")+":"), 1, row);
-				}
-				Iterator iter = hmUsers.iterator();
+		
+		if (isAdultEducation) {
+			try {
+				Collection suTypes = getSchoolUserBusiness(_iwc).getSchoolUserTypes(_school);
+			
+				if (suTypes != null && !suTypes.isEmpty()) {
+				
+				String[] userType;
+				Iterator iter = suTypes.iterator();
 				while (iter.hasNext()) {
-					User user = (User)iter.next();
-					row = insertUser(table, row, user);
+					userType = (String[]) iter.next();
+					++row;
+
+					Collection users = getSchoolUserBusiness(_iwc).getUsers(_school, Integer.parseInt(userType[2]));
+										
+					if (users != null && users.size() > 0) {
+						if (useBreak) {
+							++row;
+							table.setHeight(row, _spaceBetween);
+							++row;
+						}
+						table.add(getHeader(_iwrb.getLocalizedString(userType[0], userType[1])), 1, row);
+						Iterator userIter = users.iterator();
+					
+						while (userIter.hasNext()) {
+							User hm = (User) userIter.next();
+								row = insertUser(table, row, hm);						
+						}						
+						useBreak = true;
+					}		 
+					
 				}
-				useBreak = true;
+				}
+				
+			} 
+			catch (FinderException fe){
+				fe.printStackTrace(System.err);
 			}
-		} catch (FinderException e) {
-			e.printStackTrace(System.err);
+			catch (IDORelationshipException e) {
+				e.printStackTrace(System.err);
+			}
+		}
+		else {
+			try {
+				Collection hmUsers = getSchoolUserBusiness(_iwc).getAssistantHeadmasters(_school);
+				if (hmUsers != null && !hmUsers.isEmpty()) {
+	//			int headmasterId = _school.getHeadmasterUserId();
+	//			if (headmasterId > 0 ) {
+					if (useBreak) {
+						++row;
+						table.setHeight(row, _spaceBetween);
+						++row;
+					}
+					if (isSchool) {
+						table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
+					} else {
+						table.add(getHeader(_iwrb.getLocalizedString("school.childcare_assistant_manager","Assistant Manager")+":"), 1, row);
+					}
+					Iterator iter = hmUsers.iterator();
+					while (iter.hasNext()) {
+						User user = (User)iter.next();
+						row = insertUser(table, row, user);
+					}
+					useBreak = true;
+				}
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+			}
 		}
 		if (useBreak) {
 			++row;
@@ -355,6 +405,18 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		return false;
 	}
+	
+	private boolean isAdultEducation() {
+		try {
+			String category = getSchoolUserBusiness(_iwc).getSchoolCategory(_school);
+			if (category.equalsIgnoreCase(getSchoolUserBusiness(_iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory())) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return false;
+	}
 
 		
 	private Text getHeader(String content) {
@@ -388,7 +450,8 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 	public void setSpaceBetween(int spaceBetween) {
 		_spaceBetween = spaceBetween;
 	}
-
+	
+	
 	/*
 	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
