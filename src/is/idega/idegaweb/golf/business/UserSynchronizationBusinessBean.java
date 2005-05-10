@@ -43,14 +43,18 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
 /**
- * This UserGroupPlugin is used to synchronize the golf data tables with the user system. <br>
- * Methods in this plugin are called after the LDAPReplicator has replicated a user.
- * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
+ * This UserGroupPlugin is used to synchronize the golf data tables with the
+ * user system. <br>
+ * Methods in this plugin are called after the LDAPReplicator has replicated a
+ * user.
+ * 
+ * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a
+ *         href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class UserSynchronizationBusinessBean extends IBOServiceBean implements UserSynchronizationBusiness,UserGroupPlugInBusiness,GolfConstants {
+public class UserSynchronizationBusinessBean extends IBOServiceBean implements UserSynchronizationBusiness,
+		UserGroupPlugInBusiness, GolfConstants {
 
 	private static int USERS_PER_CHECK = 10;
-	
 	private UserHome uHome;
 	private MemberHome mHome;
 	private GenderHome gHome;
@@ -67,7 +71,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	private static HashMap countries = new HashMap();
 	private boolean initDone = false;
 	private static String NO_CLUB_ABBR = "-";
-	
+
 	public UserSynchronizationBusinessBean() {
 		super();
 	}
@@ -88,12 +92,15 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 					users = userBusiness.getGroupBusiness().getUsers(group);
 					if (users != null) {
 						union = getUnionFromGroup(group);
-						//System.out.println("Synchronizing Union : "+group.getAbbrevation()+" ("+group.getPrimaryKey().toString()+")");
+						// System.out.println("Synchronizing Union :
+						// "+group.getAbbrevation()+"
+						// ("+group.getPrimaryKey().toString()+")");
 						Iterator userIter = users.iterator();
 						while (userIter.hasNext() && union != null) {
 							user = (User) userIter.next();
 							if (user.getPersonalID() != null) {
-								System.out.print("Synchronizing user : "+user.getPersonalID()+" ("+user.getID()+") ");
+								System.out.print("Synchronizing user : " + user.getPersonalID() + " (" + user.getID()
+										+ ") ");
 								member = getMemberFromUser(user);
 								try {
 									System.out.print(".");
@@ -102,16 +109,17 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 									synchronizePhones(user, member);
 									System.out.print(".");
 									unionCorrect.setMainUnion(member, union.getID());
-
 									System.out.println("done.");
 								}
 								catch (SQLException e1) {
-									System.out.println("failed ("+e1.getMessage()+")");
+									System.out.println("failed (" + e1.getMessage() + ")");
 								}
-
-								//synchronizeUser( user, getMemberFromUser(user));
-							} else {
-								System.out.println("Synchronizing SKIPPING user : "+user.getName()+" ("+user.getID()+") : personalID = NULL");
+								// synchronizeUser( user,
+								// getMemberFromUser(user));
+							}
+							else {
+								System.out.println("Synchronizing SKIPPING user : " + user.getName() + " ("
+										+ user.getID() + ") : personalID = NULL");
 							}
 						}
 					}
@@ -132,23 +140,25 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		}
 		return true;
 	}
-	
-	private Member getMemberFromUser(User user) throws RemoteException, CreateException{
+
+	private Member getMemberFromUser(User user) throws RemoteException, CreateException {
 		Member member = null;
 		try {
 			member = mHome.findMemberByIWMemberSystemUser(user);
-		} catch (FinderException f) {
+		}
+		catch (FinderException f) {
 			try {
 				member = mHome.findBySSN(user.getPersonalID());
 				member.setICUser(user);
 				member.store();
-			} catch (FinderException f1) {
+			}
+			catch (FinderException f1) {
 				member = createMemberFromUser(user);
 			}
 		}
 		return member;
 	}
-	
+
 	public synchronized boolean synchronize() {
 		try {
 			init();
@@ -170,18 +180,17 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 						try {
 							member = mHome.findMemberByIWMemberSystemUser(icUser);
 							isSynched = true;
-						} catch (FinderException f) {
+						}
+						catch (FinderException f) {
 							try {
 								member = mHome.findBySSN(icUser.getPersonalID());
-							} catch (FinderException f1) {}
-							
+							}
+							catch (FinderException f1) {
+							}
 							synchronizeUser(icUser, member);
 						}
-						
-						
 					}
 				}
-				
 				++currentCheck;
 			}
 		}
@@ -197,7 +206,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	 * @throws IBOLookupException
 	 */
 	private void init() throws IDOLookupException, IBOLookupException {
-		if(!initDone){
+		if (!initDone) {
 			uHome = (UserHome) IDOLookup.getHome(User.class);
 			mHome = (MemberHome) IDOLookup.getHome(Member.class);
 			gHome = (GenderHome) IDOLookup.getHome(Gender.class);
@@ -217,77 +226,69 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			if (member == null) {
 				member = createMemberFromUser(user);
 			}
-			System.out.print("Synchronizing user : "+user.getPersonalID()+" ("+user.getID()+") ");
+			System.out.print("Synchronizing user : " + user.getPersonalID() + " (" + user.getID() + ") ");
 			System.out.print(".");
 			synchronizeAddresses(user, member);
 			System.out.print(".");
 			synchronizePhones(user, member);
 			System.out.print(".");
-			
 			synchronizeUnion(user, member);
-			
 			System.out.println("done.");
 		}
 		else {
-			System.out.println("Synchronizing SKIPPING user : "+user.getName()+" ("+user.getID()+") : personalID = NULL");
+			System.out.println("Synchronizing SKIPPING user : " + user.getName() + " (" + user.getID()
+					+ ") : personalID = NULL");
 		}
 	}
-	
-	
+
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
 		String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
-		mainUnion = ("".equals(mainUnion))?null:mainUnion;
-		
+		mainUnion = ("".equals(mainUnion)) ? null : mainUnion;
 		String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
-		subUnions = ("".equals(subUnions))?null:subUnions;
-		
-		synchronizeUnion(user,member,mainUnion,subUnions);
-	
+		subUnions = ("".equals(subUnions)) ? null : subUnions;
+		synchronizeUnion(user, member, mainUnion, subUnions);
 	}
-		
+
 	private void synchronizeUnion(User user, Member member, String mainUnion, String subUnions) throws RemoteException {
-		
-		//first we deactivate all sub club union member infos, 
-		//otherwise we will miss the changes when only some of the subclubs are removed
+		// first we deactivate all sub club union member infos,
+		// otherwise we will miss the changes when only some of the subclubs are
+		// removed
 		try {
-			//deactivate all subclubs member infos
+			// deactivate all subclubs member infos
 			unionCorrect.setMemberInactiveInAllSubUnions(member);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		//must be done here because otherwise the wrong sub union will be deactivated
-		//and we will miss a main club change, because the unionmemberinfo will still exist
+		// must be done here because otherwise the wrong sub union will be
+		// deactivated
+		// and we will miss a main club change, because the unionmemberinfo will
+		// still exist
 		try {
 			unionCorrect.setMemberInactiveInMainUnion(member);
 		}
 		catch (SQLException e) {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
-		
-		
-		if(subUnions!=null){
-			StringTokenizer tokens = new StringTokenizer(subUnions,",");
+		if (subUnions != null) {
+			StringTokenizer tokens = new StringTokenizer(subUnions, ",");
 			while (tokens.hasMoreTokens()) {
 				String subAbbr = tokens.nextToken();
 				Union sub = getUnionFromAbbreviation(subAbbr);
-				if(sub!=null){
+				if (sub != null) {
 					try {
-						unionCorrect.setMemberActiveInSubUnion(member,sub.getID());
+						unionCorrect.setMemberActiveInSubUnion(member, sub.getID());
 					}
 					catch (SQLException e) {
 						e.printStackTrace();
 					}
 				}
 			}
-			
 		}
-
-		//must be done last!
-		if(mainUnion!=null){
+		// must be done last!
+		if (mainUnion != null) {
 			Union main = getUnionFromAbbreviation(mainUnion);
-			if(main!=null){
+			if (main != null) {
 				try {
 					unionCorrect.setMainUnion(member, main.getID());
 				}
@@ -296,7 +297,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				}
 			}
 		}
-		
 	}
 
 	/**
@@ -306,32 +306,32 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	 */
 	private Union getUnionFromGroup(Group group) {
 		Union union = null;
-		try { 
-			union = unionHome.findUnionByIWMemberSystemGroup(group); 
-		} catch (FinderException e) {
+		try {
+			union = unionHome.findUnionByIWMemberSystemGroup(group);
+		}
+		catch (FinderException e) {
 			try {
 				union = unionHome.findByAbbreviation(group.getAbbrevation());
 				union.setICGroup(group);
 				union.store();
 			}
 			catch (FinderException e1) {
-				System.out.println("UserSynchronizationBusinessBean : union not found : "+group.getAbbrevation());
+				System.out.println("UserSynchronizationBusinessBean : union not found : " + group.getAbbrevation());
 				union = null;
 			}
 		}
 		return union;
 	}
-	
+
 	private Union getUnionFromAbbreviation(String abbr) {
 		Union union = null;
 		GroupBusiness groupBiz;
 		try {
 			groupBiz = (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
 			Collection groups = groupBiz.getGroupsByAbbreviation(abbr);
-			if(groups!=null && !groups.isEmpty() && groups.size()==1){
-				union = getUnionFromGroup((Group)groups.iterator().next());
+			if (groups != null && !groups.isEmpty() && groups.size() == 1) {
+				union = getUnionFromGroup((Group) groups.iterator().next());
 			}
-			
 		}
 		catch (IBOLookupException e) {
 			// TODO Auto-generated catch block
@@ -341,7 +341,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return union;
 	}
 
@@ -361,7 +360,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 							phoneExists = true;
 						}
 					}
-					
 					if (!phoneExists) {
 						is.idega.idegaweb.golf.entity.Phone ph = oldPhoneHome.create();
 						ph.setNumber(phone.getNumber());
@@ -396,26 +394,27 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 							addressExists = true;
 						}
 					}
-					
 					if (!addressExists) {
 						is.idega.idegaweb.golf.entity.Address addr = oldAddressHome.create();
 						addr.setStreet(address.getStreetName());
 						addr.setStreetNumber(address.getStreetNumber());
-						
 						int postalCode = address.getPostalCodeID();
 						if (postalCode > 0 && postalToAreaCode.get(new Integer(postalCode)) == null) {
 							try {
 								zip = zHome.findByCode(address.getPostalCode().getPostalCode());
 								addr.setZipcode(zip);
 								postalToAreaCode.put(new Integer(postalCode), zip.getIDInteger());
-							} catch (FinderException e) {
-								System.out.print("z");
-								//System.out.println("UserSynchronizationBusinessBean : zip code not found : "+address.getPostalCode().getPostalCode());
 							}
-						} else if (postalCode > 0) {
+							catch (FinderException e) {
+								System.out.print("z");
+								// System.out.println("UserSynchronizationBusinessBean
+								// : zip code not found :
+								// "+address.getPostalCode().getPostalCode());
+							}
+						}
+						else if (postalCode > 0) {
 							addr.setZipcodeId((Integer) postalToAreaCode.get(new Integer(postalCode)));
 						}
-						
 						int countryId = address.getCountryId();
 						if (countryId > 0 && countries.get(new Integer(countryId)) == null) {
 							try {
@@ -424,16 +423,16 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 								countries.put(new Integer(countryId), country.getIDInteger());
 							}
 							catch (FinderException e) {
-								System.out.println("UserSynchronizationBusinessBean : country not found : "+address.getCountry().getIsoAbbreviation());
+								System.out.println("UserSynchronizationBusinessBean : country not found : "
+										+ address.getCountry().getIsoAbbreviation());
 							}
-						} else if (countryId > 0) {
-							addr.setCountryId( (Integer) countries.get(new Integer(countryId)));
 						}
-						
+						else if (countryId > 0) {
+							addr.setCountryId((Integer) countries.get(new Integer(countryId)));
+						}
 						addr.setAddressType("home");
 						addr.store();
 					}
-					
 				}
 			}
 		}
@@ -448,14 +447,14 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		member.setMiddleName(user.getMiddleName());
 		member.setLastName(user.getLastName());
 		member.setDateOfBirth(user.getDateOfBirth());
-		
 		int genderId = user.getGenderID();
 		if (genderId > 0) {
 			if (genders.get(new Integer(genderId)) == null) {
 				try {
 					Gender gender = gHome.findByPrimaryKey(new Integer(genderId));
-					genders.put(new Integer(genderId), gender.getName().substring(0,1).toUpperCase());
-				} catch (FinderException e) {
+					genders.put(new Integer(genderId), gender.getName().substring(0, 1).toUpperCase());
+				}
+				catch (FinderException e) {
 					e.printStackTrace();
 				}
 			}
@@ -474,38 +473,41 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	}
 
 	private Collection getUserBatch(UserHome uHome, int currentCheck) throws FinderException {
-		return uHome.findNewestUsers(USERS_PER_CHECK, currentCheck*USERS_PER_CHECK);
+		return uHome.findNewestUsers(USERS_PER_CHECK, currentCheck * USERS_PER_CHECK);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
-		
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
 	 */
-	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {		
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 		init();
 		if (user.getPersonalID() != null) {
-			//System.out.println("Synchronizing user : "+user.getPersonalID()+" ("+user.getID()+") ");
+			// System.out.println("Synchronizing user : "+user.getPersonalID()+"
+			// ("+user.getID()+") ");
 			Member member = getMemberFromUser(user);
-//			try {
-				synchronizeAddresses(user, member);
-				synchronizePhones(user, member);
-				synchronizeUnion(user, member);
-//			}
-//			catch (SQLException e1) {
-//				System.out.println("failed ("+e1.getMessage()+")");
-//			}
+			// try {
+			synchronizeAddresses(user, member);
+			synchronizePhones(user, member);
+			synchronizeUnion(user, member);
+			// }
+			// catch (SQLException e1) {
+			// System.out.println("failed ("+e1.getMessage()+")");
+			// }
 		}
 	}
-	
-	public void syncUserFromRequest(IWContext iwc){
-		
+
+	public void syncUserFromRequest(IWContext iwc) {
 		try {
 			init();
 			String subs = iwc.getParameter(GolfConstants.SUB_CLUBS_META_DATA_KEY);
@@ -513,76 +515,82 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			String uuid = iwc.getParameter(GolfConstants.MEMBER_UUID);
 			String pin = iwc.getParameter(GolfConstants.MEMBER_PIN);
 			String name = iwc.getParameter(GolfConstants.MEMBER_NAME);
-			
-			System.out.println("UserSync: trying to sync : pin:"+pin+ " uuid:"+uuid+" name:"+name+" mainclub:"+main+ " subclubs:"+subs);
-			//do we need gender yet or can it just wait until the ldap replication...
-			
-			if(uuid!=null && pin!=null){
-				subs = ("".equals(subs))?null:subs;
-				main = ("".equals(main))?null:main;
-				
-				User user = getUserBusiness().getUserByUniqueId(uuid);
-				if(user == null){
-					user = getUserBusiness().getUser(pin);	
+			System.out.println("UserSync: trying to sync : pin:" + pin + " uuid:" + uuid + " name:" + name
+					+ " mainclub:" + main + " subclubs:" + subs);
+			// do we need gender yet or can it just wait until the ldap
+			// replication...
+			if (uuid != null && pin != null) {
+				subs = ("".equals(subs)) ? null : subs;
+				main = ("".equals(main)) ? null : main;
+				User user = null;
+				try {
+					user = getUserBusiness().getUserByUniqueId(uuid);
 				}
-			
-				if(user==null){
-					user = getUserBusiness().createUserByPersonalIDIfDoesNotExist(name,pin,null,null);
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (user == null) {
+						user = getUserBusiness().getUser(pin);
+					}
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+				
+				if (user == null) {
+					user = getUserBusiness().createUserByPersonalIDIfDoesNotExist(name, pin, null, null);
 					user.setUniqueId(uuid);
 					user.store();
 				}
-				
-				if(user!=null){
+				if (user != null) {
 					Member member = getMemberFromUser(user);
-					synchronizeUnion(user, member,main,subs);
+					synchronizeUnion(user, member, main, subs);
 				}
-				else{
-					System.err.println(" UserSync: USER IS NULL "+uuid+" "+pin);
+				else {
+					System.err.println(" UserSync: USER IS NULL " + uuid + " " + pin);
 				}
-				
 			}
 		}
 		catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
 		catch (RemoteException e) {
-
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
 			e.printStackTrace();
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
 	 */
 	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
-		
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
 	 */
 	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
-		//if the group is a club then search for the union and update it, create if it does not exist
-//		init();
-//		Union union = getUnionFromGroup(group);
-//		if(union==null){
-//			
-//			
-//		}
-		
-		
-		
+		// if the group is a club then search for the union and update it,
+		// create if it does not exist
+		// init();
+		// Union union = getUnionFromGroup(group);
+		// if(union==null){
+		//			
+		//			
+		// }
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException {
@@ -590,7 +598,9 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateViewer(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateViewer(Group group) throws RemoteException {
@@ -598,7 +608,9 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
 	 */
 	public List getUserPropertiesTabs(User user) throws RemoteException {
@@ -606,7 +618,9 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
@@ -614,7 +628,9 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
 	 */
 	public List getMainToolbarElements() throws RemoteException {
@@ -622,7 +638,9 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
 	 */
 	public List getGroupToolbarElements(Group group) throws RemoteException {
@@ -630,32 +648,40 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User,
+	 *      com.idega.user.data.Group, com.idega.user.data.Group)
 	 */
-	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws RemoteException {
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup)
+			throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User,
+	 *      com.idega.user.data.Group)
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	public UserBusiness getUserBusiness() throws IBOLookupException{
-		return (UserBusiness)getServiceInstance(UserBusiness.class);
+
+	public UserBusiness getUserBusiness() throws IBOLookupException {
+		return (UserBusiness) getServiceInstance(UserBusiness.class);
 	}
-	
 }
