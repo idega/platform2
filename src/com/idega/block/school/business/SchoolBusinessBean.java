@@ -979,6 +979,33 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		return rootGroup;
 	}
+	
+	/**
+	 * Returns or creates (if not available) the default usergroup all adult education
+	 * administors have as their primary group.
+	 * 
+	 * @throws CreateException
+	 *           if it failed to create the group.
+	 * @throws FinderException
+	 *           if it failed to locate the group.
+	 */
+	public Group getRootAdultEducationAdministratorGroup() throws CreateException, FinderException, RemoteException {
+		Group rootGroup = null;
+		//create the default group
+		String ROOT_ADULT_EDUCATION_ADMINISTRATORS_GROUP = "adult_education_administrators_group_id";
+		IWBundle bundle = getCommuneBundle();
+		String groupId = bundle.getProperty(ROOT_ADULT_EDUCATION_ADMINISTRATORS_GROUP);
+		if (groupId != null) {
+			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("trying to store Commune Root Adult Education administrators group");
+
+			rootGroup = getUserBusiness().getGroupBusiness().createGroup("Adult Education Administrators", "The Commune Root Adult Educaiton Administrators Group.");
+			bundle.setProperty(ROOT_ADULT_EDUCATION_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
+		}
+		return rootGroup;
+	}
 
 	/**
 	 * Returns or creates (if not available) the default usergroup all school

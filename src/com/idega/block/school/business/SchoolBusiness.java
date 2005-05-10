@@ -1,5 +1,5 @@
 /*
- * Created on 2005-maj-02
+ * Created on 2005-maj-10
  *
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
@@ -448,6 +448,12 @@ public interface SchoolBusiness extends IBOService {
 	 */
 	public Group getRootHighSchoolAdministratorGroup() throws CreateException,
 			FinderException, RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#getRootAdultEducationAdministratorGroup
+	 */
+	public Group getRootAdultEducationAdministratorGroup()
+			throws CreateException, FinderException, RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getRootMusicSchoolAdministratorGroup
