@@ -132,7 +132,7 @@ public class ForumTree extends AbstractTreeViewer {
 
 	private PresentationObject getNumberOfResponses(ICTreeNode node) {
 		ForumData thread = (ForumData) node;
-		Text text = formatText(String.valueOf(thread.getNumberOfSubThreads()));
+		Text text = formatText(String.valueOf(thread.getNumberOfResponses()));
 		return text;
 	}
 

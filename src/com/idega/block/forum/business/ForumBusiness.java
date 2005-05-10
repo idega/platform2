@@ -87,6 +87,11 @@ public class ForumBusiness {
 			if (parentThreadID != -1) {
 				parentThread = getForumData(parentThreadID);
 				updateParent(parentThread, 1);
+			} 
+			
+			if(!update){
+				thread.setNumberOfResponses(0);
+				thread.setNumberOfSubThreads(0);
 			}
 
 			thread.setTopicID(topicID);
@@ -112,8 +117,6 @@ public class ForumBusiness {
 					thread.setUserEMail(email);
 			}
 			thread.setValid(true);
-			if (!update)
-				thread.setNumberOfResponses(0);
 			thread.setThreadDate(new IWTimestamp().getTimestampRightNow());
 
 			thread.store();
@@ -132,6 +135,7 @@ public class ForumBusiness {
 		ForumData topParent = null;
 		if(thread.getParentThreadID() == -1 ){
 			topParent = thread;
+		} else {
 			topParent = getForumData(thread.getTopParentID());
 		}
 		thread.setNumberOfResponses(thread.getNumberOfResponses() + increase);
@@ -292,8 +296,12 @@ public class ForumBusiness {
 		if(childs != null){
 			for (Iterator iter = childs.iterator(); iter.hasNext();) {
 				ForumData subthread = (ForumData) iter.next();
-				totalSubThreads++;
-				totalSubThreads += recursionOfUpdateNumberOfSubThreadsAndResponces(subthread);
+				if(subthread.isValid()){
+					totalSubThreads++;
+					totalSubThreads += recursionOfUpdateNumberOfSubThreadsAndResponces(subthread);
+				} else {
+					System.out.println("[ERROR]: ForumData#getChildren() does also return invalid childrens");
+				}
 			}
 			realTopThread.setNumberOfResponses(childs.size());
 		} else {
