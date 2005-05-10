@@ -39,6 +39,12 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	public static final int USER_TYPE_WEB_ADMIN = SchoolUserBMPBean.USER_TYPE_WEB_ADMIN;
 	public static final int USER_TYPE_IB_COORDINATOR = SchoolUserBMPBean.USER_TYPE_IB_COORDINATOR;
 	public static final int USER_TYPE_STUDY_AND_WORK_COUNCEL = SchoolUserBMPBean.USER_TYPE_STUDY_AND_WORK_COUNCEL;
+	public static final int USER_TYPE_SCHOOL_MASTER = SchoolUserBMPBean.USER_TYPE_SCHOOL_MASTER;
+	public static final int USER_TYPE_CONTACT_PERSON = SchoolUserBMPBean.USER_TYPE_CONTACT_PERSON;
+	public static final int USER_TYPE_EXPEDITION = SchoolUserBMPBean.USER_TYPE_EXPEDITION;
+	public static final int USER_TYPE_PROJECT_MANAGER = SchoolUserBMPBean.USER_TYPE_PROJECT_MANAGER;
+	
+	
 	
 	public SchoolUser addUser(School school, User user, int userType, boolean isEconomicalResponsible) throws RemoteException, CreateException, FinderException {
 		return addUser (school, user, userType, true, false, isEconomicalResponsible);
@@ -90,6 +96,20 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 
 	public SchoolUser addAssistantHeadmaster(School school, User user) throws RemoteException, CreateException, FinderException {
 		return addUser(school, user, USER_TYPE_ASSISTANT_HEADMASTER,false);	
+	}
+	public SchoolUser addSchoolMaster(School school, User user) throws RemoteException, CreateException, FinderException {
+		return addUser(school, user, USER_TYPE_SCHOOL_MASTER,false);	
+	}
+	public SchoolUser addContactPerson(School school, User user) throws RemoteException, CreateException, FinderException {
+		return addUser(school, user, USER_TYPE_CONTACT_PERSON,false);	
+	}
+	
+	public SchoolUser addExpedition(School school, User user) throws RemoteException, CreateException, FinderException {
+		return addUser(school, user, USER_TYPE_EXPEDITION,false);	
+	}
+	
+	public SchoolUser addProjectManager(School school, User user) throws RemoteException, CreateException, FinderException {
+		return addUser(school, user, USER_TYPE_PROJECT_MANAGER,false);	
 	}
 
 	public SchoolUser addWebAdmin(School school, User user) throws RemoteException, CreateException, FinderException {
@@ -290,7 +310,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			}
 			
 			return show;
-		}
+	}
 	public boolean getUserMainHeadmaster(User user) throws RemoteException, FinderException {
 		//Collection schUsers = getSchoolUserHome().findBySchoolAndUser(school, user);
 		//borde ev göras om lite eftersom det skulle kunna finnas flera school users på en user
@@ -448,6 +468,12 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
+			}
+			else if (category.equals(getSchoolBusiness().getCategoryAdultEducation().getCategory())) {
+				userTypes.add(new String[] {"school.master", "School master", Integer.toString(USER_TYPE_SCHOOL_MASTER) });
+				userTypes.add(new String[] {"school.contact_person", "Contact person", Integer.toString(USER_TYPE_CONTACT_PERSON) });
+				userTypes.add(new String[] {"school.expedition", "Expedition", Integer.toString(USER_TYPE_EXPEDITION) });
+				userTypes.add(new String[] {"school.project_manager", "Project manager", Integer.toString(USER_TYPE_PROJECT_MANAGER) });
 			}
 			
 		}

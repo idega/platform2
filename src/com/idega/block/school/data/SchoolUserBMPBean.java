@@ -30,6 +30,10 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	public static final int USER_TYPE_WEB_ADMIN = 3;
 	public static final int USER_TYPE_IB_COORDINATOR = 4;
 	public static final int USER_TYPE_STUDY_AND_WORK_COUNCEL = 5;
+	public static final int USER_TYPE_SCHOOL_MASTER = 6;
+	public static final int USER_TYPE_CONTACT_PERSON = 7;
+	public static final int USER_TYPE_EXPEDITION = 8;
+	public static final int USER_TYPE_PROJECT_MANAGER = 9;
 
 
 	/**

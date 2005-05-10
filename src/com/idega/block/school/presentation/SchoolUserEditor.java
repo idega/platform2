@@ -1425,6 +1425,10 @@ public class SchoolUserEditor extends Block {
 				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
 					priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
 			}
+			
+		if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory()))
+			priGroup = getSchoolBusiness(iwc).getRootAdultEducationAdministratorGroup();
+		
 		}
 		catch (CreateException e1) {
 			e1.printStackTrace();
