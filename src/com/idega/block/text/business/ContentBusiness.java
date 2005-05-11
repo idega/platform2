@@ -118,7 +118,7 @@ public class ContentBusiness {
 	
 	public static Content saveContent(int iContentId, int iLocalizedTextId, int iLocaleId, int iUserId, Timestamp tsPublishFrom, Timestamp tsPublishTo, String sHeadline, String sBody, String sTitle, List listOfFiles, Timestamp dateOfContent) {
 
-		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance(Content.class);
 		try {
 			t.begin();
 			boolean ctUpdate = false;
