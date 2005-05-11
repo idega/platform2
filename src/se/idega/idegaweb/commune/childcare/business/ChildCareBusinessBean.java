@@ -3372,7 +3372,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			// test also for futurecontracts if oldContract is provided
 			// IWTimestamp fromDate = new IWTimestamp(validFrom);
-			if (oldArchive != null && !oldArchive.equals(archive) && hasFutureContracts(applicationID)) {
+			if (oldArchive != null && !oldArchive.equals(archive) && hasFutureContracts(applicationID, validFrom)) {
 				try {
 					Collection futureContracts = getChildCareContractArchiveHome().findFutureContractsByApplication(applicationID, validFrom);
 					IWTimestamp earliestFutureStartDate = null;
