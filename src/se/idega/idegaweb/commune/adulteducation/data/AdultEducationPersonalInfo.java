@@ -6,8 +6,6 @@
  */
 package se.idega.idegaweb.commune.adulteducation.data;
 
-
-
 import com.idega.data.IDOEntity;
 
 /**

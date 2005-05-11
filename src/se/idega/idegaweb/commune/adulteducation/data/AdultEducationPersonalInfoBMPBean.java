@@ -6,16 +6,11 @@
  */
 package se.idega.idegaweb.commune.adulteducation.data;
 
-import java.util.Collection;
 
 import com.idega.core.localisation.data.ICLanguage;
 import com.idega.core.location.data.Country;
 import com.idega.data.GenericEntity;
-import javax.ejb.FinderException;
 
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOQuery;
-import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
