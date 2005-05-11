@@ -1,5 +1,5 @@
 /*
- * $Id: CourseCollectionHandler.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
+ * $Id: CourseCollectionHandler.java,v 1.2 2005/05/11 08:42:38 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import se.idega.idegaweb.commune.adulteducation.AdultEducationConstants;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
-import se.idega.idegaweb.commune.adulteducation.presentation.ChoiceApplication;
+import se.idega.idegaweb.commune.adulteducation.presentation.AdultEducationBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -28,10 +28,10 @@ import com.idega.presentation.remotescripting.RemoteScriptingResults;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 08:42:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CourseCollectionHandler implements RemoteScriptCollection {
 
@@ -55,8 +55,8 @@ public class CourseCollectionHandler implements RemoteScriptCollection {
     Collection names = new ArrayList();
 		names.add(iwrb.getLocalizedString("select_course","Select course"));
     
-		Object seasonPK = iwc.getParameter(ChoiceApplication.PARAMETER_SCHOOL_SEASON);
-		Object studyPathPK = iwc.getParameter(ChoiceApplication.PARAMETER_STUDY_PATH);
+		Object seasonPK = iwc.getParameter(AdultEducationBlock.PARAMETER_SCHOOL_SEASON);
+		Object studyPathPK = iwc.getParameter(AdultEducationBlock.PARAMETER_STUDY_PATH);
 		
 		try {
 			Collection courses = biz.getAvailableCourses(seasonPK, sourceID, studyPathPK);
