@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.3 2005/05/11 17:44:48 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.4 2005/05/11 20:01:19 malin Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,6 +28,9 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReasonH
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseHome;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
+
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
@@ -50,10 +53,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 20:01:19 $ by $Author: malin $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -506,4 +509,82 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			fe.printStackTrace();
 		}
 	}
+	
+	public AdultEducationPersonalInfo storePersonalInfo(int icUserID, int nativecountryId, int languageID, int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA, boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) {
+		try {
+			AdultEducationPersonalInfo personalInfo = null;
+			if (icUserID != -1) {
+				try{
+					personalInfo = getAdultEducationPersonalHome().findByUserId(new Integer(icUserID));
+				}
+				catch (FinderException fe){
+					personalInfo = getAdultEducationPersonalHome().create();
+					personalInfo.store(); // so it gets a primary key, otherwise an exception
+				}
+			}
+			
+			if (personalInfo != null){
+				if (icUserID != -1)
+					personalInfo.setIcUserID(icUserID);
+				if (nativecountryId != -1)
+					personalInfo.setNativeCountryID(nativecountryId);
+				if (languageID != -1)
+					personalInfo.setIcLanguageID(languageID);
+				
+				personalInfo.setNativeThisCountry(nativeThisCountry);
+				personalInfo.setCitizenThisCountry(citizenThisCountry);
+				personalInfo.setEduA(educationA);
+				personalInfo.setEduB(educationB);
+				personalInfo.setEduC(educationC);
+				personalInfo.setEduD(educationD);
+				personalInfo.setEduE(educationE);
+				personalInfo.setEduF(educationF);
+				if (eduGCountryID != -1)
+					personalInfo.setEducationCountryID(educationCountryID);
+				if (eduYears != -1)
+					personalInfo.setEduGYears(eduYears);
+				personalInfo.setEduHA(eduHA);
+				personalInfo.setEduHB(eduHB);
+				personalInfo.setEduHC(eduHC);
+				if (eduHCommune != null && !eduHCommune.equals(""))
+					personalInfo.setEduHCommune(eduHCommune);
+				personalInfo.setFulltime(fulltime);
+				personalInfo.setLangSFI(langSfi);
+				personalInfo.setLangSAS(langSas);
+				personalInfo.setLangSFI(langOther);
+				personalInfo.setStudySupport(studySupport);
+				personalInfo.setWorkEmploy(workEmpl);
+				personalInfo.setWorkUnEmploy(workUnEmpl);
+				personalInfo.setWorkKicked(workKicked);
+				if (workOther != null && !workOther.equals(""))
+					personalInfo.setWorkOther(workOther);
+				
+				personalInfo.store();
+				
+			}
+			return personalInfo;
+		}
+	/*	catch (FinderException fe) {
+			fe.printStackTrace(System.err);
+			return null;
+		}
+	*/
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+			return null;
+		}
+		
+		
+	}
+	
+	
+	public AdultEducationPersonalInfoHome getAdultEducationPersonalHome() {
+		try {
+			return (AdultEducationPersonalInfoHome) IDOLookup.getHome(AdultEducationPersonalInfo.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
 }
