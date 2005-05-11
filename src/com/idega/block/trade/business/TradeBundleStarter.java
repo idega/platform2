@@ -11,51 +11,89 @@ package com.idega.block.trade.business;
  * @version 1.0
  */
 
-import java.rmi.RemoteException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import com.idega.idegaweb.IWBundleStartable;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+import com.idega.core.component.data.ICObject;
+import com.idega.data.IDOFactory;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWBundleStartable;
 import com.idega.util.EventTimer;
-import com.idega.block.trade.business.CurrencyBusiness;
 
 public class TradeBundleStarter implements IWBundleStartable,ActionListener{
-
-private IWBundle bundle_;
-private EventTimer timer;
-public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
-
-  public TradeBundleStarter() {
-  }
-
-  public void start(IWBundle bundle){
-    bundle_ = bundle;
-    timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
-    timer.addActionListener(this);
-    //Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
-    // -- Fix for working properly on Interebase with entity-auto-create-on.
-    timer.start(3*60*1000);
-    System.out.println("Trade bundle starter: starting");
-  }
-
-  public void actionPerformed(ActionEvent event) {
-    try{
-      if (event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)) {
-        CurrencyBusiness.getCurrencyMap(bundle_);
-      }
-    }
-    catch (com.idega.data.IDONoDatastoreError error) {
-      System.err.println("TradeBundleStarter.actionPerformed() Error: "+error.getMessage());
-    }
-    catch (RemoteException re) {
-      System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
-    }
-    catch (Exception re) {
-      System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
-      re.printStackTrace();
-    }
-  }
-
+	
+	private IWBundle bundle_;
+	private EventTimer timer;
+	public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
+	public static final String DATASOURCE = "datasource";
+	
+	public TradeBundleStarter() {
+	}
+	
+	public void start(IWBundle bundle){
+		bundle_ = bundle;
+		checkDataSource(bundle);
+		timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
+		timer.addActionListener(this);
+		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
+		// -- Fix for working properly on Interebase with entity-auto-create-on.
+		timer.start(3*60*1000);
+		System.out.println("Trade bundle starter: starting");
+	}
+	
+	/**
+	 * @param bundle
+	 */
+	private void checkDataSource(IWBundle bundle) {
+		// Switching the datasource
+		String dataSource = bundle.getProperty(DATASOURCE);
+		if (dataSource != null) {
+			try {
+				Collection entities = bundle.getDataObjects();
+				if (entities != null){
+					Iterator iter = entities.iterator();
+					while (iter.hasNext())
+					{
+						ICObject ico = (ICObject) iter.next();
+						try
+						{
+							Class c = ico.getObjectClass();
+							IDOFactory home = (IDOFactory) IDOLookup.getHome(c);
+							home.setDatasource(dataSource);
+						}
+						catch (ClassNotFoundException e)
+						{
+							System.out.println("Cant set the dataSource : Class " + e.getMessage() + " not found");
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void actionPerformed(ActionEvent event) {
+		try{
+			if (event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)) {
+				CurrencyBusiness.getCurrencyMap(bundle_);
+			}
+		}
+		catch (com.idega.data.IDONoDatastoreError error) {
+			System.err.println("TradeBundleStarter.actionPerformed() Error: "+error.getMessage());
+		}
+		catch (RemoteException re) {
+			System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
+		}
+		catch (Exception re) {
+			System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
+			re.printStackTrace();
+		}
+	}
+	
 	/**
 	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
 	 */
