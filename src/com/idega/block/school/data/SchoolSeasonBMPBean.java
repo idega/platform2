@@ -183,7 +183,7 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, schoolSeason.getSchoolCategoryPK()));
 		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.LESS, schoolSeason.getSchoolSeasonStart()));
-		query.addOrder(table, START, true);
+		query.addOrder(table, START, false);
 		
 		return (Integer) idoFindOnePKByQuery(query);
 	}
