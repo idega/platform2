@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.1 2005/05/11 17:44:48 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.2 2005/05/11 20:01:12 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.presentation.text.Link;
 
 
 /**
- * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 20:01:12 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -74,6 +74,7 @@ public class ChoiceOverview extends AdultEducationBlock {
 							Link edit = new Link(getEditIcon(localize("edit_choice", "Edit choice")));
 							edit.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 							edit.addParameter(PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
+							edit.addParameter(PARAMETER_SCHOOL_SEASON, course.getSchoolSeason().getPrimaryKey().toString());
 							edit.setPage(getResponsePage());
 							table.add(edit, 2, row);
 						}
