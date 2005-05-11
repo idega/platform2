@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.2 2005/05/11 13:14:12 laddi Exp $
+ * $Id: AdultEducationBusiness.java,v 1.3 2005/05/11 17:44:48 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.school.business.SchoolBusiness;
@@ -27,10 +28,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface AdultEducationBusiness extends CaseBusiness {
 
@@ -60,6 +61,22 @@ public interface AdultEducationBusiness extends CaseBusiness {
 	public Collection getCourses(Object season, Object type, Object school, Object group) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoice
+	 */
+	public AdultEducationChoice getChoice(Object choicePK) throws FinderException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoice
+	 */
+	public AdultEducationChoice getChoice(User user, Object studyPathPK, int choiceOrder) throws FinderException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoices
+	 */
+	public Collection getChoices(User user, SchoolSeason season) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getSelectedStudyPaths
 	 */
 	public Collection getSelectedStudyPaths(User user, SchoolSeason season) throws java.rmi.RemoteException;
@@ -74,6 +91,11 @@ public interface AdultEducationBusiness extends CaseBusiness {
 	 */
 	public Collection getAvailableCourses(Object seasonPK, Object schoolPK, Object studyPathPK)
 			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getPendingSeasons
+	 */
+	public Collection getPendingSeasons() throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getActiveReasons
@@ -120,11 +142,16 @@ public interface AdultEducationBusiness extends CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeChoices
 	 */
-	public void storeChoices(User user, Collection courses, String comment, Object[] reasons, String otherReason)
-			throws IDOCreateException, java.rmi.RemoteException;
+	public void storeChoices(User user, Collection courses, Object[] oldCourses, String comment, Object[] reasons,
+			String otherReason) throws IDOCreateException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeCourse
 	 */
 	public void removeCourse(Object coursePK) throws RemoveException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeChoice
+	 */
+	public void removeChoice(Object choicePK, User performer) throws java.rmi.RemoteException;
 }

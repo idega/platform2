@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.1 2005/05/11 13:14:12 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.2 2005/05/11 17:44:48 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,8 +13,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.business.CourseCollectionHandler;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
@@ -22,6 +25,7 @@ import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOCreateException;
+import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.remotescripting.RemoteScriptHandler;
@@ -30,16 +34,17 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -53,6 +58,7 @@ public class ChoiceApplication extends AdultEducationBlock {
 	private static final String PARAMETER_COMMENT = "ce_comment";
 	private static final String PARAMETER_REASON = "ce_reason";
 	private static final String PARAMETER_OTHER_REASON = "ce_other_reason";
+	private static final String PARAMETER_OLD_COURSES = "ce_old_courses";
 
 	private static final int ACTION_APPLICATION = 1;
 	private static final int ACTION_STORE = 2;
@@ -64,6 +70,9 @@ public class ChoiceApplication extends AdultEducationBlock {
 	private Object iStudyPathGroupPK;
 	private SchoolStudyPathGroup iStudyPathGroup;
 	private Object iStudyPathPK;
+	private AdultEducationChoice iChoice;
+	
+	private boolean isUpdate = false;
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.adulteducation.presentation.AdultEducationBlock#present(com.idega.presentation.IWContext)
@@ -90,6 +99,9 @@ public class ChoiceApplication extends AdultEducationBlock {
 		form.add(getNavigationTable());
 		form.add(new Break(2));
 		form.add(getApplicationTable(iwc));
+		if (isUpdate) {
+			form.maintainParameter(PARAMETER_CHOICE);
+		}
 
 		add(form);
 	}
@@ -107,6 +119,10 @@ public class ChoiceApplication extends AdultEducationBlock {
 			types.setSelectedElement(iSchoolTypePK.toString());
 		}
 		types.setToSubmit();
+		if (isUpdate) {
+			types.setDisabled(true);
+			table.add(new HiddenInput(PARAMETER_SCHOOL_TYPE, iSchoolTypePK.toString()));
+		}
 		
 		DropdownMenu groups = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_STUDY_PATH_GROUP), getBusiness().getStudyPathsGroups(), "getLocalizationKey", getResourceBundle()));
 		groups.addMenuElementFirst("", localize("select_study_path_group", "Select group"));
@@ -114,6 +130,10 @@ public class ChoiceApplication extends AdultEducationBlock {
 			groups.setSelectedElement(iStudyPathGroupPK.toString());
 		}
 		groups.setToSubmit();
+		if (isUpdate) {
+			groups.setDisabled(true);
+			table.add(new HiddenInput(PARAMETER_STUDY_PATH_GROUP, iStudyPathGroupPK.toString()));
+		}
 		
 		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_SEASON), getBusiness().getSeasons(), "getSeasonName"));
 		seasons.addMenuElementFirst("", localize("select_season", "Select season"));
@@ -121,6 +141,10 @@ public class ChoiceApplication extends AdultEducationBlock {
 			seasons.setSelectedElement(iSchoolSeasonPK.toString());
 		}
 		seasons.setToSubmit();
+		if (isUpdate) {
+			seasons.setDisabled(true);
+			table.add(new HiddenInput(PARAMETER_SCHOOL_SEASON, iSchoolSeasonPK.toString()));
+		}
 		
 		table.add(getSmallHeader(localize("type", "Type")), 1, 1);
 		table.add(new Break(), 1, 1);
@@ -145,7 +169,9 @@ public class ChoiceApplication extends AdultEducationBlock {
 		table.mergeCells(1, 6, 3, 6);
 		
 		Collection paths = getBusiness().getStudyPaths(iSchoolType, iStudyPathGroup);
-		paths.removeAll(getBusiness().getSelectedStudyPaths(iwc.getCurrentUser(), iSchoolSeason));
+		if (!isUpdate) {
+			paths.removeAll(getBusiness().getSelectedStudyPaths(iwc.getCurrentUser(), iSchoolSeason));
+		}
 		
 		DropdownMenu studyPaths = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_STUDY_PATH));
 		studyPaths.addMenuElementFirst("", localize("select_study_path", "Select study path"));
@@ -158,6 +184,10 @@ public class ChoiceApplication extends AdultEducationBlock {
 		if (iStudyPathPK != null) {
 			studyPaths.setSelectedElement(iStudyPathPK.toString());
 		}
+		if (isUpdate) {
+			studyPaths.setDisabled(true);
+			table.add(new HiddenInput(PARAMETER_STUDY_PATH, iStudyPathPK.toString()));
+		}
 		
 		table.add(getSmallHeader(localize("study_path", "Study path")), 1, 1);
 		table.add(new Break(), 1, 1);
@@ -169,6 +199,21 @@ public class ChoiceApplication extends AdultEducationBlock {
 		}
 
 		for (int a = 1; a <= 3; a++) {
+			School chosenSchool = null;
+			AdultEducationCourse chosenCourse = null;
+			if (isUpdate) {
+				try {
+					AdultEducationChoice choice = getBusiness().getChoice(iwc.getCurrentUser(), iStudyPathPK, a);
+					AdultEducationCourse course = choice.getCourse();
+					
+					chosenSchool = course.getSchool();
+					chosenCourse = choice.getCourse();
+				}
+				catch (FinderException fe) {
+					//fe.printStackTrace();
+				}
+			}
+			
 			DropdownMenu school = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOL + "_" + a));
 			school.addMenuElementFirst("", localize("select_school", "Select school"));
 			if (schools != null) {
@@ -178,9 +223,23 @@ public class ChoiceApplication extends AdultEducationBlock {
 					school.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolName());
 				}
 			}
+			if (chosenSchool != null) {
+				school.setSelectedElement(chosenSchool.getPrimaryKey().toString());
+			}
+			
 			DropdownMenu course = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_COURSE + "_" + a));
 			course.addMenuElementFirst("", localize("select_course", "Select course"));
-
+			if (chosenCourse != null) {
+				Collection courses = getBusiness().getAvailableCourses(iSchoolSeasonPK, chosenSchool.getPrimaryKey(), iStudyPathPK);
+				Iterator iterator = courses.iterator();
+				while (iterator.hasNext()) {
+					AdultEducationCourse element = (AdultEducationCourse) iterator.next();
+					course.addMenuElement(element.getPrimaryKey().toString(), element.getCode());
+				}
+				course.setSelectedElement(chosenCourse.getPrimaryKey().toString());
+				table.add(new HiddenInput(PARAMETER_OLD_COURSES, chosenCourse.getPrimaryKey().toString()));
+			}
+			
 			if (a == 1) {
 				table.add(getSmallHeader(localize("school", "School")), 2, 1);
 				table.add(new Break(), 2, 1);
@@ -212,6 +271,9 @@ public class ChoiceApplication extends AdultEducationBlock {
 		TextArea area = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENT));
 		area.setWidth(Table.HUNDRED_PERCENT);
 		area.setRows(5);
+		if (isUpdate && iChoice.getComment() != null) {
+			area.setContent(iChoice.getComment());
+		}
 		table.add(new Break(), 1, 4);
 		table.add(getSmallHeader(localize("comment", "Comment") + ":"), 1, 4);
 		table.add(new Break(), 1, 4);
@@ -226,6 +288,16 @@ public class ChoiceApplication extends AdultEducationBlock {
 		reasonTable.setHeight(2, 12);
 		
 		Collection reasons = getBusiness().getActiveReasons();
+		Collection selectedReasons = new ArrayList();
+		if (isUpdate) {
+			try {
+				selectedReasons = iChoice.getReasons();
+			}
+			catch (IDORelationshipException ire) {
+				ire.printStackTrace();
+				selectedReasons = new ArrayList();
+			}
+		}
 		int reasonCount = reasons.size();
 		int divider = reasonCount / 2;
 		int column = 1;
@@ -240,6 +312,7 @@ public class ChoiceApplication extends AdultEducationBlock {
 			AdultEducationChoiceReason reason = (AdultEducationChoiceReason) iterator.next();
 			
 			CheckBox reasonBox = getCheckBox(PARAMETER_REASON, reason.getPrimaryKey().toString());
+			reasonBox.setChecked(selectedReasons.contains(reason));
 			
 			reasonTable.add(reasonBox, column, row);
 			reasonTable.add(Text.getNonBrakingSpace(), column, row);
@@ -253,6 +326,9 @@ public class ChoiceApplication extends AdultEducationBlock {
 		TextArea otherReason = (TextArea) getStyledInterface(new TextArea(PARAMETER_OTHER_REASON));
 		otherReason.setWidth(Table.HUNDRED_PERCENT);
 		otherReason.setRows(5);
+		if (isUpdate && iChoice.getOtherReason() != null) {
+			area.setContent(iChoice.getOtherReason());
+		}
 		reasonTable.add(getSmallHeader(localize("other_reason", "Other reason") + ":"), 1, row);
 		reasonTable.add(new Break(), 1, row);
 		reasonTable.add(otherReason, 1, row);
@@ -281,9 +357,10 @@ public class ChoiceApplication extends AdultEducationBlock {
 		String[] reasons = iwc.getParameterValues(PARAMETER_REASON);
 		String comment = iwc.isParameterSet(PARAMETER_COMMENT) ? iwc.getParameter(PARAMETER_COMMENT) : null;
 		String otherReason = iwc.isParameterSet(PARAMETER_OTHER_REASON) ? iwc.getParameter(PARAMETER_OTHER_REASON) : null;
+		String[] oldCourses = iwc.getParameterValues(PARAMETER_OLD_COURSES);
 		
 		try {
-			getBusiness().storeChoices(iwc.getCurrentUser(), coursePKs, comment, reasons, otherReason);
+			getBusiness().storeChoices(iwc.getCurrentUser(), coursePKs, oldCourses, comment, reasons, otherReason);
 			if (getResponsePage() != null) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
 			}
@@ -300,20 +377,44 @@ public class ChoiceApplication extends AdultEducationBlock {
 
 	private int parseAction(IWContext iwc) {
 		try {
+			if (iwc.isParameterSet(PARAMETER_STUDY_PATH)) {
+				iStudyPathPK = iwc.getParameter(PARAMETER_STUDY_PATH);
+			}
+			if (iwc.isParameterSet(PARAMETER_CHOICE)) {
+				isUpdate = true;
+				
+				try {
+					iChoice = getBusiness().getChoice(iwc.getParameter(PARAMETER_CHOICE));
+					AdultEducationCourse course = iChoice.getCourse();
+					SchoolStudyPath path = course.getStudyPath();
+					
+					iSchoolTypePK = new Integer(path.getSchoolTypeId());
+					iSchoolSeason = course.getSchoolSeason();
+					iSchoolSeasonPK = iSchoolSeason.getPrimaryKey();
+					iStudyPathGroupPK = new Integer(path.getStudyPathGroupID());
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+			}
 			if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPE)) {
 				iSchoolTypePK = iwc.getParameter(PARAMETER_SCHOOL_TYPE);
-				iSchoolType = getBusiness().getSchoolBusiness().getSchoolType(iSchoolTypePK);
 			}
 			if (iwc.isParameterSet(PARAMETER_SCHOOL_SEASON)) {
 				iSchoolSeasonPK = iwc.getParameter(PARAMETER_SCHOOL_SEASON);
-				iSchoolSeason = getBusiness().getSchoolBusiness().getSchoolSeason(iSchoolSeasonPK);
 			}
 			if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
 				iStudyPathGroupPK = iwc.getParameter(PARAMETER_STUDY_PATH_GROUP);
-				iStudyPathGroup = getBusiness().getStudyPathBusiness().findStudyPathGroup(iStudyPathGroupPK);
 			}
-			if (iwc.isParameterSet(PARAMETER_STUDY_PATH)) {
-				iStudyPathPK = iwc.getParameter(PARAMETER_STUDY_PATH);
+			
+			if (iSchoolTypePK != null) {
+				iSchoolType = getBusiness().getSchoolBusiness().getSchoolType(iSchoolTypePK);
+			}
+			if (iSchoolSeasonPK != null) {
+				iSchoolSeason = getBusiness().getSchoolBusiness().getSchoolSeason(iSchoolSeasonPK);
+			}
+			if (iStudyPathGroupPK != null) {
+				iStudyPathGroup = getBusiness().getStudyPathBusiness().findStudyPathGroup(iStudyPathGroupPK);
 			}
 		}
 		catch (RemoteException re) {

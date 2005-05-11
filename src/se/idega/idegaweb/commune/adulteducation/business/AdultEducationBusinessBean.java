@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.2 2005/05/11 13:14:12 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.3 2005/05/11 17:44:48 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,9 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -48,10 +50,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -156,6 +158,26 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		return getChoiceHome().findByUserAndCourse(user.getPrimaryKey(), coursePK);
 	}
 	
+	public AdultEducationChoice getChoice(Object choicePK) throws FinderException {
+		return getChoiceHome().findByPrimaryKey(choicePK);
+	}
+	
+	public AdultEducationChoice getChoice(User user, Object studyPathPK, int choiceOrder) throws FinderException {
+		String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus() };
+		return getChoiceHome().findByUserAndStudyPathAndChoiceOrder(user.getPrimaryKey(), studyPathPK, choiceOrder, statuses);
+	}
+	
+	public Collection getChoices(User user, SchoolSeason season) {
+		try {
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+			return getChoiceHome().findAllByUserAndSeasonAndStatuses(user, season, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
 	public Collection getSelectedStudyPaths(User user, SchoolSeason season) {
 		Collection studyPaths = new ArrayList();
 		
@@ -192,6 +214,21 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	public Collection getAvailableCourses(Object seasonPK, Object schoolPK, Object studyPathPK) {
 		try {
 			return getCourseHome().findAllBySeasonAndSchoolAndStudyPath(seasonPK, schoolPK, studyPathPK);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getPendingSeasons() {
+		try {
+			List list = new ArrayList(getSchoolBusiness().getSchoolSeasonHome().findPendingSeasonsByDate(getCategory(), new IWTimestamp().getDate()));
+			Collections.reverse(list);
+			return list;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -343,7 +380,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		return course;
 	}
 	
-	public void storeChoices(User user, Collection courses, String comment, Object[] reasons, String otherReason) throws IDOCreateException {
+	public void storeChoices(User user, Collection courses, Object[] oldCourses, String comment, Object[] reasons, String otherReason) throws IDOCreateException {
 		javax.transaction.UserTransaction trans = this.getSessionContext().getUserTransaction();
 		try {
 			trans.begin();
@@ -359,6 +396,12 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			int i = 0;
 			while (iter.hasNext()) {
 				Object course = iter.next();
+				
+				Object oldCourse = course;
+				if (oldCourses != null && oldCourses.length > i) {
+					oldCourse = oldCourses[i];
+				}
+				
 				timeNow.addSeconds(-i);
 				if (i == 0) {
 					status = first;
@@ -366,7 +409,8 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 				else {
 					status = other;
 				}
-				choice = storeChoice(user, course, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate());
+				
+				choice = storeChoice(user, course, oldCourse, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate());
 				i++;
 			}
 			trans.commit();
@@ -383,10 +427,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	private AdultEducationChoice storeChoice(User user, Object course, String comment, Object[] reasons, String otherReason, int choiceOrder, CaseStatus status, Case parentCase, Date choiceDate) throws CreateException {
+	private AdultEducationChoice storeChoice(User user, Object course, Object oldCourse, String comment, Object[] reasons, String otherReason, int choiceOrder, CaseStatus status, Case parentCase, Date choiceDate) throws CreateException {
 		AdultEducationChoice choice = null;
 		try {
-			choice = getChoice(user, course);
+			choice = getChoice(user, oldCourse);
 			try {
 				choice.removeAllReasons();
 			}
@@ -430,6 +474,36 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 		catch (FinderException fe) {
 			throw new RemoveException(fe.getMessage());
+		}
+	}
+	
+	public void removeChoice(Object choicePK, User performer) {
+		try {
+			AdultEducationChoice choice = getChoiceHome().findByPrimaryKey(choicePK);
+			changeCaseStatus(choice, getCaseStatusDeleted().getStatus(), performer);
+			
+			if (choice.getChildCount() > 0) {
+				Iterator iter = choice.getChildrenIterator();
+				while (iter.hasNext()) {
+					Case childCase = (Case) iter.next();
+					if (childCase.getCode().equals(choice.getCode())) {
+						changeCaseStatus(childCase, getCaseStatusDeleted().getStatus(), performer);
+						
+						if (childCase.getChildCount() > 0) {
+							Iterator iterator = childCase.getChildrenIterator();
+							while (iterator.hasNext()) {
+								Case childChildCase = (Case) iterator.next();
+								if (childChildCase.getCode().equals(choice.getCode())) {
+									changeCaseStatus(childChildCase, getCaseStatusDeleted().getStatus(), performer);
+								}								
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
 		}
 	}
 }

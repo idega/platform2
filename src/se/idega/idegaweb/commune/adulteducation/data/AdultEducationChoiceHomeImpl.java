@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHomeImpl.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
- * Created on May 10, 2005
+ * $Id: AdultEducationChoiceHomeImpl.java,v 1.2 2005/05/11 17:44:48 laddi Exp $
+ * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEducationChoiceHome {
 
@@ -51,9 +51,27 @@ public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEdu
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findAllByUserAndSeasonAndStatuses(User user, SchoolSeason season, String[] statuses)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllByUserAndSeasonAndStatuses(user,
+				season, statuses);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public AdultEducationChoice findByUserAndCourse(Object userPK, Object coursePK) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((AdultEducationChoiceBMPBean) entity).ejbFindByUserAndCourse(userPK, coursePK);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public AdultEducationChoice findByUserAndStudyPathAndChoiceOrder(Object userPK, Object studyPathPK, int choiceOrder,
+			String[] statuses) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((AdultEducationChoiceBMPBean) entity).ejbFindByUserAndStudyPathAndChoiceOrder(userPK, studyPathPK,
+				choiceOrder, statuses);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}

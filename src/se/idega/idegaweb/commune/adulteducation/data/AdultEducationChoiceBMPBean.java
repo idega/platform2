@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.2 2005/05/11 17:44:48 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,12 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.AdultEducationConstants;
 import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -266,6 +268,28 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		return idoFindPKsByQuery(query);
 	}
 	
+	public Collection ejbFindAllByUserAndSeasonAndStatuses(User user, SchoolSeason season, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(table, cases);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(table, CHOICE_ORDER, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
 	public Object ejbFindByUserAndCourse(Object userPK, Object coursePK) throws FinderException {
 		Table table = new Table(this);
 		
@@ -273,6 +297,28 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		query.addColumn(new WildCardColumn(table));
 		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, userPK));
 		query.addCriteria(new MatchCriteria(table, COURSE, MatchCriteria.EQUALS, coursePK));
+		
+		return idoFindOnePKByQuery(query);
+	}
+	
+	public Object ejbFindByUserAndStudyPathAndChoiceOrder(Object userPK, Object studyPathPK, int choiceOrder, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(table, cases);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, userPK));
+		query.addCriteria(new MatchCriteria(course, "sch_study_path_id", MatchCriteria.EQUALS, studyPathPK));
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
 		
 		return idoFindOnePKByQuery(query);
 	}
