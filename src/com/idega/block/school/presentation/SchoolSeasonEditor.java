@@ -11,11 +11,13 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -76,11 +78,14 @@ public class SchoolSeasonEditor extends SchoolBlock {
 			String name = iwc.getParameter("sch_season_name");
 			String start = iwc.getParameter("sch_season_start");
 			String end = iwc.getParameter("sch_season_end");
+			String startdate = iwc.getParameter("sch_season_start_date");
 			String duedate = iwc.getParameter("sch_season_due_date");
+			String category = iwc.getParameter("sch_type_cat");
 			int aid = -1;
 			Date startDate = null;
 			Date endDate = null;
 			Date dueDate = null;
+			Date choiceStartDate = null;
 			if (id != null) {
 				aid = Integer.parseInt(id);
 			}
@@ -93,7 +98,10 @@ public class SchoolSeasonEditor extends SchoolBlock {
 			if (duedate != null) {
 				dueDate = new IWTimestamp(duedate).getSQLDate();
 			}
-			getBusiness().storeSchoolSeason(aid, name, startDate, endDate, dueDate);
+			if (startdate != null) {
+				choiceStartDate = new IWTimestamp(startdate).getSQLDate();
+			}
+			getBusiness().storeSchoolSeason(aid, name, startDate, endDate, choiceStartDate, dueDate, category);
 		}
 	}
 
@@ -133,7 +141,7 @@ public class SchoolSeasonEditor extends SchoolBlock {
 			try {
 				startDate = sarea.getSchoolSeasonStart() != null ? new IWTimestamp(sarea.getSchoolSeasonStart()) : null;
 				endDate = sarea.getSchoolSeasonEnd() != null ? new IWTimestamp(sarea.getSchoolSeasonEnd()) : null;
-				dueDate = sarea.getSchoolSeasonDueDate() != null ? new IWTimestamp(sarea.getSchoolSeasonDueDate()) : null;
+				dueDate = sarea.getChoiceEndDate() != null ? new IWTimestamp(sarea.getChoiceEndDate()) : null;
 				Link L = new Link(getEditIcon(localize("edit", "Edit")));
 				L.addParameter("sch_school_season_id", ((Integer) sarea.getPrimaryKey()).intValue());
 				
@@ -184,19 +192,24 @@ public class SchoolSeasonEditor extends SchoolBlock {
 		return table;
 	}
 
-	public PresentationObject getInputTable(IWContext iwc, SchoolSeason bean) {
-		Table T = new Table(3, 6);
+	public PresentationObject getInputTable(IWContext iwc, SchoolSeason bean) throws RemoteException {
+		Table T = new Table(3, 8);
 		T.mergeCells(1, 1, 3, 1);
 		T.add(getHeader(localize("school_season", "SchoolSeason")), 1, 1);
 		T.add(getHeader(localize("name", "Name")), 1, 2);
 		T.add(getHeader(localize("start", "Start")), 1, 3);
 		T.add(getHeader(localize("end", "End")), 1, 4);
-		T.add(getHeader(localize("due_date", "Duedate")), 1, 5);
+		T.add(getHeader(localize("start_date", "Start date")), 1, 5);
+		T.add(getHeader(localize("due_date", "Duedate")), 1, 6);
+		T.add(getHeader(localize("school_category", "School category")), 1, 7);
 
 		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_season_name"));
 		DateInput inputStart = (DateInput) getStyledInterface(new DateInput("sch_season_start"));
 		DateInput inputEnd = (DateInput) getStyledInterface(new DateInput("sch_season_end"));
+		DateInput inputStartDate = (DateInput) getStyledInterface(new DateInput("sch_season_start_date"));
 		DateInput inputDueDate = (DateInput) getStyledInterface(new DateInput("sch_season_due_date"));
+		SelectorUtility util = new SelectorUtility();
+		DropdownMenu drpCategory = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), getBusiness().getSchoolCategories(), "getLocalizedKey", getResourceBundle()));
 		int beanId = -1;
 		if (bean != null) {
 			try {
@@ -204,7 +217,13 @@ public class SchoolSeasonEditor extends SchoolBlock {
 				inputName.setContent(bean.getSchoolSeasonName());
 				inputStart.setDate(bean.getSchoolSeasonStart());
 				inputEnd.setDate(bean.getSchoolSeasonEnd());
-				inputDueDate.setDate(bean.getSchoolSeasonDueDate());
+				if (bean.getChoiceStartDate() != null) {
+					inputStartDate.setDate(bean.getChoiceStartDate());
+				}
+				inputDueDate.setDate(bean.getChoiceEndDate());
+				if (bean.getSchoolCategoryPK() != null) {
+					drpCategory.setSelectedElement(bean.getSchoolCategoryPK());
+				}
 				T.add(new HiddenInput("sch_school_season_id", String.valueOf(beanId)));
 			}
 			catch (Exception ex) {
@@ -214,16 +233,18 @@ public class SchoolSeasonEditor extends SchoolBlock {
 		T.add(inputName, 3, 2);
 		T.add(inputStart, 3, 3);
 		T.add(inputEnd, 3, 4);
-		T.add(inputDueDate, 3, 5);
-		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_season", "true")), 3, 6);
+		T.add(inputStartDate, 3, 5);
+		T.add(inputDueDate, 3, 6);
+		T.add(drpCategory, 3, 7);
+		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_season", "true")), 3, 8);
 		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
 		cancel.setPageToOpen(iwc.getCurrentIBPageID());
-		T.add(cancel, 3, 6);
+		T.add(cancel, 3, 8);
 		if (beanId > 0) {
 			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
 			delete.setPageToOpen(iwc.getCurrentIBPageID());
 			delete.addParameterToPage("sch_delete_season", beanId);
-			T.add(delete, 3, 6);
+			T.add(delete, 3, 8);
 		}
 
 		return T;

@@ -44,6 +44,14 @@ public class SchoolStudyPathGroupBMPBean extends GenericEntity implements School
 		return idoFindPKsByQuery(query);
 	}
 	
+	public Object ejbFindByGroupName(String name) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEqualsQuoted(COLUMN_GROUP_NAME, name);
+		query.appendOrderBy(COLUMN_GROUP_NAME);
+		return idoFindOnePKByQuery(query);
+	}
+	
 	public String getGroupName() {
 		return getStringColumnValue(COLUMN_GROUP_NAME);
 	}

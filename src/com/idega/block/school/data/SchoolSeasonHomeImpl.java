@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolSeasonHomeImpl.java,v 1.8 2005/03/19 16:38:22 laddi Exp $
- * Created on 19.3.2005
+ * $Id: SchoolSeasonHomeImpl.java,v 1.9 2005/05/11 07:14:19 laddi Exp $
+ * Created on 28.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,13 +16,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * <p>
- * TODO laddi Describe Type SchoolSeasonHomeImpl
- * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SchoolSeasonHomeImpl extends IDOFactory implements SchoolSeasonHome {
 
@@ -45,6 +42,20 @@ public class SchoolSeasonHomeImpl extends IDOFactory implements SchoolSeasonHome
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public java.util.Collection findAllSchoolSeasonsWithoutCategory() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolSeasonBMPBean) entity).ejbFindAllSchoolSeasonsWithoutCategory();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public java.util.Collection findAllSchoolSeasons(SchoolCategory category) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolSeasonBMPBean) entity).ejbFindAllSchoolSeasons(category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 	public java.util.Collection findAllPreviousSchoolSeasons(SchoolSeason schoolSeason) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolSeasonBMPBean) entity).ejbFindAllPreviousSchoolSeasons(schoolSeason);
@@ -59,25 +70,25 @@ public class SchoolSeasonHomeImpl extends IDOFactory implements SchoolSeasonHome
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolSeason findSeasonByDate(Date date) throws FinderException {
+	public SchoolSeason findSeasonByDate(SchoolCategory category, Date date) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolSeasonBMPBean) entity).ejbFindSeasonByDate(date);
+		Object pk = ((SchoolSeasonBMPBean) entity).ejbFindSeasonByDate(category, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolSeason findCurrentSeason() throws FinderException {
+	public SchoolSeason findCurrentSeason(SchoolCategory category) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolSeasonBMPBean) entity).ejbFindCurrentSeason();
+		Object pk = ((SchoolSeasonBMPBean) entity).ejbFindCurrentSeason(category);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public Collection findSchoolSeasonsActiveInTimePeriod(Date firstDateInPeriod, Date lastDateInPeriod)
-			throws FinderException {
+	public Collection findSchoolSeasonsActiveInTimePeriod(SchoolCategory category, Date firstDateInPeriod,
+			Date lastDateInPeriod) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolSeasonBMPBean) entity).ejbFindSchoolSeasonsActiveInTimePeriod(firstDateInPeriod,
-				lastDateInPeriod);
+		java.util.Collection ids = ((SchoolSeasonBMPBean) entity).ejbFindSchoolSeasonsActiveInTimePeriod(category,
+				firstDateInPeriod, lastDateInPeriod);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

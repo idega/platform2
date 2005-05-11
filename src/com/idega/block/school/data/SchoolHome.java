@@ -19,7 +19,9 @@ public interface SchoolHome extends com.idega.data.IDOHome
  public Collection findAllByCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException;
  public Collection findAllBySchoolArea(int p0)throws javax.ejb.FinderException;
  public Collection findAllBySchoolGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException;
+ public Collection findAllByInQuery(java.lang.String p0)throws javax.ejb.FinderException;
  public Collection findAllBySchoolName(java.lang.String p0)throws javax.ejb.FinderException;
+ public Collection findAllBySchoolType(SchoolType p0)throws javax.ejb.FinderException;
  public Collection findAllBySchoolType(Collection p0)throws javax.ejb.FinderException;
  public Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException;
  public Collection findAllCentralizedAdministrated()throws javax.ejb.FinderException;

@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolSeason.java,v 1.7 2005/03/19 16:38:22 laddi Exp $
- * Created on 19.3.2005
+ * $Id: SchoolSeason.java,v 1.8 2005/05/11 07:14:19 laddi Exp $
+ * Created on 28.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -15,13 +15,10 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * <p>
- * TODO laddi Describe Type SchoolSeason
- * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface SchoolSeason extends IDOEntity {
 
@@ -61,14 +58,44 @@ public interface SchoolSeason extends IDOEntity {
 	public void setSchoolSeasonStart(java.util.Date start);
 
 	/**
-	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#getSchoolSeasonDueDate
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#getChoiceEndDate
 	 */
-	public Date getSchoolSeasonDueDate();
+	public Date getChoiceEndDate();
 
 	/**
-	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#setSchoolSeasonDueDate
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#setChoiceEndDate
 	 */
-	public void setSchoolSeasonDueDate(java.util.Date due);
+	public void setChoiceEndDate(java.util.Date due);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#getChoiceStartDate
+	 */
+	public Date getChoiceStartDate();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#setChoiceStartDate
+	 */
+	public void setChoiceStartDate(java.util.Date due);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#getSchoolCategory
+	 */
+	public SchoolCategory getSchoolCategory();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#getSchoolCategoryPK
+	 */
+	public String getSchoolCategoryPK();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#setSchoolCategory
+	 */
+	public void setSchoolCategory(SchoolCategory category);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#setSchoolCategory
+	 */
+	public void setSchoolCategory(Object categoryPK);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#getPreviousSeason

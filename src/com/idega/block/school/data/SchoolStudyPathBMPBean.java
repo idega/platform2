@@ -8,6 +8,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
@@ -68,7 +69,11 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	}
 
 	public String getLocalizedKey() {
-		return getStringColumnValue(COLUMN_LOCALIZED_KEY);
+		String key = getStringColumnValue(COLUMN_LOCALIZED_KEY);
+		if (key == null) {
+			key = "sch_study_path." + getCode();
+		}
+		return key;
 	}
 	
 	public void setLocalizedKey(String localizedKey) {
@@ -188,16 +193,28 @@ public void setStudyPathGroupID(int study_path_group) {
 	}
 
 	public Collection ejbFindStudyPaths(School school) throws IDORelationshipException, FinderException {
-		return ejbFindStudyPaths(school, school.getSchoolTypes());
+		return ejbFindStudyPaths(school, null, school.getSchoolTypes());
+	}
+
+	public Collection ejbFindStudyPaths(School school, SchoolStudyPathGroup group) throws IDORelationshipException, FinderException {
+		return ejbFindStudyPaths(school, group, school.getSchoolTypes());
 	}
 
 	public Collection ejbFindStudyPaths(School school, Object schoolTypePK) throws FinderException {
+		return ejbFindStudyPaths(school, null, schoolTypePK);
+	}
+	
+	public Collection ejbFindStudyPaths(School school, SchoolStudyPathGroup group, Object schoolTypePK) throws FinderException {
 		Vector vector = new Vector();
 		vector.add(schoolTypePK);
-		return ejbFindStudyPaths(school, vector);
+		return ejbFindStudyPaths(school, group, vector);
 	}
 
 	public Collection ejbFindStudyPaths(School school, Collection schoolTypePKs) throws FinderException {
+		return ejbFindStudyPaths(school, null, schoolTypePKs);
+	}
+	
+	public Collection ejbFindStudyPaths(School school, SchoolStudyPathGroup group, Collection schoolTypePKs) throws FinderException {
 		boolean useTypes = schoolTypePKs != null && !schoolTypePKs.isEmpty();
 		
 		if (useTypes) {
@@ -207,7 +224,13 @@ public void setStudyPathGroupID(int study_path_group) {
 			.append(" where s.").append(COLUMN_SCHOOL_TYPE).append(" in ( ");
 			Iterator iter = schoolTypePKs.iterator();
 			while (iter.hasNext()) {
-				query.append(iter.next().toString());
+				Object next = iter.next();
+				if (next instanceof IDOEntity) {
+					query.append(((IDOEntity) next).getPrimaryKey().toString());
+				}
+				else {
+					query.append(next.toString());
+				}
 				if (iter.hasNext()) {
 					query.append(", ");
 				}
@@ -218,6 +241,7 @@ public void setStudyPathGroupID(int study_path_group) {
 			.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null")
 			.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
 			
+			System.out.println(query.toString());
 			return this.idoFindPKsByQuery(query);
 		} else {
 			/** No schoolTypes. Returning empty collection instead of all schoolCourses */
@@ -263,6 +287,17 @@ public void setStudyPathGroupID(int study_path_group) {
 		query.appendWhere().append(COLUMN_SCHOOL_TYPE).appendInCollection(schoolTypes);
 		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
 		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendOrderBy(COLUMN_CODE);
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindBySchoolType(SchoolType schoolType, SchoolStudyPathGroup group) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_SCHOOL_TYPE,schoolType.getPrimaryKey().toString());
+		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendAndEquals(COLUMN_STUDY_PATH_GROUP_ID, group.getPrimaryKey().toString());
 		query.appendOrderBy(COLUMN_CODE);
 		return idoFindPKsByQuery(query);
 	}

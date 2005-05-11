@@ -364,6 +364,13 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		return super.idoFindPKsBySQL(select);
 	}
 
+	public Collection ejbFindAllBySchoolType(SchoolType type) throws javax.ejb.FinderException {
+		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + type.getPrimaryKey().toString() + " and m.sch_school_id = s.sch_school_id " +
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+				" order by s."+NAME;
+		return super.idoFindPKsBySQL(select);
+	}
+
 	public Collection ejbFindAllByAreaTypeManagement(int areaId, int typeId, String managementType) throws javax.ejb.FinderException {
 		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id " +
 				" and " + SCHOOLAREA + " = " + areaId + 
@@ -606,6 +613,13 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 
 		return super.idoFindPKsBySQL(sql.toString());
 
+	}
+	
+	public Collection ejbFindAllByInQuery(String inQuery) throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from sch_school where sch_school_id in (");
+		sql.append(inQuery).append(") order by ").append(NAME);
+		
+		return idoFindPKsBySQL(sql.toString());
 	}
 	
 	public Collection ejbFindAllByAreaAndTypeAndYear(int areaID, int typeID, int yearID) throws javax.ejb.FinderException {

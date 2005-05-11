@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolSeasonHome.java,v 1.8 2005/03/19 16:38:22 laddi Exp $
- * Created on 19.3.2005
+ * $Id: SchoolSeasonHome.java,v 1.9 2005/05/11 07:14:19 laddi Exp $
+ * Created on 28.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,13 +16,10 @@ import com.idega.data.IDOHome;
 
 
 /**
- * <p>
- * TODO laddi Describe Type SchoolSeasonHome
- * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface SchoolSeasonHome extends IDOHome {
 
@@ -34,6 +31,16 @@ public interface SchoolSeasonHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindAllSchoolSeasons
 	 */
 	public java.util.Collection findAllSchoolSeasons() throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindAllSchoolSeasonsWithoutCategory
+	 */
+	public java.util.Collection findAllSchoolSeasonsWithoutCategory() throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindAllSchoolSeasons
+	 */
+	public java.util.Collection findAllSchoolSeasons(SchoolCategory category) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindAllPreviousSchoolSeasons
@@ -48,18 +55,18 @@ public interface SchoolSeasonHome extends IDOHome {
 	/**
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindSeasonByDate
 	 */
-	public SchoolSeason findSeasonByDate(Date date) throws FinderException;
+	public SchoolSeason findSeasonByDate(SchoolCategory category, Date date) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindCurrentSeason
 	 */
-	public SchoolSeason findCurrentSeason() throws FinderException;
+	public SchoolSeason findCurrentSeason(SchoolCategory category) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindSchoolSeasonsActiveInTimePeriod
 	 */
-	public Collection findSchoolSeasonsActiveInTimePeriod(Date firstDateInPeriod, Date lastDateInPeriod)
-			throws FinderException;
+	public Collection findSchoolSeasonsActiveInTimePeriod(SchoolCategory category, Date firstDateInPeriod,
+			Date lastDateInPeriod) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindNextSeason

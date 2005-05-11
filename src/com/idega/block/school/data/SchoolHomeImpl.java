@@ -105,6 +105,20 @@ public Collection findAllBySchoolName(java.lang.String p0)throws javax.ejb.Finde
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public Collection findAllByInQuery(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Collection ids = ((SchoolBMPBean)entity).ejbFindAllByInQuery(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public Collection findAllBySchoolType(SchoolType p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public Collection findAllBySchoolType(Collection p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolType(p0);
