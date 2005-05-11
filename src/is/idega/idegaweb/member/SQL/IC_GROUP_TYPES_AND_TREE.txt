@@ -94,3 +94,42 @@ insert into ic_group_type_tree values ('general','iwme_club_division')
 insert into ic_group_type_tree values ('iwme_temporary','iwme_club_division')
 
 insert into ic_group_type_tree values ('iwme_club_player_template','iwme_club_division_template')
+
+
+//AND THEN THE TYPE SETTINGS
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='alias', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='alias';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='general', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='general';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_club';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_committee', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_club_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_division', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_club_division';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_division_committee', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_club_division_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_main_committee', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_main_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_division_staff', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_division_staff';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_division_template', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_club_division_template';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_player_template', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_player_template';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_division_trainer', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_division_trainer';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_member', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_member';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_player', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_player';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_staff', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_staff';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_trainer', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_trainer';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_federation', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_federation';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_federation_committee', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_federation_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_federation_staff', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_federation_staff'
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_league', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_league';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_league_collection', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_league_collection';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_league_committee', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_league_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_league_staff', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_league_staff'
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_regional_union', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_regional_union';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_regional_union_collection', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_regional_union_collection';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_regional_union_committee', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_regional_union_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_regional_union_staff', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_regional_union_staff';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_temporary', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_temporary';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_union', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_union';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_union_committee', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_union_committee';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_union_staff', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_union_staff';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='permission', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='permission';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_league_club_division', SAME_CHILD_TYPE='N', SAME_CHILD_TYPE_ONLY='N' WHERE GROUP_TYPE='iwme_league_club_division';
+UPDATE IC_GROUP_TYPE SET GROUP_TYPE='iwme_club_practice_player', SAME_CHILD_TYPE='Y', SAME_CHILD_TYPE_ONLY='Y' WHERE GROUP_TYPE='iwme_club_practice_player';
+
+
+
