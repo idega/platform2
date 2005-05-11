@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.2 2005/05/11 17:44:48 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.3 2005/05/11 17:54:47 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:54:47 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -338,6 +338,8 @@ public class ChoiceApplication extends AdultEducationBlock {
 		table.setCellBorder(1, 5, 1, "#999999", "solid");
 		
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("submit", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_STORE)));
+		submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
+		
 		table.add(new Break(), 1, 6);
 		table.add(submit, 1, 6);
 
@@ -373,6 +375,51 @@ public class ChoiceApplication extends AdultEducationBlock {
 			add(getSmallErrorText(localize("choice_store_failed", "Choice store failed.")));
 			showApplication(iwc);
 		}
+	}
+
+	private String getSubmitCheckScript() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("\nfunction checkApplication(){\n\t");
+		buffer.append("\n\t var dropOne = ").append("findObj('").append(PARAMETER_COURSE + "_1").append("');");
+		buffer.append("\n\t var dropTwo = ").append("findObj('").append(PARAMETER_COURSE + "_2").append("');");
+		buffer.append("\n\t var dropThree = ").append("findObj('").append(PARAMETER_COURSE + "_3").append("');");
+
+		buffer.append("\n\t var one = 0;");
+		buffer.append("\n\t var two = 0;");
+		buffer.append("\n\t var three = 0;");
+		buffer.append("\n\t var length = 0;");
+
+		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) {\n\t\t one = dropOne.options[dropOne.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropThree.selectedIndex > 0) {\n\t\t three = dropThree.options[dropThree.selectedIndex].value;\n\t\t length++;\n\t }");
+		
+		buffer.append("\n\t if(length > 0){");
+		buffer.append("\n\t\t if(one > 0 && (one == two || one == three)){");
+		String message = localize("must_not_be_the_same", "Please do not choose the same course more than once.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t if(two > 0 && (two == one || two == three)){");
+		message = localize("child_care.must_not_be_the_same", "Please do not choose the same course more than once.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t if(three > 0 && (three == one || three == two)){");
+		message = localize("child_care.must_not_be_the_same", "Please do not choose the same course more than once.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t }");
+		buffer.append("\n\t else {");
+		message = localize("child_care.must_fill_out_one", "Please fill out the first choice.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		message = localize("less_than_three_chosen", "You have chosen less than three course.  A placement can not be guaranteed.");
+		buffer.append("\n\t if(length < 3)\n\t\t return confirm('").append(message).append("');");
+		buffer.append("\n\t return true;");
+		buffer.append("\n}\n");
+		return buffer.toString();
 	}
 
 	private int parseAction(IWContext iwc) {
