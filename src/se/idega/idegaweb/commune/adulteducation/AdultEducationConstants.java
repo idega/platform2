@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationConstants.java,v 1.1 2005/05/11 07:16:48 laddi Exp $
+ * $Id: AdultEducationConstants.java,v 1.2 2005/05/11 13:14:12 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,5 +26,12 @@ public class AdultEducationConstants {
 	public static final String STUDY_PATH_GROUP_ECONOMICS = "ECONOMICS";
 	public static final String STUDY_PATH_GROUP_IT = "IT";
 	public static final String STUDY_PATH_GROUP_PROFESSION_TRAINING = "PROFESSION_TRAINING";
+
+	public static final String REASON_FULFILL_STUDIES = "FULFILL_STUDIES";
+	public static final String REASON_COMPLEMENT_HIGH_SCHOOL = "COMPLEMENT_HIGH_SCHOOL";
+	public static final String REASON_QUALIFICATION_COURSE = "QUALIFICATION_COURSE";
+	public static final String REASON_WORK_RELATED_KNOWLEDGE = "WORK_RELATED_KNOWLEDGE";
+	public static final String REASON_TO_GET_EMPLOYMENT = "TO_GET_EMPLOYMENT";
+	public static final String REASON_GET_FINAL_GRADE = "GET_FINAL_GRADE";
 
 }

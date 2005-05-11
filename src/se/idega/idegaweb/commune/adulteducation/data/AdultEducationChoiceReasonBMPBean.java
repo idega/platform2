@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceReasonBMPBean.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
+ * $Id: AdultEducationChoiceReasonBMPBean.java,v 1.2 2005/05/11 13:14:12 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -77,5 +77,16 @@ public class AdultEducationChoiceReasonBMPBean extends GenericEntity  implements
 		query.addCriteria(new MatchCriteria(table, IS_ACTIVE, MatchCriteria.EQUALS, true));
 		
 		return idoFindPKsByQuery(query);
+	}
+	
+	public Object ejbFindByName(String name) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, NAME, MatchCriteria.EQUALS, name));
+		query.addCriteria(new MatchCriteria(table, IS_ACTIVE, MatchCriteria.EQUALS, true));
+		
+		return idoFindOnePKByQuery(query);
 	}
 }

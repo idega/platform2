@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.1 2005/05/11 07:16:22 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.2 2005/05/11 13:14:12 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -48,10 +48,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/11 07:16:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -343,7 +343,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		return course;
 	}
 	
-	public void storeChoices(User user, Object[] courses, String comment, Object[] reasons, String otherReason) throws IDOCreateException {
+	public void storeChoices(User user, Collection courses, String comment, Object[] reasons, String otherReason) throws IDOCreateException {
 		javax.transaction.UserTransaction trans = this.getSessionContext().getUserTransaction();
 		try {
 			trans.begin();
@@ -355,7 +355,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			AdultEducationChoice choice = null;
 			IWTimestamp timeNow = new IWTimestamp();
 			
-			for (int i = 0; i < courses.length; i++) {
+			Iterator iter = courses.iterator();
+			int i = 0;
+			while (iter.hasNext()) {
+				Object course = iter.next();
 				timeNow.addSeconds(-i);
 				if (i == 0) {
 					status = first;
@@ -363,7 +366,8 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 				else {
 					status = other;
 				}
-				choice = storeChoice(user, courses[i], comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate());
+				choice = storeChoice(user, course, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate());
+				i++;
 			}
 			trans.commit();
 		}
@@ -405,12 +409,14 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		choice.setOtherReason(otherReason);
 		choice.store();
 		
-		for (int i = 0; i < reasons.length; i++) {
-			try {
-				choice.addReason(reasons[i]);
-			}
-			catch (IDOAddRelationshipException iare) {
-				log(iare);
+		if (reasons != null) {
+			for (int i = 0; i < reasons.length; i++) {
+				try {
+					choice.addReason(reasons[i]);
+				}
+				catch (IDOAddRelationshipException iare) {
+					log(iare);
+				}
 			}
 		}
 		

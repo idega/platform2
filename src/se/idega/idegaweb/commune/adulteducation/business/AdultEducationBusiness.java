@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
- * Created on May 10, 2005
+ * $Id: AdultEducationBusiness.java,v 1.2 2005/05/11 13:14:12 laddi Exp $
+ * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface AdultEducationBusiness extends CaseBusiness {
 
@@ -120,7 +120,7 @@ public interface AdultEducationBusiness extends CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeChoices
 	 */
-	public void storeChoices(User user, Object[] courses, String comment, Object[] reasons, String otherReason)
+	public void storeChoices(User user, Collection courses, String comment, Object[] reasons, String otherReason)
 			throws IDOCreateException, java.rmi.RemoteException;
 
 	/**

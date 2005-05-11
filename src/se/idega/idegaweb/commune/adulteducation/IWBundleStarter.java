@@ -2,6 +2,8 @@ package se.idega.idegaweb.commune.adulteducation;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReasonHome;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolStudyPathGroup;
@@ -11,10 +13,10 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 
@@ -35,6 +37,13 @@ public class IWBundleStarter implements IWBundleStartable {
 		insertStudyPathGroup(AdultEducationConstants.STUDY_PATH_GROUP_PROFESSION_TRAINING);
 		insertStudyPathGroup(AdultEducationConstants.STUDY_PATH_GROUP_SCIENCE);
 		insertStudyPathGroup(AdultEducationConstants.STUDY_PATH_GROUP_SOCIAL_SCIENCES);
+		
+		insertReason(AdultEducationConstants.REASON_FULFILL_STUDIES);
+		insertReason(AdultEducationConstants.REASON_COMPLEMENT_HIGH_SCHOOL);
+		insertReason(AdultEducationConstants.REASON_QUALIFICATION_COURSE);
+		insertReason(AdultEducationConstants.REASON_WORK_RELATED_KNOWLEDGE);
+		insertReason(AdultEducationConstants.REASON_TO_GET_EMPLOYMENT);
+		insertReason(AdultEducationConstants.REASON_GET_FINAL_GRADE);
 	}
 
 	private void insertSchoolCategory(String category){
@@ -77,6 +86,31 @@ public class IWBundleStarter implements IWBundleStartable {
 					group.setLocalizationKey("study_path_group." + name);
 					group.store();
 					System.out.println("[IWBundleStarter]ÊInserted study path group = " + name);
+				}
+				catch (CreateException ce) {
+					ce.printStackTrace();
+				}
+			}
+		}
+		catch (IDOLookupException ile) {
+			ile.printStackTrace();
+		}
+	}
+
+	private void insertReason(String name){
+		try {
+			AdultEducationChoiceReasonHome cHome = (AdultEducationChoiceReasonHome) com.idega.data.IDOLookup.getHome(AdultEducationChoiceReason.class);
+			AdultEducationChoiceReason reason;
+			try {
+				reason = cHome.findByName(name); 
+			}
+			catch (FinderException fe) {
+				try {
+					reason = cHome.create();
+					reason.setName(name);
+					reason.setLocalizedKey("vux_choice_reason." + name);
+					reason.store();
+					System.out.println("[IWBundleStarter]ÊInserted reason = " + name);
 				}
 				catch (CreateException ce) {
 					ce.printStackTrace();
