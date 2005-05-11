@@ -400,6 +400,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 			if (showSubGroups != null && !showSubGroups.booleanValue())
 				query.appendAndEquals(COLUMN_SUB_GROUP, false);
 		}
+		query.appendAnd().appendLeftParenthesis().appendEquals(COLUMN_VALID, true).appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
+		
 		return super.idoFindPKsByQuery(query);
 	}
 
