@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolSeason.java,v 1.8 2005/05/11 07:14:19 laddi Exp $
- * Created on 28.4.2005
+ * $Id: SchoolSeason.java,v 1.9 2005/05/11 17:45:47 laddi Exp $
+ * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -15,10 +15,10 @@ import com.idega.data.IDOEntity;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:45:47 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface SchoolSeason extends IDOEntity {
 

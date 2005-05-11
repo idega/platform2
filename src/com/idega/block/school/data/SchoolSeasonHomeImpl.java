@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolSeasonHomeImpl.java,v 1.9 2005/05/11 07:14:19 laddi Exp $
- * Created on 28.4.2005
+ * $Id: SchoolSeasonHomeImpl.java,v 1.10 2005/05/11 17:45:47 laddi Exp $
+ * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:14:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 17:45:47 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SchoolSeasonHomeImpl extends IDOFactory implements SchoolSeasonHome {
 
@@ -75,6 +75,13 @@ public class SchoolSeasonHomeImpl extends IDOFactory implements SchoolSeasonHome
 		Object pk = ((SchoolSeasonBMPBean) entity).ejbFindSeasonByDate(category, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
+	}
+
+	public Collection findPendingSeasonsByDate(SchoolCategory category, Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolSeasonBMPBean) entity).ejbFindPendingSeasonsByDate(category, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public SchoolSeason findCurrentSeason(SchoolCategory category) throws FinderException {
