@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.3 2005/05/11 17:54:47 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.4 2005/05/11 19:42:59 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/11 17:54:47 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/11 19:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -102,6 +102,12 @@ public class ChoiceApplication extends AdultEducationBlock {
 		if (isUpdate) {
 			form.maintainParameter(PARAMETER_CHOICE);
 		}
+		
+		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("submit", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_STORE)));
+		form.add(new Break(2));
+		form.add(submit);
+		submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
+		form.setToDisableOnSubmit(submit, true);
 
 		add(form);
 	}
@@ -160,13 +166,12 @@ public class ChoiceApplication extends AdultEducationBlock {
 	}
 	
 	private Table getApplicationTable(IWContext iwc) throws RemoteException {
-		Table table = new Table(3, 6);
+		Table table = new Table(3, 5);
 		table.setCellpadding(3);
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.mergeCells(1, 4, 3, 4);
 		table.mergeCells(1, 5, 3, 5);
-		table.mergeCells(1, 6, 3, 6);
 		
 		Collection paths = getBusiness().getStudyPaths(iSchoolType, iStudyPathGroup);
 		if (!isUpdate) {
@@ -337,12 +342,6 @@ public class ChoiceApplication extends AdultEducationBlock {
 		table.setCellpadding(1, 5, 10);
 		table.setCellBorder(1, 5, 1, "#999999", "solid");
 		
-		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("submit", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_STORE)));
-		submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
-		
-		table.add(new Break(), 1, 6);
-		table.add(submit, 1, 6);
-
 		return table;
 	}
 	
