@@ -380,7 +380,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setNoWrap(1, row);
 		Collection providerSeasons = null; 
 		try {
-			providerSeasons = getSchoolBusiness().findAllSchoolSeasons();
+			providerSeasons = getSchoolBusiness().findAllSchoolSeasons(getSchoolBusiness().getCategoryElementarySchool());
 		}
 		catch (RemoteException e) {
 			providerSeasons = new ArrayList();

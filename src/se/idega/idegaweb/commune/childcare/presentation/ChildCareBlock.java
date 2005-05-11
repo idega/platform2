@@ -289,7 +289,7 @@ public class ChildCareBlock extends CommuneBlock {
 
 	protected DropdownMenu getSeasons() throws RemoteException {
 		SelectorUtility util = new SelectorUtility();
-		Collection seasons = business.getSchoolBusiness().findAllSchoolSeasons();
+		Collection seasons = business.getSchoolBusiness().findAllSchoolSeasons(getBusiness().getSchoolBusiness().getCategoryElementarySchool());
 
 		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterSeasonID()), seasons, "getSchoolSeasonName");
 		menu.setToSubmit();
@@ -298,7 +298,7 @@ public class ChildCareBlock extends CommuneBlock {
 			menu.setSelectedElement(getSession().getSeasonID());
 		else {
 			try {
-				SchoolSeason currentSeason = getBusiness().getSchoolBusiness().getCurrentSchoolSeason();
+				SchoolSeason currentSeason = getBusiness().getSchoolBusiness().getCurrentSchoolSeason(getBusiness().getSchoolBusiness().getCategoryElementarySchool());
 				menu.setSelectedElement(currentSeason.getPrimaryKey().toString());
 			}
 			catch (FinderException e) {

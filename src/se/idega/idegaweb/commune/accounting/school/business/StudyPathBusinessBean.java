@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.7 2005/04/22 08:10:45 malin Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.8 2005/05/11 07:15:37 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,13 +9,13 @@
  */
 package se.idega.idegaweb.commune.accounting.school.business;
 
-import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolStudyPath;
@@ -24,14 +24,17 @@ import com.idega.block.school.data.SchoolStudyPathGroupHome;
 import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.business.IBORuntimeException;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2005/04/22 08:10:45 $ by $Author: malin $
+ * Last modified: $Date: 2005/05/11 07:15:37 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
@@ -60,31 +63,49 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	/**
 	 * Return study path home. 
 	 */	
-	protected SchoolStudyPathHome getSchoolStudyPathHome() throws RemoteException {
-		return (SchoolStudyPathHome) com.idega.data.IDOLookup.getHome(SchoolStudyPath.class);
+	protected SchoolStudyPathHome getSchoolStudyPathHome() {
+		try {
+			return (SchoolStudyPathHome) com.idega.data.IDOLookup.getHome(SchoolStudyPath.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}	
 	
 	/**
 	 * Return study path home. 
 	 */	
-	protected SchoolStudyPathGroupHome getSchoolStudyPathGroupHome() throws RemoteException {
-		return (SchoolStudyPathGroupHome) com.idega.data.IDOLookup.getHome(SchoolStudyPathGroup.class);
+	protected SchoolStudyPathGroupHome getSchoolStudyPathGroupHome() {
+		try {
+			return (SchoolStudyPathGroupHome) com.idega.data.IDOLookup.getHome(SchoolStudyPathGroup.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 
 	/**
 	 * Return school type home. 
 	 */	
-	protected SchoolTypeHome getSchoolTypeHome() throws RemoteException {
-		return (SchoolTypeHome) com.idega.data.IDOLookup.getHome(SchoolType.class);
+	protected SchoolTypeHome getSchoolTypeHome() {
+		try {
+			return (SchoolTypeHome) com.idega.data.IDOLookup.getHome(SchoolType.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}	
 	
 	/**
 	 * Return school class member home. 
 	 */	
-	protected SchoolClassMemberHome getSchoolClassMemberHome ()
-        throws RemoteException {
-		return (SchoolClassMemberHome) com.idega.data.IDOLookup.getHome
-                (SchoolClassMember.class);
+	protected SchoolClassMemberHome getSchoolClassMemberHome() {
+		try {
+			return (SchoolClassMemberHome) com.idega.data.IDOLookup.getHome(SchoolClassMember.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}	
 	
 	/**
@@ -96,8 +117,6 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		try {
 			SchoolStudyPathHome home = getSchoolStudyPathHome();
 			return home.findAllStudyPaths();				
-		} catch (RemoteException e) {
-			return null;
 		} catch (FinderException e) {
 			return null;
 		}
@@ -116,7 +135,34 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		} catch (Exception e) {
 			return null;
 		}
-	}	
+	}
+	
+	public Collection findStudyPathsByType(SchoolType type, SchoolStudyPathGroup group) {
+		try {
+			return getSchoolStudyPathHome().findBySchoolType(type, group);
+		}
+		catch (FinderException fe) {
+			return new ArrayList();
+		}
+	}
+	
+	public Collection findStudyPathsBySchool(School school) {
+		return findStudyPathsBySchool(school, null);
+	}
+
+	public Collection findStudyPathsBySchool(School school, SchoolStudyPathGroup group) {
+		try {
+			return getSchoolStudyPathHome().findStudyPaths(school, group);
+		}
+		catch (IDORelationshipException ire) {
+			ire.printStackTrace();
+			return null;
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return null;
+		}
+	}
 	
 	/**
 	 * Finds all oparations (school types).
@@ -126,8 +172,6 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		try {
 			SchoolTypeHome home = getSchoolTypeHome();
 			return home.findAllSchoolTypes();				
-		} catch (RemoteException e) {
-			return null;
 		} catch (FinderException e) {
 			return null;
 		}
@@ -141,8 +185,6 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		try {
 			SchoolStudyPathGroupHome home = getSchoolStudyPathGroupHome();
 			return home.findAllStudyPathGroups();				
-		} catch (RemoteException e) {
-			return null;
 		} catch (FinderException e) {
 			return null;
 		}
@@ -156,12 +198,19 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		try {
 			SchoolStudyPathGroupHome home = getSchoolStudyPathGroupHome();
 			return home.findByPrimaryKey((new Integer (groupId)));			
-		} catch (RemoteException e) {
-			return null;
 		} catch (FinderException e) {
 			return null;
 		}
-	}	
+	}
+	
+	public SchoolStudyPathGroup findStudyPathGroup(Object groupPK) {
+		try {
+			return getSchoolStudyPathGroupHome().findByPrimaryKey(groupPK);			
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
 	
 	/**
 	 * Saves a study path object.
@@ -247,8 +296,6 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			sp.setPoints(intPoints);
 			sp.setStudyPathGroupID(intStudyPathGroupId);
 			sp.store();
-		} catch (RemoteException e) { 
-			throw new StudyPathException(KEY_CANNOT_SAVE_STUDY_PATH, DEFAULT_CANNOT_SAVE_STUDY_PATH);
 		} catch (CreateException e) { 
 			throw new StudyPathException(KEY_CANNOT_SAVE_STUDY_PATH, DEFAULT_CANNOT_SAVE_STUDY_PATH);
 		}		
@@ -284,8 +331,6 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
             } catch (final FinderException fe) {
                 // no problem, no kids with this study path - do nothing
             }
-		} catch (RemoteException e) { 
-			throw new StudyPathException(KEY_CANNOT_DELETE_STUDY_PATH, DEFAULT_CANNOT_DELETE_STUDY_PATH);
 		} catch (FinderException e) { 
 			throw new StudyPathException(KEY_CANNOT_DELETE_STUDY_PATH, DEFAULT_CANNOT_DELETE_STUDY_PATH);
 		} catch (RemoveException e) { 
@@ -303,8 +348,6 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		try {
 			SchoolStudyPathHome home = getSchoolStudyPathHome();
 			sp = home.findByPrimaryKey(new Integer(id));
-		} catch (RemoteException e) { 
-			throw new StudyPathException(KEY_CANNOT_FIND_STUDY_PATH, DEFAULT_CANNOT_FIND_STUDY_PATH);
 		} catch (FinderException e) { 
 			throw new StudyPathException(KEY_CANNOT_FIND_STUDY_PATH, DEFAULT_CANNOT_FIND_STUDY_PATH);
 		}

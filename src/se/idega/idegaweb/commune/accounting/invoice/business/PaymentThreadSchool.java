@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
+ * Last modified: $Date: 2005/05/11 07:15:37 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.140 $
+ * @version $Revision: 1.141 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -150,7 +150,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			if (hasPlacements()) {
 				throw new NotEmptyException(getLocalizedString("invoice.must_first_empty_old_data","Must first empty old data"));
 			}
-  			validSchoolSeasonId = ((Integer)getSchoolSeasonHome().findCurrentSeason().getPrimaryKey()).intValue();
+			SchoolCategory category = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findElementarySchoolCategory();
+  			validSchoolSeasonId = ((Integer)getSchoolSeasonHome().findCurrentSeason(category).getPrimaryKey()).intValue();
 
 			int privateType = ((Integer) providerType.getPrimaryKey()).intValue();
 

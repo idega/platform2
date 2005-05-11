@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.11 2005/04/22 12:03:57 malin Exp $
+ * $Id: StudyPathEditor.java,v 1.12 2005/05/11 07:15:37 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,42 +9,34 @@
  */
 package se.idega.idegaweb.commune.accounting.school.presentation;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.rmi.RemoteException;
-
-import javax.ejb.FinderException;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.Table;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Link;
-
-import com.idega.block.school.data.SchoolStudyPath;
-import com.idega.block.school.data.SchoolStudyPathGroup;
-
-import com.idega.block.school.data.SchoolType;
-
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathGroup;
+import com.idega.block.school.data.SchoolType;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /** 
  * This idegaWeb block that handles study paths for schools.
  * <p>
- * Last modified: $Date: 2005/04/22 12:03:57 $ by $Author: malin $
+ * Last modified: $Date: 2005/05/11 07:15:37 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class StudyPathEditor extends AccountingBlock {
 

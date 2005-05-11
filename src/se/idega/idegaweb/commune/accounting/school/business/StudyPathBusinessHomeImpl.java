@@ -1,23 +1,25 @@
 /*
- * Created on 2005-apr-22
+ * $Id: StudyPathBusinessHomeImpl.java,v 1.3 2005/05/11 07:15:37 laddi Exp $
+ * Created on 28.4.2005
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.accounting.school.business;
 
-
-
 import com.idega.business.IBOHomeImpl;
 
+
 /**
- * @author Malin
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Last modified: $Date: 2005/05/11 07:15:37 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.3 $
  */
-public class StudyPathBusinessHomeImpl extends IBOHomeImpl implements
-		StudyPathBusinessHome {
+public class StudyPathBusinessHomeImpl extends IBOHomeImpl implements StudyPathBusinessHome {
+
 	protected Class getBeanInterfaceClass() {
 		return StudyPathBusiness.class;
 	}
@@ -25,5 +27,4 @@ public class StudyPathBusinessHomeImpl extends IBOHomeImpl implements
 	public StudyPathBusiness create() throws javax.ejb.CreateException {
 		return (StudyPathBusiness) super.createIBO();
 	}
-
 }
