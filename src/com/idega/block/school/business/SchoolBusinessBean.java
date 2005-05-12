@@ -2858,8 +2858,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				if (!iter.hasNext()) {
 					if (member.getRemovedDate() != null) {
 						endDate = new IWTimestamp(member.getRemovedDate()).getDate();
+						log.setEndDate(endDate);
 					}
-					log.setEndDate(endDate);
 					log.setSchoolClass(new Integer(member.getSchoolClassId()));
 					log.store();
 					break;
