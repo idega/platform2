@@ -2313,6 +2313,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			SchoolClassMember oldStudent = null;
 			int oldContractFileID = -1;
 			int oldSchoolTypeID = -1;
+			int oldEmploymentTypeID = -1;
 			String oldCareTime = null;
 			if (oldArchiveID > 0) {// && application.getContractFileId()>0){
 
@@ -2323,6 +2324,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					invoiceReceiverId = con.getInvoiceReceiverID();
 					oldStudent = con.getSchoolClassMember();
 					oldSchoolTypeID = oldStudent.getSchoolTypeId();
+					oldEmploymentTypeID = con.getEmploymentTypeId();
 				}
 			}
 			
@@ -2331,6 +2333,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				oldContractFileID = -1;
 			}
 			if (oldSchoolTypeID != -1 && schoolTypeId != -1 && oldSchoolTypeID != schoolTypeId) {
+				oldContractFileID = -1;
+			}
+			if (oldEmploymentTypeID != -1 && employmentTypeID != -1 && oldEmploymentTypeID != employmentTypeID) {
 				oldContractFileID = -1;
 			}
 			if (oldContractFileID == -1) {
