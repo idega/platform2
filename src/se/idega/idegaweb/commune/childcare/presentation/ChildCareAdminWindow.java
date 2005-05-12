@@ -2006,7 +2006,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		if (!getBusiness().isTryingToChangeSchoolTypeButNotSchoolClass(oldArchiveId, schoolTypeId, schoolClassId)) {
 			if (getBusiness().isSchoolClassBelongingToSchooltype(schoolClassId, schoolTypeId)) {
-				if (getBusiness().isOnlyGroupChange(_applicationID, childCareTime, validFrom.getDate(), schoolTypeId)) {
+				if (getBusiness().isOnlyGroupChange(_applicationID, childCareTime, employmentType, validFrom.getDate(), schoolTypeId)) {
 					if (getBusiness().isGroupChange(_applicationID, validFrom.getDate(), schoolClassId)) {
 						getBusiness().changeGroup(_applicationID, validFrom.getDate(), schoolClassId, iwc.getCurrentUser());
 					}

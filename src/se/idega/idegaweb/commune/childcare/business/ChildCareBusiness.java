@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 26.4.2005 laddi Exp $
- * Created on 26.4.2005
+ * $Id: ChildCareBusiness.java 1.1 May 12, 2005 laddi Exp $
+ * Created on May 12, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -47,10 +47,7 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * <p>
- * TODO laddi Describe Type ChildCareBusiness
- * </p>
- *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: laddi $
+ * Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
  * @version $Revision: 1.1 $
@@ -577,8 +574,8 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isOnlyGroupChange
 	 */
-	public boolean isOnlyGroupChange(int applicationId, String careTime, Date validFrom, int schoolTypeId)
-			throws java.rmi.RemoteException;
+	public boolean isOnlyGroupChange(int applicationId, String careTime, int employmentTypeID, Date validFrom,
+			int schoolTypeId) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isGroupChange

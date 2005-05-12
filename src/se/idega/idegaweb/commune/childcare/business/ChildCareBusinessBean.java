@@ -2186,7 +2186,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return assignContractToApplication(applicationID, -1, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, false, -1, -1);
 	}
 
-	public boolean isOnlyGroupChange(int applicationId, String careTime, Date validFrom, int schoolTypeId) {
+	public boolean isOnlyGroupChange(int applicationId, String careTime, int employmentTypeID, Date validFrom, int schoolTypeId) {
 		boolean isOnlyGroupChange = false;
 
 		try {
@@ -2198,6 +2198,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			if (careTime.equals(oldCareTime) && schoolTypeId == oldSchoolTypeId) {
 				isOnlyGroupChange = true;
+			}
+			if (isOnlyGroupChange && employmentTypeID != -1) {
+				isOnlyGroupChange = employmentTypeID == archive.getEmploymentTypeId();
 			}
 		} catch (Exception e) {}
 		
