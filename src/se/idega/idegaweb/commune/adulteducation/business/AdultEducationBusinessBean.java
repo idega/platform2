@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.4 2005/05/11 20:01:19 malin Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.5 2005/05/12 12:13:06 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -53,10 +53,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/11 20:01:19 $ by $Author: malin $
+ * Last modified: $Date: 2005/05/12 12:13:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -190,7 +190,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 				Iterator iter = choices.iterator();
 				while (iter.hasNext()) {
 					AdultEducationChoice choice = (AdultEducationChoice) iter.next();
-					studyPaths.add(choice.getCourse().getStudyPath());
+					if (!choice.getStatus().equals(getCaseStatusDeletedString())) {
+						studyPaths.add(choice.getCourse().getStudyPath());
+					}
 				}
 			}
 			catch (FinderException fe) {

@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.4 2005/05/11 19:42:59 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.5 2005/05/12 12:13:06 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/11 19:42:59 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/12 12:13:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -239,7 +239,9 @@ public class ChoiceApplication extends AdultEducationBlock {
 				Iterator iterator = courses.iterator();
 				while (iterator.hasNext()) {
 					AdultEducationCourse element = (AdultEducationCourse) iterator.next();
-					course.addMenuElement(element.getPrimaryKey().toString(), element.getCode());
+					if (!element.isInactive()) {
+						course.addMenuElement(element.getPrimaryKey().toString(), element.getCode());
+					}
 				}
 				course.setSelectedElement(chosenCourse.getPrimaryKey().toString());
 				table.add(new HiddenInput(PARAMETER_OLD_COURSES, chosenCourse.getPrimaryKey().toString()));
@@ -332,7 +334,7 @@ public class ChoiceApplication extends AdultEducationBlock {
 		otherReason.setWidth(Table.HUNDRED_PERCENT);
 		otherReason.setRows(5);
 		if (isUpdate && iChoice.getOtherReason() != null) {
-			area.setContent(iChoice.getOtherReason());
+			otherReason.setContent(iChoice.getOtherReason());
 		}
 		reasonTable.add(getSmallHeader(localize("other_reason", "Other reason") + ":"), 1, row);
 		reasonTable.add(new Break(), 1, row);
@@ -382,34 +384,56 @@ public class ChoiceApplication extends AdultEducationBlock {
 		buffer.append("\n\t var dropOne = ").append("findObj('").append(PARAMETER_COURSE + "_1").append("');");
 		buffer.append("\n\t var dropTwo = ").append("findObj('").append(PARAMETER_COURSE + "_2").append("');");
 		buffer.append("\n\t var dropThree = ").append("findObj('").append(PARAMETER_COURSE + "_3").append("');");
+		buffer.append("\n\t var dropSchoolOne = ").append("findObj('").append(PARAMETER_SCHOOL + "_1").append("');");
+		buffer.append("\n\t var dropSchoolTwo = ").append("findObj('").append(PARAMETER_SCHOOL + "_2").append("');");
+		buffer.append("\n\t var dropSchoolThree = ").append("findObj('").append(PARAMETER_SCHOOL + "_3").append("');");
 
 		buffer.append("\n\t var one = 0;");
 		buffer.append("\n\t var two = 0;");
 		buffer.append("\n\t var three = 0;");
+		buffer.append("\n\t var schoolOne = 0;");
+		buffer.append("\n\t var schoolTwo = 0;");
+		buffer.append("\n\t var schoolThree = 0;");
 		buffer.append("\n\t var length = 0;");
 
 		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) {\n\t\t one = dropOne.options[dropOne.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropThree.selectedIndex > 0) {\n\t\t three = dropThree.options[dropThree.selectedIndex].value;\n\t\t length++;\n\t }");
+		buffer.append("\n\t if (dropSchoolOne.selectedIndex > 0) {\n\t\t schoolOne = dropSchoolOne.options[dropSchoolOne.selectedIndex].value;\n\t }");
+		buffer.append("\n\t if (dropSchoolTwo.selectedIndex > 0) {\n\t\t schoolTwo = dropSchoolTwo.options[dropSchoolTwo.selectedIndex].value;\n\t }");
+		buffer.append("\n\t if (dropSchoolThree.selectedIndex > 0) {\n\t\t schoolThree = dropSchoolThree.options[dropSchoolThree.selectedIndex].value;\n\t }");
 		
-		buffer.append("\n\t if(length > 0){");
-		buffer.append("\n\t\t if(one > 0 && (one == two || one == three)){");
+		buffer.append("\n\t if(one > 0 && (one == two || one == three)){");
 		String message = localize("must_not_be_the_same", "Please do not choose the same course more than once.");
-		buffer.append("\n\t\t\t alert('").append(message).append("');");
-		buffer.append("\n\t\t\t return false;");
-		buffer.append("\n\t\t }");
-		buffer.append("\n\t\t if(two > 0 && (two == one || two == three)){");
-		message = localize("child_care.must_not_be_the_same", "Please do not choose the same course more than once.");
-		buffer.append("\n\t\t\t alert('").append(message).append("');");
-		buffer.append("\n\t\t\t return false;");
-		buffer.append("\n\t\t }");
-		buffer.append("\n\t\t if(three > 0 && (three == one || three == two)){");
-		message = localize("child_care.must_not_be_the_same", "Please do not choose the same course more than once.");
-		buffer.append("\n\t\t\t alert('").append(message).append("');");
-		buffer.append("\n\t\t\t return false;");
-		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
-		buffer.append("\n\t else {");
+		buffer.append("\n\t else if(one <= 0 && schoolOne > 0){");
+		message = localize("school_chosen_but_no_course", "Please choose a course together with a provider.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if(two > 0 && (two == one || two == three)){");
+		message = localize("child_care.must_not_be_the_same", "Please do not choose the same course more than once.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t else if(two <= 0 && schoolTwo > 0){");
+		message = localize("school_chosen_but_no_course", "Please choose a course together with a provider.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if(three > 0 && (three == one || three == two)){");
+		message = localize("child_care.must_not_be_the_same", "Please do not choose the same course more than once.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t else if(three <= 0 && schoolThree > 0){");
+		message = localize("school_chosen_but_no_course", "Please choose a course together with a provider.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if (length == 0) {");
 		message = localize("child_care.must_fill_out_one", "Please fill out the first choice.");
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
