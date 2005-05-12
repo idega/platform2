@@ -57,8 +57,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/05/12 16:50:50 $ by $Author: laddi $
- * @version $Revision: 1.138 $
+ *         Last modified: $Date: 2005/05/12 19:11:44 $ by $Author: laddi $
+ * @version $Revision: 1.139 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1175,7 +1175,6 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		if (schoolClassID != -1) {
 			sql.appendAnd();
 			sql.appendEquals("m.sch_school_class_id", schoolClassID).appendAnd();
-			sql.appendEquals("l.sch_school_class_id", "m.sch_school_class_id");
 		}
 		if (showNotYetActive != null) {
 			if (showNotYetActive.booleanValue()) {
