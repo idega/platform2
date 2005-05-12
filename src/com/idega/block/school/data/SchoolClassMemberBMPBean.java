@@ -57,8 +57,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/04/13 13:38:11 $ by $Author: laddi $
- * @version $Revision: 1.137 $
+ *         Last modified: $Date: 2005/05/12 16:50:50 $ by $Author: laddi $
+ * @version $Revision: 1.138 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1145,8 +1145,22 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.append("distinct m.*,u.*");
 		sql.appendFrom();
 		sql.append("sch_class_member m left join sch_class_member_log l ");
-		sql.append("on m.sch_class_member_id=l.sch_class_member_id,");
-		sql.append("sch_school_class c,");
+		sql.append("on").appendEquals("m.sch_class_member_id", "l.sch_class_member_id");
+		if (schoolClassID != -1) {
+			sql.appendAnd();
+			sql.appendEquals("l.sch_school_class_id", "m.sch_school_class_id");
+		}
+		if (showNotYetActive != null) {
+			if (showNotYetActive.booleanValue()) {
+				sql.appendAnd().append("l.start_date").appendGreaterThanOrEqualsSign().append(date);
+			}
+			else {
+				sql.appendAnd().append("l.start_date").appendLessThanOrEqualsSign().append(date);
+				sql.appendAnd().appendLeftParenthesis().append("l.end_date").appendGreaterThanOrEqualsSign().append(date);
+				sql.appendOr().append("l.end_date is null").appendRightParenthesis();
+			}
+		}
+		sql.append(",sch_school_class c,");
 		sql.append("sch_school_type t,");
 		sql.append("ic_user u");
 		sql.appendWhereEquals("m.sch_school_type_id", "t.sch_school_type_id");
@@ -1166,13 +1180,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		if (showNotYetActive != null) {
 			if (showNotYetActive.booleanValue()) {
 				sql.appendAnd().append("m.register_date").appendGreaterThanSign().append(date);
-				sql.appendAnd().append("l.start_date").appendGreaterThanOrEqualsSign().append(date);
 			}
 			else {
 				sql.appendAnd().append("m.register_date").appendLessThanOrEqualsSign().append(date);
-				sql.appendAnd().append("l.start_date").appendLessThanOrEqualsSign().append(date);
-				sql.appendAnd().appendLeftParenthesis().append("l.end_date").appendGreaterThanOrEqualsSign().append(date);
-				sql.appendOr().append("l.end_date is null").appendRightParenthesis();
 			}
 		}
 		sql.appendAnd().appendLeftParenthesis();
