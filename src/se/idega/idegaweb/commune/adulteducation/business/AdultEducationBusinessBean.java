@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.5 2005/05/12 12:13:06 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.6 2005/05/13 18:29:38 malin Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -53,10 +53,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/12 12:13:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/13 18:29:38 $ by $Author: malin $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -512,7 +512,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public AdultEducationPersonalInfo storePersonalInfo(int icUserID, int nativecountryId, int languageID, int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA, boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) {
+	public AdultEducationPersonalInfo storePersonalInfo(int icUserID, int nativecountryId, int languageID, int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA, boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF, String educationG, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) {
 		try {
 			AdultEducationPersonalInfo personalInfo = null;
 			if (icUserID != -1) {
@@ -528,9 +528,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			if (personalInfo != null){
 				if (icUserID != -1)
 					personalInfo.setIcUserID(icUserID);
-				if (nativecountryId != -1)
 					personalInfo.setNativeCountryID(nativecountryId);
-				if (languageID != -1)
 					personalInfo.setIcLanguageID(languageID);
 				
 				personalInfo.setNativeThisCountry(nativeThisCountry);
@@ -541,6 +539,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 				personalInfo.setEduD(educationD);
 				personalInfo.setEduE(educationE);
 				personalInfo.setEduF(educationF);
+				personalInfo.setEduG(educationG);
 				if (eduGCountryID != -1)
 					personalInfo.setEducationCountryID(educationCountryID);
 				if (eduYears != -1)
@@ -548,17 +547,17 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 				personalInfo.setEduHA(eduHA);
 				personalInfo.setEduHB(eduHB);
 				personalInfo.setEduHC(eduHC);
-				if (eduHCommune != null && !eduHCommune.equals(""))
+				//if (eduHCommune != null && !eduHCommune.equals(""))
 					personalInfo.setEduHCommune(eduHCommune);
 				personalInfo.setFulltime(fulltime);
 				personalInfo.setLangSFI(langSfi);
 				personalInfo.setLangSAS(langSas);
-				personalInfo.setLangSFI(langOther);
+				personalInfo.setLangOTHER(langOther);
 				personalInfo.setStudySupport(studySupport);
 				personalInfo.setWorkEmploy(workEmpl);
 				personalInfo.setWorkUnEmploy(workUnEmpl);
 				personalInfo.setWorkKicked(workKicked);
-				if (workOther != null && !workOther.equals(""))
+				//if (workOther != null && !workOther.equals(""))
 					personalInfo.setWorkOther(workOther);
 				
 				personalInfo.store();

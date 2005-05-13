@@ -1,5 +1,5 @@
 /*
- * Created on 2005-maj-11
+ * Created on 2005-maj-13
  *
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
@@ -180,8 +180,8 @@ public interface AdultEducationBusiness extends IBOService {
 			boolean nativeThisCountry, boolean citizenThisCountry,
 			boolean educationA, boolean educationB, boolean educationC,
 			boolean educationD, boolean educationE, String educationF,
-			int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB,
-			boolean eduHC, String eduHCommune, boolean fulltime,
+			String educationG, int eduGCountryID, int eduYears, boolean eduHA,
+			boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime,
 			boolean langSfi, boolean langSas, boolean langOther,
 			boolean studySupport, boolean workUnEmpl, boolean workEmpl,
 			boolean workKicked, String workOther)
