@@ -17,13 +17,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
-
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.data.CurrencyValues;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
@@ -61,7 +60,7 @@ public class CurrencyBusiness {
 	public static String currencyUrl = null;
 	public static IWTimestamp lastUpdate = null;
 	
-	public static void getCurrencyMap(IWBundle bundle) throws RemoteException {
+	public static void getCurrencyMap(IWBundle bundle) throws RemoteException, CreateException {
 		IWTimestamp stamp = new IWTimestamp();
 		file = null;
 
@@ -182,6 +181,10 @@ public class CurrencyBusiness {
 				System.out.println("[CurrencyBusiness] getCurrencyMap(bundle) FAILED...");
 				e.printStackTrace(System.err);
 			}
+			catch (CreateException e) {
+				System.out.println("[CurrencyBusiness] getCurrencyMap(bundle) FAILED...");
+				e.printStackTrace(System.err);
+			}
 		}
 		return currencyMap;
 	}
@@ -211,7 +214,7 @@ public class CurrencyBusiness {
 		currencyMap.put(holder.getCurrencyName(), holder);
 	}
 
-	public static void saveCurrencyValuesToDatabase() throws RemoteException {
+	public static void saveCurrencyValuesToDatabase() throws RemoteException, CreateException {
 		if (getCurrencyMap() != null) {
 			//EntityBulkUpdater bulk = new EntityBulkUpdater();
 			IWTimestamp stamp = new IWTimestamp();
@@ -229,10 +232,10 @@ public class CurrencyBusiness {
 				holder = (CurrencyHolder) getCurrencyMap().get((String) iter.next());
 				currency = (Currency) currencies.get(holder.getCurrencyName());
 				if (currency != null) {
-					values = CurrencyFinder.getCurrencyValue(currency.getID());
+					values = CurrencyFinder.getCurrencyValue(currency.getID(), currency.getDatasource());
 					if (values == null) {
 	//					update = false;
-						values = ((com.idega.block.trade.data.CurrencyValuesHome) com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).createLegacy();
+						values = ((com.idega.block.trade.data.CurrencyValuesHome) com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).create();
 						values.setID(currency.getID());
 					}
 					values.setBuyValue(holder.getBuyValue());
@@ -270,7 +273,7 @@ public class CurrencyBusiness {
 		boolean update;
 
 		Iterator iter = getCurrencyMap().keySet().iterator();
-		HashMap map = getValuesFromDB();
+		HashMap map = getValuesFromDB(home.getDatasource());
 		while (iter.hasNext()) {
 			currAbbr = (String) iter.next();
 			CurrencyHolder holder = (CurrencyHolder) getCurrencyMap().get(currAbbr);
@@ -329,23 +332,24 @@ public class CurrencyBusiness {
 			}
 		}
 */
-		return CurrencyFinder.getCurrenciesMap();
+		return CurrencyFinder.getCurrenciesMap(home.getDatasource());
 	}
 
-	public static void getValuesFromDatabase() {
-		HashMap map = getValuesFromDB();
+	public static void getValuesFromDatabase() throws IDOLookupException {
+		CurrencyHome home = (CurrencyHome) IDOLookup.getHome(Currency.class);
+		HashMap map = getValuesFromDB(home.getDatasource());
 		currencyMap = map;
 	}
 
-	public static HashMap getValuesFromDB() {
+	public static HashMap getValuesFromDB(String datasource) {
 		HashMap map = new HashMap();
 
 		CurrencyHolder holder = null;
 		Currency currency = null;
 		CurrencyValues value = null;
 
-		HashMap currencies = CurrencyFinder.getCurrenciesMap();
-		HashMap values = CurrencyFinder.getCurrencyValuesMap();
+		HashMap currencies = CurrencyFinder.getCurrenciesMap(datasource);
+		HashMap values = CurrencyFinder.getCurrencyValuesMap(datasource);
 		if (currencies != null && values != null) {
 			Iterator iter = currencies.keySet().iterator();
 			while (iter.hasNext()) {

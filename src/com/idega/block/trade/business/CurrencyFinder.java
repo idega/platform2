@@ -9,57 +9,91 @@ package com.idega.block.trade.business;
  * @version 1.0
  */
 
-import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
-
+import java.util.Iterator;
+import javax.ejb.FinderException;
 import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.data.CurrencyValues;
+import com.idega.block.trade.data.CurrencyValuesHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 
 public class CurrencyFinder {
 
-  public static Currency getCurrency(int currencyID) {
+  public static Currency getCurrency(int currencyID, String datasource) {
     try {
-      return ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(currencyID);
+		CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
+		cHome.setDatasource(datasource);
+		return cHome.findByPrimaryKey(currencyID);
     }
-    catch (SQLException e) {
-      return null;
-    }
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+    return null;
   }
 
-  public static CurrencyValues getCurrencyValue(int currencyID) {
+  public static CurrencyValues getCurrencyValue(int currencyID, String datasource) {
     try {
-      return ((com.idega.block.trade.data.CurrencyValuesHome)com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).findByPrimaryKeyLegacy(currencyID);
+		CurrencyValuesHome cHome = (CurrencyValuesHome) IDOLookup.getHome(CurrencyValues.class);
+		cHome.setDatasource(datasource);
+		return cHome.findByPrimaryKey(new Integer(currencyID));
     }
-    catch (SQLException e) {
-      return null;
-    }
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+    return null;
   }
 
-  public static Currency[] getCurrencies() {
+  public static Collection getCurrencies(String datasource) {
     try {
-      return (Currency[]) com.idega.block.trade.data.CurrencyBMPBean.getStaticInstance(Currency.class).findAll();
+		CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
+		cHome.setDatasource(datasource);
+		return cHome.findAll();
     }
-    catch (SQLException e) {
-      return null;
-    }
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	
+	return null;
   }
 
-  public static CurrencyValues[] getCurrencyValues() {
+  public static Collection getCurrencyValues(String datasource) {
     try {
-      return (CurrencyValues[]) com.idega.block.trade.data.CurrencyValuesBMPBean.getStaticInstance(CurrencyValues.class).findAll();
+		CurrencyValuesHome cHome = (CurrencyValuesHome) IDOLookup.getHome(CurrencyValues.class);
+		cHome.setDatasource(datasource);
+		return cHome.findAll();
     }
-    catch (SQLException e) {
-      return null;
-    }
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	
+	return null;
   }
 
-  public static HashMap getCurrenciesMap() {
+  public static HashMap getCurrenciesMap(String datasource) {
     try {
-      Currency[] currencies = getCurrencies();
-      if ( currencies != null && currencies.length > 0 ) {
+      Collection currencies = getCurrencies(datasource);
+      if ( currencies != null && !currencies.isEmpty() ) {
         HashMap map = new HashMap();
-        for (int i = 0; i < currencies.length; i++) {
-          map.put(currencies[i].getCurrencyAbbreviation(),currencies[i]);
+		Iterator iter = currencies.iterator();
+		Currency currency;
+		while (iter.hasNext()) {
+			currency = (Currency) iter.next();
+          map.put(currency.getCurrencyAbbreviation(),currency);
         }
         return map;
       }
@@ -70,13 +104,16 @@ public class CurrencyFinder {
     }
   }
 
-  public static HashMap getCurrencyValuesMap() {
+  public static HashMap getCurrencyValuesMap(String datasource) {
     try {
-      CurrencyValues[] currencies = getCurrencyValues();
-      if ( currencies != null && currencies.length > 0 ) {
+      Collection currencies = getCurrencyValues(datasource);
+      if ( currencies != null && !currencies.isEmpty() ) {
         HashMap map = new HashMap();
-        for (int i = 0; i < currencies.length; i++) {
-          map.put(new Integer(currencies[i].getID()),currencies[i]);
+		Iterator iter = currencies.iterator();
+		CurrencyValues value;
+		while (iter.hasNext()) {
+			value = (CurrencyValues) iter.next();
+          map.put(new Integer(value.getPrimaryKey().toString()),value);
         }
         return map;
       }
