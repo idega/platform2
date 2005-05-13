@@ -4,12 +4,17 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
+import javax.ejb.FinderException;
 import com.idega.block.text.data.Content;
+import com.idega.block.text.data.ContentHome;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.data.ICLocale;
+import com.idega.core.localisation.data.ICLocaleHome;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 
 /**
@@ -36,12 +41,16 @@ public class ContentFinder {
       return null;
   }
 
-   public static ContentHelper getContentHelper(int iContentId,int iLocaleId){
+  public static ContentHelper getContentHelper(int iContentId,int iLocaleId){
+	  return getContentHelper(iContentId, iLocaleId, null);
+  }
+   public static ContentHelper getContentHelper(int iContentId,int iLocaleId, String datasource){
     ContentHelper CH = new ContentHelper();
-    Content content = getContent(iContentId);
+	int newLocaleID = tmpDatasourceHack(iLocaleId, datasource);
+    Content content = getContent(iContentId, datasource);
     if(content!=null){
       CH.setContent(content);
-      CH.setLocalizedText(getLocalizedText(iContentId,iLocaleId));
+      CH.setLocalizedText(getLocalizedText(iContentId,newLocaleID, datasource));
       CH.setFiles(listOfContentFiles(iContentId));
       return CH;
     }
@@ -49,6 +58,36 @@ public class ContentFinder {
       return null;
     }
   }
+   
+   /**
+    * Check for the corresponding locale id on the other datasource
+    * @return
+    */
+   private static int tmpDatasourceHack(int iLocaleId, String datasource) {
+	   if (datasource != null) {
+		   try {
+			ICLocaleHome lHome = (ICLocaleHome) IDOLookup.getHome(ICLocale.class);
+			String oldDatasource = lHome.getDatasource();
+			if (!oldDatasource.equals(datasource)) {
+				ICLocale locale = lHome.findByPrimaryKey(new Integer(iLocaleId));
+				String localeName = locale.getLocale();
+				
+				lHome.setDatasource(datasource, false);
+				ICLocale newLocale = lHome.findByLocaleName(localeName);
+				int newID = ((Integer)newLocale.getPrimaryKey()).intValue();
+				lHome.setDatasource(oldDatasource);
+				return newID;
+			}
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	   }
+	   return iLocaleId;
+   }
 
   public static ContentHelper getContentHelper(int iContentId,Locale locale){
     ContentHelper CH = new ContentHelper();
@@ -56,7 +95,7 @@ public class ContentFinder {
 
     if(content!=null){
       CH.setContent(content);
-      CH.setLocalizedText(getLocalizedText(iContentId,locale));
+      CH.setLocalizedText(getLocalizedText(iContentId,locale, null));
       CH.setFiles(listOfContentFiles(iContentId));
       return CH;
     }
@@ -91,6 +130,10 @@ public class ContentFinder {
   }
 
   public static List listOfLocalizedText(int iContentId,int iLocaleId){
+	  return listOfLocalizedText(iContentId, iLocaleId, null);
+  }
+  
+  public static List listOfLocalizedText(int iContentId,int iLocaleId, String datasource){
     StringBuffer sql = new StringBuffer("select lt.* from tx_localized_text lt, tx_content t,tx_content_TX_LOCALIZED_TEXT ttl ");
     sql.append(" where ttl.tx_content_id = t.tx_content_id ");
     sql.append(" and ttl.tx_localized_text_id = lt.tx_localized_text_id ");
@@ -99,7 +142,11 @@ public class ContentFinder {
     sql.append(" and lt.ic_locale_id =  ");
     sql.append(iLocaleId);
     try {
-      return EntityFinder.findAll(((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy(),sql.toString());
+		IDOLegacyEntity ent = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+		if (datasource != null) {
+			ent.setDatasource(datasource);
+		}
+      return EntityFinder.findAll(ent,sql.toString());
     }
     catch (SQLException ex) {
       return null;
@@ -143,9 +190,9 @@ public class ContentFinder {
     }
   }
 
-  public static LocalizedText getLocalizedText(int iContentId,int iLocaleId){
+  public static LocalizedText getLocalizedText(int iContentId,int iLocaleId, String datasource){
     LocalizedText LTX = null;
-    List L =   listOfLocalizedText(iContentId,iLocaleId);
+    List L =   listOfLocalizedText(iContentId,iLocaleId, datasource);
     if(L!= null){
       LTX = (LocalizedText) L.get(0);
     }
@@ -153,9 +200,9 @@ public class ContentFinder {
     return LTX;
   }
 
-  public static LocalizedText getLocalizedText(int iContentId,Locale locale){
+  public static LocalizedText getLocalizedText(int iContentId,Locale locale, String datasource){
     int Lid = getLocaleId(locale);
-    return getLocalizedText(iContentId,Lid);
+    return getLocalizedText(iContentId,Lid, datasource);
   }
 
   public static List listOfContentFiles(int id){
@@ -177,16 +224,31 @@ public class ContentFinder {
 	}
     return null;
   }
-
   public static Content getContent(int iContentId){
+	  return getContent(iContentId, null);
+  }
+  
+  public static Content getContent(int iContentId, String datasource){
     try {
-      if(iContentId > 0)
-        return ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
+      if(iContentId > 0) {
+		  ContentHome cHome = (ContentHome) IDOLookup.getHome(Content.class);
+		  if (datasource != null) {
+			  cHome.setDatasource(datasource, false);
+		  }
+		  return cHome.findByPrimaryKey(iContentId);
+//        return ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
+      }
     }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-
-    }
+//    catch (SQLException ex) {
+//      ex.printStackTrace();
+//
+//    }
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
     return null;
   }
 /*
