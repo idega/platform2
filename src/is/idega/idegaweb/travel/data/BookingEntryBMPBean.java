@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
@@ -39,8 +38,9 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
   }
 
   public ProductPrice getProductPrice() throws FinderException{
-    ProductPriceHome ppHome = (com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class);
-    return (ppHome).findByPrimaryKey(getProductPriceId());
+//    ProductPriceHome ppHome = (com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class);
+//    return (ppHome).findByPrimaryKey(getProductPriceId());
+	return (ProductPrice) getColumnValue(getProductPriceIDColumnName());
   }
 
   public int getProductPriceId() {
@@ -92,7 +92,7 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
   }
 
   public Collection getEntries(ProductPrice pPrice) throws FinderException {
-    return super.idoFindAllIDsByColumnBySQL(getProductPriceIDColumnName(), Integer.toString(pPrice.getID()));
+    return super.idoFindAllIDsByColumnBySQL(getProductPriceIDColumnName(), pPrice.getPrimaryKey().toString());
   }
 
 }
