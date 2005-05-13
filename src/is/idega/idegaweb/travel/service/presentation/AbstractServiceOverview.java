@@ -7,6 +7,7 @@ import is.idega.idegaweb.travel.presentation.TravelManager;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Locale;
+import javax.ejb.FinderException;
 
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -44,7 +45,7 @@ public abstract class AbstractServiceOverview extends TravelManager implements S
     this.initialize(iwc);
   }
 
-  public abstract Table getServiceInfoTable(IWContext iwc, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException;
+  public abstract Table getServiceInfoTable(IWContext iwc, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException, FinderException;
 
   protected void initialize(IWContext iwc) throws RemoteException{
     _iwrb = super.getResourceBundle();

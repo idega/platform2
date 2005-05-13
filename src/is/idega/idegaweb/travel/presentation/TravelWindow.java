@@ -8,6 +8,8 @@ import java.rmi.RemoteException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
@@ -17,6 +19,8 @@ import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -241,5 +245,12 @@ public class TravelWindow extends Window {
   	String par = getTravelSessionManager(iwc).getIWBundle().getProperty(TravelBlock.TEST_MODE_PARAMETER_NAME);
   	return (par != null && par.equalsIgnoreCase("yes"));
   }
-
+  protected ProductPriceHome getProductPriceHome() {
+	  try {
+		return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+	}
+	catch (IDOLookupException e) {
+		throw new IDORuntimeException(e);
+	}
+  }
 }

@@ -22,6 +22,8 @@ import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
@@ -30,6 +32,8 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -344,4 +348,14 @@ public class TravelBlock extends Block {
 			throw new IBORuntimeException(e);
 		}
   }
+  
+  protected ProductPriceHome getProductPriceHome() {
+	  try {
+		return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+	}
+	catch (IDOLookupException e) {
+		throw new IDORuntimeException(e);
+	}
+  }
+  
 }

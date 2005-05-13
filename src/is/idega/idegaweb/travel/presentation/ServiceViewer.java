@@ -24,6 +24,7 @@ import com.idega.block.trade.stockroom.business.ProductPriceException;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
@@ -31,6 +32,8 @@ import com.idega.business.IBOLookup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -553,12 +556,14 @@ public class ServiceViewer extends Window {
     List depAddresses = product.getDepartureAddresses(true);
     TravelAddress tAddress;
     Timeframe[] timeframes = product.getTimeframes();
-    ProductPrice[] prices = null;
+    Collection prices = null;
 
     if (cutOff) {
-      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[0].getID(), ((TravelAddress) depAddresses.get(0)).getID(), true);
-      if (prices.length > 0) {
-        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), ((Integer) service.getPrimaryKey()).intValue(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[0].getID(),  ((TravelAddress) depAddresses.get(0)).getID()) ) );
+      prices = getProductPriceHome().findProductPrices(product.getID(), timeframes[0].getID(), ((TravelAddress) depAddresses.get(0)).getID(), true);
+      if (prices != null && !prices.isEmpty()) {
+		  Iterator iter = prices.iterator();
+		  ProductPrice price = (ProductPrice) iter.next();
+        pTable.add(price.getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(((Integer)price.getPrimaryKey()).intValue(), ((Integer) service.getPrimaryKey()).intValue(),price.getPriceCategoryID() , price.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[0].getID(),  ((TravelAddress) depAddresses.get(0)).getID()) ) );
       }
     }else {
       Currency currency;
@@ -575,8 +580,8 @@ public class ServiceViewer extends Window {
             departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
           pTable.add(departureFromTextBold, 1, pRow);
           for (int i = 0; i < timeframes.length; i++) {
-            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), tAddress.getID(), true);
-            if (prices.length > 0) {
+            prices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), tAddress.getID(), true);
+            if (prices != null && !prices.isEmpty()) {
               stampTxt1 = new IWTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
               stampTxt2 = new IWTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
               if (timeframes[i].getIfYearly()) {
@@ -589,15 +594,19 @@ public class ServiceViewer extends Window {
                 timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               pTable.add(timeframeTextBold,2,pRow);
 
-              if (prices.length == 0) {
+              if (prices.isEmpty()) {
                 ++pRow;
               }
-              for (int j = 0; j < prices.length; j++) {
-                currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-                nameOfCategory = getText(prices[j].getPriceCategory().getName());
+			  Iterator piter = prices.iterator();
+			  ProductPrice price;
+			  while (piter.hasNext()) {
+				  price = (ProductPrice) piter.next();
+//              for (int j = 0; j < prices.length; j++) {
+                currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(price.getCurrencyId());
+                nameOfCategory = getText(price.getPriceCategory().getName());
                   nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
                 try {
-                  priceText = getBoldText(df.format(getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow()) ) );
+                  priceText = getBoldText(df.format(getTravelStockroomBusiness(iwc).getPrice(((Integer) price.getPrimaryKey()).intValue(),((Integer) service.getPrimaryKey()).intValue(),price.getPriceCategoryID() , price.getCurrencyId(), IWTimestamp.getTimestampRightNow()) ) );
                   currencyText = getBoldText(currency.getCurrencyAbbreviation());
                   pTable.add(currencyText,5,pRow);
                 }catch (ProductPriceException p) {
@@ -639,6 +648,14 @@ public class ServiceViewer extends Window {
   }
   protected ProductHome getProductHome() throws RemoteException {
     return (ProductHome) IDOLookup.getHome(Product.class);
+  }
+  protected ProductPriceHome getProductPriceHome() {
+	  try {
+		return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+	}
+	catch (IDOLookupException e) {
+		throw new IDORuntimeException(e);
+	}
   }
 }
 

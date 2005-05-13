@@ -118,18 +118,18 @@ public class ProductEditorBusiness extends IBOServiceBean {
 				int pCurrId = -1;
 				if (pPri != null) {
 					oldP = (int) pPri.getPrice();
-					pCurrId = pPri.getID();
+					pCurrId = ((Integer) pPri.getPrimaryKey()).intValue();
 				}
 				int newP = Integer.parseInt(price);
 				if (oldP != newP || Integer.parseInt(currencyId) != pCurrId) {
-					ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome) com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
+					ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome) com.idega.data.IDOLookup.getHome(ProductPrice.class)).create();
 					pPrice.setIsValid(true);
 					pPrice.setPrice(Float.parseFloat(price));
 					pPrice.setPriceType(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
 					pPrice.setProductId(product.getID());
 					pPrice.setPriceDate(IWTimestamp.getTimestampRightNow());
 					pPrice.setCurrencyId(Integer.parseInt(currencyId));
-					pPrice.insert();
+					pPrice.store();
 					return true;
 				}
 				else {

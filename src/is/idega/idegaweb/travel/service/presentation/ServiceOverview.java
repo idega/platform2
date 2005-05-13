@@ -19,6 +19,6 @@ import is.idega.idegaweb.travel.business.*;
  */
 
 public interface ServiceOverview {
-  public Table getServiceInfoTable(IWContext iwc, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException;
+  public Table getServiceInfoTable(IWContext iwc, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException, FinderException;
   public Table getPublicServiceInfoTable(IWContext iwc, Product product) throws FinderException, RemoteException;
 }

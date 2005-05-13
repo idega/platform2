@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
@@ -38,7 +39,6 @@ import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -446,7 +446,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 
-	protected void handleSubmit(IWContext iwc) throws RemoteException {
+	protected void handleSubmit(IWContext iwc) throws RemoteException, FinderException {
 		String action = iwc.getParameter(this.ACTION);
 		String pId = iwc.getParameter(this.PARAMETER_PRODUCT_ID);
 		int STATE = -1;
@@ -690,7 +690,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	
-	protected TravelBlock getBookingForm(Form form) throws RemoteException {
+	protected TravelBlock getBookingForm(Form form) throws RemoteException, NumberFormatException, EJBException, FinderException {
 		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
 
 		Table table = new Table();
@@ -836,9 +836,15 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				if (timeframe != null) {
 					sTimeframeId = timeframe.getPrimaryKey().toString();
 				}
-				ProductPrice[] prices = getProductPrices(product, Integer.parseInt(sAddressId), Integer.parseInt(sTimeframeId));
-				if (prices != null && prices.length > 0) {
-					productPriceId = prices[prices.length-1].getPrimaryKey().toString();
+				Collection prices = getProductPrices(product, Integer.parseInt(sAddressId), Integer.parseInt(sTimeframeId));
+				if (prices != null && !prices.isEmpty()) {
+					Iterator iter = prices.iterator();
+					while (iter.hasNext() ) {
+						ProductPrice p = (ProductPrice) iter.next();
+						if (!iter.hasNext()) { // getting the latest price
+							productPriceId = p.getPrimaryKey().toString();
+						}
+					}
 				}
 			}
 			
@@ -1432,24 +1438,28 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 
-	private int oldGetPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, int days, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
-		ProductPrice[] prices;
+	private int oldGetPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, int days, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException, FinderException {
+		Collection prices;
 		Currency currency;
 		prices = getProductPrices(usedProduct, addressId, timeframeId);
+		ProductPrice price;
+		Iterator iter = prices.iterator();
 		//prices = ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
-		for (int i = 0; i < prices.length; i++) {
-			tmpPriceID = prices[i].getID();
-			table.add(getText(oldGetPriceString(bus, usedProduct.getID(), timeframeId, prices[i], days)), 1, row++);
+		while (iter.hasNext()) {
+			price = (ProductPrice) iter.next();
+			tmpPriceID = ((Integer) price.getPrimaryKey()).intValue();
+//			tmpPriceID = prices[i].getID();
+			table.add(getText(oldGetPriceString(bus, usedProduct.getID(), timeframeId, price, days)), 1, row++);
 		}
 		return row;
 	}
 
-	private ProductPrice[] getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException {
-		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
+	private Collection getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException, FinderException {
+		return getProductPriceHome().findProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 	}
 
 	private String oldGetPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice, int days) throws SQLException, RemoteException {
-		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+		float price = bus.getPrice(((Integer) pPrice.getPrimaryKey()).intValue(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
 /*
 		Currency currency;
 		try {
@@ -1960,8 +1970,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				TravelAddress ta;
 				while (iter.hasNext()) {
 					ta = (TravelAddress) iter.next();
-					ProductPrice[]prices = ProductPriceBMPBean.getProductPrices(product.getID(), frame.getID(), ta.getID(), true, this.getPriceCategoryKey());
-					if (prices.length > 0) {
+					Collection prices = getProductPriceHome().findProductPrices(product.getID(), frame.getID(), ta.getID(), true, this.getPriceCategoryKey());
+					if (prices != null && !prices.isEmpty()) {
 						addresses.addMenuElement(ta.getPrimaryKey().toString(), ta.getName());
 					}
 				}

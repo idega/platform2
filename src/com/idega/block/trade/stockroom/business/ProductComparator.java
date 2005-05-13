@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -210,9 +212,15 @@ public class ProductComparator implements Comparator {
       else if (pr2 < pr1) return 1;
       else return 0;
 
-      }catch (RemoteException re) {
-        throw new RuntimeException(re.getMessage());
-      }
+	  }catch (RemoteException re) {
+	    throw new RuntimeException(re.getMessage());
+	  }
+	catch (EJBException e) {
+	    throw new RuntimeException(e.getMessage());
+	}
+	catch (FinderException e) {
+	    throw new RuntimeException(e.getMessage());
+	}
   }
 
   private int dateSort(Object o1, Object o2) throws RemoteException {

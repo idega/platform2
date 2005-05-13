@@ -365,18 +365,18 @@ public class ServiceDaySetter extends TravelWindow {
 					productPrice.store();
 					try {
 						if(timeframeId != -1) {
-							productPrice.addTo(Timeframe.class, timeframeId); 
+							productPrice.addTimeframe(new Integer(timeframeId)); 
 						}
-					}catch (SQLException e1) {
+					}catch (IDOAddRelationshipException e1) {
 //						e1.printStackTrace();
 					}
 					try {
 						if(addressId != -1) {
-							productPrice.addTo(TravelAddress.class, addressId);
+							productPrice.addTravelAddress(new Integer(addressId));
 						}
 						
 					}
-					catch (SQLException e1) {
+					catch (IDOAddRelationshipException e1) {
 //						e1.printStackTrace();
 					}
 				}
@@ -545,7 +545,7 @@ public class ServiceDaySetter extends TravelWindow {
 		add(form);
 	}
 	
-	private void drawDayEditorForm(IWContext iwc, IWTimestamp stamp)throws RemoteException{
+	private void drawDayEditorForm(IWContext iwc, IWTimestamp stamp)throws RemoteException, FinderException{
 		Form form = new Form();
 		IWCalendar calendar = new IWCalendar();
 		Table table = new Table();

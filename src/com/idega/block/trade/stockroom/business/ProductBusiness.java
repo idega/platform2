@@ -1,61 +1,307 @@
+/*
+ * $Id: ProductBusiness.java,v 1.43 2005/05/13 04:37:46 gimmi Exp $
+ * Created on 12.5.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.List;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOService;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
+import com.idega.data.IDORelationshipException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
 
 
-public interface ProductBusiness extends com.idega.business.IBOService
-{
- public void clearProductCache(int p0) throws java.rmi.RemoteException;
- public int createProduct(int p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,boolean p5,int[] p6,int p7)throws java.lang.Exception, java.rmi.RemoteException;
- public int createProduct(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,int p8)throws java.lang.Exception, java.rmi.RemoteException;
- public int createProduct(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,int p8,int p9)throws java.lang.Exception, java.rmi.RemoteException;
- public int createProduct(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,boolean p4)throws java.lang.Exception, java.rmi.RemoteException;
- public int createProduct(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,boolean p4,int p5)throws java.lang.Exception, java.rmi.RemoteException;
- public void deleteProduct(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public com.idega.core.location.data.Address getArrivalAddress(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,com.idega.data.IDOFinderException,java.sql.SQLException, java.rmi.RemoteException;
- public com.idega.core.location.data.Address[] getArrivalAddresses(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.TravelAddress getDepartureAddress(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,com.idega.data.IDOFinderException,java.sql.SQLException, java.rmi.RemoteException;
- public java.util.List getDepartureAddresses(com.idega.block.trade.stockroom.data.Product p0,com.idega.util.IWTimestamp p1,boolean p2)throws java.rmi.RemoteException,com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public java.util.List getDepartureAddresses(com.idega.block.trade.stockroom.data.Product p0,boolean p1)throws java.rmi.RemoteException,com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, IDOFinderException;
- public com.idega.presentation.ui.DropdownMenu getDropdownMenuWithProducts(com.idega.presentation.IWContext p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.presentation.ui.DropdownMenu getDropdownMenuWithProducts(com.idega.presentation.IWContext p0,int p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.presentation.ui.DropdownMenu getDropdownMenuWithProducts(com.idega.presentation.IWContext p0,java.util.List p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.presentation.ui.DropdownMenu getLocaleDropDown(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
- public java.lang.String getParameterLocaleDrop() throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product getProduct(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product getProduct(java.lang.Integer p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProductCategories()throws com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public java.util.List getProductCategories(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,com.idega.data.IDORelationshipException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.ProductCategory getProductCategory(int p0) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.ProductHome getProductHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getProductIdParameter() throws java.rmi.RemoteException;
- public java.lang.String getProductNameWithNumber(com.idega.block.trade.stockroom.data.Product p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getProductNameWithNumber(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getProductNameWithNumber(com.idega.block.trade.stockroom.data.Product p0,boolean p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getProductNameWithNumber(com.idega.block.trade.stockroom.data.Product p0,boolean p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.List getProducts(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(com.idega.block.trade.stockroom.data.ProductCategory p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(com.idega.block.category.data.ICCategory p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(com.idega.presentation.IWContext p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.List getProducts(com.idega.util.IWTimestamp p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.List getProducts(int p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getProducts(java.util.List p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public int getSelectedLocaleId(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe getTimeframe(com.idega.block.trade.stockroom.data.Product p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe getTimeframe(com.idega.block.trade.stockroom.data.Product p0,com.idega.util.IWTimestamp p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public Timeframe getTimeframe(Product product, Timeframe[] timeframes, IWTimestamp stamp, int travelAddressId) throws RemoteException;
- public int updateProduct(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,int p8)throws java.lang.Exception, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product updateProduct(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,javax.ejb.FinderException,com.idega.data.IDOException, java.rmi.RemoteException;
- public int updateProduct(int p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,boolean p5,int p6)throws java.lang.Exception, java.rmi.RemoteException;
- public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key, Timeframe[] timeframes) throws RemoteException, IDOFinderException;
+/**
+ * 
+ *  Last modified: $Date: 2005/05/13 04:37:46 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.43 $
+ */
+public interface ProductBusiness extends IBOService {
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#updateProduct
+	 */
+	public int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number,
+			String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#updateProduct
+	 */
+	public int updateProduct(int productId, Integer fileId, String productName, String number,
+			String productDescription, boolean isValid, int localeId) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#createProduct
+	 */
+	public int createProduct(Integer fileId, String productName, String number, String productDescription,
+			boolean isValid, int localeId) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#createProduct
+	 */
+	public int createProduct(Integer fileId, String productName, String number, String productDescription,
+			boolean isValid) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#createProduct
+	 */
+	public int createProduct(int supplierId, Integer fileId, String productName, String number,
+			String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#createProduct
+	 */
+	public int createProduct(int productId, int supplierId, Integer fileId, String productName, String number,
+			String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#createProduct
+	 */
+	public int createProduct(int productId, int supplierId, Integer fileId, String productName, String number,
+			String productDescription, boolean isValid, int[] addressIds, int discountTypeId, int localeId)
+			throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductIdParameter
+	 */
+	public String getProductIdParameter() throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getParameterLocaleDrop
+	 */
+	public String getParameterLocaleDrop() throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProduct
+	 */
+	public Product getProduct(Integer productId) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProduct
+	 */
+	public Product getProduct(int productId) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#deleteProduct
+	 */
+	public void deleteProduct(Product product) throws RemoteException, IDOException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#updateProduct
+	 */
+	public Product updateProduct(Product product) throws RemoteException, FinderException, IDOException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductCategory
+	 */
+	public ProductCategory getProductCategory(int categoryID) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductNameWithNumber
+	 */
+	public String getProductNameWithNumber(Product product) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductNameWithNumber
+	 */
+	public String getProductNameWithNumber(Product product, int localeID) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductNameWithNumber
+	 */
+	public String getProductNameWithNumber(Product product, boolean numberInFront) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductNameWithNumber
+	 */
+	public String getProductNameWithNumber(Product product, boolean numberInFront, int localeID) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getSelectedLocaleId
+	 */
+	public int getSelectedLocaleId(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getLocaleDropDown
+	 */
+	public DropdownMenu getLocaleDropDown(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#clearProductCache
+	 */
+	public void clearProductCache(int supplierId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(IWContext iwc, int supplierId) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(int supplierId) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts() throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(List productCategories) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(ICCategory category) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(ProductCategory productCategory) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(int supplierId, IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(int supplierId, IWTimestamp from, IWTimestamp to) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProducts
+	 */
+	public List getProducts(int supplierId, int productCategoryId, IWTimestamp from, IWTimestamp to)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getTimeframe
+	 */
+	public Timeframe getTimeframe(Product product, IWTimestamp stamp) throws RemoteException, EJBException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getTimeframe
+	 */
+	public Timeframe getTimeframe(Product product, IWTimestamp stamp, int travelAddressId) throws RemoteException,
+			EJBException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getTimeframe
+	 */
+	public Timeframe getTimeframe(Product product, Timeframe[] timeframes, IWTimestamp stamp, int travelAddressId)
+			throws RemoteException, EJBException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDepartureAddresses
+	 */
+	public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDepartureAddresses
+	 */
+	public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDepartureAddresses
+	 */
+	public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key,
+			Timeframe[] timeframes) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDepartureAddresses
+	 */
+	public List getDepartureAddresses(Product product, boolean ordered) throws RemoteException, IDOFinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDepartureAddress
+	 */
+	public TravelAddress getDepartureAddress(Product product) throws RemoteException, IDOFinderException, SQLException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getArrivalAddresses
+	 */
+	public Address[] getArrivalAddresses(Product product) throws RemoteException, IDOFinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getArrivalAddress
+	 */
+	public Address getArrivalAddress(Product product) throws RemoteException, IDOFinderException, SQLException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDropdownMenuWithProducts
+	 */
+	public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDropdownMenuWithProducts
+	 */
+	public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId, String parameterName)
+			throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getDropdownMenuWithProducts
+	 */
+	public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, List products, String parameterName)
+			throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductCategories
+	 */
+	public List getProductCategories() throws IDOFinderException, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductCategories
+	 */
+	public List getProductCategories(Product product) throws RemoteException, IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductHome
+	 */
+	public ProductHome getProductHome() throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.ProductBusinessBean#getProductPriceHome
+	 */
+	public ProductPriceHome getProductPriceHome() throws RemoteException;
 }

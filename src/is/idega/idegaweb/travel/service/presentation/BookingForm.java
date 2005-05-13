@@ -44,7 +44,6 @@ import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Settings;
@@ -370,20 +369,20 @@ public abstract class BookingForm extends TravelManager{
 		
 		
 		int bookingDays = 1;
-		ProductPrice[] prices = {};
-		ProductPrice[] misc = {};
+		Collection prices = null;
+		Collection misc = null;
 		Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
 		int timeframeId = -1;
 		if (tFrame != null) {
 			timeframeId = tFrame.getID();
-			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
-			misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
+			prices = getProductPriceHome().findProductPrices(_service.getID(), tFrame.getID(), addressId, false);
+			misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
 		}else {
-			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, false);
-			misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, false);
+			prices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, false);
+			misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, -1, false);
 		}
 		
-		if (prices.length > 0) {
+		if (!prices.isEmpty()) {
 			
 			int row = 1;
 			int textInputSizeLg = 38;
@@ -595,29 +594,31 @@ public abstract class BookingForm extends TravelManager{
 			pTable.add(unitPrice, 2, 1);
 			pTable.add(amount, 3, 1);
 			
-			int pricesLength = prices.length;
-			int miscLength = misc.length;
+			int pricesLength = prices.size();
+			int miscLength = misc.size();
 			ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+			Iterator iter = prices.iterator();
 			for (int i = 0; i < pricesLength; i++) {
-				pPrices[i] = prices[i];
+				pPrices[i] = (ProductPrice) iter.next();
 			}
+			iter = misc.iterator();
 			for (int i = 0; i < miscLength; i++) {
-				pPrices[i+pricesLength] = misc[i];
+				pPrices[i+pricesLength] = (ProductPrice) iter.next();
 			}
 			
 			for (int i = 0; i < pPrices.length; i++) {
 				try {
 					++row;
 					category = pPrices[i].getPriceCategory();
-					int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
+					int price = (int) getTravelStockroomBusiness(iwc).getPrice(((Integer) pPrices[i].getPrimaryKey()).intValue(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
 					//              pPrices[i].getPrice();
 					pPriceCatNameText = (Text) theText.clone();
 					pPriceCatNameText.setText(category.getName());
 					
-					pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
+					pPriceText = new ResultOutput("thePrice"+((Integer) pPrices[i].getPrimaryKey()).intValue(),"0");
 					pPriceText.setSize(8);
 					
-					pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
+					pPriceMany = new TextInput("priceCategory"+((Integer) pPrices[i].getPrimaryKey()).intValue() ,"0");
 					pPriceMany.setSize(5);
 					
 					if (i == pricesLength) {
@@ -635,7 +636,7 @@ public abstract class BookingForm extends TravelManager{
 						++row;
 					}
 					if (i >= pricesLength) {
-						pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
+						pPriceMany.setName("miscPriceCategory"+((Integer) pPrices[i].getPrimaryKey()).intValue());
 					}
 					
 					if (_booking != null) {
@@ -644,13 +645,13 @@ public abstract class BookingForm extends TravelManager{
 								if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
 									pPri = entries[j].getProductPrice();
 									currentCount = entries[j].getCount();
-									price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+									price = (int) getTravelStockroomBusiness(iwc).getPrice(((Integer) pPri.getPrimaryKey()).intValue(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
 									currentSum = (int) (currentCount * price);
 									
 									totalCount += currentCount;
 									totalSum += currentSum;
 									pPriceMany.setContent(Integer.toString(currentCount));
-									pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
+									pPriceText = new ResultOutput("thePrice"+((Integer) pPrices[i].getPrimaryKey()).intValue(),Integer.toString(currentSum));
 									pPriceText.setSize(8);
 								}
 							}
@@ -1275,7 +1276,7 @@ public abstract class BookingForm extends TravelManager{
 		return table;
 	}
 	
-	private Table getPublicBookingInfo(IWContext iwc, Product product) throws RemoteException {
+	private Table getPublicBookingInfo(IWContext iwc, Product product) throws RemoteException, FinderException {
 		Table table = new Table();
 		table.setCellpaddingAndCellspacing(0);
 		table.setWidth("100%");
@@ -1290,27 +1291,29 @@ public abstract class BookingForm extends TravelManager{
 		}
 		int addressId = getAddressIDToUse(iwc, addresses);
 		
-		ProductPrice[] prodPrices = {};
-		ProductPrice[] misc = {};
+		Collection prodPrices = null;
+		Collection misc = null;
 		Timeframe tFrame = getProductBusiness(iwc).getTimeframe(product, _stamp, addressId);
 		int timeframeId = -1;
 		if (tFrame != null) {
 			timeframeId = tFrame.getID();
-			prodPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), addressId, true);
-			misc = ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), addressId, true);
+			prodPrices = getProductPriceHome().findProductPrices(product.getID(), tFrame.getID(), addressId, true);
+			misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tFrame.getID(), addressId, true);
 		}else {
-			prodPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, true);
-			misc = ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, -1, true);
+			prodPrices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, true);
+			misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), -1, -1, true);
 		}
 		
-		int pricesLength = prodPrices.length;
-		int miscLength = misc.length;
+		int pricesLength = prodPrices.size();
+		int miscLength = misc.size();
 		ProductPrice[] prices = new ProductPrice[pricesLength+miscLength];
+		Iterator iter = prodPrices.iterator();
 		for (int i = 0; i < pricesLength; i++) {
-			prices[i] = prodPrices[i];
+			prices[i] = (ProductPrice) iter.next();
 		}
+		iter = misc.iterator();
 		for (int i = 0; i < miscLength; i++) {
-			prices[i+pricesLength] = misc[i];
+			prices[i+pricesLength] = (ProductPrice) iter.next();
 		}
 		
 		if (prices.length > 0) {
@@ -1393,7 +1396,7 @@ public abstract class BookingForm extends TravelManager{
 			for (int i = 0; i < prices.length; i++) {
 				++fRow;
 				try {
-					price = getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[i].getPriceCategoryID() , prices[i].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, addressId );
+					price = getTravelStockroomBusiness(iwc).getPrice(((Integer) prices[i].getPrimaryKey()).intValue(),((Integer) product.getPrimaryKey()).intValue(),prices[i].getPriceCategoryID() , prices[i].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, addressId );
 				}
 				catch (SQLException e) {
 					System.err.println("Exception caught");
@@ -1401,10 +1404,10 @@ public abstract class BookingForm extends TravelManager{
 					price = -1;
 				}
 //				price = prices[i].getPrice();
-				pPriceText = new ResultOutput("thePrice"+prices[i].getID(),"0");
+				pPriceText = new ResultOutput("thePrice"+((Integer) prices[i].getPrimaryKey()).intValue(),"0");
 				pPriceText.setSize(8);
 				
-				pPriceMany = new TextInput("priceCategory"+prices[i].getID() ,"0");
+				pPriceMany = new TextInput("priceCategory"+((Integer) prices[i].getPrimaryKey()).intValue() ,"0");
 				pPriceMany.setSize(5);
 				
 				if (i == pricesLength) {
@@ -1429,7 +1432,7 @@ public abstract class BookingForm extends TravelManager{
 //					++fRow;
 				}
 				if (i >= pricesLength) {
-					pPriceMany.setName("miscPriceCategory"+prices[i].getID());
+					pPriceMany.setName("miscPriceCategory"+((Integer) prices[i].getPrimaryKey()).intValue());
 				} else {
 					TotalPassTextInput.add(pPriceMany);
 				}
@@ -1469,8 +1472,9 @@ public abstract class BookingForm extends TravelManager{
 	 * @param supplier
 	 * @return
 	 * @throws RemoteException
+	 * @throws FinderException 
 	 */
-	private Table getPublicHeader(IWContext iwc, Product product, Supplier supplier) throws RemoteException {
+	private Table getPublicHeader(IWContext iwc, Product product, Supplier supplier) throws RemoteException, FinderException {
 		Table headerTable = new Table();
 		headerTable.setCellpaddingAndCellspacing(0);
 		headerTable.setBorder(0);
@@ -1555,14 +1559,17 @@ public abstract class BookingForm extends TravelManager{
 					headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 					headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 					headerTable.add(getSmallText(address.getName()), headerColumn, hRow++);
-					ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrames[i].getID(), address.getID(), true);
-					for (int j = 0; j < prices.length; j++) {
+					Collection prices = getProductPriceHome().findProductPrices(product.getID(), tFrames[i].getID(), address.getID(), true);
+					Iterator iter = prices.iterator();
+					ProductPrice pprice;
+					while (iter.hasNext()) {
+						pprice = (ProductPrice) iter.next();
 						headerTable.setCellpaddingTop(headerColumn, hRow, 1);
 						headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 						headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
-						headerTable.add(getSmallText(prices[j].getPriceCategory().getName()+ " : "), headerColumn, hRow);
+						headerTable.add(getSmallText(pprice.getPriceCategory().getName()+ " : "), headerColumn, hRow);
 						try {
-							price = getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), tFrames[i].getID(), address.getID() );
+							price = getTravelStockroomBusiness(iwc).getPrice(((Integer) pprice.getPrimaryKey()).intValue(),((Integer) product.getPrimaryKey()).intValue(),pprice.getPriceCategoryID() , pprice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), tFrames[i].getID(), address.getID() );
 						} catch (SQLException e) {
 							System.out.println("Caught Exception");
 							e.printStackTrace();
@@ -1570,8 +1577,8 @@ public abstract class BookingForm extends TravelManager{
 						}
 
 						headerTable.add(getOrangeText(Float.toString(price)), headerColumn, hRow);
-            if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
-            	headerTable.add(getOrangeText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)"), headerColumn, hRow);
+            if (pprice.getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
+            	headerTable.add(getOrangeText(Text.NON_BREAKING_SPACE+"("+pprice.getPrice()+"%)"), headerColumn, hRow);
 						}
             ++hRow;
 					}
@@ -1582,22 +1589,25 @@ public abstract class BookingForm extends TravelManager{
 				headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 				headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 				headerTable.add(getSmallText(tFrames[i].getName()), headerColumn, hRow++);
-				ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrames[i].getID(), -1, true);
-				for (int j = 0; j < prices.length; j++) {
+				Collection prices = getProductPriceHome().findProductPrices(product.getID(), tFrames[i].getID(), -1, true);
+				Iterator iter = prices.iterator();
+				ProductPrice pprice;
+				while (iter.hasNext()) {
+					pprice = (ProductPrice) iter.next();
 					headerTable.setCellpaddingTop(headerColumn, hRow, 1);
 					headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 					headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
-					headerTable.add(getSmallText(prices[j].getPriceCategory().getName()+ " : "), headerColumn, hRow);
+					headerTable.add(getSmallText(pprice.getPriceCategory().getName()+ " : "), headerColumn, hRow);
 					try {
-						price = getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), tFrames[i].getID(), -1 );
+						price = getTravelStockroomBusiness(iwc).getPrice(((Integer) pprice.getPrimaryKey()).intValue(),((Integer) product.getPrimaryKey()).intValue(),pprice.getPriceCategoryID() , pprice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), tFrames[i].getID(), -1 );
 					} catch (SQLException e) {
 						System.out.println("Caught Exception");
 						e.printStackTrace();
 						price = -1;
 					}
 					headerTable.add(getOrangeText(Float.toString(price)), headerColumn, hRow);
-          if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
-          	headerTable.add(getOrangeText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)"), headerColumn, hRow);
+          if (pprice.getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
+          	headerTable.add(getOrangeText(Text.NON_BREAKING_SPACE+"("+pprice.getPrice()+"%)"), headerColumn, hRow);
 					}
           ++hRow;
 				}
@@ -2330,7 +2340,7 @@ public abstract class BookingForm extends TravelManager{
 	}
 	
 	
-	public Table getDisabledProduct(IWContext iwc) throws RemoteException {
+	public Table getDisabledProduct(IWContext iwc) throws RemoteException, FinderException {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -2350,7 +2360,7 @@ public abstract class BookingForm extends TravelManager{
 		return table;
 	}
 	
-	public Table getNoSeatsAvailable(IWContext iwc, IWTimestamp stamp) throws RemoteException {
+	public Table getNoSeatsAvailable(IWContext iwc, IWTimestamp stamp) throws RemoteException, FinderException {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -2911,13 +2921,13 @@ public abstract class BookingForm extends TravelManager{
 		return addressId;
 	}
 	
-	public Form getFormMaintainingAllParameters(IWContext iwc)  throws RemoteException {
+	public Form getFormMaintainingAllParameters(IWContext iwc)  throws RemoteException, FinderException {
 		return getFormMaintainingAllParameters(iwc, true);
 	}
-	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) throws RemoteException  {
+	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) throws RemoteException, FinderException  {
 		return getFormMaintainingAllParameters(iwc, withBookingAction, false);
 	}
-	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction, boolean withSAction) throws RemoteException {
+	public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction, boolean withSAction) throws RemoteException, FinderException {
 		Form form = new Form();
 		form.maintainParameter("surname");
 		form.maintainParameter("lastname");
@@ -2976,13 +2986,18 @@ public abstract class BookingForm extends TravelManager{
 			timeframeId = tFrame.getID();
 		}
 
-		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, timeframeId, addressId, onlineOnly);
-		for (int i = 0; i < pPrices.length; i++) {
-			form.maintainParameter("priceCategory"+pPrices[i].getID());
+		Collection pPrices = getProductPriceHome().findProductPrices(this._productId, timeframeId, addressId, onlineOnly);
+		Iterator iter = pPrices.iterator();
+		ProductPrice price;
+		while (iter.hasNext()) {
+			price = (ProductPrice) iter.next();
+			form.maintainParameter("priceCategory"+price.getPrimaryKey().toString());
 		}
-		ProductPrice[] misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
-		for (int i = 0; i < misc.length; i++) {
-			form.maintainParameter("miscPriceCategory"+misc[i].getID());
+		Collection misc = getProductPriceHome().findMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
+		iter = misc.iterator();
+		while (iter.hasNext()) {
+			price = (ProductPrice) iter.next();
+			form.maintainParameter("miscPriceCategory"+price.getPrimaryKey().toString());
 		}
 		form.maintainParameter(this.parameterFromDate);
 		form.maintainParameter(this.parameterManyDays);
@@ -3124,12 +3139,15 @@ public abstract class BookingForm extends TravelManager{
 		}
 		
 		if (iMany == 0) {
-			ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly, key);
+			Collection pPrices = getProductPriceHome().findProductPrices(_service.getID(), -1, -1, onlineOnly, key);
 			//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
 			int current = 0;
-			for (int i = 0; i < pPrices.length; i++) {
+			Iterator iter = pPrices.iterator();
+			ProductPrice price;
+			while (iter.hasNext()) {
+				price = (ProductPrice) iter.next();
 				try {
-					current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
+					current = Integer.parseInt(iwc.getParameter("priceCategory"+price.getPrimaryKey().toString()));
 				}catch (NumberFormatException n) {
 					current = 0;
 				}
@@ -3332,18 +3350,22 @@ public abstract class BookingForm extends TravelManager{
 			onlineOnly = false;
 		}
 		
-		ProductPrice[] prices = {};
-		ProductPrice[] misc = {};
+		Collection prices = null;
+		Collection misc = null;
 		Timeframe[] timeframes = _product.getTimeframes();
-		prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1,iAddressId, onlineOnly, key);
-		misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, iAddressId, onlineOnly);
+		prices = getProductPriceHome().findProductPrices(_service.getID(), -1,iAddressId, onlineOnly, key);
+		misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), -1, iAddressId, onlineOnly);
 		
-		ProductPrice[] pPrices = new ProductPrice[prices.length + misc.length];
-		for (int i = 0; i < prices.length; i++) {
-			pPrices[i] = prices[i];
+		int pricesLength = prices.size();
+		int miscLength = misc.size();
+		ProductPrice[] pPrices = new ProductPrice[pricesLength + miscLength];
+		Iterator iter = prices.iterator();
+		for (int i = 0; i < pricesLength; i++) {
+			pPrices[i] = (ProductPrice) iter.next();
 		}
-		for (int i = 0; i < misc.length; i++) {
-			pPrices[i+prices.length] = misc[i];
+		iter = misc.iterator();
+		for (int i = 0; i < miscLength; i++) {
+			pPrices[i+pricesLength] = (ProductPrice) iter.next();
 		}
 		
 		int lbookingId = -1;
@@ -3353,9 +3375,9 @@ public abstract class BookingForm extends TravelManager{
 		
 		try {
 			int[] manys = new int[pPrices.length];
-			int[] manyMiscs = new int[misc.length];
+			int[] manyMiscs = new int[miscLength];
 			for (int i = 0; i < manys.length; i++) {
-				many = iwc.getParameter("priceCategory"+pPrices[i].getID());
+				many = iwc.getParameter("priceCategory"+((Integer) pPrices[i].getPrimaryKey()).intValue());
 				//System.out.println("[Bookingform] pCat(p) = "+pPrices[i].getPriceCategory().getName() +" : "+many);
 				if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
 					manys[i] = Integer.parseInt(many);
@@ -3364,9 +3386,11 @@ public abstract class BookingForm extends TravelManager{
 					manys[i] = 0;
 				}
 			}
-			
+			Iterator biter = misc.iterator();
+			ProductPrice pprice;
 			for (int i = 0; i < manyMiscs.length; i++) {
-				many = iwc.getParameter("miscPriceCategory"+misc[i].getID());
+				pprice = (ProductPrice) biter.next();
+				many = iwc.getParameter("miscPriceCategory"+pprice.getPrimaryKey().toString());
 				//System.out.println("[Bookingform] pCat(m) = "+misc[i].getPriceCategory().getName() +" : "+many);
 				if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
 					manyMiscs[i] = Integer.parseInt(many);
@@ -3583,11 +3607,11 @@ public abstract class BookingForm extends TravelManager{
 								bEntry = beHome.create();
 								try {
 									ppID = getProductPriceID(iwc, pPrices[i], new IWTimestamp(booking.getBookingDate()), timeframes, iAddressId, onlineOnly, key);
-									prodPrick = ppHome.findByPrimaryKey(ppID);
+									prodPrick = ppHome.findByPrimaryKey(new Integer(ppID));
 									//System.out.println("ProductPrice = "+ prodPrick.getPrice());
 								} catch (ProductPriceException p) {
 									System.out.println("... ppID error");
-									ppID = pPrices[i].getID();
+									ppID = ((Integer) pPrices[i].getPrimaryKey()).intValue();
 								}
 								//System.out.println("... ppID = "+ppID);
 								bEntry.setProductPriceId(ppID);
@@ -3596,17 +3620,20 @@ public abstract class BookingForm extends TravelManager{
 								bEntry.store();
 							}
 						}
-						for (int i = 0; i < misc.length; i++) {
+						ProductPrice mprice;
+						Iterator miter = misc.iterator();
+						for (int i = 0; i < manyMiscs.length; i++) {
+							mprice = (ProductPrice)  miter.next();
 							if (manyMiscs[i] != 0) {
 								bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
 								try {
-									ppID = getProductPriceID(iwc, misc[i], new IWTimestamp(booking.getBookingDate()), timeframes, iAddressId, onlineOnly, key);
+									ppID = getProductPriceID(iwc, mprice, new IWTimestamp(booking.getBookingDate()), timeframes, iAddressId, onlineOnly, key);
 								} catch (ProductPriceException p) {
 									System.out.println("MppID error");
-									ppID = misc[i].getID();
+									ppID = ((Integer) mprice.getPrimaryKey()).intValue();
 								}
 								//System.out.println("MppID = "+ppID);
-								bEntry.setProductPriceId(misc[i].getID());
+								bEntry.setProductPriceId(((Integer) mprice.getPrimaryKey()).intValue());
 								bEntry.setBookingId(bookingIds[k]);
 								bEntry.setCount(manyMiscs[i]);
 								bEntry.store();
@@ -3625,7 +3652,7 @@ public abstract class BookingForm extends TravelManager{
 						for (int i = 0; i < pPrices.length; i++) {
 							done = false;
 							for (int j = 0; j < entries.length; j++) {
-								if (pPrices[i].getID() == entries[j].getProductPriceId()) {
+								if (((Integer) pPrices[i].getPrimaryKey()).intValue() == entries[j].getProductPriceId()) {
 									done = true;
 									entries[j].setCount(manys[i]);
 									entries[j].store();
@@ -3634,16 +3661,20 @@ public abstract class BookingForm extends TravelManager{
 							}
 							if (!done && manys[i] != 0) {
 								bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-								bEntry.setProductPriceId(pPrices[i].getID());
+								bEntry.setProductPriceId(((Integer) pPrices[i].getPrimaryKey()).intValue());
 								bEntry.setBookingId(bookingIds[k]);
 								bEntry.setCount(manys[i]);
 								bEntry.store();
 							}
 						}
-						for (int i = 0; i < misc.length; i++) {
+						ProductPrice mprice;
+						Iterator miter = misc.iterator();
+						for (int i = 0; i < manyMiscs.length; i++) {
+							mprice = (ProductPrice)  miter.next();
+//						for (int i = 0; i < misc.length; i++) {
 							done = false;
 							for (int j = 0; j < entries.length; j++) {
-								if (misc[i].getID() == entries[j].getProductPriceId()) {
+								if (((Integer) mprice.getPrimaryKey()).intValue() == entries[j].getProductPriceId()) {
 									done = true;
 									entries[j].setCount(manyMiscs[i]);
 									entries[j].store();
@@ -3652,7 +3683,7 @@ public abstract class BookingForm extends TravelManager{
 							}
 							if (!done && manyMiscs[i] != 0) {
 								bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-								bEntry.setProductPriceId(misc[i].getID());
+								bEntry.setProductPriceId(((Integer) mprice.getPrimaryKey()).intValue());
 								bEntry.setBookingId(bookingIds[k]);
 								bEntry.setCount(manyMiscs[i]);
 								bEntry.store();
@@ -3760,28 +3791,35 @@ public abstract class BookingForm extends TravelManager{
 		}
 	}
 	
-	protected int getProductPriceID(IWContext iwc, ProductPrice pPrice, IWTimestamp stamp, Timeframe[] timeframes, int iAddressId, boolean onlineOnly, String key) throws RemoteException, ProductPriceException {
+	protected int getProductPriceID(IWContext iwc, ProductPrice pPrice, IWTimestamp stamp, Timeframe[] timeframes, int iAddressId, boolean onlineOnly, String key) throws RemoteException, ProductPriceException, FinderException {
 		if (timeframes == null || timeframes.length < 2) {
-			return pPrice.getID();
+			return ((Integer) pPrice.getPrimaryKey()).intValue();
 		} else {
 			Timeframe frame = getProductBusiness(iwc).getTimeframe(_product, timeframes, stamp, -1);
 			if (frame != null) {
 				int categoryID = pPrice.getPriceCategoryID();
-				ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), frame.getID(),iAddressId, onlineOnly, key);
-				if (prices!= null || prices.length > 0) {
-					for (int i = 0; i < prices.length; i++) {
-						if (prices[i].getPriceCategoryID() == categoryID) {
-							return prices[i].getID();
+				Collection prices = getProductPriceHome().findProductPrices(_service.getID(), frame.getID(),iAddressId, onlineOnly, key);
+				Iterator iter = prices.iterator();
+				ProductPrice price;
+				while (iter.hasNext()) {
+//				if (prices!= null || prices.length > 0) {
+//					for (int i = 0; i < prices.length; i++) {
+					price = (ProductPrice) iter.next();
+						if (price.getPriceCategoryID() == categoryID) {
+							return ((Integer) price.getPrimaryKey()).intValue();
 						}
-					}
+//					}
 				} 
-				ProductPrice[] misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), frame.getID(), iAddressId, onlineOnly);
-				if (misc != null || misc.length > 0) {
-					for (int i = 0; i < misc.length; i++) {
-						if (misc[i].getPriceCategoryID() == categoryID) {
-							return misc[i].getID();
-						}
+				Collection misc = getProductPriceHome().findMiscellaneousPrices(_service.getID(), frame.getID(), iAddressId, onlineOnly);
+				iter = misc.iterator();
+				while (iter.hasNext()) {
+//				if (misc != null || misc.length > 0) {
+//					for (int i = 0; i < misc.length; i++) {
+					price = (ProductPrice) iter.next();
+					if (price.getPriceCategoryID() == categoryID) {
+						return ((Integer) price.getPrimaryKey()).intValue();
 					}
+//					}
 				}
 				throw new ProductPriceException(iwrb.getLocalizedString("travel.price_category_not_found", "Price category not found"));
 			}
@@ -3964,7 +4002,7 @@ public abstract class BookingForm extends TravelManager{
 		return usersDrop;
 	}
 	
-	private Form getFieldErrorForm(IWContext iwc) throws RemoteException {
+	private Form getFieldErrorForm(IWContext iwc) throws RemoteException, FinderException {
 		Form form = getFormMaintainingAllParameters(iwc, false, true);
 		Table table = new Table();
 		table.setColor(super.WHITE);
@@ -3996,7 +4034,7 @@ public abstract class BookingForm extends TravelManager{
 		return form;		
 	}
 	
-	private Form getTooManyForm(IWContext iwc)  throws RemoteException {
+	private Form getTooManyForm(IWContext iwc)  throws RemoteException, FinderException {
 		Form form = getFormMaintainingAllParameters(iwc, false, true);
 		Table table = new Table();
 		table.setColor(super.WHITE);
@@ -4050,7 +4088,7 @@ public abstract class BookingForm extends TravelManager{
 		return form;
 	}
 	
-	public Table getVerifyBookingTable(IWContext iwc, Product product) throws RemoteException, SQLException{
+	public Table getVerifyBookingTable(IWContext iwc, Product product) throws RemoteException, SQLException, FinderException{
 		String surname = iwc.getParameter("surname");
 		String lastname = iwc.getParameter("lastname");
 		String address = iwc.getParameter("address");
@@ -4090,8 +4128,8 @@ public abstract class BookingForm extends TravelManager{
 		}
 		
 		//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
-		ProductPrice[] prices = {};
-		ProductPrice[] misc = {};
+		Collection prices = null;
+		Collection misc = null;
 		int tFrameID = -1;
 		int depAddrID = -1;
 		try {
@@ -4104,8 +4142,8 @@ public abstract class BookingForm extends TravelManager{
 			tFrameID = tFrame.getID();
 		}
 
-		prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrameID, depAddrID, true);
-		misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrameID, depAddrID, true);
+		prices = getProductPriceHome().findProductPrices(product.getID(), tFrameID, depAddrID, true);
+		misc = getProductPriceHome().findMiscellaneousPrices(product.getID(), tFrameID, depAddrID, true);
 			//			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
 			//			misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
 		
@@ -4282,22 +4320,24 @@ public abstract class BookingForm extends TravelManager{
 		int current = 0;
 		Currency currency = null;
 		
-		int pricesLength = prices.length;
-		int miscLength = misc.length;
+		int pricesLength = prices.size();
+		int miscLength = misc.size();
 		ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+		Iterator iter = prices.iterator();
 		for (int i = 0; i < pricesLength; i++) {
-			pPrices[i] = prices[i];
+			pPrices[i] = (ProductPrice) iter.next();
 		}
+		iter = misc.iterator();
 		for (int i = 0; i < miscLength; i++) {
-			pPrices[i+pricesLength] = misc[i];
+			pPrices[i+pricesLength] = (ProductPrice) iter.next();
 		}
 		
 		for (int i = 0; i < pPrices.length; i++) {
 			try {
 				if (i >= pricesLength) {
-					current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+pPrices[i].getID()));
+					current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+((Integer)pPrices[i].getPrimaryKey()).intValue()));
 				}else {
-					current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
+					current = Integer.parseInt(iwc.getParameter("priceCategory"+((Integer)pPrices[i].getPrimaryKey()).intValue()));
 					total += current;
 				}
 			}catch (NumberFormatException n) {
@@ -4308,7 +4348,7 @@ public abstract class BookingForm extends TravelManager{
 				if (i == 0) {
 					currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
 				}
-				price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,product.getID(),pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrameID, depAddrID);
+				price += current * getTravelStockroomBusiness(iwc).getPrice(((Integer)pPrices[i].getPrimaryKey()).intValue() ,product.getID(),pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrameID, depAddrID);
 			}catch (SQLException sql) {
 			}catch (NumberFormatException n) {
 				n.printStackTrace();
@@ -4377,7 +4417,7 @@ public abstract class BookingForm extends TravelManager{
 	}
 	
 	
-	public Form getErrorForm(IWContext iwc, int error) throws RemoteException {
+	public Form getErrorForm(IWContext iwc, int error) throws RemoteException, FinderException {
 		switch (error) {
 			case errorTooMany :
 				return getTooManyForm(iwc);

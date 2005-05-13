@@ -39,6 +39,7 @@ import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplies;
 import com.idega.block.trade.stockroom.data.SupplyPool;
@@ -1081,15 +1082,15 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       TravelAddress tAddress = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).create();
       Timeframe timeframe = ((TimeframeHome) IDOLookup.getHome(Timeframe.class)).create();
 
-
-      ProductPrice[] allPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, false);
-
+	  ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+      Collection allPrices = ppHome.findProductPrices(product.getID(), -1, -1, false);
+	  Iterator piter = allPrices.iterator();
       ProductPrice price;
       Collection cFrames;
       Collection cAddresses;
       boolean remove = false;
-      for (int i = 0; i < allPrices.length; i++) {
-        price = allPrices[i];
+	  while (piter.hasNext()) {
+        price = (ProductPrice) piter.next();
         System.out.println("============================================================");
         System.out.println("[TSB] working with price : "+price.getPrice());
 
@@ -1132,8 +1133,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
         if (remove) {
           System.out.println("[TSB] remove == true, (timeframe) removing price with price = "+price.getPrice());
-          price.delete();
-          price.update();
+          price.invalidate();
+          price.store();
         }else {
           Iterator iAddresses = addresses.iterator();
           while (iAddresses.hasNext()) {
@@ -1149,8 +1150,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
         if (remove) {
           System.out.println("[TSB] remove == true, (address) removing price with price = "+price.getPrice());
-          price.delete();
-          price.update();
+          price.invalidate();
+          price.store();
         }
 
 

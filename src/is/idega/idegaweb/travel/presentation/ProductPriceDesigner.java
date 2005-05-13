@@ -1,22 +1,19 @@
 package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.Settings;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -131,7 +128,7 @@ public class ProductPriceDesigner extends TravelWindow {
 
   }
 
-  private void displayForm(IWContext iwc) throws RemoteException{
+  private void displayForm(IWContext iwc) throws RemoteException, FinderException{
     if (_product == null) {
       productIsNull();
     }else if (_settings == null) {
@@ -169,7 +166,7 @@ public class ProductPriceDesigner extends TravelWindow {
       ++row;
       table.add(super.getTextHeader(iwrb.getLocalizedString("travel.active_currencies","Active currencies")), 2, row);
       table.add(super.getTextHeader(" : "), 2, row);
-      int[] activeCurrencies = ProductPriceBMPBean.getCurrenciesInUse(_product.getID());
+      int[] activeCurrencies = getProductPriceHome().getCurrenciesInUse(_product.getID());
       Link link;
       Currency currency;
       CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
@@ -198,11 +195,11 @@ public class ProductPriceDesigner extends TravelWindow {
     }
   }
 
-  public Form getPriceCategoryForm(IWContext iwc, Product product, String submitParameterName, String submitParameterValue) throws RemoteException{
+  public Form getPriceCategoryForm(IWContext iwc, Product product, String submitParameterName, String submitParameterValue) throws RemoteException, FinderException{
 		return getPriceCategoryForm(iwc, product, submitParameterName, submitParameterValue, new Form());
   }
 	
-  public Form getPriceCategoryForm(IWContext iwc, Product product, String submitParameterName, String submitParameterValue, Form form) throws RemoteException{
+  public Form getPriceCategoryForm(IWContext iwc, Product product, String submitParameterName, String submitParameterValue, Form form) throws RemoteException, FinderException{
     _product = product;
 		ServiceHandler sh = (ServiceHandler) IBOLookup.getServiceInstance(iwc, ServiceHandler.class);
 		try {
@@ -233,7 +230,7 @@ public class ProductPriceDesigner extends TravelWindow {
   }
 
 
-  private Table getTable(IWContext iwc) throws RemoteException{
+  private Table getTable(IWContext iwc) throws RemoteException, FinderException{
     Table table = new Table();
     table.setAlignment("center");
     table.setWidth(TABLE_WIDTH);
@@ -287,7 +284,7 @@ public class ProductPriceDesigner extends TravelWindow {
     DecimalFormat df = new DecimalFormat("0.00");
     if (!iter.hasNext()) {
     	if (tFrames.length == 0) {
-	      ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1,  0, _currencyId, _visibility);
+	      Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1,  0, _currencyId, _visibility);
 	      for (int i = 0; i < cats.length; i++) {
 	        try {
 	          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, "-1"),1,row);
@@ -312,7 +309,7 @@ public class ProductPriceDesigner extends TravelWindow {
 	        table.add(timeframeText,3,row);
 	        table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		      ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[i].getID(), -1,  0, _currencyId, _visibility);
+		      Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[i].getID(), -1,  0, _currencyId, _visibility);
 		      for (int p = 0; p < cats.length; p++) {
 		        try {
 		          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[i].getID() ) ),1,row);
@@ -350,7 +347,7 @@ public class ProductPriceDesigner extends TravelWindow {
         table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.setRowColor(row, TravelManager.backgroundColor);
 
-        ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(),  0, _currencyId, _visibility);
+        Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(),  0, _currencyId, _visibility);
         for (int i = 0; i < cats.length; i++) {
           try {
             table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[k].getID())),1,row);
@@ -378,7 +375,7 @@ public class ProductPriceDesigner extends TravelWindow {
     return table;
   }
 
-	private int insertMiscellaneousProductCategories(Table table, int row,	PriceCategory[] misc, int tFrameId, int addressId) throws RemoteException {
+	private int insertMiscellaneousProductCategories(Table table, int row,	PriceCategory[] misc, int tFrameId, int addressId) throws RemoteException, FinderException {
 		Text catName;
 
 		if (misc.length > 0) {
@@ -389,7 +386,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		  table.setRowColor(row, TravelManager.backgroundColor);
 		}
 		
-		ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, _currencyId);
+		Collection prices = getProductPriceHome().findMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, _currencyId);
 		for (int i = 0; i < misc.length; i++) {
 		  table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrameId)),1,row);
 		  table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)),1,row);
@@ -405,7 +402,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		return row;
 	}
 	
-	private int insertSpecialPriceCategories(Table table, int row, PriceCategory[] specials, int tFrameId, int addressId) throws RemoteException{
+	private int insertSpecialPriceCategories(Table table, int row, PriceCategory[] specials, int tFrameId, int addressId) throws RemoteException, FinderException{
 		Text catName;
 
 		if (specials.length > 0) {
@@ -418,7 +415,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		//System.out.println("[ProductPriceDesigner] timeframId = "+tFrameId);
 		//System.out.println("[ProductPriceDesigner] addressId  = "+addressId);
 		
-		ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, 0, _currencyId, bf.getPriceCategorySearchKey());
+		Collection prices = getProductPriceHome().findProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, 0, _currencyId, bf.getPriceCategorySearchKey());
 		for (int i = 0; i < specials.length; i++) {
 		  table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrameId)),1,row);
 		  table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)),1,row);
@@ -448,8 +445,8 @@ public class ProductPriceDesigner extends TravelWindow {
         int priceCategoryId = 0;
         int productPriceId = -1;
 
-        com.idega.block.trade.stockroom.data.ProductPriceBMPBean.clearPrices(((Integer)_product.getPrimaryKey()).intValue(), this._currencyId);
-				com.idega.block.trade.stockroom.data.ProductPriceBMPBean.clearPrices(((Integer)_product.getPrimaryKey()).intValue(), this._currencyId, bf.getPriceCategorySearchKey());
+		getProductPriceHome().clearPrices(((Integer)_product.getPrimaryKey()).intValue(), this._currencyId);
+		getProductPriceHome().clearPrices(((Integer)_product.getPrimaryKey()).intValue(), this._currencyId, bf.getPriceCategorySearchKey());
 
         float price;
         int iMaxUsage;
@@ -505,7 +502,7 @@ public class ProductPriceDesigner extends TravelWindow {
 
   }
 
-  private void insertCategoryIntoTable(Table table, int row, PriceCategory pCat, ProductPrice[] prices) throws SQLException, RemoteException{
+  private void insertCategoryIntoTable(Table table, int row, PriceCategory pCat, Collection prices) throws SQLException, RemoteException{
     Text categoryName = getText(pCat.getName());
     Text infoText = getText(pCat.getName());
     TextInput priceDiscount = new TextInput(PARAMETER_PRICE_DISCOUNT);
@@ -525,15 +522,19 @@ public class ProductPriceDesigner extends TravelWindow {
     HiddenInput hi = new HiddenInput(this.PARAMETER_PRODUCT_PRICE_ID, "-1");
 
     int iMaxUsage = 0;
-    for (int j = 0; j < prices.length; j++) {
-      iMaxUsage = prices[j].getMaxUsage();
-      if (pCat.getID() == prices[j].getPriceCategoryID()) {
-        if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
-          priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
+	Iterator iter = prices.iterator();
+	ProductPrice price;
+	while (iter.hasNext()) {
+//    for (int j = 0; j < prices.length; j++) {
+		price = (ProductPrice) iter.next();
+      iMaxUsage = price.getMaxUsage();
+      if (pCat.getID() == price.getPriceCategoryID()) {
+        if (price.getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
+          priceDiscount.setContent(Integer.toString((int)price.getPrice()));
         }else {
-          priceDiscount.setContent(Float.toString(prices[j].getPrice()));
+          priceDiscount.setContent(Float.toString(price.getPrice()));
         }
-        hi.setValue(prices[j].getID());
+        hi.setValue(price.getPrimaryKey().toString());
         break;
       }
 

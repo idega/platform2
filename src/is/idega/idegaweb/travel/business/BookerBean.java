@@ -437,7 +437,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 						e.printStackTrace();
 					}
           
-          total = entry.getCount() * getTravelStockroomBusiness().getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking(), timeframeId, addressId);
+          total = entry.getCount() * getTravelStockroomBusiness().getPrice(((Integer) pPrice.getPrimaryKey()).intValue(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking(), timeframeId, addressId);
           getIWApplicationContext().setApplicationAttribute(applName, new Float(total));
         }else {
           total = temp.floatValue();

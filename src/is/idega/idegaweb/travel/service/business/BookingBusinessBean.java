@@ -1,15 +1,16 @@
 package is.idega.idegaweb.travel.service.business;
 
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 
@@ -48,7 +49,7 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		int timeframeId;
 		Timeframe timeframe;
 		BookingForm bf;
-		ProductPrice[] prices;
+		Collection prices;
 		boolean productIsValid	 = true;
 		//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
 		bf = getServiceHandler().getBookingForm(iwc, product);
@@ -60,9 +61,10 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 			timeframeId = timeframe.getID();
 		}
 //		System.out.println("BookingBusinessBean checking product");
-		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+		ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+		prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 		
-		if (prices != null && prices.length > 0) { 
+		if (prices != null && !prices.isEmpty()) { 
 //			System.out.println("BookingBusinessBean found prices : "+prices.length);
 			/** Not inserting product without proper price categories */
 			tmp = new IWTimestamp(from);

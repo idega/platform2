@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.trade.stockroom.data.Product;
@@ -16,7 +17,7 @@ import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.block.trade.stockroom.data.ProductCategoryHome;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.presentation.ProductCatalog;
@@ -357,13 +358,15 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   }
 
   /**
-   * @deprecated
+   * @throws FinderException 
+ * @throws EJBException 
+ * @deprecated
    */
-  public Timeframe getTimeframe(Product product, IWTimestamp stamp) throws RemoteException {
+  public Timeframe getTimeframe(Product product, IWTimestamp stamp) throws RemoteException, EJBException, FinderException {
     return getTimeframe(product, stamp, -1);
   }
 
-  public Timeframe getTimeframe(Product product, IWTimestamp stamp, int travelAddressId) throws RemoteException {
+  public Timeframe getTimeframe(Product product, IWTimestamp stamp, int travelAddressId) throws RemoteException, EJBException, FinderException {
   	try {
   		return getTimeframe(product, product.getTimeframes(), stamp, travelAddressId);
   	} catch (SQLException e) {
@@ -372,15 +375,15 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   	}
   }
   
-  public Timeframe getTimeframe(Product product, Timeframe[] timeframes, IWTimestamp stamp, int travelAddressId) throws RemoteException {
+  public Timeframe getTimeframe(Product product, Timeframe[] timeframes, IWTimestamp stamp, int travelAddressId) throws RemoteException, EJBException, FinderException {
 		Timeframe returner = null;
-	  ProductPrice[] pPrices;
+	  Collection pPrices;
 	  for (int i = 0; i < timeframes.length; i++) {
 	  	returner = timeframes[i];
 	    if (travelAddressId != -1) {
-	      pPrices = ProductPriceBMPBean.getProductPrices(((Integer) product.getPrimaryKey()).intValue() , timeframes[i].getID(), travelAddressId, false);
+	      pPrices = getProductPriceHome().findProductPrices(((Integer) product.getPrimaryKey()).intValue() , timeframes[i].getID(), travelAddressId, false);
 	//          System.err.println("getting prices : length = "+pPrices.length);
-	      if (pPrices.length == 0) {
+	      if (pPrices == null || pPrices.isEmpty()) {
 	        continue;
 	      }
 	    }
@@ -391,21 +394,24 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 	  }
     return returner;
   }
-  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered) throws RemoteException, IDOFinderException  {
+  
+  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered) throws RemoteException, FinderException  {
   		return getDepartureAddresses(product, stamp, ordered, null);
   }
-  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, IDOFinderException  {
+  
+  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, FinderException  {
   	try{
 	  	return getDepartureAddresses(product, stamp, ordered, key, product.getTimeframes());
 		}catch (SQLException sql) {
 			throw new IDOFinderException(sql);
 		}
-  }  
-  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key, Timeframe[] timeframes) throws RemoteException, IDOFinderException  {
+  } 
+  
+  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key, Timeframe[] timeframes) throws RemoteException, FinderException  {
 		List list = getDepartureAddresses(product, ordered);
 		List returner = new Vector();
 
-		ProductPrice[] pPrices;
+		Collection pPrices;
 		TravelAddress ta;
 		boolean add = false;
 		if (list != null) {
@@ -416,11 +422,11 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 				for (int i = 0; i < timeframes.length; i++) {
 					if (getStockroomBusiness().isInTimeframe(new IWTimestamp(timeframes[i].getFrom()), new IWTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getYearly())) {
 						if (key == null) {
-							pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
+							pPrices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
 						} else {
-							pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
+							pPrices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
 						}
-						if (pPrices.length > 0) {
+						if (pPrices != null && !pPrices.isEmpty()) {
 							add = true;
 							break;
 						}
@@ -522,6 +528,10 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
   public ProductHome getProductHome() throws RemoteException {
     return (ProductHome) IDOLookup.getHome(Product.class);
+  }
+
+  public ProductPriceHome getProductPriceHome() throws RemoteException {
+	    return (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
   }
 
   protected StockroomBusiness getStockroomBusiness() throws RemoteException {

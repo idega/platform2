@@ -31,6 +31,7 @@ import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -74,7 +75,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 	}
 
 
-	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) {
+	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) throws IDOLookupException, FinderException {
 		List list = new Vector();
 		String firstName = iwc.getParameter(AbstractSearchForm.PARAMETER_FIRST_NAME);
 		String lastName = iwc.getParameter(AbstractSearchForm.PARAMETER_LAST_NAME);
@@ -127,11 +128,15 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 		}
 		String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		
-		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
+		ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+		Collection pPrices = ppHome.findProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
+		Iterator iter = pPrices.iterator();
+		ProductPrice price;
 		int iMany = 0;
-		for (int i = 0; i < pPrices.length; i++) {
+		while (iter.hasNext()) {
+			price = (ProductPrice) iter.next();
 		  try {
-			iMany += Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
+			iMany += Integer.parseInt(iwc.getParameter("priceCategory"+price.getPrimaryKey()));
 		  }catch (NumberFormatException n) {
 		  	//n.printStackTrace();
 		  }

@@ -35,9 +35,10 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	public void initializeBean();
 
 	/**
+	 * @throws FinderException 
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#getErrorFormFields
 	 */
-	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) throws java.rmi.RemoteException;
+	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) throws java.rmi.RemoteException, FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#sortProducts

@@ -3,20 +3,18 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.data.BookingEntry;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.interfaces.Booking;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
-import com.idega.data.IDOFinderException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -101,7 +99,7 @@ public class AdditionalBooking extends TravelWindow {
     }
   }
 
-  private void displayForm(IWContext iwc) throws RemoteException, SQLException, IDOFinderException{
+  private void displayForm(IWContext iwc) throws RemoteException, SQLException, FinderException{
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -125,7 +123,7 @@ public class AdditionalBooking extends TravelWindow {
       if (tfrId != null) iTimeframeId = Integer.parseInt(tfrId);
 
 
-      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), iTimeframeId, iAddressId, false);
+      Collection pPrices = getProductPriceHome().findProductPrices(service.getID(), iTimeframeId, iAddressId, false);
       PriceCategory category;
 
       Text header = (Text) text.clone();
@@ -200,12 +198,16 @@ public class AdditionalBooking extends TravelWindow {
       table.add(new HiddenInput(this.parameterTimeframeId, "-1"));
     }
 
-
-      for (int i = 0; i < pPrices.length; i++) {
+	Iterator iter = pPrices.iterator();
+	ProductPrice pprice;
+	int i = 0;
+	while (iter.hasNext()) {
+//      for (int i = 0; i < pPrices.length; i++) {
         try {
+			pprice = (ProductPrice) iter.next();
             ++row;
-            category = pPrices[i].getPriceCategory();
-            int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), iTimeframeId, iAddressId);
+            category = pprice.getPriceCategory();
+            int price = (int) getTravelStockroomBusiness(iwc).getPrice(((Integer)pprice.getPrimaryKey()).intValue(), service.getID(),pprice.getPriceCategoryID(),pprice.getCurrencyId(),IWTimestamp.getTimestampRightNow(), iTimeframeId, iAddressId);
             pPriceCatNameText = (Text) text.clone();
               pPriceCatNameText.setText(category.getName());
 
@@ -225,6 +227,7 @@ public class AdditionalBooking extends TravelWindow {
             table.add(pPriceText, 2,row);
 
             table.add(Integer.toString(price),2,row);
+			++i;
         }catch (SQLException sql) {
           sql.printStackTrace(System.err);
         }
@@ -245,7 +248,7 @@ public class AdditionalBooking extends TravelWindow {
   }
 
 
-  public void saveBooking(IWContext iwc) throws RemoteException{
+  public void saveBooking(IWContext iwc) throws RemoteException, FinderException{
       String name = iwc.getParameter("name");
       String addressId = iwc.getParameter(this.parameterDepartureAddressId);
 
@@ -258,11 +261,11 @@ public class AdditionalBooking extends TravelWindow {
       	iTimeframeId = timeframe.getID();	
       }
 
-      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), iTimeframeId, Integer.parseInt(addressId), false);
+      Collection pPrices = getProductPriceHome().findProductPrices(service.getID(), iTimeframeId, Integer.parseInt(addressId), false);
       int bookingId;
 
       try {
-        int[] manys = new int[pPrices.length];
+        int[] manys = new int[pPrices.size()];
         for (int i = 0; i < manys.length; i++) {
             many = iwc.getParameter("priceCategory"+i);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
@@ -290,11 +293,16 @@ public class AdditionalBooking extends TravelWindow {
 
         bookingId = getBooker(iwc).Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH, userId, ownerId, Integer.parseInt(addressId), "", null, null);
 
+		Iterator iter = pPrices.iterator();
+		ProductPrice pprice;
+		int i = 0;
         BookingEntry bEntry;
-        for (int i = 0; i < pPrices.length; i++) {
+		while (iter.hasNext()) {
+//        for (int i = 0; i < pPrices.length; i++) {
+			pprice = (ProductPrice) iter.next();
           if (manys[i] != 0) {
             bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-              bEntry.setProductPriceId(pPrices[i].getID());
+              bEntry.setProductPriceId(((Integer) pprice.getPrimaryKey()).intValue());
               bEntry.setBookingId(bookingId);
               bEntry.setCount(manys[i]);
             bEntry.store();
