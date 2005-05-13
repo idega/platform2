@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.1 2005/05/11 07:16:23 laddi Exp $
+ * $Id: CourseEditor.java,v 1.2 2005/05/13 07:52:59 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.adulteducation.business.DuplicateValueException;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
+import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
@@ -38,10 +39,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/13 07:52:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -75,6 +76,7 @@ public class CourseEditor extends AdultEducationBlock {
 	private Object iSchoolPK;
 	//private School iSchool;
 	private Object iSchoolSeasonPK;
+	private SchoolSeason iSchoolSeason;
 	private Object iStudyPathGroupPK;
 	private SchoolStudyPathGroup iStudyPathGroup;
 	
@@ -188,6 +190,9 @@ public class CourseEditor extends AdultEducationBlock {
 		code.setMaxlength(20);
 		
 		DateInput startDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_DATE));
+		if (iSchoolSeason != null) {
+			startDate.setDate(iSchoolSeason.getSchoolSeasonStart());
+		}
 		if (iCourse != null) {
 			startDate.setDate(iCourse.getStartDate());
 		}
@@ -196,6 +201,9 @@ public class CourseEditor extends AdultEducationBlock {
 		}
 		
 		DateInput endDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_DATE));
+		if (iSchoolSeason != null) {
+			endDate.setDate(iSchoolSeason.getSchoolSeasonEnd());
+		}
 		if (iCourse != null) {
 			endDate.setDate(iCourse.getEndDate());
 		}
@@ -461,6 +469,7 @@ public class CourseEditor extends AdultEducationBlock {
 			}
 			if (iwc.isParameterSet(PARAMETER_SCHOOL_SEASON)) {
 				iSchoolSeasonPK = iwc.getParameter(PARAMETER_SCHOOL_SEASON);
+				iSchoolSeason = getBusiness().getSchoolBusiness().getSchoolSeason(iSchoolSeasonPK);
 			}
 			if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
 				iStudyPathGroupPK = iwc.getParameter(PARAMETER_STUDY_PATH_GROUP);

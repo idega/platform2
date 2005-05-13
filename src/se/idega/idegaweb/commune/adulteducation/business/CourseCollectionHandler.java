@@ -1,5 +1,5 @@
 /*
- * $Id: CourseCollectionHandler.java,v 1.2 2005/05/11 08:42:38 laddi Exp $
+ * $Id: CourseCollectionHandler.java,v 1.3 2005/05/13 07:52:59 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.presentation.remotescripting.RemoteScriptingResults;
 
 
 /**
- * Last modified: $Date: 2005/05/11 08:42:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/13 07:52:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CourseCollectionHandler implements RemoteScriptCollection {
 
@@ -63,8 +63,10 @@ public class CourseCollectionHandler implements RemoteScriptCollection {
 	    Iterator iter = courses.iterator();
 	    while (iter.hasNext()) {
 	    		AdultEducationCourse course = (AdultEducationCourse) iter.next();
-	    		ids.add(course.getPrimaryKey().toString());
-	    		names.add(course.getCode());
+				if (!course.isInactive()) {
+		    		ids.add(course.getPrimaryKey().toString());
+		    		names.add(course.getCode());
+				}
 	    }
 		}
 		catch (RemoteException re) {
