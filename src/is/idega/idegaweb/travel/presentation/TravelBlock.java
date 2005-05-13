@@ -20,7 +20,7 @@ import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
-import com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean;
+import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceHome;
@@ -74,7 +74,7 @@ public class TravelBlock extends Block {
     tsm = getTravelSessionManager(iwc);
     if (tsm.isSet()) {
 //    	System.out.println("SessionManager already set");
-    } else {
+    } else if (iwc.isLoggedOn()) {
 //    	System.out.println("Setting SessionManager");
 	    if (!isTravelAdministrator(iwc)) {
 	      try {
@@ -103,7 +103,7 @@ public class TravelBlock extends Block {
 		      }
 	      }
 	      catch (Exception e) {
-	      	//e.printStackTrace(System.err);
+	      	e.printStackTrace(System.err);
 	        debug(e.getMessage());
 	      }
 	      
@@ -262,7 +262,7 @@ public class TravelBlock extends Block {
   
   private boolean isSupplierManager(IWContext iwc) {
   	try {
-  		return iwc.getAccessController().hasRole(SupplierManagerBusinessBean.SUPPLIER_MANAGER_ROLE_KEY, iwc);
+  		return iwc.getAccessController().hasRole(TradeConstants.SUPPLIER_MANAGER_ROLE_KEY, iwc);
   	} catch (NotLoggedOnException n) {
   		return false;
   	}
@@ -357,5 +357,4 @@ public class TravelBlock extends Block {
 		throw new IDORuntimeException(e);
 	}
   }
-  
 }
