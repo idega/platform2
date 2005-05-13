@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CurrencyBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.data.Currency {
+public class CurrencyBMPBean extends com.idega.data.GenericEntity implements Currency{
 
   public CurrencyBMPBean() {
   }
@@ -79,4 +79,8 @@ public class CurrencyBMPBean extends com.idega.data.GenericEntity implements com
   public static String getColumnNameCurrencyName(){return"CURRENCY_NAME";}
   public static String getColumnNameCurrencyAbbreviation(){return"CURRENCY_ABBREVIATION";}
 
+  public Collection ejbFindAll() throws FinderException {
+	return this.idoFindAllIDsBySQL();  
+  }
+  
 }

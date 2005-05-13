@@ -2,6 +2,8 @@ package com.idega.block.trade.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+import javax.ejb.FinderException;
 
 
 /**
@@ -12,7 +14,7 @@ import java.sql.Timestamp;
  * @version 1.0
  */
 
-public class CurrencyValuesBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.data.CurrencyValues {
+public class CurrencyValuesBMPBean extends com.idega.data.GenericEntity implements CurrencyValues{
 
     private static String sClassName = CurrencyValues.class.getName();
 
@@ -87,5 +89,8 @@ public class CurrencyValuesBMPBean extends com.idega.data.GenericEntity implemen
     public void setCurrencyDate(Timestamp currencyDate){
       setColumn(getColumnNameTimestamp(),currencyDate);
     }
+	  public Collection ejbFindAll() throws FinderException {
+			return this.idoFindAllIDsBySQL();  
+		  }
 
 }
