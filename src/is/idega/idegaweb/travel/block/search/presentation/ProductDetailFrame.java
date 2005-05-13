@@ -7,9 +7,11 @@ import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
@@ -20,7 +22,6 @@ import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -90,7 +91,7 @@ public class ProductDetailFrame extends TravelBlock {
 
 				descriptionText = product.getText();
 				if (descriptionText != null) {
-					ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
+					ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID, product.getDatasource());
 				}
 				bookingForm = getServiceHandler(iwc).getBookingForm(iwc, product);
 
@@ -133,7 +134,7 @@ public class ProductDetailFrame extends TravelBlock {
 		}
 	}
 	
-	public void main(IWContext iwc) throws RemoteException {
+	public void main(IWContext iwc) throws RemoteException, EJBException, FinderException {
 		super.add(getProductDetailFrame(iwc));
 	}
 	
@@ -153,7 +154,7 @@ public class ProductDetailFrame extends TravelBlock {
 		leftAdd.add(po);
 	}
 	
-	protected Table getProductDetailFrame(IWContext iwc) throws RemoteException {
+	protected Table getProductDetailFrame(IWContext iwc) throws RemoteException, EJBException, FinderException {
 
 		Table table = new Table();
 		table.setCellspacing(0);
@@ -200,7 +201,7 @@ public class ProductDetailFrame extends TravelBlock {
 			try {
 				TxText descriptionText = product.getText();
 				if (descriptionText != null) {
-					ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
+					ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID, product.getDatasource());
 					if (ch != null) {
 						locText = ch.getLocalizedText();
 						files = ch.getFiles();
@@ -435,22 +436,25 @@ public class ProductDetailFrame extends TravelBlock {
 		return ++resultsRow;
 	}
 
-	private ProductPrice[] getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException {
-		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, priceCategoryKey);
+	private Collection getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException, FinderException {
+		return getProductPriceHome().findProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, priceCategoryKey);
 	}
 
-	int addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException {
-		ProductPrice[] prices = getProductPrices(product, addressId, timeframeId);
+	int addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException, FinderException {
+		Collection prices = getProductPrices(product, addressId, timeframeId);
+		ProductPrice price;
+		Iterator iter = prices.iterator();
 		int tmpPriceID = -1;
-		for (int i = 0; i < prices.length; i++) {
-			tmpPriceID = prices[i].getID();
-			addPrices(table, column, row, bus, product.getID(), timeframeId, addressId, prices[i], days, seperator);
+		while (iter.hasNext()) {
+			price = (ProductPrice) iter.next();
+			tmpPriceID = ((Integer)price.getPrimaryKey()).intValue();
+			addPrices(table, column, row, bus, product.getID(), timeframeId, addressId, price, days, seperator);
 		}
 		return tmpPriceID;
 	}
 	
 	private void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, int productId, int timeframeId, int travelAddressId, ProductPrice pPrice, int days, String seperator) throws SQLException, RemoteException {
-		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+		float price = bus.getPrice(((Integer) pPrice.getPrimaryKey()).intValue(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
 		float total = -1;
 		String returner = "";
 
