@@ -1,5 +1,5 @@
 /*
- * Created on 2005-maj-11
+ * Created on 2005-maj-13
  *
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
@@ -144,6 +144,16 @@ public interface AdultEducationPersonalInfo extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setEduF
 	 */
 	public void setEduF(String edu_F);
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getEduG
+	 */
+	public String getEduG();
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setEduG
+	 */
+	public void setEduG(String edu_G);
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getEduGCountryID

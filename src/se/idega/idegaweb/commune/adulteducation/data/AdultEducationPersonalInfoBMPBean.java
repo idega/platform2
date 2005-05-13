@@ -43,6 +43,7 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	public static final String COLUMN_EDU_E = "EDU_E";
 	public static final String COLUMN_EDU_F = "EDU_F";
 	
+	public static final String COLUMN_EDU_G = "EDU_G";
 	public static final String COLUMN_EDU_G_YEARS = "EDU_G_YEARS";
 	public static final String COLUMN_EDU_H_A = "EDU_H_A";
 	public static final String COLUMN_EDU_H_B = "EDU_H_B";
@@ -83,6 +84,7 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	addAttribute(COLUMN_EDU_D, "education D", true, true, Boolean.class);
 	addAttribute(COLUMN_EDU_E, "education E", true, true, Boolean.class);
 	addAttribute(COLUMN_EDU_F, "education F", true, true, String.class);
+	addAttribute(COLUMN_EDU_G, "education G", true, true, String.class);
 	addAttribute(COLUMN_EDU_G_YEARS, "education years", true, true, Integer.class);
 	addAttribute(COLUMN_EDU_H_A, "education H A", true, true, Boolean.class);
 	addAttribute(COLUMN_EDU_H_B, "education H B", true, true, Boolean.class);
@@ -91,7 +93,7 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	addAttribute(COLUMN_FULL_TIME, "full time", true, true, Boolean.class);
 	addAttribute(COLUMN_LANG_SFI, "language sfi", true, true, Boolean.class);
 	addAttribute(COLUMN_LANG_SAS, "language sas", true, true, Boolean.class);
-	addAttribute(COLUMN_LANG_SFI, "language other", true, true, Boolean.class);
+	addAttribute(COLUMN_LANG_OTHER, "language other", true, true, Boolean.class);
 	addAttribute(COLUMN_STUDY_SUPPORT, "study support", true, true, Boolean.class);
 	addAttribute(COLUMN_WORK_UNEMP, "work unemployed", true, true, Boolean.class);
 	addAttribute(COLUMN_WORK_EMP, "work employed", true, true, Boolean.class);
@@ -221,6 +223,14 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 
 	public void setEduF(String edu_F) {
 		setColumn(COLUMN_EDU_F, edu_F);
+	}
+	
+	public String getEduG() {
+		return getStringColumnValue(COLUMN_EDU_G);
+	}
+
+	public void setEduG(String edu_G) {
+		setColumn(COLUMN_EDU_G, edu_G);
 	}
 	
 	public int getEduGCountryID() {
