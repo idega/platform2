@@ -130,7 +130,8 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
           System.out.println("[ProductPriceBMPBean] Cannot execute Backwards compatability : currencyHolder == null for "+currency.getCurrencyName());
         }
       }catch (Exception e) {
-        e.printStackTrace(System.err);
+          System.out.println("[ProductPriceBMPBean] Error in executing Backwards compatability : "+e.getMessage());
+//        e.printStackTrace(System.err);
       }
 //    }
     return currId;
