@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 
@@ -28,6 +29,7 @@ import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.CommuneHome;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
+import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
@@ -219,7 +221,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	}
 
 	private void savePersonalInfo(IWContext iwc) {
-		try {
+	
 					
 			boolean blanguageSFI = iwc.isParameterSet(LANGUAGE_SFI);
 			boolean blanguageSAS = iwc.isParameterSet(LANGUAGE_SAS);
@@ -264,25 +266,39 @@ public class PersonalInfo extends AdultEducationBlock {
 				bisCitizenCountry = iwc.getParameter(GROUPNAME_CIT_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
 			}
 			
-			
+			try {
 			getBusiness().storePersonalInfo(studentId, intNativeCountryID, intIcLanguageID, inteduCountryID, bisNativeCountry, bisCitizenCountry,
-					beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, seducationG, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
+						beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, seducationG, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
 					
-			
-			////
-			
-			if (getResponsePage() != null) {
-				iwc.forwardToIBPage(getParentPage(), getResponsePage());
 			}
-			else {
-				add(getSmallHeader(localize("choice_stored", "Choice stored.")));
-			}	
+			catch (Exception ce){
+				log(ce);
+			}
 			
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		
+					
+			try {
+				getBusiness().storePersonalInfo(studentId, intNativeCountryID, intIcLanguageID, inteduCountryID, bisNativeCountry, bisCitizenCountry,
+						beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, seducationG, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
+
+				if (getResponsePage() != null) {
+					iwc.forwardToIBPage(getParentPage(), getResponsePage());
+				}
+				else {
+					add(getSmallHeader(localize("choice_stored", "Choice stored.")));
+				}
+			}
+			catch (RemoteException re) {
+				re.printStackTrace();
+				add(getSmallErrorText(localize("personal_info_failed", "Personal info store failed.")));
+				try{
+					control(iwc);	
+				}
+				catch (Exception e){
+					log(e);
+				}
+			}
+			
+				
 	}
 
 	private int parseAction(IWContext iwc) {
@@ -423,7 +439,7 @@ public class PersonalInfo extends AdultEducationBlock {
 				///
 		}
 		else if (!iwc.isLoggedOn())
-			add(getLocalizedHeader("school.need_to_be_logged_on", "You need to log in"));
+			add(getLocalizedHeader("persInfo.need_to_be_logged_on", "You need to log in"));
 			
 			
 						
@@ -507,10 +523,10 @@ public class PersonalInfo extends AdultEducationBlock {
 
 		table.setBorder(0);
 		int row = 1;
-		table.add(getSmallHeader(iwrb.getLocalizedString("school.name", "Name") + ":"), 1, row++);
-		table.add(getSmallHeader(iwrb.getLocalizedString("school.personal_id", "Personal ID") + ":"), 1, row++);
-		table.add(getSmallHeader(iwrb.getLocalizedString("school.address", "Address") + ":"), 1, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("school.commune", "Commune") + ":"), 5, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("persInfo.name", "Name") + ":"), 1, row++);
+		table.add(getSmallHeader(iwrb.getLocalizedString("persInfo.personal_id", "Personal ID") + ":"), 1, row++);
+		table.add(getSmallHeader(iwrb.getLocalizedString("persInfo.address", "Address") + ":"), 1, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("persInfo.commune", "Commune") + ":"), 5, row);
 		
 		
 		row = 1;
@@ -543,7 +559,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		/*Address coAddress = userbuiz.getUsersCoAddress(student);
 		if (coAddress != null ) { //a check to see if the c/o address is active is needed
 			if (!coAddress.getStreetAddress().equals("")){
-				table.add(getSmallHeader(iwrb.getLocalizedString("school.coaddress", "C/O address") + ":"), 1, row);
+				table.add(getSmallHeader(iwrb.getLocalizedString("persInfo.coaddress", "C/O address") + ":"), 1, row);
 				table.add(getSmallText(coAddress.getStreetAddress()), 3, row);
 			}
 				
@@ -570,7 +586,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			
 		final RadioButton rbNative1 = getRadioButton (GROUPNAME_NAT_KEY, Boolean.TRUE.toString());
 		final RadioButton rbNative2 = getRadioButton (GROUPNAME_NAT_KEY, Boolean.FALSE.toString());
-		rbNative1.setMustBeSelected(iwrb.getLocalizedString("school.must_select_nationality", "You have to set nationality"));
+		rbNative1.setMustBeSelected(iwrb.getLocalizedString("persInfo.must_select_nationality", "You have to set nationality"));
 		
 		if (savedBefore && isNativeCountry){
 			rbNative1.setSelected();
@@ -585,7 +601,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		
 		final RadioButton rbCitizen1 = getRadioButton (GROUPNAME_CIT_KEY, Boolean.TRUE.toString());
 		final RadioButton rbCitizen2 = getRadioButton (GROUPNAME_CIT_KEY, Boolean.FALSE.toString());
-		rbCitizen1.setMustBeSelected(iwrb.getLocalizedString("school.must_select_citizen", "You have to set your citizenship"));
+		rbCitizen1.setMustBeSelected(iwrb.getLocalizedString("persInfo.must_select_citizen", "You have to set your citizenship"));
 		if (savedBefore && isCitizenCountry){
 			rbCitizen1.setSelected();
 		}
@@ -641,7 +657,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			if (cHome!= null){
 				Collection countries = cHome.findAll();
 				drpCountry = (DropdownMenu) getStyledInterface(new DropdownMenu(countries, name));
-				drpCountry.addMenuElementFirst("-1", localize("school.drp_choose_country", "- Choose country -"));
+				drpCountry.addMenuElementFirst("-1", localize("persInfo.drp_choose_country", "- Choose country -"));
 				drpCountry.setSelectedElement(countryID);
 			}
 		}		  
@@ -847,7 +863,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			rbFulltime2.setSelected(false);
 		}
 		
-		rbFulltime1.setMustBeSelected(iwrb.getLocalizedString("school.must_select_full_time", "You have to select if you want to study full time or part time"));
+		rbFulltime1.setMustBeSelected(iwrb.getLocalizedString("persInfo.must_select_full_time", "You have to select if you want to study full time or part time"));
 		
 		
 		table.add(getLocalizedSmallHeader("persInfo.earlier_studies", "Earlier studies"), 1, row);
@@ -886,7 +902,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	
 	private DropdownMenu getNativeLanguagesDropdown(int icLanguageID) {
 		DropdownMenu drop = (DropdownMenu) getStyledInterface(new DropdownMenu(IC_LANGUAGE));
-		drop.addMenuElementFirst("-1", localize("school.drp_chose_native_lang", "- Choose languge -"));
+		drop.addMenuElementFirst("-1", localize("persInfo.drp_chose_native_lang", "- Choose languge -"));
 		try {
 			Collection langs = getICLanguageHome().findAll();
 			if (langs != null) {
