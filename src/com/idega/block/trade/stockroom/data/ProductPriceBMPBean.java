@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.ejb.FinderException;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.business.CurrencyHolder;
@@ -11,7 +12,9 @@ import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityControl;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.SimpleQuerier;
@@ -26,7 +29,7 @@ import com.idega.util.text.TextSoap;
  * @version 1.0
  */
 
-public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.ProductPrice {
+public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements ProductPrice{
 
   public static final int PRICETYPE_PRICE = 0;
   public static final int PRICETYPE_DISCOUNT = 1;
@@ -114,6 +117,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 //    if (currId == 1) {
       try {
         CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
+		cHome.setDatasource(this.getDatasource(), false);
         Currency currency = cHome.findByPrimaryKey(currId);
         CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(currency.getCurrencyName());
         if (holder != null) {
@@ -123,7 +127,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 	          this.store();
         	}
         }else {
-          System.out.println("[ProductPriceBMPBean] Cannot execute Backwards compatability : currencyHolder == null");
+          System.out.println("[ProductPriceBMPBean] Cannot execute Backwards compatability : currencyHolder == null for "+currency.getCurrencyName());
         }
       }catch (Exception e) {
         e.printStackTrace(System.err);
@@ -180,48 +184,52 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return getBooleanColumnValue(getColumnNameIsValid());
   }
 
-  public static void clearPrices(int productId, int currencyId) throws SQLException {
-  	clearPrices(productId, currencyId, null);
+  public void ejbHomeClearPrices(int productId, int currencyId) throws IDOLookupException, FinderException {
+	  ejbHomeClearPrices(productId, currencyId, null);
   }
   
-  public static void clearPrices(int productId, int currencyId, String key) throws SQLException{
-		ProductPrice[] prices = getProductPrices(productId, -1, -1, -1, currencyId, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, key);
-		for (int i = 0; i < prices.length; i++) {
-	  	prices[i].invalidate();
-	  	prices[i].update();
-		}
+  public void ejbHomeClearPrices(int productId, int currencyId, String key) throws FinderException, IDOLookupException {
+	Collection prices = ejbFindProductPrices(productId, -1, -1, -1, currencyId, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, key);
+	Iterator iter = prices.iterator();
+	ProductPrice price;
+	ProductPriceHome pHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
+	while (iter.hasNext()) {
+		price = pHome.findByPrimaryKey(iter.next());
+	  	price.invalidate();
+	  	price.store();
+	}
   }
 
-  public static ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
-    return getProductPrices(productId, -1, netBookingOnly);
+  public Collection ejbFindProductPrices(int productId, boolean netBookingOnly) throws FinderException {
+    return ejbFindProductPrices(productId, -1, netBookingOnly);
   }
 
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, boolean netBookingOnly) {
-    return getProductPrices(productId, timeframeId, -1, netBookingOnly);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, boolean netBookingOnly) throws FinderException {
+    return ejbFindProductPrices(productId, timeframeId, -1, netBookingOnly);
   }
 
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key) {
-		return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1, key);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key) throws FinderException {
+		return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1, key);
   }
 
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
-    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) throws FinderException {
+    return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1);
   }
 
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int[] visibility) {
-	return getProductPrices(productId, timeframeId, addressId, 0, -1, visibility, null);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int[] visibility) throws FinderException {
+	return ejbFindProductPrices(productId, timeframeId, addressId, 0, -1, visibility, null);
   }
 
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int[] visibility, String key) {
-    return getProductPrices(productId, timeframeId, addressId, 0, -1, visibility, key);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int[] visibility, String key) throws FinderException {
+    return ejbFindProductPrices(productId, timeframeId, addressId, 0, -1, visibility, key);
   }
   
-  public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
-    return getMiscellaneousPrices(productId, timeframeId, addressId, netBookingOnly, -1);
+  public Collection ejbFindMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) throws FinderException {
+    return ejbFindMiscellaneousPrices(productId, timeframeId, addressId, netBookingOnly, -1);
   }
 
-  public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int currencyId) {
-    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId);
+  public Collection ejbFindMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int currencyId) throws FinderException {
+    return ejbFindProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId);
   }
 
   /**
@@ -232,9 +240,10 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
    * @param currencyId Currency id
    * @return ProductPrice array
+ * @throws FinderException 
    */
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) {
-		return getProductPrices(productId, timeframeId, addressId,  netBookingOnly, countAsPersonStatus, currencyId, null);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) throws FinderException {
+		return ejbFindProductPrices(productId, timeframeId, addressId,  netBookingOnly, countAsPersonStatus, currencyId, null);
   }
 
   /**
@@ -245,15 +254,16 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
    * @param currencyId Currency id
    * @return ProductPrice array
+ * @throws FinderException 
    */
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId, String key) {
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId, String key) throws FinderException {
   	int[] visibility = new int[]{};
   	if (netBookingOnly) {
   		visibility = new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC};	
   	}else {
   		visibility = new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE};	
   	}
-		return getProductPrices(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);	
+		return ejbFindProductPrices(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);	
   }
 
   /**
@@ -266,9 +276,10 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @param visibility 1 = Private Prices, 2 = Public Prices, 3 Both Types
    * @param key used for special prices, default is null
    * @return ProductPrice array
+ * @throws FinderException 
    */
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility, String key) {
-		return getProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, key);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility, String key) throws FinderException {
+		return ejbFindProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, key);
   }
 
   /**
@@ -280,9 +291,10 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @param currencyId Currency id
    * @param visibility 1 = Private Prices, 2 = Public Prices, 3 Both Types
    * @return ProductPrice array
+ * @throws FinderException 
    */
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility) {
-		return getProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, null);
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility) throws FinderException {
+		return ejbFindProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, null);
   }
 
   /**
@@ -294,40 +306,26 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @param currencyId Currency id
    * @param visibility[] 1 = Private Prices, 2 = Public Prices, 3 Both Types
    * @return ProductPrice array
+ * @throws FinderException 
    */
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility, String key) {
-      ProductPrice[] prices = {};
-      try {
-        String sql = getSQLQuery(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key, -1, null);
-        //if (key != null) {
-        	//System.out.println("[ProductPriceBMPBean]\n"+sql);
-        //}
-        prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(sql);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
-      return prices;
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility, String key) throws FinderException {
+    String sql = getSQLQuery(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key, -1, null);
+	return this.idoFindPKsBySQL(sql);
   }
   
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int currencyId, int priceCategoryId, Date exactDate) {
-  		ProductPrice[] prices = {};
-  		try {
-  			String sql = getSQLQuery(productId, timeframeId, addressId, -1, currencyId, null, null, priceCategoryId, exactDate);
-  			prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(sql);
-  		}catch(SQLException sql) {
-  			sql.printStackTrace(System.err);
-  		}
-  		return prices;
+  public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, int currencyId, int priceCategoryId, Date exactDate) throws FinderException {
+	String sql = getSQLQuery(productId, timeframeId, addressId, -1, currencyId, null, null, priceCategoryId, exactDate);
+	return this.idoFindPKsBySQL(sql);
   }
 
-  public static int[] getCurrenciesInUse(int productId) {
-		return getCurrenciesInUse(productId, -1);
+  public int[] ejbHomeGetCurrenciesInUse(int productId) {
+		return ejbHomeGetCurrenciesInUse(productId, -1);
   }
-  public static int[] getCurrenciesInUse(int productId, int visibility) {
-		return getCurrenciesInUse(productId, new int[]{visibility});
+  public int[] ejbHomeGetCurrenciesInUse(int productId, int visibility) {
+		return ejbHomeGetCurrenciesInUse(productId, new int[]{visibility});
   }
   
-  public static int[] getCurrenciesInUse(int productId, int[] visibility) {
+  public int[] ejbHomeGetCurrenciesInUse(int productId, int[] visibility) {
     String sql = getSQLQuery(productId, -1, -1, -1, -1, visibility);
     sql = TextSoap.findAndReplace(sql, getProductPriceTableName()+".*", "distinct "+getColumnNameCurrencyId());
     try {
@@ -346,12 +344,11 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return new int[]{};
   }
 
-  private static String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility) {
+  private String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility) {
 		return getSQLQuery(productId, timeframeId, addressId, countAsPersonStatus, currencyId, visibility, null, -1, null);
   }
   
-  private static String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility, String categoryKey, int priceCategoryId, Date exactDate) {
-    ProductPrice price = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
+  private String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility, String categoryKey, int priceCategoryId, Date exactDate) {
     PriceCategory category = (PriceCategory) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class);
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
     TravelAddress tAddress = (TravelAddress) com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class);
@@ -373,7 +370,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     if (timeframeId != -1) {
       SQLQuery.append(ptmTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
       SQLQuery.append(" AND ");
-      SQLQuery.append(ptmTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+      SQLQuery.append(ptmTable+"."+getIDColumnName()+" = "+pTable+"."+getIDColumnName());
       SQLQuery.append(" AND ");
     }
     if (currencyId > 0) {
@@ -396,7 +393,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     if (addressId != -1) {
       SQLQuery.append(pamTable+"."+tAddress.getIDColumnName()+" = "+addressId);
       SQLQuery.append(" AND ");
-      SQLQuery.append(pamTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+      SQLQuery.append(pamTable+"."+getIDColumnName()+" = "+pTable+"."+getIDColumnName());
       SQLQuery.append(" AND ");
     }
     SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
@@ -521,7 +518,19 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 			query.appendAndEquals("pp." + getColumnNameExactDate(), date);
 		}
 		return (Integer)idoFindOnePKByQuery(query);
-	
   }
+  
+  public Collection ejbFindBySQL(String sql) throws FinderException {
+	  return this.idoFindPKsBySQL(sql);
+  }
+  
+  public void addTimeframe(Object timeframePK) throws IDOAddRelationshipException {
+	this.idoAddTo(Timeframe.class, timeframePK); 
+  }
+  
+  public void addTravelAddress(Object travelAddressPK) throws IDOAddRelationshipException {
+		this.idoAddTo(TravelAddress.class, travelAddressPK); 
+  }
+  
 
 }
