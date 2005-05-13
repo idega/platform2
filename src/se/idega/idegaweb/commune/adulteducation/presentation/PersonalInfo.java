@@ -7,12 +7,9 @@
 package se.idega.idegaweb.commune.adulteducation.presentation;
 
 import java.rmi.RemoteException;
-import java.text.DateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -20,16 +17,8 @@ import javax.faces.component.UIComponent;
 import se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
-import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolArea;
-import com.idega.block.school.data.SchoolClass;
-import com.idega.block.school.data.SchoolSeason;
-import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.localisation.data.ICLanguage;
@@ -44,9 +33,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Text;
@@ -76,13 +63,10 @@ public class PersonalInfo extends AdultEducationBlock {
 	List[] schools = null;
 	int preTypeId = -1;
 	int preAreaId = -1;
-	DateFormat df;
 
 	private String prefix = "sch_app_";
 	private String prmYearReload = prefix + "yearReload";
 	private String prmRealSubmit = prefix + "real_submit";
-	//private String prmAutoAssign = prefix + "aut_ass";
-	//private String prmSchoolChange = prefix + "scl_chg";
 	private String prmAction = prefix + "snd_frm";
 	private String prmChildId = CitizenChildren.getChildIDParameterName();
 	private String prmForm = prefix + "the_frm";
@@ -95,10 +79,6 @@ public class PersonalInfo extends AdultEducationBlock {
 	private static final int ACTION_STORE = 2;
 	private int iAction = ACTION_NONE;
 	
-	private final static String NAT_THIS_COUNTRY = "nat_this_country";
-	private final static String NAT_OTHER_COUNTRY = "nat_other";
-	private final static String CITIZEN_THIS_COUNTRY = "citizen_this_country";
-	private final static String CITIZEN_OTHER_COUNTRY = "nat_other";
 	private final static String IC_COUNTRY = "country";
 	private final static String IC_LANGUAGE = "language";
 	private final static String EDUCATION_A = "educationA";
@@ -108,6 +88,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	private final static String EDUCATION_E = "educationE";
 	private final static String EDUCATION_F = "educationF";
 	private final static String EDUCATION_F_INPUT = "educationFInput";
+	private final static String EDUCATION_G_INPUT = "educationGInput";
 	private final static String EDUCATION_HA = "educationHA";
 	private final static String EDUCATION_HB = "educationHB";
 	private final static String EDUCATION_HC = "educationHC";
@@ -127,37 +108,11 @@ public class PersonalInfo extends AdultEducationBlock {
 	
 	private final static String GROUPNAME_NAT_KEY = "nationality";
 	private final static String GROUPNAME_CIT_KEY = "citizen";
-	private final static String GROUPNAME_EDUCATION_KEY = "education";
-	private final static String GROUPNAME_STUDY_SUPPORT_KEY = "studySupportKey";
-	private final static String GROUPNAME_COURSE_KEY = "course";
-	private final static String GROUPNAME_WORK_KEY= "work";
 	private final static String GROUPNAME_FULLTIME_KEY= "fulltime";
 	
-	////
 	
-	
-	SchoolCommuneBusiness schCommBiz;
-	CareBusiness careBuiz = null;
-	SchoolClass schoolClass = null;
-	SchoolClass schoolClassNew = null;
-	School school = null;
-	School schoolNew = null;
-	SchoolYear schoolYear = null;
-	SchoolArea schoolArea = null;
-	SchoolType schoolType = null;
-	SchoolSeason season = null;
-	SchoolSeason seasonNew = null;
-
-	
-	Map schoolsByType = null;
-
 	private Form myForm;
 
-	private boolean isOwner = true;
-	private User owner;
-	private Date choiceDate;
-	private Integer responsePageID = null;
-	
 	boolean languageSFI = false;
 	boolean languageSAS = false;
 	boolean languageOTHER = false;
@@ -169,6 +124,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	int nativeCountryID = -1;
 	int icLanguageID = -1;
 	boolean isNativeCountry = false;
+	boolean isNativeOtherCountry = false;
 	boolean isCitizenCountry = false;
 	boolean isCitizenOther = false;
 	
@@ -185,6 +141,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	int eduCountryID = -1;
 	int eduYears = -1;
 	String educationF = null;
+	String educationG = null;
 	boolean fulltime = false;
 	boolean savedBefore = false;
 	
@@ -200,6 +157,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	int inativeCountryID = -1;
 	int iicLanguageID = -1;
 	boolean bisNativeCountry = false;
+	boolean bisNativeOtherCountry = false;
 	boolean bisCitizenCountry = false;
 	boolean bisCitizenOther = false;
 	
@@ -231,7 +189,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			}
 			iwb = getBundle(iwc);
 			iwrb = getResourceBundle(iwc);
-			df = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
+						
 			try {
 				control(iwc);	
 			}
@@ -243,52 +201,26 @@ public class PersonalInfo extends AdultEducationBlock {
 		catch (Exception re) {
 			throw new IBORuntimeException(re);
 		}
-	/*	if (iwc.isLoggedOn()) {
-			try {
-				add(getPersonalInfoForm(iwc, student));	
-			}
-			catch (RemoteException re){
-				log(re);
-			}
-			
-		
-		}
-		else if (!iwc.isLoggedOn())
-		add(getLocalizedHeader("school.need_to_be_logged_on", "You need to log in"));
-	*/	
 		
 	}
 	
 	public void control(IWContext iwc) throws Exception {
 		//debugParameters(iwc);
-		String ID = null;
 			
-		
 		if (iwc.isLoggedOn()) {
 				studentId = iwc.getCurrentUserId();
 				userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-				//schCommBiz = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc, SchoolCommuneBusiness.class);
 				User student = userbuiz.getUser(studentId);
 				
 				add(getPersonalInfoForm(iwc, student));
 			
 		}
-		else if (!iwc.isLoggedOn())
-			add(getLocalizedHeader("school.need_to_be_logged_on", "You need to log in"));
+		
 	}
 
 	private void savePersonalInfo(IWContext iwc) {
 		try {
-			//			schBuiz.createSchoolChoices(valCaseOwner, childId, valType,
-			// valPreSchool, valFirstSchool, valSecondSchool, valThirdSchool,
-			// valPreGrade, valMethod, -1, -1, valLanguage, valMessage,
-			// schoolChange, valSixyearCare, valAutoAssign, valCustodiansAgree,
-			// valSendCatalogue, valPlacementDate, season);
-			
-			//bstudySupport = iwc.isParameterSet(STUDY_SUPPORT) ? iwc.getParameter(STUDY_SUPPORT) : null;
-		
-			////
-			
+					
 			boolean blanguageSFI = iwc.isParameterSet(LANGUAGE_SFI);
 			boolean blanguageSAS = iwc.isParameterSet(LANGUAGE_SAS);
 			boolean blanguageOTHER = iwc.isParameterSet(LANGUAGE_OTHER);
@@ -299,10 +231,6 @@ public class PersonalInfo extends AdultEducationBlock {
 			String sworkOther = iwc.isParameterSet(WORK_OTHER_INPUT) ? iwc.getParameter(WORK_OTHER_INPUT) : null;
 			String inativeCountryID = iwc.isParameterSet(IC_COUNTRY) ? iwc.getParameter(IC_COUNTRY) : null;
 			String iicLanguageID = iwc.isParameterSet(IC_LANGUAGE) ? iwc.getParameter(IC_LANGUAGE) : null;
-			
-			boolean bisNativeCountry = iwc.isParameterSet(NAT_THIS_COUNTRY);
-			boolean bisCitizenCountry = iwc.isParameterSet(CITIZEN_THIS_COUNTRY);
-			
 			
 			boolean beducationHA = iwc.isParameterSet(EDUCATION_HA);
 			boolean beducationHB = iwc.isParameterSet(EDUCATION_HB);
@@ -315,6 +243,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			boolean beducationD = iwc.isParameterSet(EDUCATION_D);
 			boolean beducationE = iwc.isParameterSet(EDUCATION_E);
 			String seducationF = iwc.isParameterSet(EDUCATION_F_INPUT) ? iwc.getParameter(EDUCATION_F_INPUT) : null;
+			String seducationG = iwc.isParameterSet(EDUCATION_G_INPUT) ? iwc.getParameter(EDUCATION_G_INPUT) : null;
 			String ieduCountryID = iwc.isParameterSet(EDU_COUNTRY) ? iwc.getParameter(EDU_COUNTRY) : null;
 			String ieduYears = iwc.isParameterSet(EDU_YEARS) ? iwc.getParameter(EDU_YEARS) : null;
 			
@@ -326,10 +255,18 @@ public class PersonalInfo extends AdultEducationBlock {
 			if (iwc.isParameterSet(GROUPNAME_FULLTIME_KEY)) {
 				bfullTime = iwc.getParameter(GROUPNAME_FULLTIME_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
 			}
+			boolean bisNativeCountry = false;
+			if (iwc.isParameterSet(GROUPNAME_NAT_KEY)){
+				bisNativeCountry = iwc.getParameter(GROUPNAME_NAT_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
+			}
+			boolean bisCitizenCountry = false;
+			if (iwc.isParameterSet(GROUPNAME_CIT_KEY)){
+				bisCitizenCountry = iwc.getParameter(GROUPNAME_CIT_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
+			}
 			
 			
 			getBusiness().storePersonalInfo(studentId, intNativeCountryID, intIcLanguageID, inteduCountryID, bisNativeCountry, bisCitizenCountry,
-					beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
+					beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, seducationG, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
 					
 			
 			////
@@ -346,27 +283,6 @@ public class PersonalInfo extends AdultEducationBlock {
 			ex.printStackTrace();
 		}
 		
-	}
-
-	private void parse(IWContext iwc) {
-	/*	valSendCatalogue = iwc.isParameterSet(prmSendCatalogue);
-		valSixyearCare = iwc.isParameterSet(prmSixYearCare);
-		if (iwc.isParameterSet(prmAfterschool)) {
-			valWantsAfterSchool = iwc.getParameter(prmAfterschool).equalsIgnoreCase(Boolean.TRUE.toString());
-		}
-
-		valAutoAssign = true;
-		valLanguage = iwc.getParameter(prmLanguage);
-		valCaseOwner = iwc.isParameterSet(prmParentId) ? Integer.parseInt(iwc.getParameter(prmParentId)) : -1;
-		valNativeLangIsChecked = iwc.isParameterSet(prmNativeLangIsChecked) ? true : false;
-		valNativeLang = iwc.isParameterSet(prmNativeLang) ? Integer.parseInt(iwc.getParameter(prmNativeLang)) : -1;
-		if (!quickAdmin) {
-			valCaseOwner = iwc.getUserId();
-		}
-		else {
-			valMethod = 2;
-		}
-		*/
 	}
 
 	private int parseAction(IWContext iwc) {
@@ -398,66 +314,25 @@ public class PersonalInfo extends AdultEducationBlock {
 				}
 				
 				if (aePI != null){
-					savedBefore = true;  //user has stored this info before
-					/*
-					 * 	boolean blanguageSFI = iwc.isParameterSet(LANGUAGE_SFI);
-			boolean blanguageSAS = iwc.isParameterSet(LANGUAGE_SAS);
-			boolean blanguageOTHER = iwc.isParameterSet(LANGUAGE_OTHER);
-			boolean bworkUnemp = iwc.isParameterSet(WORK_UNEMP);
-			boolean bworkEmp = iwc.isParameterSet(WORK_EMP);
-			boolean bworkKicked = iwc.isParameterSet(WORK_KICKED);
-			boolean bstudySupport = iwc.isParameterSet(STUDY_SUPPORT);
-			String sworkOther = iwc.isParameterSet(WORK_OTHER_INPUT) ? iwc.getParameter(WORK_OTHER_INPUT) : null;
-			String inativeCountryID = iwc.isParameterSet(IC_COUNTRY) ? iwc.getParameter(IC_COUNTRY) : null;
-			String iicLanguageID = iwc.isParameterSet(IC_LANGUAGE) ? iwc.getParameter(IC_LANGUAGE) : null;
-			
-			boolean bisNativeCountry = iwc.isParameterSet(NAT_THIS_COUNTRY);
-			boolean bisCitizenCountry = iwc.isParameterSet(CITIZEN_THIS_COUNTRY);
-			
-			
-			boolean beducationHA = iwc.isParameterSet(EDUCATION_HA);
-			boolean beducationHB = iwc.isParameterSet(EDUCATION_HB);
-			boolean beducationHC = iwc.isParameterSet(EDUCATION_HC);
-			String seducationCommune = iwc.isParameterSet(EDUCATION_HCOMMUNE) ? iwc.getParameter(EDUCATION_HCOMMUNE) : null;
-			
-			boolean beducationA = iwc.isParameterSet(EDUCATION_A);
-			boolean beducationB = iwc.isParameterSet(EDUCATION_B);
-			boolean beducationC = iwc.isParameterSet(EDUCATION_C);
-			boolean beducationD = iwc.isParameterSet(EDUCATION_D);
-			boolean beducationE = iwc.isParameterSet(EDUCATION_E);
-			String seducationF = iwc.isParameterSet(EDUCATION_F_INPUT) ? iwc.getParameter(EDUCATION_F_INPUT) : null;
-			String ieduCountryID = iwc.isParameterSet(EDU_COUNTRY) ? iwc.getParameter(EDU_COUNTRY) : null;
-			String ieduYears = iwc.isParameterSet(EDU_YEARS) ? iwc.getParameter(EDU_YEARS) : null;
-			
-			int intNativeCountryID = Integer.parseInt(inativeCountryID);
-			int intIcLanguageID = Integer.parseInt(iicLanguageID);
-			int inteduCountryID = Integer.parseInt(ieduCountryID);
-			int intEduYears = Integer.parseInt(ieduYears);
-			boolean bfullTime =false;
-			if (iwc.isParameterSet(GROUPNAME_FULLTIME_KEY)) {
-				bfullTime = iwc.getParameter(GROUPNAME_FULLTIME_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
-			}
-					 * 
-					 */
+					savedBefore = true;  //user has info stored already
+					studySupport = aePI.getStudySupport();
+					languageSFI = aePI.getLangSFI();
+					languageSAS = aePI.getLangSAS();
 					
-					
-					
-					
-					studySupport = iwc.isParameterSet(STUDY_SUPPORT) ? iwc.isParameterSet(STUDY_SUPPORT): aePI.getStudySupport();
-					languageSFI = iwc.isParameterSet(LANGUAGE_SFI) ? iwc.isParameterSet(LANGUAGE_SFI): aePI.getLangSFI();
-					languageSAS = iwc.isParameterSet(LANGUAGE_SAS) ? iwc.isParameterSet(LANGUAGE_SAS): aePI.getLangSAS();
-					
-					languageOTHER = iwc.isParameterSet(LANGUAGE_OTHER) ? iwc.isParameterSet(LANGUAGE_OTHER): aePI.getLangOTHER();
+					languageOTHER =aePI.getLangOTHER();
 					workUnemp = aePI.getWorkUnEmploy();
 					workEmp = aePI.getWorkEmploy();
 					workKicked = aePI.getWorkKicked();
 					workOther = aePI.getWorkOther();
 					
 					isNativeCountry = aePI.getNativeThisCountry();
+					if (!isNativeCountry)
+						isNativeOtherCountry = true;
+					
 					icLanguageID = aePI.getIcLanguageID();
 					isCitizenCountry = aePI.getCitizenThisCountry();
 					if (!isCitizenCountry)
-							isCitizenOther = true;
+						isCitizenOther = true;
 				
 					nativeCountryID = aePI.getNativeCountryID();
 					
@@ -472,12 +347,80 @@ public class PersonalInfo extends AdultEducationBlock {
 					educationD = aePI.getEduD();
 					educationE = aePI.getEduE();
 					educationF = aePI.getEduF();
+					educationG = aePI.getEduG();
 					eduCountryID = aePI.getEducationCountryID();
 					eduYears = aePI.getEduGYears();
 					fulltime = aePI.getFulltime();
 					sworkOther = aePI.getWorkOther();
 				}
+				///
+				if (iwc.isParameterSet(LANGUAGE_SFI))
+					languageSFI = iwc.isParameterSet(LANGUAGE_SFI);
+				if (iwc.isParameterSet(LANGUAGE_SAS))
+					languageSAS = iwc.isParameterSet(LANGUAGE_SAS);
+				if (iwc.isParameterSet(LANGUAGE_OTHER))
+					languageOTHER = iwc.isParameterSet(LANGUAGE_OTHER);
+				if (iwc.isParameterSet(WORK_UNEMP)) 
+					workUnemp = iwc.isParameterSet(WORK_UNEMP);
+				if (iwc.isParameterSet(WORK_EMP))
+					workEmp = iwc.isParameterSet(WORK_EMP);
+				if (iwc.isParameterSet(WORK_KICKED))
+					bworkKicked = iwc.isParameterSet(WORK_KICKED);
+				if (iwc.isParameterSet(STUDY_SUPPORT))
+					studySupport = iwc.isParameterSet(STUDY_SUPPORT);
+				if (iwc.isParameterSet(WORK_OTHER_INPUT))
+					workOther = iwc.getParameter(WORK_OTHER_INPUT);
+				if (iwc.isParameterSet(IC_COUNTRY)){
+					String nativeCountryID = iwc.getParameter(IC_COUNTRY);
+					inativeCountryID = Integer.parseInt(nativeCountryID); 
+				}
+				if (iwc.isParameterSet(IC_COUNTRY)){
+					String cLanguageID = iwc.getParameter(IC_LANGUAGE);
+					iicLanguageID = Integer.parseInt(cLanguageID); 
+				}
+				if (iwc.isParameterSet(GROUPNAME_NAT_KEY)){
+					isNativeCountry = iwc.getParameter(GROUPNAME_NAT_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
+				}
 				
+				if (iwc.isParameterSet(GROUPNAME_CIT_KEY))
+					isCitizenCountry = iwc.getParameter(GROUPNAME_CIT_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
+				if (iwc.isParameterSet(EDUCATION_HA))
+					beducationHA = iwc.isParameterSet(EDUCATION_HA);
+				if (iwc.isParameterSet(EDUCATION_HB))
+					beducationHB = iwc.isParameterSet(EDUCATION_HB);
+				if (iwc.isParameterSet(EDUCATION_HC))
+					beducationHC = iwc.isParameterSet(EDUCATION_HC);
+				if (iwc.isParameterSet(EDUCATION_HCOMMUNE))
+					seducationCommune = iwc.getParameter(EDUCATION_HCOMMUNE);
+				if (iwc.isParameterSet(EDUCATION_A))
+					beducationA = iwc.isParameterSet(EDUCATION_A);
+				if (iwc.isParameterSet(EDUCATION_B))
+					beducationB = iwc.isParameterSet(EDUCATION_B);
+				if (iwc.isParameterSet(EDUCATION_C))
+					beducationC = iwc.isParameterSet(EDUCATION_C);
+				if (iwc.isParameterSet(EDUCATION_D))
+					beducationD = iwc.isParameterSet(EDUCATION_D);
+				if (iwc.isParameterSet(EDUCATION_E))
+					beducationE = iwc.isParameterSet(EDUCATION_E);
+				if (iwc.isParameterSet(EDUCATION_F_INPUT))
+					educationF = iwc.getParameter(EDUCATION_F_INPUT);
+				if (iwc.isParameterSet(EDUCATION_G_INPUT))
+					educationG = iwc.getParameter(EDUCATION_G_INPUT);
+				if (iwc.isParameterSet(EDU_COUNTRY)){
+					String ieduCountryID = iwc.getParameter(EDU_COUNTRY);
+					eduCountryID = Integer.parseInt(ieduCountryID);
+				}
+				
+				if (iwc.isParameterSet(EDU_YEARS) ){
+					String seduYears = iwc.getParameter(EDU_YEARS);
+					eduYears = Integer.parseInt(seduYears);
+				}
+			
+				if (iwc.isParameterSet(GROUPNAME_FULLTIME_KEY)) {
+					fulltime = iwc.getParameter(GROUPNAME_FULLTIME_KEY).equalsIgnoreCase(Boolean.TRUE.toString());
+				}
+				
+				///
 		}
 		else if (!iwc.isLoggedOn())
 			add(getLocalizedHeader("school.need_to_be_logged_on", "You need to log in"));
@@ -504,7 +447,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		int row = 1;
 
 		T.add(getStudentPersonalInfo(iwc, student), 1, row++);
-		T.add(getNationalityTable(iwc, student), 1, row++);
+		T.add(getNationalityTable(), 1, row++);
 		HorizontalRule hr = new HorizontalRule();
 		hr.setHeight(1);
 		T.add(hr, 1, row++);
@@ -512,7 +455,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		T.setHeight(row++, 12);
 		
 		//T.add(getChoiceSchool(), 1, row++);
-		T.add(getCountryEducationTable(iwc, student), 1, row++);
+		T.add(getCountryEducationTable(), 1, row++);
 		T.setHeight(row, 5);
 		T.add(hr, 1, row++);
 		//add table with messagePart and submit button
@@ -530,13 +473,11 @@ public class PersonalInfo extends AdultEducationBlock {
 		T.add(new HiddenInput(prmRealSubmit, "-1"), 1, 1);
 		T.add(new HiddenInput(prmChildId, student.getPrimaryKey().toString()), 1, 1);
 
-		Page p = this.getParentPage();
+		/*Page p = this.getParentPage();
 		if (p != null) {
-			Script S = p.getAssociatedScript();
-			//p.setOnLoad("checkApplication()");
-			
+			Script S = p.getAssociatedScript();			
 		}
-
+*/
 		return myForm;
 	}
 
@@ -615,7 +556,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	}
 	
 	
-	private PresentationObject getNationalityTable(IWContext iwc, User student) {
+	private PresentationObject getNationalityTable() {
 		Table table = new Table();
 		table.setColumns(3);
 		table.setCellpadding(2);
@@ -627,18 +568,35 @@ public class PersonalInfo extends AdultEducationBlock {
 		table.setWidth(2, 2, "5");
 
 			
-		final RadioButton rbNative1 = getRadioButton (GROUPNAME_NAT_KEY, NAT_THIS_COUNTRY);
-		final RadioButton rbNative2 = getRadioButton (GROUPNAME_NAT_KEY, NAT_OTHER_COUNTRY);
+		final RadioButton rbNative1 = getRadioButton (GROUPNAME_NAT_KEY, Boolean.TRUE.toString());
+		final RadioButton rbNative2 = getRadioButton (GROUPNAME_NAT_KEY, Boolean.FALSE.toString());
 		rbNative1.setMustBeSelected(iwrb.getLocalizedString("school.must_select_nationality", "You have to set nationality"));
-		rbNative1.setSelected(isNativeCountry);		
-		if (nativeCountryID != -1) // if a country is set then student is not native of this country
-			rbNative2.setSelected();
 		
-		final RadioButton rbCitizen1 = getRadioButton (GROUPNAME_CIT_KEY, CITIZEN_THIS_COUNTRY);
-		final RadioButton rbCitizen2 = getRadioButton (GROUPNAME_CIT_KEY, CITIZEN_OTHER_COUNTRY);
+		if (savedBefore && isNativeCountry){
+			rbNative1.setSelected();
+		}
+		else if (savedBefore && !isNativeCountry){
+			rbNative2.setSelected();
+		}
+		else {
+			rbNative1.setSelected(false);
+			rbNative2.setSelected(false);
+		}
+		
+		final RadioButton rbCitizen1 = getRadioButton (GROUPNAME_CIT_KEY, Boolean.TRUE.toString());
+		final RadioButton rbCitizen2 = getRadioButton (GROUPNAME_CIT_KEY, Boolean.FALSE.toString());
 		rbCitizen1.setMustBeSelected(iwrb.getLocalizedString("school.must_select_citizen", "You have to set your citizenship"));
-		rbCitizen1.setSelected(isCitizenCountry);
-		rbCitizen2.setSelected(isCitizenOther);
+		if (savedBefore && isCitizenCountry){
+			rbCitizen1.setSelected();
+		}
+		else if (savedBefore && !isCitizenCountry){
+			rbCitizen2.setSelected();
+		}
+		else {
+			rbCitizen1.setSelected(false);
+			rbCitizen2.setSelected(false);
+		}
+		
 		
 		int row = 1;
 		table.mergeCells(1, 1, table.getColumns(), row);
@@ -646,9 +604,12 @@ public class PersonalInfo extends AdultEducationBlock {
 		table.add(getLocalizedSmallHeader("persInfo.nationality", "Nationality"), 1, row++);
 		table.add(rbNative1, 1, row);
 		table.add(getLocalizedSmallText("persInfo.nationality_this", "Nationality the country"), 1, row++);
+		table.mergeCells(1, row, table.getColumns(), row);
 		table.add(rbNative2, 1, row);
 		table.add(getLocalizedSmallText("persInfo.nationality_other", "Nationality other country"), 1, row);
-		table.add(getCountryDropdown(IC_COUNTRY, nativeCountryID), 3, row++);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(getCountryDropdown(IC_COUNTRY, nativeCountryID), 1, row++);
 		row++;
 		table.add(getLocalizedSmallHeader("persInfo.mother_tongue", "Mother tongue"), 1, row);
 		table.add(getLocalizedSmallText("persInfo.mother_tongue_info", "(if not swedish)"), 1, row++);
@@ -680,7 +641,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			if (cHome!= null){
 				Collection countries = cHome.findAll();
 				drpCountry = (DropdownMenu) getStyledInterface(new DropdownMenu(countries, name));
-				drpCountry.addMenuElement("-1", localize("school.drp_choose_country", "- Choose country -"));
+				drpCountry.addMenuElementFirst("-1", localize("school.drp_choose_country", "- Choose country -"));
 				drpCountry.setSelectedElement(countryID);
 			}
 		}		  
@@ -693,13 +654,13 @@ public class PersonalInfo extends AdultEducationBlock {
 			
 	}
 	
-	private PresentationObject getCountryEducationTable(IWContext iwc, User student) {
+	private PresentationObject getCountryEducationTable() {
 		Table table = new Table();
 		table.setColumns(3);
 		table.setCellpadding(2);
 		table.setCellspacing(0);
 		table.setBorder(0);
-
+		table.setHeight("10");
 		table.mergeCells(3, 1, 3, 10);
 		table.setCellpaddingTop(1, 1, 6);
 		table.setWidth(1, 2, "100");
@@ -720,16 +681,18 @@ public class PersonalInfo extends AdultEducationBlock {
 		if (educationF != null && !educationF.equals(""))
 			cbEducationF.setChecked(true);
 				
-		//cbEducationA.setMustBeChecked(iwrb.getLocalizedString("persInfo.edcucation_must_checked", "Education must be set"));
 		TextInput inputEducationF = (TextInput) getStyledInterface(new TextInput(EDUCATION_F_INPUT));
 		if (educationF != null && !educationF.equals(""))
 			inputEducationF.setContent(educationF);
 		
+		TextInput inputEducationG = (TextInput) getStyledInterface(new TextInput(EDUCATION_G_INPUT));
+		if (educationG != null && !educationG.equals(""))
+			inputEducationG.setContent(educationG);
+		
 		if (!cbEducationF.isEmpty())
 			inputEducationF.setAsNotEmpty(iwrb.getLocalizedString("persInfo.what_educationF", "You have to fill in what education"));
 		
-		int row = 1;
-		//table.mergeCells(1, 1, table.getColumns(), row);		
+		int row = 1;	
 		table.add(getLocalizedSmallHeader("persInfo.thisCountryEducation", "Education in this country"), 1, row++);
 		table.add(cbEducationA, 1, row);
 		table.add(getLocalizedSmallText("persInfo.education_A", "Education A"), 1, row++);
@@ -745,7 +708,11 @@ public class PersonalInfo extends AdultEducationBlock {
 		table.add(getLocalizedSmallText("persInfo.education_F", "Education F"), 1, row);
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(inputEducationF, 1, row++);		
-
+		table.add(getLocalizedSmallHeader("persInfo.otherCountryEducation", "Education other country"), 1, row++);
+		table.add(getLocalizedSmallText("persInfo.education_G", "Education G"), 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(inputEducationG, 1, row++);
+		
 		Table tableDropdwns = new Table();
 		tableDropdwns.setColumns(3);
 		tableDropdwns.setCellpadding(2);
@@ -766,15 +733,15 @@ public class PersonalInfo extends AdultEducationBlock {
 		menuYears.setSelectedElement(eduYears);
 		tableDropdwns.add(menuYears, 3, rowT);
 		
-		table.add(getRightTable(iwc, student), 3, 1);
-		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_TOP);
+		table.add(getRightTable(), 3, 1);
+		table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
 		table.add(tableDropdwns, 1, row++);		
-		table.add(getEarlierStudiesTable(iwc, student), 1, row);
+		table.add(getEarlierStudiesTable(), 1, row);
 		return table;
 		
 	}
 	
-	private PresentationObject getRightTable(IWContext iwc, User student) {
+	private PresentationObject getRightTable() {
 		
 		Table table = new Table();
 		table.setColumns(1);
@@ -800,9 +767,6 @@ public class PersonalInfo extends AdultEducationBlock {
 		final CheckBox cbWorkOther = getCheckBox(WORK_OTHER, Boolean.TRUE.toString());
 		if (workOther != null)
 			cbWorkOther.setChecked(true);
-		
-
-		//cbWorkUnmep.setMustBeChecked(iwrb.getLocalizedString("persInfo.work_must_be_checked", "Work situation must be set"));
 		
 		final CheckBox cbStudySupport = getCheckBox(STUDY_SUPPORT, Boolean.TRUE.toString());
 		cbStudySupport.setChecked(studySupport);
@@ -846,7 +810,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		
 	}
 	
-	private PresentationObject getEarlierStudiesTable(IWContext iwc, User student) {
+	private PresentationObject getEarlierStudiesTable() {
 		Table table = new Table();
 		table.setColumns(3);
 		table.setCellpadding(2);
@@ -882,6 +846,7 @@ public class PersonalInfo extends AdultEducationBlock {
 			rbFulltime1.setSelected(false);
 			rbFulltime2.setSelected(false);
 		}
+		
 		rbFulltime1.setMustBeSelected(iwrb.getLocalizedString("school.must_select_full_time", "You have to select if you want to study full time or part time"));
 		
 		
@@ -921,7 +886,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	
 	private DropdownMenu getNativeLanguagesDropdown(int icLanguageID) {
 		DropdownMenu drop = (DropdownMenu) getStyledInterface(new DropdownMenu(IC_LANGUAGE));
-		drop.addMenuElement("-1", localize("school.drp_chose_native_lang", "- Choose languge -"));
+		drop.addMenuElementFirst("-1", localize("school.drp_chose_native_lang", "- Choose languge -"));
 		try {
 			Collection langs = getICLanguageHome().findAll();
 			if (langs != null) {
@@ -948,17 +913,74 @@ public class PersonalInfo extends AdultEducationBlock {
 		s.append("\nfunction checkApplication(){\n\t");
 	
 		s.append("\n\t var dropNativeLang = ").append("findObj('").append(IC_COUNTRY).append("');");
-		s.append("\n\t var checkNativeLang = ").append("findObj('").append(NAT_OTHER_COUNTRY).append("');");
-		//s.append("\n\t alert(dropNativeLang.type);");
-/*
-		s.append("\n\n\t if (dropNativeLang.options[dropNativeLang.selectedIndex].value > 0 && checkNativeLang.checked == false){");
+		s.append("\n\t var checkNativeLang = ").append("findObj('").append(GROUPNAME_NAT_KEY).append("');");
+		
+		s.append("\n\t var checkEduA = ").append("findObj('").append(EDUCATION_A).append("');");
+		s.append("\n\t var checkEduB = ").append("findObj('").append(EDUCATION_B).append("');");
+		s.append("\n\t var checkEduC = ").append("findObj('").append(EDUCATION_C).append("');");
+		s.append("\n\t var checkEduD = ").append("findObj('").append(EDUCATION_D).append("');");
+		s.append("\n\t var checkEduE = ").append("findObj('").append(EDUCATION_E).append("');");
+		s.append("\n\t var checkEduF = ").append("findObj('").append(EDUCATION_F).append("');");
+		s.append("\n\t var inputEduF = ").append("findObj('").append(EDUCATION_F_INPUT).append("');");
+		
+		s.append("\n\t var checkEduHA = ").append("findObj('").append(EDUCATION_HA).append("');");
+		s.append("\n\t var checkEduHB = ").append("findObj('").append(EDUCATION_HB).append("');");
+		s.append("\n\t var checkEduHC = ").append("findObj('").append(EDUCATION_HC).append("');");
+		s.append("\n\t var inputEduHCommune = ").append("findObj('").append(EDUCATION_HCOMMUNE).append("');");
+		
+		s.append("\n\t var checkUnempl = ").append("findObj('").append(WORK_UNEMP).append("');");
+		s.append("\n\t var checkEmpl = ").append("findObj('").append(WORK_EMP).append("');");
+		s.append("\n\t var checkFired = ").append("findObj('").append(WORK_KICKED).append("');");
+		s.append("\n\t var checkWorkOther = ").append("findObj('").append(WORK_OTHER).append("');");
+		s.append("\n\t var inputWork = ").append("findObj('").append(WORK_OTHER_INPUT).append("');");
+		
+		//education
+		s.append("\n\n\t if (checkEduA.checked == false && checkEduB.checked == false && checkEduC.checked == false && checkEduD.checked == false && checkEduE.checked == false && checkEduF.checked == false){"); 
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education", "You must fill previous education") + "');");
+		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t if (checkEduF.checked == true && inputEduF.value == ''){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_f", "You must set what education") + "');");
+		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t else if (inputEduF.value != '' && checkEduF.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_f_checkbox", "You must set education checkbox") + "');");
+		s.append("\n\t\t return false; \n}");
+		//Work situation
+		s.append("\n\n\t if (checkUnempl.checked == false && checkEmpl.checked == false && checkFired.checked == false && checkWorkOther.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_situation", "You must set work situation") + "');");
+		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t if (checkWorkOther.checked == true && inputWork.value == ''){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_other", "You must set work other") + "');");
+		s.append("\n\t\t return false; \n}");	
+		s.append("\n\n\t else if (inputWork.value != '' && checkWorkOther.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_other_checkbox", "You must check work other checkbox") + "');");
+		s.append("\n\t\t return false; \n}");
+		//earlier studies
+		s.append("\n\n\t if (checkEduHC.checked == true && inputEduHCommune.value == ''){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_other_commune", "You must set what commune") + "');");
+		s.append("\n\t\t return false; \n}");	
+		s.append("\n\n\t else if (inputEduHCommune.value != '' && checkEduHC.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_other_commune_checkbox", "You must check the chekbox for other commune") + "');");
+		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t if (checkEduHA.checked == false && checkEduHB.checked == false && checkEduHC.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_H_ABC", "You have to set earlier adult studies") + "');");
+		s.append("\n\t\t return false; \n}");
+		
+		s.append("\n\n\t if (checkEduHA.checked == true && checkEduHB.checked == true){");
+		s.append("\n\t\t alert('" + localize("persInfo.cannot_fill_HA_plus", "You cannot choose yes and no in earlier studies") + "');");
+		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t else if (checkEduHA.checked == true && checkEduHC.checked == true){");
+		s.append("\n\t\t alert('" + localize("persInfo.cannot_fill_HA_plus", "You cannot choose yes and no in earlier studies") + "');");
+		s.append("\n\t\t return false; \n}");
+		
+		//citizen
+		s.append("\n\n\t if (dropNativeLang.options[dropNativeLang.selectedIndex].value > 0 && checkNativeLang[1].checked == false){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_native_language", "You must check the radiobutton for native language if you want it") + "');");
 		s.append("\n\t\t return false; \n}");
-		s.append("\n\n\t else if (dropNativeLang.options[dropNativeLang.selectedIndex].value < 0 && checkNativeLang.checked == true){");
+		s.append("\n\n\t else if (dropNativeLang.options[dropNativeLang.selectedIndex].value < 0 && checkNativeLang[1].checked == true ){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_native_language_drp", "Select a native language in the dropdown ") + "');");
 		s.append("\n\t\t return false; \n}");
-	*/
-			s.append("\n\t\t}");
+
+		s.append("\n\t\t}");
 		
 		return s.toString();
 	}
