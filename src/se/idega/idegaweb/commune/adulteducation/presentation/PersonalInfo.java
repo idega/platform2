@@ -10,16 +10,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
-
 import se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.localisation.data.ICLanguage;
@@ -29,7 +25,6 @@ import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.CommuneHome;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
-import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
