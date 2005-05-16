@@ -865,12 +865,12 @@ public class PersonalInfo extends AdultEducationBlock {
 		table.mergeCells(1, row, 3, row);
 		row++;
 		table.add(cbEducationHA, 1, row);
-		table.add(getLocalizedSmallText("persInfo.educaiton_HA", "No"), 1, row);
+		table.add(getLocalizedSmallText("persInfo.education_HA", "No"), 1, row);
 		table.add(cbEducationHB, 3, row);
 		table.setNoWrap(3, row);
-		table.add(getLocalizedSmallText("persInfo.educaiton_HB", "Yes in this commune"), 3, row++);
+		table.add(getLocalizedSmallText("persInfo.education_HB", "Yes in this commune"), 3, row++);
 		table.add(cbEducationHC, 1, row);
-		table.add(getLocalizedSmallText("persInfo.educaiton_HC", "Yes, in other commune"), 1, row);
+		table.add(getLocalizedSmallText("persInfo.education_HC", "Yes, in other commune"), 1, row);
 		table.setNoWrap(1, row);
 		table.add(inputStudiedCommune, 3, row++);
 		
