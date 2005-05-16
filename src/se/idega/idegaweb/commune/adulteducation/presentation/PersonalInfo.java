@@ -956,14 +956,14 @@ public class PersonalInfo extends AdultEducationBlock {
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_f_checkbox", "You must set education checkbox") + "');");
 		s.append("\n\t\t return false; \n}");
 		//Work situation
-		s.append("\n\n\t if (checkUnempl.checked == false && checkEmpl.checked == false && checkFired.checked == false && checkWorkOther.checked == false){");
-		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_situation", "You must set work situation") + "');");
+		s.append("\n\n\t if (inputWork.value != '' && checkWorkOther.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_other_checkbox", "You must check work other checkbox") + "');");
 		s.append("\n\t\t return false; \n}");
 		s.append("\n\n\t if (checkWorkOther.checked == true && inputWork.value == ''){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_other", "You must set work other") + "');");
 		s.append("\n\t\t return false; \n}");	
-		s.append("\n\n\t else if (inputWork.value != '' && checkWorkOther.checked == false){");
-		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_other_checkbox", "You must check work other checkbox") + "');");
+		s.append("\n\n\t else if (checkUnempl.checked == false && checkEmpl.checked == false && checkFired.checked == false && checkWorkOther.checked == false){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_situation", "You must set work situation") + "');");
 		s.append("\n\t\t return false; \n}");
 		//earlier studies
 		s.append("\n\n\t if (checkEduHC.checked == true && inputEduHCommune.value == ''){");
