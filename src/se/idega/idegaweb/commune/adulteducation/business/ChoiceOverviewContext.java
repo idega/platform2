@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverviewContext.java,v 1.4 2005/05/16 14:44:17 laddi Exp $ Created
+ * $Id: ChoiceOverviewContext.java,v 1.5 2005/05/16 14:58:24 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 
 /**
- * Last modified: $Date: 2005/05/16 14:44:17 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 14:58:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ChoiceOverviewContext extends PrintingContextImpl {
 
@@ -188,8 +188,8 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 			throw new IBORuntimeException("Student has no adult education information!!!");
 		}
 		
-		props.put("swedish", info.getCitizenThisCountry() ? "X" : "");
-		props.put("otherNationality", info.getCitizenOtherCountry() ? "X" : "");
+		props.put("swedish", info.getNativeThisCountry() ? "X" : "");
+		props.put("otherNationality", !info.getNativeThisCountry() ? "X" : "");
 		props.put("otherNation", info.getNativeCountryID() != -1 ? info.getNativeCountry().getName() : "");
 		
 		StringBuffer studies = new StringBuffer();
