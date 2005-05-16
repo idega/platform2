@@ -70,7 +70,7 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	addManyToOneRelationship(COLUMN_IC_USER_ID, User.class);
 	addManyToOneRelationship(COLUMN_NAT_IC_COUNTRY_ID, Country.class);
 	addManyToOneRelationship(COLUMN_IC_LANGUAGE_ID, ICLanguage.class);
-	addManyToOneRelationship(COLUMN_EDU_G_IC_COUNTRY_ID, ICLanguage.class);
+	addManyToOneRelationship(COLUMN_EDU_G_IC_COUNTRY_ID, Country.class);
 	//addAttribute(COLUMN_IC_LANGUAGE_ID, "language id", true, true, Integer.class);
 	//addAttribute(COLUMN_EDU_G_IC_COUNTRY_ID, "studied country id", true, true, Integer.class);
 	
@@ -131,6 +131,10 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	public int getNativeCountryID() {
 		return getIntColumnValue(COLUMN_NAT_IC_COUNTRY_ID);
 	}
+	
+	public Country getNativeCountry() {
+		return (Country) getColumnValue(COLUMN_NAT_IC_COUNTRY_ID);
+	}
 
 	public void setNativeCountryID(int nativeCountryId) {
 		setColumn(COLUMN_NAT_IC_COUNTRY_ID, nativeCountryId);
@@ -141,6 +145,10 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	public int getIcLanguageID() {
 		return getIntColumnValue(COLUMN_IC_LANGUAGE_ID);
 	}
+	
+	public ICLanguage getICLanguage() {
+		return (ICLanguage) getColumnValue(COLUMN_IC_LANGUAGE_ID);
+	}
 
 	public void setIcLanguageID(int icLanguageId) {
 		setColumn(COLUMN_IC_LANGUAGE_ID, icLanguageId);
@@ -148,6 +156,10 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	
 	public int getEducationCountryID() {
 		return getIntColumnValue(COLUMN_EDU_G_IC_COUNTRY_ID);
+	}
+	
+	public Country getEducationCountry() {
+		return (Country) getColumnValue(COLUMN_EDU_G_IC_COUNTRY_ID);
 	}
 
 	public void setEducationCountryID(int educationCountryId) {
@@ -235,6 +247,10 @@ public class AdultEducationPersonalInfoBMPBean extends GenericEntity implements 
 	
 	public int getEduGCountryID() {
 		return getIntColumnValue(COLUMN_EDU_G_IC_COUNTRY_ID);
+	}
+
+	public Country getEduGCountry() {
+		return (Country) getColumnValue(COLUMN_EDU_G_IC_COUNTRY_ID);
 	}
 
 	public void setEduGCountryID(int edu_countryid) {

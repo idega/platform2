@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.2 2005/05/11 20:01:12 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.3 2005/05/16 08:57:06 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,21 +12,25 @@ package se.idega.idegaweb.commune.adulteducation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import se.idega.idegaweb.commune.adulteducation.business.PDFOverviewCreator;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 
 /**
- * Last modified: $Date: 2005/05/11 20:01:12 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 08:57:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -58,7 +62,15 @@ public class ChoiceOverview extends AdultEducationBlock {
 			SchoolSeason season = (SchoolSeason) iter.next();
 			Collection choices = getBusiness().getChoices(iwc.getCurrentUser(), season);
 			if (!choices.isEmpty()) {
-				table.add(getSmallHeader(season.getSchoolSeasonName()), 1, row++);
+				table.add(getSmallHeader(season.getSchoolSeasonName()), 1, row);
+				table.add(Text.getNonBrakingSpace(), 1, row);
+				
+				Link pdf = new Link(getPDFIcon(localize("get_pdf", "Get PDF")));
+				pdf.setWindow(getFileWindow());
+				pdf.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(PDFOverviewCreator.class));
+				pdf.addParameter(PARAMETER_SCHOOL_SEASON, season.getPrimaryKey().toString());
+				table.add(pdf, 1, row++);
+				
 				table.setHeight(row++, 6);
 				
 				Iterator iterator = choices.iterator();

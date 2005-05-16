@@ -1,20 +1,27 @@
 /*
- * Created on 2005-maj-13
+ * $Id: AdultEducationPersonalInfo.java,v 1.4 2005/05/16 08:57:06 laddi Exp $
+ * Created on May 14, 2005
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.adulteducation.data;
 
+import com.idega.core.localisation.data.ICLanguage;
+import com.idega.core.location.data.Country;
 import com.idega.data.IDOEntity;
 
+
 /**
- * @author Malin
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Last modified: $Date: 2005/05/16 08:57:06 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.4 $
  */
 public interface AdultEducationPersonalInfo extends IDOEntity {
+
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getIcUserID
 	 */
@@ -31,6 +38,11 @@ public interface AdultEducationPersonalInfo extends IDOEntity {
 	public int getNativeCountryID();
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getNativeCountry
+	 */
+	public Country getNativeCountry();
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setNativeCountryID
 	 */
 	public void setNativeCountryID(int nativeCountryId);
@@ -41,6 +53,11 @@ public interface AdultEducationPersonalInfo extends IDOEntity {
 	public int getIcLanguageID();
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getICLanguage
+	 */
+	public ICLanguage getICLanguage();
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setIcLanguageID
 	 */
 	public void setIcLanguageID(int icLanguageId);
@@ -49,6 +66,11 @@ public interface AdultEducationPersonalInfo extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getEducationCountryID
 	 */
 	public int getEducationCountryID();
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getEducationCountry
+	 */
+	public Country getEducationCountry();
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setEducationCountryID
@@ -159,6 +181,11 @@ public interface AdultEducationPersonalInfo extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getEduGCountryID
 	 */
 	public int getEduGCountryID();
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#getEduGCountry
+	 */
+	public Country getEduGCountry();
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setEduGCountryID
@@ -304,5 +331,4 @@ public interface AdultEducationPersonalInfo extends IDOEntity {
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoBMPBean#setWorkOther
 	 */
 	public void setWorkOther(String workOther);
-
 }

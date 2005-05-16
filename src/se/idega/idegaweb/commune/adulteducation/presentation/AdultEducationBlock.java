@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBlock.java,v 1.3 2005/05/11 17:44:48 laddi Exp $
+ * $Id: AdultEducationBlock.java,v 1.4 2005/05/16 08:57:06 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,12 +17,13 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Window;
 
 /**
- * Last modified: $Date: 2005/05/11 17:44:48 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 08:57:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class AdultEducationBlock extends CommuneBlock {
 
@@ -59,6 +60,15 @@ public abstract class AdultEducationBlock extends CommuneBlock {
 		}
 	}
 
+	protected Window getFileWindow() {
+		Window w = new Window(localize("pdf", "PDF"), getIWApplicationContext().getIWMainApplication().getMediaServletURI());
+		w.setResizable(true);
+		w.setMenubar(true);
+		w.setHeight(400);
+		w.setWidth(500);
+		return w;
+	}
+	
 	public String getBundleIdentifier() {
 		return AdultEducationConstants.IW_BUNDLE_IDENTIFIER;
 	}
