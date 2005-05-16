@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.7 2005/05/16 10:46:32 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.8 2005/05/16 10:48:00 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/16 10:46:32 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 10:48:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -455,10 +455,11 @@ public class ChoiceApplication extends AdultEducationBlock {
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
 
-		buffer.append("\n\t findObj('").append(PARAMETER_ACTION).append("').value = " + ACTION_STORE + ";");
+		buffer.append("\n\t var submit = true;");
 		message = localize("less_than_three_chosen", "You have chosen less than three course.  A placement can not be guaranteed.");
-		buffer.append("\n\t if(length < 3)\n\t\t return confirm('").append(message).append("');");
-		buffer.append("\n\t return true;");
+		buffer.append("\n\t if(length < 3)\n\t\t submit = confirm('").append(message).append("');");
+		buffer.append("\n\t if (submit) findObj('").append(PARAMETER_ACTION).append("').value = " + ACTION_STORE + ";");
+		buffer.append("\n\t return submit;");
 		buffer.append("\n}\n");
 		return buffer.toString();
 	}
