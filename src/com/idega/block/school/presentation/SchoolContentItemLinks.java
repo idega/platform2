@@ -6,6 +6,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolType;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.data.IDOLookup;
@@ -65,7 +66,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		String open_hours = _school.getOpenHours();
 		String email = _school.getSchoolEmail();
 		String visitaddress = _school.getSchoolVisitAddress();
-		
+
 		if ((address != null || zipArea != null || zipCode != null || phone != null || fax != null)) {
 			if (useBreak) {
 				++row;
@@ -79,7 +80,12 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				table.add(getText(address), 1, row);
 			}*/
 			if (visitaddress != null && !visitaddress.equals(" ")) {
-				table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);
+				if (isAdultEducation()){
+					table.add(getHeader(_iwrb.getLocalizedString("school.educating_address","Educating address")+":"), 1, row);
+				}else{
+					table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);	
+				}
+				
 				++row;
 				table.add(getText(visitaddress), 1, row);
 				++row;

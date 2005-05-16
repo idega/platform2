@@ -75,7 +75,7 @@ public class SchoolContentEditor extends IWAdminWindow{
   private School _school;
  private SchoolUserEditor sue;
   private boolean _highSchoolCategory = false;
-
+private boolean _isAdultEducation = false;
 	public SchoolContentEditor() {
     setUnMerged();
     // Window changed to 780/580 to make space for the wider editor by Kelly (kelly@lindman.se) 15 may 2003
@@ -99,6 +99,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 				if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
 					_highSchoolCategory = true;
 				}
+				else if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryAdultEducation().getCategory()))
+					_isAdultEducation = true;
 				
 			}
 										
@@ -298,8 +300,11 @@ public class SchoolContentEditor extends IWAdminWindow{
 		Text sEmailText = new Text(_iwrb.getLocalizedString("school.email","Email"));
 		Text sActivityText = new Text(_iwrb.getLocalizedString("school.activity","Activity"));
 		Text sOpenHoursText = new Text(_iwrb.getLocalizedString("school.open_hours","Open hours"));
-		Text sVisitAddress = new Text(_iwrb.getLocalizedString("school.visiting_address","Visiting address"));
-		
+		Text sVisitAddress = null;
+		if (_isAdultEducation)
+			sVisitAddress = new Text(_iwrb.getLocalizedString("school.educating_address","Educating address"));
+		else
+			sVisitAddress = new Text(_iwrb.getLocalizedString("school.visiting_address","Visiting address"));
 		formatText(sNameText, true);
 		formatText(sNumberText, true);
 		formatText(sAreaCodeText, true);
@@ -349,7 +354,10 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 
 		this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
-		this.addRight(_iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
+		if (_isAdultEducation)
+			this.addRight(_iwrb.getLocalizedString("school.educating_address","Educating address"), visitAddress, true);
+		else
+			this.addRight(_iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
 		this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
 		this.addRight(_iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
 		this.addRight(_iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
@@ -625,7 +633,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				
 				//User currentUser = iwc.getCurrentUser();
 				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
-
+				
 				//if (!school_name.equals("")) { 
 				// changed all if cases below so that it saves the changes if the user emptied the field
 				if (school_name != null) {
@@ -725,5 +733,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 		link.addParameter(PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString() );
 		return link;
 	}
+	
+
 
 }
