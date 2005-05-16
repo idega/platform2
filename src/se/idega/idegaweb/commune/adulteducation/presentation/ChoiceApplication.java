@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.6 2005/05/12 12:31:43 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.7 2005/05/16 10:46:32 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/12 12:31:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 10:46:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -166,12 +166,13 @@ public class ChoiceApplication extends AdultEducationBlock {
 	}
 	
 	private Table getApplicationTable(IWContext iwc) throws RemoteException {
-		Table table = new Table(3, 5);
+		Table table = new Table(4, 5);
 		table.setCellpadding(3);
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		table.mergeCells(1, 4, 3, 4);
-		table.mergeCells(1, 5, 3, 5);
+		table.mergeCells(1, 4, 4, 4);
+		table.mergeCells(1, 5, 4, 5);
+		table.setWidth(2, 12);
 		
 		Collection paths = getBusiness().getStudyPaths(iSchoolType, iStudyPathGroup);
 		if (!isUpdate) {
@@ -239,7 +240,7 @@ public class ChoiceApplication extends AdultEducationBlock {
 				Iterator iterator = courses.iterator();
 				while (iterator.hasNext()) {
 					AdultEducationCourse element = (AdultEducationCourse) iterator.next();
-					if (!element.isInactive()) {
+					if (!element.isInactive() || (isUpdate && chosenCourse.equals(element))) {
 						course.addMenuElement(element.getPrimaryKey().toString(), element.getCode());
 					}
 				}
@@ -248,14 +249,16 @@ public class ChoiceApplication extends AdultEducationBlock {
 			}
 			
 			if (a == 1) {
-				table.add(getSmallHeader(localize("school", "School")), 2, 1);
-				table.add(new Break(), 2, 1);
-				table.add(getSmallHeader(localize("course_code", "Course code")), 3, 1);
+				table.add(getSmallHeader(localize("school", "School")), 3, 1);
 				table.add(new Break(), 3, 1);
+				table.add(getSmallHeader(localize("course_code", "Course code")), 4, 1);
+				table.add(new Break(), 4, 1);
 			}
 			
-			table.add(school, 2, a);
-			table.add(course, 3, a);
+			table.add(getSmallHeader(String.valueOf(a)), 2, a);
+			table.setVerticalAlignment(2, a, Table.VERTICAL_ALIGN_BOTTOM);
+			table.add(school, 3, a);
+			table.add(course, 4, a);
 			
 			try {
 				/*RemoteScriptHandler rsh = new RemoteScriptHandler(studyPaths, school);
@@ -387,6 +390,8 @@ public class ChoiceApplication extends AdultEducationBlock {
 		buffer.append("\n\t var dropSchoolOne = ").append("findObj('").append(PARAMETER_SCHOOL + "_1").append("');");
 		buffer.append("\n\t var dropSchoolTwo = ").append("findObj('").append(PARAMETER_SCHOOL + "_2").append("');");
 		buffer.append("\n\t var dropSchoolThree = ").append("findObj('").append(PARAMETER_SCHOOL + "_3").append("');");
+		buffer.append("\n\t var reasons = ").append("findObj('").append(PARAMETER_REASON).append("');");
+		buffer.append("\n\t var otherReason = ").append("findObj('").append(PARAMETER_OTHER_REASON).append("');");
 		buffer.append("\n\t findObj('").append(PARAMETER_ACTION).append("').value = " + ACTION_APPLICATION + ";");
 
 		buffer.append("\n\t var one = 0;");
@@ -439,6 +444,17 @@ public class ChoiceApplication extends AdultEducationBlock {
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
+
+		buffer.append("\n\t var reasonChecked = false;");
+		buffer.append("\n\t for (var a = 0; a < reasons.length; a++) {");
+		buffer.append("\n\t\t if (reasons[a].checked == true) reasonChecked = true;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if (!reasonChecked && otherReason.value.length == 0) {");
+		message = localize("must_choose_reason", "You have to provide a reason.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+
 		buffer.append("\n\t findObj('").append(PARAMETER_ACTION).append("').value = " + ACTION_STORE + ";");
 		message = localize("less_than_three_chosen", "You have chosen less than three course.  A placement can not be guaranteed.");
 		buffer.append("\n\t if(length < 3)\n\t\t return confirm('").append(message).append("');");

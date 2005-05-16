@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.7 2005/05/13 20:21:56 malin Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.8 2005/05/16 10:46:32 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,11 +11,13 @@ package se.idega.idegaweb.commune.adulteducation.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -30,14 +32,16 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseHome;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
-
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookupException;
@@ -53,12 +57,42 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/13 20:21:56 $ by $Author: malin $
+ * Last modified: $Date: 2005/05/16 10:46:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
+
+	public String getBundleIdentifier() {
+		return AdultEducationConstants.IW_BUNDLE_IDENTIFIER;
+	}
+	
+	public String getLocalizedCaseDescription(Case theCase, Locale locale) {
+		AdultEducationChoice choice = getAdultEducationChoiceInstance(theCase);
+		AdultEducationCourse course = choice.getCourse();
+		SchoolStudyPath path = course.getStudyPath();
+		School school = course.getSchool();
+		
+		Object[] arguments = { String.valueOf(choice.getChoiceOrder()), path.getDescription(), String.valueOf(path.getPoints()), school.getSchoolName() };
+
+		String desc = super.getLocalizedCaseDescription(theCase, locale);
+		return MessageFormat.format(desc, arguments);
+	}
+
+	protected AdultEducationChoice getAdultEducationChoiceInstance(Case theCase) throws RuntimeException {
+		String caseCode = "unreachable";
+		try {
+			caseCode = theCase.getCode();
+			if (AdultEducationConstants.ADULT_EDUCATION_CASE_CODE.equals(caseCode)) {
+				return this.getChoice(theCase.getPrimaryKey());
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to an adult education choice");
+	}
 
 	/**
 	 * Fetches the home interface for AdultEducationCourse.
@@ -111,6 +145,15 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
+		}
+	}
+
+	private MessageBusiness getMessageBusiness() {
+		try {
+			return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
 		}
 	}
 
@@ -397,6 +440,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			AdultEducationChoice choice = null;
 			IWTimestamp timeNow = new IWTimestamp();
 			
+			Collection choices = new ArrayList();
 			Iterator iter = courses.iterator();
 			int i = 0;
 			while (iter.hasNext()) {
@@ -415,9 +459,15 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 					status = other;
 				}
 				
-				choice = storeChoice(user, course, oldCourse, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate());
+				choices.add(storeChoice(user, course, oldCourse, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate()));
 				i++;
 			}
+			
+			String subject = getLocalizedString("choices_sent_subject", "Adult education choices sent");
+			String body = getLocalizedString("choices_sent_body", "You have made a choice to course {0} for period {1}. The following alternatives where chosen:\n\n1. {2} - {3}\n2. {4} - {5}3. {6} - {7}");
+			
+			sendMessage(choices, subject, body);
+			
 			trans.commit();
 		}
 		catch (Exception ex) {
@@ -432,6 +482,39 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
+	private void sendMessage(Collection choices, String subject, String body) {
+		try {
+			Object[] arguments = { "-", "-", "-", "-", "-", "-", "-", "-" };
+
+			AdultEducationChoice parentCase = null;
+			User user = null;
+			boolean first = true;
+			int i = 2;
+			Iterator iter = choices.iterator();
+			while (iter.hasNext()) {
+				AdultEducationChoice choice = (AdultEducationChoice) iter.next();
+				AdultEducationCourse course = choice.getCourse();
+				School school = course.getSchool();
+				if (first) {
+					user = choice.getUser();
+					parentCase = choice;
+					SchoolStudyPath path = course.getStudyPath();
+					SchoolSeason season = course.getSchoolSeason();
+					arguments[0] = path.getDescription();
+					arguments[1] = season.getSchoolSeasonName();
+					first = false;
+				}
+				arguments[i] = school.getSchoolName() + " - " + course.getCode();
+				i++;
+			}
+
+			getMessageBusiness().createUserMessage(parentCase, user, subject, MessageFormat.format(body, arguments), true);
+		}
+		catch (RemoteException re) {
+			re.printStackTrace();
+		}
+	}
+
 	private AdultEducationChoice storeChoice(User user, Object course, Object oldCourse, String comment, Object[] reasons, String otherReason, int choiceOrder, CaseStatus status, Case parentCase, Date choiceDate) throws CreateException {
 		AdultEducationChoice choice = null;
 		try {
