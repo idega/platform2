@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.5 2005/05/16 16:05:29 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.6 2005/05/16 16:28:16 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -21,24 +21,24 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 
 
 /**
- * Last modified: $Date: 2005/05/16 16:05:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 16:28:16 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
-	
-	private static final String PARAMETER_REMOVE = "co_remove";
 	
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.adulteducation.presentation.AdultEducationBlock#present(com.idega.presentation.IWContext)
 	 */
 	public void present(IWContext iwc) {
 		try {
-			if (iwc.isParameterSet(PARAMETER_REMOVE)) {
+			if (iwc.isParameterSet(PARAMETER_STUDY_PATH)) {
 				remove(iwc);
 			}
 			showOverview(iwc);
@@ -49,8 +49,11 @@ public class ChoiceOverview extends AdultEducationBlock {
 	}
 	
 	private void showOverview(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		
 		Table table = new Table();
 		table.setColumns(3);
+		form.add(table);
 		int row = 1;
 		
 		Collection seasons = getBusiness().getPendingSeasons();
@@ -89,9 +92,9 @@ public class ChoiceOverview extends AdultEducationBlock {
 							table.add(edit, 2, row);
 						}
 
-						Link delete = new Link(getDeleteIcon(localize("delete_choices", "delete choices")));
-						delete.addParameter(PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
-						delete.addParameter(PARAMETER_REMOVE, Boolean.TRUE.toString());
+						SubmitButton delete = new SubmitButton(getDeleteIcon(localize("school.delete_from_group", "Click to remove student from group")), PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
+						delete.setDescription(localize("school.delete_from_group", "Click to remove student from group"));
+						delete.setSubmitConfirm(localize("confirm_choice_delete", "Are you sure you want to remove the choices?"));
 						table.add(delete, 3, row);
 					}
 					row++;
@@ -101,7 +104,7 @@ public class ChoiceOverview extends AdultEducationBlock {
 			}
 		}
 		
-		add(table);
+		add(form);
 	}
 	
 	private void remove(IWContext iwc) throws RemoteException {
