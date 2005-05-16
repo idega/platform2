@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.3 2005/05/16 08:57:06 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.4 2005/05/16 13:42:54 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.presentation.text.Text;
 
 
 /**
- * Last modified: $Date: 2005/05/16 08:57:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -91,8 +91,8 @@ public class ChoiceOverview extends AdultEducationBlock {
 							table.add(edit, 2, row);
 						}
 
-						Link delete = new Link(getDeleteIcon(localize("edit_choice", "Edit choice")));
-						delete.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+						Link delete = new Link(getDeleteIcon(localize("delete_choices", "delete choices")));
+						delete.addParameter(PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
 						delete.addParameter(PARAMETER_REMOVE, Boolean.TRUE.toString());
 						table.add(delete, 3, row);
 					}
@@ -107,6 +107,6 @@ public class ChoiceOverview extends AdultEducationBlock {
 	}
 	
 	private void remove(IWContext iwc) throws RemoteException {
-		getBusiness().removeChoice(iwc.getParameter(PARAMETER_CHOICE), iwc.getCurrentUser());
+		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getCurrentUser());
 	}
 }

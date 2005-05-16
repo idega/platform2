@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverviewContext.java,v 1.1 2005/05/16 08:57:06 laddi Exp $ Created
+ * $Id: ChoiceOverviewContext.java,v 1.2 2005/05/16 13:42:54 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 
 /**
- * Last modified: $Date: 2005/05/16 08:57:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChoiceOverviewContext extends PrintingContextImpl {
 
@@ -81,6 +81,7 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 		Collection reasons = null;
 		String otherReason = null;
 		StringBuffer courses = new StringBuffer();
+		StringBuffer reasonsString = new StringBuffer();
 		
 		Collection choices = getBusiness(iwac).getChoices(user, season);
 		Iterator iter = choices.iterator();
@@ -93,9 +94,6 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 			
 			courses.append(path.getDescription()).append(", ").append(path.getPoints());
 			courses.append(" (").append(start.getLocaleDate(locale, IWTimestamp.SHORT)).append(" - ").append(end.getLocaleDate(locale, IWTimestamp.SHORT)).append(")");
-			if (iter.hasNext()) {
-				courses.append("\n");
-			}
 			
 			if (reasons == null) {
 				try {
@@ -108,9 +106,35 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 			if (otherReason == null) {
 				otherReason = choice.getOtherReason();
 			}
+
+			if (reasons != null) {
+				reasonsString.append(path.getDescription()).append(":\n");
+				Iterator iterator = reasons.iterator();
+				while (iterator.hasNext()) {
+					AdultEducationChoiceReason reason = (AdultEducationChoiceReason) iterator.next();
+					reasonsString.append(getResourceBundle(iwac, locale).getLocalizedString(reason.getLocalizedKey()));
+					if (iter.hasNext()) {
+						reasonsString.append("\n");
+					}
+				}
+			}
+			if (otherReason != null) {
+				if (reasons != null) {
+					reasonsString.append("\n");
+				}
+				reasonsString.append(otherReason);
+				if (iter.hasNext()) {
+					reasonsString.append("\n\n");
+				}
+			}
+
+			if (iter.hasNext()) {
+				courses.append("\n");
+			}
 		}
 		props.put("courses", courses.toString());
-
+		props.put("reasons", reasonsString.toString());
+		
 		Address address = null;
 		PostalCode code = null;
 		try {
@@ -243,8 +267,7 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 			addComma = true;
 		}
 		if (info.getEduHCommune() != null) {
-			Country country = info.getEduGCountry();
-			previousStudies.append(" - ").append(country.getName());
+			previousStudies.append(" - ").append(info.getEduHCommune());
 		}
 		props.put("previousStudies", previousStudies.toString());
 		
@@ -311,25 +334,6 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 			workSituation.append(info.getWorkOther());
 		}
 		props.put("workSituation", workSituation.toString());
-		
-		StringBuffer reasonsString = new StringBuffer();
-		if (reasons != null) {
-			Iterator iterator = reasons.iterator();
-			while (iterator.hasNext()) {
-				AdultEducationChoiceReason reason = (AdultEducationChoiceReason) iterator.next();
-				reasonsString.append(getResourceBundle(iwac, locale).getLocalizedString(reason.getLocalizedKey()));
-				if (iter.hasNext()) {
-					reasonsString.append("\n");
-				}
-			}
-		}
-		if (otherReason != null) {
-			if (reasons != null) {
-				reasonsString.append("\n");
-			}
-			reasonsString.append(otherReason);
-		}
-		props.put("reasons", reasonsString.toString());
 		
 		addDocumentProperties(props);
 		setResourceDirectory(new File(getResourcRealPath(getBundle(iwac), locale)));

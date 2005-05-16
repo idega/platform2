@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.8 2005/05/16 10:46:32 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.9 2005/05/16 13:42:54 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/16 10:46:32 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -459,7 +459,8 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 					status = other;
 				}
 				
-				choices.add(storeChoice(user, course, oldCourse, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate()));
+				choice = storeChoice(user, course, oldCourse, comment, reasons, otherReason, i + 1, status, choice, timeNow.getDate());
+				choices.add(choice);
 				i++;
 			}
 			
@@ -565,29 +566,14 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public void removeChoice(Object choicePK, User performer) {
+	public void removeChoices(Object studyPathPK, User performer) {
 		try {
-			AdultEducationChoice choice = getChoiceHome().findByPrimaryKey(choicePK);
-			changeCaseStatus(choice, getCaseStatusDeleted().getStatus(), performer);
-			
-			if (choice.getChildCount() > 0) {
-				Iterator iter = choice.getChildrenIterator();
-				while (iter.hasNext()) {
-					Case childCase = (Case) iter.next();
-					if (childCase.getCode().equals(choice.getCode())) {
-						changeCaseStatus(childCase, getCaseStatusDeleted().getStatus(), performer);
-						
-						if (childCase.getChildCount() > 0) {
-							Iterator iterator = childCase.getChildrenIterator();
-							while (iterator.hasNext()) {
-								Case childChildCase = (Case) iterator.next();
-								if (childChildCase.getCode().equals(choice.getCode())) {
-									changeCaseStatus(childChildCase, getCaseStatusDeleted().getStatus(), performer);
-								}								
-							}
-						}
-					}
-				}
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus() };
+			Collection choices = getChoiceHome().findAllByUserAndStudyPath(performer.getPrimaryKey(), studyPathPK, statuses);
+			Iterator iter = choices.iterator();
+			while (iter.hasNext()) {
+				AdultEducationChoice choice = (AdultEducationChoice) iter.next();
+				changeCaseStatus(choice, getCaseStatusDeleted().getStatus(), performer);
 			}
 		}
 		catch (FinderException fe) {

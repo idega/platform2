@@ -2,8 +2,10 @@ package se.idega.idegaweb.commune.adulteducation;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReasonHome;
+import com.idega.block.process.business.CaseCodeManager;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolStudyPathGroup;
@@ -13,10 +15,10 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 
 /**
- * Last modified: $Date: 2005/05/11 13:14:12 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 
@@ -29,6 +31,9 @@ public class IWBundleStarter implements IWBundleStartable {
 	}
 
 	protected void insertStartData() {
+		CaseCodeManager caseCodeManager = CaseCodeManager.getInstance();
+		caseCodeManager.addCaseBusinessForCode(AdultEducationConstants.ADULT_EDUCATION_CASE_CODE, AdultEducationBusiness.class);
+
 		insertSchoolCategory(AdultEducationConstants.ADULT_EDUCATION_CATEGORY);
 		insertStudyPathGroup(AdultEducationConstants.STUDY_PATH_GROUP_ECONOMICS);
 		insertStudyPathGroup(AdultEducationConstants.STUDY_PATH_GROUP_IT);
