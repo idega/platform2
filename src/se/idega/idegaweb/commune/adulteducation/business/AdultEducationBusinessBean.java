@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.10 2005/05/16 14:08:00 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.11 2005/05/16 16:05:29 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,8 @@
  */
 package se.idega.idegaweb.commune.adulteducation.business;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
@@ -33,6 +35,8 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseHome;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import com.idega.block.pdf.business.PrintingContext;
+import com.idega.block.pdf.business.PrintingService;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
@@ -51,16 +55,20 @@ import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
 import com.idega.user.data.User;
+import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/16 14:08:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 16:05:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -641,10 +649,32 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			ce.printStackTrace(System.err);
 			return null;
 		}
-		
-		
 	}
 	
+	public void createOverviewPDF(User user, SchoolSeason season, String path, String fileName, Locale locale) {
+		MemoryFileBuffer buffer = new MemoryFileBuffer();
+    OutputStream mos = new MemoryOutputStream(buffer);
+    InputStream mis = new MemoryInputStream(buffer);
+   
+    PrintingContext pcx = new ChoiceOverviewContext(getIWApplicationContext(), season, user, locale);
+    pcx.setDocumentStream(mos);
+    try {
+    		getPrintingService().printDocument(pcx);
+    }
+    catch (RemoteException re) {
+    		throw new IBORuntimeException(re);
+    }
+    FileUtil.streamToFile(mis, path, fileName);
+	}
+
+  private PrintingService getPrintingService() {
+    try {
+    		return (PrintingService)getServiceInstance(PrintingService.class);
+    }
+    catch (IBOLookupException ile) {
+    		throw new IBORuntimeException(ile);
+    }
+  }
 	
 	public AdultEducationPersonalInfoHome getAdultEducationPersonalHome() {
 		try {

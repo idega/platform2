@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverviewContext.java,v 1.5 2005/05/16 14:58:24 laddi Exp $ Created
+ * $Id: ChoiceOverviewContext.java,v 1.6 2005/05/16 16:05:29 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 
 /**
- * Last modified: $Date: 2005/05/16 14:58:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 16:05:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ChoiceOverviewContext extends PrintingContextImpl {
 
@@ -238,7 +238,7 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 				studies.append("\n");
 			}
 			Country country = info.getEduGCountry();
-			studies.append(info.getEduG()).append(" - ").append(country.getName()).append(" - ").append(info.getEduGYears());
+			studies.append(info.getEduG()).append(" - ").append(country.getName()).append(" - ").append(getResourceBundle(iwac, locale).getLocalizedString("persInfo.education_G_Years")).append(info.getEduGYears());
 		}
 		props.put("studies", studies.toString());
 		

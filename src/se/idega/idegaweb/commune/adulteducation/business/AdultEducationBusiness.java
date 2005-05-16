@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.7 2005/05/16 13:42:54 laddi Exp $
+ * $Id: AdultEducationBusiness.java,v 1.8 2005/05/16 16:05:29 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,7 +20,6 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
-import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
@@ -33,12 +32,12 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 16:05:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
-public interface AdultEducationBusiness extends IBOService, CaseBusiness {
+public interface AdultEducationBusiness extends IBOService {
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getBundleIdentifier
@@ -166,7 +165,7 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	public void removeCourse(Object coursePK) throws RemoveException, java.rmi.RemoteException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeChoice
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeChoices
 	 */
 	public void removeChoices(Object studyPathPK, User performer) throws java.rmi.RemoteException;
 
@@ -179,6 +178,12 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 			String educationG, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC,
 			String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport,
 			boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#createOverviewPDF
+	 */
+	public void createOverviewPDF(User user, SchoolSeason season, String path, String fileName, Locale locale)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getAdultEducationPersonalHome
