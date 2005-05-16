@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.6 2005/05/16 16:28:16 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.7 2005/05/16 16:39:20 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.presentation.ui.SubmitButton;
 
 
 /**
- * Last modified: $Date: 2005/05/16 16:28:16 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 16:39:20 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -92,8 +92,8 @@ public class ChoiceOverview extends AdultEducationBlock {
 							table.add(edit, 2, row);
 						}
 
-						SubmitButton delete = new SubmitButton(getDeleteIcon(localize("school.delete_from_group", "Click to remove student from group")), PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
-						delete.setDescription(localize("school.delete_from_group", "Click to remove student from group"));
+						SubmitButton delete = new SubmitButton(getDeleteIcon(localize("delete_choices", "Delete choices")), PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
+						delete.setDescription(localize("delete_choices", "Delete choices"));
 						delete.setSubmitConfirm(localize("confirm_choice_delete", "Are you sure you want to remove the choices?"));
 						table.add(delete, 3, row);
 					}
