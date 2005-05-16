@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.8 2005/05/16 10:48:00 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.9 2005/05/16 19:41:02 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/16 10:48:00 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 19:41:02 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -96,16 +96,23 @@ public class ChoiceApplication extends AdultEducationBlock {
 	private void showApplication(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 
-		form.add(getNavigationTable());
-		form.add(new Break(2));
-		form.add(getApplicationTable(iwc));
+		Table table = new Table(1, 5);
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(2, 20);
+		table.setHeight(4, 20);
+		table.setAlignment(1, 5, Table.HORIZONTAL_ALIGN_RIGHT);
+		form.add(table);
+		
+		table.add(getNavigationTable(), 1, 1);
+		table.add(getApplicationTable(iwc), 1, 3);
 		if (isUpdate) {
 			form.maintainParameter(PARAMETER_CHOICE);
 		}
 		
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("submit", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_STORE)));
-		form.add(new Break(2));
-		form.add(submit);
+		table.add(submit, 1, 5);
 		submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
 		form.setToDisableOnSubmit(submit, true);
 
