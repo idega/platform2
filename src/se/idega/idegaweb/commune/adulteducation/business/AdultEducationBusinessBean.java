@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.9 2005/05/16 13:42:54 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.10 2005/05/16 14:08:00 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -57,10 +57,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 14:08:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -485,7 +485,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	private void sendMessage(Collection choices, String subject, String body) {
 		try {
-			Object[] arguments = { "-", "-", "-", "-", "-", "-", "-", "-" };
+			Object[] arguments = { "-", "-", "-", "-", "-" };
 
 			AdultEducationChoice parentCase = null;
 			User user = null;

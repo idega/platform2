@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverviewContext.java,v 1.2 2005/05/16 13:42:54 laddi Exp $ Created
+ * $Id: ChoiceOverviewContext.java,v 1.3 2005/05/16 14:08:00 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 
 /**
- * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/16 14:08:00 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChoiceOverviewContext extends PrintingContextImpl {
 
@@ -95,17 +95,13 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 			courses.append(path.getDescription()).append(", ").append(path.getPoints());
 			courses.append(" (").append(start.getLocaleDate(locale, IWTimestamp.SHORT)).append(" - ").append(end.getLocaleDate(locale, IWTimestamp.SHORT)).append(")");
 			
-			if (reasons == null) {
-				try {
-					reasons = choice.getReasons();
-				}
-				catch (IDORelationshipException ire) {
-					ire.printStackTrace();
-				}
+			try {
+				reasons = choice.getReasons();
 			}
-			if (otherReason == null) {
-				otherReason = choice.getOtherReason();
+			catch (IDORelationshipException ire) {
+				ire.printStackTrace();
 			}
+			otherReason = choice.getOtherReason();
 
 			if (reasons != null) {
 				reasonsString.append(path.getDescription()).append(":\n");
@@ -113,7 +109,7 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 				while (iterator.hasNext()) {
 					AdultEducationChoiceReason reason = (AdultEducationChoiceReason) iterator.next();
 					reasonsString.append(getResourceBundle(iwac, locale).getLocalizedString(reason.getLocalizedKey()));
-					if (iter.hasNext()) {
+					if (iterator.hasNext()) {
 						reasonsString.append("\n");
 					}
 				}
