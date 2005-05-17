@@ -338,8 +338,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			
 			if (parents != null) {
 				table.add(getLocalizedSmallHeader("child_care.parents","Parents"), 1, row);
-				Phone phone;
-				Email email;
+				Phone phone = null;
+				Email email= null;
 
 				Iterator iter = parents.iterator();
 				while (iter.hasNext()) {
@@ -369,6 +369,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 						table.add(link, 3, row++);
 					}
 			
+					phone = null;
+					email= null;
 					table.setHeight(row++, 12);
 				}
 			}
