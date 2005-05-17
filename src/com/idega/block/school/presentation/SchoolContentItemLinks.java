@@ -6,7 +6,6 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolManagementType;
-import com.idega.block.school.data.SchoolType;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.data.IDOLookup;
