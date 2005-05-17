@@ -939,6 +939,10 @@ public class PersonalInfo extends AdultEducationBlock {
 		s.append("\n\t var checkEduHC = ").append("findObj('").append(EDUCATION_HC).append("');");
 		s.append("\n\t var inputEduHCommune = ").append("findObj('").append(EDUCATION_HCOMMUNE).append("');");
 		
+		s.append("\n\t var inputEduG = ").append("findObj('").append(EDUCATION_G_INPUT).append("');");
+		s.append("\n\t var dropEduGCountry = ").append("findObj('").append(EDU_COUNTRY).append("');");
+		s.append("\n\t var dropEduGYears = ").append("findObj('").append(EDU_YEARS).append("');");
+		
 		s.append("\n\t var checkUnempl = ").append("findObj('").append(WORK_UNEMP).append("');");
 		s.append("\n\t var checkEmpl = ").append("findObj('").append(WORK_EMP).append("');");
 		s.append("\n\t var checkFired = ").append("findObj('").append(WORK_KICKED).append("');");
@@ -946,15 +950,27 @@ public class PersonalInfo extends AdultEducationBlock {
 		s.append("\n\t var inputWork = ").append("findObj('").append(WORK_OTHER_INPUT).append("');");
 		
 		//education
-		s.append("\n\n\t if (checkEduA.checked == false && checkEduB.checked == false && checkEduC.checked == false && checkEduD.checked == false && checkEduE.checked == false && checkEduF.checked == false){"); 
+		s.append("\n\n\t if (checkEduA.checked == false && checkEduB.checked == false && checkEduC.checked == false && checkEduD.checked == false && checkEduE.checked == false && checkEduF.checked == false && inputEduG.value == ''){"); 
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education", "You must fill previous education") + "');");
 		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t else \n{");
 		s.append("\n\n\t if (checkEduF.checked == true && inputEduF.value == ''){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_f", "You must set what education") + "');");
 		s.append("\n\t\t return false; \n}");
+		
+		s.append("\n\n\t if (inputEduG.value == '' && (dropEduGCountry.options[dropEduGCountry.selectedIndex].value > 0 || dropEduGYears.options[dropEduGYears.selectedIndex].value > 0)) {");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_g_dropdown", "You must set what kind of education for studies abroad") + "');");
+		s.append("\n\t\t return false; \n}");
+		
+		s.append("\n\n\t else if (inputEduG.value != '' && (dropEduGCountry.options[dropEduGCountry.selectedIndex].value < 0 && dropEduGYears.options[dropEduGYears.selectedIndex].value < 0) ||  dropEduGYears.options[dropEduGYears.selectedIndex].value < 0 || dropEduGCountry.options[dropEduGCountry.selectedIndex].value < 0 ){");
+		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_g_dropdown", "You must set country and years for studies abroad") + "');");
+		s.append("\n\t\t return false; \n}");
+				
 		s.append("\n\n\t else if (inputEduF.value != '' && checkEduF.checked == false){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_f_checkbox", "You must set education checkbox") + "');");
 		s.append("\n\t\t return false; \n}");
+		s.append("\n\n\t  \n}");
+		
 		//Work situation
 		s.append("\n\n\t if (inputWork.value != '' && checkWorkOther.checked == false){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_work_other_checkbox", "You must check work other checkbox") + "');");
