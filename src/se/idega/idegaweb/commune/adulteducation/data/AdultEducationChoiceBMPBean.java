@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.3 2005/05/16 13:42:54 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.4 2005/05/17 06:00:26 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -301,7 +301,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		return idoFindOnePKByQuery(query);
 	}
 	
-	public Collection ejbFindAllByUserAndStudyPath(Object userPK, Object studyPathPK, String[] statuses) throws FinderException {
+	public Collection ejbFindAllByUserAndSeasonAndStudyPath(Object userPK, Object seasonPK, Object studyPathPK, String[] statuses) throws FinderException {
 		Table table = new Table(this);
 		Table course = new Table(AdultEducationCourse.class);
 		Table cases = new Table(Case.class);
@@ -317,6 +317,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		}
 		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, userPK));
 		query.addCriteria(new MatchCriteria(course, "sch_study_path_id", MatchCriteria.EQUALS, studyPathPK));
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, seasonPK));
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
 		
 		return idoFindPKsByQuery(query);

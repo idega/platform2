@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHome.java,v 1.3 2005/05/16 13:42:54 laddi Exp $
- * Created on May 16, 2005
+ * $Id: AdultEducationChoiceHome.java,v 1.4 2005/05/17 06:00:26 laddi Exp $
+ * Created on May 17, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/16 13:42:54 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/17 06:00:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface AdultEducationChoiceHome extends IDOHome {
 
@@ -50,10 +50,10 @@ public interface AdultEducationChoiceHome extends IDOHome {
 	public AdultEducationChoice findByUserAndCourse(Object userPK, Object coursePK) throws FinderException;
 
 	/**
-	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUserAndStudyPath
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUserAndSeasonAndStudyPath
 	 */
-	public Collection findAllByUserAndStudyPath(Object userPK, Object studyPathPK, String[] statuses)
-			throws FinderException;
+	public Collection findAllByUserAndSeasonAndStudyPath(Object userPK, Object seasonPK, Object studyPathPK,
+			String[] statuses) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindByUserAndStudyPathAndChoiceOrder

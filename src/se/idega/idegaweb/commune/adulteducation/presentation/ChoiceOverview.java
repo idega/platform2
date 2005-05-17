@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.7 2005/05/16 16:39:20 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.8 2005/05/17 06:00:26 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,14 +22,15 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 
 
 /**
- * Last modified: $Date: 2005/05/16 16:39:20 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/17 06:00:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -50,6 +51,7 @@ public class ChoiceOverview extends AdultEducationBlock {
 	
 	private void showOverview(IWContext iwc) throws RemoteException {
 		Form form = new Form();
+		form.add(new HiddenInput(PARAMETER_SCHOOL_SEASON, "-1"));
 		
 		Table table = new Table();
 		table.setColumns(3);
@@ -87,13 +89,14 @@ public class ChoiceOverview extends AdultEducationBlock {
 							Link edit = new Link(getEditIcon(localize("edit_choice", "Edit choice")));
 							edit.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 							edit.addParameter(PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
-							edit.addParameter(PARAMETER_SCHOOL_SEASON, course.getSchoolSeason().getPrimaryKey().toString());
+							edit.addParameter(PARAMETER_SCHOOL_SEASON, season.getPrimaryKey().toString());
 							edit.setPage(getResponsePage());
 							table.add(edit, 2, row);
 						}
 
 						SubmitButton delete = new SubmitButton(getDeleteIcon(localize("delete_choices", "Delete choices")), PARAMETER_STUDY_PATH, path.getPrimaryKey().toString());
 						delete.setDescription(localize("delete_choices", "Delete choices"));
+						delete.setValueOnClick(PARAMETER_SCHOOL_SEASON, season.getPrimaryKey().toString());
 						delete.setSubmitConfirm(localize("confirm_choice_delete", "Are you sure you want to remove the choices?"));
 						table.add(delete, 3, row);
 					}
@@ -108,6 +111,6 @@ public class ChoiceOverview extends AdultEducationBlock {
 	}
 	
 	private void remove(IWContext iwc) throws RemoteException {
-		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getCurrentUser());
+		getBusiness().removeChoices(iwc.getParameter(PARAMETER_STUDY_PATH), iwc.getParameter(PARAMETER_SCHOOL_SEASON), iwc.getCurrentUser());
 	}
 }
