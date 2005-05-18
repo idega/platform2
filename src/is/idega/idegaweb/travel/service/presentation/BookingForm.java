@@ -2150,6 +2150,7 @@ public abstract class BookingForm extends TravelManager{
 
 	public void addAreaCodeInput(Product product, Collection countries, boolean vertical) {
 		try {
+			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 			boolean isIcelandOnly = false;
 			if (countries == null || countries.isEmpty()) {
 				isIcelandOnly = true;
@@ -2160,7 +2161,7 @@ public abstract class BookingForm extends TravelManager{
 			
 			InterfaceObject menu;
 			if (isIcelandOnly) {
-				menu = getPostalCodeDropdown(iwrb);
+				menu = getPostalCodeDropdown(iwrb, pHome.getDatasource());
 				try {
 					if (product != null) {
 						((DropdownMenu)menu).setSelectedElement(product.getSupplier().getAddress().getPostalCode().getPrimaryKey().toString());
@@ -2178,13 +2179,17 @@ public abstract class BookingForm extends TravelManager{
 			e.printStackTrace();
 		}		
 	}
-	public DropdownMenu getPostalCodeDropdown(IWResourceBundle iwrb) throws RemoteException, FinderException {
+	public DropdownMenu getPostalCodeDropdown(IWResourceBundle iwrb, String datasource) throws RemoteException, FinderException {
 		if (staticPostalCode != null) {
-			return (DropdownMenu) staticPostalCode.clone();
+		//	return (DropdownMenu) staticPostalCode.clone();
 		}
-		
+		 
 		
 		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+		String oldDatasource = pch.getDatasource();
+		if (datasource != null) {
+			pch.setDatasource(datasource);
+		}
 		Collection coll = pch.findAllByCountryIdOrderedByPostalCode( getIcelandicCountryID() );
 		
 		DropdownMenu menu = new DropdownMenu(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
@@ -2204,7 +2209,8 @@ public abstract class BookingForm extends TravelManager{
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_SOUTH_ICELAND, iwrb.getLocalizedString("travel.search.south_iceland", "South Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS, iwrb.getLocalizedString("travel.search.westman_islands", "Westman islands"));
 			menu.addMenuElement("999", iwrb.getLocalizedString("travel.search.the_interiour", "The Interiour"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_SPACER, "------------------------------");
+			menu.addMenuElement(PARAMETER_POSTAL_CODE_SPACER, "----------------------");
+//			menu.addMenuElement(PARAMETER_POSTAL_CODE_SPACER, "------------------------------");
 			
 			while (iter.hasNext()) {
 				pc = (PostalCode) iter.next();
@@ -2214,6 +2220,7 @@ public abstract class BookingForm extends TravelManager{
 			}
 			menu.setSelectedElement(PARAMETER_POSTAL_CODE_ICELAND);
 		}
+		pch.setDatasource(oldDatasource);
 		staticPostalCode = menu;
 		return menu;
 	}
