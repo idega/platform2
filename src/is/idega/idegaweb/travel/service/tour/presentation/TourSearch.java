@@ -63,7 +63,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
-		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE);
+		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE, true);
 		fromDate.setDate(now.getDate());
 		now.addDays(1);
 		TextInput manySeats = new TextInput(PARAMETER_MANY_SEATS);

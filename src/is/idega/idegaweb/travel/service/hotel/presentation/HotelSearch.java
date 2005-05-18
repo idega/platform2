@@ -161,10 +161,10 @@ public class HotelSearch extends AbstractSearchForm {
 
 		IWTimestamp now = IWTimestamp.RightNow();
 		
-		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE);
+		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE, true);
 		fromDate.setDate(now.getDate());
 		now.addDays(1);
-		DateInput toDate = new DateInput(PARAMETER_TO_DATE);
+		DateInput toDate = new DateInput(PARAMETER_TO_DATE, true);
 		toDate.setDate(now.getDate());
 
 		Collection hotelTypes = new Vector();
@@ -259,6 +259,7 @@ public class HotelSearch extends AbstractSearchForm {
 			if ( !defined ) {
 				bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_accomodation","Type of accomodation")}, new PresentationObject[]{spHotelTypes}, vertical);
 				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
+				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-2, 2, bf.getCurrentBookingPartRow()-2);
 				bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms")}, new PresentationObject[]{roomTypeDrop}, vertical);
 				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
 			}
