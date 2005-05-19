@@ -1176,7 +1176,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 							earliestPossibleMessage = localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate());							
 						}
 						else {
-							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is " + format.format(earliestTerminationDate.getDate()));
+							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is ") + format.format(earliestTerminationDate.getDate());
 						}
 					}
 					else {
@@ -1187,7 +1187,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 							earliestPossibleMessage = localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen");
 						}
 						else {
-							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is " + format.format(earliestTerminationDate.getDate()));
+							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is ") + format.format(earliestTerminationDate.getDate());
 						}
 					}
 				}
