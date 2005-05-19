@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.4 2005/05/19 12:54:21 laddi Exp $
+ * $Id: CourseEditor.java,v 1.5 2005/05/19 14:20:06 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/19 12:54:21 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/19 14:20:06 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -450,6 +450,7 @@ public class CourseEditor extends AdultEducationBlock {
 				ce.printStackTrace();
 			}
 			catch (DuplicateValueException dpe) {
+				iAction = Integer.parseInt(iwc.getParameter(PARAMETER_FROM_ACTION));
 				getParentPage().setAlertOnLoad(localize("duplicate_values_detected", "Trying to store duplicate values, ignoring..."));
 			}
 			catch (RemoteException re) {
