@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.3 2005/05/19 12:35:25 laddi Exp $
+ * $Id: CourseEditor.java,v 1.4 2005/05/19 12:54:21 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/19 12:35:25 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/19 12:54:21 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -352,7 +352,7 @@ public class CourseEditor extends AdultEducationBlock {
 					table.add(getSmallText(start.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + " - " + end.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row);
 					table.add(getSmallText(String.valueOf(course.getLength())), 4, row);
 					table.add(edit, 5, row);
-					table.add(copy, 6, row++);
+					table.add(copy, 6, row);
 					table.add(delete, 7, row++);
 				}
 			}
@@ -497,7 +497,7 @@ public class CourseEditor extends AdultEducationBlock {
 				iStudyPathGroupPK = iwc.getParameter(PARAMETER_STUDY_PATH_GROUP);
 				iStudyPathGroup = getBusiness().getStudyPathBusiness().findStudyPathGroup(iStudyPathGroupPK);
 			}
-			if (iwc.isParameterSet(PARAMETER_COURSE_PK) && iAction == ACTION_EDIT) {
+			if (iwc.isParameterSet(PARAMETER_COURSE_PK) && (iAction == ACTION_EDIT || iAction == ACTION_COPY)) {
 				try {
 					iCourse = getBusiness().getCourse(iwc.getParameter(PARAMETER_COURSE_PK));
 				}
