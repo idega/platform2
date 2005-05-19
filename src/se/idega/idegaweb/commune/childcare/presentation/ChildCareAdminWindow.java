@@ -1301,7 +1301,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallErrorText(localize("child_care.no_application_found", "No childcare application found.")), 1, row++);
 		}
 
-		table.add(close, 1, row);
+		table.add(getStyledInterface(new CloseButton(localize("close_window", "Close"))), 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 
