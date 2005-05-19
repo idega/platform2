@@ -255,6 +255,8 @@ public class HotelSearch extends AbstractSearchForm {
 			bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_out_date","Check out date")}, new PresentationObject[]{toDate}, vertical);
 			
 			bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{getDropdownWithNumbers(PARAMETER_TYPE_COUNT, 1, 7)}, false, true, vertical);
+			bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
+			bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-2, 2, bf.getCurrentBookingPartRow()-2);
 			bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.minimum_rating","Minimum rating"), iwrb.getLocalizedString("travel.search.maximum_rating","Maximum rating")},  new PresentationObject[] { min, max}, vertical);
 			if ( !defined ) {
 				bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_accomodation","Type of accomodation")}, new PresentationObject[]{spHotelTypes}, vertical);
@@ -262,6 +264,7 @@ public class HotelSearch extends AbstractSearchForm {
 				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-2, 2, bf.getCurrentBookingPartRow()-2);
 				bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms")}, new PresentationObject[]{roomTypeDrop}, vertical);
 				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
+				bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-2, 2, bf.getCurrentBookingPartRow()-2);
 			}
 		}
 	}
