@@ -635,6 +635,7 @@ public class FieldEditor extends GolfWindow {
 
 			String[] forgjof = modinfo.getParameterValues("forgjof");
 			String[] par = modinfo.getParameterValues("par");
+			int iPar = 0;
 
 			String[] temp_holu_array;
 
@@ -675,22 +676,29 @@ public class FieldEditor extends GolfWindow {
 			boolean forgjof_bl = true;
 			boolean par_bl = true;
 
-			for (int i = 0; i < forgjof.length; i++) {
+			for (int i = 0; i < forgjof.length && forgjof_bl; i++) {
 				if (forgjof[i].equalsIgnoreCase("")) {
 					forgjof_bl = false;
-					continue;
 				}
 			}
-			for (int i = 0; i < par.length; i++) {
+			for (int i = 0; i < par.length && par_bl; i++) {
 				if (par[i].equalsIgnoreCase("")) {
 					par_bl = false;
-					continue;
+				} else {
+					try {
+						iPar += Integer.parseInt(par[i]);
+					} catch (NumberFormatException e) {
+						par_bl = false;
+					}
 				}
 			}
 
 			if ((par_bl) && (forgjof_bl)) {
+				// par and handicap all filled out
+				field.setFieldPar(iPar);
+				field.store();
+				
 				// check which to update;
-
 				for (int i = 0; i < hola_0.length; i++) {
 					if (!hola_0[i].equalsIgnoreCase("")) {
 						color_0 = true;
@@ -765,7 +773,6 @@ public class FieldEditor extends GolfWindow {
 									tee[j].setHandicap(forgjof[j]);
 									tee[j].setTeeLength(Integer.parseInt(temp_holu_array[j]));
 									tee[j].update();
-
 								}
 							}
 							else {
