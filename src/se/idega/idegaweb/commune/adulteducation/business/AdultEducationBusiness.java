@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.9 2005/05/17 06:00:26 laddi Exp $
- * Created on May 17, 2005
+ * $Id: AdultEducationBusiness.java,v 1.10 2005/05/19 12:35:25 laddi Exp $
+ * Created on May 19, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,24 +20,24 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
+import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
-import com.idega.business.IBOService;
 import com.idega.data.IDOCreateException;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/17 06:00:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/19 12:35:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
-public interface AdultEducationBusiness extends IBOService {
+public interface AdultEducationBusiness extends CaseBusiness {
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getBundleIdentifier
@@ -149,9 +149,9 @@ public interface AdultEducationBusiness extends IBOService {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeCourse
 	 */
-	public AdultEducationCourse storeCourse(Object season, String code, Object school, Object studyPath, Date startDate,
-			Date endDate, String comment, int length, boolean notActive, boolean update) throws CreateException,
-			DuplicateValueException, java.rmi.RemoteException;
+	public AdultEducationCourse storeCourse(Object season, Object oldSeason, String code, String oldCode, Object school,
+			Object studyPath, Date startDate, Date endDate, String comment, int length, boolean notActive, boolean update)
+			throws CreateException, DuplicateValueException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeChoices

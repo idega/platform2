@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.2 2005/05/13 07:52:59 laddi Exp $
+ * $Id: CourseEditor.java,v 1.3 2005/05/19 12:35:25 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,22 +39,25 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/13 07:52:59 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/19 12:35:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
 	private static final String PARAMETER_ACTION = "ce_action";
+	private static final String PARAMETER_FROM_ACTION = "ce_from_action";
 
 	private static final String PARAMETER_SCHOOL_TYPE = "ce_school_type";
 	private static final String PARAMETER_SCHOOL = "ce_school";
 	private static final String PARAMETER_SCHOOL_SEASON = "ce_school_season";
+	private static final String PARAMETER_OLD_SCHOOL_SEASON = "ce_old_school_season";
 	private static final String PARAMETER_STUDY_PATH_GROUP = "ce_study_path_group";
 	
 	private static final String PARAMETER_STUDY_PATH = "ce_study_path";
 	private static final String PARAMETER_CODE = "ce_code";
+	private static final String PARAMETER_OLD_CODE = "ce_old_code";
 	private static final String PARAMETER_START_DATE = "ce_start_date";
 	private static final String PARAMETER_END_DATE = "ce_end_date";
 	private static final String PARAMETER_COMMENT = "ce_comment";
@@ -66,7 +69,8 @@ public class CourseEditor extends AdultEducationBlock {
 
 	private static final int ACTION_DELETE = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int ACTION_STORE = 3;
+	private static final int ACTION_COPY = 3;
+	private static final int ACTION_STORE = 4;
 	
 	private int iAction = ACTION_EDIT;
 	
@@ -84,6 +88,8 @@ public class CourseEditor extends AdultEducationBlock {
 		try {
 			switch (parseAction(iwc)) {
 				case ACTION_EDIT:
+					break;
+				case ACTION_COPY:
 					break;
 				case ACTION_DELETE:
 					remove(iwc);
@@ -104,6 +110,9 @@ public class CourseEditor extends AdultEducationBlock {
 	
 	private Form getEditor() throws RemoteException {
 		Form form = new Form();
+		form.addParameter(PARAMETER_FROM_ACTION, String.valueOf(iAction));
+		form.maintainParameter(PARAMETER_OLD_SCHOOL_SEASON);
+		form.maintainParameter(PARAMETER_OLD_CODE);
 
 		form.add(getNavigationTable());
 		form.add(new Break(2));
@@ -180,8 +189,8 @@ public class CourseEditor extends AdultEducationBlock {
 		TextInput code = (TextInput) getStyledInterface(new TextInput(PARAMETER_CODE));
 		if (iCourse != null) {
 			code.setContent(iCourse.getCode());
-			code.setDisabled(true);
-			table.add(new HiddenInput(PARAMETER_CODE, iCourse.getCode()));
+		}
+		if (iAction == ACTION_EDIT) {
 			table.add(new HiddenInput(PARAMETER_UPDATE, Boolean.TRUE.toString()));
 		}
 		if (!(iAction == ACTION_DELETE || iAction == ACTION_STORE)) {
@@ -282,7 +291,7 @@ public class CourseEditor extends AdultEducationBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(6);
+		table.setColumns(7);
 		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
@@ -305,10 +314,20 @@ public class CourseEditor extends AdultEducationBlock {
 					Link edit = new Link(getEditIcon(localize("edit", "Edit")));
 					edit.addParameter(PARAMETER_COURSE_PK, course.getPrimaryKey().toString());
 					edit.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
+					edit.addParameter(PARAMETER_OLD_SCHOOL_SEASON, iSchoolSeasonPK.toString());
+					edit.addParameter(PARAMETER_OLD_CODE, course.getCode());
 					edit.maintainParameter(PARAMETER_SCHOOL_TYPE, iwc);
 					edit.maintainParameter(PARAMETER_STUDY_PATH_GROUP, iwc);
 					edit.maintainParameter(PARAMETER_SCHOOL, iwc);
 					edit.maintainParameter(PARAMETER_SCHOOL_SEASON, iwc);
+					
+					Link copy = new Link(getCopyIcon(localize("copy", "Copy")));
+					copy.addParameter(PARAMETER_COURSE_PK, course.getPrimaryKey().toString());
+					copy.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_COPY));
+					copy.maintainParameter(PARAMETER_SCHOOL_TYPE, iwc);
+					copy.maintainParameter(PARAMETER_STUDY_PATH_GROUP, iwc);
+					copy.maintainParameter(PARAMETER_SCHOOL, iwc);
+					copy.maintainParameter(PARAMETER_SCHOOL_SEASON, iwc);
 					
 					Link delete = new Link(getDeleteIcon(localize("delete", "Delete")));
 					delete.addParameter(PARAMETER_COURSE_PK, course.getPrimaryKey().toString());
@@ -333,7 +352,8 @@ public class CourseEditor extends AdultEducationBlock {
 					table.add(getSmallText(start.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + " - " + end.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row);
 					table.add(getSmallText(String.valueOf(course.getLength())), 4, row);
 					table.add(edit, 5, row);
-					table.add(delete, 6, row++);
+					table.add(copy, 6, row++);
+					table.add(delete, 7, row++);
 				}
 			}
 			catch (RemoteException re) {
@@ -345,8 +365,10 @@ public class CourseEditor extends AdultEducationBlock {
 	}
 	
 	private void store(IWContext iwc) {
+		Object oldSeason = iwc.isParameterSet(PARAMETER_OLD_SCHOOL_SEASON) ? iwc.getParameter(PARAMETER_OLD_SCHOOL_SEASON) : null;
 		String studyPath = iwc.isParameterSet(PARAMETER_STUDY_PATH) ? iwc.getParameter(PARAMETER_STUDY_PATH) : null;
 		String code = iwc.isParameterSet(PARAMETER_CODE) ? iwc.getParameter(PARAMETER_CODE) : null;
+		String oldCode = iwc.isParameterSet(PARAMETER_OLD_CODE) ? iwc.getParameter(PARAMETER_OLD_CODE) : null;
 		String startDate = iwc.isParameterSet(PARAMETER_START_DATE) ? iwc.getParameter(PARAMETER_START_DATE) : null;
 		String endDate = iwc.isParameterSet(PARAMETER_END_DATE) ? iwc.getParameter(PARAMETER_END_DATE) : null;
 		String comment = iwc.getParameter(PARAMETER_COMMENT);
@@ -416,7 +438,7 @@ public class CourseEditor extends AdultEducationBlock {
 		
 		if (validated) {
 			try {
-				getBusiness().storeCourse(iSchoolSeasonPK, code, iSchoolPK, studyPath, new IWTimestamp(startDate).getDate(), new IWTimestamp(endDate).getDate(), comment, length, notActive, update);
+				getBusiness().storeCourse(iSchoolSeasonPK, oldSeason, code, oldCode, iSchoolPK, studyPath, new IWTimestamp(startDate).getDate(), new IWTimestamp(endDate).getDate(), comment, length, notActive, update);
 				if (update) {
 					getParentPage().setAlertOnLoad(localize("course_updated", "Course updated"));
 				}
@@ -435,7 +457,7 @@ public class CourseEditor extends AdultEducationBlock {
 			}
 		}
 		else {
-			iAction = ACTION_EDIT;
+			iAction = Integer.parseInt(iwc.getParameter(PARAMETER_FROM_ACTION));
 			getParentPage().setAlertOnLoad(alert.toString());
 		}
 	}

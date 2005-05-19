@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.12 2005/05/17 06:00:26 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.13 2005/05/19 12:35:25 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/17 06:00:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/19 12:35:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -411,13 +411,24 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	 *           When trying to store a new course with the same code and season
 	 *           as an already existing course.
 	 */
-	public AdultEducationCourse storeCourse(Object season, String code, Object school, Object studyPath, Date startDate,
+	public AdultEducationCourse storeCourse(Object season, Object oldSeason, String code, String oldCode, Object school, Object studyPath, Date startDate,
 			Date endDate, String comment, int length, boolean notActive, boolean update) throws CreateException, DuplicateValueException {
 		AdultEducationCourse course = null;
 		try {
-			course = getCourse(season, code);
+			course = getCourse(update ? oldSeason: season, update ? oldCode : code);
 			if (!update) {
 				throw new DuplicateValueException("Season=" + season.toString() + "/Code=" + code);
+			}
+			else {
+				if (!season.equals(oldSeason) || !code.equals(oldCode)) {
+					try {
+						getCourse(season, code);
+						throw new DuplicateValueException("Season=" + season.toString() + "/Code=" + code);
+					}
+					catch (FinderException fe) {
+						//Nothing found so we continue...
+					}
+				}
 			}
 		}
 		catch (FinderException fe) {
