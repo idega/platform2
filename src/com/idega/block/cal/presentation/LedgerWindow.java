@@ -698,6 +698,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		entityBrowser = EntityBrowser.getInstanceUsingEventSystem();
 
 		entityBrowser.setEntities("havanna",users);
+		entityBrowser.setName("LedgerWindow");
 		entityBrowser.setDefaultNumberOfRows(Math.min(users.size(), 30));
 		entityBrowser.setWidth(Table.HUNDRED_PERCENT);
 		
