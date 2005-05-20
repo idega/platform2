@@ -1,3 +1,12 @@
+/*
+ * $Id: Supplier.java,v 1.24 2005/05/20 01:11:06 gimmi Exp $
+ * Created on 20.5.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.trade.stockroom.data;
 
 import java.rmi.RemoteException;
@@ -18,7 +27,11 @@ import com.idega.user.data.Group;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/05/20 01:11:06 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.24 $
  */
 public interface Supplier extends IDOLegacyEntity {
 

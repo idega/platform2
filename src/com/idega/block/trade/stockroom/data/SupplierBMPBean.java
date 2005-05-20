@@ -16,6 +16,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
@@ -24,8 +25,11 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.AND;
 import com.idega.data.query.Column;
+import com.idega.data.query.Criteria;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
 import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -373,6 +377,63 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		query.addCriteria(new MatchCriteria(groupColumn, MatchCriteria.EQUALS, groupID));
 		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
 		return this.idoFindPKsByQuery(query);
+	}
+		
+	public Collection ejbFindByPostalCodes(Group supplierManager, String[] from, String[] to, Collection criterias) throws IDORelationshipException, FinderException {
+		int fromLength = from.length;
+		int toLength = to.length;
+		if (fromLength != toLength) {
+			throw new FinderException("From and To arrays must be of same size");
+		}
+		
+		Table table = new Table(this);
+		Column suppMan = new Column(table, COLUMN_SUPPLIER_MANAGER_ID);
+		Column valid = new Column(table, getColumnNameIsValid());
+
+		SelectQuery query = new SelectQuery(table);
+		query.setAsDistinct(true);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(suppMan, MatchCriteria.EQUALS, supplierManager.getPrimaryKey()));
+		query.addCriteria(new MatchCriteria(valid, MatchCriteria.EQUALS, true));
+		if (fromLength > 0) {
+			Table address = new Table(Address.class);
+			Table postal = new Table(PostalCode.class);
+			Column postalCode = new Column(postal, "POSTAL_CODE");
+
+			query.addJoin(table, address);
+			query.addJoin(address, postal);
+			Vector crits = new Vector();
+			for (int i = 0; i < fromLength; i++) {
+				if (to[i] == null) {
+					crits.add(new MatchCriteria(postalCode, MatchCriteria.EQUALS, from[i]));
+				} else {
+					AND and = new AND(new MatchCriteria(postalCode, MatchCriteria.GREATEREQUAL, from[i]), new MatchCriteria(postalCode, MatchCriteria.LESSEQUAL, to[i]));
+					crits.add(and);
+				}
+			}
+			if (fromLength == 1) {
+				query.addCriteria( (Criteria) crits.get(0));
+			} else {
+				OR mainOR = new OR( (Criteria) crits.get(0), (Criteria) crits.get(1));
+				
+				for ( int i = 2; i < fromLength; i++) {
+					mainOR = new OR(mainOR, (Criteria) crits.get(i));
+				}
+				
+				query.addCriteria(mainOR);
+			}
+		}
+		
+		if (criterias != null) {
+			Iterator iter = criterias.iterator();
+			while (iter.hasNext()) {
+				query.addCriteria((Criteria) iter.next());
+			}
+		}
+		
+		query.addOrder(table, getColumnNameName(), true);
+//		System.out.println(query.toString());
+		return idoFindPKsByQuery(query);
 	}
 
 	public String getOrganizationID() {

@@ -1,13 +1,27 @@
+/*
+ * $Id: SupplierHome.java,v 1.7 2005/05/20 01:11:06 gimmi Exp $
+ * Created on 20.5.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.trade.stockroom.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.data.IDOHome;
+import com.idega.data.IDORelationshipException;
 import com.idega.user.data.Group;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/05/20 01:11:06 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.7 $
  */
 public interface SupplierHome extends IDOHome {
 
@@ -33,4 +47,10 @@ public interface SupplierHome extends IDOHome {
 	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#ejbFindAllByGroupID
 	 */
 	public Collection findAllByGroupID(int groupID) throws FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#ejbFindByPostalCodes
+	 */
+	public Collection findByPostalCodes(Group supplierManager, String[] from, String[] to, Collection criterias)
+			throws IDORelationshipException, FinderException;
 }
