@@ -243,8 +243,8 @@ public class ContractEditor extends ChildCareBlock {
 		try {
 			ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 			ChildCareContract contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
-			ChildCareContract firstContract = contractHome.findFirstContractByApplication(contract.getApplicationID());
-			boolean isFirstContract = contract.getPrimaryKey().equals(firstContract.getPrimaryKey());
+			//ChildCareContract firstContract = contractHome.findFirstContractByApplication(contract.getApplicationID());
+			//boolean isFirstContract = contract.getPrimaryKey().equals(firstContract.getPrimaryKey());
 
 			EmploymentType et = contract.getEmploymentType();
 			int etId = -1;
@@ -265,7 +265,7 @@ public class ContractEditor extends ChildCareBlock {
 			DateInput from = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
 			IWTimestamp stamp = IWTimestamp.RightNow();
 			from.setYearRange(stamp.getYear() - 2, stamp.getYear() + 3);
-			if (isFirstContract) {
+			/*if (isFirstContract) {
 				try {
 					ChildCareContract latestContract = contractHome.findLatestNotByApplication(contract.getApplicationID(), contract.getValidFromDate());
 					if (latestContract.getTerminatedDate() != null) {
@@ -277,7 +277,7 @@ public class ContractEditor extends ChildCareBlock {
 				catch (FinderException fe) {
 					//No old contract found...
 				}
-			}
+			}*/
 
 			DateInput cancelled = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCELLED_DATE));
 			cancelled.setYearRange(stamp.getYear() - 2, stamp.getYear() + 3);
