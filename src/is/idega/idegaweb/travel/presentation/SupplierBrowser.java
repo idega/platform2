@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.1 2005/05/20 04:05:03 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.2 2005/05/20 18:17:50 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,7 +9,6 @@
  */
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.service.hotel.presentation.HotelBrowser;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -49,7 +48,9 @@ public class SupplierBrowser extends TravelBlock {
 	private String[][] postalCodes = null;
 	private Group supplierManager = null;
 	private int supplierManagerId = -1;
+	
 	private SupplierBrowserPlugin plugin = null;
+	private String pluginClassName = null;
 	
 	private String textStyleClass = null;
 	private String linkStyleClass = null;
@@ -69,19 +70,23 @@ public class SupplierBrowser extends TravelBlock {
 		init(iwc);
 		
 		Form form = new Form();
-		form.maintainParameter(PARAMETER_POSTAL_CODES);
-		form.maintainParameter(PARAMETER_SUPPLIER_MANAGER);
-		form.maintainParameter(PARAMETER_SUPPLIER_ID);
-		form.maintainParameter(ACTION);
-		String[] params = plugin.getParameters();
-		if (params != null) {
-			for (int i = 0; i < params.length; i++) {
-				form.maintainParameter(params[i]);
-			}
-		}
-		if (supplierManager == null) {
-			form.add("SupplierManager not set");
+
+		if (plugin == null) {
+			form.add(getText(getResourceBundle().getLocalizedString("plugin_not_defined", "Plugin not defined")));
+		} else if (supplierManager == null) {
+			form.add(getText(getResourceBundle().getLocalizedString("supplier_manager_not_defined", "SupplierManager not defined")));
 		} else {
+			form.maintainParameter(PARAMETER_POSTAL_CODES);
+			form.maintainParameter(PARAMETER_SUPPLIER_MANAGER);
+			form.maintainParameter(PARAMETER_SUPPLIER_ID);
+			form.maintainParameter(ACTION);
+			String[] params = plugin.getParameters();
+			if (params != null) {
+				for (int i = 0; i < params.length; i++) {
+					form.maintainParameter(params[i]);
+				}
+			}
+
 			String action = iwc.getParameter(ACTION);
 			if (action == null) {
 				action = ACTION_VIEW_SUPPLIERS;
@@ -99,7 +104,7 @@ public class SupplierBrowser extends TravelBlock {
 	private void init(IWContext iwc) {
 		// SupplierManager check
 		String suppMan = iwc.getParameter(PARAMETER_SUPPLIER_MANAGER);
-		if (supplierManagerId > 0) { // 948 Birgir
+		if (supplierManagerId > 0) {
 			suppMan = Integer.toString(supplierManagerId);
 		}
 		if (suppMan != null) {
@@ -141,8 +146,14 @@ public class SupplierBrowser extends TravelBlock {
 			}
 		}
 		
-		// Remove this hardcoding, and make a Chooser or something
-		plugin = new HotelBrowser();
+		if (pluginClassName != null) {
+			try {
+				plugin = (SupplierBrowserPlugin) Class.forName(pluginClassName).newInstance();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private Table listProducts(IWContext iwc) throws RemoteException {
@@ -356,6 +367,10 @@ public class SupplierBrowser extends TravelBlock {
 	
 	public void setInterfaceObjectStyleClass(String styleClass) {
 		this.interfaceObjectStyleClass = styleClass;
+	}
+	
+	public void setPlugin(String pluginClassName) {
+		this.pluginClassName = pluginClassName;
 	}
 	
 	public void setWidth(String width) {
