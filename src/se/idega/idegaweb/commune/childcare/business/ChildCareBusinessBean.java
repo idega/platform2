@@ -3962,7 +3962,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return getChildCareContractArchiveHome().findValidContractByPlacement(member, validDate);
 		}
 		catch (FinderException fe) {
-			return null;
+			try {
+				return getChildCareContractArchiveHome().findLatestBySchoolClassMember(member);
+			}
+			catch (FinderException fex) {
+				return null;
+			}
 		}
 	}
 
