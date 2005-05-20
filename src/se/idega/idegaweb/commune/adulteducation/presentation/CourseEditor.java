@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.6 2005/05/20 08:34:32 laddi Exp $
+ * $Id: CourseEditor.java,v 1.7 2005/05/20 11:37:14 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/20 08:34:32 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 11:37:14 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -190,7 +190,7 @@ public class CourseEditor extends AdultEducationBlock {
 		if (iCourse != null) {
 			code.setContent(iCourse.getCode());
 		}
-		if (iAction == ACTION_EDIT) {
+		if (iAction == ACTION_EDIT && iCourse != null) {
 			table.add(new HiddenInput(PARAMETER_UPDATE, Boolean.TRUE.toString()));
 		}
 		if (!(iAction == ACTION_DELETE || iAction == ACTION_STORE)) {
