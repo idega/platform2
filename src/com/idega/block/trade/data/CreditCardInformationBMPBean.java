@@ -60,7 +60,7 @@ public class CreditCardInformationBMPBean extends GenericEntity implements Credi
 	}
 	
 	public void setSupplierManager(Group supplierManager) {
-		setColumn(COLUMN_SUPPLIER_MANAGER_ID, supplierManager);
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, supplierManager.getPrimaryKey());
 	}
 	
 	public Collection ejbFindBySupplierManager(Group supplierManager) throws FinderException {
