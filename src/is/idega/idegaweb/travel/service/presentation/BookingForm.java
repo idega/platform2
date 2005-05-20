@@ -2188,7 +2188,7 @@ public abstract class BookingForm extends TravelManager{
 		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
 		String oldDatasource = pch.getDatasource();
 		if (datasource != null) {
-			pch.setDatasource(datasource);
+			pch.setDatasource(datasource, false);
 		}
 		Collection coll = pch.findAllByCountryIdOrderedByPostalCode( getIcelandicCountryID() );
 		
@@ -2220,7 +2220,7 @@ public abstract class BookingForm extends TravelManager{
 			}
 			menu.setSelectedElement(PARAMETER_POSTAL_CODE_ICELAND);
 		}
-		pch.setDatasource(oldDatasource);
+		pch.setDatasource(oldDatasource, false);
 		staticPostalCode = menu;
 		return menu;
 	}
