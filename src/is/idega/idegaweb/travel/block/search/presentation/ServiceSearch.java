@@ -120,12 +120,7 @@ public class ServiceSearch extends TravelBlock {
 	protected AbstractSearchForm setCurrentSearchForm(IWContext iwc, List searchForms) {
 		try {
 			String currentSF = iwc.getParameter(PARAMETER_SERVICE_SEARCH_FORM);
-			try {
-				Integer.parseInt(currentSF);
-				currentSF = IWMainApplication.decryptClassName(currentSF);
-			} catch (NumberFormatException n) {
-				//System.out.println("Cannot decrypt class name = "+currentSF);
-			}
+			currentSF = IWMainApplication.decryptClassName(currentSF); //Checks if currentSF is a crypto reference
 			AbstractSearchForm ss = null;
 			if (currentSF != null) {
 				ss = (AbstractSearchForm) Class.forName(currentSF).newInstance();
