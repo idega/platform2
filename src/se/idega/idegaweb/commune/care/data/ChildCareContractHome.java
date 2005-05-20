@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContractHome.java,v 1.9 2005/04/22 11:40:39 laddi Exp $
- * Created on 22.4.2005
+ * $Id: ChildCareContractHome.java,v 1.10 2005/05/20 09:50:25 laddi Exp $
+ * Created on May 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,13 +21,10 @@ import com.idega.util.TimePeriod;
 
 
 /**
- * <p>
- * TODO laddi Describe Type ChildCareContractHome
- * </p>
- *  Last modified: $Date: 2005/04/22 11:40:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 09:50:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface ChildCareContractHome extends IDOHome {
 
@@ -64,6 +61,11 @@ public interface ChildCareContractHome extends IDOHome {
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindValidContractByApplication
 	 */
 	public ChildCareContract findValidContractByApplication(int applicationID, Date date) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindValidContractByPlacement
+	 */
+	public ChildCareContract findValidContractByPlacement(SchoolClassMember member, Date date) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindValidContractByProvider

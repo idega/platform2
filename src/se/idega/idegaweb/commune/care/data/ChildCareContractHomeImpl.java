@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.9 2005/04/22 11:40:39 laddi Exp $
- * Created on 22.4.2005
+ * $Id: ChildCareContractHomeImpl.java,v 1.10 2005/05/20 09:50:25 laddi Exp $
+ * Created on May 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,13 +21,10 @@ import com.idega.util.TimePeriod;
 
 
 /**
- * <p>
- * TODO laddi Describe Type ChildCareContractHomeImpl
- * </p>
- *  Last modified: $Date: 2005/04/22 11:40:39 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 09:50:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareContractHome {
 
@@ -81,6 +78,13 @@ public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareCo
 	public ChildCareContract findValidContractByApplication(int applicationID, Date date) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((ChildCareContractBMPBean) entity).ejbFindValidContractByApplication(applicationID, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public ChildCareContract findValidContractByPlacement(SchoolClassMember member, Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ChildCareContractBMPBean) entity).ejbFindValidContractByPlacement(member, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
