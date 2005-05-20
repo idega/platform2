@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.13 2005/05/19 12:35:25 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.14 2005/05/20 12:11:23 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/19 12:35:25 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -216,9 +216,9 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		return getChoiceHome().findByPrimaryKey(choicePK);
 	}
 	
-	public AdultEducationChoice getChoice(User user, Object studyPathPK, int choiceOrder) throws FinderException {
+	public AdultEducationChoice getChoice(User user, Object seasonPK, Object studyPathPK, int choiceOrder) throws FinderException {
 		String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus() };
-		return getChoiceHome().findByUserAndStudyPathAndChoiceOrder(user.getPrimaryKey(), studyPathPK, choiceOrder, statuses);
+		return getChoiceHome().findByUserAndSeasonAndStudyPathAndChoiceOrder(user.getPrimaryKey(), seasonPK, studyPathPK, choiceOrder, statuses);
 	}
 	
 	public Collection getChoices(User user, SchoolSeason season) {

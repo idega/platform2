@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceApplication.java,v 1.9 2005/05/16 19:41:02 laddi Exp $
+ * $Id: ChoiceApplication.java,v 1.10 2005/05/20 12:11:23 laddi Exp $
  * Created on May 10, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 
 /**
- * Last modified: $Date: 2005/05/16 19:41:02 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ChoiceApplication extends AdultEducationBlock {
 
@@ -216,7 +216,7 @@ public class ChoiceApplication extends AdultEducationBlock {
 			AdultEducationCourse chosenCourse = null;
 			if (isUpdate) {
 				try {
-					AdultEducationChoice choice = getBusiness().getChoice(iwc.getCurrentUser(), iStudyPathPK, a);
+					AdultEducationChoice choice = getBusiness().getChoice(iwc.getCurrentUser(), iSchoolSeasonPK, iStudyPathPK, a);
 					AdultEducationCourse course = choice.getCourse();
 					
 					chosenSchool = course.getSchool();

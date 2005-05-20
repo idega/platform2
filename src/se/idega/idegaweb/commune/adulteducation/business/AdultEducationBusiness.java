@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.10 2005/05/19 12:35:25 laddi Exp $
- * Created on May 19, 2005
+ * $Id: AdultEducationBusiness.java,v 1.11 2005/05/20 12:11:23 laddi Exp $
+ * Created on May 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -27,17 +27,18 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
+import com.idega.business.IBOService;
 import com.idega.data.IDOCreateException;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/19 12:35:25 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
-public interface AdultEducationBusiness extends CaseBusiness {
+public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getBundleIdentifier
@@ -82,8 +83,8 @@ public interface AdultEducationBusiness extends CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoice
 	 */
-	public AdultEducationChoice getChoice(User user, Object studyPathPK, int choiceOrder) throws FinderException,
-			java.rmi.RemoteException;
+	public AdultEducationChoice getChoice(User user, Object seasonPK, Object studyPathPK, int choiceOrder)
+			throws FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoices

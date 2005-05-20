@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHomeImpl.java,v 1.4 2005/05/17 06:00:26 laddi Exp $
- * Created on May 17, 2005
+ * $Id: AdultEducationChoiceHomeImpl.java,v 1.5 2005/05/20 12:11:23 laddi Exp $
+ * Created on May 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/17 06:00:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEducationChoiceHome {
 
@@ -76,11 +76,11 @@ public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEdu
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public AdultEducationChoice findByUserAndStudyPathAndChoiceOrder(Object userPK, Object studyPathPK, int choiceOrder,
-			String[] statuses) throws FinderException {
+	public AdultEducationChoice findByUserAndSeasonAndStudyPathAndChoiceOrder(Object userPK, Object seasonPK,
+			Object studyPathPK, int choiceOrder, String[] statuses) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((AdultEducationChoiceBMPBean) entity).ejbFindByUserAndStudyPathAndChoiceOrder(userPK, studyPathPK,
-				choiceOrder, statuses);
+		Object pk = ((AdultEducationChoiceBMPBean) entity).ejbFindByUserAndSeasonAndStudyPathAndChoiceOrder(userPK,
+				seasonPK, studyPathPK, choiceOrder, statuses);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
