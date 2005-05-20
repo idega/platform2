@@ -159,21 +159,11 @@ public class ChildCareContracts extends ChildCareBlock {
 				while (iter.hasNext()) {
 					column = 1;
 					student = (SchoolClassMember) iter.next();
-					/*if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) )
-						continue;*/
+					if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) )
+						continue;
 				
 					child = student.getStudent();
-				
-					//address = getBusiness().getUserBusiness().getUsersMainAddress(child);
-					//phone = getBusiness().getUserBusiness().getChildHomePhone(child);
-					//registered = new IWTimestamp(student.getRegisterDate());
-					
-					
-					//contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
-					
-					application = getBusiness().getApplicationForChildAndProviderinStatus(((Integer)child.getPrimaryKey()).intValue(), getSession().getChildCareID());
-					if (application != null)
-						contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
+					contract = getBusiness().getValidContractByPlacement(student);
 
 					if (useStyleNames()) {
 						if (row % 2 == 0) {
@@ -192,10 +182,8 @@ public class ChildCareContracts extends ChildCareBlock {
 							table.setRowColor(row, getZebraColor2());
 					}
 					
-					if (contract != null && application != null) {
-						//student = contract.getSchoolClassMember();
-						//application = contract.getApplication();
-						//hasComments = true;
+					if (contract != null) {
+						application = contract.getApplication();
 						parentCancelled = application.getApplicationStatus() == getBusiness().getStatusParentTerminated();
 						waiting = application.getApplicationStatus() == getBusiness().getStatusWaiting();
 						
@@ -224,9 +212,6 @@ public class ChildCareContracts extends ChildCareBlock {
 							isCancelled = true;
 						}
 						
-						//viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-						//viewContract.setFile(contract.getContractFileID());
-						//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
 						viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
 						
 						if (isNotYetActive) {
@@ -236,7 +221,6 @@ public class ChildCareContracts extends ChildCareBlock {
 							
 						}
 						else {
-							//alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
 							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_contract_or_schooltype_for_child","Alter the contract/schooltype for this child.")));
 							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
 							
@@ -248,8 +232,6 @@ public class ChildCareContracts extends ChildCareBlock {
 																		
 						if (validFrom.isLaterThan(stamp)) {
 							showComment = true;
-							//showNotStartedComment = true;
-							//hasComments = true;
 							table.add(getSmallErrorText("*"), column, row);
 
 							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));

@@ -3952,6 +3952,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public ChildCareContract getValidContractByPlacement(SchoolClassMember member) {
+		IWTimestamp stamp = new IWTimestamp();
+		return getValidContractByPlacement(member, stamp.getDate());
+	}
+
+	public ChildCareContract getValidContractByPlacement(SchoolClassMember member, Date validDate) {
+		try {
+			return getChildCareContractArchiveHome().findValidContractByPlacement(member, validDate);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+
 	public ChildCareApplication getActiveApplicationByChild(int childID) {
 		try {
 			return getChildCareApplicationHome().findActiveApplicationByChild(childID);

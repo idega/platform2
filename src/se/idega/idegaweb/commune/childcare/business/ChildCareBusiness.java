@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 May 12, 2005 laddi Exp $
- * Created on May 12, 2005
+ * $Id: ChildCareBusiness.java 1.1 May 20, 2005 laddi Exp $
+ * Created on May 20, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -1021,6 +1021,17 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getValidContract
 	 */
 	public ChildCareContract getValidContract(int applicationID, Date validDate) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getValidContractByPlacement
+	 */
+	public ChildCareContract getValidContractByPlacement(SchoolClassMember member) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getValidContractByPlacement
+	 */
+	public ChildCareContract getValidContractByPlacement(SchoolClassMember member, Date validDate)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getActiveApplicationByChild
