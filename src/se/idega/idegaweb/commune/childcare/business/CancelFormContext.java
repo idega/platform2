@@ -1,5 +1,5 @@
 /*
- * $Id: CancelFormContext.java,v 1.2 2005/02/04 14:35:03 laddi Exp $ Created
+ * $Id: CancelFormContext.java,v 1.3 2005/05/20 12:31:19 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import javax.ejb.CreateException;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.Constants;
@@ -40,10 +41,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- * Last modified: $Date: 2005/02/04 14:35:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 12:31:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CancelFormContext extends PrintingContextImpl {
 
@@ -86,7 +87,22 @@ public class CancelFormContext extends PrintingContextImpl {
 			e.printStackTrace();
 		}
 		catch (NoUserAddressException e) {
-			e.printStackTrace();
+			try {
+				CommuneUserBusiness userBuiz = getUserService(iwac);
+				address = userBuiz.getAddressHome().create();
+				address.setStreetName("");
+				address.setStreetNumber("");
+				
+				code = userBuiz.getAddressBusiness().getPostalCodeHome().create();
+				code.setName("");
+				code.setPostalCode("");
+			}
+			catch (CreateException ce) {
+				ce.printStackTrace();
+			}
+			catch (RemoteException re) {
+				re.printStackTrace();
+			}
 		}
 		props.put("address", address);
 		props.put("postalCode", code);
