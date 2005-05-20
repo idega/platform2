@@ -962,7 +962,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_g_dropdown", "You must set what kind of education for studies abroad") + "');");
 		s.append("\n\t\t return false; \n}");
 		
-		s.append("\n\n\t else if (inputEduG.value != '' && (dropEduGCountry.options[dropEduGCountry.selectedIndex].value < 0 && dropEduGYears.options[dropEduGYears.selectedIndex].value < 0) ||  dropEduGYears.options[dropEduGYears.selectedIndex].value < 0 || dropEduGCountry.options[dropEduGCountry.selectedIndex].value < 0 ){");
+		s.append("\n\n\t else if (inputEduG.value != '' && (dropEduGCountry.options[dropEduGCountry.selectedIndex].value < 0 && dropEduGYears.options[dropEduGYears.selectedIndex].value < 0) ||  (dropEduGYears.options[dropEduGYears.selectedIndex].value > 0 && dropEduGCountry.options[dropEduGCountry.selectedIndex].value < 0 ) || (dropEduGYears.options[dropEduGYears.selectedIndex].value < 0 && dropEduGCountry.options[dropEduGCountry.selectedIndex].value > 0 )){");
 		s.append("\n\t\t alert('" + localize("persInfo.must_fill_education_g_dropdown", "You must set country and years for studies abroad") + "');");
 		s.append("\n\t\t return false; \n}");
 				
