@@ -2238,10 +2238,14 @@ public abstract class BookingForm extends TravelManager{
 		String sCityID = iwc.getParameter(AbstractSearchForm.PARAMETER_CITY_PC_D);
 		String sPostalCode = iwc.getParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
 		
+		PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+		String oldDS = pcHome.getDatasource();
+		pcHome.setDatasource(getProductPriceHome().getDatasource(), false);
+
 		Collection postalCodes = null; 
 		if (sCountryID != null) {
 			
-			PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+//			PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
 			PostalCode tpc;
 			if (sPostalCode != null && !"-1".equals(sPostalCode)) {
 				postalCodes = new Vector();
@@ -2297,7 +2301,7 @@ public abstract class BookingForm extends TravelManager{
 					to = null;
 				}
 				
-				PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+				
 				PostalCode tpc;
 				if ( to == null ) {
 					postalCodes = new Vector();
@@ -2316,6 +2320,7 @@ public abstract class BookingForm extends TravelManager{
 			} 
 		}
 
+		pcHome.setDatasource(oldDS, false);
 		return postalCodes;
 //		postalCodeIds = ids.toArray();
 //		return postalCodeIds;
