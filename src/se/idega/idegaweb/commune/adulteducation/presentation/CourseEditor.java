@@ -1,5 +1,5 @@
 /*
- * $Id: CourseEditor.java,v 1.5 2005/05/19 14:20:06 laddi Exp $
+ * $Id: CourseEditor.java,v 1.6 2005/05/20 08:34:32 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/19 14:20:06 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/20 08:34:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CourseEditor extends AdultEducationBlock {
 
@@ -478,6 +478,9 @@ public class CourseEditor extends AdultEducationBlock {
 	private int parseAction(IWContext iwc) {
 		try {
 			iAction = ACTION_EDIT;
+			if (iwc.isParameterSet(PARAMETER_FROM_ACTION)) {
+			 iAction = Integer.parseInt(iwc.getParameter(PARAMETER_FROM_ACTION));
+			}
 			if (iwc.isParameterSet(PARAMETER_ACTION)) {
 				iAction = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 			}
