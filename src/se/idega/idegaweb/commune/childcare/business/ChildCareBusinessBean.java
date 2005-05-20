@@ -1287,6 +1287,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				childcareContract.setValidFromDate(fromDate);
 			}
 			childcareContract.setTerminatedDate(endDate);
+			if (endDate != null) {
+				IWTimestamp stamp = new IWTimestamp(childcareContract.getValidFromDate());
+				stamp.addDays(1);
+				if (getNumberOfFutureContracts(childcareContract.getApplicationID()) == 0 && application.getApplicationStatus() != getStatusReady()) {
+					createCancelForm(application, endDate, locale);
+				}
+			}
 
 			if (invoiceReceiver > 0)
 				childcareContract.setInvoiceReceiverID(invoiceReceiver);
