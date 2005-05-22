@@ -1,6 +1,14 @@
+/*
+ * $Id: FamilyMemberHomeImpl.java,v 1.3 2005/05/22 16:30:52 laddi Exp $
+ * Created on May 22, 2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.block.family.data;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.data.IDOFactory;
@@ -9,7 +17,10 @@ import com.idega.user.data.User;
 
 
 /**
- * @author gimmi
+ * Last modified: $Date: 2005/05/22 16:30:52 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.3 $
  */
 public class FamilyMemberHomeImpl extends IDOFactory implements FamilyMemberHome {
 
@@ -32,7 +43,7 @@ public class FamilyMemberHomeImpl extends IDOFactory implements FamilyMemberHome
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllByFamilyNR(String familyNr) throws FinderException, RemoteException {
+	public Collection findAllByFamilyNR(String familyNr) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((FamilyMemberBMPBean) entity).ejbFindAllByFamilyNR(familyNr);
 		this.idoCheckInPooledEntity(entity);

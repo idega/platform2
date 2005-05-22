@@ -1,8 +1,8 @@
 /*
- * $Id: FamilyLogicHome.java,v 1.3 2004/09/06 10:54:11 joakim Exp $
- * Created on 6.9.2004
+ * $Id: FamilyLogicHome.java,v 1.4 2005/05/22 16:30:52 laddi Exp $
+ * Created on May 22, 2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -13,11 +13,10 @@ import com.idega.business.IBOHome;
 
 
 /**
+ * Last modified: $Date: 2005/05/22 16:30:52 $ by $Author: laddi $
  * 
- *  Last modified: $Date: 2004/09/06 10:54:11 $ by $Author: joakim $
- * 
- * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.3 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.4 $
  */
 public interface FamilyLogicHome extends IBOHome {
 

@@ -4,13 +4,9 @@
  */
 package se.idega.idegaweb.commune.business;
 
-import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-
-import com.idega.user.data.User;
-
 import is.idega.block.family.business.FamilyLogicBean;
+import javax.ejb.CreateException;
+import com.idega.user.data.User;
 
 /**
  * CommuneFamilyServiceBean
@@ -23,7 +19,7 @@ public class CommuneFamilyServiceBean extends FamilyLogicBean implements Commune
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.business.MemberFamilyLogic#setAsCohabitantFor(com.idega.user.data.User, com.idega.user.data.User)
 	 */
-	public void setAsCohabitantFor(User personToSet, User relatedPerson) throws CreateException, RemoteException {
+	public void setAsCohabitantFor(User personToSet, User relatedPerson) throws CreateException {
 		// We don't allow both cohabitant and spouse relation between same people
 		if(!this.isSpouseOf(personToSet,relatedPerson)){
 			super.setAsCohabitantFor(personToSet, relatedPerson);
@@ -35,7 +31,7 @@ public class CommuneFamilyServiceBean extends FamilyLogicBean implements Commune
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.business.MemberFamilyLogic#setAsSpouseFor(com.idega.user.data.User, com.idega.user.data.User)
 	 */
-	public void setAsSpouseFor(User personToSet, User relatedPerson) throws CreateException, RemoteException {
+	public void setAsSpouseFor(User personToSet, User relatedPerson) throws CreateException {
 		if(!this.isCohabitantOf(personToSet,relatedPerson)){
 			super.setAsSpouseFor(personToSet, relatedPerson);
 		}
