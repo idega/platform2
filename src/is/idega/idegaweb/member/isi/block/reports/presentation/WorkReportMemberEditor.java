@@ -122,7 +122,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
   }
   
-  protected void addBreakLine() {};
+  protected void addBreakLine() {}
   
   private void initializeFieldList(IWContext iwc) {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);

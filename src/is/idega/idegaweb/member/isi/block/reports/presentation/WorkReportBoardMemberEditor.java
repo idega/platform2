@@ -149,7 +149,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
   }
   
-  protected void addBreakLine() {};
+  protected void addBreakLine() {}
   
   private String parseAction(IWContext iwc, IWResourceBundle resourceBundle) {
     String action = "";

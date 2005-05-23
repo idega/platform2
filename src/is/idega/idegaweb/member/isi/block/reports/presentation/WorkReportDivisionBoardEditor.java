@@ -120,7 +120,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }
   }
   
-  protected void addBreakLine() {};
+  protected void addBreakLine() {}
   
   private String parseAction(IWContext iwc) {
     String action = "";
