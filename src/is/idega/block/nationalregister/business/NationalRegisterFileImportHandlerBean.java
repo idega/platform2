@@ -813,10 +813,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		PostalCode postalCode = natBiz.getPostalCode(po);
 		if (postalCode != null) {
 			Commune commune = cBiz.getCommuneByPostalCode(postalCode);
-			group = commune.getGroup();
-			postalToGroupMap.put(po, group);
+			if (commune != null && commune.getGroup() != null) {
+				group = commune.getGroup();
+				postalToGroupMap.put(po, group);
+			}
 		} else {
-//			System.out.println("NationalRegisterImport : postalCode not found : '"+po+"'");
 			try {
 				group = cBiz.getOtherCommuneCreateIfNotExist().getGroup();
 				if(null!=group) {
