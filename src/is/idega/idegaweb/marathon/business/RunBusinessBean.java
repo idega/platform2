@@ -3,8 +3,11 @@
  */
 package is.idega.idegaweb.marathon.business;
 
+import is.idega.block.family.business.FamilyLogic;
+import is.idega.idegaweb.marathon.data.Distance;
+import is.idega.idegaweb.marathon.data.Participant;
+import is.idega.idegaweb.marathon.data.ParticipantHome;
 import is.idega.idegaweb.marathon.data.Run;
-import is.idega.idegaweb.marathon.data.RunHome;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -20,8 +23,16 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.transaction.UserTransaction;
+import com.idega.block.creditcard.business.CreditCardAuthorizationException;
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.business.CreditCardClient;
+import com.idega.block.creditcard.data.CreditCardMerchant;
+import com.idega.block.creditcard.data.KortathjonustanMerchant;
+import com.idega.block.creditcard.data.KortathjonustanMerchantHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.EmailHome;
@@ -34,7 +45,10 @@ import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOCreateException;
 import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -42,6 +56,7 @@ import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -72,36 +87,26 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	/**
 	 * saves information on the user - creates a new user if he doesn't exsist..
 	 */
-	public int saveUser(String name, String ssn, IWTimestamp dateOfBirth, String gender, String address, String postal, String city, String country, String tel, String mobile, String email) {
+	private User saveUser(String name, String ssn, IWTimestamp dateOfBirth, Gender gender, String address, String postal, String city, Country country, String tel, String mobile, String email) {
 		User user = null;
 		try {
 			if (dateOfBirth == null) {
 				dateOfBirth = getBirthDateFromSSN(ssn);
 			}
 			user = getUserBiz().createUserByPersonalIDIfDoesNotExist(name, ssn, null, dateOfBirth);
+			user.setGender(((Integer) gender.getPrimaryKey()).intValue());
 			user.store();
-			if (gender != null && !gender.equals("")) {
-				user.setGender(Integer.parseInt(gender));
-			}
+
 			if (address != null && !address.equals("")) {
 				AddressHome addressHome = (AddressHome) getIDOHome(Address.class);
 				Address a = addressHome.create();
 				a.setStreetName(address);
 				a.setCity(city);
+				a.setCountry(country);
 				a.store();
-				CountryHome countryHome = (CountryHome) getIDOHome(Country.class);
-				Country c = null;
-				try {
-					c = countryHome.findByPrimaryKey(Integer.valueOf(country));
-				}
-				catch (FinderException fe) {
-					c = null;
-				}
-				if (c != null) {
-					a.setCountry(c);
-				}
+
 				PostalCodeHome postalHome = (PostalCodeHome) getIDOHome(PostalCode.class);
-				Integer countryID = (Integer) c.getPrimaryKey();
+				Integer countryID = (Integer) country.getPrimaryKey();
 				PostalCode p = null;
 				try {
 					p = postalHome.findByPostalCodeAndCountryId(postal, countryID.intValue());
@@ -186,7 +191,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		catch (CreateException cre) {
 		}
-		return Integer.parseInt(String.valueOf(user.getPrimaryKey()));
+		return user;
 	}
 	
 	public boolean isRegisteredInRun(int runID, int userID) {
@@ -202,6 +207,19 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			//User does not exist in database...
 		}
 		return false;
+	}
+	
+	public boolean isRegisteredInRun(Group run, User user) {
+		try {
+			Participant participant = ((ParticipantHome) IDOLookup.getHome(Participant.class)).findByUserAndRun(user, run);
+			return true;
+		}
+		catch (FinderException fe) {
+			return false;
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 	
 	public boolean isRegisteredInRun(int runID, String personalID) {
@@ -322,8 +340,8 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					}
 				}
 			}
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
-			Run r = runHome.create();
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			Participant r = runHome.create();
 			r.setUserID(userID);
 			r.setRunTypeGroupID(Integer.parseInt(run));
 			r.setRunDistanceGroupID(Integer.parseInt(distance));
@@ -373,10 +391,232 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (CreateException cre) {
 		}
 	}
+	
+	public Collection saveParticipants(Collection runners) throws IDOCreateException {
+		Collection participants = new ArrayList();
+
+		UserTransaction trans = getSessionContext().getUserTransaction();
+		try {
+			trans.begin();
+			Iterator iter = runners.iterator();
+			while (iter.hasNext()) {
+				Runner runner = (Runner) iter.next();
+				User user = runner.getUser();
+				if (user == null) {
+					saveUser(runner.getName(), runner.getPersonalID(), new IWTimestamp(runner.getDateOfBirth()), runner.getGender(), runner.getAddress(), runner.getPostalCode(), runner.getCity(), runner.getCountry(), runner.getHomePhone(), runner.getMobilePhone(), runner.getEmail());
+				}
+				
+				Group ageGenderGroup = getAgeGroup(user, runner.getRun(), runner.getDistance());
+				ageGenderGroup.addGroup(user);
+				Group yearGroup = (Group) runner.getDistance().getParentNode();
+				
+				try {
+					ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+					Participant participant = runHome.create();
+					participant.setUser(user);
+					participant.setRunTypeGroup(runner.getRun());
+					participant.setRunDistanceGroup(runner.getDistance());
+					participant.setRunYearGroup(yearGroup);
+					participant.setRunGroupGroup(ageGenderGroup);
+					
+					participant.setTShirtSize(runner.getShirtSize());
+					if (runner.isOwnChip()) {
+						participant.setChipOwnershipStatus(IWMarathonConstants.CHIP_OWN);
+					}
+					else if (runner.isRentChip()) {
+						participant.setChipOwnershipStatus(IWMarathonConstants.CHIP_RENT);
+					}
+					else if (runner.isBuyChip()) {
+						participant.setChipOwnershipStatus(IWMarathonConstants.CHIP_BUY);
+					}
+					participant.setChipNumber(runner.getChipNumber());
+					participant.setUserNationality(runner.getNationality().getName());
+					if (runner.getDistance() != null) {
+						try {
+							int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(runner.getDistance().getName()), getMaxParticipantNumber(runner.getDistance().getName()));
+							if (participantNumber == 0) {
+								participantNumber = getMinParticipantNumber(runner.getDistance().getName());
+							}
+							else {
+								participantNumber++;
+							}
+							participant.setParticipantNumber(participantNumber);
+						}
+						catch (IDOException ie) {
+							ie.printStackTrace();
+						}
+					}
+					participant.store();
+					participants.add(participant);
+					
+					getUserBiz().updateUserHomePhone(user, runner.getHomePhone());
+					getUserBiz().updateUserMobilePhone(user, runner.getMobilePhone());
+					getUserBiz().updateUserMail(user, runner.getEmail());
+				}
+				catch (CreateException ce) {
+					ce.printStackTrace();
+				}
+				catch (RemoteException re) {
+					throw new IBORuntimeException(re);
+				}
+			}
+			trans.commit();
+		}
+		catch (Exception ex) {
+			try {
+				trans.rollback();
+			}
+			catch (javax.transaction.SystemException e) {
+				throw new IDOCreateException(e.getMessage());
+			}
+			ex.printStackTrace();
+			throw new IDOCreateException(ex);
+		}
+		
+		return participants;
+	}
+	
+	private Group getAgeGroup(User user, Run run, Distance distance) {
+		Age age = new Age(user.getDateOfBirth());
+		
+		String[] groupType = { IWMarathonConstants.GROUP_TYPE_RUN_GROUP };
+		try {
+			Collection groups = getGroupBiz().getChildGroupsRecursive(distance, groupType, true);
+			
+			Iterator groupsIter = groups.iterator();
+			while (groupsIter.hasNext()) {
+				Group group = (Group) groupsIter.next();
+				if (group.getName().equals(getGroupName(age.getYears(), run, user.getGenderID()))) {
+					return group;
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		return null;
+	}
+	
+	public void doPayment(String nameOnCard, String cardNumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException {
+		try {
+			CreditCardClient client = getCreditCardBusiness().getCreditCardClient(getCreditCardMerchant());
+			client.doSale(nameOnCard, cardNumber, monthExpires, yearExpires, ccVerifyNumber, amount, currency, referenceNumber);
+		}
+		catch (CreditCardAuthorizationException ccae) {
+			throw new CreditCardAuthorizationException("Online payment failed. Creditcard authorization failed.");
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			throw new CreditCardAuthorizationException("Online payment failed. Unknown error.");
+		}
+	}
+	
+	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount) {
+		Age age = null;
+		if (runner.getUser() != null) {
+			age = new Age(runner.getUser().getDateOfBirth());
+		}
+		else {
+			age = new Age(runner.getDateOfBirth());
+		}
+		boolean isChild = age.getYears() <= 12;
+		
+		float runnerPrice = isChild ? runner.getDistance().getChildrenPrice(locale) : runner.getDistance().getPrice(locale);
+		if (runner.isOwnChip() || runner.isBuyChip()) {
+			runnerPrice = runnerPrice - chipDiscount;
+		}
+		return runnerPrice;
+	}
+	
+	public int getNumberOfChildren(Collection runners) {
+		int numberOfChildren = 0;
+
+		try {
+			Runner parent1 = null;
+			Runner parent2 = null;
+
+			boolean hasParents = false;
+			Iterator iter = runners.iterator();
+			while (iter.hasNext()) {
+				Runner runner = (Runner) iter.next();
+				Iterator iterator = runners.iterator();
+				while (iterator.hasNext()) {
+					Runner otherRunner = (Runner) iterator.next();
+					if (!runner.getUser().equals(otherRunner.getUser()) && runner.getDistance().isFamilyDiscount()) {
+						if (getFamilyLogic().isSpouseOf(runner.getUser(), otherRunner.getUser()) && otherRunner.getDistance().isFamilyDiscount()) {
+							hasParents = true;
+							parent1 = runner;
+							parent2 = otherRunner;
+							break;
+						}
+					}
+				}
+				if (hasParents) {
+					break;
+				}
+			}
+			
+			if (hasParents) {
+				runners.remove(parent1);
+				runners.remove(parent2);
+				
+				Iterator iterator = runners.iterator();
+				while (iterator.hasNext()) {
+					Runner runner = (Runner) iterator.next();
+					if (getFamilyLogic().isParentOf(parent1.getUser(), runner.getUser()) || getFamilyLogic().isParentOf(parent2.getUser(), runner.getUser())) {
+						if (runner.getDistance().isFamilyDiscount()) {
+							numberOfChildren++;
+						}
+					}
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		
+		return 0;
+	}
+	
+	private FamilyLogic getFamilyLogic() {
+		try {
+			return (FamilyLogic) getServiceInstance(FamilyLogic.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+	
+	public Collection getCreditCardImages() {
+		try {
+			return getCreditCardBusiness().getCreditCardTypeImages(getCreditCardBusiness().getCreditCardClient(getCreditCardMerchant()));
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList();
+	}
+	
+	private CreditCardMerchant getCreditCardMerchant() throws FinderException {
+		String merchantPK = getIWApplicationContext().getIWMainApplication().getBundle(IWMarathonConstants.IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_MERCHANT_PK);
+		if (merchantPK != null) {
+			try {
+				return ((KortathjonustanMerchantHome) IDOLookup.getHome(KortathjonustanMerchant.class)).findByPrimaryKey(new Integer(merchantPK));
+			}
+			catch (IDOLookupException ile) {
+				throw new IBORuntimeException(ile);
+			}
+		}
+		return null;
+	}
+	
 	public void savePayment(int userID, int distanceID, String payMethod, String amount) {
 		try {
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
-			Run run = runHome.findByUserIDandDistanceID(userID,distanceID);
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			Participant run = runHome.findByUserIDandDistanceID(userID,distanceID);
 			if(run != null) {
 				run.setPayMethod(payMethod);
 				run.setPayedAmount(amount);
@@ -390,15 +630,16 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			e.printStackTrace();
 		}
 	}
+	
 	public void savePaymentByUserID(int userID, String payMethod, String amount) {
 		try {
 			try {
-				RunHome runHome = (RunHome) getIDOHome(Run.class);
+				ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 				Collection runObjs = runHome.findByUserID(userID);
 				if(runObjs != null) {
 					Iterator runIt = runObjs.iterator();
 					while(runIt.hasNext()) {
-						Run run = (Run) runIt.next();
+						Participant run = (Participant) runIt.next();
 						if(run != null) {
 							run.setPayMethod(payMethod);
 							run.setPayedAmount(amount);
@@ -421,14 +662,15 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			e.printStackTrace();
 		} 
 	}
+	
 	public void updateParticipantAndChip(int userID,String partiNr, String chipNr) {
 		try {
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 			Collection runObjs = runHome.findByUserID(userID);
 			if(runObjs != null) {
 				Iterator runIt = runObjs.iterator();
 				while(runIt.hasNext()) {
-					Run run = (Run) runIt.next();
+					Participant run = (Participant) runIt.next();
 					if(run != null) {
 						if(partiNr != null && !partiNr.equals("")) {
 							run.setParticipantNumber(Integer.parseInt(partiNr));
@@ -456,7 +698,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	public void updateTeamName(int userID, int groupID, String teamName) {
-		Run run = null;
+		Participant run = null;
 		if(groupID != -1) {
 			run = getRunObjByUserAndGroup(userID, groupID);
 		}
@@ -468,7 +710,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	public void updateRunAndChipTimes(int userID, int groupID, String runTime, String chipTime) {
-		Run run = null;
+		Participant run = null;
 		if(groupID != -1) {
 			run = getRunObjByUserAndGroup(userID, groupID);
 		}
@@ -482,9 +724,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			run.store();
 		}
 	}
-	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) {
+	public Participant getRunObjByUserIDandDistanceID(int userID, int distanceID) {
 		try {
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 			return runHome.findByUserIDandDistanceID(userID,distanceID);
 		}
 		catch (RemoteException e) {
@@ -509,8 +751,8 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		return null;
 	}
-	public Run getRunObjByUserAndGroup(int userID, int groupID) {
-		Run run = null;
+	public Participant getRunObjByUserAndGroup(int userID, int groupID) {
+		Participant run = null;
 		int yearGroupID = -1;
 		int distanceGroupID = -1;
 		int runGroupID = -1;
@@ -547,13 +789,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 		}
 		try {
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 			if(runGroupID != -1 && yearGroupID != -1 && distanceGroupID != -1) {
-				Collection runObjs = runHome.findByUserAndParentGroups(userID,runGroupID,2004,distanceGroupID);
+				Collection runObjs = runHome.findByUserAndParentGroup(userID,runGroupID,2004,distanceGroupID);
 				if(runObjs != null && !runObjs.isEmpty()) {
 					Iterator runIt = runObjs.iterator();
 					while(runIt.hasNext()) {
-						Run runObj = (Run) runIt.next();
+						Participant runObj = (Participant) runIt.next();
 						run = runObj;
 					}
 				}
@@ -570,7 +812,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	
 	public Collection getRunnersByDistance(Group distance, Group runGroup) {
 		try {
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 			return runHome.findAllByDistanceAndGroup(distance, runGroup);
 		}
 		catch (RemoteException e) {
@@ -583,9 +825,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return new ArrayList();
 	}
 	
-	public void setParticipantNumber(Run participant) {
+	public void setParticipantNumber(Participant participant) {
 		try {
-			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 
 			
 			int groupID = participant.getRunDistanceGroupID();
@@ -757,8 +999,30 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		return nameOfGroup;
 	}
+	
+	public String[] getDistancesForRun(Group run) {
+		String runName = run.getName();
+		String[] disForMarathon = { IWMarathonConstants.DISTANCE_42, IWMarathonConstants.DISTANCE_21, IWMarathonConstants.DISTANCE_10, IWMarathonConstants.DISTANCE_3, IWMarathonConstants.DISTANCE_CHARITY_42, IWMarathonConstants.DISTANCE_CHARITY_21 };
+		String[] disForLaugavegur = { IWMarathonConstants.DISTANCE_55_WITH_BUS, IWMarathonConstants.DISTANCE_55 };
+		String[] disForMidnight = { IWMarathonConstants.DISTANCE_10, IWMarathonConstants.DISTANCE_5, IWMarathonConstants.DISTANCE_3 };
+		String[] disForRollerSkate = { IWMarathonConstants.DISTANCE_10, IWMarathonConstants.DISTANCE_5 };
 
-	public void createNewGroupYear(IWContext iwc, Group run, String year) {
+		if (runName.equals("Rvk Marathon")) {
+			return disForMarathon;
+		}
+		else if (runName.equals("Midnight Run")) {
+			return disForMidnight;
+		}
+		else if (runName.equals("Laugavegur")) {
+			return disForLaugavegur;
+		}
+		else if (runName.equals("Roller Skate")) {
+			return disForRollerSkate;
+		}
+		return null;
+	}
+
+	public void createNewGroupYear(IWContext iwc, Group run, String year, String[] priceISK, String[] priceEUR, String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount) {
 		String runName = run.getName();
 		Group group = null;
 		try {
@@ -775,26 +1039,22 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		String[] disForMarathon = { IWMarathonConstants.DISTANCE_42, IWMarathonConstants.DISTANCE_21, IWMarathonConstants.DISTANCE_10, IWMarathonConstants.DISTANCE_7, IWMarathonConstants.DISTANCE_3 };
-		String[] disForLaugavegur = { IWMarathonConstants.DISTANCE_55 };
-		String[] disForMidnight = { IWMarathonConstants.DISTANCE_3, IWMarathonConstants.DISTANCE_5, IWMarathonConstants.DISTANCE_10 };
-		String[] disForRollerSkate = { IWMarathonConstants.DISTANCE_10 };
 		String[] grForMarathon = { IWMarathonConstants.FEMALE_14, IWMarathonConstants.FEMALE_15_17, IWMarathonConstants.FEMALE_18_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50_59, IWMarathonConstants.FEMALE_60, IWMarathonConstants.MALE_14, IWMarathonConstants.MALE_15_17, IWMarathonConstants.MALE_18_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50_59, IWMarathonConstants.MALE_60 };
 		String[] grForLaugavegur = { IWMarathonConstants.FEMALE_18_29, IWMarathonConstants.FEMALE_30_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50, IWMarathonConstants.MALE_18_29, IWMarathonConstants.MALE_30_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50_59, IWMarathonConstants.MALE_60 };
 		String[] grForMidnight = { IWMarathonConstants.FEMALE_18, IWMarathonConstants.FEMALE_19_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50, IWMarathonConstants.MALE_18, IWMarathonConstants.MALE_19_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50 };
 		//TODO: remove this hack - set metadata on the groups containing the
 		// specific run...
 		if (runName.equals("Rvk Marathon")) {
-			generateSubGroups(iwc, group, disForMarathon, grForMarathon);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForMarathon, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
 		}
 		else if (runName.equals("Midnight Run")) {
-			generateSubGroups(iwc, group, disForMidnight, grForMidnight);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForMidnight, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
 		}
 		else if (runName.equals("Laugavegur")) {
-			generateSubGroups(iwc, group, disForLaugavegur, grForLaugavegur);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForLaugavegur, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
 		}
 		else if (runName.equals("Roller Skate")) {
-			generateSubGroups(iwc, group, disForRollerSkate, grForMarathon);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForMarathon, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
 		}
 	}
 
@@ -804,13 +1064,30 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * @param disForMarathon
 	 * @param grForMarathon
 	 */
-	private void generateSubGroups(IWContext iwc, Group group, String[] dis, String[] gr) {
+	private void generateSubGroups(IWContext iwc, Group group, String[] dis, String[] gr, String[] priceISK, String[] priceEUR, String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount) {
 		for (int i = 0; i < dis.length; i++) {
 			Group distance = null;
 			try {
 				distance = getGroupBiz().createGroupUnder(dis[i], null, group);
 				distance.setGroupType(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
 				distance.store();
+				try {
+					Distance distanceGroup = ConverterUtility.getInstance().convertGroupToDistance(distance);
+					distanceGroup.setUseChip(new Boolean(useChips[i]).booleanValue());
+					distanceGroup.setPriceInISK(Float.parseFloat(priceISK[i]));
+					distanceGroup.setPriceInEUR(Float.parseFloat(priceEUR[i]));
+					distanceGroup.setFamilyDiscount(new Boolean(familyDiscount[i]).booleanValue());
+					if (childrenPriceISK[i] != null && childrenPriceISK[i].length() > 0) {
+						distanceGroup.setChildrenPriceInISK(Float.parseFloat(childrenPriceISK[i]));
+					}
+					if (childrenPriceEUR[i] != null && childrenPriceEUR[i].length() > 0) {
+						distanceGroup.setChildrenPriceInEUR(Float.parseFloat(childrenPriceEUR[i]));
+					}
+					distanceGroup.store();
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
 				for (int j = 0; j < gr.length; j++) {
 					Group g = null;
 					try {
@@ -1059,13 +1336,22 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return business;
 	}
 
+	private CreditCardBusiness getCreditCardBusiness() {
+		try {
+			return (CreditCardBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CreditCardBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
 	private UserBusiness getUserBiz() throws IBOLookupException {
 		UserBusiness business = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		return business;
 	}
 
 	private int getMaxParticipantNumber(String distanceType) {
-		if (distanceType.equals(IWMarathonConstants.DISTANCE_55)) {
+		if (distanceType.equals(IWMarathonConstants.DISTANCE_55) || distanceType.equals(IWMarathonConstants.DISTANCE_55_WITH_BUS)) {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_55;
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_42)) {
@@ -1074,11 +1360,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_21)) {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_21;
 		}
+		else if (distanceType.equals(IWMarathonConstants.DISTANCE_CHARITY_42)) {
+			return IWMarathonConstants.MAX_NUMBER_DISTANCE_CHARITY_42;
+		}
+		else if (distanceType.equals(IWMarathonConstants.DISTANCE_CHARITY_21)) {
+			return IWMarathonConstants.MAX_NUMBER_DISTANCE_CHARITY_21;
+		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_10)) {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_10;
-		}
-		else if (distanceType.equals(IWMarathonConstants.DISTANCE_7)) {
-			return IWMarathonConstants.MAX_NUMBER_DISTANCE_7;
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_5)) {
 			return IWMarathonConstants.MAX_NUMBER_DISTANCE_5;
@@ -1090,7 +1379,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 
 	private int getMinParticipantNumber(String distanceType) {
-		if (distanceType.equals(IWMarathonConstants.DISTANCE_55)) {
+		if (distanceType.equals(IWMarathonConstants.DISTANCE_55) || distanceType.equals(IWMarathonConstants.DISTANCE_55_WITH_BUS)) {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_55;
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_42)) {
@@ -1099,11 +1388,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_21)) {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_21;
 		}
+		else if (distanceType.equals(IWMarathonConstants.DISTANCE_CHARITY_42)) {
+			return IWMarathonConstants.MIN_NUMBER_DISTANCE_CHARITY_42;
+		}
+		else if (distanceType.equals(IWMarathonConstants.DISTANCE_CHARITY_21)) {
+			return IWMarathonConstants.MIN_NUMBER_DISTANCE_CHARITY_21;
+		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_10)) {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_10;
-		}
-		else if (distanceType.equals(IWMarathonConstants.DISTANCE_7)) {
-			return IWMarathonConstants.MIN_NUMBER_DISTANCE_7;
 		}
 		else if (distanceType.equals(IWMarathonConstants.DISTANCE_5)) {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_5;

@@ -50,207 +50,111 @@ public class RunRegistration extends Block {
 
 	private static final String PARAMETER_ACTION = "prm_action";
 	
-	/* 
-	
-	this class works with many settings in the property file like
-	
-	travelURL_Rvk Marathon_10_km_2004_en =	
-		https://travel.idega.is/servlet/ObjectInstanciator?idegaweb_instance_class=7469&linkGeneratorProductId=744&IWCalendar_day=21&IWCalendar_month=8&IWCalendar_year=2004	
-		
-	....and so on
-	
-	further the reference number parameter (value depends on the class the link is pointing to) must be set like 
-	
-	parameter_refererence_number = rNum
-	
-	comment added by Thomas
-	*/
-
-	// this value should be defined in the property file (added by Thomas)
 	private static final String PARAMETER_REFERENCE_NUMBER = "parameter_refererence_number";
-
-	// the default value corresponds to the value of 
-	// is.idega.idegaweb.travel.service.presentation.BookingForm.PARAMETER_REFERENCE_NUMBER (added by Thomas)
-	// do not implement a reference to the travel system, this bundle can be used without the travel system or could use
-	// another booking system.
 	private static final String PARAMETER_REFERENCE_NUMBER_DEFAULT_VALUE = "rNum";
 
 	private static final int ACTION_STEP_ONE = 1;
-
 	private static final int ACTION_STEP_TWO = 2;
-
 	private static final int ACTION_STEP_THREE = 3;
-
 	private static final int ACTION_SAVE = 4;
 
 	private static final String STYLENAME_HEADING = "headingText";
-
 	private static final String STYLENAME_GREEN_TEXT = "greenText";
-
 	private static final String STYLENAME_BLUE_TEXT = "blueText";
-
 	private static final String STYLENAME_INTERFACE = "interface";
-
 	private static final String STYLENAME_CHECKBOX = "checkbox";
 
 	private Text redStar;
-
 	private Text infoRedStarText;
 
 	//texts step one
 	private Text distanceText;
-
 	private Text primaryDDLable;
-
 	private Text secondaryDDLable;
-
 	private Text nameText;
-
 	private Text nationalityText;
-
 	private Text ssnText;
-
 	private Text genderText;
-
 	private Text addressText;
-
 	private Text postalText;
-
 	private Text cityText;
-
 	private Text countryText;
-
 	private Text telText;
-
 	private Text mobileText;
-
 	private Text emailText;
-
 	private Text tShirtText;
 
 	//texts step two
 	private Text chipText;
-
 	private Text chipNumberText;
-
 	private Link chipLink;
-
 	private Text ownChipText;
-
 	private Text buyChipText;
-
 	private Text rentChipText;
 
 	private float buyPrice = 2200;
-
 	private float rentPrice = 200;
-
 	private float buyPriceEuro = 36;
-
 	private float rentPriceEuro = 3;
 
 	private Text groupCompetitionText;
-
 	private Text groupNameText;
-
 	private Text bestTimeText;
-
 	private Text goalTimeText;
-	
 	private Text agreementText;
-	
 	private Text agreeText;
-	
 	private Text disagreeText;
 
 	//fields step one
 	private DropdownMenu runDropdown = null;
-	
 	private DropdownMenu distanceDropdown = null;
-	
 	private RemoteScriptHandler rsh = null;
-	
-//	private RunDistanceDropdownDouble runDisDropdownField;
-
 	private TextInput nameField;
-
 	private DropdownMenu nationalityField;
-
 	private TextInput ssnISField;
-
 	private DateInput ssnField;
-
 	private DropdownMenu genderField;
-
 	private TextInput addressField;
-
 	private TextInput postalField;
-
 	private TextInput cityField;
-
 	private DropdownMenu countryField;
-
 	private TextInput telField;
-
 	private TextInput mobileField;
-
 	private TextInput emailField;
-
 	private DropdownMenu tShirtField;
 
 	private SelectOption small;
-
 	private SelectOption medium;
-
 	private SelectOption large;
-
 	private SelectOption xlarge;
-
 	private SelectOption xxlarge;
 
 	private SubmitButton stepOneButton;
-
 	private SubmitButton stepTwoButton;
 
 	//fields step two
 	private RadioButton ownChipField;
-
 	private RadioButton buyChipField;
-
 	private RadioButton rentChipField;
-
 	private TextInput chipNumberField;
-
 	private CheckBox groupCompetitionField;
-
 	private TextInput groupNameField;
-
 	private TextInput bestTimeField;
-
 	private TextInput goalTimeField;
-
 	private BackButton backButton;
 
 	private Link backGreen;
-
 	private Link backBlue;
-
-//	private Form f;
 
 	private IWResourceBundle iwrb;
 
 	private boolean showPayment = false;
 	
 	private RadioButton agreeField;
-	
 	private RadioButton disagreeField;
 	
 	boolean isIcelandic = false;
 	
-	public RunRegistration() {
-		super();
-	}
-
 	public Map getStyleNames() {
 		Map map = new HashMap();
 		map.put(STYLENAME_HEADING, "");
@@ -305,8 +209,6 @@ public class RunRegistration extends Block {
 	}
 
 	private void initializeFields(IWContext iwc) throws RemoteException {
-		//TODO: remove javascript popups - put red text containing error
-		// messages...
 		iwrb = getResourceBundle(iwc);
 
 		//step one fields begin
@@ -352,15 +254,6 @@ public class RunRegistration extends Block {
 			e.printStackTrace();
 		}
 
-		
-/*		runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
-		runDisDropdownField.setPrimaryLabel(primaryDDLable);
-		runDisDropdownField.setSecondaryLabel(secondaryDDLable);
-		if (iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN)) {
-			runDisDropdownField.setSelectedValues(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN), "");
-		}
-		runDisDropdownField.getSecondaryDropdown().setAsNotEmpty(iwrb.getLocalizedString("run_reg.select_run_and_distance", "You have to select a run and distance"), "-1");
-*/
 		nameField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_NAME), STYLENAME_INTERFACE);
 		nameField.setAsAlphabeticText(iwrb.getLocalizedString("run_reg.name_err_msg", "Your name may only contain alphabetic characters"));
 		nameField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.name_not_empty", "Name field cannot be empty"));
@@ -511,10 +404,6 @@ public class RunRegistration extends Block {
 		t.setCellspacing(0);
 		t.setWidth(Table.HUNDRED_PERCENT);
 		
-/*		CurrencyCalculator cc = new CurrencyCalculator();
-		cc.setUseRemoteScripting(true);
-		t.add(cc);*/
-		
 		int row = 1;
 		int column = 1;
 		int formRow = -1;
@@ -536,7 +425,6 @@ public class RunRegistration extends Block {
 		t.add(runDropdown,column,row);
 		t.add(distanceDropdown,column,row);
 		add(rsh);
-//		t.add(runDisDropdownField, column, row++);
 
 		t.setHeight(row++, 12);
 
@@ -848,11 +736,11 @@ public class RunRegistration extends Block {
 			
 			if (agrees) {
 				if (ssnIS != null && !ssnIS.equals("")) {
-					userID = runBiz.saveUser(name, ssnIS, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+					//userID = runBiz.saveUser(name, ssnIS, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
 					refNum = ssnIS;
 				}
 				else if (ssn != null && !ssn.equals("")) {
-					userID = runBiz.saveUser(name, ssn, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+					//userID = runBiz.saveUser(name, ssn, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
 					refNum = ssn;
 				}
 		

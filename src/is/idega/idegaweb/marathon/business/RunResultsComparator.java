@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.data.Run;
+import is.idega.idegaweb.marathon.data.Participant;
 
 import java.util.Comparator;
 
@@ -17,8 +17,8 @@ public class RunResultsComparator implements Comparator {
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	public int compare(Object arg0, Object arg1) {
-		Run r0 = (Run) arg0;
-		Run r1 = (Run) arg1;
+		Participant r0 = (Participant) arg0;
+		Participant r1 = (Participant) arg1;
 		
 		return r0.getRunTime() - r1.getRunTime();
 	}

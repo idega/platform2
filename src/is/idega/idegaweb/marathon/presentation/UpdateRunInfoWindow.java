@@ -5,7 +5,7 @@
 package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
-import is.idega.idegaweb.marathon.data.Run;
+import is.idega.idegaweb.marathon.data.Participant;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
@@ -162,19 +162,19 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 			}
 			runField = new Text(iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()));
 		}
-		Run run = null;
+		Participant run = null;
 		if(userID != null && selectedGroupID != null) {
-			run = getRunBiz(iwc).getRunObjByUserAndGroup(Integer.parseInt(userID),Integer.parseInt(selectedGroupID));
-		try {
-			Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
-			f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
-			if(userID != null && runGroupID != null) {
-				run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
+			try {
+				run = getRunBiz(iwc).getRunObjByUserAndGroup(Integer.parseInt(userID),Integer.parseInt(selectedGroupID));
+				Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
+				f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
+				if(userID != null && runGroupID != null) {
+					run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
+				}
 			}
-		}
-		catch (Exception re) {
-			log(re);
-		}
+			catch (Exception re) {
+				log(re);
+			}
 		}
 		
 		

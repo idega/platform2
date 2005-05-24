@@ -1,37 +1,45 @@
 /*
- * Created on 21.8.2004
+ * $Id: RunBusiness.java,v 1.18 2005/05/24 12:06:29 laddi Exp $
+ * Created on May 24, 2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.data.Run;
-
+import is.idega.idegaweb.marathon.data.Participant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-
+import com.idega.block.creditcard.business.CreditCardAuthorizationException;
+import com.idega.business.IBOService;
 import com.idega.core.location.data.Country;
+import com.idega.data.IDOCreateException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
-
 
 
 /**
- * @author laddi
+ * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.18 $
  */
-public interface RunBusiness extends com.idega.business.IBOService{
-	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#saveUser
-	 */
-	public int saveUser(String name, String ssn, IWTimestamp dateOfBirth, String gender, String address, String postal, String city, String country, String tel, String mobile, String email) throws java.rmi.RemoteException;
+public interface RunBusiness extends IBOService {
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#isRegisteredInRun
 	 */
 	public boolean isRegisteredInRun(int runID, int userID) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#isRegisteredInRun
+	 */
+	public boolean isRegisteredInRun(Group run, User user) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#isRegisteredInRun
@@ -46,7 +54,36 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#saveRun
 	 */
-	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt, String chipOwnershipStatus, String chipNumber, String groupName, String bestTime, String goalTime, Locale locale) throws java.rmi.RemoteException;
+	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt,
+			String chipOwnershipStatus, String chipNumber, String groupName, String bestTime, String goalTime, Locale locale)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#saveParticipants
+	 */
+	public Collection saveParticipants(Collection runners) throws IDOCreateException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#doPayment
+	 */
+	public void doPayment(String nameOnCard, String cardNumber, String monthExpires, String yearExpires,
+			String ccVerifyNumber, double amount, String currency, String referenceNumber)
+			throws CreditCardAuthorizationException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getPriceForRunner
+	 */
+	public float getPriceForRunner(Runner runner, Locale locale, float chipDiscount) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getNumberOfChildren
+	 */
+	public int getNumberOfChildren(Collection runners) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getCreditCardImages
+	 */
+	public Collection getCreditCardImages() throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#savePayment
@@ -64,14 +101,30 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	public void updateParticipantAndChip(int userID, String partiNr, String chipNr) throws java.rmi.RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#updateTeamName
+	 */
+	public void updateTeamName(int userID, int groupID, String teamName) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#updateRunAndChipTimes
+	 */
+	public void updateRunAndChipTimes(int userID, int groupID, String runTime, String chipTime)
+			throws java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByUserIDandDistanceID
 	 */
-	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) throws java.rmi.RemoteException;
-	
+	public Participant getRunObjByUserIDandDistanceID(int userID, int distanceID) throws java.rmi.RemoteException;
+
 	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByGroupId(String)
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunGroupByGroupId
 	 */
 	public Group getRunGroupByGroupId(Integer groupId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByUserAndGroup
+	 */
+	public Participant getRunObjByUserAndGroup(int userID, int groupID) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunnersByDistance
@@ -81,7 +134,7 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#setParticipantNumber
 	 */
-	public void setParticipantNumber(Run participant) throws java.rmi.RemoteException;
+	public void setParticipantNumber(Participant participant) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#sendMessage
@@ -89,9 +142,16 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	public void sendMessage(String email, String subject, String body) throws java.rmi.RemoteException;
 
 	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getDistancesForRun
+	 */
+	public String[] getDistancesForRun(Group run) throws java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#createNewGroupYear
 	 */
-	public void createNewGroupYear(IWContext iwc, Group run, String year) throws java.rmi.RemoteException;
+	public void createNewGroupYear(IWContext iwc, Group run, String year, String[] priceISK, String[] priceEUR,
+			String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRuns
@@ -134,24 +194,7 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	public Collection getCountries() throws java.rmi.RemoteException;
 
 	/**
-	 * 
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getCountryByNationality
 	 */
 	public Country getCountryByNationality(Object nationality) throws java.rmi.RemoteException;
-	
-	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#updateTeamName
-	 */
-	public void updateTeamName(int userID, int groupID, String teamName);
-	
-	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#updateRunAndChipTimes
-	 */
-	public void updateRunAndChipTimes(int userID, int groupID, String runTime, String chipTime);
-	
-	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByUserAndGroup
-	 */
-	public Run getRunObjByUserAndGroup(int userID, int groupID);
-
-
 }

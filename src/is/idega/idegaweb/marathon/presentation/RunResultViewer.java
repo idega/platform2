@@ -7,7 +7,7 @@ import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.business.RunGroup;
 import is.idega.idegaweb.marathon.business.RunGroupComparator;
 import is.idega.idegaweb.marathon.business.RunGroupMap;
-import is.idega.idegaweb.marathon.data.Run;
+import is.idega.idegaweb.marathon.data.Participant;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 
 import java.rmi.RemoteException;
@@ -186,7 +186,7 @@ public class RunResultViewer extends Block {
 			Iterator runIter = runs.iterator();
 			int num = 1;
 			while (runIter.hasNext()) {
-				Run run = (Run) runIter.next();
+				Participant run = (Participant) runIter.next();
 				row = insertRunIntoTable(table, row, run, num, num);
 				num++;
 			}
@@ -211,7 +211,7 @@ public class RunResultViewer extends Block {
 					Iterator runIter = runners.iterator();
 					int num = 1;
 					while (runIter.hasNext()) {
-						Run run = (Run) runIter.next();
+						Participant run = (Participant) runIter.next();
 						row = insertRunIntoTable(table, row, run, num, num);
 						num++;
 						
@@ -236,11 +236,11 @@ public class RunResultViewer extends Block {
 			RunGroupMap map = new RunGroupMap();
 			
 			System.out.println("2. Sorting out group runners");
-			Run runner;
+			Participant runner;
 			RunGroup runnerGroup;
 			Iterator iterator = runs.iterator();
 			while (iterator.hasNext()) {
-				runner = (Run) iterator.next();
+				runner = (Participant) iterator.next();
 				if (runner.getRunGroupName() != null && runner.getRunGroupName().trim().length() > 0) {
 					runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
 					if (runnerGroup == null) {
@@ -258,7 +258,7 @@ public class RunResultViewer extends Block {
 			System.out.println("4. Sorting run groups");
 
 			iterator = groupList.iterator();
-			Run run;
+			Participant run;
 			int num = 1;
 			int count = 0;
 			Iterator runIter;
@@ -275,7 +275,7 @@ public class RunResultViewer extends Block {
 					num = 1;
 					count = 0;
 					while (runIter.hasNext()) {
-						run = (Run) runIter.next();
+						run = (Participant) runIter.next();
 						num = runs.indexOf(run);
 						row = insertRunIntoTable(table, row, run, num, count+1);
 						count++;
@@ -348,7 +348,7 @@ public class RunResultViewer extends Block {
 		});
 	}
 
-	private int insertRunIntoTable(Table table, int row, Run run, int num, int participantRow) {
+	private int insertRunIntoTable(Table table, int row, Participant run, int num, int participantRow) {
 		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
 		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);

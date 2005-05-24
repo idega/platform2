@@ -3,8 +3,8 @@
  */
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.data.Run;
-import is.idega.idegaweb.marathon.data.RunHome;
+import is.idega.idegaweb.marathon.data.Participant;
+import is.idega.idegaweb.marathon.data.ParticipantHome;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -48,13 +48,13 @@ public class RunChipNumberImportBean extends IBOServiceBean  implements RunChipN
 			String chipBunchNumber = file.getFile().getName();
 			chipBunchNumber = chipBunchNumber.substring(chipBunchNumber.indexOf("_") + 1);
 			
-			RunHome runHome = (RunHome) IDOLookup.getHome(Run.class);
+			ParticipantHome runHome = (ParticipantHome) IDOLookup.getHome(Participant.class);
 			Collection runners = runHome.findAllWithoutChipNumber(126);
 			if (!runners.isEmpty()) {
 				int runnersCount = runners.size();
 				Iterator iterator = runners.iterator();
 				while ( !(item=(String)file.getNextRecord()).equals("") && iterator.hasNext() ) {
-					Run runner = (Run) iterator.next();
+					Participant runner = (Participant) iterator.next();
 					String chipNumber = file.getValueAtIndexFromRecordString(1, item);
 					
 					runner.setChipNumber(chipNumber);

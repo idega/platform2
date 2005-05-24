@@ -13,6 +13,8 @@ package is.idega.idegaweb.marathon.util;
 public class IWMarathonConstants {
   
   public final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.marathon";
+	public static final String PROPERTY_MERCHANT_PK = "merchant_pk";
+
   
   public static final String GROUP_TYPE_RUN = "iwma_run";
 /*  public static final String GROUP_TYPE_RUN_MARATHON = "iwma_run_marathon";
@@ -64,6 +66,10 @@ public class IWMarathonConstants {
   public static final String PARAMETER_RUN_TIME = "prm_run_time";
   public static final String PARAMETER_CHIP_TIME = "prm_chip_time";
   
+	public static final String CHIP_RENT = "chip_rent";
+	public static final String CHIP_BUY = "chip_buy";
+	public static final String CHIP_OWN = "chip_own";
+	
   //localized strings
   public static final String RR_INFO_RED_STAR = "run_reg.info_red_star";
   public static final String RR_PRIMARY_DD = "run_reg.primary_dd_lable";
@@ -100,12 +106,15 @@ public class IWMarathonConstants {
   
   
   public static final String DISTANCE_55 = "55_km";
+  public static final String DISTANCE_55_WITH_BUS = "55_km_with_bus";
   public static final String DISTANCE_42 = "42_km";
   public static final String DISTANCE_21 = "21_km";
   public static final String DISTANCE_10 = "10_km";
   public static final String DISTANCE_7 = "7_km";
   public static final String DISTANCE_5 = "5_km";
   public static final String DISTANCE_3 = "3_km";
+  public static final String DISTANCE_CHARITY_42 = "42_km_charity";
+  public static final String DISTANCE_CHARITY_21 = "21_km_charity";
   
   public static final String FEMALE_14 = "female_14";
   public static final String FEMALE_15_17 = "female_15_17";
@@ -132,18 +141,20 @@ public class IWMarathonConstants {
   
   public static final int MAX_NUMBER_DISTANCE_55 = 499;
   public static final int MIN_NUMBER_DISTANCE_55 = 1;
-  public static final int MAX_NUMBER_DISTANCE_42 = 499;
-  public static final int MIN_NUMBER_DISTANCE_42 = 1;
-  public static final int MAX_NUMBER_DISTANCE_21 = 1699;
+  public static final int MAX_NUMBER_DISTANCE_42 = 599;
+  public static final int MIN_NUMBER_DISTANCE_42 = 21;
+  public static final int MAX_NUMBER_DISTANCE_21 = 1599;
   public static final int MIN_NUMBER_DISTANCE_21 = 1000;
+  public static final int MAX_NUMBER_DISTANCE_CHARITY_42 = 999;
+  public static final int MIN_NUMBER_DISTANCE_CHARITY_42 = 600;
+  public static final int MAX_NUMBER_DISTANCE_CHARITY_21 = 1999;
+  public static final int MIN_NUMBER_DISTANCE_CHARITY_21 = 1600;
   public static final int MAX_NUMBER_DISTANCE_10 = 2999;
   public static final int MIN_NUMBER_DISTANCE_10 = 2000;
-  public static final int MAX_NUMBER_DISTANCE_7 = 4599;
-  public static final int MIN_NUMBER_DISTANCE_7 = 4000;
   public static final int MAX_NUMBER_DISTANCE_5 = 1999;
   public static final int MIN_NUMBER_DISTANCE_5 = 1;
-  public static final int MAX_NUMBER_DISTANCE_3 = 6999;
-  public static final int MIN_NUMBER_DISTANCE_3 = 5000;
+  public static final int MAX_NUMBER_DISTANCE_3 = 7000;
+  public static final int MIN_NUMBER_DISTANCE_3 = 3000;
   
   public static final String PROPERTY_SEND_EMAILS = "send_emails";
 }

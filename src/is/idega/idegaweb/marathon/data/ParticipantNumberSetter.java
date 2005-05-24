@@ -31,11 +31,11 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 	public void run() {
 		IWContext iwc = IWContext.getInstance();
 
-		RunHome runHome = null;
+		ParticipantHome runHome = null;
 		Collection run = null;
 		Collection run2 = null;
 		try {
-			runHome = (RunHome) getIDOHome(Run.class);
+			runHome = (ParticipantHome) getIDOHome(Participant.class);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -54,7 +54,7 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 			Iterator iter = run.iterator();
 			
 			while(iter.hasNext()) {
-				Run r = (Run) iter.next();
+				Participant r = (Participant) iter.next();
 				r.setParticipantNumber(-1);
 				r.store();
 			}
@@ -70,7 +70,7 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 		if(run2 != null) {
 			Iterator iter2 = run.iterator();
 			while(iter2.hasNext()) {
-				Run r = (Run) iter2.next();
+				Participant r = (Participant) iter2.next();
 				if(r.getParticipantNumber() == -1) {
 					try {
 						getRunBiz(iwc).setParticipantNumber(r);

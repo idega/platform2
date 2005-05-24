@@ -1,6 +1,6 @@
 /*
- * $Id: RunHomeImpl.java,v 1.11 2005/05/24 12:06:29 laddi Exp $
- * Created on May 22, 2005
+ * $Id: DistanceHome.java,v 1.1 2005/05/24 12:06:29 laddi Exp $
+ * Created on May 23, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -9,19 +9,15 @@
  */
 package is.idega.idegaweb.marathon.data;
 
-import com.idega.user.data.GroupHomeImpl;
+import com.idega.user.data.GroupHome;
 
 
 /**
  * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.1 $
  */
-public class RunHomeImpl extends GroupHomeImpl implements RunHome {
-
-	protected Class getEntityInterfaceClass() {
-		return Run.class;
-	}
+public interface DistanceHome extends GroupHome {
 
 }

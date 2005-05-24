@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.data.Run;
+import is.idega.idegaweb.marathon.data.Participant;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class RunGroupComparator implements Comparator {
 			int index = 0;
 			Iterator iter = map.getCollection(r1).iterator();
 			while (iter.hasNext()) {
-				Run element = (Run) iter.next();
+				Participant element = (Participant) iter.next();
 				if (index < 3) {
 					counter2.addSeconds(element.getRunTime());
 				}

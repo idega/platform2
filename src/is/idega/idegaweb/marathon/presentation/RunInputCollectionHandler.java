@@ -1,5 +1,5 @@
 /*
- * $Id: RunInputCollectionHandler.java,v 1.1 2005/02/15 10:27:20 birna Exp $
+ * $Id: RunInputCollectionHandler.java,v 1.2 2005/05/24 12:06:29 laddi Exp $
  * Created on Feb 14, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
+import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
@@ -27,12 +28,16 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/15 10:27:20 $ by $Author: birna $
+ *  Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RunInputCollectionHandler extends PresentationObject implements RemoteScriptCollection {
+
+	public String getBundleIdentifier() {
+		return IWMarathonConstants.IW_BUNDLE_IDENTIFIER;
+	}
 
 	public RemoteScriptingResults getResults(IWContext iwc) {
 		String sourceName = iwc.getParameter(RemoteScriptHandler.PARAMETER_SOURCE_PARAMETER_NAME);
@@ -58,22 +63,27 @@ public class RunInputCollectionHandler extends PresentationObject implements Rem
 			    Vector ids = new Vector();
 			    Vector names = new Vector();
 			    
-			    Iterator disIter = distances.iterator();
-			    if (disIter.hasNext()) {
-				    	ids.add("-1");
-				    	names.add(iwrb.getLocalizedString("run_year_ddd.select_distance","Select distance..."));
+			    if (distances != null) {
+				    Iterator disIter = distances.iterator();
+				    if (disIter.hasNext()) {
+					    	ids.add("");
+					    	names.add(iwrb.getLocalizedString("run_year_ddd.select_distance","Select distance..."));
+				    }
+				    while (disIter.hasNext()) {
+				    		Group distance = (Group) disIter.next();
+				    		String s = iwrb.getLocalizedString(distance.getName(),distance.getName());
+				    		ids.add(distance.getPrimaryKey().toString());
+				    		names.add(s);
+				    }
+				    if (distances.isEmpty()) {
+				    		ids.add("");
+				    		names.add("Unavailable");
+				    } 
 			    }
-			    while (disIter.hasNext()) {
-			    		Group distance = (Group) disIter.next();
-			    		String s = iwrb.getLocalizedString(distance.getName(),distance.getName());
-			    		ids.add(distance.getPrimaryKey().toString());
-			    		names.add(s);
-			    }
-			    
-			    if (distances.isEmpty()) {
-			    		ids.add("-1");
+			    else {
+			    		ids.add("");
 			    		names.add("Unavailable");
-			    } 
+			    }
 			    
 			    RemoteScriptingResults rsr = new RemoteScriptingResults(RemoteScriptHandler.getLayerName(sourceName, "id"), ids);
 			    rsr.addLayer(RemoteScriptHandler.getLayerName(sourceName, "name"), names);
