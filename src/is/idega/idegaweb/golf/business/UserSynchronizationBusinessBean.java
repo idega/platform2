@@ -329,8 +329,20 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		try {
 			groupBiz = (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
 			Collection groups = groupBiz.getGroupsByAbbreviation(abbr);
-			if (groups != null && !groups.isEmpty() && groups.size() == 1) {
-				union = getUnionFromGroup((Group) groups.iterator().next());
+			Group unionGroup = null;
+			if (groups != null && !groups.isEmpty()) {
+				for (Iterator possible = groups.iterator(); possible.hasNext();) {
+					Group group = (Group) possible.next();
+					if(group.getGroupType().equals(GolfConstants.GROUP_TYPE_CLUB)){
+						//TAKES THE FIRST CLUB THAT MATCHES, NOT SAFE...but some idiots started using abbreviation for other group types and then nothing worked
+						//the second search should fail if we stumble on to the wrong group but at least then we get an error message. -Eiki
+						unionGroup = group;
+						break;
+					}
+				}
+				if(unionGroup!=null){
+					union = getUnionFromGroup(unionGroup);
+				}
 			}
 		}
 		catch (IBOLookupException e) {
