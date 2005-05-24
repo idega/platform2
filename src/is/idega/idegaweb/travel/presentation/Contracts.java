@@ -10,6 +10,7 @@ import is.idega.idegaweb.travel.data.ResellerDayPK;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -396,7 +397,6 @@ public class Contracts extends TravelManager {
     String discount = iwc.getParameter("discount");
       if (discount.equals("")) discount = "0";
     String alotment = iwc.getParameter("alotment");
-      if (alotment.equals("")) alotment = "0";
 
     String allDays = iwc.getParameter("all_days");
     String mondays = iwc.getParameter("mondays");
@@ -421,6 +421,13 @@ public class Contracts extends TravelManager {
         int contractId = -1;
         if (sContractId != null) contractId = Integer.parseInt(sContractId);
 
+        int iAlot = -1;
+        if (alotment.trim().equals("")) {
+        	iAlot = BookingForm.UNLIMITED_AVAILABILITY;
+        } else {
+        	iAlot = Integer.parseInt(alotment);
+        }
+
 
         Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
@@ -440,7 +447,7 @@ public class Contracts extends TravelManager {
           contract = ((is.idega.idegaweb.travel.data.ContractHome)com.idega.data.IDOLookup.getHome(Contract.class)).create();
         }
 
-          contract.setAlotment(Integer.parseInt(alotment));
+          contract.setAlotment(iAlot);
           contract.setDiscount(discount);
           contract.setServiceId(productId);
           contract.setResellerId(resellerId);
@@ -700,6 +707,8 @@ public class Contracts extends TravelManager {
       tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
     Text tfToText = (Text) theText.clone();
       tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
+    Text alotExpl = (Text) theText.clone();
+    alotExpl.setText(iwrb.getLocalizedString("travel.leave_empty_for_unlimited","Leave empty for umlimited"));
 
     Text pName = null;
     TextInput pAlot;
@@ -822,7 +831,9 @@ public class Contracts extends TravelManager {
 
     if (contract != null) {
     	Product conProd = ((ProductHome) IDOLookup.getHome(Product.class)).findByPrimaryKey(new Integer(contract.getServiceId()));
-      pAlot.setContent(Integer.toString(contract.getAlotment()));
+    	if (contract.getAlotment() != BookingForm.UNLIMITED_AVAILABILITY) {
+    		pAlot.setContent(Integer.toString(contract.getAlotment()));
+    	}
       pDays.setContent(Integer.toString(contract.getExpireDays()) );
       pDiscount.setContent(contract.getDiscount());
       int[] days = {};
@@ -885,6 +896,7 @@ public class Contracts extends TravelManager {
     ++infoRow;
     infoTable.add(tNumberOfSeatsPerTour,1,infoRow);
     infoTable.add(pAlot,3,infoRow);
+    infoTable.add(alotExpl, 3, infoRow);
 
     ++infoRow;
     infoTable.add(tWeekdays,1,infoRow);
