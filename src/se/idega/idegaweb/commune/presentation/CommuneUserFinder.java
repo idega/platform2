@@ -179,7 +179,21 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 					user = (User) iter.next();
 					if (addUser(iwc, user)) {
 						showSubmit = true;
-						radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());
+						//radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());
+						if (isAdministrator(iwc)){
+							radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());	
+						}
+						else{
+							if (user.getUniqueId() != null){
+								iwc.removeSessionAttribute(getParameterName(iwc));
+								radio = getRadioButton(getParameterUniqueName(iwc), user.getUniqueId());							
+							}
+							else {
+								iwc.removeSessionAttribute(getParameterUniqueName(iwc));
+								radio = getRadioButton(getParameterName(iwc), user.getPrimaryKey().toString());							
+							}
+						}
+						
 						if (row == 3)
 							radio.setSelected();
 					
@@ -217,6 +231,8 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 	public abstract boolean addUser(IWContext iwc, User user);
 	
 	public abstract String getParameterName(IWContext iwc);
+	
+	public abstract String getParameterUniqueName(IWContext iwc);
 	
 	public abstract Class getEventListener();
 	

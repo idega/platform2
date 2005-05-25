@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.ejb.FinderException;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -20,9 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
+import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.user.business.UserBusiness;
-import com.idega.core.user.data.User;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -33,13 +37,14 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.99 2005/04/07 09:05:55 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.100 2005/05/25 12:33:51 malin Exp $
  * @since 12.2.2003 
  */
 
@@ -70,6 +75,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private final static int ACTION_DELETE_OFFER = 1111;
 	
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();
+	private String CHILD_UNIQUE_ID = CitizenChildren.getChildUniqueIDParameterName();
 	private int childID = -1;
 
 	ChildCareBusiness childCarebusiness = null;
@@ -81,7 +87,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private ICPage _renewQueuePage;
 	
 	private boolean _hasAcceptedApplication = false;
-
+	private boolean hasPermission = false;
+	
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
@@ -93,8 +100,29 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 		childID = getChildId(iwc);
 
+		
 		setCacheable(false);
 		childCarebusiness = getChildCareBusiness(iwc);
+		
+		if (isAdministrator(iwc)){
+			hasPermission = true;
+		}
+		else{
+		User parent = iwc.getCurrentUser();
+		Collection children = childCarebusiness.getUserBusiness().getChildrenForUser(parent);
+		Iterator theChild = children.iterator();
+			while(theChild.hasNext()){
+				User userChild = (User) theChild.next();
+				
+				int userChildId = ((Integer) userChild.getPrimaryKey()).intValue();
+				if (userChildId == childID){
+					hasPermission = true;
+					break;
+				}
+								
+			}
+		}
+		
 		
 		if (_renewQueuePage != null) {
 			if (_showOnlyChildcare && childCarebusiness.hasPendingApplications(childID, _caseCode)) {
@@ -112,6 +140,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		int action = parseAction(iwc);
 		Collection applications = findApplications(iwc);
 		ChildCareApplication application = null;
+		
 		
 		switch (action) {
 			case CCConstants.ACTION_SUBMIT_1 :
@@ -201,9 +230,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 
 		}
-
-		form.add(layoutTbl);
-		add(form);
+		if (hasPermission){
+			form.add(layoutTbl);
+			add(form);	
+		}
+		else{
+			add(getErrorText(localize("child_care.not_permitted", "You do not have permission")));
+		}
+		
 	}
 
 	/**
@@ -557,7 +591,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		}*/
 		
 		//User child = UserBusiness.getUser(Integer.parseInt(childId));
-		User child = UserBusiness.getUser(childID);
+		//User child = UserBusiness.getUser(childID);
+		
+		User child = getChildCareBusiness(iwc).getUserBusiness().getUser(childID);		
 		layoutTbl.add(getSmallHeader(localize(NAME) + ":"), 1, row);
 		layoutTbl.add(getSmallText(child.getName()), 3, row++);
 		layoutTbl.add(getSmallHeader(localize(PERSONAL_ID) + ":"), 1, row);
@@ -765,20 +801,53 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	}
 
 	private int getChildId(IWContext iwc) {
-
-		String childId = iwc.getParameter(CHILD_ID);
-		if (childId != null) {
-			iwc.setSessionAttribute(CHILD_ID, childId);
+		if (iwc.isParameterSet(CHILD_UNIQUE_ID)){
+			String childUniqueId = iwc.getParameter(CHILD_UNIQUE_ID);
+			User child = null;
+			Object objChildId = null;
+			if (childUniqueId != null){
+				try {
+					child = getUserBusiness(iwc).getUserByUniqueId(childUniqueId);	
+				}
+				catch (IBOLookupException ibe){
+					log (ibe);
+				}
+				catch (FinderException fe){
+					log (fe);
+				}
+				catch (RemoteException re){
+					log (re);
+				}
+				
+				if (child != null)
+					objChildId = child.getPrimaryKey();
+				
+				if(objChildId != null)
+				    return ((Integer) (objChildId)).intValue();
+				else
+				    return -1;
+				
+			}
+			else {
+				return -1;
+			}
 		}
 		else {
-			childId = (String) iwc.getSessionAttribute(CHILD_ID);
+			String childId = iwc.getParameter(CHILD_ID);
+			if (childId != null) {
+				iwc.setSessionAttribute(CHILD_ID, childId);
+			}
+			else {
+				childId = (String) iwc.getSessionAttribute(CHILD_ID);
+			}
+			if(childId!=null)
+			    return Integer.parseInt(childId);
+			else
+			    return -1;
 		}
-		if(childId!=null)
-		    return Integer.parseInt(childId);
-		else
-		    return -1;
 	}
-
+	
+	
 	/**
 	 * Method getChildCareBusiness returns the ChildCareBusiness object.
 	 * @param iwc
