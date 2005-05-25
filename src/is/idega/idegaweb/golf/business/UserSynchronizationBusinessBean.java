@@ -14,6 +14,7 @@ import is.idega.idegaweb.golf.entity.ZipCodeHome;
 import is.idega.idegaweb.golf.legacy.business.GolfLegacyBusiness;
 import is.idega.idegaweb.golf.util.GolfConstants;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.MetadataConstants;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.text.SocialSecurityNumber;
 
 /**
  * This UserGroupPlugin is used to synchronize the golf data tables with the
@@ -509,6 +511,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			// ("+user.getID()+") ");
 			Member member = getMemberFromUser(user);
 			// try {
+			correctDateOfBirth(member);
 			synchronizeAddresses(user, member);
 			synchronizePhones(user, member);
 			synchronizeUnion(user, member);
@@ -519,6 +522,19 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		}
 	}
 
+	private void correctDateOfBirth(Member member) {
+		if (member.getDateOfBirth() == null && member.getSocialSecurityNumber() != null) {
+			try {
+				Date date = SocialSecurityNumber.getDateFromSocialSecurityNumber(member.getSocialSecurityNumber(), false);
+				member.setDateOfBirth(date);
+				member.store();
+			} catch (Exception e) {
+				System.out.println("Cannot create DateOfBirth from ssn = "+member.getSocialSecurityNumber()+"  (member_id = "+member.getPrimaryKey().toString()+")");
+			}
+			
+		}
+	}
+	
 	public void syncUserFromRequest(IWContext iwc) {
 		try {
 
