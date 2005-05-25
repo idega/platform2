@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.1 2005/05/25 13:06:38 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.2 2005/05/25 16:53:19 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,10 +47,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/25 13:06:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 16:53:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -270,7 +270,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(getSmallHeader(localize("language", "Language") + ":"), 5, 6);
 		
 		infoTable.add(getSmallText(info.getCitizenThisCountry() ? localize("swedish", "Swedish") : localize("other", "Other")), 2, 6);
-		infoTable.add(getSmallText(info.getNativeCountryID() != -1 ? info.getNativeCountry().getName() : "-"), 4, 6);
+		infoTable.add(getSmallText(!info.getNativeThisCountry() ? info.getNativeCountry().getName() : localize("swedish", "Swedish")), 4, 6);
 		infoTable.add(getSmallText(info.getIcLanguageID() != -1 ? info.getICLanguage().getName() : "-"), 6, 6);
 		
 		Table pathTable = new Table(2, 1);
@@ -405,7 +405,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 		infoTable.add(getSmallHeader(localize("studying", "Studying")), 1, 3);
 		infoTable.add(new Break(), 1, 3);
-		infoTable.add(studying, 1, 3);
+		infoTable.add(getSmallText(studying), 1, 3);
 		infoTable.setCellpaddingRight(1, 3, 12);
 
 		Text languages = getSmallText("");
@@ -664,6 +664,21 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 
 		buffer.append("\n\t if (!hasPriority) {");
 		String message = localize("must_set_priority", "Priority must be set.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if (one && two) {");
+		message = localize("cant_select_requirement_combination", "You can not select this requirement combination.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if (four && !hasNotes) {");
+		message = localize("must_write_requirement_note", "You have to write a note if you choose requirement 4.");
+		buffer.append("\n\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		buffer.append("\n\t if (!four && hasNotes) {");
+		message = localize("must_select_requirement_4", "You have to select requirement 4 if you write a note.");
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
