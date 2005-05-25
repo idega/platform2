@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -72,6 +75,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private boolean _noCheckError = false;
 	private boolean isAdmin = false;
 	private boolean hasActivePlacement = false;
+	private boolean hasPermission = false;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -90,14 +94,23 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 		}
 		
-		switch (_action) {
+		if (hasPermission){
+			switch (_action) {
 			case ACTION_VIEW_FORM :
 				viewForm(iwc);
-				break;
+				break;	
+				
 			case ACTION_SUBMIT :
 				submitForm(iwc);
-				break;
+				break;					
+				
+					
+			}
 		}
+		else{
+			viewNotPermitted();
+		}
+		
 	}
 	
 	protected boolean isAdmin(IWContext iwc) {
@@ -122,7 +135,31 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			_action = ACTION_VIEW_FORM;
 		}
 
-		child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		//child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		try {
+			if (getSession().getUniqueID() != null)
+				child = getBusiness().getUserBusiness().getUserByUniqueId(getSession().getUniqueID());
+			else
+				child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		}catch (FinderException fe){
+				log(fe);
+		}
+		if (isAdmin){
+			hasPermission = true;
+		}
+		else{
+		User parent = iwc.getCurrentUser();
+		Collection children = getBusiness().getUserBusiness().getChildrenForUser(parent);
+		Iterator theChild = children.iterator();
+			while(theChild.hasNext()){
+				User userChild = (User) theChild.next();
+				if (userChild.isIdentical(child)){
+					hasPermission = true;
+					break;
+				}
+								
+			}
+		}
 		
 		if (isCheckRequired()) {
 			try {
@@ -137,6 +174,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 	}
 
+	private void viewNotPermitted() {
+		Table table = new Table();
+		table.setWidth(getWidth());
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.add(getErrorText(localize("not_permitted", "You do not have permission")), 1, 1);
+		add(table);
+	}
+	
 	private void viewForm(IWContext iwc) throws RemoteException {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
@@ -210,7 +256,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		boolean done = false;
 		try {
 			int numberOfApplications = hasActivePlacement ? 4 : 5;
-			if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
+			//if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
+			if (getBusiness().getAcceptedApplicationsByChild(((Integer) child.getPrimaryKey()).intValue()) != null) {
 				numberOfApplications--;
 			}
 
@@ -297,12 +344,14 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		ChildCareApplication application = null;
 		int areaID = -1;
 		int numberOfApplications = hasActivePlacement ? 4 : 5;
-		if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
+		//if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
+		if (getBusiness().getAcceptedApplicationsByChild(((Integer) child.getPrimaryKey()).intValue()) != null) {
 			numberOfApplications--;
 		}
 		for (int i = 1; i < (numberOfApplications + 1); i++) {
 			try {
-				application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
+				//application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
+				application = getBusiness().getNonActiveApplication(((Integer) child.getPrimaryKey()).intValue(), i);
 				if (application != null) {
 					areaID = application.getProvider().getSchoolAreaId();
 					message = application.getMessage();
