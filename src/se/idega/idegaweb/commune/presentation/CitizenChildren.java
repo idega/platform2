@@ -41,6 +41,7 @@ public class CitizenChildren extends CommuneBlock {
 	private Text buttonLabel;
 	//private Text ssnLabel;
 	public static final String prmChildId = "comm_child_id";
+	public static final String prmChildUniqueId = "comm_child_unique_id";
   private static final String prmParentId = "comm_parent_id";
 	private static final String prmChildSSN = "comm_child_ssn";
 	private String prmSubmitName = "submit_cits_child";
@@ -84,6 +85,10 @@ public class CitizenChildren extends CommuneBlock {
 	public static String getChildIDParameterName() {
 		return prmChildId;
 	}
+	
+	public static String getChildUniqueIDParameterName() {
+		return prmChildUniqueId;
+	}
 
   public static String getParentIDParameterName() {
 		return prmParentId;
@@ -95,6 +100,10 @@ public class CitizenChildren extends CommuneBlock {
 
 	public static Parameter getChildIDParameter(int child_id) {
 		return new Parameter(prmChildId, String.valueOf(child_id));
+	}
+	
+	public static Parameter getChildUniqueIDParameter(int child_unique_id) {
+		return new Parameter(prmChildUniqueId, String.valueOf(child_unique_id));
 	}
 
 	public static Parameter getChildSSNParameter(int child_ssn) {
@@ -200,7 +209,10 @@ public class CitizenChildren extends CommuneBlock {
 		Link L = new Link(child.getName());
 		if (getResponsePage() != null)
 			L.setPage(getResponsePage());
-		L.addParameter(prmChildId, ((Integer) child.getPrimaryKey()).toString());
+		if (child.getUniqueId() != null)
+			L.addParameter(prmChildUniqueId, child.getUniqueId());
+		else
+			L.addParameter(prmChildId, ((Integer) child.getPrimaryKey()).toString());
 		return L;
 	}
 
