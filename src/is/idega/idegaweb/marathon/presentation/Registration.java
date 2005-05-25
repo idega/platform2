@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.1 2005/05/24 12:06:29 laddi Exp $
+ * $Id: Registration.java,v 1.2 2005/05/25 14:07:26 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,6 +32,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -58,10 +59,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 14:07:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Registration extends RunBlock {
 	
@@ -879,9 +880,16 @@ public class Registration extends RunBlock {
 		creditCardTable.add(year, 1, creditRow);
 		creditCardTable.add(ccv, 3, creditRow++);
 		creditCardTable.add(new HiddenInput(PARAMETER_AMOUNT, String.valueOf(totalAmount)));
-		creditCardTable.setHeight(creditRow++, 12);
+		creditCardTable.setHeight(creditRow++, 18);
 		creditCardTable.mergeCells(1, creditRow, creditCardTable.getColumns(), creditRow);
-		creditCardTable.add(getText(localize("run_reg.no_refunds", "* No refunds after payment has been processed")), 1, creditRow);
+		creditCardTable.add(getText(localize("run_reg.read_conditions", "Please read before you finish your payment") + ": "), 1, creditRow);
+		
+		Help help = new Help();
+		help.setHelpTextBundle(IWMarathonConstants.IW_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey("terms_and_conditions");
+		help.setShowAsText(true);
+		help.setLinkText(localize("run_reg.terms_and_conditions", "Terms and conditions"));
+		creditCardTable.add(help, 1, creditRow);
 
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STEP_FIVE));
