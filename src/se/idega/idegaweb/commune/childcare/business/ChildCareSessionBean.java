@@ -20,6 +20,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected static final String PARAMETER_SCHOOL_TYPE_ID = "cc_school_type_id";	
 	protected static final String PARAMETER_GROUP_ID = "cc_group_id";
 	protected static final String PARAMETER_USER_ID = "cc_user_id";
+	protected static final String PARAMETER_UNIQUE_ID="cc_unique_id";
 	protected static final String PARAMETER_CHECK_ID = "cc_check_id";
 	protected static final String PARAMETER_APPLICATION_ID = "cc_application_id";
 	protected static final String PARAMETER_FROM = "cc_from";
@@ -33,6 +34,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected School _provider;
 	protected int _userID = -1;
 	protected int _childID = -1;
+	protected String _uniqueID = null;
 	protected int _applicationID = -1;
 	protected int _schoolTypeID = -1;
 	protected int _groupID = -1;
@@ -182,6 +184,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	public String getParameterUserID() {
 		return PARAMETER_USER_ID;
 	}
+	
+	/**
+	 * @return String
+	 */
+	public String getParameterUniqueID() {
+		return PARAMETER_UNIQUE_ID;
+	}
 
 	/**
 	 * @return String
@@ -236,6 +245,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	/**
 	 * @return int
 	 */
+	public String getUniqueID() {
+		return _uniqueID;
+	}
+
+	/**
+	 * @return int
+	 */
 	public int getCheckID() {
 		return _checkID;
 	}
@@ -254,6 +270,14 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public void setChildID(int childID) {
 		_childID = childID;
+	}
+	
+	/**
+	 * Sets the uniqueID.
+	 * @param childID The childID to set
+	 */
+	public void setUniqueID(String uniqueID) {
+		_uniqueID = uniqueID;
 	}
 
 	/**

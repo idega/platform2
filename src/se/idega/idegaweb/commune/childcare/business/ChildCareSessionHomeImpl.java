@@ -1,25 +1,24 @@
 /*
- * $Id: ChildCareSessionHomeImpl.java,v 1.2 2005/03/07 16:40:30 laddi Exp $
- * Created on 7.3.2005
+ * Created on 2005-maj-17
  *
- * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package se.idega.idegaweb.commune.childcare.business;
 
+
+
+
 import com.idega.business.IBOHomeImpl;
 
-
 /**
- * Last modified: $Date: 2005/03/07 16:40:30 $ by $Author: laddi $
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @author Malin
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class ChildCareSessionHomeImpl extends IBOHomeImpl implements ChildCareSessionHome {
-
+public class ChildCareSessionHomeImpl extends IBOHomeImpl implements
+		ChildCareSessionHome {
 	protected Class getBeanInterfaceClass() {
 		return ChildCareSession.class;
 	}
@@ -27,4 +26,5 @@ public class ChildCareSessionHomeImpl extends IBOHomeImpl implements ChildCareSe
 	public ChildCareSession create() throws javax.ejb.CreateException {
 		return (ChildCareSession) super.createIBO();
 	}
+
 }
