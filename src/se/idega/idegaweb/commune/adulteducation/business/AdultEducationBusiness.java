@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.11 2005/05/20 12:11:23 laddi Exp $
- * Created on May 20, 2005
+ * $Id: AdultEducationBusiness.java,v 1.12 2005/05/25 13:06:37 laddi Exp $
+ * Created on May 25, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -90,6 +90,11 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoices
 	 */
 	public Collection getChoices(User user, SchoolSeason season) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoices
+	 */
+	public Collection getChoices(SchoolSeason season) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getSelectedStudyPaths
@@ -159,6 +164,24 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 */
 	public void storeChoices(User user, Collection courses, Object[] oldCourses, String comment, Object[] reasons,
 			String otherReason) throws IDOCreateException, java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#grantChoice
+	 */
+	public void grantChoice(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3, boolean rule4,
+			String ruleNotes, String notes, int priority, User performer) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#denyChoice
+	 */
+	public void denyChoice(AdultEducationChoice choice, String rejectionMessage, User performer)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#saveChoiceChanges
+	 */
+	public void saveChoiceChanges(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3,
+			boolean rule4, String ruleNotes, String notes, int priority) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeCourse

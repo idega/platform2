@@ -60,6 +60,8 @@ public class PersonalInfo extends AdultEducationBlock {
 	List[] schools = null;
 	int preTypeId = -1;
 	int preAreaId = -1;
+	
+	public static final String PARAMETER_UNIQUE_ID = "prm_unique_id";
 
 	private String prefix = "sch_app_";
 	private String prmYearReload = prefix + "yearReload";
@@ -69,6 +71,7 @@ public class PersonalInfo extends AdultEducationBlock {
 	private String prmForm = prefix + "the_frm";
 	
 ////
+	private boolean inWindow = false;
 	private int studentId = -1;
 	User student = null;
 	private static final String PARAMETER_ACTION = "pi_action";
@@ -205,9 +208,17 @@ public class PersonalInfo extends AdultEducationBlock {
 		//debugParameters(iwc);
 			
 		if (iwc.isLoggedOn()) {
-				studentId = iwc.getCurrentUserId();
-				userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-				User student = userbuiz.getUser(studentId);
+			User student = null;
+				if (iwc.isParameterSet(PARAMETER_UNIQUE_ID)) {
+					userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+					student = userbuiz.getUserByUniqueId(iwc.getParameter(PARAMETER_UNIQUE_ID));
+					studentId = ((Integer) student.getPrimaryKey()).intValue();
+				}
+				else {
+					studentId = iwc.getCurrentUserId();
+					userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+					student = userbuiz.getUser(studentId);
+				}
 				
 				add(getPersonalInfoForm(iwc, student));
 			
@@ -262,24 +273,20 @@ public class PersonalInfo extends AdultEducationBlock {
 			}
 			
 			try {
-			getBusiness().storePersonalInfo(studentId, intNativeCountryID, intIcLanguageID, inteduCountryID, bisNativeCountry, bisCitizenCountry,
-						beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, seducationG, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
-					
-			}
-			catch (Exception ce){
-				log(ce);
-			}
-			
-					
-			try {
 				getBusiness().storePersonalInfo(studentId, intNativeCountryID, intIcLanguageID, inteduCountryID, bisNativeCountry, bisCitizenCountry,
 						beducationA, beducationB, beducationC, beducationD,	beducationE, seducationF, seducationG, inteduCountryID, intEduYears, beducationHA, beducationHB, beducationHC, seducationCommune, bfullTime, blanguageSFI, blanguageSAS, blanguageOTHER, bstudySupport, bworkUnemp, bworkEmp, bworkKicked, sworkOther);
 
-				if (getResponsePage() != null) {
-					iwc.forwardToIBPage(getParentPage(), getResponsePage());
+				if (isInWindow()) {
+					getParentPage().setParentToReload();
+					getParentPage().close();
 				}
 				else {
-					add(getSmallHeader(localize("choice_stored", "Choice stored.")));
+					if (getResponsePage() != null) {
+						iwc.forwardToIBPage(getParentPage(), getResponsePage());
+					}
+					else {
+						add(getSmallHeader(localize("choice_stored", "Choice stored.")));
+					}
 				}
 			}
 			catch (RemoteException re) {
@@ -1027,6 +1034,16 @@ public class PersonalInfo extends AdultEducationBlock {
 		
 	public CommuneUserBusiness getCommuneUserBusiness(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+
+	
+	public boolean isInWindow() {
+		return inWindow;
+	}
+
+	
+	public void setInWindow(boolean inWindow) {
+		this.inWindow = inWindow;
 	}	
 	
 	

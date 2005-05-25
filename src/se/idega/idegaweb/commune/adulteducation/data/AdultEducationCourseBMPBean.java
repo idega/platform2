@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.2 2005/05/25 13:06:37 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -69,7 +69,7 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 	}
 
 	public Object getStudyPathPK() {
-		return getColumnValue(STUDY_PATH);
+		return getIntegerColumnValue(STUDY_PATH);
 	}
 
 	public SchoolSeason getSchoolSeason() {
@@ -77,7 +77,7 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 	}
 
 	public Object getSchoolSeasonPK() {
-		return getColumnValue(SCHOOL_SEASON);
+		return getIntegerColumnValue(SCHOOL_SEASON);
 	}
 
 	public School getSchool() {
@@ -85,7 +85,7 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 	}
 
 	public Object getSchoolPK() {
-		return getColumnValue(SCHOOL);
+		return getIntegerColumnValue(SCHOOL);
 	}
 
 	public Date getStartDate() {

@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusinessHomeImpl.java,v 1.11 2005/05/25 13:06:37 laddi Exp $
- * Created on May 25, 2005
+ * $Id: AdultEducationSessionHomeImpl.java,v 1.1 2005/05/25 13:06:37 laddi Exp $
+ * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,15 +16,15 @@ import com.idega.business.IBOHomeImpl;
  * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.1 $
  */
-public class AdultEducationBusinessHomeImpl extends IBOHomeImpl implements AdultEducationBusinessHome {
+public class AdultEducationSessionHomeImpl extends IBOHomeImpl implements AdultEducationSessionHome {
 
 	protected Class getBeanInterfaceClass() {
-		return AdultEducationBusiness.class;
+		return AdultEducationSession.class;
 	}
 
-	public AdultEducationBusiness create() throws javax.ejb.CreateException {
-		return (AdultEducationBusiness) super.createIBO();
+	public AdultEducationSession create() throws javax.ejb.CreateException {
+		return (AdultEducationSession) super.createIBO();
 	}
 }

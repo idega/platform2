@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.5 2005/05/20 12:11:23 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.6 2005/05/25 13:06:37 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,14 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	private static final String COURSE = "vux_course_id";
 	private static final String CHOICE_DATE = "choice_date";
 	private static final String COMMENT = "choice_comment";
+	private static final String NOTES = "notes";
 	private static final String CHOICE_ORDER = "choice_order";
 	private static final String GRANTED_RULE_1 = "granted_rule_1";
 	private static final String GRANTED_RULE_2 = "granted_rule_2";
 	private static final String GRANTED_RULE_3 = "granted_rule_3";
+	private static final String GRANTED_RULE_4 = "granted_rule_4";
+	private static final String GRANTED_RULE_NOTES = "granted_rule_notes";
+	private static final String GRANTED_DATE = "granted_date";
 	private static final String ALL_GRANTED = "all_granted";
 	private static final String PRIORITY = "priority";
 	private static final String CONFIRMATION_MESSAGE = "confirmation_message";
@@ -70,11 +74,15 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		addAttribute(GRANTED_RULE_1, "Granted rule 1", Boolean.class);
 		addAttribute(GRANTED_RULE_2, "Granted rule 2", Boolean.class);
 		addAttribute(GRANTED_RULE_3, "Granted rule 3", Boolean.class);
+		addAttribute(GRANTED_RULE_4, "Granted rule 4", Boolean.class);
+		addAttribute(GRANTED_RULE_NOTES, "Granted rule notes", String.class, 1000);
+		addAttribute(GRANTED_DATE, "Granted date", Date.class);
 		addAttribute(ALL_GRANTED, "All granted", Boolean.class);
 		addAttribute(PRIORITY, "Priority", Integer.class);
-		addAttribute(CONFIRMATION_MESSAGE, "Confirmation message", Boolean.class, 1000);
-		addAttribute(PLACEMENT_MESSAGE, "Placement message", Boolean.class, 1000);
+		addAttribute(CONFIRMATION_MESSAGE, "Confirmation message", Boolean.class);
+		addAttribute(PLACEMENT_MESSAGE, "Placement message", Boolean.class);
 		addAttribute(REJECTION_COMMENT, "Rejection comment", String.class, 1000);
+		addAttribute(NOTES, "Notes", String.class, 1000);
 		addAttribute(OTHER_REASON, "Other reason", String.class);
 		
 		addManyToManyRelationShip(AdultEducationChoiceReason.class);
@@ -97,7 +105,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	}
 	
 	public Object getUserPK() {
-		return getColumnValue(USER);
+		return getIntegerColumnValue(USER);
 	}
 	
 	public AdultEducationCourse getCourse() {
@@ -105,7 +113,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	}
 	
 	public Object getCoursePK() {
-		return getColumnValue(COURSE);
+		return getIntegerColumnValue(COURSE);
 	}
 	
 	public Date getChoiceDate() {
@@ -132,8 +140,20 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		return getBooleanColumnValue(GRANTED_RULE_3, false);
 	}
 	
+	public boolean hasGrantedRule4() {
+		return getBooleanColumnValue(GRANTED_RULE_4, false);
+	}
+	
 	public boolean hasAllGranted() {
 		return getBooleanColumnValue(ALL_GRANTED, false);
+	}
+	
+	public String getGrantedRuleNotes() {
+		return getStringColumnValue(GRANTED_RULE_NOTES);
+	}
+	
+	public Date getGrantedDate() {
+		return getDateColumnValue(GRANTED_DATE);
 	}
 	
 	public int getPriority() {
@@ -150,6 +170,10 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	
 	public String getRejectionComment() {
 		return getStringColumnValue(REJECTION_COMMENT);
+	}
+	
+	public String getNotes() {
+		return getStringColumnValue(NOTES);
 	}
 	
 	public Collection getReasons() throws IDORelationshipException {
@@ -201,8 +225,20 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		setColumn(GRANTED_RULE_3, granted);
 	}
 
+	public void setGrantedRule4(boolean granted) {
+		setColumn(GRANTED_RULE_4, granted);
+	}
+	
+	public void setGrantedRuleNotes(String notes) {
+		setColumn(GRANTED_RULE_NOTES, notes);
+	}
+
 	public void setAllGranted(boolean granted) {
 		setColumn(ALL_GRANTED, granted);
+	}
+	
+	public void setGrantedDate(Date date) {
+		setColumn(GRANTED_DATE, date);
 	}
 	
 	public void setPriority(int priority) {
@@ -219,6 +255,10 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	
 	public void setRejectionComment(String comment) {
 		setColumn(REJECTION_COMMENT, comment);
+	}
+	
+	public void setNotes(String notes) {
+		setColumn(NOTES, notes);
 	}
 	
 	public void addReason(AdultEducationChoiceReason reason) throws IDOAddRelationshipException {
@@ -242,6 +282,35 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 	}
 	
 	//Finders
+	public Collection ejbFindAllBySeasonAndStatuses(SchoolSeason season, String[] statuses) throws FinderException {
+		return ejbFindAllBySeasonAndStatuses(season, statuses, -1);
+	}
+	
+	public Collection ejbFindAllBySeasonAndStatuses(SchoolSeason season, String[] statuses, int choiceOrder) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(table, cases);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		if (choiceOrder != -1) {
+			query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
+		}
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(cases, "case_status", false);
+		query.addOrder(table, CHOICE_DATE, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
 	public Collection ejbFindAllByUserAndSeason(User user, SchoolSeason season) throws FinderException {
 		return ejbFindAllByUserAndSeason(user, season, -1);
 	}

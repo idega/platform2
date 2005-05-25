@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.14 2005/05/20 12:11:23 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.15 2005/05/25 13:06:37 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -225,6 +225,17 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		try {
 			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
 			return getChoiceHome().findAllByUserAndSeasonAndStatuses(user, season, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getChoices(SchoolSeason season) {
+		try {
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusDenied().getStatus() };
+			return getChoiceHome().findAllBySeasonAndStatuses(season, statuses, 1);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -502,36 +513,48 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
+	private void sendMessage(AdultEducationChoice choice, String subject, String body) {
+		AdultEducationCourse course = choice.getCourse();
+		SchoolStudyPath path = course.getStudyPath();
+		
+		Object[] arguments = { getLocalizedString(path.getDescription(), path.getDescription()) };
+		sendMessage(choice, choice.getUser(), arguments, subject, body);
+	}
+	
 	private void sendMessage(Collection choices, String subject, String body) {
-		try {
-			Object[] arguments = { "-", "-", "-", "-", "-" };
+		Object[] arguments = { "-", "-", "-", "-", "-" };
 
-			AdultEducationChoice parentCase = null;
-			User user = null;
-			boolean first = true;
-			int i = 2;
-			Iterator iter = choices.iterator();
-			while (iter.hasNext()) {
-				AdultEducationChoice choice = (AdultEducationChoice) iter.next();
-				AdultEducationCourse course = choice.getCourse();
-				School school = course.getSchool();
-				if (first) {
-					user = choice.getUser();
-					parentCase = choice;
-					SchoolStudyPath path = course.getStudyPath();
-					SchoolSeason season = course.getSchoolSeason();
-					arguments[0] = path.getDescription();
-					arguments[1] = season.getSchoolSeasonName();
-					first = false;
-				}
-				arguments[i] = school.getSchoolName() + " - " + course.getCode();
-				i++;
+		AdultEducationChoice parentCase = null;
+		User user = null;
+		boolean first = true;
+		int i = 2;
+		Iterator iter = choices.iterator();
+		while (iter.hasNext()) {
+			AdultEducationChoice choice = (AdultEducationChoice) iter.next();
+			AdultEducationCourse course = choice.getCourse();
+			School school = course.getSchool();
+			if (first) {
+				user = choice.getUser();
+				parentCase = choice;
+				SchoolStudyPath path = course.getStudyPath();
+				SchoolSeason season = course.getSchoolSeason();
+				arguments[0] = path.getDescription();
+				arguments[1] = season.getSchoolSeasonName();
+				first = false;
 			}
+			arguments[i] = school.getSchoolName() + " - " + course.getCode();
+			i++;
+		}
 
+		sendMessage(parentCase, user, arguments, subject, body);
+	}
+	
+	private void sendMessage(Case parentCase, User user, Object[] arguments, String subject, String body) {
+		try {
 			getMessageBusiness().createUserMessage(parentCase, user, subject, MessageFormat.format(body, arguments), true);
 		}
 		catch (RemoteException re) {
-			re.printStackTrace();
+			throw new IBORuntimeException(re);
 		}
 	}
 
@@ -573,6 +596,38 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 		
 		return choice;
+	}
+	
+	public void grantChoice(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3, boolean rule4, String ruleNotes, String notes, int priority, User performer) {
+		saveChoiceChanges(choice, rule1, rule2, rule3, rule4, ruleNotes, notes, priority);
+		choice.setAllGranted(true);
+		choice.setGrantedDate(new IWTimestamp().getDate());
+		
+		changeCaseStatus(choice, getCaseStatusGranted().getStatus(), performer);
+		
+		String subject = getLocalizedString("choice_granted_subject", "VUX application granted");
+		String body = getLocalizedString("choice_granted_body", "Your choice to course in {0} has been granted. The choice will now be handled by the provider.");
+		sendMessage(choice, subject, body);
+	}
+	
+	public void denyChoice(AdultEducationChoice choice, String rejectionMessage, User performer) {
+		choice.setRejectionComment(rejectionMessage);
+		changeCaseStatus(choice, getCaseStatusDenied().getStatus(), performer);
+
+		String subject = getLocalizedString("choice_granted_subject", "VUX application granted");
+		sendMessage(choice, subject, rejectionMessage);
+	}
+	
+	public void saveChoiceChanges(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3, boolean rule4, String ruleNotes, String notes, int priority) {
+		choice.setGrantedRule1(rule1);
+		choice.setGrantedRule2(rule2);
+		choice.setGrantedRule3(rule3);
+		choice.setGrantedRule4(rule4);
+		choice.setGrantedRuleNotes(ruleNotes);
+		choice.setPriority(priority);
+		choice.setNotes(notes);
+		
+		choice.store();
 	}
 	
 	public void removeCourse(Object coursePK) throws RemoveException {

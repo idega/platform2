@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHome.java,v 1.5 2005/05/20 12:11:23 laddi Exp $
- * Created on May 20, 2005
+ * $Id: AdultEducationChoiceHome.java,v 1.6 2005/05/25 13:06:37 laddi Exp $
+ * Created on May 25, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,16 +17,27 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface AdultEducationChoiceHome extends IDOHome {
 
 	public AdultEducationChoice create() throws javax.ejb.CreateException;
 
 	public AdultEducationChoice findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllBySeasonAndStatuses
+	 */
+	public Collection findAllBySeasonAndStatuses(SchoolSeason season, String[] statuses) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllBySeasonAndStatuses
+	 */
+	public Collection findAllBySeasonAndStatuses(SchoolSeason season, String[] statuses, int choiceOrder)
+			throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllByUserAndSeason

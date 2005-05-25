@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoice.java,v 1.5 2005/05/20 12:11:23 laddi Exp $
- * Created on May 20, 2005
+ * $Id: AdultEducationChoice.java,v 1.6 2005/05/25 13:06:37 laddi Exp $
+ * Created on May 25, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/20 12:11:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface AdultEducationChoice extends IDOEntity, Case {
 
@@ -88,9 +88,24 @@ public interface AdultEducationChoice extends IDOEntity, Case {
 	public boolean hasGrantedRule3();
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#hasGrantedRule4
+	 */
+	public boolean hasGrantedRule4();
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#hasAllGranted
 	 */
 	public boolean hasAllGranted();
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#getGrantedRuleNotes
+	 */
+	public String getGrantedRuleNotes();
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#getGrantedDate
+	 */
+	public Date getGrantedDate();
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#getPriority
@@ -111,6 +126,11 @@ public interface AdultEducationChoice extends IDOEntity, Case {
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#getRejectionComment
 	 */
 	public String getRejectionComment();
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#getNotes
+	 */
+	public String getNotes();
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#getReasons
@@ -173,9 +193,24 @@ public interface AdultEducationChoice extends IDOEntity, Case {
 	public void setGrantedRule3(boolean granted);
 
 	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setGrantedRule4
+	 */
+	public void setGrantedRule4(boolean granted);
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setGrantedRuleNotes
+	 */
+	public void setGrantedRuleNotes(String notes);
+
+	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setAllGranted
 	 */
 	public void setAllGranted(boolean granted);
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setGrantedDate
+	 */
+	public void setGrantedDate(Date date);
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setPriority
@@ -196,6 +231,11 @@ public interface AdultEducationChoice extends IDOEntity, Case {
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setRejectionComment
 	 */
 	public void setRejectionComment(String comment);
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#setNotes
+	 */
+	public void setNotes(String notes);
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#addReason
