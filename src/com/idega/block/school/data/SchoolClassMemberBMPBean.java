@@ -1,5 +1,6 @@
 package com.idega.block.school.data;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -10,8 +11,6 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressBMPBean;
-import com.idega.core.location.data.AddressType;
-import com.idega.core.location.data.AddressTypeHome;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
@@ -57,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/05/12 19:29:53 $ by $Author: laddi $
- * @version $Revision: 1.140 $
+ *         Last modified: $Date: 2005/05/25 18:11:39 $ by $Author: laddi $
+ * @version $Revision: 1.141 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1713,16 +1712,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			catch (IDORelationshipException ile) {
 				throw new IDOException("Tables " + address.getName() + " and " + postal.getName() + " don't have a relation.");
 			}
-			try {
-				AddressType type = ((AddressTypeHome) IDOLookup.getHome(AddressType.class)).findAddressType1();
-				query.addCriteria(new MatchCriteria(address, AddressBMPBean.getColumnNameAddressTypeId(), MatchCriteria.EQUALS, type));
-			}
-			catch (IDOLookupException ile) {
-				throw new IDOException(ile);
-			}
-			catch (FinderException fe) {
-				throw new IDOException(fe);
-			}
+			query.addCriteria(new MatchCriteria(address, AddressBMPBean.getColumnNameAddressTypeId(), MatchCriteria.EQUALS, 1));
 			query.addCriteria(new MatchCriteria(postal, "ic_commune_id", MatchCriteria.EQUALS, commune));
 		}
 		
