@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.2 2005/05/25 16:53:19 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.3 2005/05/25 18:52:04 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,15 +47,16 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/25 16:53:19 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 18:52:04 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
 	private static final String PARAMETER_ACTION = "prm_action";
 	private static final String PARAMETER_SEASON = "prm_season";
+	private static final String PARAMETER_USER = "prm_user";
 	
 	private static final String PARAMETER_REQUIREMENT_1 = "prm_requirement_1";
 	private static final String PARAMETER_REQUIREMENT_2 = "prm_requirement_2";
@@ -118,6 +119,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		form.addParameter(PARAMETER_ACTION, "");
 		form.addParameter(PARAMETER_STUDY_PATH, "");
 		form.addParameter(PARAMETER_SCHOOL_SEASON, "");
+		form.addParameter(PARAMETER_USER, "");
 		form.setEventListener(ChoiceGranter.class);
 		
 		SelectorUtility util = new SelectorUtility();
@@ -185,13 +187,14 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			}
 			table.add(getLocalizedSmallText("case_status." + choice.getStatus(), choice.getStatus()), column++, row);
 			
-			if (choice.getCaseStatus().equals(getBusiness().getCaseStatusDenied())) {
+			if (choice.getCaseStatus().equals(getBusiness().getCaseStatusReview())) {
 				AdultEducationCourse course = choice.getCourse();
 
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize("delete_choice", "Delete choice")), PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
 				delete.setDescription(localize("delete_choices", "Delete choices"));
 				delete.setValueOnClick(PARAMETER_STUDY_PATH, course.getStudyPathPK().toString());
 				delete.setValueOnClick(PARAMETER_SCHOOL_SEASON, course.getSchoolSeasonPK().toString());
+				delete.setValueOnClick(PARAMETER_USER, user.getPrimaryKey().toString());
 				delete.setSubmitConfirm(localize("confirm_choice_delete", "Are you sure you want to remove the choice?"));
 				table.add(delete, column++, row);
 			}

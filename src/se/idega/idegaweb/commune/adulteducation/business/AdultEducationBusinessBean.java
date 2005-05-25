@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.15 2005/05/25 13:06:37 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.16 2005/05/25 18:52:04 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 18:52:04 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -234,7 +234,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public Collection getChoices(SchoolSeason season) {
 		try {
-			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusDenied().getStatus() };
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusReview().getStatus() };
 			return getChoiceHome().findAllBySeasonAndStatuses(season, statuses, 1);
 		}
 		catch (FinderException fe) {
@@ -612,7 +612,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public void denyChoice(AdultEducationChoice choice, String rejectionMessage, User performer) {
 		choice.setRejectionComment(rejectionMessage);
-		changeCaseStatus(choice, getCaseStatusDenied().getStatus(), performer);
+		changeCaseStatus(choice, getCaseStatusReview().getStatus(), performer);
 
 		String subject = getLocalizedString("choice_granted_subject", "VUX application granted");
 		sendMessage(choice, subject, rejectionMessage);
@@ -639,11 +639,15 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			throw new RemoveException(fe.getMessage());
 		}
 	}
-	
+
 	public void removeChoices(Object studyPathPK, Object seasonPK, User performer) {
+		removeChoices(studyPathPK, seasonPK, performer.getPrimaryKey(), performer);
+	}
+	
+	public void removeChoices(Object studyPathPK, Object seasonPK, Object userPK, User performer) {
 		try {
 			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusInactive().getStatus() };
-			Collection choices = getChoiceHome().findAllByUserAndSeasonAndStudyPath(performer.getPrimaryKey(), seasonPK, studyPathPK, statuses);
+			Collection choices = getChoiceHome().findAllByUserAndSeasonAndStudyPath(userPK, seasonPK, studyPathPK, statuses);
 			Iterator iter = choices.iterator();
 			while (iter.hasNext()) {
 				AdultEducationChoice choice = (AdultEducationChoice) iter.next();
