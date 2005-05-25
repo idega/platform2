@@ -242,4 +242,16 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason {
 		
 		return (Integer) idoFindOnePKByQuery(query);
 	}
+
+	public Integer ejbFindNextSeason(SchoolCategory category, Date date) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOL_CATEGORY, MatchCriteria.EQUALS, category));
+		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.GREATEREQUAL, date));
+		query.addOrder(table, START, true);
+		
+		return (Integer) idoFindOnePKByQuery(query);
+	}
 }

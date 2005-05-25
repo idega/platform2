@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolSeasonHome.java,v 1.10 2005/05/11 17:45:47 laddi Exp $
- * Created on May 11, 2005
+ * $Id: SchoolSeasonHome.java,v 1.11 2005/05/25 13:05:31 laddi Exp $
+ * Created on May 25, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/05/11 17:45:47 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/25 13:05:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface SchoolSeasonHome extends IDOHome {
 
@@ -77,4 +77,9 @@ public interface SchoolSeasonHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindNextSeason
 	 */
 	public SchoolSeason findNextSeason(SchoolSeason currentSeason) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolSeasonBMPBean#ejbFindNextSeason
+	 */
+	public SchoolSeason findNextSeason(SchoolCategory category, Date date) throws FinderException;
 }
