@@ -93,8 +93,14 @@ public class ChildCareChildren extends ChildCareBlock {
 						if (check != null) {
 							link.addParameter(getSession().getParameterCheckID(), ((Integer) check.getPrimaryKey()).intValue());
 						}
-						link.addParameter(getSession().getParameterUserID(), ((Integer)child.getPrimaryKey()).intValue());
+						//link.addParameter(getSession().getParameterUserID(), ((Integer)child.getPrimaryKey()).intValue());
+						if (child.getUniqueId() != null)
+							link.addParameter(getSession().getParameterUniqueID(), child.getUniqueId());
+						else
+							link.addParameter(getSession().getParameterUserID(), ((Integer)child.getPrimaryKey()).intValue());
+						
 						link.setEventListener(ChildCareEventListener.class);
+						
 						link.setPage(getResponsePage());
 					}
 	

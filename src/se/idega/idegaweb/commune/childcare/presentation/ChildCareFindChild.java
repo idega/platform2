@@ -45,9 +45,19 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	public String getParameterName(IWContext iwc) {
 		try {
 			return getChildCareSession(iwc).getParameterUserID();
+			
 		}
 		catch (RemoteException e) {
 			return "cc_user_id";
+		}
+	}
+	
+	public String getParameterUniqueName(IWContext iwc) {
+		try {
+			return getChildCareSession(iwc).getParameterUniqueID();
+		}
+		catch (RemoteException e) {
+			return "cc_unique_id";
 		}
 	}
 
