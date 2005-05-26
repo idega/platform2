@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.16 2005/05/25 18:52:04 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.17 2005/05/26 07:46:38 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/25 18:52:04 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 07:46:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -599,7 +599,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	}
 	
 	public void grantChoice(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3, boolean rule4, String ruleNotes, String notes, int priority, User performer) {
-		saveChoiceChanges(choice, rule1, rule2, rule3, rule4, ruleNotes, notes, priority);
+		saveChoiceChanges(choice, rule1, rule2, rule3, rule4, ruleNotes, notes, priority, performer);
 		choice.setAllGranted(true);
 		choice.setGrantedDate(new IWTimestamp().getDate());
 		
@@ -618,7 +618,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		sendMessage(choice, subject, rejectionMessage);
 	}
 	
-	public void saveChoiceChanges(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3, boolean rule4, String ruleNotes, String notes, int priority) {
+	public void saveChoiceChanges(AdultEducationChoice choice, boolean rule1, boolean rule2, boolean rule3, boolean rule4, String ruleNotes, String notes, int priority, User performer) {
 		choice.setGrantedRule1(rule1);
 		choice.setGrantedRule2(rule2);
 		choice.setGrantedRule3(rule3);
@@ -626,6 +626,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		choice.setGrantedRuleNotes(ruleNotes);
 		choice.setPriority(priority);
 		choice.setNotes(notes);
+		choice.setHandler(performer);
 		
 		choice.store();
 	}

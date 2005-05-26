@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.5 2005/05/26 07:27:46 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.6 2005/05/26 07:46:38 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,10 +47,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/26 07:27:46 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 07:46:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -626,7 +626,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		String notes = iwc.getParameter(PARAMETER_NOTES);
 		int priority = Integer.parseInt(iwc.getParameter(PARAMETER_PRIORITY));
 		
-		getBusiness().saveChoiceChanges(getSession().getChoice(), requirement1, requirement2, requirement3, requirement4, requirementNotes, notes, priority);
+		getBusiness().saveChoiceChanges(getSession().getChoice(), requirement1, requirement2, requirement3, requirement4, requirementNotes, notes, priority, iwc.getCurrentUser());
 	}
 
 	public boolean actionPerformed(IWContext iwc) throws IWException {
