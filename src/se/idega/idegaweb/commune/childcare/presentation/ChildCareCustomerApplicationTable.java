@@ -9,9 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.ejb.FinderException;
-
+import javax.ejb.RemoveException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -25,8 +24,6 @@ import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.user.business.UserBusiness;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -44,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.100 2005/05/25 12:33:51 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.101 2005/05/26 08:51:15 laddi Exp $
  * @since 12.2.2003 
  */
 
