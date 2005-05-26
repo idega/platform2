@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.2 2005/05/25 14:07:26 laddi Exp $
+ * $Id: Registration.java,v 1.3 2005/05/26 10:24:38 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -59,10 +59,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/25 14:07:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 10:24:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Registration extends RunBlock {
 	
@@ -373,7 +373,7 @@ public class Registration extends RunBlock {
 			nationalityField.setSelectedElement("104");
 			if (runner.getUser() != null) {
 				Address address = getUserBusiness(iwc).getUsersMainAddress(runner.getUser());
-				if (address != null) {
+				if (address.getCountry() != null) {
 					countryField.setSelectedElement(address.getCountry().getPrimaryKey().toString());
 				}
 			}
