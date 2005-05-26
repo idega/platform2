@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSession.java,v 1.2 2005/05/26 07:16:21 laddi Exp $
+ * $Id: AdultEducationSession.java,v 1.3 2005/05/26 07:27:46 laddi Exp $
  * Created on May 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,10 +16,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/26 07:16:21 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 07:27:46 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface AdultEducationSession extends IBOSession {
 
@@ -51,5 +51,10 @@ public interface AdultEducationSession extends IBOSession {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setStudent
 	 */
-	public void setStudent(String userUniqueID) throws java.rmi.RemoteException;
+	public void setStudent(String userPK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setStudentUniqueID
+	 */
+	public void setStudentUniqueID(String userUniqueID) throws java.rmi.RemoteException;
 }

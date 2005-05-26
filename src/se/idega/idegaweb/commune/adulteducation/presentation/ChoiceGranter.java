@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.4 2005/05/26 07:16:21 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.5 2005/05/26 07:27:46 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,16 +47,17 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/26 07:16:21 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 07:27:46 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
 	private static final String PARAMETER_ACTION = "prm_action";
 	private static final String PARAMETER_SEASON = "prm_season";
 	private static final String PARAMETER_USER = "prm_user";
+	private static final String PARAMETER_UNIQUE_ID = "prm_unique_id";
 	
 	private static final String PARAMETER_REQUIREMENT_1 = "prm_requirement_1";
 	private static final String PARAMETER_REQUIREMENT_2 = "prm_requirement_2";
@@ -166,7 +167,12 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			
 			Link link = getSmallLink(choice.getPrimaryKey().toString());
 			link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
-			link.addParameter(PARAMETER_USER, user.getUniqueId());
+			if (user.getUniqueId() != null) {
+				link.addParameter(PARAMETER_UNIQUE_ID, user.getUniqueId());
+			}
+			else {
+				link.addParameter(PARAMETER_USER, user.getPrimaryKey().toString());
+			}
 			link.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
 			link.setEventListener(ChoiceGranter.class);
 			
@@ -637,6 +643,15 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		if (iwc.isParameterSet(PARAMETER_CHOICE)) {
 			try {
 				getSession(iwc).setChoice(iwc.getParameter(PARAMETER_CHOICE));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_UNIQUE_ID)) {
+			try {
+				getSession(iwc).setStudentUniqueID(iwc.getParameter(PARAMETER_UNIQUE_ID));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
