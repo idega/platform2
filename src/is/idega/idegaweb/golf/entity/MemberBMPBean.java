@@ -242,20 +242,24 @@ public class MemberBMPBean extends GenericEntity implements Member {
     for( int i=0; i < union.length ; i++ ){
       if( "main".equalsIgnoreCase(union[i].getMembershipType()) && "A".equalsIgnoreCase(union[i].getMemberStatus())) {
         skilari = union[i].getUnionID();
+		break;
       }
     }
 
-    try{
-      if ( union.length == 0 ) {
-        Union[] unionMember = (Union[]) this.findRelated((Union) IDOLookup.instanciateEntity(Union.class));
-        if ( unionMember.length > 0 ) {
-          skilari = unionMember[0].getID();
-        }
-      }
-    }
-    catch(SQLException ex){
-      ex.printStackTrace();
-    }
+	//TABLE NOT USED ANY MORE!
+//    try{
+//      if ( union.length == 0 ) {
+//        Union[] unionMember = (Union[]) this.findRelated((Union) IDOLookup.instanciateEntity(Union.class));
+//        if ( unionMember.length > 0 ) {
+//          skilari = unionMember[0].getID();
+//        }
+//      }
+//    }
+//    catch(SQLException ex){
+//      ex.printStackTrace();
+//    }
+	
+	
     return skilari;
   }
 
