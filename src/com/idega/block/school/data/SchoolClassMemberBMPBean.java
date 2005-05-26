@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/05/25 18:11:39 $ by $Author: laddi $
- * @version $Revision: 1.141 $
+ *         Last modified: $Date: 2005/05/26 06:26:57 $ by $Author: laddi $
+ * @version $Revision: 1.142 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -88,26 +88,29 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	private final static String KEY_INVOICE_INTERVAL_VALUE_YEAR = PK + "year";
 
 	public void initializeAttributes() {
-		this.addAttribute(getIDColumnName());
-		this.addAttribute(MEMBER, "classmember", true, true, Integer.class, MANY_TO_ONE, com.idega.core.user.data.User.class);
-		this.addAttribute(SCHOOLCLASS, "class", true, true, Integer.class, MANY_TO_ONE, SchoolClass.class);
-		this.addAttribute(SCHOOL_TYPE, "school type", true, true, Integer.class, MANY_TO_ONE, SchoolType.class);
-		this.addAttribute(SCHOOL_YEAR, "school year", true, true, Integer.class, MANY_TO_ONE, SchoolYear.class);
-		this.addAttribute(NOTES, "notes", true, true, String.class, 255);
-		this.addAttribute(REGISTER_DATE, "registerdate", true, true, Timestamp.class);
-		this.addAttribute(REGISTRATION_CREATED_DATE, "inregisterdate", true, true, Timestamp.class);
-		this.addAttribute(REMOVED_DATE, "removeddate", true, true, Timestamp.class);
-		this.addAttribute(REGISTRATOR, "registrator", true, true, Integer.class, MANY_TO_ONE, com.idega.core.user.data.User.class);
-		this.addAttribute(NEEDS_SPECIAL_ATTENTION, "Needs special attention", true, true, Boolean.class);
-		this.addAttribute(SPECIALLY_PLACED, "Specially placed", true, true, Boolean.class);
-		this.addAttribute(LANGUAGE, "Language", true, true, String.class);
-		this.addAttribute(INVOICE_INTERVAL, "Invoice interval", true, true, String.class);
-		this.addAttribute(LATEST_INVOICE_DATE, "Latest invoice date", true, true, Timestamp.class);
-		this.addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
-		this.addAttribute(COMPENSATION_BY_AGREEMENT, "Compensation by agreement", true, true, Boolean.class);
-		this.addAttribute(STUDY_PATH, "study_path", true, true, Integer.class, MANY_TO_ONE, SchoolStudyPath.class);
-		this.addManyToManyRelationShip(SchoolClass.class, "sch_sub_group_placements");
-		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_member_study_path");
+		addAttribute(getIDColumnName());
+		
+		addManyToOneRelationship(MEMBER, "classmember", User.class);
+		addManyToOneRelationship(SCHOOLCLASS, "class", SchoolClass.class);
+		addManyToOneRelationship(SCHOOL_TYPE, "school type", SchoolType.class);
+		addManyToOneRelationship(SCHOOL_YEAR, "school year", SchoolYear.class);
+		addManyToOneRelationship(REGISTRATOR, "registrator", User.class);
+		addManyToOneRelationship(STUDY_PATH, "study_path", SchoolStudyPath.class);
+		
+		addAttribute(NOTES, "notes", true, true, String.class, 255);
+		addAttribute(REGISTER_DATE, "registerdate", true, true, Timestamp.class);
+		addAttribute(REGISTRATION_CREATED_DATE, "inregisterdate", true, true, Timestamp.class);
+		addAttribute(REMOVED_DATE, "removeddate", true, true, Timestamp.class);
+		addAttribute(NEEDS_SPECIAL_ATTENTION, "Needs special attention", true, true, Boolean.class);
+		addAttribute(SPECIALLY_PLACED, "Specially placed", true, true, Boolean.class);
+		addAttribute(LANGUAGE, "Language", true, true, String.class);
+		addAttribute(INVOICE_INTERVAL, "Invoice interval", true, true, String.class);
+		addAttribute(LATEST_INVOICE_DATE, "Latest invoice date", true, true, Timestamp.class);
+		addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
+		addAttribute(COMPENSATION_BY_AGREEMENT, "Compensation by agreement", true, true, Boolean.class);
+		
+		addManyToManyRelationShip(SchoolClass.class, "sch_sub_group_placements");
+		addManyToManyRelationShip(SchoolStudyPath.class, "sch_member_study_path");
 	}
 
 	public String getEntityName() {
@@ -1652,9 +1655,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		Table student = new Table(this, "m");
 		Table schoolClass = new Table(SchoolClass.class, "s");
 		Table instruments = new Table(SchoolStudyPath.class, "sp");
-		Table user = new Table(User.class);
-		Table address = new Table(Address.class);
-		Table postal = new Table(PostalCode.class);
+		Table user = new Table(User.class, "u");
+		Table address = new Table(Address.class, "a");
+		Table postal = new Table(PostalCode.class, "p");
 		
 		SelectQuery query = new SelectQuery(student);
 		query.addColumn(new CountColumn(student, this.getIDColumnName()));
@@ -1695,13 +1698,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		if (commune != null) {
 			try {
-				query.addJoin(student, user);
+				query.addJoin(student, user, MEMBER);
 			}
 			catch (IDORelationshipException ile) {
 				throw new IDOException("Tables " + student.getName() + " and " + user.getName() + " don't have a relation.");
 			}
 			try {
-				query.addJoin(user, address);
+				query.addManyToManyJoin(user, address, "ua");
 			}
 			catch (IDORelationshipException ile) {
 				throw new IDOException("Tables " + user.getName() + " and " + address.getName() + " don't have a relation.");
