@@ -362,11 +362,13 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public Integer ejbFindNextContractByChild(ChildCareContract contract) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, contract.getChildID());
-		if(contract.getValidFromDate()!=null){
-		    sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(contract.getValidFromDate());
+		if(contract.getTerminatedDate()!=null){
+		    sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(contract.getTerminatedDate());
 		}
-		sql.appendAnd().append(getIDColumnName()).appendNOTEqual().append(contract.getPrimaryKey());
-		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		else {
+	    sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(contract.getValidFromDate());
+		}
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
@@ -386,10 +388,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public Integer ejbFindPreviousTerminatedContractByChild(ChildCareContract contract) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, contract.getChildID());
-		if(contract.getTerminatedDate()!=null){
-		    sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanSign().append(contract.getTerminatedDate());
-			sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendLessThanOrEqualsSign().append(contract.getTerminatedDate());
-		}
+    sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendLessThanSign().append(contract.getValidFromDate());
 		sql.appendAnd().append(getIDColumnName()).appendNOTEqual().append(contract.getPrimaryKey());
 		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendIsNotNull();
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
