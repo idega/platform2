@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.3 2005/05/26 10:24:38 laddi Exp $
+ * $Id: Registration.java,v 1.4 2005/05/26 11:08:38 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -59,10 +59,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/26 10:24:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 11:08:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Registration extends RunBlock {
 	
@@ -851,7 +851,7 @@ public class Registration extends RunBlock {
 		}
 		DropdownMenu year = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_EXPIRES_YEAR));
 		for (int a = stamp.getYear(); a <= stamp.getYear() + 8; a++) {
-			year.addMenuElement(String.valueOf(a), String.valueOf(a));
+			year.addMenuElement(String.valueOf(a).substring(2), String.valueOf(a));
 		}
 		
 		creditCardTable.add(getHeader(localize("run_reg.card_holder", "Card holder")), 1, creditRow);
