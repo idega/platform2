@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.1 2005/05/25 13:06:37 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.2 2005/05/26 07:16:21 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,20 +12,22 @@ package se.idega.idegaweb.commune.adulteducation.business;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOSessionBean;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/25 13:06:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 07:16:21 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -34,6 +36,9 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	
 	private Object iChoicePK = null;
 	private AdultEducationChoice iChoice = null;
+	
+	private String iUserUniqueID = null;
+	private User iUser = null;
 
 	public SchoolSeason getSchoolSeason() {
 		if (iSeason == null && iSeasonPK != null) {
@@ -82,6 +87,36 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	public void setChoice(Object choicePK) {
 		iChoicePK = choicePK;
 		iChoice = null;
+	}
+
+	public User getStudent() {
+		if (iUser == null && iUserUniqueID != null) {
+			try {
+				iUser = getUserBusiness().getUserByUniqueId(iUserUniqueID);
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+				iUser = null;
+			}
+			catch (RemoteException re) {
+				iUser = null;
+			}
+		}
+		return iUser;
+	}
+
+	public void setStudent(String userUniqueID) {
+		iUserUniqueID = userUniqueID;
+		iUser = null;
+	}
+
+	private CommuneUserBusiness getUserBusiness() {
+		try {
+			return (CommuneUserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), CommuneUserBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 
 	private SchoolBusiness getSchoolBusiness() {

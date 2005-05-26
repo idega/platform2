@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.3 2005/05/25 18:52:04 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.4 2005/05/26 07:16:21 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -47,10 +47,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/25 18:52:04 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 07:16:21 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -166,6 +166,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			
 			Link link = getSmallLink(choice.getPrimaryKey().toString());
 			link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+			link.addParameter(PARAMETER_USER, user.getUniqueId());
 			link.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
 			link.setEventListener(ChoiceGranter.class);
 			
@@ -474,7 +475,6 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		
 		GenericButton button = getButton(new GenericButton(localize("edit_personal_info", "Edit personal info")));
 		button.setWindowToOpen(PersonalInfoWindow.class);
-		button.addParameterToWindow(PersonalInfo.PARAMETER_UNIQUE_ID, user.getUniqueId());
 		table.setHeight(row++, 8);
 		table.add(button, 1, row);
 		table.setAlignment(1, row++, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -637,6 +637,15 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		if (iwc.isParameterSet(PARAMETER_CHOICE)) {
 			try {
 				getSession(iwc).setChoice(iwc.getParameter(PARAMETER_CHOICE));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_USER)) {
+			try {
+				getSession(iwc).setStudent(iwc.getParameter(PARAMETER_USER));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {

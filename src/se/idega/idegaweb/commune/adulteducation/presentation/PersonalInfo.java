@@ -360,8 +360,7 @@ public class PersonalInfo extends AdultEducationBlock {
 		try {
 			if (iwc.isLoggedOn()) {
 				if (isInWindow()) {
-					userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-					student = userbuiz.getUserByUniqueId(iwc.getParameter(PARAMETER_UNIQUE_ID));
+					student = getSession().getStudent();
 					studentId = ((Integer) student.getPrimaryKey()).intValue();
 				}
 				else {
@@ -492,10 +491,6 @@ public class PersonalInfo extends AdultEducationBlock {
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
-		}
-		catch (FinderException fe) {
-			fe.printStackTrace();
-			return ACTION_NONE;
 		}
 	}
 
