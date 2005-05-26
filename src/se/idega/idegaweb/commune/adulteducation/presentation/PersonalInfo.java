@@ -359,17 +359,14 @@ public class PersonalInfo extends AdultEducationBlock {
 	private int parseAction(IWContext iwc) {
 		try {
 			if (iwc.isLoggedOn()) {
+				userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 				if (isInWindow()) {
 					student = getSession().getStudent();
 					studentId = ((Integer) student.getPrimaryKey()).intValue();
 				}
 				else {
 					studentId = iwc.getCurrentUserId();
-					userbuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-					// schCommBiz = (SchoolCommuneBusiness)
-					// IBOLookup.getServiceInstance(iwc, SchoolCommuneBusiness.class);
 					student = userbuiz.getUser(studentId);
-					// add(getPersonalInfoForm(iwc, student));
 				}
 				iAction = ACTION_NONE;
 				if (iwc.isParameterSet(PARAMETER_ACTION)) {
