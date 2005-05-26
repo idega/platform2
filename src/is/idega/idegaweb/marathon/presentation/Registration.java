@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.4 2005/05/26 11:08:38 laddi Exp $
+ * $Id: Registration.java,v 1.5 2005/05/26 12:39:05 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,6 +43,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
@@ -52,6 +53,7 @@ import com.idega.user.business.GenderBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -59,10 +61,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/26 11:08:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 12:39:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Registration extends RunBlock {
 	
@@ -224,6 +226,10 @@ public class Registration extends RunBlock {
 		table.add(choiceTable, 1, row++);
 		int iRow = 1;
 		
+		IWTimestamp ts = IWTimestamp.RightNow();
+    Integer y = new Integer(ts.getYear());
+    String yearString = y.toString();
+    
 		boolean hasRuns = false;
 		DropdownMenu runDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_RUN));
 		Collection runs = getRunBusiness(iwc).getRuns();
@@ -233,7 +239,7 @@ public class Registration extends RunBlock {
 			while (iter.hasNext()) {
 				Group run = (Group) iter.next();
 				if (runner.getUser() != null) {
-					if (!getRunBusiness(iwc).isRegisteredInRun(run, runner.getUser())) {
+					if (!getRunBusiness(iwc).isRegisteredInRun(yearString, run, runner.getUser())) {
 						runDropdown.addMenuElement(run.getPrimaryKey().toString(), localize(run.getName(), run.getName()));
 						hasRuns = true;
 					}
@@ -257,10 +263,6 @@ public class Registration extends RunBlock {
 			}
 		}
 		
-		IWTimestamp ts = IWTimestamp.RightNow();
-    Integer y = new Integer(ts.getYear());
-    String yearString = y.toString();
-    
 		DropdownMenu distanceDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_DISTANCE));
 		distanceDropdown.addMenuElement("", localize("run_year_ddd.select_distance","Select distance..."));
 		if(runner.getRun() != null) {
@@ -318,6 +320,11 @@ public class Registration extends RunBlock {
 		Collection genders = getGenderBusiness(iwc).getAllGenders();
 		genderField.addMenuElement("", localize("run_reg.select_gender","Select gender..."));
 		if(genders != null) {
+			Iterator iter = genders.iterator();
+			while (iter.hasNext()) {
+				Gender gender = (Gender) iter.next();
+				genderField.addMenuElement(gender.getPrimaryKey().toString(), localize("gender." + gender.getName(), gender.getName()));
+			}
 			genderField.addMenuElements(genders);
 		}
 		if (runner.getGender() != null) {
@@ -1002,7 +1009,12 @@ public class Registration extends RunBlock {
 		table.add(getText(localize("run_reg.best_regards", "Best regards,")), 1, row++);
 		table.add(getText(localize("run_reg.reykjavik_marathon", "Reykjavik Marathon")), 1, row++);
 		table.add(getText("www.marathon.is"), 1, row++);
-
+		
+		table.setHeight(row++, 16);
+		
+		PrintButton print = (PrintButton) getButton(new PrintButton(localize("print", "Print")));
+		table.add(print, 1, row);
+		
 		add(table);
 	}
 	

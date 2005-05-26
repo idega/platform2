@@ -1,6 +1,6 @@
 /*
- * $Id: RunBusiness.java,v 1.18 2005/05/24 12:06:29 laddi Exp $
- * Created on May 24, 2005
+ * $Id: RunBusiness.java,v 1.19 2005/05/26 12:39:05 laddi Exp $
+ * Created on May 26, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/26 12:39:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public interface RunBusiness extends IBOService {
 
@@ -39,7 +39,7 @@ public interface RunBusiness extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#isRegisteredInRun
 	 */
-	public boolean isRegisteredInRun(Group run, User user) throws java.rmi.RemoteException;
+	public boolean isRegisteredInRun(String year, Group run, User user) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#isRegisteredInRun
