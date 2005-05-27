@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.9 2005/05/27 10:07:37 laddi Exp $
+ * $Id: Registration.java,v 1.10 2005/05/27 12:55:30 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,6 +32,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -61,10 +62,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/27 10:07:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 12:55:30 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Registration extends RunBlock {
 	
@@ -326,7 +327,6 @@ public class Registration extends RunBlock {
 				Gender gender = (Gender) iter.next();
 				genderField.addMenuElement(gender.getPrimaryKey().toString(), localize("gender." + gender.getName(), gender.getName()));
 			}
-			genderField.addMenuElements(genders);
 		}
 		if (runner.getGender() != null) {
 			genderField.setSelectedElement(runner.getGender().getPrimaryKey().toString());
@@ -959,8 +959,9 @@ public class Registration extends RunBlock {
 			IWTimestamp paymentStamp = new IWTimestamp();
 			
 			Collection runners = ((Map) iwc.getSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP)).values();
-			getRunBusiness(iwc).doPayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", new IWTimestamp().toString());
+			String properties = getRunBusiness(iwc).authorizePayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", new IWTimestamp().toString());
 			Collection participants = getRunBusiness(iwc).saveParticipants(runners, email, hiddenCardNumber, amount, paymentStamp, iwc.getCurrentLocale());
+			getRunBusiness(iwc).finishPayment(properties);
 			iwc.removeSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP);
 			
 			showReceipt(iwc, participants, amount, hiddenCardNumber, paymentStamp);
@@ -971,7 +972,8 @@ public class Registration extends RunBlock {
 			stepSix(iwc);
 		}
 		catch (CreditCardAuthorizationException ccae) {
-			getParentPage().setAlertOnLoad(localize("run_reg.payment_failed", "There was an error when trying to finish registration.  Make sure that all credit card information is correct and try again."));
+			IWResourceBundle creditCardBundle = iwc.getIWMainApplication().getBundle("com.idega.block.creditcard").getResourceBundle(iwc.getCurrentLocale());
+			getParentPage().setAlertOnLoad(ccae.getLocalizedMessage(creditCardBundle));
 			ccae.printStackTrace();
 			stepSix(iwc);
 		}

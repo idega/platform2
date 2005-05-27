@@ -1,5 +1,5 @@
 /*
- * $Id: RunBusiness.java,v 1.20 2005/05/27 09:06:49 laddi Exp $
+ * $Id: RunBusiness.java,v 1.21 2005/05/27 12:55:30 laddi Exp $
  * Created on May 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/27 09:06:49 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 12:55:30 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public interface RunBusiness extends IBOService {
 
@@ -66,9 +66,14 @@ public interface RunBusiness extends IBOService {
 			IWTimestamp date, Locale locale) throws IDOCreateException, java.rmi.RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#doPayment
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#finishPayment
 	 */
-	public void doPayment(String nameOnCard, String cardNumber, String monthExpires, String yearExpires,
+	public void finishPayment(String properties) throws CreditCardAuthorizationException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#authorizePayment
+	 */
+	public String authorizePayment(String nameOnCard, String cardNumber, String monthExpires, String yearExpires,
 			String ccVerifyNumber, double amount, String currency, String referenceNumber)
 			throws CreditCardAuthorizationException, java.rmi.RemoteException;
 

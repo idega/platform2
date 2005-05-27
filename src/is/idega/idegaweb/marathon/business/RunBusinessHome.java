@@ -1,5 +1,5 @@
 /*
- * $Id: RunBusinessHome.java,v 1.5 2005/05/27 09:06:49 laddi Exp $
+ * $Id: RunBusinessHome.java,v 1.6 2005/05/27 12:55:30 laddi Exp $
  * Created on May 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,10 @@ import com.idega.business.IBOHome;
 
 
 /**
- * Last modified: $Date: 2005/05/27 09:06:49 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 12:55:30 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface RunBusinessHome extends IBOHome {
 

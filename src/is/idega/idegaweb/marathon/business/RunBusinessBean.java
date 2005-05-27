@@ -35,9 +35,6 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.EmailHome;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.contact.data.PhoneHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressHome;
 import com.idega.core.location.data.Country;
@@ -62,6 +59,7 @@ import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Name;
 
 /**
  * Description: Business bean (service) for run... <br>
@@ -87,14 +85,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	/**
 	 * saves information on the user - creates a new user if he doesn't exsist..
 	 */
-	private User saveUser(String name, String ssn, IWTimestamp dateOfBirth, Gender gender, String address, String postal, String city, Country country, String tel, String mobile, String email) {
+	private User saveUser(String name, String ssn, IWTimestamp dateOfBirth, Gender gender, String address, String postal, String city, Country country) {
 		User user = null;
 		try {
 			if (dateOfBirth == null) {
 				dateOfBirth = getBirthDateFromSSN(ssn);
 			}
-			user = getUserBiz().createUserByPersonalIDIfDoesNotExist(name, ssn, null, dateOfBirth);
-			user.setGender(((Integer) gender.getPrimaryKey()).intValue());
+			Name fullName = new Name(name);
+			user = getUserBiz().createUser(fullName.getFirstName(), fullName.getMiddleName(), fullName.getLastName(), null, gender, dateOfBirth);
 			user.store();
 
 			if (address != null && !address.equals("")) {
@@ -112,7 +110,11 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					p = postalHome.findByPostalCodeAndCountryId(postal, countryID.intValue());
 				}
 				catch (FinderException fe) {
-					p = null;
+					p = postalHome.create();
+					p.setCountry(country);
+					p.setPostalCode(postal);
+					p.setName(city);
+					p.store();
 				}
 				if (p != null) {
 					a.setPostalCode(p);
@@ -122,67 +124,6 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					user.addAddress(a);
 				}
 				catch (IDOAddRelationshipException idoEx) {
-				}
-			}
-			//TODO: look up the users phonenumbers and email - only create new
-			// if doesn't exist - else update or do nothing if same data
-			if (tel != null && !tel.equals("")) {
-				PhoneHome telHome = (PhoneHome) getIDOHome(Phone.class);
-				Phone phone = null;
-				try {
-					phone = telHome.create();
-					phone.setNumber(tel);
-					phone.setPhoneTypeId(1);
-					phone.store();
-				}
-				catch (CreateException cre) {
-					phone = null;
-				}
-				if (phone != null) {
-					try {
-						user.addPhone(phone);
-					}
-					catch (IDOAddRelationshipException idoEx) {
-					}
-				}
-			}
-			if (mobile != null && !mobile.equals("")) {
-				PhoneHome mobileHome = (PhoneHome) getIDOHome(Phone.class);
-				Phone mob = null;
-				try {
-					mob = mobileHome.create();
-					mob.setNumber(mobile);
-					mob.setPhoneTypeId(3);
-					mob.store();
-				}
-				catch (CreateException cre) {
-					mob = null;
-				}
-				if (mob != null) {
-					try {
-						user.addPhone(mob);
-					}
-					catch (IDOAddRelationshipException idoEx) {
-					}
-				}
-			}
-			if (email != null && !email.equals("")) {
-				EmailHome eHome = (EmailHome) getIDOHome(Email.class);
-				Email emil = null;
-				try {
-					emil = eHome.create();
-					emil.setEmailAddress(email);
-					emil.store();
-				}
-				catch (CreateException cre) {
-					emil = null;
-				}
-				if (emil != null) {
-					try {
-						user.addEmail(emil);
-					}
-					catch (IDOAddRelationshipException idoEx) {
-					}
 				}
 			}
 			user.store();
@@ -419,7 +360,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				Runner runner = (Runner) iter.next();
 				User user = runner.getUser();
 				if (user == null) {
-					saveUser(runner.getName(), runner.getPersonalID(), new IWTimestamp(runner.getDateOfBirth()), runner.getGender(), runner.getAddress(), runner.getPostalCode(), runner.getCity(), runner.getCountry(), runner.getHomePhone(), runner.getMobilePhone(), runner.getEmail());
+					user = saveUser(runner.getName(), runner.getPersonalID(), new IWTimestamp(runner.getDateOfBirth()), runner.getGender(), runner.getAddress(), runner.getPostalCode(), runner.getCity(), runner.getCountry());
 				}
 				
 				Group ageGenderGroup = getAgeGroup(user, runner.getRun(), runner.getDistance());
@@ -531,10 +472,21 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return null;
 	}
 	
-	public void doPayment(String nameOnCard, String cardNumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException {
+	public void finishPayment(String properties) throws CreditCardAuthorizationException {
 		try {
 			CreditCardClient client = getCreditCardBusiness().getCreditCardClient(getCreditCardMerchant());
-			client.doSale(nameOnCard, cardNumber, monthExpires, yearExpires, ccVerifyNumber, amount, currency, referenceNumber);
+			client.finishTransaction(properties);
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			throw new CreditCardAuthorizationException("Online payment failed. Unknown error.");
+		}
+	}
+	
+	public String authorizePayment(String nameOnCard, String cardNumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException {
+		try {
+			CreditCardClient client = getCreditCardBusiness().getCreditCardClient(getCreditCardMerchant());
+			return client.creditcardAuthorization(nameOnCard, cardNumber, monthExpires, yearExpires, ccVerifyNumber, amount, currency, referenceNumber);
 		}
 		catch (CreditCardAuthorizationException ccae) {
 			throw new CreditCardAuthorizationException("Online payment failed. Creditcard authorization failed.");
