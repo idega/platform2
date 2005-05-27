@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.5 2005/05/26 12:39:05 laddi Exp $
+ * $Id: Registration.java,v 1.6 2005/05/27 09:06:49 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -61,10 +61,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/26 12:39:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 09:06:49 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Registration extends RunBlock {
 	
@@ -103,6 +103,7 @@ public class Registration extends RunBlock {
 	private static final String PARAMETER_CCV = "prm_ccv";
 	private static final String PARAMETER_AMOUNT = "prm_amount";
 	private static final String PARAMETER_CURRENCY = "prm_currency";
+	private static final String PARAMETER_CARD_HOLDER_EMAIL = "prm_card_holder_email";
 
 	private static final int ACTION_STEP_ONE = 1;
 	private static final int ACTION_STEP_TWO = 2;
@@ -843,6 +844,7 @@ public class Registration extends RunBlock {
 
 		TextInput nameField = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME_ON_CARD));
 		nameField.setAsNotEmpty(localize("run_reg.must_supply_card_holder_name", "You must supply card holder name"));
+		nameField.keepStatusOnAction(true);
 		
 		TextInput ccv = (TextInput) getStyledInterface(new TextInput(PARAMETER_CCV));
 		ccv.setLength(3);
@@ -850,16 +852,19 @@ public class Registration extends RunBlock {
 		ccv.setMininumLength(3, localize("run_reg.not_valid_ccv", "Not a valid CCV number"));
 		ccv.setAsIntegers(localize("run_reg.not_valid_ccv", "Not a valid CCV number"));
 		ccv.setAsNotEmpty(localize("run_reg.must_supply_ccv", "You must enter the CCV number"));
+		ccv.keepStatusOnAction(true);
 		
 		IWTimestamp stamp = new IWTimestamp();
 		DropdownMenu month = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_EXPIRES_MONTH));
 		for (int a = 1; a <= 12; a++) {
 			month.addMenuElement(a < 10 ? "0" + a : String.valueOf(a), a < 10 ? "0" + a : String.valueOf(a));
 		}
+		month.keepStatusOnAction(true);
 		DropdownMenu year = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_EXPIRES_YEAR));
 		for (int a = stamp.getYear(); a <= stamp.getYear() + 8; a++) {
 			year.addMenuElement(String.valueOf(a).substring(2), String.valueOf(a));
 		}
+		year.keepStatusOnAction(true);
 		
 		creditCardTable.add(getHeader(localize("run_reg.card_holder", "Card holder")), 1, creditRow);
 		creditCardTable.add(getHeader(localize("run_reg.card_number", "Card number")), 3, creditRow++);
@@ -871,6 +876,7 @@ public class Registration extends RunBlock {
 			cardNumber.setMininumLength(4, localize("run_reg.not_valid_card_number", "Not a valid card number"));
 			cardNumber.setAsIntegers(localize("run_reg.not_valid_card_number", "Not a valid card number"));
 			cardNumber.setAsNotEmpty(localize("run_reg.must_supply_card_number", "You must enter the credit card number"));
+			cardNumber.keepStatusOnAction(true);
 
 			creditCardTable.add(cardNumber, 3, creditRow);
 			if (a != 4) {
@@ -886,6 +892,14 @@ public class Registration extends RunBlock {
 		creditCardTable.add(getText("/"), 1, creditRow);
 		creditCardTable.add(year, 1, creditRow);
 		creditCardTable.add(ccv, 3, creditRow++);
+		
+		TextInput emailField = (TextInput) getStyledInterface(new TextInput(PARAMETER_CARD_HOLDER_EMAIL));
+		emailField.setAsEmail(localize("run_reg.email_err_msg", "Not a valid email address"));
+		emailField.setWidth(Table.HUNDRED_PERCENT);
+		emailField.keepStatusOnAction(true);
+		
+		creditCardTable.add(getHeader(localize("run_reg.card_holder_email", "Email")), 1, creditRow++);
+		creditCardTable.add(emailField, 1, creditRow++);
 		creditCardTable.add(new HiddenInput(PARAMETER_AMOUNT, String.valueOf(totalAmount)));
 		creditCardTable.setHeight(creditRow++, 18);
 		creditCardTable.mergeCells(1, creditRow, creditCardTable.getColumns(), creditRow);
@@ -927,14 +941,16 @@ public class Registration extends RunBlock {
 			String expiresMonth = iwc.getParameter(PARAMETER_EXPIRES_MONTH);
 			String expiresYear = iwc.getParameter(PARAMETER_EXPIRES_YEAR);
 			String ccVerifyNumber = iwc.getParameter(PARAMETER_CCV);
+			String email = iwc.getParameter(PARAMETER_CARD_HOLDER_EMAIL);
 			double amount = Double.parseDouble(iwc.getParameter(PARAMETER_AMOUNT));
+			IWTimestamp paymentStamp = new IWTimestamp();
 			
 			Collection runners = ((Map) iwc.getSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP)).values();
 			getRunBusiness(iwc).doPayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", new IWTimestamp().toString());
-			Collection participants = getRunBusiness(iwc).saveParticipants(runners);
+			Collection participants = getRunBusiness(iwc).saveParticipants(runners, email, hiddenCardNumber, amount, paymentStamp, iwc.getCurrentLocale());
 			iwc.removeSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP);
 			
-			showReceipt(iwc, participants, amount, hiddenCardNumber);
+			showReceipt(iwc, participants, amount, hiddenCardNumber, paymentStamp);
 		}
 		catch (IDOCreateException ice) {
 			getParentPage().setAlertOnLoad(localize("run_reg.save_failed", "There was an error when trying to finish registration.  Please contact the marathon.is office."));
@@ -948,7 +964,7 @@ public class Registration extends RunBlock {
 		}
 	}
 	
-	private void showReceipt(IWContext iwc, Collection runners, double amount, String cardNumber) {
+	private void showReceipt(IWContext iwc, Collection runners, double amount, String cardNumber, IWTimestamp paymentStamp) {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -989,7 +1005,7 @@ public class Registration extends RunBlock {
 		
 		Table creditCardTable = new Table(2, 3);
 		creditCardTable.add(getHeader(localize("run_reg.payment_received_timestamp", "Payment received") + ":"), 1, 1);
-		creditCardTable.add(getText(new IWTimestamp().getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), 2, 1);
+		creditCardTable.add(getText(paymentStamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), 2, 1);
 		creditCardTable.add(getHeader(localize("run_reg.card_number", "Card number") + ":"), 1, 2);
 		creditCardTable.add(getText(cardNumber), 2, 2);
 		creditCardTable.add(getHeader(localize("run_reg.amount", "Amount") + ":"), 1, 3);

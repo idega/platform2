@@ -1,6 +1,6 @@
 /*
- * $Id: RunBusiness.java,v 1.19 2005/05/26 12:39:05 laddi Exp $
- * Created on May 26, 2005
+ * $Id: RunBusiness.java,v 1.20 2005/05/27 09:06:49 laddi Exp $
+ * Created on May 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -21,13 +21,14 @@ import com.idega.data.IDOCreateException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/26 12:39:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 09:06:49 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public interface RunBusiness extends IBOService {
 
@@ -61,7 +62,8 @@ public interface RunBusiness extends IBOService {
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#saveParticipants
 	 */
-	public Collection saveParticipants(Collection runners) throws IDOCreateException, java.rmi.RemoteException;
+	public Collection saveParticipants(Collection runners, String email, String hiddenCardNumber, double amount,
+			IWTimestamp date, Locale locale) throws IDOCreateException, java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#doPayment

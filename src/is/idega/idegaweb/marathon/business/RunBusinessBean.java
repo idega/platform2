@@ -408,7 +408,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	
-	public Collection saveParticipants(Collection runners) throws IDOCreateException {
+	public Collection saveParticipants(Collection runners, String email, String hiddenCardNumber, double amount, IWTimestamp date, Locale locale) throws IDOCreateException {
 		Collection participants = new ArrayList();
 
 		UserTransaction trans = getSessionContext().getUserTransaction();
@@ -425,13 +425,15 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				Group ageGenderGroup = getAgeGroup(user, runner.getRun(), runner.getDistance());
 				ageGenderGroup.addGroup(user);
 				Group yearGroup = (Group) runner.getDistance().getParentNode();
+				Group run = runner.getRun();
+				Group distance = runner.getDistance();
 				
 				try {
 					ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
 					Participant participant = runHome.create();
 					participant.setUser(user);
-					participant.setRunTypeGroup(runner.getRun());
-					participant.setRunDistanceGroup(runner.getDistance());
+					participant.setRunTypeGroup(run);
+					participant.setRunDistanceGroup(distance);
 					participant.setRunYearGroup(yearGroup);
 					participant.setRunGroupGroup(ageGenderGroup);
 					
@@ -468,6 +470,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					getUserBiz().updateUserHomePhone(user, runner.getHomePhone());
 					getUserBiz().updateUserMobilePhone(user, runner.getMobilePhone());
 					getUserBiz().updateUserMail(user, runner.getEmail());
+
+					if (runner.getEmail() != null) {
+						IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(IWMarathonConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+						Object[] args = { user.getName(), iwrb.getLocalizedString(run.getName(),run.getName()), iwrb.getLocalizedString(distance.getName(),distance.getName()), iwrb.getLocalizedString("shirt_size." + runner.getShirtSize(), runner.getShirtSize()), String.valueOf(participant.getParticipantNumber()) };
+						String subject = iwrb.getLocalizedString("registration_received_subject_mail", "Your registration has been received.");
+						String body = MessageFormat.format(iwrb.getLocalizedString("registration_received_body_mail", "Your registration has been received."), args);
+						sendMessage(runner.getEmail(), subject, body);
+					}
 				}
 				catch (CreateException ce) {
 					ce.printStackTrace();
@@ -475,6 +485,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				catch (RemoteException re) {
 					throw new IBORuntimeException(re);
 				}
+			}
+
+			if (email != null) {
+				IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(IWMarathonConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+				Object[] args = { hiddenCardNumber, String.valueOf(amount), date.getLocaleDateAndTime(locale, IWTimestamp.SHORT, IWTimestamp.SHORT) };
+				String subject = iwrb.getLocalizedString("receipt_subject_mail", "Your receipt for registration on Marathon.is");
+				String body = MessageFormat.format(iwrb.getLocalizedString("receipt_body_mail", "Your registration has been received."), args);
+				sendMessage(email, subject, body);
 			}
 			trans.commit();
 		}
