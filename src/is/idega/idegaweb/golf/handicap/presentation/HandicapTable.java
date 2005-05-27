@@ -8,6 +8,7 @@ import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
+import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
@@ -132,7 +133,7 @@ public class HandicapTable extends GolfWindow {
             teeInfoTable.add(CR + "", 2, 2);
             teeInfoTable.add(slope + "", 2, 3);
 
-            Table teeTable = getTeeTable(modinfo, (double) slope, (double) CR,
+            Table teeTable = getTeeTable(modinfo, slope, CR,
                 fieldPar);
             genderTable.add(outerTable, column, 2);
             genderTable.add(teeTable, column, 3);
@@ -158,8 +159,8 @@ public class HandicapTable extends GolfWindow {
 
     }
 
-    public Table getTeeTable(IWContext modinfo, double slope,
-        double course_rating, int par) {
+    public Table getTeeTable(IWContext modinfo, int slope,
+        float course_rating, int par) {
       IWResourceBundle iwrb = getResourceBundle();
 
       double grunn = 36.0;
@@ -262,12 +263,9 @@ public class HandicapTable extends GolfWindow {
 
     }
 
-    public long handicap(double grunn, double slope, double cr, int par) {
-	  		BigDecimal courseRating = new BigDecimal(cr);
-	  		
-	  		double leikhandicap = grunn * (slope / 113) + (courseRating.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue() - par);
-	  		BigDecimal bd = new BigDecimal(leikhandicap);
-	  		return bd.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+    public long handicap(double grunn, int slope, float cr, int par) {
+	  		Handicap handicap = new Handicap(grunn);
+	  		return handicap.getLeikHandicap(slope, cr, par);
     }
 
     class MinMax {
