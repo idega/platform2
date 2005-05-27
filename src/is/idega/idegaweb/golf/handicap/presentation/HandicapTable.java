@@ -11,14 +11,11 @@ import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
