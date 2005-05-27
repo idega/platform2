@@ -1287,7 +1287,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 					}
 				}
 
-				scorecards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumn("MEMBER_ID", member_id, "TOURNAMENT_ROUND_ID", tRounds[j].getID() + "");
+				scorecards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAllByColumnEquals("MEMBER_ID", member_id, "TOURNAMENT_ROUND_ID", tRounds[j].getID() + "");
 				if (scorecards != null) {
 					for (int i = 0; i < scorecards.length; i++) {
 						try {
