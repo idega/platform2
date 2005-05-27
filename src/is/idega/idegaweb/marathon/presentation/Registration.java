@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.10 2005/05/27 12:55:30 laddi Exp $
+ * $Id: Registration.java,v 1.11 2005/05/27 13:07:07 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -62,10 +62,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/27 12:55:30 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 13:07:07 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Registration extends RunBlock {
 	
@@ -187,6 +187,7 @@ public class Registration extends RunBlock {
 		input.setAsIcelandicSSNumber(localize("run_reg.not_valid_personal_id", "The personal ID you've entered is not valid"));
 		input.setLength(10);
 		input.setMaxlength(10);
+		input.setInFocusOnPageLoad(true);
 		table.add(input, 1, row++);
 		
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next")));
@@ -302,7 +303,6 @@ public class Registration extends RunBlock {
 		choiceTable.setHeight(iRow++, 12);
 		
 		TextInput nameField = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME));
-		nameField.setInFocusOnPageLoad(true);
 		nameField.setWidth(Table.HUNDRED_PERCENT);
 		if (runner.getName() != null) {
 			nameField.setContent(runner.getName());
