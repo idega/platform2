@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.7 2005/05/27 09:27:23 laddi Exp $
+ * $Id: Registration.java,v 1.8 2005/05/27 09:57:20 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -61,10 +61,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/27 09:27:23 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 09:57:20 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Registration extends RunBlock {
 	
@@ -720,7 +720,12 @@ public class Registration extends RunBlock {
 		Iterator iter = runners.values().iterator();
 		while (iter.hasNext()) {
 			Runner runner = (Runner) iter.next();
-			runnerTable.add(getText(runner.getUser().getName()), 1, runRow);
+			if (runner.getUser() != null) {
+				runnerTable.add(getText(runner.getUser().getName()), 1, runRow);
+			}
+			else {
+				runnerTable.add(getText(runner.getName()), 1, runRow);
+			}
 			runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
 			runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow++);
 		}
@@ -778,7 +783,12 @@ public class Registration extends RunBlock {
 		Iterator iter = runners.values().iterator();
 		while (iter.hasNext()) {
 			Runner runner = (Runner) iter.next();
-			runnerTable.add(getText(runner.getUser().getName()), 1, runRow);
+			if (runner.getUser() != null) {
+				runnerTable.add(getText(runner.getUser().getName()), 1, runRow);
+			}
+			else {
+				runnerTable.add(getText(runner.getName()), 1, runRow);
+			}
 			runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
 			runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow);
 			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount);
