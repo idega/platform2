@@ -2,7 +2,6 @@ package com.idega.block.trade.stockroom.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
 import com.idega.core.location.data.Address;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
@@ -31,11 +30,12 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute(getColumnNameAddressId(), "addressId", true, true, Integer.class);
+//    this.addAttribute(getColumnNameAddressId(), "addressId", true, true, Integer.class);
     this.addAttribute(getColumnNameTime(), "time", true, true, Timestamp.class);
     this.addAttribute(getColumnNameAddressTypeId(), "addressutýpa", true, true, Integer.class);
     this.addAttribute(getColumnNameRefillStock() , "fylla á byrgðir", true, true, Boolean.class);
 
+    this.addOneToOneRelationship(getColumnNameAddressId(), Address.class);
     this.addManyToManyRelationShip( Product.class, "SR_PRODUCT_SR_ADDRESS" );
   }
 
@@ -48,12 +48,7 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
   }
 
   public Address getAddress() {
-    try {
-      return ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(getIntColumnValue(getColumnNameAddressId()));
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-      return null;
-    }
+	  return (Address) getColumnValue(getColumnNameAddressId());
   }
 
   public String getName() {
