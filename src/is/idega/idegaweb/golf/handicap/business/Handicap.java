@@ -11,6 +11,7 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -108,9 +109,11 @@ public class Handicap {
 	}
 
 	public int getLeikHandicap(double slope, double course_rating, double field_par) {
-		double leikhandicap = grunn * (slope / 113) + (course_rating - field_par);
-		int leik = (int) Math.rint(leikhandicap);
-		return leik;
+		BigDecimal courseRating = new BigDecimal(course_rating);
+		
+		double leikhandicap = grunn * (slope / 113) + (courseRating.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue() - field_par);
+		BigDecimal bd = new BigDecimal(leikhandicap);
+		return bd.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 	}
 
 	public float getHandicapForScorecard(int tournament_id, int tee_color_id, float max_handicap) throws IOException, SQLException {
