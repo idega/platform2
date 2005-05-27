@@ -12,6 +12,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -262,10 +263,11 @@ public class HandicapTable extends GolfWindow {
     }
 
     public long handicap(double grunn, double slope, double cr, int par) {
-      double tmp = grunn * slope / 113.0 + (cr - par);
-      long h = java.lang.Math.round(tmp);
-
-      return (h);
+	  		BigDecimal courseRating = new BigDecimal(cr);
+	  		
+	  		double leikhandicap = grunn * (slope / 113) + (courseRating.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue() - par);
+	  		BigDecimal bd = new BigDecimal(leikhandicap);
+	  		return bd.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
     }
 
     class MinMax {
