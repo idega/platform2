@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.6 2005/05/27 09:06:49 laddi Exp $
+ * $Id: Registration.java,v 1.7 2005/05/27 09:27:23 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -61,10 +61,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/27 09:06:49 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 09:27:23 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Registration extends RunBlock {
 	
@@ -898,6 +898,7 @@ public class Registration extends RunBlock {
 		emailField.setWidth(Table.HUNDRED_PERCENT);
 		emailField.keepStatusOnAction(true);
 		
+		creditCardTable.setHeight(creditRow++, 3);
 		creditCardTable.add(getHeader(localize("run_reg.card_holder_email", "Email")), 1, creditRow++);
 		creditCardTable.add(emailField, 1, creditRow++);
 		creditCardTable.add(new HiddenInput(PARAMETER_AMOUNT, String.valueOf(totalAmount)));
