@@ -441,11 +441,12 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness,UserG
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
-			try {
-				userBiz.removeUserFromGroup(user,groupBiz.getGroupByGroupID(ledger.getGroupID()),iwc.getCurrentUser());
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
+			//try {
+			//	userBiz.removeUserFromGroup(user,groupBiz.getGroupByGroupID(ledger.getGroupID()),iwc.getCurrentUser());
+			//}catch (Exception e) {
+			//	e.printStackTrace();
+			//}
+			//This delete was preformed weather the user had the privileges or not
 			
 		}
 	}
