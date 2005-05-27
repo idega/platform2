@@ -28,6 +28,8 @@ import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -880,13 +882,13 @@ public class CalendarView extends Block{
 		ledgerTable.setCellspacing(0);
 		ledgerTable.setWidth(Table.HUNDRED_PERCENT);
 		
-		Text linkText = new Text(iwrb.getLocalizedString("calendarwindow.new_ledger","New Ledger"));
-		Link newLedgerLink = new Link(linkText);
-		newLedgerLink.setWindowToOpen(CreateLedgerWindow.class);
-		newLedgerLink.setAsImageButton(true,true);
+		String linkText = iwrb.getLocalizedString("calendarwindow.new_ledger","New Ledger");
+		GenericButton newLedgerButton = new GenericButton(linkText);
+		newLedgerButton.setWindowToOpen(CreateLedgerWindow.class);
+		StyledButton styledNewLedgerButton = new StyledButton(newLedgerButton);
 	
 		ledgerTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_RIGHT);
-		ledgerTable.add(newLedgerLink,1,1);
+		ledgerTable.add(styledNewLedgerButton,1,1);
 		
 		User user = null;
 		if(iwc.isLoggedOn()) {
