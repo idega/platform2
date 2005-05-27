@@ -45,6 +45,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
@@ -811,7 +812,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		form = new Form();
 		form.maintainAllParameters();
-		form.maintainParameter(LEDGER);
+		form.add(new HiddenInput(LEDGER, iwc.getParameter(LEDGER)));
+		//form.maintainParameter(LEDGER);
 		form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
 		form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
 		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
