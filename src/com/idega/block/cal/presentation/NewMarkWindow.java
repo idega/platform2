@@ -11,6 +11,7 @@ import com.idega.block.cal.data.AttendanceMark;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.help.presentation.Help;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -20,6 +21,8 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -40,6 +43,9 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 	private static String submitButtonParameterName = "submit";
 	private static String submitButtonParameterValue = "save";
 	
+	private Help help; 
+	private static final String HELP_TEXT_KEY = "new_marker";
+	
 	//texts
 	private Text markText;
 	private Text markDescriptionText;
@@ -49,11 +55,14 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 	private TextInput markDescriptionField;
 	
 	//buttons
-	private SubmitButton submitButton;
+	private SubmitButton saveButton;
+	private StyledButton styledSaveButton;
 	private CloseButton closeButton;
-	private Link deleteLink;
+	private StyledButton styledCloseButton;
+	private SubmitButton deleteButton;
+	private StyledButton styledDeleteButton;
 	
-	private Table table;
+	private Table mainTable;
 	private Form form;
 	
 	public NewMarkWindow() {
@@ -80,23 +89,24 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		markDescriptionField = new TextInput(markDescriptionFieldParameterName);	
 		markDescriptionField.setSize(20);
 	
-		submitButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),submitButtonParameterName,submitButtonParameterValue);
+		saveButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),submitButtonParameterName,submitButtonParameterValue);
+		styledSaveButton = new StyledButton(saveButton);
 
 		//closes the window
 		closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
+		styledCloseButton = new StyledButton(closeButton);
 		
 		String markID = iwc.getParameter(markIDParameterName);
 		
 		if(markID != null && !markID.equals("")) {
 			
-			deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
-			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
-			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, markID);
-			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
-			deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,MARK);
-			deleteLink.addParameter(LedgerWindow.LEDGER,iwc.getParameter(LedgerWindow.LEDGER));
-			Image del = iwb.getImage("delete2.gif");
-			deleteLink.setImage(del);
+			deleteButton = new SubmitButton(iwrb.getLocalizedString("delete","Delete"));
+			deleteButton.setWindowToOpen(ConfirmDeleteWindow.class);
+			deleteButton.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, markID);
+			deleteButton.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
+			deleteButton.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,MARK);
+			deleteButton.addParameter(LedgerWindow.LEDGER,iwc.getParameter(LedgerWindow.LEDGER));
+			styledDeleteButton = new StyledButton(deleteButton);
 			
 			
 //			deleteButton = new SubmitButton(iwrb.getLocalizedString("delete", "Delete"),markIDParameterName,markID,"window.open("+ deleteWindow.getURL(iwc) +")");
@@ -107,25 +117,55 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		}
 		
 	}	
-	public void lineUp(IWContext iwc) {
-		table = new Table();
-		table.setCellspacing(0);
-		table.setCellpadding(0);
-		table.setStyleClass("main");
-		table.add(markText + ":",1,1);
-		table.add(markField,2,1);
-		table.add(markDescriptionText + ":",1,2);
-		table.add(markDescriptionField,2,2);
-		table.setAlignment(2,3,"right");
-		table.add(submitButton,2,3);
-		table.add(Text.NON_BREAKING_SPACE,2,3);
-		table.add(closeButton,2,3);
+	public void lineUp(IWContext iwc) {	
+		mainTable = new Table(1,3);
+		mainTable.setCellspacing(0);
+		mainTable.setCellpadding(0);
+		mainTable.setWidth(Table.HUNDRED_PERCENT);
+		mainTable.setHeight(2, 5);
+	    
+	    Table inputTable = new Table();
+		inputTable.setWidth(Table.HUNDRED_PERCENT);
+		inputTable.setCellspacing(12);
+		inputTable.setCellpadding(0);
+		inputTable.setStyleClass("main");
+		inputTable.add(markText + ":",1,1);
+		inputTable.add(markField,2,1);
+		inputTable.add(markDescriptionText + ":",1,2);
+		inputTable.add(markDescriptionField,2,2);
+		inputTable.setAlignment(2,3,"right");
+		
+		Table buttonTable = new Table();
+		buttonTable.setCellspacing(0);
+		buttonTable.setCellpadding(0);
+		buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		buttonTable.add(styledSaveButton,1,1);
+		buttonTable.setWidth(2, "5");
+		buttonTable.add(styledCloseButton,3,1);
 		String markID = iwc.getParameter(markIDParameterName);
 		if(markID != null && !markID.equals("")) {
-			table.add(Text.NON_BREAKING_SPACE,2,3);
-			table.add(deleteLink,2,3);
-		}		
-		form.add(table);
+		    buttonTable.setWidth(4, "5");
+		    buttonTable.add(styledDeleteButton,5,1);
+		}
+		
+		Table helpTable = new Table();
+		helpTable.setCellpadding(0);
+		helpTable.setCellspacing(0);
+		helpTable.add(getHelp(HELP_TEXT_KEY),1,1);
+		
+		Table bottomTable = new Table();
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(5);
+		bottomTable.setWidth(Table.HUNDRED_PERCENT);
+		bottomTable.setStyleClass("main");
+		bottomTable.add(helpTable,1,1);
+		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.add(buttonTable,2,1);
+		
+		mainTable.add(inputTable,1,1);
+		mainTable.add(bottomTable,1,3);
+		
+		form.add(mainTable);
 	}
 	
 	public void saveMark(IWContext iwc) {
@@ -162,6 +202,11 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		
 	}
 	public void main(IWContext iwc) throws Exception{
+	    IWResourceBundle iwrb = getResourceBundle(iwc);
+		IWBundle iwb = getBundle(iwc);
+		
+	    addTitle(iwrb.getLocalizedString("create_new_mark", "Create new mark"), TITLE_STYLECLASS);
+	    
 		form = new Form();
 		form.maintainParameter(markIDParameterName);
 		initializeTexts(iwc);
