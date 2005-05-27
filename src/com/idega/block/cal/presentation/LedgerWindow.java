@@ -45,7 +45,9 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
@@ -107,11 +109,14 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	
 	//buttons
 	private SubmitButton saveButton;
+	private StyledButton styledSaveButton;
 	private CloseButton closeButton;
+	private StyledButton styledCloseButton;
 	private Link printableLedger;
 	private Link printableEmptyLedger;
 //	private PrintButton printButton;
-	private Link deleteLink;
+	private GenericButton deleteButton;
+	private StyledButton styledDeleteButton;
 	
 	private CalBusiness calBiz = null;
 	private GroupBusiness groupBiz = null;
@@ -259,9 +264,10 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		//when save button is pushed the new ledger is created
 		saveButton = new SubmitButton(iwrb.getLocalizedString("ledgerwindow.save","Save"),saveButtonParameterName,saveButtonParameterValue);
+		styledSaveButton = new StyledButton(saveButton);
 		//closes the window
 		closeButton = new CloseButton(iwrb.getLocalizedString("ledgerwindow.close","Close"));
-		
+		styledCloseButton = new StyledButton(closeButton); 
 		printableLedger = new Link(iwrb.getLocalizedString("ledger_window.printable_ledger","Printable Ledger"));
 		printableLedger.setWindowToOpen(PrintableLedgerWindow.class);
 		printableLedger.setStyleClass(styledLink);
@@ -280,15 +286,12 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 //		printButton = new PrintButton(print);
 		
-		deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
-		deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
-		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, lIDString);
-		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
-		deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,LEDGER);
-		Image del = iwb.getImage("delete2.gif");
-		del.setAlt(iwrb.getLocalizedString("ledger_window.close_ledger","Close Ledger"));
-		deleteLink.setAsImageButton(true);
-//		deleteLink.setImage(del);
+		deleteButton = new GenericButton(iwrb.getLocalizedString("delete","Delete"));
+		deleteButton.setWindowToOpen(ConfirmDeleteWindow.class);
+		deleteButton.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, lIDString);
+		deleteButton.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
+		deleteButton.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,LEDGER);
+		styledDeleteButton = new StyledButton(deleteButton);;
 		
 	}
 
@@ -376,18 +379,28 @@ public class LedgerWindow extends StyledIWAdminWindow{
 
 		mainTable.add(entityTable,1,3);
 		
+		Table buttonTable = new Table();
+		buttonTable.setCellspacing(0);
+		buttonTable.setCellpadding(0);
+		buttonTable.add(styledSaveButton,1,1);
+		buttonTable.setWidth(2, "5");
+		buttonTable.add(styledCloseButton,3,1);
+		buttonTable.setWidth(4, "5");
+		buttonTable.add(styledDeleteButton,5,1);
+		
+		Table helpTable = new Table();
+		helpTable.setCellpadding(0);
+		helpTable.setCellspacing(0);
+		helpTable.add(getHelp(HELP_TEXT_KEY),1,1);
+		
 		Table bottomTable = new Table();
 		bottomTable.setWidth(Table.HUNDRED_PERCENT);
 		bottomTable.setCellpadding(0);
-		bottomTable.setCellspacing(12);
+		bottomTable.setCellspacing(5);
 		bottomTable.setStyleClass(borderAllWhiteStyle);
-		bottomTable.add(getHelp(this.HELP_TEXT_KEY),1,1);
+		bottomTable.add(helpTable,1,1);
 		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
-		bottomTable.add(saveButton,2,1);
-		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
-		bottomTable.add(closeButton,2,1);
-		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
-		bottomTable.add(deleteLink,2,1);
+		bottomTable.add(buttonTable,2,1);
 		
 		mainTable.setHeight(4,5);
 		mainTable.add(bottomTable,1,5);
@@ -747,31 +760,33 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		confirmDeleting += " ?";
 		SubmitButton deleteButton =
 			new SubmitButton(
-					resourceBundle.getLocalizedImageButton("Delete selection", "Delete selection"),
+					resourceBundle.getLocalizedString("Delete selection", "Delete selection"),
 					DELETE_USERS_KEY,
 					DELETE_USERS_KEY);
 		deleteButton.setSubmitConfirm(confirmDeleting);
-		entityBrowser.addPresentationObjectToBottom(deleteButton);
+		StyledButton styledDeleteButton = new StyledButton(deleteButton);
+		entityBrowser.addPresentationObjectToBottom(styledDeleteButton);
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		Link addUserLink = new Link(iwrb.getLocalizedString("ledgerwindow.add_user","Add user"));
-		addUserLink.setAsImageButton(true);
-//		addUserLink.setStyleClass(styledLink);
-		addUserLink.setParameter(LEDGER,ledgerString);
-		addUserLink.setWindowToOpen(CreateUserInLedger.class);
-		Link statisticsLink = new Link(iwrb.getLocalizedString("ledgerwindow.statistics","Statistics"));
-		statisticsLink.setAsImageButton(true);
-//		statisticsLink.setStyleClass(styledLink);
-		statisticsLink.addParameter(LEDGER,ledgerString);
-		statisticsLink.setWindowToOpen(UserStatisticsWindow.class);
-		Link addNewMarkLink = new Link(iwrb.getLocalizedString("ledgerwindow.add_mark","Add mark"));
-		addNewMarkLink.setAsImageButton(true);
-//		addNewMarkLink.setStyleClass(styledLink);
-		addNewMarkLink.addParameter(LEDGER,ledgerString);
-		addNewMarkLink.setWindowToOpen(NewMarkWindow.class);
+		GenericButton addUserButton = new GenericButton(iwrb.getLocalizedString("ledgerwindow.add_user","Add user"));
 		
-		entityBrowser.addPresentationObjectToBottom(addUserLink);
-		entityBrowser.addPresentationObjectToBottom(statisticsLink);
-		entityBrowser.addPresentationObjectToBottom(addNewMarkLink);
+//		addUserLink.setStyleClass(styledLink);
+		addUserButton.addParameter(LEDGER,ledgerString);
+		addUserButton.setWindowToOpen(CreateUserInLedger.class);
+		StyledButton styledAddUserButton = new StyledButton(addUserButton);
+		GenericButton statisticsButton = new GenericButton(iwrb.getLocalizedString("ledgerwindow.statistics","Statistics"));
+//		statisticsLink.setStyleClass(styledLink);
+		statisticsButton.addParameter(LEDGER,ledgerString);
+		statisticsButton.setWindowToOpen(UserStatisticsWindow.class);
+		StyledButton styledStatisticsButton = new StyledButton(statisticsButton);
+		GenericButton addNewMarkButton = new GenericButton(iwrb.getLocalizedString("ledgerwindow.add_mark","Add mark"));
+//		addNewMarkLink.setStyleClass(styledLink);
+		addNewMarkButton.addParameter(LEDGER,ledgerString);
+		addNewMarkButton.setWindowToOpen(NewMarkWindow.class);
+		StyledButton styledAddNewMarkButton = new StyledButton(addNewMarkButton);
+		
+		entityBrowser.addPresentationObjectToBottom(styledAddUserButton);
+		entityBrowser.addPresentationObjectToBottom(styledStatisticsButton);
+		entityBrowser.addPresentationObjectToBottom(styledAddNewMarkButton);
 
 		return entityBrowser;
 	}
