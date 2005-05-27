@@ -729,7 +729,7 @@ public class HandicapRegister extends GolfBlock {
 					String putt_strokes = modinfo.getParameter("putts_" + d);
 					int putts;
 
-					if (tee_id[d - 1].getPar() == 3) {
+					if (tee_id[d - Integer.parseInt(start_hole)].getPar() == 3) {
 						parThrees++;
 					}
 
