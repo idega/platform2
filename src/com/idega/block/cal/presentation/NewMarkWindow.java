@@ -205,7 +205,7 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 	    IWResourceBundle iwrb = getResourceBundle(iwc);
 		IWBundle iwb = getBundle(iwc);
 		
-	    addTitle(iwrb.getLocalizedString("create_new_mark", "Create new mark"), TITLE_STYLECLASS);
+	    addTitle(iwrb.getLocalizedString("create_new_mark", "Create a new mark"), TITLE_STYLECLASS);
 	    
 		form = new Form();
 		form.maintainParameter(markIDParameterName);
