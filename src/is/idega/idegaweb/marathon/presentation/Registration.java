@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.8 2005/05/27 09:57:20 laddi Exp $
+ * $Id: Registration.java,v 1.9 2005/05/27 10:07:37 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -61,10 +61,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/27 09:57:20 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/27 10:07:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Registration extends RunBlock {
 	
@@ -800,14 +800,16 @@ public class Registration extends RunBlock {
 			}
 		}
 		
-		int numberOfChildren = getRunBusiness(iwc).getNumberOfChildren(runners.values());
-		if (numberOfChildren > 1) {
-			float childrenDiscount = -(numberOfChildren * childDiscount);
-			totalAmount += childrenDiscount;
-			
-			runnerTable.setHeight(runRow++, 12);
-			runnerTable.add(getText(localize("run_reg.family_discount", "Family discount")), 1, runRow);
-			runnerTable.add(getText(formatAmount(iwc.getCurrentLocale(), childrenDiscount)), 4, runRow++);
+		if (isIcelandic) {
+			int numberOfChildren = getRunBusiness(iwc).getNumberOfChildren(runners.values());
+			if (numberOfChildren > 1) {
+				float childrenDiscount = -(numberOfChildren * childDiscount);
+				totalAmount += childrenDiscount;
+				
+				runnerTable.setHeight(runRow++, 12);
+				runnerTable.add(getText(localize("run_reg.family_discount", "Family discount")), 1, runRow);
+				runnerTable.add(getText(formatAmount(iwc.getCurrentLocale(), childrenDiscount)), 4, runRow++);
+			}
 		}
 		
 		if (chipsToBuy > 0) {
