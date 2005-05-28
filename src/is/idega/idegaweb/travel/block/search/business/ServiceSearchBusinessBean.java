@@ -210,6 +210,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 			Iterator iter = results.iterator();
 			Collection toRemove = new Vector(); 
 			boolean productIsValid = true;
+			if (from == null || to == null || to.isEarlierThan(from)) {
+				return new Vector();
+			}
 			while (iter.hasNext() && from != null && to != null) {
 				try {
 					product = (Product) iter.next();
@@ -292,7 +295,14 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 		return engine;
 	}
 	
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager) {
+		return storeEngine(pk, name, code, url, supplierManager, false);
+	}	
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager, boolean useBasket) {
 		ServiceSearchEngine engine = null;
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
@@ -315,6 +325,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 				engine.setSupplierManager(supplierManager);
 			}
 			engine.setURL(url);
+			engine.setUseBasket(useBasket);
 			engine.store();
 			
 			if (getServiceSearchEngineStaffGroup(engine) == null) {
