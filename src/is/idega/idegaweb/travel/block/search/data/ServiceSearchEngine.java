@@ -1,3 +1,12 @@
+/*
+ * $Id: ServiceSearchEngine.java,v 1.6 2005/05/28 00:30:05 gimmi Exp $
+ * Created on 24.5.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.travel.block.search.data;
 
 import java.util.Collection;
@@ -10,7 +19,11 @@ import com.idega.user.data.Group;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/05/28 00:30:05 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.6 $
  */
 public interface ServiceSearchEngine extends IDOEntity {
 
@@ -28,6 +41,11 @@ public interface ServiceSearchEngine extends IDOEntity {
 	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#setStaffGroupID
 	 */
 	public void setStaffGroupID(int groupID);
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#setUseBasket
+	 */
+	public void setUseBasket(boolean useBasket);
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#getStaffGroupID
@@ -48,6 +66,11 @@ public interface ServiceSearchEngine extends IDOEntity {
 	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#getIsValid
 	 */
 	public boolean getIsValid();
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#getUseBasket
+	 */
+	public boolean getUseBasket();
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#addSupplier

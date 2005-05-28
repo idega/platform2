@@ -28,6 +28,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	private static String COLUMN_BOOKING_CODE = "BOOKING_CODE";
 	private static String COLUMN_IS_VALID = "IS_VALID";
 	private static String COLUMN_GROUP_ID = "GROUP_ID";
+	private static String COLUMN_USE_BASKET = "USE_BASKET";
 	private static String MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE = "sr_supplier_service_engine";
 	private static String MIDDLE_TABLE_COUNTRY_SEARCH_ENGINE = "tb_service_engine_country";
 	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
@@ -42,6 +43,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		addAttribute(COLUMN_NAME, "name", String.class, 200);
 		addAttribute(COLUMN_BOOKING_CODE, "code", String.class, 200);
 		addAttribute(COLUMN_IS_VALID, "is valid", Boolean.class);
+		addAttribute(COLUMN_USE_BASKET, "use basket", Boolean.class);
 		addAttribute(COLUMN_GROUP_ID, "staff group Id", true, true, Integer.class, super.ONE_TO_ONE, ServiceSearchEngineStaffGroup.class);
 		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
 
@@ -71,6 +73,10 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		setColumn(COLUMN_GROUP_ID, groupID);
 	}
 	
+	public void setUseBasket(boolean useBasket) {
+		setColumn(COLUMN_USE_BASKET, useBasket);
+	}
+	
 	public int getStaffGroupID() {
 		return getIntColumnValue(COLUMN_GROUP_ID);
 	}
@@ -85,6 +91,10 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	
 	public boolean getIsValid() {
 		return getBooleanColumnValue(COLUMN_IS_VALID);
+	}
+	
+	public boolean getUseBasket() {
+		return getBooleanColumnValue(COLUMN_USE_BASKET, false);
 	}
 	
 	public void addSupplier(Supplier supplier) throws IDOAddRelationshipException {
