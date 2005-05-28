@@ -477,6 +477,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			CreditCardClient client = getCreditCardBusiness().getCreditCardClient(getCreditCardMerchant());
 			client.finishTransaction(properties);
 		}
+		catch (CreditCardAuthorizationException ccae) {
+			throw ccae;
+		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 			throw new CreditCardAuthorizationException("Online payment failed. Unknown error.");
@@ -489,7 +492,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			return client.creditcardAuthorization(nameOnCard, cardNumber, monthExpires, yearExpires, ccVerifyNumber, amount, currency, referenceNumber);
 		}
 		catch (CreditCardAuthorizationException ccae) {
-			throw new CreditCardAuthorizationException("Online payment failed. Creditcard authorization failed.");
+			throw ccae;
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -1221,20 +1224,25 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		List distances = null;
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
-		Iterator yearsIter = getYears(run).iterator();
-		while (yearsIter.hasNext()) {
-			Group y = (Group) yearsIter.next();
-			if (y.getName().equals(year)) {
-				try {
-					distances = new ArrayList(getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true));
+		if (run != null) {
+			Collection years = getYears(run);
+			if (years != null) {
+				Iterator yearsIter = years.iterator();
+				while (yearsIter.hasNext()) {
+					Group y = (Group) yearsIter.next();
+					if (y.getName().equals(year)) {
+						try {
+							distances = new ArrayList(getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true));
+						}
+						catch (Exception e) {
+							distances = null;
+						}
+					}
 				}
-				catch (Exception e) {
-					distances = null;
+				if(distances != null) {
+					Collections.sort(distances, new RunDistanceComparator());
 				}
 			}
-		}
-		if(distances != null) {
-			Collections.sort(distances, new RunDistanceComparator());
 		}
 		
 		return distances;

@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.11 2005/05/27 13:07:07 laddi Exp $
+ * $Id: Registration.java,v 1.12 2005/05/28 11:14:52 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -43,8 +43,8 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
@@ -62,14 +62,19 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/27 13:07:07 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/28 11:14:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class Registration extends RunBlock {
 	
 	private static final String SESSION_ATTRIBUTE_RUNNER_MAP = "sa_runner_map";
+	public static final String SESSION_ATTRIBUTE_PARTICIPANTS = "sa_participants";
+	public static final String SESSION_ATTRIBUTE_AMOUNT = "sa_amount";
+	public static final String SESSION_ATTRIBUTE_CARD_NUMBER = "sa_card_number";
+	public static final String SESSION_ATTRIBUTE_PAYMENT_DATE = "sa_payment_date";
+
 	private static final String PROPERTY_CHIP_PRICE_ISK = "chip_price_ISK";
 	private static final String PROPERTY_CHIP_PRICE_EUR = "chip_price_EUR";
 	private static final String PROPERTY_CHIP_DISCOUNT_ISK = "chip_discount_ISK";
@@ -381,7 +386,7 @@ public class Registration extends RunBlock {
 			nationalityField.setSelectedElement("104");
 			if (runner.getUser() != null) {
 				Address address = getUserBusiness(iwc).getUsersMainAddress(runner.getUser());
-				if (address.getCountry() != null) {
+				if (address != null && address.getCountry() != null) {
 					countryField.setSelectedElement(address.getCountry().getPrimaryKey().toString());
 				}
 			}
@@ -432,6 +437,7 @@ public class Registration extends RunBlock {
 
 		TextInput emailField = (TextInput) getStyledInterface(new TextInput(PARAMETER_EMAIL));
 		emailField.setAsEmail(localize("run_reg.email_err_msg", "Not a valid email address"));
+		emailField.setEmptyConfirm(localize("run_reg.continue_without_email", "Are you sure you want to continue without entering an e-mail?"));
 		emailField.setWidth(Table.HUNDRED_PERCENT);
 		if (runner.getEmail() != null) {
 			emailField.setContent(runner.getEmail());
@@ -923,13 +929,23 @@ public class Registration extends RunBlock {
 		help.setHelpTextKey("terms_and_conditions");
 		help.setShowAsText(true);
 		help.setLinkText(localize("run_reg.terms_and_conditions", "Terms and conditions"));
-		creditCardTable.add(help, 1, creditRow);
+		creditCardTable.add(help, 1, creditRow++);
+
+		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("run_reg.pay", "Pay")));
+		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
+		next.setDisabled(true);
+
+		CheckBox agree = getCheckBox(PARAMETER_AGREE + "_terms", Boolean.TRUE.toString());
+		agree.setToEnableWhenChecked(next);
+		agree.setToDisableWhenUnchecked(next);
+		
+		creditCardTable.setHeight(creditRow++, 12);
+		creditCardTable.add(agree, 1, creditRow);
+		creditCardTable.add(Text.getNonBrakingSpace(), 1, creditRow);
+		creditCardTable.add(getHeader(localize("run_reg.agree_terms_and_conditions", "I agree to the terms and conditions")), 1, creditRow++);
 
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STEP_FIVE));
-		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("run_reg.pay", "Pay")));
-		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
-
 		table.setHeight(row++, 18);
 		table.add(previous, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -985,6 +1001,10 @@ public class Registration extends RunBlock {
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
+		iwc.setSessionAttribute(SESSION_ATTRIBUTE_PARTICIPANTS, runners);
+		iwc.setSessionAttribute(SESSION_ATTRIBUTE_AMOUNT, new Double(amount));
+		iwc.setSessionAttribute(SESSION_ATTRIBUTE_CARD_NUMBER, cardNumber);
+		iwc.setSessionAttribute(SESSION_ATTRIBUTE_PAYMENT_DATE, paymentStamp);
 
 		table.add(getPhasesTable(isIcelandic ? 7 : 6, isIcelandic ? 7 : 6, "run_reg.receipt", "Receipt"), 1, row++);
 		table.setHeight(row++, 18);
@@ -1043,7 +1063,8 @@ public class Registration extends RunBlock {
 		
 		table.setHeight(row++, 16);
 		
-		PrintButton print = (PrintButton) getButton(new PrintButton(localize("print", "Print")));
+		GenericButton print = getButton(new GenericButton(localize("print", "Print")));
+		print.setWindowToOpen(RegistrationReceivedPrintable.class);
 		table.add(print, 1, row);
 		
 		add(table);
