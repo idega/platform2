@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.12 2005/05/28 11:14:52 laddi Exp $
+ * $Id: Registration.java,v 1.13 2005/05/28 11:29:42 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -62,10 +62,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/28 11:14:52 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/28 11:29:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class Registration extends RunBlock {
 	
@@ -110,6 +110,7 @@ public class Registration extends RunBlock {
 	private static final String PARAMETER_AMOUNT = "prm_amount";
 	private static final String PARAMETER_CURRENCY = "prm_currency";
 	private static final String PARAMETER_CARD_HOLDER_EMAIL = "prm_card_holder_email";
+	private static final String PARAMETER_REFERENCE_NUMBER = "prm_reference_number";
 
 	private static final int ACTION_STEP_ONE = 1;
 	private static final int ACTION_STEP_TWO = 2;
@@ -787,6 +788,7 @@ public class Registration extends RunBlock {
 		float totalAmount = 0;
 		int chipsToBuy = 0;
 		Iterator iter = runners.values().iterator();
+		boolean first = true;
 		while (iter.hasNext()) {
 			Runner runner = (Runner) iter.next();
 			if (runner.getUser() != null) {
@@ -803,6 +805,11 @@ public class Registration extends RunBlock {
 			
 			if (runner.isBuyChip()) {
 				chipsToBuy++;
+			}
+			
+			if (first) {
+				runnerTable.add(new HiddenInput(PARAMETER_REFERENCE_NUMBER, runner.getPersonalID().replaceAll("-", "")));
+				first = false;
 			}
 		}
 		
@@ -972,10 +979,11 @@ public class Registration extends RunBlock {
 			String ccVerifyNumber = iwc.getParameter(PARAMETER_CCV);
 			String email = iwc.getParameter(PARAMETER_CARD_HOLDER_EMAIL);
 			double amount = Double.parseDouble(iwc.getParameter(PARAMETER_AMOUNT));
+			String referenceNumber = iwc.getParameter(PARAMETER_REFERENCE_NUMBER);
 			IWTimestamp paymentStamp = new IWTimestamp();
 			
 			Collection runners = ((Map) iwc.getSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP)).values();
-			String properties = getRunBusiness(iwc).authorizePayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", new IWTimestamp().toString());
+			String properties = getRunBusiness(iwc).authorizePayment(nameOnCard, cardNumber, expiresMonth, expiresYear, ccVerifyNumber, amount, isIcelandic ? "ISK" : "EUR", referenceNumber);
 			Collection participants = getRunBusiness(iwc).saveParticipants(runners, email, hiddenCardNumber, amount, paymentStamp, iwc.getCurrentLocale());
 			getRunBusiness(iwc).finishPayment(properties);
 			iwc.removeSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP);
