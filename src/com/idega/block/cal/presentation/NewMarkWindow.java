@@ -5,23 +5,18 @@ package com.idega.block.cal.presentation;
 
 import java.util.Collection;
 import java.util.Iterator;
-
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.AttendanceMark;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -81,7 +76,7 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 	
 	protected void initializeFields(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		IWBundle iwb = getBundle(iwc);
+		//IWBundle iwb = getBundle(iwc);
 		
 		markField = new TextInput(markFieldParameterName);
 		markField.setMaxlength(1);
@@ -202,10 +197,10 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		
 	}
 	public void main(IWContext iwc) throws Exception{
-	    IWResourceBundle iwrb = getResourceBundle(iwc);
-		IWBundle iwb = getBundle(iwc);
+	  IWResourceBundle iwrb = getResourceBundle(iwc);
+		//IWBundle iwb = getBundle(iwc);
 		
-	    addTitle(iwrb.getLocalizedString("create_new_mark", "Create a new mark"), TITLE_STYLECLASS);
+	  addTitle(iwrb.getLocalizedString("create_new_mark", "Create a new mark"), TITLE_STYLECLASS);
 	    
 		form = new Form();
 		form.maintainParameter(markIDParameterName);

@@ -171,8 +171,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	 */
 	protected void initializeFields(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		IWBundle iwb = getBundle(iwc);
-		
+		//IWBundle iwb = getBundle(iwc);
 		
 		LedgerVariationsHandler ledgerVariationsHandler = getLedgerVariationsHandler(iwc);
 		

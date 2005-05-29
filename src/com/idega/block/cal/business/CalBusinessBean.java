@@ -415,7 +415,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness,UserG
 	
 	public void deleteUserFromLedger(int userID, int ledgerID, IWContext iwc) {
 		UserBusiness userBiz = getUserBusiness(iwc);
-		GroupBusiness groupBiz = getGroupBusiness(iwc);
+		//GroupBusiness groupBiz = getGroupBusiness(iwc);
 		CalendarLedger ledger = getLedger(ledgerID);
 		User user = null;
 		try{
