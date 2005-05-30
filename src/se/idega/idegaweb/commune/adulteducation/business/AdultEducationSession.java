@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationSession.java,v 1.3 2005/05/26 07:27:46 laddi Exp $
- * Created on May 26, 2005
+ * $Id: AdultEducationSession.java,v 1.4 2005/05/30 10:01:42 laddi Exp $
+ * Created on May 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -9,17 +9,19 @@
  */
 package se.idega.idegaweb.commune.adulteducation.business;
 
+import java.sql.Date;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOSession;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/26 07:27:46 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/30 10:01:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface AdultEducationSession extends IBOSession {
 
@@ -32,6 +34,36 @@ public interface AdultEducationSession extends IBOSession {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setSeason
 	 */
 	public void setSeason(Object seasonPK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#getSchoolType
+	 */
+	public SchoolType getSchoolType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setSchoolType
+	 */
+	public void setSchoolType(Object schoolTypePK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#getDate
+	 */
+	public Date getDate() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setDate
+	 */
+	public void setDate(Date date) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#getSort
+	 */
+	public int getSort() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setSort
+	 */
+	public void setSort(int sort) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#getChoice

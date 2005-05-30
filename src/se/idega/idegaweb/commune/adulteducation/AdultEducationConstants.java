@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationConstants.java,v 1.2 2005/05/11 13:14:12 laddi Exp $
+ * $Id: AdultEducationConstants.java,v 1.3 2005/05/30 10:01:43 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,10 @@ public class AdultEducationConstants {
 	public static final String ADULT_EDUCATION_CASE_CODE = "MBVUXVA";
 	public static final String ADULT_EDUCATION_CASE_DESCRIPTION = "Adult education choice";
 	
+	public static final int SORT_ALL = 1;
+	public static final int SORT_UNHANDLED = 2;
+	public static final int SORT_HANDLED = 3;
+	public static final int SORT_HANDLER = 4;
 	
 	public static final String STUDY_PATH_GROUP_LANGUAGES = "LANGUAGES";
 	public static final String STUDY_PATH_GROUP_SOCIAL_SCIENCES = "SOCIAL_SCIENCES";

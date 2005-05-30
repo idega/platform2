@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.3 2005/05/26 07:27:46 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.4 2005/05/30 10:01:43 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,11 +10,13 @@
 package se.idega.idegaweb.commune.adulteducation.business;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -24,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/26 07:27:46 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/30 10:01:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -40,6 +42,13 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	private String iUserUniqueID = null;
 	private User iUser = null;
 	private Object iUserPK = null;
+	
+	private Object iSchoolTypePK = null;
+	private SchoolType iSchoolType = null;
+	
+	private Date iDate = null;
+	
+	private int iSort = -1;
 
 	public SchoolSeason getSchoolSeason() {
 		if (iSeason == null && iSeasonPK != null) {
@@ -67,6 +76,42 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	public void setSeason(Object seasonPK) {
 		iSeasonPK = seasonPK;
 		iSeason = null;
+	}
+	
+	public SchoolType getSchoolType() {
+		if (iSchoolType == null && iSeasonPK != null) {
+			try {
+				iSchoolType = getSchoolBusiness().getSchoolType(new Integer(iSchoolTypePK.toString()));
+			}
+			catch (RemoteException re) {
+				iSchoolType = null;
+			}
+		}
+		return iSchoolType;
+	}
+
+	public void setSchoolType(Object schoolTypePK) {
+		iSchoolTypePK = schoolTypePK;
+		iSchoolType= null;
+	}
+	
+	public Date getDate() {
+		if (iDate == null) {
+			iDate = new IWTimestamp().getDate();
+		}
+		return iDate;
+	}
+	
+	public void setDate(Date date) {
+		iDate = date;
+	}
+	
+	public int getSort() {
+		return iSort;
+	}
+	
+	public void setSort(int sort) {
+		iSort = sort;
 	}
 	
 	public AdultEducationChoice getChoice() {

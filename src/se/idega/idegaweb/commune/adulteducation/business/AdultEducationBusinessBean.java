@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.17 2005/05/26 07:46:38 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.18 2005/05/30 10:01:43 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/26 07:46:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/30 10:01:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -232,14 +232,52 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public Collection getChoices(SchoolSeason season) {
+	public Collection getChoices(SchoolSeason season, SchoolType type, Date date, User handler) {
 		try {
+			IWTimestamp stamp = new IWTimestamp(date);
+			stamp.addDays(1);
 			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusReview().getStatus() };
-			return getChoiceHome().findAllBySeasonAndStatuses(season, statuses, 1);
+			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, stamp.getDate(), handler, statuses, 1);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
 			return new ArrayList();
+		}
+	}
+	
+	public Collection getUnhandledChoices(SchoolSeason season, SchoolType type, Date date, User handler) {
+		try {
+			IWTimestamp stamp = new IWTimestamp(date);
+			stamp.addDays(1);
+			String[] statuses = { getCaseStatusOpen().getStatus() };
+			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, stamp.getDate(), handler, statuses, 1);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getHandledChoices(SchoolSeason season, SchoolType type, Date date, User handler) {
+		try {
+			IWTimestamp stamp = new IWTimestamp(date);
+			stamp.addDays(1);
+			String[] statuses = { getCaseStatusReview().getStatus() };
+			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, stamp.getDate(), handler, statuses, 1);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	private void updateHandlerForUserCases(User user, SchoolSeason season, User handler) {
+		Collection choices = getChoices(user, season);
+		Iterator iter = choices.iterator();
+		while (iter.hasNext()) {
+			AdultEducationChoice choice = (AdultEducationChoice) iter.next();
+			choice.setHandler(handler);
+			choice.store();
 		}
 	}
 	
@@ -604,6 +642,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		choice.setGrantedDate(new IWTimestamp().getDate());
 		
 		changeCaseStatus(choice, getCaseStatusGranted().getStatus(), performer);
+		updateHandlerForUserCases(choice.getUser(), choice.getCourse().getSchoolSeason(), performer);
 		
 		String subject = getLocalizedString("choice_granted_subject", "VUX application granted");
 		String body = getLocalizedString("choice_granted_body", "Your choice to course in {0} has been granted. The choice will now be handled by the provider.");
@@ -613,6 +652,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	public void denyChoice(AdultEducationChoice choice, String rejectionMessage, User performer) {
 		choice.setRejectionComment(rejectionMessage);
 		changeCaseStatus(choice, getCaseStatusReview().getStatus(), performer);
+		updateHandlerForUserCases(choice.getUser(), choice.getCourse().getSchoolSeason(), performer);
 
 		String subject = getLocalizedString("choice_granted_subject", "VUX application granted");
 		sendMessage(choice, subject, rejectionMessage);
@@ -629,6 +669,8 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		choice.setHandler(performer);
 		
 		choice.store();
+		
+		updateHandlerForUserCases(choice.getUser(), choice.getCourse().getSchoolSeason(), performer);
 	}
 	
 	public void removeCourse(Object coursePK) throws RemoveException {

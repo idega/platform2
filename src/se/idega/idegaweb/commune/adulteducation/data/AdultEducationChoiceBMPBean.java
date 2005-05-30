@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.6 2005/05/25 13:06:37 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.7 2005/05/30 10:01:42 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -16,11 +16,15 @@ import se.idega.idegaweb.commune.adulteducation.AdultEducationConstants;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolType;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.query.InCriteria;
+import com.idega.data.query.JoinCriteria;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
@@ -307,6 +311,48 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
 		query.addOrder(cases, "case_status", false);
 		query.addOrder(table, CHOICE_DATE, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllBySeasonAndTypeAndDateAndStatuses(SchoolSeason season, SchoolType type, Date date, String[] statuses, int choiceOrder) throws FinderException {
+		return ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, date, null, statuses, choiceOrder);
+	}
+	
+	public Collection ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(SchoolSeason season, SchoolType type, Date date, User handler, String[] statuses, int choiceOrder) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		Table studyPath = new Table(SchoolStudyPath.class);
+		Table user = new Table(User.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(table, cases);
+			query.addJoin(course, studyPath);
+			query.addJoin(table, user, USER);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		if (choiceOrder != -1) {
+			query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
+		}
+		if (type != null) {
+			query.addCriteria(new MatchCriteria(studyPath, "sch_school_type_id", MatchCriteria.EQUALS, type));
+		}
+		query.addCriteria(new MatchCriteria(table, CHOICE_DATE, MatchCriteria.LESS, date));
+		if (handler != null) {
+			OR or1 = new OR(new MatchCriteria(cases.getColumn("HANDLER_GROUP_ID"), false), new JoinCriteria(table.getColumn(USER), cases.getColumn("HANDLER_GROUP_ID")));
+			query.addCriteria(new OR(new MatchCriteria(cases, "HANDLER_GROUP_ID", MatchCriteria.EQUALS, handler), or1));
+		}
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(cases, "case_status", false);
+		query.addOrder(table, CHOICE_DATE, true);
+		query.addOrder(user, "personal_id", true);
 		
 		return idoFindPKsByQuery(query);
 	}

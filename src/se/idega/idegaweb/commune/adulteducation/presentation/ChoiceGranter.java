@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.6 2005/05/26 07:46:38 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.7 2005/05/30 10:01:43 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.adulteducation.AdultEducationConstants;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
@@ -34,6 +35,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -47,10 +49,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/26 07:46:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/30 10:01:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -58,6 +60,9 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 	private static final String PARAMETER_SEASON = "prm_season";
 	private static final String PARAMETER_USER = "prm_user";
 	private static final String PARAMETER_UNIQUE_ID = "prm_unique_id";
+	private static final String PARAMETER_SCHOOL_TYPE = "rm_school_type";
+	private static final String PARAMETER_DATE = "prm_date";
+	private static final String PARAMETER_SORT = "prm_sort";
 	
 	private static final String PARAMETER_REQUIREMENT_1 = "prm_requirement_1";
 	private static final String PARAMETER_REQUIREMENT_2 = "prm_requirement_2";
@@ -123,23 +128,59 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		form.addParameter(PARAMETER_USER, "");
 		form.setEventListener(ChoiceGranter.class);
 		
-		SelectorUtility util = new SelectorUtility();
-		
-		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SEASON), getBusiness().getSeasons(), "getSeasonName"));
-		if (getSession().getSchoolSeason() != null) {
-			seasons.setSelectedElement(getSession().getSchoolSeason().getPrimaryKey().toString());
-		}
-		seasons.setToSubmit();
-
-		form.add(getHeader(localize("season", "Season") + ":"));
-		form.add(Text.getNonBrakingSpace());
-		form.add(seasons);
+		form.add(getNavigationTable());
 		form.add(new Break(2));
 		form.add(getChoices(iwc));
 		
 		add(form);
 	}
 
+	private Table getNavigationTable() throws RemoteException {
+		Table table = new Table(7, 3);
+		table.setCellpadding(3);
+		table.setCellspacing(0);
+		
+		SelectorUtility util = new SelectorUtility();
+		
+		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SEASON), getBusiness().getSeasons(), "getSeasonName"));
+		if (getSession().getSchoolSeason() != null) {
+			seasons.setSelectedElement(getSession().getSchoolSeason().getPrimaryKey().toString());
+		}
+
+		DropdownMenu types = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_TYPE), getBusiness().getSchoolTypes(), "getLocalizationKey", getResourceBundle()));
+		types.addMenuElementFirst("", localize("show_all", "All"));
+		if (getSession().getSchoolType() != null) {
+			types.setSelectedElement(getSession().getSchoolType().getPrimaryKey().toString());
+		}
+		
+		DropdownMenu sort = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SORT));
+		sort.addMenuElement(AdultEducationConstants.SORT_ALL, localize("show_all", "All"));
+		sort.addMenuElement(AdultEducationConstants.SORT_UNHANDLED, localize("show_unhandled", "Unhandled"));
+		sort.addMenuElement(AdultEducationConstants.SORT_HANDLED, localize("show_handled", "Handled"));
+		sort.addMenuElement(AdultEducationConstants.SORT_HANDLER, localize("show_all_by_handler", "All by handler"));
+		if (getSession().getSort() != -1) {
+			sort.setSelectedElement(getSession().getSort());
+		}
+		
+		DateInput date = (DateInput) getStyledInterface(new DateInput(PARAMETER_DATE));
+		date.setDate(getSession().getDate());
+		
+		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("search", "Search")));
+		
+		table.add(getSmallHeader(localize("school_season", "School season") + ":"), 1, 1);
+		table.add(seasons, 2, 1);
+		table.add(getSmallHeader(localize("school_type", "School type") + ":"), 3, 1);
+		table.add(types, 4, 1);
+		table.add(getSmallHeader(localize("sort", "Sort") + ":"), 5, 1);
+		table.add(sort, 6, 1);
+		table.add(button, 7, 1);
+		table.add(getSmallHeader(localize("date", "Date") + ":"), 1, 3);
+		table.mergeCells(2, 3, 7, 3);
+		table.add(date, 2, 3);
+		
+		return table;
+	}
+	
 	private Table getChoices(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -156,7 +197,20 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.add(getLocalizedSmallHeader("handler","Handler"), column++, row);
 		table.add(getLocalizedSmallHeader("status","Status"), column++, row++);
 
-		Collection choices = getBusiness().getChoices(getSession().getSchoolSeason());
+		Collection choices = null;
+		switch (getSession().getSort()) {
+			case AdultEducationConstants.SORT_UNHANDLED:
+				choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				break;
+				
+			case AdultEducationConstants.SORT_HANDLED:
+				choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				break;
+				
+			default:
+				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				break;
+		}
 		Iterator iter = choices.iterator();
 		while (iter.hasNext()) {
 			AdultEducationChoice choice = (AdultEducationChoice) iter.next();
@@ -186,7 +240,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			table.add(link, column++, row);
 			table.add(getSmallText(date.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-			if (handler != null) {
+			if (handler != null && !handler.getPrimaryKey().equals(user.getPrimaryKey())) {
 				table.add(getSmallText(getUserBusiness(iwc).getNameOfGroupOrUser(handler)), column++, row);
 			}
 			else {
@@ -661,6 +715,41 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		if (iwc.isParameterSet(PARAMETER_USER)) {
 			try {
 				getSession(iwc).setStudent(iwc.getParameter(PARAMETER_USER));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPE)) {
+			try {
+				getSession(iwc).setSchoolType(iwc.getParameter(PARAMETER_SCHOOL_TYPE));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		else {
+			try {
+				getSession(iwc).setSchoolType(null);
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_DATE)) {
+			try {
+				getSession(iwc).setDate(new IWTimestamp(iwc.getParameter(PARAMETER_DATE)).getDate());
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_SORT)) {
+			try {
+				getSession(iwc).setSort(Integer.parseInt(iwc.getParameter(PARAMETER_SORT)));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
