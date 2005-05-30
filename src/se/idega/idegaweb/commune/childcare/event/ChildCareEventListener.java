@@ -27,6 +27,9 @@ public class ChildCareEventListener implements IWPageEventListener {
 
 			if (iwc.isParameterSet(session.getParameterUserID()))
 				session.setChildID(Integer.parseInt(iwc.getParameter(session.getParameterUserID())));
+			
+			if (iwc.isParameterSet(session.getParameterUniqueID()))
+				session.setUniqueID(iwc.getParameter(session.getParameterUniqueID()));
 
 			if (iwc.isParameterSet(session.getParameterApplicationID()))
 				session.setApplicationID(Integer.parseInt(iwc.getParameter(session.getParameterApplicationID())));
