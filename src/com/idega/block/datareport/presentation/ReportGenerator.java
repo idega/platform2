@@ -59,7 +59,6 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.BusyBar;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -112,7 +111,6 @@ public class ReportGenerator extends Block {
 	private Table _fieldTable = null;
 	private JasperDesign _design = null;
 	private ReportDescription _reportDescription = null;//new ReportDescription();
-	private BusyBar _busy = null;
 	
 	private List maintainParameterList = new Vector();
 
@@ -133,7 +131,6 @@ public class ReportGenerator extends Block {
 	 */
 	public ReportGenerator() {
 		super();
-		_busy = new BusyBar("busy_generating_report");
 	}
 
 
@@ -892,10 +889,6 @@ public class ReportGenerator extends Block {
 		}
 		_fieldTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		_busy.addDisabledObject(generateButton);
-		_busy.addBusyObject(generateButton);
-		_busy.setBusyBarUrl(coreBundle.getImage("loading.gif").getURL());
-		_fieldTable.add(_busy, 1, ++row);
 		_fieldTable.mergeCells(1, row, 2, row);
 		_fieldTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 
