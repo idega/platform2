@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.7 2005/05/30 10:01:43 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.8 2005/05/30 11:26:36 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -49,10 +49,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/30 10:01:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/30 11:26:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -200,15 +200,23 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		Collection choices = null;
 		switch (getSession().getSort()) {
 			case AdultEducationConstants.SORT_UNHANDLED:
-				choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
 				break;
 				
 			case AdultEducationConstants.SORT_HANDLED:
-				choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
 				break;
 				
-			default:
+			case AdultEducationConstants.SORT_HANDLER:
 				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				break;
+
+			case AdultEducationConstants.SORT_ALL:
+				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
+				break;
+
+			default:
+				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
 				break;
 		}
 		Iterator iter = choices.iterator();
