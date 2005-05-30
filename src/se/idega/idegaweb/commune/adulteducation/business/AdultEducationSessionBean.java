@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.4 2005/05/30 10:01:43 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.5 2005/05/30 11:07:02 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/30 10:01:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/30 11:07:02 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -79,7 +79,7 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	}
 	
 	public SchoolType getSchoolType() {
-		if (iSchoolType == null && iSeasonPK != null) {
+		if (iSchoolType == null && iSchoolTypePK != null) {
 			try {
 				iSchoolType = getSchoolBusiness().getSchoolType(new Integer(iSchoolTypePK.toString()));
 			}
