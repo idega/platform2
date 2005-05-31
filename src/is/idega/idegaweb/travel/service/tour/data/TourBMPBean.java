@@ -218,11 +218,14 @@ public class TourBMPBean extends GenericEntity implements Tour {
 				.append(addressTableName).append(" ica ");
 			}
 			
-			sql.append(" where ")
-			.append("p.").append(productTableIDColumnName).append(" = pa.").append(productTableIDColumnName)
-			.append(" AND pa.").append(travelAddressTableIDColumnName).append(" = addr.").append(travelAddressTableIDColumnName)
-			.append(" AND addr.").append(addressTableIDColumnName).append(" = ica.").append(addressTableIDColumnName)
-			.append(" AND h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
+			sql.append(" where ");
+			if (postalCode) {
+				sql.append("p.").append(productTableIDColumnName).append(" = pa.").append(productTableIDColumnName)
+				.append(" AND pa.").append(travelAddressTableIDColumnName).append(" = addr.").append(travelAddressTableIDColumnName)
+				.append(" AND addr.").append(addressTableIDColumnName).append(" = ica.").append(addressTableIDColumnName)
+				.append(" AND ");
+			}
+			sql.append("h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
 			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName)
 			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 			
