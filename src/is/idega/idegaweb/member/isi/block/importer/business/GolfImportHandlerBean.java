@@ -318,13 +318,12 @@ private static final String MAIN_CLUB_TYPE = "main";
 			Iterator ownerIter = owners.iterator();
 			while (ownerIter.hasNext()) {
 				User owner = (User) ownerIter.next();
-				groupBiz.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(getUserContext(),
-						importGroup, owner);
+				groupBiz.applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(importGroup, owner);
 			}
 		}
 			
 	      //set current user as owner of group
-	      groupBiz.applyUserAsGroupsOwner(getUserContext(), importGroup, currentUser);
+	      groupBiz.applyUserAsGroupsOwner(importGroup, currentUser);
 		
       return importGroup;
 		
