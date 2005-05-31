@@ -51,7 +51,7 @@ private static final String IC_CATEGORY_IC_OBJECT_INSTANCE_MIDDLE_TABLE_NAME = "
 		addAttribute(getColumnOwnerGroup(), "Owner group", true, true, Integer.class);
 		addAttribute(getColumnName(), "Name", true, true, String.class);
 		addAttribute(getColumnDescription(), "Description", true, true, String.class);
-		addAttribute(getColumnType(), "Type", true, true, String.class);
+		addAttribute(getColumnType(), "Type", true, true, String.class, 50);
 		addAttribute(getColumnCreated(), "Created", true, true, java.sql.Timestamp.class);
 		addAttribute(getColumnInvalidationDate(), "Invalidation date", true, true, java.sql.Timestamp.class);
 		addAttribute(getColumnValid(), "Valid", true, true, Boolean.class);
