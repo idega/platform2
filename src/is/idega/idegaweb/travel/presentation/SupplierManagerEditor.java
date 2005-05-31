@@ -5,11 +5,13 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.data.IDOLookup;
@@ -19,6 +21,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
@@ -42,7 +45,7 @@ public class SupplierManagerEditor extends TravelManager {
 	private static String PARAMETER_CHOOSE = "sme_chU";
 	private static String PARAMETER_MANAGER_ID = "sme_mid";
 	private static String PARAMETER_MANAGER_NAME = "sme_mn";
-	private static String PARAMETER_MANAGER_DESCRIPTION = "sme_md";
+	private static String PARAMETER_MANAGER_DESCRIPTION = "sme_md";	
 	private static String PARAMETER_USER_NAME = "sme_un";
 	private static String PARAMETER_PASSWORD_1 = "sme_p1";
 	private static String PARAMETER_PASSWORD_2 = "sme_p2";
@@ -51,7 +54,7 @@ public class SupplierManagerEditor extends TravelManager {
 	
 	private IWResourceBundle iwrb;
 	private String errorMessage;
-
+	
 	public void _main(IWContext iwc) throws Exception {
 		if (PARAMETER_CHOOSE.equals(iwc.getParameter(this.ACTION))) {
 			try {
@@ -86,12 +89,12 @@ public class SupplierManagerEditor extends TravelManager {
 		if (action == null || "".equals(action)) {
 			managerList(iwc);
 		} else if (action.equals(ACTION_NEW)) {
-			managerEditor(null);
+			managerEditor(iwc, null);
 		} else if (action.equals(ACTION_EDIT)) {
 			String mID = iwc.getParameter(PARAMETER_MANAGER_ID);
-			managerEditor( ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(mID))  );
+			managerEditor(iwc, ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(mID))  );
 		} else if (action.equals(ACTION_SAVE)) {
-			managerEditor(saveManager(iwc));
+			managerEditor(iwc, saveManager(iwc));
 		} else if (action.equals(ACTION_DELETE)) {
 			String mID = iwc.getParameter(PARAMETER_MANAGER_ID);
 			deleteManager( ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(mID))  );
@@ -129,21 +132,29 @@ public class SupplierManagerEditor extends TravelManager {
 				} else if (!pass1.equals(pass2)) {
 					errorMessage = iwrb.getLocalizedString("travel.passwords_must_be_identical", "Passwords must be identical");
 				} else {
-	        boolean inUse = LoginDBHandler.isLoginInUse(username);
-	        if (!inUse) {
-	        	manager = getSupplierManagerBusiness(iwc).createSupplierManager(name, description, adminName, username, pass1, iwc);
-		      } else {
-		      	errorMessage = iwrb.getLocalizedString("travel.username_in_use", "Username in use");
-		      }
-
+					boolean inUse = LoginDBHandler.isLoginInUse(username);
+					if (!inUse) {
+						manager = getSupplierManagerBusiness(iwc).createSupplierManager(name, description, adminName, username, pass1, iwc);
+					} else {
+						errorMessage = iwrb.getLocalizedString("travel.username_in_use", "Username in use");
+					}
+					
 				}
 			}
+		}
+		
+		// Roles
+		List roles = getRoles();
+		Iterator iter = roles.iterator();
+		while (iter.hasNext()) {
+			String role = iter.next().toString();
+			getSupplierManagerBusiness(iwc).setRole(manager, role, iwc.isParameterSet(role));
 		}
 		
 		return manager;
 	}
 	
-	private void managerEditor(Group groupToEdit) {
+	private void managerEditor(IWContext iwc, Group groupToEdit) throws RemoteException {
 		Form form = new Form();
 		Table table = getTable();
 		form.add(table);
@@ -159,20 +170,25 @@ public class SupplierManagerEditor extends TravelManager {
 		
 		TextInput name = new TextInput(PARAMETER_MANAGER_NAME);
 		TextInput description = new TextInput(PARAMETER_MANAGER_DESCRIPTION);
-
+		Collection roles = new Vector();
+		
 		if (groupToEdit != null) {
 			name.setContent(groupToEdit.getName());
 			description.setContent(groupToEdit.getDescription());
 			table.add(new HiddenInput(PARAMETER_MANAGER_ID, groupToEdit.getPrimaryKey().toString()), 1, row);
+			roles = getSupplierManagerBusiness(iwc).getRolesAsString(groupToEdit);
+			if (roles == null) {
+				roles = new Vector();
+			}
 		}
-
+		
 		table.add(getText(iwrb.getLocalizedString("travel.name", "Name")), 1, row);
 		table.add(name, 2, row);
 		table.setRowColor(row++, GRAY);
 		table.add(getText(iwrb.getLocalizedString("travel.description", "Description")), 1, row);
 		table.add(description, 2, row);
 		table.setRowColor(row++, GRAY);
-
+		
 		if (groupToEdit == null) {
 			TextInput adminName = new TextInput(PARAMETER_ADMIN_NAME);
 			TextInput login = new TextInput(PARAMETER_USER_NAME);
@@ -189,6 +205,21 @@ public class SupplierManagerEditor extends TravelManager {
 			table.setRowColor(row++, GRAY);
 			table.add(getText(iwrb.getLocalizedString("travel.retype_password", "Retype password")), 1, row);
 			table.add(pass2, 2, row);
+			table.setRowColor(row++, GRAY);
+		}
+		
+		// Roles
+		List allRoles = getRoles();
+		Iterator allRolesIter = allRoles.iterator();
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, row);
+		table.setRowColor(row, backgroundColor);
+		table.mergeCells(1, row, 2, row++);
+		while (allRolesIter.hasNext()) {
+			String role = allRolesIter.next().toString();
+			CheckBox box = new CheckBox(role);
+			box.setChecked(roles.contains(role));
+			table.add(box, 1, row);
+			table.add(getText(iwrb.getLocalizedString("travel.role."+role, role)), 2, row);
 			table.setRowColor(row++, GRAY);
 		}
 		
@@ -231,7 +262,7 @@ public class SupplierManagerEditor extends TravelManager {
 				use = new Link(iwrb.getLocalizedImageButton("use", "Use"));
 				use.addParameter(ACTION, PARAMETER_CHOOSE);
 				use.addParameter(PARAMETER_MANAGER_ID, manager.getPrimaryKey().toString());
-
+				
 				table.add(name, 1, row);
 				table.add(getText(manager.getDescription()), 2, row);
 				table.add(use, 3, row);
@@ -245,7 +276,13 @@ public class SupplierManagerEditor extends TravelManager {
 		
 		add(form);
 	}
-
-
+	
+	private List getRoles() {
+		List l = new Vector();
+		l.add(TradeConstants.ROLE_BOOKING_BASKET);
+//		l.add(TradeConstants.ROLE_CREATE_EDIT_PRODUCTS);
+//		l.add(TradeConstants.ROLE_EDIT_SUPPLIES);
+		return l;
+	}
 	
 }
