@@ -1,5 +1,5 @@
 /*
- * $Id: RunBlock.java,v 1.1 2005/05/24 12:06:29 laddi Exp $
+ * $Id: RunBlock.java,v 1.2 2005/05/31 19:04:35 laddi Exp $
  * Created on May 17, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,26 +9,34 @@
  */
 package is.idega.idegaweb.marathon.presentation;
 
+import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.util.HashMap;
 import java.util.Map;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.user.business.GenderBusiness;
+import com.idega.user.business.UserBusiness;
 
 
 /**
- * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RunBlock extends Block {
 
@@ -117,6 +125,64 @@ public class RunBlock extends Block {
 		this.iwrb = resourceBundle;
 	}
 
+	protected RunBusiness getRunBusiness(IWApplicationContext iwac) {
+		try {
+			return (RunBusiness) IBOLookup.getServiceInstance(iwac, RunBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+
+	protected UserBusiness getUserBusiness(IWApplicationContext iwac) {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+
+	protected GenderBusiness getGenderBusiness(IWApplicationContext iwac) {
+		try {
+			return (GenderBusiness) IBOLookup.getServiceInstance(iwac, GenderBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+
+	protected Table getPhasesTable(int phase, int totalPhases, String key, String defaultText) {
+		Table table = new Table(2, 1);
+		table.setCellpadding(3);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setBottomCellBorder(1, 1, 1, "#D7D7D7", "solid");
+		table.setBottomCellBorder(2, 1, 1, "#D7D7D7", "solid");
+		
+		table.add(getHeader(localize(key, defaultText)), 1, 1);
+		
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(localize("step", "Step")).append(" ").append(phase).append(" ").append(localize("of", "of")).append(" ").append(totalPhases);
+		table.add(getHeader(buffer.toString()), 2, 1);
+		
+		return table;
+	}
+	
+	protected Table getInformationTable(String information) {
+		Table table = new Table(1, 1);
+		table.setCellpadding(3);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setBottomCellBorder(1, 1, 1, "#D7D7D7", "solid");
+		table.setCellpaddingBottom(1, 1, 6);
+		
+		table.add(getText(information), 1, 1);
+		
+		return table;
+	}
+	
 	public String getBundleIdentifier() {
 		return IWMarathonConstants.IW_BUNDLE_IDENTIFIER;
 	}

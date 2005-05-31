@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.14 2005/05/31 19:04:34 laddi Exp $
+ * $Id: Registration.java,v 1.15 2005/05/31 19:05:57 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:05:57 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class Registration extends RunBlock {
 	
@@ -904,8 +904,14 @@ public class Registration extends RunBlock {
 		creditCardTable.add(nameField, 1, creditRow);
 		for (int a = 1; a <= 4; a++) {
 			TextInput cardNumber = (TextInput) getStyledInterface(new TextInput(PARAMETER_CARD_NUMBER + "_" + a));
-			cardNumber.setLength(4);
-			cardNumber.setMaxlength(4);
+			if (a < 4) {
+				cardNumber.setLength(4);
+				cardNumber.setMaxlength(4);
+			}
+			else {
+				cardNumber.setLength(7);
+				cardNumber.setMaxlength(7);
+			}
 			cardNumber.setMininumLength(4, localize("run_reg.not_valid_card_number", "Not a valid card number"));
 			cardNumber.setAsIntegers(localize("run_reg.not_valid_card_number", "Not a valid card number"));
 			cardNumber.setAsNotEmpty(localize("run_reg.must_supply_card_number", "You must enter the credit card number"));

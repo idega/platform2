@@ -1,6 +1,6 @@
 /*
- * $Id: DistanceHome.java,v 1.1 2005/05/24 12:06:29 laddi Exp $
- * Created on May 23, 2005
+ * $Id: DistanceHome.java,v 1.2 2005/05/31 19:04:34 laddi Exp $
+ * Created on May 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import com.idega.user.data.GroupHome;
 
 
 /**
- * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface DistanceHome extends GroupHome {
 

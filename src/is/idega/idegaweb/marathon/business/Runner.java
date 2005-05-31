@@ -1,5 +1,5 @@
 /*
- * $Id: Runner.java,v 1.1 2005/05/24 12:06:29 laddi Exp $ Created on May 16, 2005
+ * $Id: Runner.java,v 1.2 2005/05/31 19:04:35 laddi Exp $ Created on May 16, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  * 
@@ -19,10 +19,10 @@ import com.idega.user.data.User;
  * A holder class for information about runners and their selection when
  * registering.
  * 
- * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Runner {
 
@@ -49,6 +49,7 @@ public class Runner {
 	private String homePhone;
 	private String mobilePhone;
 	private boolean agree;
+	private float amount;
 
 	public User getUser() {
 		return user;
@@ -230,5 +231,15 @@ public class Runner {
 	
 	public void setAgree(boolean agree) {
 		this.agree = agree;
+	}
+
+	
+	public float getAmount() {
+		return amount;
+	}
+
+	
+	public void setAmount(float amount) {
+		this.amount = amount;
 	}
 }

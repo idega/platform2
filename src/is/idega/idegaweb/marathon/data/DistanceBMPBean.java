@@ -1,5 +1,5 @@
 /*
- * $Id: DistanceBMPBean.java,v 1.1 2005/05/24 12:06:29 laddi Exp $
+ * $Id: DistanceBMPBean.java,v 1.2 2005/05/31 19:04:34 laddi Exp $
  * Created on May 22, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/24 12:06:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 
@@ -28,6 +28,7 @@ public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 	private static final String METADATA_FAMILY_DISCOUNT = "family_discount";
 	private static final String METADATA_CHILDREN_PRICE_ISK = "children_price_isk";
 	private static final String METADATA_CHILDREN_PRICE_EUR = "children_price_eur";
+	private static final String METADATA_ALLOWS_GROUPS = "allows_groups";
 
 	public boolean isUseChip() {
 		String useChip = this.getMetaData(METADATA_USE_CHIP);
@@ -97,5 +98,17 @@ public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 
 	public void setFamilyDiscount(boolean discount) {
 		setMetaData(METADATA_FAMILY_DISCOUNT, String.valueOf(discount), "java.lang.Boolean");
+	}
+
+	public boolean isAllowsGroups() {
+		String allowsGroups = this.getMetaData(METADATA_ALLOWS_GROUPS);
+		if (allowsGroups != null) {
+			return new Boolean(allowsGroups).booleanValue();
+		}
+		return true;
+	}
+
+	public void setAllowsGroups(boolean allowsGroups) {
+		setMetaData(METADATA_ALLOWS_GROUPS, String.valueOf(allowsGroups), "java.lang.Boolean");
 	}
 }

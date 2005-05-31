@@ -358,6 +358,17 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 		return idoGetNumberOfRecords(query.toString());
 	}
 	
+	public int ejbHomeGetCountByDistanceAndGroupName(Object distancePK, String groupName) throws IDOException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distancePK));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunGroupName(), MatchCriteria.EQUALS, groupName));
+		
+		return idoGetNumberOfRecords(query);
+	}
+	
 	public Collection ejbFindAllByDistanceAndGroup(Group distance, Group runGroup) throws FinderException {
 		Table table = new Table(this);
 		
@@ -376,6 +387,13 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(getColumnNameUserID(),userID);
 		query.appendAndEquals(getColumnNameRunDistanceGroupID(),distanceID);
+		return (Integer) super.idoFindOnePKByQuery(query);
+	}
+	
+	public Integer ejbFindByDistanceAndParticpantNumber(Object distancePK, int participantNumber) throws FinderException{
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(getColumnNameRunDistanceGroupID(), distancePK);
+		query.appendAndEquals(getColumnNameParticipantNumber(), participantNumber);
 		return (Integer) super.idoFindOnePKByQuery(query);
 	}
 	

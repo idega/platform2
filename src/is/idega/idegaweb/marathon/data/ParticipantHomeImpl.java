@@ -1,6 +1,6 @@
 /*
- * $Id: ParticipantHomeImpl.java,v 1.2 2005/05/26 12:39:05 laddi Exp $
- * Created on May 26, 2005
+ * $Id: ParticipantHomeImpl.java,v 1.3 2005/05/31 19:04:34 laddi Exp $
+ * Created on May 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/26 12:39:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ParticipantHomeImpl extends IDOFactory implements ParticipantHome {
 
@@ -51,6 +51,13 @@ public class ParticipantHomeImpl extends IDOFactory implements ParticipantHome {
 		return theReturn;
 	}
 
+	public int getCountByDistanceAndGroupName(Object distancePK, String groupName) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((ParticipantBMPBean) entity).ejbHomeGetCountByDistanceAndGroupName(distancePK, groupName);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
 	public Collection findAllByDistanceAndGroup(Group distance, Group runGroup) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ParticipantBMPBean) entity).ejbFindAllByDistanceAndGroup(distance, runGroup);
@@ -61,6 +68,13 @@ public class ParticipantHomeImpl extends IDOFactory implements ParticipantHome {
 	public Participant findByUserIDandDistanceID(int userID, int distanceID) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((ParticipantBMPBean) entity).ejbFindByUserIDandDistanceID(userID, distanceID);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public Participant findByDistanceAndParticpantNumber(Object distancePK, int participantNumber) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ParticipantBMPBean) entity).ejbFindByDistanceAndParticpantNumber(distancePK, participantNumber);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}

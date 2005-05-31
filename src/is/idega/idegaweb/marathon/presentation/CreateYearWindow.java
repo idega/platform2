@@ -31,7 +31,7 @@ public class CreateYearWindow extends StyledIWAdminWindow {
 
 	public CreateYearWindow() {
 		super();
-		setWidth(700);
+		setWidth(730);
 		setHeight(500);
 	}
 	
@@ -50,11 +50,11 @@ public class CreateYearWindow extends StyledIWAdminWindow {
 
 		Table table = new Table();
 		table.setCellpadding(3);
-		table.setColumns(7);
+		table.setColumns(8);
 		int row = 1;
 		
 		table.add(new Text("Year: "), 1, row);
-		table.mergeCells(2, 1, 7, 1);
+		table.mergeCells(2, 1, 8, 1);
 		table.add(new TextInput("year"), 2, row++);
 		table.setHeight(row++, 12);
 		
@@ -63,7 +63,8 @@ public class CreateYearWindow extends StyledIWAdminWindow {
 		table.add(new Text("Child Price (ISK)"), 4, row);
 		table.add(new Text("Child Price (EUR)"), 5, row);
 		table.add(new Text("Use chip"), 6, row);
-		table.add(new Text("Family discount"), 7, row++);
+		table.add(new Text("Family discount"), 7, row);
+		table.add(new Text("Allows groups"), 8, row++);
 		String[] distances = getRunBiz(iwc).getDistancesForRun(run);
 		if (distances != null) {
 			for (int i = 0; i < distances.length; i++) {
@@ -95,7 +96,13 @@ public class CreateYearWindow extends StyledIWAdminWindow {
 				menu.addMenuElement(Boolean.TRUE.toString(), "Yes");
 				menu.addMenuElement(Boolean.FALSE.toString(), "No");
 				menu.setSelectedElement(Boolean.FALSE.toString());
-				table.add(menu, 7, row++);
+				table.add(menu, 7, row);
+
+				menu = new DropdownMenu("allows_groups");
+				menu.addMenuElement(Boolean.TRUE.toString(), "Yes");
+				menu.addMenuElement(Boolean.FALSE.toString(), "No");
+				menu.setSelectedElement(Boolean.FALSE.toString());
+				table.add(menu, 8, row++);
 			}
 		}
 		form.add(table);
@@ -108,7 +115,7 @@ public class CreateYearWindow extends StyledIWAdminWindow {
 
 		switch (parseAction(iwc)) {
 			case 1:
-				getRunBiz(iwc).createNewGroupYear(iwc, run, iwc.getParameter("year"), iwc.getParameterValues("price_isk"), iwc.getParameterValues("price_eur"), iwc.getParameterValues("use_chip"), iwc.getParameterValues("price_children_isk"), iwc.getParameterValues("price_children_eur"), iwc.getParameterValues("family_discount"));
+				getRunBiz(iwc).createNewGroupYear(iwc, run, iwc.getParameter("year"), iwc.getParameterValues("price_isk"), iwc.getParameterValues("price_eur"), iwc.getParameterValues("use_chip"), iwc.getParameterValues("price_children_isk"), iwc.getParameterValues("price_children_eur"), iwc.getParameterValues("family_discount"), iwc.getParameterValues("allows_groups"));
 				close();
 		}
 	}

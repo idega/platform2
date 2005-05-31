@@ -1,6 +1,6 @@
 /*
- * $Id: ParticipantHome.java,v 1.2 2005/05/26 12:39:05 laddi Exp $
- * Created on May 26, 2005
+ * $Id: ParticipantHome.java,v 1.3 2005/05/31 19:04:34 laddi Exp $
+ * Created on May 30, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/26 12:39:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ParticipantHome extends IDOHome {
 
@@ -40,6 +40,11 @@ public interface ParticipantHome extends IDOHome {
 	public int getNextAvailableParticipantNumber(int min, int max) throws IDOException;
 
 	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbHomeGetCountByDistanceAndGroupName
+	 */
+	public int getCountByDistanceAndGroupName(Object distancePK, String groupName) throws IDOException;
+
+	/**
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbFindAllByDistanceAndGroup
 	 */
 	public Collection findAllByDistanceAndGroup(Group distance, Group runGroup) throws FinderException;
@@ -48,6 +53,11 @@ public interface ParticipantHome extends IDOHome {
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbFindByUserIDandDistanceID
 	 */
 	public Participant findByUserIDandDistanceID(int userID, int distanceID) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbFindByDistanceAndParticpantNumber
+	 */
+	public Participant findByDistanceAndParticpantNumber(Object distancePK, int participantNumber) throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.ParticipantBMPBean#ejbFindByUserAndRun

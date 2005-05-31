@@ -179,6 +179,19 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	
+	public boolean doesGroupExist(Object distancePK, String groupName) {
+		try {
+			return ((ParticipantHome) IDOLookup.getHome(Participant.class)).getCountByDistanceAndGroupName(distancePK, groupName) > 0;
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return false;
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+	
 	public boolean isRegisteredInRun(int runID, String personalID) {
 		try {
 			User user = getUserBiz().getUserHome().findByPersonalID(personalID);
@@ -377,6 +390,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					participant.setRunDistanceGroup(distance);
 					participant.setRunYearGroup(yearGroup);
 					participant.setRunGroupGroup(ageGenderGroup);
+					if (runner.getAmount() > 0) {
+						participant.setPayedAmount(String.valueOf(runner.getAmount()));
+					}
 					
 					participant.setTShirtSize(runner.getShirtSize());
 					if (runner.isOwnChip()) {
@@ -449,6 +465,28 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		
 		return participants;
+	}
+	
+	public void addParticipantsToGroup(String[] participants, String[] bestTimes, String[] estimatedTimes, String groupName) {
+		try {
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			
+			for (int i = 0; i < participants.length; i++) {
+				try {
+					Participant participant = runHome.findByPrimaryKey(new Integer(participants[i]));
+					participant.setBestTime(bestTimes[i]);
+					participant.setGoalTime(estimatedTimes[i]);
+					participant.setRunGroupName(groupName);
+					participant.store();
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 	
 	private Group getAgeGroup(User user, Run run, Distance distance) {
@@ -727,6 +765,17 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		 
 		return null;
 	}
+	
+	public Participant getParticipantByDistanceAndParticipantNumber(Object distancePK, int participantNumber) throws FinderException {
+		try {
+			ParticipantHome runHome = (ParticipantHome) getIDOHome(Participant.class);
+			return runHome.findByDistanceAndParticpantNumber(distancePK, participantNumber);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
 	public Group getRunGroupByGroupId(Integer groupId) {
 		try {
 			GroupHome groupHome = (GroupHome) getIDOHome(Group.class);
@@ -1011,7 +1060,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return null;
 	}
 
-	public void createNewGroupYear(IWContext iwc, Group run, String year, String[] priceISK, String[] priceEUR, String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount) {
+	public void createNewGroupYear(IWContext iwc, Group run, String year, String[] priceISK, String[] priceEUR, String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount, String[] allowsGroups) {
 		String runName = run.getName();
 		Group group = null;
 		try {
@@ -1034,16 +1083,16 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		//TODO: remove this hack - set metadata on the groups containing the
 		// specific run...
 		if (runName.equals("Rvk Marathon")) {
-			generateSubGroups(iwc, group, getDistancesForRun(run), grForMarathon, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForMarathon, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount, allowsGroups);
 		}
 		else if (runName.equals("Midnight Run")) {
-			generateSubGroups(iwc, group, getDistancesForRun(run), grForMidnight, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForMidnight, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount, allowsGroups);
 		}
 		else if (runName.equals("Laugavegur")) {
-			generateSubGroups(iwc, group, getDistancesForRun(run), grForLaugavegur, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForLaugavegur, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount, allowsGroups);
 		}
 		else if (runName.equals("Roller Skate")) {
-			generateSubGroups(iwc, group, getDistancesForRun(run), grForMarathon, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount);
+			generateSubGroups(iwc, group, getDistancesForRun(run), grForMarathon, priceISK, priceEUR, useChips, childrenPriceISK, childrenPriceEUR, familyDiscount, allowsGroups);
 		}
 	}
 
@@ -1053,7 +1102,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * @param disForMarathon
 	 * @param grForMarathon
 	 */
-	private void generateSubGroups(IWContext iwc, Group group, String[] dis, String[] gr, String[] priceISK, String[] priceEUR, String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount) {
+	private void generateSubGroups(IWContext iwc, Group group, String[] dis, String[] gr, String[] priceISK, String[] priceEUR, String[] useChips, String[] childrenPriceISK, String[] childrenPriceEUR, String[] familyDiscount, String[] allowsGroups) {
 		for (int i = 0; i < dis.length; i++) {
 			Group distance = null;
 			try {
@@ -1072,6 +1121,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					if (childrenPriceEUR[i] != null && childrenPriceEUR[i].length() > 0) {
 						distanceGroup.setChildrenPriceInEUR(Float.parseFloat(childrenPriceEUR[i]));
 					}
+					distanceGroup.setAllowsGroups(new Boolean(allowsGroups[i]).booleanValue());
 					distanceGroup.store();
 				}
 				catch (FinderException fe) {
