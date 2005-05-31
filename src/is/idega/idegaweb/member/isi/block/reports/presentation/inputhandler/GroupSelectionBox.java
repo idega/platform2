@@ -211,6 +211,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
 		initialize(iwc);
 		this.setName(name);
+		this.selectAllOnSubmitIfNoneSelected();
 		if (value != null) {
 			this.setSelectedElement(value);
 		}
@@ -270,6 +271,21 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			Iterator iter = ((Collection) value).iterator();
 			StringBuffer names = new StringBuffer();
 			int numberOfGroups = ((Collection) value).size();
+			int totalNumberOfGroups = -1;
+			String totalNumberOfGroupsParam = iwc.getParameter(PARAM_NUMBER_OF_ELEMENTS_IN_SELECTIONBOX+"_"+getClassName());
+			if (totalNumberOfGroupsParam != null && !totalNumberOfGroupsParam.equals("")) {
+			    try {
+                    totalNumberOfGroups = Integer.parseInt(totalNumberOfGroupsParam);
+                } catch (NumberFormatException e) {
+					e.printStackTrace();
+                }
+			}
+			if (numberOfGroups != -1) {
+			    if (totalNumberOfGroups == numberOfGroups) {
+					String shortClassName = this.getClassName().substring(this.getClassName().lastIndexOf(".")+1);
+			        return this.getResourceBundle(iwc).getLocalizedString(shortClassName+".all_or_none_selected","All");
+			    }
+			}
 			int counter = 0;
 
 			while (iter.hasNext()) {
