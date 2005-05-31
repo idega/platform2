@@ -1,3 +1,12 @@
+/*
+ * $Id: TravelSessionManager.java,v 1.6 2005/05/31 19:15:20 gimmi Exp $
+ * Created on 10.2.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
@@ -12,7 +21,11 @@ import com.idega.user.data.User;
 
 
 /**
- * @author gimmi
+ * 
+ *  Last modified: $Date: 2005/05/31 19:15:20 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.6 $
  */
 public interface TravelSessionManager extends IBOSession {
 
@@ -27,14 +40,14 @@ public interface TravelSessionManager extends IBOSession {
 	public void clearAll() throws java.rmi.RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#isSet
-	 */
-	public boolean isSet() throws java.rmi.RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#isSupplierManager
 	 */
 	public boolean isSupplierManager() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#isSet
+	 */
+	public boolean isSet() throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#setIsSupplierManager
@@ -110,4 +123,14 @@ public interface TravelSessionManager extends IBOSession {
 	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#getSearchEngine
 	 */
 	public ServiceSearchEngine getSearchEngine() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#hasRole
+	 */
+	public boolean hasRole(String role) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelSessionManagerBean#clearRoleCache
+	 */
+	public void clearRoleCache() throws java.rmi.RemoteException;
 }

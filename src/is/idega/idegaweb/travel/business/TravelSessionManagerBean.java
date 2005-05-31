@@ -1,9 +1,15 @@
 package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import com.idega.block.trade.stockroom.business.TradePermissionBusiness;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -37,6 +43,7 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
   private boolean _isSupplierManager;
   private User _user;
   private int _userId = -1;
+  private Map permissionMap;
 
   public TravelSessionManagerBean() {
   }
@@ -57,6 +64,7 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
     _supplierManager = null;
     _isSupplierManager = false;
     _isSet = false;
+    clearRoleCache();
   }
   
   public boolean isSupplierManager() {
@@ -150,6 +158,48 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
   
   public ServiceSearchEngine getSearchEngine() {
   	return _engine;
+  }
+  
+  private Map getPermissionMap() {
+  	if (permissionMap == null) {
+  		permissionMap = new HashMap();
+  	}
+  	return permissionMap;
+  }
+  
+  public boolean hasRole(String role) {
+  	Boolean bool = (Boolean) getPermissionMap().get(role);
+  	if (bool == null) { 
+  		try {
+	  		if (isSupplierManager()) {
+	  			bool = new Boolean(getTradePermissionBusiness().hasRole(_supplierManager, role));
+	  		} else if (_supplier != null) {
+	  			bool = new Boolean(getTradePermissionBusiness().hasRole(_supplier, role));
+	  		}
+  		} catch (Exception e) {
+  			e.printStackTrace();
+  		}
+  		if (bool == null) {
+  			bool = new Boolean(false); // Returning false, if nothing is found
+  		} else {
+	  		getPermissionMap().put(role, bool);
+  		}
+  	}
+  	
+  	return bool.booleanValue();
+  }
+  
+  public void clearRoleCache() {
+  	permissionMap = null;
+  }
+  
+  protected TradePermissionBusiness getTradePermissionBusiness() {
+  	try {
+		return (TradePermissionBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TradePermissionBusiness.class);
+	}
+	catch (IBOLookupException e) {
+		throw new IBORuntimeException(e);
+	}
   }
 
 }
