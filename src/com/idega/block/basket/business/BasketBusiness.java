@@ -13,6 +13,7 @@ public interface BasketBusiness extends com.idega.business.IBOSession
  public void emptyExtraInfo() throws java.rmi.RemoteException;
  public java.util.Map getBasket() throws java.rmi.RemoteException;
  public java.util.List getExtraInfo() throws java.rmi.RemoteException;
+ public int getQuantity() throws java.rmi.RemoteException;
  public void removeExtraInfo(java.lang.Object p0) throws java.rmi.RemoteException;
  public void removeItem(com.idega.block.basket.data.BasketItem p0) throws java.rmi.RemoteException;
 }

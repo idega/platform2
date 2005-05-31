@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.idega.block.basket.data.BasketEntry;
 import com.idega.block.basket.data.BasketItem;
 import com.idega.business.IBOSessionBean;
@@ -34,6 +33,8 @@ public class BasketBusinessBean extends IBOSessionBean
 								 // entries.
 	
 	protected List extraData = null; //A list to additional data for the basket.
+	
+	protected int quantity = 0; // Total quantity for every entry in the basket
 
 	/**
 	 * Increments the quantity of the specified item in the basket by one.
@@ -76,6 +77,7 @@ public class BasketBusinessBean extends IBOSessionBean
 			} else {
 				entry = new BasketEntry(item, quantity);
 			}
+			this.quantity += quantity;
 			basket.put(item.getItemID(), entry);
 		}
 	}
@@ -91,6 +93,8 @@ public class BasketBusinessBean extends IBOSessionBean
 		}
 
 		if (basket.containsKey(item.getItemID())) {
+			BasketEntry entry = (BasketEntry) basket.get(item.getItemID());
+			this.quantity -= entry.getQuantity();
 			basket.remove(item.getItemID());
 		}
 	}
@@ -108,11 +112,15 @@ public class BasketBusinessBean extends IBOSessionBean
 			return;
 		}
 
+
+		this.quantity += quantity;
+
 		if (basket == null) {
 			addItem(item, quantity);
 		} else {
 			if (basket.containsKey(item.getItemID())) {
 				BasketEntry entry = (BasketEntry) basket.get(item.getItemID());
+				this.quantity -= entry.getQuantity();
 				entry.setQuantity(quantity);
 			} else {
 				addItem(item, quantity);
@@ -177,6 +185,7 @@ public class BasketBusinessBean extends IBOSessionBean
 
 		basket = null;
 		extraData = null;
+		quantity = 0;
 	}
 	
 	/**
@@ -217,5 +226,13 @@ public class BasketBusinessBean extends IBOSessionBean
 		}
 		
 		extraData.remove(info);
+	}
+	
+	/**
+	 * Returns the total quantity of every entry in the basket
+	 * @return
+	 */
+	public int getQuantity() {
+		return quantity;
 	}
 }
