@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.13 2005/05/28 11:29:42 laddi Exp $
+ * $Id: Registration.java,v 1.14 2005/05/31 19:04:34 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,6 @@
 package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.ConverterUtility;
-import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.business.Runner;
 import is.idega.idegaweb.marathon.data.Participant;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
@@ -23,15 +22,11 @@ import java.util.Locale;
 import java.util.Map;
 import javax.ejb.FinderException;
 import com.idega.block.creditcard.business.CreditCardAuthorizationException;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
@@ -50,22 +45,21 @@ import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
-import com.idega.user.business.GenderBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/28 11:29:42 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class Registration extends RunBlock {
 	
@@ -733,8 +727,13 @@ public class Registration extends RunBlock {
 			else {
 				runnerTable.add(getText(runner.getName()), 1, runRow);
 			}
-			runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
-			runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow++);
+			if (runner.getRun() != null) {
+				runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
+				runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow++);
+			}
+			else {
+				removeRunner(iwc, runner.getPersonalID());
+			}
 		}
 		
 		SubmitButton previous = (SubmitButton) getButton(new SubmitButton(localize("previous", "Previous")));
@@ -785,6 +784,8 @@ public class Registration extends RunBlock {
 		table.setHeight(row++, 18);
 		int runRow = 2;
 		
+		int numberOfChildren = isIcelandic ? getRunBusiness(iwc).getNumberOfChildren(runners.values()) : 0;
+		int childNumber = 0;
 		float totalAmount = 0;
 		int chipsToBuy = 0;
 		Iterator iter = runners.values().iterator();
@@ -797,15 +798,23 @@ public class Registration extends RunBlock {
 			else {
 				runnerTable.add(getText(runner.getName()), 1, runRow);
 			}
+			if (isChild(runner)) {
+				childNumber++;
+			}
 			runnerTable.add(getText(localize(runner.getRun().getName(), runner.getRun().getName())), 2, runRow);
 			runnerTable.add(getText(localize(runner.getDistance().getName(), runner.getDistance().getName())), 3, runRow);
 			float runPrice = getRunBusiness(iwc).getPriceForRunner(runner, iwc.getCurrentLocale(), chipDiscount);
 			totalAmount += runPrice;
 			runnerTable.add(getText(formatAmount(iwc.getCurrentLocale(), runPrice)), 4, runRow++);
-			
+			if (numberOfChildren > 1 && childNumber > 1) {
+				runPrice -= childDiscount;
+			}
 			if (runner.isBuyChip()) {
 				chipsToBuy++;
 			}
+			
+			runner.setAmount(runPrice);
+			addRunner(iwc, runner.getPersonalID(), runner);
 			
 			if (first) {
 				runnerTable.add(new HiddenInput(PARAMETER_REFERENCE_NUMBER, runner.getPersonalID().replaceAll("-", "")));
@@ -814,9 +823,8 @@ public class Registration extends RunBlock {
 		}
 		
 		if (isIcelandic) {
-			int numberOfChildren = getRunBusiness(iwc).getNumberOfChildren(runners.values());
 			if (numberOfChildren > 1) {
-				float childrenDiscount = -(numberOfChildren * childDiscount);
+				float childrenDiscount = -((numberOfChildren - 1) * childDiscount);
 				totalAmount += childrenDiscount;
 				
 				runnerTable.setHeight(runRow++, 12);
@@ -1020,7 +1028,7 @@ public class Registration extends RunBlock {
 		table.add(getHeader(localize("run_reg.hello_participant", "Hello participant(s)")), 1, row++);
 		table.setHeight(row++, 16);
 
-		table.add(getText(localize("run_reg.payment received", "We have received payment for the following:")), 1, row++);
+		table.add(getText(localize("run_reg.payment_received", "We have received payment for the following:")), 1, row++);
 		table.setHeight(row++, 8);
 
 		Table runnerTable = new Table(5, runners.size() + 1);
@@ -1082,35 +1090,15 @@ public class Registration extends RunBlock {
 		iwc.removeSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP);
 	}
 	
-	private Table getPhasesTable(int phase, int totalPhases, String key, String defaultText) {
-		Table table = new Table(2, 1);
-		table.setCellpadding(3);
-		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setBottomCellBorder(1, 1, 1, "#D7D7D7", "solid");
-		table.setBottomCellBorder(2, 1, 1, "#D7D7D7", "solid");
-		
-		table.add(getHeader(localize(key, defaultText)), 1, 1);
-		
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(localize("step", "Step")).append(" ").append(phase).append(" ").append(localize("of", "of")).append(" ").append(totalPhases);
-		table.add(getHeader(buffer.toString()), 2, 1);
-		
-		return table;
-	}
-	
-	private Table getInformationTable(String information) {
-		Table table = new Table(1, 1);
-		table.setCellpadding(3);
-		table.setCellspacing(0);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setBottomCellBorder(1, 1, 1, "#D7D7D7", "solid");
-		table.setCellpaddingBottom(1, 1, 6);
-		
-		table.add(getText(information), 1, 1);
-		
-		return table;
+	private boolean isChild(Runner theRunner) {
+		Age age = null;
+		if (theRunner.getUser() != null) {
+			age = new Age(theRunner.getUser().getDateOfBirth());
+		}
+		else {
+			age = new Age(theRunner.getDateOfBirth());
+		}
+		return age.getYears() <= 12;
 	}
 	
 	private Runner collectValues(IWContext iwc) throws FinderException, RemoteException {
@@ -1248,32 +1236,5 @@ public class Registration extends RunBlock {
 		}
 		runnerMap.remove(key);
 		iwc.setSessionAttribute(SESSION_ATTRIBUTE_RUNNER_MAP, runnerMap);
-	}
-
-	private RunBusiness getRunBusiness(IWApplicationContext iwac) {
-		try {
-			return (RunBusiness) IBOLookup.getServiceInstance(iwac, RunBusiness.class);
-		}
-		catch (IBOLookupException e) {
-			throw new IBORuntimeException(e);
-		}
-	}
-
-	private UserBusiness getUserBusiness(IWApplicationContext iwac) {
-		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
-		}
-		catch (IBOLookupException e) {
-			throw new IBORuntimeException(e);
-		}
-	}
-
-	private GenderBusiness getGenderBusiness(IWApplicationContext iwac) {
-		try {
-			return (GenderBusiness) IBOLookup.getServiceInstance(iwac, GenderBusiness.class);
-		}
-		catch (IBOLookupException e) {
-			throw new IBORuntimeException(e);
-		}
 	}
 }
