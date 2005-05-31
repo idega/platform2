@@ -78,6 +78,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry,
     protected final static String COLUMN_PAYMENT_CONTRACT_ID = "pay_cont_id";
     
     protected final static String COLUMN_CREDIT_CARD_BATCH_ID = "cc_batch_id";
+    
+    protected final static String COLUMN_PAYED_BY_USER_ID = "payed_by_user_id";
 
     protected final static String STATUS_CREATED = "C";
 
@@ -149,6 +151,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry,
         addManyToOneRelationship(COLUMN_PAYMENT_CONTRACT_ID,
                 PaymentContract.class);
         addManyToOneRelationship(COLUMN_CREDIT_CARD_BATCH_ID, Batch.class);
+        addManyToOneRelationship(COLUMN_PAYED_BY_USER_ID, User.class);
 
         setNullable(COLUMN_USER_ID, false);
         setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -459,6 +462,22 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry,
     
     public Batch getCreditCardBatch() {
         return (Batch) getColumnValue(COLUMN_CREDIT_CARD_BATCH_ID);
+    }
+        
+    public int getPayedByUserID() {
+        return getIntColumnValue(COLUMN_PAYED_BY_USER_ID);
+    }
+
+    public void setPayedByUserID(int id) {
+        setColumn(COLUMN_PAYED_BY_USER_ID, id);
+    }
+
+    public User getPayedByUser() {
+        return (User) getColumnValue(COLUMN_PAYED_BY_USER_ID);
+    }
+
+    public void setPayedByUser(User user) {
+        setColumn(COLUMN_PAYED_BY_USER_ID, user);
     }
     
     public Collection ejbFindAllByAssessmentRound(AssessmentRound round)
