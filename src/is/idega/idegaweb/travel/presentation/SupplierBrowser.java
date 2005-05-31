@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.2 2005/05/20 18:17:50 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.3 2005/05/31 19:13:06 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -301,8 +301,10 @@ public class SupplierBrowser extends TravelBlock {
 		link.maintainParameter(PARAMETER_SUPPLIER_MANAGER, iwc);
 		link.addParameter(PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString());
 		String[] params = plugin.getParameters();
-		for (int i = 0; i < params.length; i++) {
-			link.maintainParameter(params[i], iwc);
+		if (params != null) {
+			for (int i = 0; i < params.length; i++) {
+				link.maintainParameter(params[i], iwc);
+			}
 		}
 		return link;
 	}
@@ -322,7 +324,7 @@ public class SupplierBrowser extends TravelBlock {
 	// Move to a better location later... when possible
 	private Collection getSuppliers(IWContext iwc) throws IDOCompositePrimaryKeyException {
 		try {
-			return getSupplierHome().findByPostalCodes(supplierManager, postalCodes[0], postalCodes[1], plugin.getCriterias(iwc));
+			return getSupplierHome().findByPostalCodes(supplierManager, postalCodes[0], postalCodes[1], plugin.getSuppplierSearchCriterias(iwc));
 		}
 		catch (IDORelationshipException e) {
 			e.printStackTrace();

@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.1 2005/05/20 04:05:03 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.2 2005/05/31 19:13:06 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -46,6 +46,8 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	private static final String PARAMETER_ROOM_TYPE = "hb_rt";
 	private static final String PARAMETER_FROM_DATE = "hb_fd";
 	private static final String PARAMETER_TO_DATE = "hb_td";
+	private static final String PARAMETER_MAX_RATING = "hb_mar";
+	private static final String PARAMETER_MIN_RATING = "hb_mir";
 	
 	public boolean isProductSearchCompleted(IWContext iwc) {
 		return iwc.getParameter(PARAMETER_FROM_DATE) != null && iwc.getParameter(PARAMETER_TO_DATE) != null;
@@ -57,14 +59,30 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		
 		texts.add(iwrb.getLocalizedString("arrival_date", "Arrival date"));
 		texts.add(iwrb.getLocalizedString("departure_date", "Departure date"));
+		texts.add(iwrb.getLocalizedString("minimum_rating", "Minimum rating"));
+		texts.add(iwrb.getLocalizedString("maximum_rating", "Maximum rating"));
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
 		DatePicker from = new DatePicker(PARAMETER_FROM_DATE);
 		from.setDate(now.getDate());
 		DatePicker to = new DatePicker(PARAMETER_TO_DATE);
-		now.addDays(14);
+		now.addDays(1);
 		to.setDate(now.getDate());
+		DropdownMenu min = new DropdownMenu(PARAMETER_MIN_RATING);
+		min.addMenuElement("-1", "");
+		min.addMenuElement("1", "1");
+		min.addMenuElement("2", "2");
+		min.addMenuElement("3", "3");
+		min.addMenuElement("4", "4");
+		min.addMenuElement("5", "5");
+		DropdownMenu max = new DropdownMenu(PARAMETER_MAX_RATING);
+		max.addMenuElement("-1", "");
+		max.addMenuElement("1", "1");
+		max.addMenuElement("2", "2");
+		max.addMenuElement("3", "3");
+		max.addMenuElement("4", "4");
+		max.addMenuElement("5", "5");
 		
 		String pFrom = iwc.getParameter(PARAMETER_FROM_DATE);
 		if (pFrom != null) {
@@ -76,9 +94,18 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 			IWTimestamp tmp = new IWTimestamp(pTo);
 			to.setDate(tmp.getDate());
 		}
-		
+		String pMin = iwc.getParameter(PARAMETER_MIN_RATING);
+		if (pMin != null) {
+			min.setSelectedElement(pMin);
+		}
+		String pMax = iwc.getParameter(PARAMETER_MAX_RATING);
+		if (pMax != null) {
+			max.setSelectedElement(pMax);
+		}
 		ios.add(from);
 		ios.add(to);
+		ios.add(min);
+		ios.add(max);
 		
 		return new Collection[]{texts, ios};
 	}	
@@ -130,7 +157,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		return new Collection[]{texts, ios};
 	}
 	
-	public Collection getCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException {
+	public Collection getSuppplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException {
 		Collection coll = new Vector();
 		
 		Table supplier = new Table(Supplier.class);
@@ -172,6 +199,8 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
 		String roomType = (String) iwc.getParameter(PARAMETER_ROOM_TYPE);
 		String hotelType = (String) iwc.getParameter(PARAMETER_ACCOMMODATION_TYPE);
+		String min = (String) iwc.getParameter(PARAMETER_MIN_RATING);
+		String max = (String) iwc.getParameter(PARAMETER_MAX_RATING);
 		
 		IWTimestamp fromStamp = null;
 		if (from != null) {
@@ -191,8 +220,17 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 			hotelTypes = new String[]{hotelType};
 		}
 		
+		float iMin = -1;
+		if (min != null) {
+			iMin = Float.parseFloat(min);
+		}
+		float iMax = -1;
+		if (max != null) {
+			iMax = Float.parseFloat(max);
+		}
 		
-		Collection coll = getProducts(fromStamp, toStamp, roomTypes, hotelTypes, null, new Object[]{supplier.getPrimaryKey()},-1, -1, null);
+		
+		Collection coll = getProducts(fromStamp, toStamp, roomTypes, hotelTypes, null, new Object[]{supplier.getPrimaryKey()},iMin, iMax, null);
 		if (coll != null && !coll.isEmpty()) {
 			Collection pColl = new Vector();
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);

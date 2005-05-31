@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.1 2005/05/20 04:05:03 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.2 2005/05/31 19:13:06 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -54,13 +54,13 @@ public interface SupplierBrowserPlugin {
 	public Collection[] getProductSearchInputs(IWContext iwc, IWResourceBundle iwrb);
 
 	/**
-	 * Method for calling com.idega.data.query.Criteria to be used when creating the SelectQuery, including join-criterias
+	 * Returns a collection of Criterias use to find the
 	 * @return
 	 * @throws IDOException 
 	 * @throws IDOCompositePrimaryKeyException 
 	 * @throws IDORelationshipException 
 	 */
-	public Collection getCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException;
+	public Collection getSuppplierSearchCriterias(IWContext iwc) throws IDOCompositePrimaryKeyException, IDORelationshipException;
 	
 
 	/**
