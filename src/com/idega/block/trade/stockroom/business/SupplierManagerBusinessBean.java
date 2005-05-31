@@ -121,7 +121,7 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
       user.setPrimaryGroup(admin);
       user.store();
 			try {
-				getIWMainApplication().getAccessController().setAsOwner(manager, Integer.parseInt(user.getPrimaryKey().toString()), iwuc);
+				getIWMainApplication().getAccessController().setAsOwner(manager, Integer.parseInt(user.getPrimaryKey().toString()), getIWApplicationContext());
 			}
 			catch (NumberFormatException e2) {
 				e2.printStackTrace();
@@ -133,7 +133,7 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 				e2.printStackTrace();
 			}
 		}
-  	getIWMainApplication().getAccessController().addRoleToGroup(SUPPLIER_MANAGER_ROLE_KEY, admin, iwuc);
+  	getIWMainApplication().getAccessController().addRoleToGroup(SUPPLIER_MANAGER_ROLE_KEY, admin, getIWApplicationContext());
   	return manager;
 	}
 	
