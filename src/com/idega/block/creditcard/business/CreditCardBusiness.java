@@ -1,39 +1,153 @@
+/*
+ * $Id: CreditCardBusiness.java,v 1.5 2005/05/31 19:28:07 gimmi Exp $
+ * Created on 4.4.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.creditcard.business;
 
 import java.util.Collection;
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.creditcard.data.CreditCardMerchant;
+import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.business.IBOService;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 
-public interface CreditCardBusiness extends com.idega.business.IBOService
-{
-	
-  public final static String CARD_TYPE_VISA = "VISA";
-  public final static String CARD_TYPE_ELECTRON = "ELECTRON";
-  public final static String CARD_TYPE_DINERS = "DINERS";
-  public final static String CARD_TYPE_DANKORT = "DANKORT";
-  public final static String CARD_TYPE_MASTERCARD = "MASTERCARD";
-  public final static String CARD_TYPE_JCB = "JCB";
-  public final static String CARD_TYPE_AMERICAN_EXPRESS = "AMERICAN_EXRESS";
-  
- public void addCreditCardMerchant(com.idega.block.trade.stockroom.data.Supplier p0,com.idega.block.creditcard.data.CreditCardMerchant p1)throws javax.ejb.CreateException, java.rmi.RemoteException;
- public com.idega.block.creditcard.data.CreditCardMerchant createCreditCardMerchant(java.lang.String p0)throws javax.ejb.CreateException, java.rmi.RemoteException;
- //public java.lang.String encodeCreditCardNumber(java.lang.String p0)throws java.lang.IllegalArgumentException, java.rmi.RemoteException;
- public com.idega.block.creditcard.data.CreditCardAuthorizationEntry getAuthorizationEntry(com.idega.block.trade.stockroom.data.Supplier p0,java.lang.String p1, IWTimestamp stamp) throws java.rmi.RemoteException;
- public CreditCardClient getCreditCardClient(CreditCardMerchant merchant) throws Exception;
- public com.idega.block.creditcard.business.CreditCardClient getCreditCardClient(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp stamp)throws java.lang.Exception, java.rmi.RemoteException;
- public com.idega.block.trade.data.CreditCardInformation getCreditCardInformation(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp p1) throws java.rmi.RemoteException;
- public java.util.Collection getCreditCardInformations(com.idega.block.trade.stockroom.data.Supplier p0)throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
- public com.idega.block.creditcard.data.CreditCardMerchant getCreditCardMerchant(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp p1) throws java.rmi.RemoteException;
- public com.idega.block.creditcard.data.CreditCardMerchant getCreditCardMerchant(com.idega.block.trade.stockroom.data.Supplier p0,java.lang.Object p1) throws java.rmi.RemoteException;
- public java.util.Collection getCreditCardTypeImages(com.idega.block.creditcard.business.CreditCardClient p0) throws java.rmi.RemoteException;
- public boolean verifyCreditCardNumber(java.lang.String p0,com.idega.block.creditcard.data.CreditCardAuthorizationEntry p1)throws java.lang.IllegalArgumentException, java.rmi.RemoteException;
- public boolean getUseCVC(CreditCardClient client);
- public boolean getUseCVC(CreditCardMerchant merchant);
- public boolean getUseCVC(Supplier supplier, IWTimestamp stamp);
-	public Collection getAllRefunds(IWTimestamp from, IWTimestamp to, int clientType) throws IDOLookupException, FinderException;
+/**
+ * 
+ *  Last modified: $Date: 2005/05/31 19:28:07 $ by $Author: gimmi $
+ * 
+ * @author <a href="mailto:gimmi@idega.com">gimmi</a>
+ * @version $Revision: 1.5 $
+ */
+public interface CreditCardBusiness extends IBOService {
 
+	public final static String CARD_TYPE_VISA = "VISA";
+	public final static String CARD_TYPE_ELECTRON = "ELECTRON";
+	public final static String CARD_TYPE_DINERS = "DINERS";
+	public final static String CARD_TYPE_DANKORT = "DANKORT";
+	public final static String CARD_TYPE_MASTERCARD = "MASTERCARD";
+	public final static String CARD_TYPE_JCB = "JCB";
+	public final static String CARD_TYPE_AMERICAN_EXPRESS = "AMERICAN_EXRESS";
+
+	  /**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getBundleIdentifier
+	 */
+	public String getBundleIdentifier() throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardTypeImages
+	 */
+	public Collection getCreditCardTypeImages(CreditCardClient client) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardClient
+	 */
+	public CreditCardClient getCreditCardClient(Supplier supplier, IWTimestamp stamp) throws Exception,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardClient
+	 */
+	public CreditCardClient getCreditCardClient(CreditCardMerchant merchant) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardMerchant
+	 */
+	public CreditCardMerchant getCreditCardMerchant(Supplier supplier, IWTimestamp stamp)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardMerchant
+	 */
+	public CreditCardMerchant getCreditCardMerchant(Group supplierManager, IWTimestamp stamp)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardInformation
+	 */
+	public CreditCardInformation getCreditCardInformation(Supplier supplier, IWTimestamp stamp)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardMerchant
+	 */
+	public CreditCardMerchant getCreditCardMerchant(Supplier supplier, Object PK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardMerchant
+	 */
+	public CreditCardMerchant getCreditCardMerchant(Group supplierManager, Object PK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#createCreditCardMerchant
+	 */
+	public CreditCardMerchant createCreditCardMerchant(String type) throws CreateException, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#addCreditCardMerchant
+	 */
+	public void addCreditCardMerchant(Group supplierManager, CreditCardMerchant merchant) throws CreateException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#addCreditCardMerchant
+	 */
+	public void addCreditCardMerchant(Supplier supplier, CreditCardMerchant merchant) throws CreateException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardInformations
+	 */
+	public Collection getCreditCardInformations(Supplier supplier) throws IDORelationshipException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getCreditCardInformations
+	 */
+	public Collection getCreditCardInformations(Group supplierManager) throws FinderException, IDOLookupException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#verifyCreditCardNumber
+	 */
+	public boolean verifyCreditCardNumber(String numberToCheck, CreditCardAuthorizationEntry entry)
+			throws IllegalArgumentException, java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getAuthorizationEntry
+	 */
+	public CreditCardAuthorizationEntry getAuthorizationEntry(Supplier supplier, String authorizationCode,
+			IWTimestamp stamp) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getUseCVC
+	 */
+	public boolean getUseCVC(CreditCardClient client) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getUseCVC
+	 */
+	public boolean getUseCVC(CreditCardMerchant merchant) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getUseCVC
+	 */
+	public boolean getUseCVC(Supplier supplier, IWTimestamp stamp) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.creditcard.business.CreditCardBusinessBean#getAllRefunds
+	 */
+	public Collection getAllRefunds(IWTimestamp from, IWTimestamp to, int clientType) throws IDOLookupException,
+			FinderException, java.rmi.RemoteException;
 }

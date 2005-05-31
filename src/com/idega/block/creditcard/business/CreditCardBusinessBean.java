@@ -112,6 +112,11 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		return getCreditCardMerchant(ccInfo);
 	}
 	
+	public CreditCardMerchant getCreditCardMerchant(Group supplierManager, IWTimestamp stamp) {
+		CreditCardInformation ccInfo = getCreditCardInformations(supplierManager, stamp);
+		return getCreditCardMerchant(ccInfo);
+	}
+	
 	private CreditCardMerchant getCreditCardMerchant(CreditCardInformation ccInfo) {
 		if (ccInfo != null) {
 			try {
@@ -134,7 +139,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		try {
 			Timestamp toCheck = null;
 			if (stamp != null) {
-				stamp.getTimestamp();
+				toCheck = stamp.getTimestamp();
 			} else {
 				toCheck = IWTimestamp.getTimestampRightNow();
 			}
@@ -148,11 +153,9 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 				ccInfo = getCreditCardInformationInUse(iter, toCheck);
 			}
 			
-			// Checking for merchants configured to this supplier's supplierManager 
-			coll = getCreditCardInformations(supplier.getSupplierManager());
+			// Checking for merchants configured to this supplier's supplierManager
 			if (ccInfo == null) {
-				Iterator iter = coll.iterator();
-				ccInfo = getCreditCardInformationInUse(iter, toCheck);
+				ccInfo = getCreditCardInformations(supplier.getSupplierManager(), stamp);
 			}
 			
 			return ccInfo;
@@ -161,6 +164,37 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			e.printStackTrace(System.err);
 		}
 		return null;
+	}
+
+	/**
+	 * @param supplier
+	 * @param toCheck
+	 * @param ccInfo
+	 * @return
+	 * @throws FinderException
+	 * @throws IDOLookupException
+	 */
+	private CreditCardInformation getCreditCardInformations(Group supplierManager, IWTimestamp stamp) {
+		Timestamp toCheck = null;
+		if (stamp != null) {
+			toCheck = stamp.getTimestamp();
+		} else {
+			toCheck = IWTimestamp.getTimestampRightNow();
+		}
+
+		CreditCardInformation ccInfo = null;
+		try {
+			Collection coll;
+			coll = getCreditCardInformations(supplierManager);
+			if (ccInfo == null) {
+				Iterator iter = coll.iterator();
+				ccInfo = getCreditCardInformationInUse(iter, toCheck);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ccInfo;
 	}
 	
 	private CreditCardInformation getCreditCardInformationInUse(Iterator iter, Timestamp toCheck) {
@@ -190,20 +224,43 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 	public CreditCardMerchant getCreditCardMerchant(Supplier supplier, Object PK) {
 		try {
 			Collection coll = supplier.getCreditCardInformation();
-			if (coll != null) {
-				Iterator iter = coll.iterator();
-				CreditCardInformation info;
-				CreditCardMerchant merchant;
-				while (iter.hasNext()) {
-					info = (CreditCardInformation) iter.next();
-					merchant = getCreditCardMerchant(info);
-					if (merchant != null && merchant.getPrimaryKey().toString().equals(PK.toString())) {
-						return merchant;
-					}
+			CreditCardMerchant returner = getCreditCardMerchant(PK, coll);
+			return returner;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public CreditCardMerchant getCreditCardMerchant(Group supplierManager, Object PK) {
+		try {
+			Collection coll = getCreditCardInformations(supplierManager);
+			CreditCardMerchant returner = getCreditCardMerchant(PK, coll);
+			return returner;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * @param PK
+	 * @param creditcardInformations
+	 * @param returner
+	 * @return
+	 */
+	private CreditCardMerchant getCreditCardMerchant(Object PK, Collection creditcardInformations) {
+		if (creditcardInformations != null) {
+			Iterator iter = creditcardInformations.iterator();
+			CreditCardInformation info;
+			CreditCardMerchant merchant;
+			while (iter.hasNext()) {
+				info = (CreditCardInformation) iter.next();
+				merchant = getCreditCardMerchant(info);
+				if (merchant != null && merchant.getPrimaryKey().toString().equals(PK.toString())) {
+					return merchant;
 				}
 			}
-		} catch (Exception e) {
-			
 		}
 		return null;
 	}
@@ -223,20 +280,41 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		}
 	}
 	
+	public void addCreditCardMerchant(Group supplierManager, CreditCardMerchant merchant) throws CreateException {
+		addCreditCardMerchant( (Object) supplierManager, merchant);
+	}
+
 	public void addCreditCardMerchant(Supplier supplier, CreditCardMerchant merchant) throws CreateException {
+		addCreditCardMerchant((Object) supplier, merchant);
+	}
+
+	private void addCreditCardMerchant(Object merchantType, CreditCardMerchant merchant) throws CreateException {
 		TransactionManager t = IdegaTransactionManager.getInstance();
 		try {
 			t.begin();
+			boolean isSupplier = (merchantType instanceof Supplier);
+			boolean isSupplierManager = (merchantType instanceof Group);
 
 			// Setting other merchants to deleted
-			Collection coll = supplier.getCreditCardInformation();
+			Collection coll = null;
+			if (isSupplier) {
+				coll = ((Supplier) merchantType).getCreditCardInformation();
+			} else if (isSupplierManager) {
+				coll = getCreditCardInformations((Group) merchantType);
+			}
+			
 			if (coll != null) {
 				Iterator iter = coll.iterator();
 				CreditCardInformation info;
-				CreditCardMerchant tmpMerchant;
+				CreditCardMerchant tmpMerchant = null;
 				while (iter.hasNext()) {
 					info = (CreditCardInformation) iter.next();
-					tmpMerchant = getCreditCardMerchant(supplier, new Integer(info.getMerchantPKString()));
+					
+					if (isSupplier) {
+						tmpMerchant = getCreditCardMerchant((Supplier)merchantType, new Integer(info.getMerchantPKString()));
+					} else if (isSupplierManager) {
+						tmpMerchant = getCreditCardMerchant((Group) merchantType, new Integer(info.getMerchantPKString()));
+					}
 					if (tmpMerchant != null && !tmpMerchant.getIsDeleted()) {
 						tmpMerchant.remove();
 					}
@@ -248,9 +326,14 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			CreditCardInformation info = infoHome.create();
 			info.setType(merchant.getType());
 			info.setMerchantPK(merchant.getPrimaryKey());
+			if (isSupplierManager) {
+				info.setSupplierManager((Group) merchantType);
+			}
 			info.store();
 			
-			supplier.addCreditCardInformation(info);
+			if (isSupplier) {
+				((Supplier) merchantType).addCreditCardInformation(info);
+			}
 
 			t.commit();
 		} catch (Exception e) {
