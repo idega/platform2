@@ -103,7 +103,7 @@ public class TravelBlock extends Block {
 		      }
 	      }
 	      catch (Exception e) {
-	      	e.printStackTrace(System.err);
+//	      	e.printStackTrace(System.err);
 	        debug(e.getMessage());
 	      }
 	      
@@ -136,6 +136,10 @@ public class TravelBlock extends Block {
   protected boolean hasPermission() {
 		return this.isInPermissionGroup || this.isSuperAdmin;
 	}
+  
+  	protected boolean hasRole(IWContext iwc, String role) throws RemoteException {
+  		return getTravelSessionManager(iwc).hasRole(role);
+ 	}
 	
 	public boolean isInPermissionGroup(IWContext iwc) throws RemoteException {
 	  return isInPermissionGroup(iwc, tsm.getUser());
