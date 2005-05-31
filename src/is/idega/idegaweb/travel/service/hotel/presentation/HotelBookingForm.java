@@ -1536,7 +1536,7 @@ public class HotelBookingForm extends BookingForm {
 		return checkBooking(iwc, saveBookingIfValid, bookIfTooMany, false);
   }
   
-  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean bookIfTooFew) throws Exception {
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean bookIfTooFew, boolean doCreditCardCheck) throws Exception {
     boolean tooMany = false;
 
 
@@ -1706,7 +1706,7 @@ public class HotelBookingForm extends BookingForm {
       return this.errorTooMany;
     }else {
       if (saveBookingIfValid) {
-        return saveBooking(iwc);
+        return saveBooking(iwc, doCreditCardCheck);
       }else {
         return 0;
       }

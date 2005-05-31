@@ -3018,11 +3018,15 @@ public abstract class BookingForm extends TravelManager{
 		return form;
 	}
 	
+  public int handleInsert(IWContext iwc) throws Exception {
+	  return handleInsert(iwc, true);
+  }
   /**
    * return bookingId, 0 if nothing is done,  -10 if inquiry is sent
    */
-
-  public int handleInsert(IWContext iwc) throws Exception {
+	
+	
+  public int handleInsert(IWContext iwc, boolean doCreditCardCheck) throws Exception {
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
     String inquiry = iwc.getParameter(this.parameterInquiry);
@@ -3033,12 +3037,12 @@ public abstract class BookingForm extends TravelManager{
         		return fields;
         	}else { 
 	          if (inquiry == null) {
-	            return checkBooking(iwc, true);
+	            return checkBooking(iwc, true, false, false, doCreditCardCheck);
 	          }else {
-	            int checkInt = checkBooking(iwc, true, true);
+	            int checkInt = checkBooking(iwc, true, true, false, doCreditCardCheck);
 	            ///// INquiry STUFF JAMMS
 	            if (checkInt > 0) {
-	              int inqId = this.sendInquery(iwc, checkInt, true);
+	              int inqId = this.sendInquery(iwc, checkInt, true, doCreditCardCheck);
 	              int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
 	              /** @todo senda email....grrrr */
 	              if (resp == 0) {
@@ -3052,9 +3056,9 @@ public abstract class BookingForm extends TravelManager{
 	          }
 	       }
         }else if (action.equals(this.parameterBookAnyway)) {
-          return saveBooking(iwc);
+          return saveBooking(iwc,doCreditCardCheck);
         }else if (action.equals(this.parameterSendInquery)) {
-          if (sendInquery(iwc) > 0) {
+          if (sendInquery(iwc, doCreditCardCheck) > 0) {
             return this.inquirySent;
           }else {
             return -1;
@@ -3105,6 +3109,10 @@ public abstract class BookingForm extends TravelManager{
 	}
 	
 	public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean bookIfTooFew) throws Exception {
+		return checkBooking(iwc, saveBookingIfValid, bookIfTooMany, bookIfTooFew, true);
+	}
+	
+	public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean bookIfTooFew, boolean doCreditCardCheck) throws Exception {
 		boolean tooMany = false;
 		
 		int iMany = 0;
@@ -3261,13 +3269,15 @@ public abstract class BookingForm extends TravelManager{
 					}
 				}
 			}
+		} else if (totalSeats != BookingForm.UNLIMITED_AVAILABILITY) {
+			tooMany = true;
 		}
 		
 		if (tooMany && !bookIfTooMany) {
 			return this.errorTooMany;
 		}else {
 			if (saveBookingIfValid) {
-				return saveBooking(iwc);
+				return saveBooking(iwc, doCreditCardCheck);
 			}else {
 				return 0;
 			}
@@ -3282,7 +3292,7 @@ public abstract class BookingForm extends TravelManager{
 		return stamp;
 	}
 	
-	public int saveBooking(IWContext iwc) throws CreateException, RemoveException, FinderException, SQLException, CreditCardAuthorizationException, RemoteException, IDOException{
+	public int saveBooking(IWContext iwc, boolean doCreditCardCheck) throws CreateException, RemoveException, FinderException, SQLException, CreditCardAuthorizationException, RemoteException, IDOException{
 		
 		
 		String surname = iwc.getParameter(PARAMETER_FIRST_NAME);
@@ -3390,7 +3400,7 @@ public abstract class BookingForm extends TravelManager{
 			int[] manyMiscs = new int[miscLength];
 			for (int i = 0; i < manys.length; i++) {
 				many = iwc.getParameter("priceCategory"+((Integer) pPrices[i].getPrimaryKey()).intValue());
-				//System.out.println("[Bookingform] pCat(p) = "+pPrices[i].getPriceCategory().getName() +" : "+many);
+//				System.out.println("[Bookingform] pCat(p) = "+pPrices[i].getPriceCategory().getName() +" : "+many);
 				if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
 					manys[i] = Integer.parseInt(many);
 					iMany += Integer.parseInt(many);
@@ -3706,8 +3716,9 @@ public abstract class BookingForm extends TravelManager{
 				}
 			}
 			
-			handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear, ccCVC, _product);
-			
+			if (doCreditCardCheck) {
+				handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear, ccCVC, _product);
+			}
 		}catch (NumberFormatException n) {
 			n.printStackTrace(System.err);
 		}
@@ -3881,7 +3892,7 @@ public abstract class BookingForm extends TravelManager{
 		}
 	}
 
-  public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId) throws Exception {
+  public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId, boolean doCreditCardCheck) throws Exception {
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -3909,7 +3920,7 @@ public abstract class BookingForm extends TravelManager{
         toStamp.addDays(iManyDays);
 
       if (bookingId == -1) {
-        bookingId = saveBooking(iwc);
+        bookingId = saveBooking(iwc, doCreditCardCheck);
       }
 
       GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
@@ -3955,8 +3966,8 @@ public abstract class BookingForm extends TravelManager{
     }
   }
 
-	public int sendInquery(IWContext iwc) throws Exception {
-		return sendInquery(iwc, -1, false);
+	public int sendInquery(IWContext iwc, boolean doCreditCardCheck) throws Exception {
+		return sendInquery(iwc, -1, false, doCreditCardCheck);
 	}
 	
 	protected void setTimestamp(IWContext iwc) {

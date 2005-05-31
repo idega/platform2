@@ -1300,7 +1300,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
     return checkBooking(iwc, saveBookingIfValid, false);
   }
 
-  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean doCreditCardCheck) throws Exception {
     boolean tooMany = false;
 
     int iMany = 0;
@@ -1430,7 +1430,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
       return this.errorTooMany;
     }else {
       if (saveBookingIfValid) {
-        return saveBooking(iwc);
+        return saveBooking(iwc,doCreditCardCheck);
       }else {
         return 0;
       }
@@ -1846,11 +1846,11 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
 */
 
 
-  public int sendInquery(IWContext iwc) throws Exception {
-    return sendInquery(iwc, -1, false);
+  public int sendInquery(IWContext iwc, boolean doCreditCardCheck) throws Exception {
+    return sendInquery(iwc, -1, false, doCreditCardCheck);
   }
 
-  public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId) throws Exception {
+  public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId, boolean doCreditCardCheck) throws Exception {
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -1873,7 +1873,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) throws FinderExceptio
       IWTimestamp stamp = new IWTimestamp(fromDate);
 
       if (bookingId == -1) {
-        bookingId = saveBooking(iwc);
+        bookingId = saveBooking(iwc, doCreditCardCheck);
       }
 
       GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
