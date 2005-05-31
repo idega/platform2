@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverview.java,v 1.8 2005/05/17 06:00:26 laddi Exp $
+ * $Id: ChoiceOverview.java,v 1.9 2005/05/31 12:08:41 laddi Exp $
  * Created on May 11, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.presentation.ui.SubmitButton;
 
 
 /**
- * Last modified: $Date: 2005/05/17 06:00:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 12:08:41 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ChoiceOverview extends AdultEducationBlock {
 	
@@ -84,7 +84,7 @@ public class ChoiceOverview extends AdultEducationBlock {
 					
 					table.add(getSmallText(path.getDescription() + ", " + path.getPoints()), 1, row);
 					
-					if (!choice.hasAllGranted()) {
+					if (choice.getCaseStatus().equals(getBusiness().getCaseStatusOpen())) {
 						if (getResponsePage() != null) {
 							Link edit = new Link(getEditIcon(localize("edit_choice", "Edit choice")));
 							edit.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());

@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.7 2005/05/30 10:01:42 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.8 2005/05/31 12:08:41 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -379,6 +379,29 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 			query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
 		}
 		query.addOrder(table, CHOICE_ORDER, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllByUser(User user, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table season = new Table(SchoolSeason.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(course, season);
+			query.addJoin(table, cases);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(season, "season_start", true);
 		
 		return idoFindPKsByQuery(query);
 	}

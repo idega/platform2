@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.18 2005/05/30 10:01:43 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.19 2005/05/31 12:08:41 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -65,10 +65,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/30 10:01:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 12:08:41 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -223,8 +223,19 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public Collection getChoices(User user, SchoolSeason season) {
 		try {
-			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus() };
 			return getChoiceHome().findAllByUserAndSeasonAndStatuses(user, season, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getChoices(User user) {
+		try {
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus() };
+			return getChoiceHome().findAllByUser(user, statuses);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -654,7 +665,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		changeCaseStatus(choice, getCaseStatusReview().getStatus(), performer);
 		updateHandlerForUserCases(choice.getUser(), choice.getCourse().getSchoolSeason(), performer);
 
-		String subject = getLocalizedString("choice_granted_subject", "VUX application granted");
+		String subject = getLocalizedString("choice_denied_subject", "VUX application denied");
 		sendMessage(choice, subject, rejectionMessage);
 	}
 	

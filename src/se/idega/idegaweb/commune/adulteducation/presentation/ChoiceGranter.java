@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.8 2005/05/30 11:26:36 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.9 2005/05/31 12:08:41 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,13 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReason;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.message.presentation.StandardMessageArea;
+import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.PostalCode;
@@ -42,6 +45,8 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.business.NoEmailFoundException;
+import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -49,10 +54,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/30 11:26:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/05/31 12:08:41 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -286,8 +291,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		int row = 1;
 		
 		Table infoTable = new Table();
-		infoTable.setColumns(6);
-		infoTable.setWidth(Table.HUNDRED_PERCENT);
+		infoTable.setColumns(2);
 		table.setCellpadding(1, row, 10);
 		table.setCellBorder(1, row, 1, "#999999", "solid");
 		table.add(infoTable, 1, row++);
@@ -303,6 +307,34 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 		Address address = getUserBusiness(iwc).getUsersMainAddress(user);
 		PostalCode code = address != null? address.getPostalCode() : null;
+		Phone homePhone = null;
+		Phone workPhone = null;
+		Phone mobilePhone = null;
+		Email mail = null;
+		try {
+			homePhone = getUserBusiness(iwc).getUsersHomePhone(user);
+		}
+		catch (NoPhoneFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			workPhone = getUserBusiness(iwc).getUsersWorkPhone(user);
+		}
+		catch (NoPhoneFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			mobilePhone = getUserBusiness(iwc).getUsersMobilePhone(user);
+		}
+		catch (NoPhoneFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			mail = getUserBusiness(iwc).getUsersMainEmail(user);
+		}
+		catch (NoEmailFoundException e) {
+			e.printStackTrace();
+		}
 
 		Collection reasons = null;
 		AdultEducationPersonalInfo info = null;
@@ -324,26 +356,24 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(getSmallText(choice.getPrimaryKey().toString()), 2, 1);
 		
 		infoTable.add(getSmallHeader(localize("school_type", "School type") + ":"), 1, 2);
-		infoTable.mergeCells(2, 2, 6, 2);
 		infoTable.add(getSmallText(localize(type.getLocalizationKey(), type.getSchoolTypeName())), 2, 2);
 		
 		infoTable.add(getSmallHeader(localize("student", "Student") + ":"), 1, 3);
-		infoTable.mergeCells(2, 3, 6, 3);
 		infoTable.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) + ", " + name.getLastName() + " " + name.getFirstName()), 2, 3);
 		
 		infoTable.add(getSmallHeader(localize("address", "Address") + ":"), 1, 4);
-		infoTable.mergeCells(2, 4, 6, 4);
 		infoTable.add(getSmallText((address != null ? address.getStreetAddress() : "-") + ", " + (code != null ? code.getPostalAddress() : "-")), 2, 4);
 		
 		infoTable.setHeight(5, 16);
 		
-		infoTable.add(getSmallHeader(localize("citizenship", "Citizenship") + ":"), 1, 6);
-		infoTable.add(getSmallHeader(localize("nationality", "Nationality") + ":"), 3, 6);
-		infoTable.add(getSmallHeader(localize("language", "Language") + ":"), 5, 6);
+		infoTable.add(getSmallHeader(localize("home_phone", "Home phone") + ":"), 1, 6);
+		infoTable.add(getSmallText((homePhone != null ? homePhone.getNumber() : "-")), 2, 6);
 		
-		infoTable.add(getSmallText(info.getCitizenThisCountry() ? localize("swedish", "Swedish") : localize("other", "Other")), 2, 6);
-		infoTable.add(getSmallText(!info.getNativeThisCountry() ? info.getNativeCountry().getName() : localize("swedish", "Swedish")), 4, 6);
-		infoTable.add(getSmallText(info.getIcLanguageID() != -1 ? info.getICLanguage().getName() : "-"), 6, 6);
+		infoTable.add(getSmallHeader(localize("work_mobile_phone", "Work/Mobile phone") + ":"), 1, 7);
+		infoTable.add(getSmallText((workPhone != null ? workPhone.getNumber() : "-") + ", " + (mobilePhone != null ? mobilePhone.getNumber() : "-")), 2, 7);
+		
+		infoTable.add(getSmallHeader(localize("email", "E-mail") + ":"), 1, 8);
+		infoTable.add(getSmallText((mail != null ? mail.getEmailAddress() : "-")), 2, 8);
 		
 		Table pathTable = new Table(2, 1);
 		pathTable.setWidth(Table.HUNDRED_PERCENT);
@@ -357,6 +387,51 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		pathTable.add(getSmallHeader(localize("school_season", "School season") + ": "), 2, 1);
 		pathTable.add(getSmallText(season.getSchoolSeasonName()), 2, 1);
 		
+		Collection choices = getBusiness().getChoices(user);
+		choices.remove(choice);
+		if (!choices.isEmpty()) {
+			table.setTopCellBorder(1, row++, 1, "#999999", "solid");
+			table.setHeight(row++, 8);
+			table.add(getHeader(localize("other_choices", "Other choices")), 1, row++);
+			table.setHeight(row++, 6);
+			
+			Table choiceTable = new Table();
+			choiceTable.setColumns(3);
+			table.add(choiceTable, 1, row++);
+			table.setHeight(row++, 8);
+			int choiceRow = 1;
+			
+			Iterator iter = choices.iterator();
+			while (iter.hasNext()) {
+				AdultEducationChoice element = (AdultEducationChoice) iter.next();
+				AdultEducationCourse elementCourse = element.getCourse();
+				SchoolStudyPath elementPath = elementCourse.getStudyPath();
+				SchoolSeason elementSeason = elementCourse.getSchoolSeason();
+				CaseStatus status = element.getCaseStatus();
+				
+				if (status.equals(getBusiness().getCaseStatusGranted())) {
+					choiceTable.add(getSmallText(elementPath.getDescription()), 1, choiceRow);
+				}
+				else {
+					Link link = getSmallLink(elementPath.getDescription());
+					link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+					if (user.getUniqueId() != null) {
+						link.addParameter(PARAMETER_UNIQUE_ID, user.getUniqueId());
+					}
+					else {
+						link.addParameter(PARAMETER_USER, user.getPrimaryKey().toString());
+					}
+					link.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_EDIT));
+					link.setEventListener(ChoiceGranter.class);
+					choiceTable.add(link, 1, choiceRow);
+				}
+				choiceTable.add(getSmallText(elementSeason.getSchoolSeasonName()), 2, choiceRow);
+				choiceTable.add(getSmallText(localize("case_status." + status.getStatus(), status.getStatus())), 3, choiceRow);
+				choiceTable.setCellpaddingRight(1, choiceRow, 12);
+				choiceTable.setCellpaddingRight(2, choiceRow, 12);
+			}
+		}
+
 		table.setTopCellBorder(1, row++, 1, "#999999", "solid");
 		table.setHeight(row++, 8);
 		table.add(getHeader(localize("reasons_for_study", "Reasons for study")), 1, row++);
