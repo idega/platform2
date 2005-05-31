@@ -67,6 +67,7 @@ public class IWMemberConstants {
 	public static final String GROUP_TYPE_LEAGUE_STAFF = "iwme_league_staff";
 	public static final String GROUP_TYPE_LEAGUE_COMMITTEE = "iwme_league_committee";
 	public static final String GROUP_TYPE_LEAGUE_COLLECTION = "iwme_league_collection";
+	public static final String GROUP_TYPE_LEAGUE_CLUB_COLLECTION = "iwme_league_club_collection";
 	public static final String GROUP_TYPE_LEAGUE_CLUB_DIVISION = "iwme_league_club_division";
 	public static final String GROUP_TYPE_CLUB = GroupTypeConstants.GROUP_TYPE_CLUB;
 	public static final String GROUP_TYPE_CLUB_MEMBER = "iwme_club_member";
