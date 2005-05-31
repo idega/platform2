@@ -611,6 +611,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		
 		String committeeGroupId = division.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
 		if(committeeGroupId!=null && !"".equals(committeeGroupId)){
+			committeeGroupId = committeeGroupId.substring(committeeGroupId.indexOf("_")+1);
 			addRoleAccessToGroup(access, roleKey, new Integer(committeeGroupId));
 		}
 		
