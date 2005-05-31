@@ -1,6 +1,6 @@
 /*
- * $Id: AccountingBusinessHomeImpl.java,v 1.5 2005/05/31 09:59:59 palli Exp $
- * Created on May 27, 2005
+ * $Id: AccountingBusinessHomeImpl.java,v 1.6 2005/05/31 10:18:00 palli Exp $
+ * Created on May 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 09:59:59 $ by $Author: palli $
+ *  Last modified: $Date: 2005/05/31 10:18:00 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AccountingBusinessHomeImpl extends IBOHomeImpl implements AccountingBusinessHome {
 

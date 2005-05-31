@@ -97,7 +97,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	 *            The last payment date to be put in the FinanceEntry.
 	 */
 	public boolean doAssessment(String name, Group club, Group division, String groupId, User user,
-			boolean includeChildren, String tariffs[], Timestamp paymentDate) {
+			boolean includeChildren, String tariffs[], Timestamp paymentDate, Timestamp runOnDate) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -117,7 +117,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
 		IWTimestamp now = IWTimestamp.RightNow();
 		AssessmentRound round = insertAssessmentRound(name, club, division, group, user, now.getTimestamp(), null,
-				includeChildren, paymentDate);
+				includeChildren, paymentDate, runOnDate);
 
 		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext(), Arrays.asList(tariffs));
 		assRoundThread.start();
@@ -535,7 +535,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	}
 
 	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user,
-			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate) {
+			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Timestamp runOnDate) {
 		AssessmentRound round = null;
 		try {
 			round = getAssessmentRoundHome().create();
@@ -557,7 +557,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			}
 			round.setIncludeChildren(includeChildren);
 			round.setPaymentDate(paymentDate);
-			// round.setRunOnDate(runOnDate);
+			round.setRunOnDate(runOnDate);
 
 			round.store();
 		}

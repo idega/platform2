@@ -1,6 +1,6 @@
 /*
- * $Id: AccountingBusiness.java,v 1.37 2005/05/31 09:59:59 palli Exp $
- * Created on May 27, 2005
+ * $Id: AccountingBusiness.java,v 1.38 2005/05/31 10:18:00 palli Exp $
+ * Created on May 31, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 09:59:59 $ by $Author: palli $
+ *  Last modified: $Date: 2005/05/31 10:18:00 $ by $Author: palli $
  * 
  * @author <a href="mailto:bluebottle@idega.com">bluebottle</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  */
 public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -48,7 +48,8 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#doAssessment
 	 */
 	public boolean doAssessment(String name, Group club, Group division, String groupId, User user,
-			boolean includeChildren, String[] tariffs, Timestamp paymentDate) throws java.rmi.RemoteException;
+			boolean includeChildren, String[] tariffs, Timestamp paymentDate, Timestamp runOnDate)
+			throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#findAllTariffByClub
@@ -151,7 +152,7 @@ public interface AccountingBusiness extends IBOService, UserGroupPlugInBusiness 
 	 * @see is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusinessBean#insertAssessmentRound
 	 */
 	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user,
-			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate)
+			Timestamp start, Timestamp end, boolean includeChildren, Timestamp paymentDate, Timestamp runOnDate)
 			throws java.rmi.RemoteException;
 
 	/**
