@@ -479,7 +479,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 				e.printStackTrace();
 			}
 		}
-		throw new RuntimeException("Does not belong to any supplier");
+		throw new RuntimeException("Does not belong to any reseller");
 	
 	/*com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
     List gr = gGroup.getAllGroupsContainingUser(user);
