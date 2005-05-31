@@ -48,6 +48,7 @@ public class ServiceSearchEditor extends TravelManager {
 	private static final String PARAMETER_URL = "sse_prm_url";
 	private static final String PARAMETER_IN_USE = "sse_prm_iu_";
 	private static final String PARAMETER_SUPPLIER_ID = "sse_prm_sid";
+	private static final String PARAMETER_USE_BASKET = "sse_prm_ub";
 	
 	IWResourceBundle iwrb;
 	ServiceSearchEngine engine;
@@ -215,9 +216,16 @@ public class ServiceSearchEditor extends TravelManager {
 		table.add(tiUrl, 2, row);
 		table.setRowColor(row, GRAY);
 		
+		++row;
+		CheckBox cbBasket = new CheckBox(PARAMETER_USE_BASKET);
+		table.add(getText(iwrb.getLocalizedString("travel.use_basket", "Use basket")), 1, row);
+		table.add(cbBasket, 2, row);
+		table.setRowColor(row, GRAY);
+		
 		String pName = iwc.getParameter(PARAMETER_NAME);
 		String pCode = iwc.getParameter(PARAMETER_CODE);
 		String pUrl = iwc.getParameter(PARAMETER_URL);
+		String pBasket = iwc.getParameter(PARAMETER_USE_BASKET);
 		
 		String pID = iwc.getParameter(PARAMETER_SSE_ID);
 		
@@ -230,6 +238,7 @@ public class ServiceSearchEditor extends TravelManager {
 				if (engine.getURL() != null) {
 					tiUrl.setContent(engine.getURL());
 				}
+				cbBasket.setChecked(engine.getUseBasket());
 			} catch (Exception e) {
 				System.err.println("[ServiceSearchEditor] Failed to populate fields");
 			}
@@ -239,6 +248,7 @@ public class ServiceSearchEditor extends TravelManager {
 			tiName.setContent(pName);
 			tiCode.setContent(pCode);
 			tiUrl.setContent(pUrl);
+			cbBasket.setChecked(pBasket != null);
 		}
 		
 		SubmitButton bSave = new SubmitButton(iwrb.getLocalizedImageButton("travel.save", "Save"), ACTION, ACTION_SAVE);
@@ -275,11 +285,15 @@ public class ServiceSearchEditor extends TravelManager {
 			
 			table.add(getHeaderText(iwrb.getLocalizedString("travel.search.used", "Used")), 1, row);
 			table.setRowColor(row, backgroundColor);
-			table.mergeCells(1, row, 2, row);
+			CheckBox multiChecker = new CheckBox("tmp1");
+			multiChecker.setChecked(true);
+			table.add(getHeaderText(iwrb.getLocalizedString("travel.all", "All")+" "), 2, row);
+			table.add(multiChecker, 2, row);
+//			table.mergeCells(1, row, 2, row);
 			++row;
 			
 			if ( engineSupps != null && !engineSupps.isEmpty()) {
-				row = insertSuppliers(table, row, engineSupps, true);
+				row = insertSuppliers(table, row, engineSupps, true, multiChecker);
 			} else {
 				table.setRowColor(row, GRAY);
 				table.add(getText(iwrb.getLocalizedString("travel.search.no_suppliers", "No suppliers")), 1, row++);
@@ -287,11 +301,14 @@ public class ServiceSearchEditor extends TravelManager {
 
 			table.add(getHeaderText(iwrb.getLocalizedString("travel.search.unused", "Unused")), 1, row);
 			table.setRowColor(row, backgroundColor);
-			table.mergeCells(1, row, 2, row);
+			CheckBox multiChecker2 = new CheckBox("tmp");
+			table.add(getHeaderText(iwrb.getLocalizedString("travel.all", "All")+" "), 2, row);
+			table.add(multiChecker2, 2, row);
+//			table.mergeCells(1, row, 2, row);
 			++row;
 			
 			if ( allSupps != null && !allSupps.isEmpty()) {
-				row = insertSuppliers(table, row, allSupps, false);
+				row = insertSuppliers(table, row, allSupps, false, multiChecker2);
 			} else {
 				table.setRowColor(row, GRAY);
 				table.add(getText(iwrb.getLocalizedString("travel.search.no_suppliers", "No suppliers")), 1, row++);
@@ -346,7 +363,10 @@ public class ServiceSearchEditor extends TravelManager {
 				}
 				
 				CountryHome cHome = (CountryHome) IDOLookup.getHome(Country.class);
-				Collection countries = cHome.findAllFromPostalCodes(postalCodes);
+				Collection countries = new Vector();
+				if (postalCodes != null && !postalCodes.isEmpty()) {
+					countries = cHome.findAllFromPostalCodes(postalCodes);
+				}
 
 				engine.setCountries(countries);
 			}catch (Exception e) {
@@ -357,7 +377,7 @@ public class ServiceSearchEditor extends TravelManager {
 		}
 	}
 	
-	private int insertSuppliers(Table table, int row, Collection suppliers, boolean setCheckBox) {
+	private int insertSuppliers(Table table, int row, Collection suppliers, boolean setCheckBox, CheckBox multiChecker) {
 		Supplier supplier;
 		CheckBox box;
 		Iterator iter = suppliers.iterator();
@@ -366,7 +386,9 @@ public class ServiceSearchEditor extends TravelManager {
 			table.setRowColor(row, GRAY);
 			box = new CheckBox(PARAMETER_IN_USE+supplier.getPrimaryKey().toString());
 			box.setChecked(setCheckBox);
-			
+			if (multiChecker != null) {
+				multiChecker.setToCheckWhenCheckedAndUncheckWhenUnchecked(box);
+			}
 			table.add(new HiddenInput(PARAMETER_SUPPLIER_ID, supplier.getPrimaryKey().toString()), 1, row);
 			table.add(getText(supplier.getName()), 1, row);
 			table.add(box ,2, row++);
@@ -379,7 +401,7 @@ public class ServiceSearchEditor extends TravelManager {
 		String code = iwc.getParameter(PARAMETER_CODE);
 		String url = iwc.getParameter(PARAMETER_URL);
 		String id = iwc.getParameter(PARAMETER_SSE_ID);
-		
+		String basket = iwc.getParameter(PARAMETER_USE_BASKET);
 		boolean isValid = true;
 		ServiceSearchEngine engine = null;
 		
@@ -419,7 +441,7 @@ public class ServiceSearchEditor extends TravelManager {
 				}
 				
 				if (proceed) {
-					engine = getBusiness(iwc).storeEngine(iID, name, code, url, getSupplierManager());
+					engine = getBusiness(iwc).storeEngine(iID, name, code, url, getSupplierManager(), basket != null);
 					displaySearchEngineList(iwc);
 				} else {
 					displayCreation(iwc);
