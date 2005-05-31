@@ -1,17 +1,14 @@
 package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
-
 import com.idega.core.contact.data.Email;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
@@ -524,6 +521,28 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		
 		//if no club is found we throw the exception
 		throw new NoDivisionFoundException(club.getName());
+	}
+	
+	/**
+	 * A method to find the club collection group for a league
+	 * @param league
+	 * @return
+	 * @throws NoLeagueClubCollectionGroup 
+	 */
+	public Group getClubCollectionGroupForLeague(Group league) throws RemoteException, NoLeagueClubCollectionGroup {
+		Collection children = league.getChildren();
+		
+		if (children != null && !children.isEmpty()) {
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_COLLECTION)) {
+					return child;
+				}
+			}
+		}
+		
+		throw new NoLeagueClubCollectionGroup(league.getName());
 	}
 
 	

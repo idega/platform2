@@ -6,6 +6,9 @@
  */
 package is.idega.idegaweb.member.business.plugins;
 
+import is.idega.idegaweb.member.business.MemberUserBusiness;
+import is.idega.idegaweb.member.business.NoAbbreviationException;
+import is.idega.idegaweb.member.business.NoLeagueClubCollectionGroup;
 import is.idega.idegaweb.member.presentation.ClubInformationTab;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
@@ -14,9 +17,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.accesscontrol.data.ICRole;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -133,6 +142,8 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 */
 	public boolean createSpecialConnection(String connection, int parentGroupId, String clubName, IWContext iwc) {
 		//Are we connecting to a league.
+		
+		//TODO OTHER CONNECTION TO CLUB GROUP FOR LEAGUE
 		if (connection == null || connection.equals("")) {
 			return false;
 		}
@@ -180,8 +191,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 				if (parentGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
 					topNode = getGroupBusiness().createGroupUnder("Flokkar", "",
 							IWMemberConstants.GROUP_TYPE_CLUB_DIVISION, parentGroup);
-					getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-							iwc, topNode, iwc.getCurrentUser());
+					getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(topNode, iwc.getCurrentUser());
 				}
 				//Insert a copy of all the template groups under the
 				// club/division and aliases under the league.
@@ -239,11 +249,10 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						Iterator owners = templateOwners.iterator();
 						while (owners.hasNext()) {
 							User owner = (User) owners.next();
-							getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-									iwc, newGroup, owner);
+							getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(newGroup, owner);
 						}
 					}
-					getGroupBusiness().applyAllGroupPermissionsForGroupToUsersPrimaryGroup(iwc, newGroup,
+					getGroupBusiness().applyAllGroupPermissionsForGroupToUsersPrimaryGroup(newGroup,
 							iwc.getCurrentUser());
 					//Try to update the connection to the league. If it does
 					// not exist, create a new connection.
@@ -265,8 +274,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							Iterator owners = templateOwners.iterator();
 							while (owners.hasNext()) {
 								User owner = (User) owners.next();
-								getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-										iwc, newSpecialPlayerGroup, owner);
+								getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(newSpecialPlayerGroup, owner);
 							}
 						}
 						//Create a link to the actual group in the club, with
@@ -283,8 +291,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							Iterator owners = templateOwners.iterator();
 							while (owners.hasNext()) {
 								User owner = (User) owners.next();
-								getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-										iwc, newSpecialPlayerAliasGroup, owner);
+								getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(newSpecialPlayerAliasGroup, owner);
 							}
 						}
 					}
@@ -332,8 +339,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							Iterator o = owners.iterator();
 							while (o.hasNext()) {
 								User owner = (User) o.next();
-								getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(
-										iwc, newSpecialPlayerAliasGroup, owner);
+								getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(newSpecialPlayerAliasGroup, owner);
 							}
 						}
 						return true;
@@ -377,6 +383,20 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		}
 		return business;
 	}
+	
+	/*
+	 * Get the MemberUserBusiness.
+	 */
+	private MemberUserBusiness getMemberUserBusiness() {
+		MemberUserBusiness business = null;
+		try {
+			business = (MemberUserBusiness) getServiceInstance(MemberUserBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+		return business;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -400,7 +420,261 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
 	 */
 	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
-		// TODO Auto-generated method stub
+		
+		//A fix so we don't always autocreate main committess, only when creating new clubs,league,etc
+		String type = group.getGroupType();
+		
+		if( (type.equals(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE) || type.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_COMMITTEE) 
+				|| type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE) || type.equals(IWMemberConstants.GROUP_TYPE_FEDERATION_COMMITTEE) 
+				|| type.equals(IWMemberConstants.GROUP_TYPE_UNION_COMMITTEE) || type.equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE))
+				&& groupTypeOfSubGroup.equals(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN)){
+			Collection parents = group.getParentGroups();
+			if(parents!=null && parents.size()==1){
+				Group parent = (Group) parents.iterator().next();
+				if(parent.getGroupType().equals(type)){
+					return "[This is a fix/hack for the group type templates] Auto creation of main committee stopped for group "+group.getName()+" of type "+ type;
+				}
+				else if(type.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_COMMITTEE)){
+					return "[This is a fix/hack for the group type templates] Auto creation of main committee stopped for group "+group.getName()+" of type "+ type;
+				}
+			}else{
+				return "[This is a fix/hack for the group type templates] Auto creation of main committee stopped for group "+group.getName()+" of type "+ type+". The parent group has many parents!";
+			}
+		}
+		
 		return null;
 	}
+	
+	protected void connectAllClubsUnderTheirLeagues() throws RemoteException {
+		UserTransaction trans = this.getSessionContext().getUserTransaction();
+		try {
+			trans.begin();
+		
+			String[] leagueType = { IWMemberConstants.GROUP_TYPE_LEAGUE };
+			// Get all leagues
+			Collection leagues = getGroupBusiness().getGroups(leagueType, true);
+			if (leagues != null && !leagues.isEmpty()) {
+				for (Iterator iter = leagues.iterator(); iter.hasNext();) {
+					Group league = (Group) iter.next();
+					ICRole role = createRoleForLeague(league);
+					addLeagueRoleToLeagueStaffAndCommitteeGroups(role, league);
+					Group clubCollectionGroup = addClubCollectionGroupToLeague(league);
+					
+					
+					// for each create the shortcuts for the clubs and all roles
+					// and stuff
+					Collection clubs = getGroupBusiness().getGroupsByMetaDataKeyAndValue(
+							IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, league.getPrimaryKey().toString());
+					// THESE ONLY SHOULD HAVE ONE DIVISION
+					if (clubs != null && !clubs.isEmpty()) {
+						for (Iterator clubbies = clubs.iterator(); clubbies.hasNext();) {
+							Group club = (Group) clubbies.next();
+							addLeagueRoleAccessToClub(role, club);
+							// ADD SHORTCUT TO CLUB
+							createAliasToClubUnderClubCollectionGroup(clubCollectionGroup,club);
+							
+							Group division = getMemberUserBusiness().getDivisionForClub(club);
+							String metadata = division.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
+							if (metadata == null
+									|| club.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION).equals(
+											metadata)) {
+								addLeagueRoleAccessToDivision(role, division);
+							}
+							else {
+								System.err.println("[ClubInformationPluginBusiness] Club league connection and division connection do not match for club: "
+										+ club.getName()
+										+ "and division: "
+										+ division.getName()
+										+ " (league id "
+										+ metadata + ")");
+							}
+						}
+					}
+					
+					// MULTIDIVISION CLUBS
+					Collection divisions = getGroupBusiness().getGroupsByMetaDataKeyAndValue(
+							IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION, league.getPrimaryKey().toString());
+					if (divisions != null && !divisions.isEmpty()) {
+						for (Iterator divs = divisions.iterator(); divs.hasNext();) {
+							Group division = (Group) divs.next();
+							addLeagueRoleAccessToDivision(role, division);
+							// ADD SHORTCUT TO CLUB
+							Group theClub = getMemberUserBusiness().getClubForGroup(division);
+							createAliasToClubUnderClubCollectionGroup(clubCollectionGroup,theClub);
+						}
+					}
+				}
+			}
+			
+			trans.commit();
+		}
+		catch (Exception e1) {
+			
+			e1.printStackTrace();
+			try {
+				trans.rollback();
+			}
+			catch (IllegalStateException e) {
+				e.printStackTrace();
+			}
+			catch (SecurityException e) {
+				e.printStackTrace();
+			}
+			catch (SystemException e) {
+				e.printStackTrace();
+			}	
+		}
+
+	}
+
+	private void createAliasToClubUnderClubCollectionGroup(Group clubCollectionGroup, Group club) throws CreateException, RemoteException {
+		boolean needToCreateAlias = true;
+		String[] aliasType = {IWMemberConstants.GROUP_TYPE_ALIAS};
+		Collection clubAliases = clubCollectionGroup.getChildGroups(aliasType,true);
+		
+		for (Iterator aliasesToClubs = clubAliases.iterator(); aliasesToClubs.hasNext() && needToCreateAlias; ) {
+			Group clubAlias = (Group) aliasesToClubs.next();
+			if(clubAlias.getAlias().equals(clubCollectionGroup)){
+				needToCreateAlias = false;
+			}
+		}
+		
+		if(needToCreateAlias){
+			Group alias = getGroupBusiness().createGroupUnder(club.getName(),null,IWMemberConstants.GROUP_TYPE_ALIAS,clubCollectionGroup);
+			alias.setAlias(club);
+			alias.store();
+		}
+	}
+
+	protected Group addClubCollectionGroupToLeague(Group league) throws RemoteException, CreateException {
+		Group clubColl = null;
+		try {
+			clubColl = getMemberUserBusiness().getClubCollectionGroupForLeague(league);
+			return clubColl;
+		}
+		catch (NoLeagueClubCollectionGroup e) {
+			log("No club collection group for league: "+league.getName()+", creating one...");
+	
+			//TODO change sloppy none localized group name
+			clubColl = getGroupBusiness().createGroupUnder("Aðildarfélög",null,IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_COLLECTION,league);
+			Collection leagueOwners = getGroupBusiness().getOwnerUsersForGroup(league);
+			for (Iterator owners = leagueOwners.iterator(); owners.hasNext();) {
+				User owner = (User) owners.next();
+				getGroupBusiness().applyOwnerAndAllGroupPermissionsToNewlyCreatedGroupForUserAndHisPrimaryGroup(clubColl, owner);
+			}	
+		}
+		
+		return clubColl;
+		
+	}
+
+	protected void addLeagueRoleToLeagueStaffAndCommitteeGroups(ICRole role, Group league) {
+		AccessController access = getAccessController();
+		List staffType = new ArrayList();
+		staffType.add(IWMemberConstants.GROUP_TYPE_LEAGUE_STAFF);
+		staffType.add(IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE);
+		String roleKey = role.getRoleKey();
+		
+		try {
+			Collection staff = getGroupBusiness().getChildGroupsRecursiveResultFiltered(league,staffType,true);
+			if(staff!=null && !staff.isEmpty()){
+				for (Iterator groups = staff.iterator(); groups.hasNext();) {
+					Group group = (Group) groups.next();
+					access.addRoleToGroup(roleKey,(Integer)group.getPrimaryKey(),getIWApplicationContext());
+					
+					//and for the children, especially the main committee
+					if(group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE)){
+						Collection mainCommitteAndPossibleOthers = getGroupBusiness().getChildGroupsRecursive(group);
+						if(mainCommitteAndPossibleOthers!=null && !mainCommitteAndPossibleOthers.isEmpty()){
+							for (Iterator committs = mainCommitteAndPossibleOthers.iterator(); committs.hasNext();) {
+								Group comm = (Group) committs.next();
+								access.addRoleToGroup(roleKey,(Integer)comm.getPrimaryKey(),getIWApplicationContext());
+							}
+						}
+					}
+						
+					
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void addLeagueRoleAccessToDivision(ICRole role, Group division) {
+		AccessController access = getAccessController();
+		String roleKey = role.getRoleKey();
+		Integer divisionId = (Integer)division.getPrimaryKey();
+		//SET PERMISSIONS TO THE CLUB, then get the main board...
+		addRoleAccessToGroup(access, roleKey, divisionId);
+		
+		String committeeGroupId = division.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
+		if(committeeGroupId!=null && !"".equals(committeeGroupId)){
+			addRoleAccessToGroup(access, roleKey, new Integer(committeeGroupId));
+		}
+		
+	}
+
+	protected void addLeagueRoleAccessToClub(ICRole role, Group club) {
+		AccessController access = getAccessController();
+		String roleKey = role.getRoleKey();
+		Integer clubId = (Integer)club.getPrimaryKey();
+		//SET PERMISSIONS TO THE CLUB, then get the main board...
+		addRoleAccessToGroup(access, roleKey, clubId);
+		
+		List committee = new ArrayList();
+		committee.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
+		
+		try {
+			//in two steps so
+			Collection committees = getGroupBusiness().getChildGroupsRecursiveResultFiltered(club,committee,true);
+			if(committees!=null && !committees.isEmpty()){
+				for (Iterator groups = committees.iterator(); groups.hasNext();) {
+					Group group = (Group) groups.next();
+					Integer groupId = (Integer)group.getPrimaryKey();
+					addRoleAccessToGroup(access, roleKey, groupId);
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param access
+	 * @param roleKey
+	 * @param clubId
+	 */
+	protected void addRoleAccessToGroup(AccessController access, String roleKey, Integer groupId) {
+		access.addRoleToGroup(roleKey,AccessControl.PERMISSION_KEY_VIEW,groupId,this.getIWApplicationContext());
+		access.addRoleToGroup(roleKey,AccessControl.PERMISSION_KEY_EDIT,groupId,this.getIWApplicationContext());
+	}
+
+	/**
+	 * Creates a role with the name "The leagues abbreviation"+"_access";
+	 * @param league
+	 * @return the created role
+	 * @throws NoAbbreviationException
+	 */
+	protected ICRole createRoleForLeague(Group league) throws NoAbbreviationException{
+		String abbreviation = league.getAbbrevation();
+		AccessController access = getAccessController();
+		
+		if(abbreviation!=null && !"".equals(abbreviation) ){
+			String role = abbreviation+"_access";
+			try {
+				return access.getRoleByRoleKey(role);
+			}
+			catch (FinderException e) {
+				return access.createRoleWithRoleKey(role);
+			}
+		}
+		else throw new NoAbbreviationException(league.getName());
+	}
+	
+	
+	
+	
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: MemberUserBusiness.java,v 1.10 2005/01/04 15:44:23 palli Exp $
+ * $Id: MemberUserBusiness.java,v 1.11 2005/05/31 11:45:34 eiki Exp $
  * Created on Jan 4, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/04 15:44:23 $ by $Author: palli $
+ *  Last modified: $Date: 2005/05/31 11:45:34 $ by $Author: eiki $
  * 
  * @author <a href="mailto:palli@idega.com">palli</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface MemberUserBusiness extends IBOService, UserBusiness {
 
@@ -143,4 +143,13 @@ public interface MemberUserBusiness extends IBOService, UserBusiness {
 	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#setClubMemberNumberForUser
 	 */
 	public boolean setClubMemberNumberForUser(String number, User user, Group club) throws RemoteException;
+	
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberUserBusinessBean#getClubCollectionGroupForLeague 
+	 * @param league
+	 * @return
+	 * @throws RemoteException
+	 * @throws NoLeagueClubCollectionGroup
+	 */
+	public Group getClubCollectionGroupForLeague(Group league) throws RemoteException, NoLeagueClubCollectionGroup;
 }
