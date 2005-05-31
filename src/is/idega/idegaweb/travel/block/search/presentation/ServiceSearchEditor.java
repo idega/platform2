@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+import com.idega.block.trade.stockroom.business.TradeConstants;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
@@ -187,7 +188,7 @@ public class ServiceSearchEditor extends TravelManager {
 	}
 	
 	
-	private void displayCreation(IWContext iwc) {
+	private void displayCreation(IWContext iwc) throws RemoteException {
 		Table table = super.getTable();
 		Form form = new Form();
 		form.add(table);
@@ -216,11 +217,13 @@ public class ServiceSearchEditor extends TravelManager {
 		table.add(tiUrl, 2, row);
 		table.setRowColor(row, GRAY);
 		
-		++row;
 		CheckBox cbBasket = new CheckBox(PARAMETER_USE_BASKET);
-		table.add(getText(iwrb.getLocalizedString("travel.use_basket", "Use basket")), 1, row);
-		table.add(cbBasket, 2, row);
-		table.setRowColor(row, GRAY);
+		if (super.hasRole(iwc, TradeConstants.ROLE_BOOKING_BASKET)) {
+			++row;
+			table.add(getText(iwrb.getLocalizedString("travel.use_basket", "Use basket")), 1, row);
+			table.add(cbBasket, 2, row);
+			table.setRowColor(row, GRAY);
+		}
 		
 		String pName = iwc.getParameter(PARAMETER_NAME);
 		String pCode = iwc.getParameter(PARAMETER_CODE);
@@ -396,7 +399,7 @@ public class ServiceSearchEditor extends TravelManager {
 		return row;
 	}
 
-	private void saveEngine(IWContext iwc) {
+	private void saveEngine(IWContext iwc) throws RemoteException {
 		String name = iwc.getParameter(PARAMETER_NAME);
 		String code = iwc.getParameter(PARAMETER_CODE);
 		String url = iwc.getParameter(PARAMETER_URL);
