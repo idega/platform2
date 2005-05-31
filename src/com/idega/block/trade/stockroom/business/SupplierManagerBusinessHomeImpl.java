@@ -1,6 +1,6 @@
 /*
- * $Id: SupplierManagerBusinessHomeImpl.java,v 1.2 2005/02/08 15:54:36 gimmi Exp $
- * Created on 8.2.2005
+ * $Id: SupplierManagerBusinessHomeImpl.java,v 1.3 2005/05/31 19:23:12 gimmi Exp $
+ * Created on 4.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/08 15:54:36 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/05/31 19:23:12 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SupplierManagerBusinessHomeImpl extends IBOHomeImpl implements SupplierManagerBusinessHome {
 

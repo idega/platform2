@@ -1,6 +1,6 @@
 /*
- * $Id: SupplierManagerBusiness.java,v 1.3 2005/02/08 15:54:36 gimmi Exp $
- * Created on 8.2.2005
+ * $Id: SupplierManagerBusiness.java,v 1.4 2005/05/31 19:23:12 gimmi Exp $
+ * Created on 4.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/08 15:54:36 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/05/31 19:23:12 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface SupplierManagerBusiness extends IBOService {
 
@@ -47,9 +47,45 @@ public interface SupplierManagerBusiness extends IBOService {
 			String password, IWUserContext iwuc) throws RemoteException, CreateException;
 
 	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#setRole
+	 */
+	public void setRole(Group supplierManager, String role, boolean setRole) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#setRole
+	 */
+	public void setRole(Supplier supplier, String role, boolean setRole) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getRoles
+	 */
+	public Collection getRoles(Group supplierManager) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getRolesAsString
+	 */
+	public Collection getRolesAsString(Group supplierManager) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getRoles
+	 */
+	public Collection getRoles(Supplier supplier) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getRolesAsString
+	 */
+	public Collection getRolesAsString(Supplier supplier) throws RemoteException, FinderException;
+
+	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getSupplierManagerAdmins
 	 */
 	public Collection getSupplierManagerAdmins(Group supplierManager) throws RemoteException, FinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#findAllSupplierManagers
+	 */
+	public Collection findAllSupplierManagers() throws java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#getSupplierManagerGroup
