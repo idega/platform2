@@ -24,10 +24,12 @@ import com.idega.data.EntityControl;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOPrimaryKey;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
+import com.idega.data.PrimaryKey;
 import com.idega.data.SimpleQuerier;
 import com.idega.data.query.AND;
 import com.idega.data.query.Column;
@@ -63,6 +65,28 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
   public GeneralBookingBMPBean(int id)throws SQLException{
           super(id);
   }
+ 
+  //- basketitem implementation ------------
+  
+  public IDOPrimaryKey getItemID() { 
+      PrimaryKey key = new PrimaryKey();
+      key.setPrimaryKeyValue(getIDColumnName(), getPrimaryKeyValue());
+
+      return key;
+
+//      return getPrimaryKey();
+//	  String idString = Integer.toString(getServiceID());
+//	  if (getBookingDate() != null) {
+//		  idString += getBookingDate().toString();
+//	  }
+//	  return idString; 
+  }
+  
+  public String getItemName() { return null; }
+  public String getItemDescription() { return null; };
+  public Double getItemPrice() { return (Double)null; };
+  
+  //----------------------------------------
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
@@ -644,7 +668,7 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
             	++count;
             	id = ((Integer) serviter.next()).intValue();
               Timeframe timeframe = pBus.getTimeframe(pBus.getProduct(id), fromStamp);
-            	MatchCriteria serID = new MatchCriteria(new Column(productTable, ProductBMPBean.getIdColumnName()), MatchCriteria.EQUALS, id);
+            	MatchCriteria serID = new MatchCriteria(productPK, MatchCriteria.EQUALS, id);
 	            if (timeframe != null) {
 	          		query.addJoin(productTable, ProductBMPBean.getIdColumnName(), timeframeMiddleTable, ProductBMPBean.getIdColumnName());
 	          		query.addJoin(timeframeMiddleTable, timeframe.getIDColumnName(), timeframeTable, timeframe.getIDColumnName());
@@ -710,8 +734,11 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
               
               query.addCriteria(new MatchCriteria(dateColumn, MatchCriteria.LIKE, "%"+fromStamp.toSQLDateString()+"%"));
             }else if ( (fromStamp != null) && (toStamp != null)) {
-            	MatchCriteria crit1 = new MatchCriteria(dateColumn, MatchCriteria.GREATEREQUAL, fromStamp.toSQLDateString());
-            	MatchCriteria crit2 = new MatchCriteria(dateColumn, MatchCriteria.LESSEQUAL, toStamp.toSQLDateString());
+              IWTimestamp tmpTo = new IWTimestamp(toStamp);
+              tmpTo.addDays(1);
+
+              MatchCriteria crit1 = new MatchCriteria(dateColumn, MatchCriteria.GREATEREQUAL, fromStamp.toSQLDateString()+" 00:00:00");
+            	MatchCriteria crit2 = new MatchCriteria(dateColumn, MatchCriteria.LESS, tmpTo.toSQLDateString()+" 00:00:00");
             	AND andCriteria = new AND(crit1, crit2);
             	query.addCriteria(andCriteria);
               sql.append(" (");
@@ -719,7 +746,7 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
               sql.append(dateCol+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
 //              sql.append(dateColumn+" <= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
-              sql.append(dateCol+" <= '"+toStamp.toSQLDateString()+"'"); // Gimmi fixar ... +"')");
+              sql.append(dateCol+" < '"+tmpTo.toSQLDateString()+" 00:00:00'"); // Gimmi fixar ... +"')");
 	            sql.append(" )");
             }
             sql.append(" )");
@@ -731,7 +758,6 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
 
             //System.out.println(sql.toString());
 //            System.out.println(query.toString(false));
-            
         return (int) idoGetValueFromSingleValueResultSet(query.toString());
 
 //        many = SimpleQuerier.executeStringQuery(query.toString());

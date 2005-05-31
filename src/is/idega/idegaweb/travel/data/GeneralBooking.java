@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.block.basket.data.BasketItem;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.data.IDOAddRelationshipException;
@@ -16,7 +17,7 @@ import com.idega.data.IDORemoveRelationshipException;
 /**
  * @author gimmi
  */
-public interface GeneralBooking extends IDOEntity, Booking {
+public interface GeneralBooking extends IDOEntity, Booking, BasketItem {
 
 	/**
 	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getName
