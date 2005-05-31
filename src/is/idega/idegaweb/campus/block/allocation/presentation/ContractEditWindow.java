@@ -16,6 +16,7 @@ import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
@@ -181,6 +182,13 @@ public class ContractEditWindow extends CampusWindow{
           T.add(getText(localize("resign_info","Resign info")),1,row);
       
           T.add(info,2,row);
+ 
+          row++;
+          CheckBox hasPhone = new CheckBox("hasPhone");
+          hasPhone.setChecked(eContract.getHasPhone());
+          T.add(getText(localize("has_phone","Has phone")),1,row);
+      
+          T.add(hasPhone, 2, row);
           row++;
 
         }
@@ -223,6 +231,8 @@ public class ContractEditWindow extends CampusWindow{
       if(iwc.isParameterSet("info")){
         eContract.setResignInfo((iwc.getParameter("info")));
       }
+    	  	
+      eContract.setHasPhone(iwc.isParameterSet("hasPhone"));
 
       eContract.store();
     }

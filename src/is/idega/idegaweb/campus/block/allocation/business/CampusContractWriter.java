@@ -211,7 +211,7 @@ public class CampusContractWriter {
 					if (eContract
 						.getStatus()
 						.equalsIgnoreCase(
-							is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusCreated)) {
+							is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.STATUS_CREATED)) {
 						eContract.setStatusPrinted();
 						update = true;
 					}

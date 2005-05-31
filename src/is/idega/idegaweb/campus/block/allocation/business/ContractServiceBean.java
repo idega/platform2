@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.23 2004/09/01 14:37:35 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.24 2005/05/31 09:46:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -256,7 +256,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public void endExpiredContracts(){
 		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndValidBeforeDate(ContractBMPBean.statusSigned,IWTimestamp.RightNow().getDate());
+			contracts = getContractHome().findByStatusAndValidBeforeDate(ContractBMPBean.STATUS_SIGNED,IWTimestamp.RightNow().getDate());
 			if(contracts!=null )
 			    System.out.println(contracts.size()+" contracts found to be ended");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
@@ -275,7 +275,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public void garbageEndedContracts(java.sql.Date lastChangeDate){
 	    Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusEnded,lastChangeDate);
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.STATUS_ENDED,lastChangeDate);
 			if(contracts!=null )
 			    System.out.println(contracts.size()+" ended contracts found to be garbaged");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
@@ -294,7 +294,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public void garbageResignedContracts(java.sql.Date lastChangeDate){
 	    Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusResigned,lastChangeDate);
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.STATUS_RESIGNED,lastChangeDate);
 			if(contracts!=null )
 			    System.out.println(contracts.size()+" resigned contracts found to be garbaged");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
@@ -313,7 +313,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public void finalizeGarbageContracts(java.sql.Date lastChangeDate){
 		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusGarbage,lastChangeDate);
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.STATUS_GARBAGE,lastChangeDate);
 			if(contracts!=null )
 			    System.out.println(contracts.size()+" contracts found to be finalized");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
@@ -735,7 +735,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 							Applicant applicant =
 								getApplicationService().getApplicantHome().findByPrimaryKey(applicantID);
 							Collection applicantNewContracts =
-								getContractHome().findByApplicantAndStatus(applicantID, ContractBMPBean.statusCreated);
+								getContractHome().findByApplicantAndStatus(applicantID, ContractBMPBean.STATUS_CREATED);
 							if (applicantNewContracts == null || applicantNewContracts.isEmpty()) {
 								String[] emails = getApplicationService().getApplicantEmail(applicantID.intValue());
 								Contract contract = null;
@@ -972,8 +972,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	 * Returns statuses:  signed, ended,resigned and terminated.
 	 */
 	public String[] getRentableStatuses(){
-		String[] statuses = {ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
-				ContractBMPBean.statusTerminated};
+		String[] statuses = {ContractBMPBean.STATUS_SIGNED, ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
+				ContractBMPBean.STATUS_TERMINATED};
 		return statuses;
 	}
 	
@@ -981,8 +981,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	 * Returns statuses: created,printed, signed, ended,resigned and terminated.
 	 */
 	public String[] getAllocateableStatuses(){
-		String[] statuses = {ContractBMPBean.statusCreated,ContractBMPBean.statusPrinted,ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
-				ContractBMPBean.statusTerminated};
+		String[] statuses = {ContractBMPBean.STATUS_CREATED,ContractBMPBean.STATUS_PRINTED,ContractBMPBean.STATUS_SIGNED, ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
+				ContractBMPBean.STATUS_TERMINATED};
 		return statuses;
 	}
 	
@@ -993,7 +993,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	}
 	
 	public Map getNewApplicantContracts() throws RemoteException, FinderException {
-		return getApplicantContractsByStatus(ContractBMPBean.statusCreated);
+		return getApplicantContractsByStatus(ContractBMPBean.STATUS_CREATED);
 	}
 	public CampusUserService getUserService() throws RemoteException {
 		return (CampusUserService) getServiceInstance(CampusUserService.class);

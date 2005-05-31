@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.41 2004/07/05 14:50:41 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.42 2005/05/31 09:48:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -242,7 +242,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 			Table denialTable = null;
 			Contract c = holder.getContract();
 			
-			if(c!=null && c.getStatus().equals(ContractBMPBean.statusCreated)){
+			if(c!=null && c.getStatus().equals(ContractBMPBean.STATUS_CREATED)){
 				try {
 					ApartmentView allocatedApartment = applicationService.getBuildingService().getApartmentViewHome().findByPrimaryKey(c.getApartmentId());
 					
@@ -416,7 +416,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 				if(contracts!=null && !contracts.isEmpty()){
 					for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 						Contract con = (Contract) iter.next();
-						if(con.getStatus().equalsIgnoreCase(ContractBMPBean.statusCreated)){
+						if(con.getStatus().equalsIgnoreCase(ContractBMPBean.STATUS_CREATED)){
 							service.doGarbageContract(((Integer)con.getPrimaryKey()));
 						}
 					}

@@ -278,8 +278,8 @@ public class CampusContracts extends CampusBlock {
 		T.setTitlesHorizontal(true);
 		T.setWidth("100%");
 		T.add(getHeader("#"), col++, 1);
-		if (sGlobalStatus.equals(ContractBMPBean.statusEnded) || sGlobalStatus.equals(ContractBMPBean.statusResigned)
-				|| sGlobalStatus.equals(ContractBMPBean.statusRejected)) {
+		if (sGlobalStatus.equals(ContractBMPBean.STATUS_ENDED) || sGlobalStatus.equals(ContractBMPBean.STATUS_RESIGNED)
+				|| sGlobalStatus.equals(ContractBMPBean.STATUS_REJECTED)) {
 			T.add((garbageImage), col++, 1);
 			garbage = true;
 		} else
@@ -328,16 +328,16 @@ public class CampusContracts extends CampusBlock {
 						T.add(getGarbageLink(garbageImage, contractID), col++, row);
 					else
 						T.add(getPDFLink(printImage, contractID, Ap.getSSN()), col++, row);
-					if (status.equalsIgnoreCase(ContractBMPBean.statusSigned))
+					if (status.equalsIgnoreCase(ContractBMPBean.STATUS_SIGNED))
 						T.add(getReSignLink(resignImage, contractID), col, row);
 					col++;
-					if (status.equalsIgnoreCase(ContractBMPBean.statusPrinted)
-							|| status.equalsIgnoreCase(ContractBMPBean.statusSigned))
+					if (status.equalsIgnoreCase(ContractBMPBean.STATUS_PRINTED)
+							|| status.equalsIgnoreCase(ContractBMPBean.STATUS_SIGNED))
 						T.add(getSignedLink(registerImage, contractID, isAdmin), col, row);
 					col++;
-					if (status.equalsIgnoreCase(ContractBMPBean.statusEnded)
-							|| status.equalsIgnoreCase(ContractBMPBean.statusResigned)
-							|| status.equalsIgnoreCase(ContractBMPBean.statusSigned))
+					if (status.equalsIgnoreCase(ContractBMPBean.STATUS_ENDED)
+							|| status.equalsIgnoreCase(ContractBMPBean.STATUS_RESIGNED)
+							|| status.equalsIgnoreCase(ContractBMPBean.STATUS_SIGNED))
 						T.add(getRenewLink(renewImage, contractID), col, row);
 					col++;
 					T.add(getText(Ap.getFullName()), col++, row);

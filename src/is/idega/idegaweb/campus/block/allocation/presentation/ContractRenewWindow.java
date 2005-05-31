@@ -209,7 +209,7 @@ public class ContractRenewWindow extends CampusWindow{
           T.add(to,2,row);
           row++;
 
-          if(contract.getStatus().equals(ContractBMPBean.statusSigned)){
+          if(contract.getStatus().equals(ContractBMPBean.STATUS_SIGNED)){
             T.add(getHeader(localize("end_old_contract","End old contract")),1,row);
             CheckBox endOldContract = new CheckBox("end_old_contr","true");
             T.add(endOldContract,2,row);

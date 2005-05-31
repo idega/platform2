@@ -108,7 +108,7 @@ public class ContractKeyWindow extends CampusWindow{
       if(apartmentReturn){
         T.addTitle(getResourceBundle().getLocalizedString("apartment_return","Apartment return"));
         val = "return";
-        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusEnded) || eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusResigned) ) {
+        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.STATUS_ENDED) || eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.STATUS_RESIGNED) ) {
           T.addButton(save);
           canSave = true;
         }
@@ -116,7 +116,7 @@ public class ContractKeyWindow extends CampusWindow{
       else{
         T.addTitle(localize("apartment_deliver","Apartment deliver"));
         val = "deliver";
-        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned) ) {
+        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.STATUS_SIGNED) ) {
           T.addButton(save);
           canSave = true;
         }

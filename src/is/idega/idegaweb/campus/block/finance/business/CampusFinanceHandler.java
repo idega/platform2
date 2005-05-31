@@ -72,8 +72,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 		logger.info("Starting assessment for period " + start.toString() + "-" + end.toString());
 		Collection tariffs = null;
 		Collection listOfUsers = null;
-		String[] statuses = {ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
-				ContractBMPBean.statusTerminated};
+		String[] statuses = {ContractBMPBean.STATUS_SIGNED, ContractBMPBean.STATUS_ENDED, ContractBMPBean.STATUS_RESIGNED,
+				ContractBMPBean.STATUS_TERMINATED};
 		try {
 			tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findByTariffGroup((tariffGroupId));
 			ContractAccountApartmentHome caah = ((ContractAccountApartmentHome) IDOLookup.getHome(ContractAccountApartment.class));
