@@ -26,6 +26,7 @@ import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
+import com.idega.block.basket.business.BasketBusiness;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.TPosException;
 import com.idega.block.text.data.LocalizedText;
@@ -82,10 +83,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	private boolean debug = false;
 	
 	protected String ACTION = "bsf_a";
+	protected String PREV_ACTION = "bsf_pa";
 	protected String ACTION_SEARCH = "bsf_as";
 	protected String ACTION_BOOKING_FORM = "bsf_bf";
 	protected String ACTION_PRODUCT_DETAILS = "bsf_pd";
 	protected String ACTION_CONFIRM = "bsf_cm";
+	protected String ACTION_ADD_TO_BASKET = "bsf_atb";
 
 	protected static final int STATE_SHOW_SEARCH_FORM = 0;
 	protected static final int STATE_SHOW_SEARCH_RESULTS = 1;
@@ -93,6 +96,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected static final int STATE_CHECK_BOOKING = 3;
 	protected static final int STATE_SHOW_DETAILED_PRODUCT = 4;
 	protected static final int STATE_DEFINED_PRODUCT = 5;
+	protected static final int STATE_CHECK_ADD_TO_BASKET = 7;
 
 	protected String PARAMETER_TYPE = "hs_pt";
 	protected String PARAMETER_TYPE_COUNT = "hs_ptc";
@@ -155,10 +159,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected IWResourceBundle iwrb;
 	protected IWBundle bundle;
 	protected ServiceSearchEngine engine = null;
+	protected boolean useBasket = false;
+	private boolean addedToBasket = false;
 	protected int resultsPerPage = 5;
 	private int currentPageNumber = 1;
 	protected Image searchImage = null;
 	protected Image resetImage = null;
+	private String currentAction = null;
 	
 	protected Image headerImage;
 	protected Image headerImageTiler;
@@ -210,6 +217,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			currentPageNumber = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_NR));
 		} catch (NumberFormatException ignore) {}
 		bf = getBookingForm();
+		if (engine != null) {
+			useBasket = engine.getUseBasket();
+		}
 	}
 	
 	public void _main(IWContext iwc) throws Exception {
@@ -228,8 +238,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		if (width != null) {
 			outTable.setWidth(width);
 		}
-		//outTable.setBorder(1);
-		//outTable.setBorderColor("GREEN");
+		outTable.setBorder(1);
+//		outTable.setBorderColor("GREEN");
 		outTable.setCellpaddingAndCellspacing(0);
 		
 		
@@ -448,6 +458,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected void handleSubmit(IWContext iwc) throws RemoteException, FinderException {
 		String action = iwc.getParameter(this.ACTION);
+		currentAction = action;
 		String pId = iwc.getParameter(this.PARAMETER_PRODUCT_ID);
 		int STATE = -1;
 		if (action == null) {
@@ -475,7 +486,37 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			}
 		} else if (action.equals(ACTION_PRODUCT_DETAILS)) {
 			STATE = STATE_SHOW_DETAILED_PRODUCT;
-		}
+		} else if (action.equals(ACTION_ADD_TO_BASKET)) {
+			if (!addedToBasket && !isAlwaysSearchForm) {
+				BasketBusiness travelbasket = getBasketBusiness(iwc);
+				
+				try {
+					GeneralBooking booking = doBooking(iwc, false);
+					booking.setIsValid(false);
+					booking.store();
+					
+					travelbasket.addItem(booking);
+					addedToBasket = true;
+	
+				}
+				catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				
+				
+			}
+			
+			String prevAction = iwc.getParameter(PREV_ACTION);
+			if (prevAction != null ) {
+				if (prevAction.equals(ACTION_PRODUCT_DETAILS)) {
+					STATE = STATE_SHOW_DETAILED_PRODUCT;
+				} else if (prevAction.equals(ACTION_SEARCH)) {
+					STATE = STATE_SHOW_SEARCH_RESULTS;
+				}
+			}
+	    }
+
+		
 		getSession(iwc).setState(STATE);
 	}
 	
@@ -957,6 +998,27 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return frame;
 	}
 	
+	protected GeneralBooking doBooking(IWContext iwc, boolean doCreditCardCheck) throws Exception {
+		Product product = getProduct();
+		int bookingId = -1;
+		if (!doCreditCardCheck) {
+			bookingId = getBookingForm().checkBooking(iwc, true, false, false, doCreditCardCheck);
+		} else {
+			bookingId = getBookingForm().handleInsert(iwc, doCreditCardCheck);
+		}
+//		int bookingId = getBookingForm().checkBooking(iwc, true);
+		GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+		GeneralBooking gBooking = null;
+		
+		if (bookingId > 0) {
+			gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));	
+			gBooking.setCode(this.engine.getCode());
+		}
+		
+		return gBooking;
+
+	}
+	
 	protected void checkBooking() throws RemoteException {
 		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
 	  Table table = new Table();
@@ -969,17 +1031,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
 		try {
 			Product product = getProduct();
-			int bookingId = getBookingForm().handleInsert(iwc);
-//			int bookingId = getBookingForm().checkBooking(iwc, true);
-			GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
-			GeneralBooking gBooking = null;
+			GeneralBooking gBooking = doBooking(iwc, true);
+			int bookingId = gBooking.getID();
 			boolean inquirySent = (bookingId == BookingForm.inquirySent); 
-			
-			if (bookingId > 0) {
-				gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));	
-				gBooking.setCode(this.engine.getCode());
-			}
-			
 
 			if (gBooking != null) {
 			  boolean sendEmail = bf.sendEmails(iwc, gBooking, iwrb);
@@ -1117,7 +1171,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 						innerTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 						innerTable.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_TOP);
 						innerTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-						innerTable.setWidth(4, 1, 70);
+/**
+ * TODO : why 180 ???
+ */
+						//						innerTable.setWidth(4, 1, 70);
+						innerTable.setWidth(4, 1, 180);
 						innerTable.setVerticalAlignment(4, 1, Table.VERTICAL_ALIGN_TOP);
 						innerTable.setAlignment(4, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
@@ -1153,14 +1211,37 @@ public abstract class AbstractSearchForm extends TravelBlock{
 						}
 						
 						addProductInfo(product, innerTable, 3, 1);
-				    innerTable.add(getDetailsLink(productId), 4, 1);
+//				    innerTable.add(getDetailsLink(productId), 4, 1);
 				    if (addressCount <= 1) {
-				    		innerTable.add(Text.BREAK, 4, 1);
+//				    		innerTable.add(Text.BREAK, 4, 1);
 				    		Link bLink = getBookingLink(productId);
 				    		if (addressCount == 1) {
 				    			bLink.addParameter(PARAMETER_ADDRESS_ID, ((TravelAddress) addresses.get(0)).getPrimaryKey().toString());
 				    		}
-				    		innerTable.add(bLink, 4, 1);
+//				    		innerTable.add(bLink, 4, 1);
+				    		Link aLink = getAddToBasketLink(product, tmpPriceID);
+							
+							Table btnTable;
+							btnTable = new Table(1, 2);
+							innerTable.add(btnTable, 4, 1);
+							innerTable.setVerticalAlignment(4, 1, Table.VERTICAL_ALIGN_TOP);
+
+
+							btnTable.setWidth("100%");
+							btnTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+							
+							
+							btnTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+							btnTable.add(getDetailsLink(productId), 1, 1);							
+
+							if (useBasket) {
+								btnTable.add(aLink, 1, 2);
+							} else {
+								btnTable.add(bLink, 1, 2);
+							}
+							
+				    		
+
 				    }
 				    
 						++resultsRow;
@@ -1323,10 +1404,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 	
-	protected Link addParameters(Link po, int productId) {
+	protected Link addParameters(Link po, int productId, String action) {
 		if (po instanceof Link) {
 			((Link)po).maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
-			((Link)po).addParameter(ACTION, ACTION_BOOKING_FORM);
+			((Link)po).addParameter(ACTION, action);
 			((Link)po).maintainParameter(PARAMETER_FROM_DATE, iwc);
 			((Link)po).maintainParameter(PARAMETER_MANY_DAYS, iwc);
 			((Link)po).maintainParameter(PARAMETER_TO_DATE, iwc);
@@ -1385,7 +1466,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected Link getBookingLink(int productId) {
 		Link link = new Link(getLinkText( iwrb.getLocalizedString("travel.book","Book"), false ));
-		return addParameters(link, productId);
+		return addParameters(link, productId, ACTION_BOOKING_FORM);
 	}
 	
 	protected Link getNextOrPreviousLink(boolean next) {
@@ -1993,19 +2074,58 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		linkTable.setWidth("100%");
 		linkTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		linkTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-		linkTable.setWidth(3, 1, "20");
+		linkTable.setWidth(3, 1, "60");
 		Link back = new Link(getLinkText(iwrb.getLocalizedString("travel.search.back_to_results","Back to results"), false));
 		back.setAsBackLink();
 		linkTable.add(back, 1, 1);
 		Link bookingLink = getBookingLink(product.getID());
 		//bookingLink.setImage(bundle.getImage("images/book_01.jpg"));
-		SubmitButton button = new SubmitButton(bundle.getImage("images/book_01.jpg"));
-		form.addParameter(ACTION, ACTION_BOOKING_FORM);
+		if (useBasket) {
+			linkTable.add(getAddToBasketLink(product, tmpPriceID), 3, 1);
+		} else {
+			SubmitButton button = new SubmitButton(bundle.getImage("images/book_01.jpg"));
+			form.addParameter(ACTION, ACTION_BOOKING_FORM);
+			linkTable.add(button, 3, 1);
+		}
 		//bookingLink.setToFormSubmit(form);
 		//linkTable.add(bookingLink, 3, 1);
-		linkTable.add(button, 3, 1);
 		return form;
 	}	
+	
+
+	protected Link getAddToBasketLink(Product product , int priceID) throws RemoteException {
+		Link link = new Link(getLinkText( iwrb.getLocalizedString("travel.add_to_basket","Add to cart"), false ));
+		link = addParameters(link, product.getID(), ACTION_ADD_TO_BASKET);
+		link.addParameter(BookingForm.BookingAction, BookingForm.BookingParameter);
+		link.addParameter(PREV_ACTION, currentAction);
+		try {
+//			ProductPrice pPrice = 0getProductPriceHome().findByPrimaryKey(new Integer(priceID));
+			link.addParameter("priceCategory"+priceID, 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+//		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
+//		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
+//		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
+//		link.maintainParameter(PARAMETER_TO_DATE, iwc);
+//		link.addParameter(getBookingForm().getParameterTypeCountName(), getCount());
+//		link.addParameter(PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString());
+//		//link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+//		link.maintainParameter(PARAMETER_ADDRESS_ID, iwc);
+//		maintainEngineSpecificParameters(link);
+
+		return link;
+	}
+	
+	protected BasketBusiness getBasketBusiness(IWContext iwc) {
+		try {
+			return (BasketBusiness) IBOLookup.getSessionInstance(iwc, BasketBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
 	
 	protected ProductDetailFrame getProductDetailFrame(Product product, int columns) throws RemoteException {
 		ProductDetailFrame frame = (ProductDetailFrame) frames.get(columns+""+product);
