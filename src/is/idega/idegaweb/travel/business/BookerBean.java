@@ -79,10 +79,18 @@ public class BookerBean extends IBOServiceBean implements Booker{
   private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment, String code, String referenceNumber) throws RemoteException, CreateException {
     GeneralBooking booking = null;
     int returner = bookingId;
-    address = TextSoap.findAndReplace(address, "'", "´");
-    name = TextSoap.findAndReplace(name, "'", "´");
-    country = TextSoap.findAndReplace(country, "'", "´");
-    city = TextSoap.findAndReplace(city, "'", "´");
+    if (address != null) {
+    	address = TextSoap.findAndReplace(address, "'", "´");
+    }
+    if (name != null) {
+    	name = TextSoap.findAndReplace(name, "'", "´");
+    }
+    if (country != null) {
+    	country = TextSoap.findAndReplace(country, "'", "´");
+    }
+    if (city != null) {
+    	city = TextSoap.findAndReplace(city, "'", "´");
+    }
     if (comment != null) {
       comment = TextSoap.findAndReplace(comment, "'", "´");
     }
