@@ -445,7 +445,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		return null;
 	}
 	
-	public void connectAllClubsUnderTheirLeagues() throws RemoteException {
+	protected void connectAllClubsUnderTheirLeagues() throws RemoteException {
 		UserTransaction trans = this.getSessionContext().getUserTransaction();
 		try {
 			trans.begin();
