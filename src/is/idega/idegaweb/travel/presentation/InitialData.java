@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
@@ -571,7 +572,11 @@ public class InitialData extends TravelManager {
 		orgIDText.setText(iwrb.getLocalizedString("travel.organization_id","Organization ID"));
 		orgIDText.addToText(":");
 
-		
+		Text imgText = (Text) theBoldText.clone();
+		imgText.setFontColor(super.BLACK);
+		imgText.setText(iwrb.getLocalizedString("travel.imdage","Image"));
+		imgText.addToText(":");
+
 		Text loginText = (Text) theBoldText.clone();
 		loginText.setFontColor(super.BLACK);
 		loginText.setText(iwrb.getLocalizedString("travel.user_name","User name"));
@@ -633,6 +638,8 @@ public class InitialData extends TravelManager {
 		passOne.setAsNotEmpty("Gimmi flippar");
 		PasswordInput passTwo = new PasswordInput("supplier_password_two");
 
+		ImageInserter im = new ImageInserter("s_image_id");
+		
 		Collection suppRoles = new Vector();
 		Collection suppManRoles = new Vector();
 		
@@ -644,7 +651,10 @@ public class InitialData extends TravelManager {
 			suppManRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(supplierManager);
 			suppRoles = super.getSupplierManagerBusiness(iwc).getRolesAsString(lSupplier);
 
-			
+			if (lSupplier.getICFile() != null) {
+				im = new ImageInserter( ((Integer)lSupplier.getICFile().getPrimaryKey()).intValue(), "s_image_id");
+				im.setSelected(true);
+			}
 			
 			name.setContent(lSupplier.getName());
 			description.setContent(lSupplier.getDescription());
@@ -703,27 +713,41 @@ public class InitialData extends TravelManager {
 		
 		
 		++row;
-		table.mergeCells(1,row,2,row);
+		table.mergeCells(1,row,3,row);
 		table.add(newSupplierText,1,row);
 		table.setAlignment(1,row,"center");
 		table.setRowColor(row,super.backgroundColor);
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(nameText,1,row);
 		table.add(name,2,row);
 		table.setAlignment(1,row,"left");
 		table.setAlignment(2,row,"left");
 		table.setRowColor(row,super.GRAY);
 		
+//		++row;
+//		table.add(imgText, 1, row);
+//		table.setVerticalAlignment(1,row,"top");
+//		table.add(im,2,row);
+//		table.setAlignment(1,row,"left");
+//		table.setAlignment(2,row,"left");
+//		table.setRowColor(row,super.GRAY);
+
 		++row;
 		table.add(descText,1,row);
 		table.setVerticalAlignment(1,row,"top");
+		table.setVerticalAlignment(2,row,"top");
+		table.setVerticalAlignment(3,row,"top");
 		table.add(description,2,row);
 		table.setAlignment(1,row,"left");
 		table.setAlignment(2,row,"left");
 		table.setRowColor(row,super.GRAY);
+		table.add(im,3,row);
+		table.setAlignment(3,row,"left");
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(addressText,1,row);
 		table.add(address,2,row);
 		table.setAlignment(1,row,"left");
@@ -731,6 +755,7 @@ public class InitialData extends TravelManager {
 		table.setRowColor(row,super.GRAY);
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(postalText,1,row);
 		table.add(locInp,2,row);
 //		table.add(postalCode,2,row);
@@ -747,6 +772,7 @@ public class InitialData extends TravelManager {
 		table.setRowColor(row,super.GRAY);
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(phoneText,1,row);
 		table.add(phone,2,row);
 		table.setAlignment(1,row,"left");
@@ -754,6 +780,7 @@ public class InitialData extends TravelManager {
 		table.setRowColor(row,super.GRAY);
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(faxText,1,row);
 		table.add(fax,2,row);
 		table.setAlignment(1,row,"left");
@@ -761,6 +788,7 @@ public class InitialData extends TravelManager {
 		table.setRowColor(row,super.GRAY);
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(emailText,1,row);
 		table.add(email,2,row);
 		table.setAlignment(1,row,"left");
@@ -768,6 +796,7 @@ public class InitialData extends TravelManager {
 		table.setRowColor(row,super.GRAY);
 		
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.add(orgIDText, 1,row);
 		table.add(orgID, 2, row);
 		table.setAlignment(1, row, "left");
@@ -776,6 +805,7 @@ public class InitialData extends TravelManager {
 		
 		if (supplier_id == -1) {
 			++row;
+			table.mergeCells(2,row,3,row);
 			table.add(loginText,1,row);
 			table.add(userName,2,row);
 			table.setAlignment(1,row,"left");
@@ -783,6 +813,7 @@ public class InitialData extends TravelManager {
 			table.setRowColor(row,super.GRAY);
 			
 			++row;
+			table.mergeCells(2,row,3,row);
 			table.add(passwordText,1,row);
 			table.setVerticalAlignment(1,row,"top");
 			table.add(passOne,2,row);
@@ -796,7 +827,7 @@ public class InitialData extends TravelManager {
 		if (super.isSupplierManager()) {
 			table.add(getHeaderText(iwrb.getLocalizedString("travel.roles", "Roles")), 1, ++row);
 			table.setRowColor(row, backgroundColor);
-			table.mergeCells(1, row, 2, row);
+			table.mergeCells(1, row, 3, row);
 			Iterator suppManRolesIter = suppManRoles.iterator();
 			while (suppManRolesIter.hasNext()) {
 				String role = (String) suppManRolesIter.next();
@@ -805,14 +836,16 @@ public class InitialData extends TravelManager {
 				table.add(box, 1, ++row);
 				table.add(getText(iwrb.getLocalizedString("travel.role."+role, role)), 2, row);
 				table.setRowColor(row, GRAY);
+				table.mergeCells(2,row,3,row);
 			}
 		}
 		
 		++row;
 		table.add(Text.NON_BREAKING_SPACE,1,row);
 		table.setRowColor(row,super.GRAY);
-		table.mergeCells(1,row,2,row);
+		table.mergeCells(1,row,3,row);
 		++row;
+		table.mergeCells(2,row,3,row);
 		table.setAlignment(1,row,"left");
 		table.add(lBack,1,row);
 		if (super.isInPermissionGroup || isSupplierManager()) {
@@ -859,6 +892,13 @@ public class InitialData extends TravelManager {
 			String countryID = iwc.getParameter("supplier_country");
 			String newCity = iwc.getParameter("supp_new_city");
 			String newZip = iwc.getParameter("supp_new_zip");
+			
+			String sImageId = iwc.getParameter("s_image_id");
+			String insertImage = iwc.getParameter("insertImage");
+			int imageId = -1;
+			if (sImageId != null && insertImage != null && insertImage.equals("Y")) {
+				imageId = Integer.parseInt(sImageId);
+			}
 			
 			if (countryID != null && newCity != null && newZip != null && !"".equals(newCity.trim()) && !"".equals(newZip.trim())) {
 				PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
@@ -954,7 +994,7 @@ public class InitialData extends TravelManager {
 				int[] emailIds = new int[1];
 				emailIds[0] = eml.getID();
 				
-				supplier = getSupplierManagerBusiness(iwc).updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds, orgID);
+				supplier = getSupplierManagerBusiness(iwc).updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds, orgID, imageId);
 				
 				saveRoles(supplier, iwc);
 				
@@ -1001,7 +1041,7 @@ public class InitialData extends TravelManager {
 					eEmail.insert();
 					emailIds[0] = eEmail.getID();
 					
-					Supplier supplier = getSupplierManagerBusiness(iwc).createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds, orgID);
+					Supplier supplier = getSupplierManagerBusiness(iwc).createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds, orgID, imageId);
 					supplier.setSupplierManager(getSupplierManager());
 					supplier.store();
 					

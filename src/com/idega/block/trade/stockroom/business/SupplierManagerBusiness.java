@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierManagerBusiness.java,v 1.4 2005/05/31 19:23:12 gimmi Exp $
+ * $Id: SupplierManagerBusiness.java,v 1.5 2005/06/01 09:29:41 gimmi Exp $
  * Created on 4.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/31 19:23:12 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/01 09:29:41 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface SupplierManagerBusiness extends IBOService {
 
@@ -111,13 +111,13 @@ public interface SupplierManagerBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#updateSupplier
 	 */
 	public Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds,
-			int[] emailIds, String organizationID) throws Exception, java.rmi.RemoteException;
+			int[] emailIds, String organizationID, int fileID) throws Exception, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#createSupplier
 	 */
 	public Supplier createSupplier(String name, String userName, String password, String description, int[] addressIds,
-			int[] phoneIds, int[] emailIds, String organizationID) throws Exception, java.rmi.RemoteException;
+			int[] phoneIds, int[] emailIds, String organizationID, int fileID) throws Exception, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#invalidateSupplier
