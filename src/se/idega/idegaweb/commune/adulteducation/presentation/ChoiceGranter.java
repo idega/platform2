@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.9 2005/05/31 12:08:41 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.10 2005/06/01 05:12:05 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -54,10 +54,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/05/31 12:08:41 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/01 05:12:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -369,8 +369,18 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		infoTable.add(getSmallHeader(localize("home_phone", "Home phone") + ":"), 1, 6);
 		infoTable.add(getSmallText((homePhone != null ? homePhone.getNumber() : "-")), 2, 6);
 		
+		StringBuffer workAndMobilePhone = new StringBuffer();
 		infoTable.add(getSmallHeader(localize("work_mobile_phone", "Work/Mobile phone") + ":"), 1, 7);
-		infoTable.add(getSmallText((workPhone != null ? workPhone.getNumber() : "-") + ", " + (mobilePhone != null ? mobilePhone.getNumber() : "-")), 2, 7);
+		if (workPhone != null) {
+			workAndMobilePhone.append(workPhone.getNumber());
+		}
+		if (mobilePhone != null) {
+			if (workAndMobilePhone.length() > 0) {
+				workAndMobilePhone.append(", ");
+			}
+			workAndMobilePhone.append(mobilePhone.getNumber());
+		}
+		infoTable.add(getSmallText(workAndMobilePhone.toString()), 2, 7);
 		
 		infoTable.add(getSmallHeader(localize("email", "E-mail") + ":"), 1, 8);
 		infoTable.add(getSmallText((mail != null ? mail.getEmailAddress() : "-")), 2, 8);
@@ -414,7 +424,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 				}
 				else {
 					Link link = getSmallLink(elementPath.getDescription());
-					link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+					link.addParameter(PARAMETER_CHOICE, element.getPrimaryKey().toString());
 					if (user.getUniqueId() != null) {
 						link.addParameter(PARAMETER_UNIQUE_ID, user.getUniqueId());
 					}
@@ -428,7 +438,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 				choiceTable.add(getSmallText(elementSeason.getSchoolSeasonName()), 2, choiceRow);
 				choiceTable.add(getSmallText(localize("case_status." + status.getStatus(), status.getStatus())), 3, choiceRow);
 				choiceTable.setCellpaddingRight(1, choiceRow, 12);
-				choiceTable.setCellpaddingRight(2, choiceRow, 12);
+				choiceTable.setCellpaddingRight(2, choiceRow++, 12);
 			}
 		}
 
@@ -584,7 +594,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 		infoTable.add(getSmallHeader(localize("study_support", "Study support")), 2, 2);
 		infoTable.add(new Break(), 2, 2);
-		infoTable.add(studySupport, 2, 2);
+		infoTable.add(getSmallText(studySupport), 2, 2);
 
 		Text workSituation = getSmallText("");
 		addComma = false;
