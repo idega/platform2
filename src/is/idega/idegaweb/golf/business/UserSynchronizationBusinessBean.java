@@ -457,10 +457,55 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 
 	private Member createMemberFromUser(User user) throws CreateException, RemoteException {
 		Member member = mHome.create();
+		correctName(user, member);
+		member.setDateOfBirth(user.getDateOfBirth());
+		correctGender(user, member);
+		correctSocialSecurityNumber(user, member);
+		correctEmails(member, user);
+		
+		member.setICUser(user);
+		member.store();
+		
+		return member;
+	}
+
+	/**
+	 * @param member
+	 * @param user
+	 */
+	private void correctEmails(Member member, User user) {
+		Collection emails = user.getEmails();
+		if (emails != null && !emails.isEmpty()) {
+			Iterator iter = emails.iterator();
+			member.setEmail(((Email) iter.next()).getEmailAddress());
+		}
+	}
+
+	/**
+	 * @param user
+	 * @param member
+	 */
+	private void correctSocialSecurityNumber(User user, Member member) {
+		member.setSocialSecurityNumber(user.getPersonalID());
+	}
+
+	/**
+	 * @param user
+	 * @param member
+	 */
+	private void correctName(User user, Member member) {
 		member.setFirstName(user.getFirstName());
 		member.setMiddleName(user.getMiddleName());
 		member.setLastName(user.getLastName());
-		member.setDateOfBirth(user.getDateOfBirth());
+		
+		member.setFullName();
+	}
+
+	/**
+	 * @param user
+	 * @param member
+	 */
+	private void correctGender(User user, Member member) {
 		int genderId = user.getGenderID();
 		if (genderId > 0) {
 			if (genders.get(new Integer(genderId)) == null) {
@@ -474,16 +519,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			}
 			member.setGender((String) genders.get(new Integer(genderId)));
 		}
-		member.setSocialSecurityNumber(user.getPersonalID());
-		Collection emails = user.getEmails();
-		if (emails != null && !emails.isEmpty()) {
-			Iterator iter = emails.iterator();
-			member.setEmail(((Email) iter.next()).getEmailAddress());
-		}
-		member.setFullName();
-		member.setICUser(user);
-		member.store();
-		return member;
 	}
 
 	private Collection getUserBatch(UserHome uHome, int currentCheck) throws FinderException {
@@ -512,6 +547,11 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			Member member = getMemberFromUser(user);
 			// try {
 			correctDateOfBirth(member);
+			correctName(user,member);
+			correctGender(user,member);
+			correctSocialSecurityNumber(user,member);
+			member.store();
+			
 			synchronizeAddresses(user, member);
 			synchronizePhones(user, member);
 			synchronizeUnion(user, member);
@@ -527,7 +567,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			try {
 				Date date = SocialSecurityNumber.getDateFromSocialSecurityNumber(member.getSocialSecurityNumber(), false);
 				member.setDateOfBirth(date);
-				member.store();
 			} catch (Exception e) {
 				System.out.println("Cannot create DateOfBirth from ssn = "+member.getSocialSecurityNumber()+"  (member_id = "+member.getPrimaryKey().toString()+")");
 			}
