@@ -335,14 +335,18 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			if (groups != null && !groups.isEmpty()) {
 				for (Iterator possible = groups.iterator(); possible.hasNext();) {
 					Group group = (Group) possible.next();
-					if(group.getGroupType().equals(GolfConstants.GROUP_TYPE_CLUB)){
-						//TAKES THE FIRST CLUB THAT MATCHES, NOT SAFE...but some idiots started using abbreviation for other group types and then nothing worked
-						//the second search should fail if we stumble on to the wrong group but at least then we get an error message. -Eiki
+					if (group.getGroupType().equals(GolfConstants.GROUP_TYPE_CLUB)) {
+						// TAKES THE FIRST CLUB THAT MATCHES, NOT SAFE...but
+						// some idiots started using abbreviation for other
+						// group types and then nothing worked
+						// the second search should fail if we stumble on to the
+						// wrong group but at least then we get an error
+						// message. -Eiki
 						unionGroup = group;
 						break;
 					}
 				}
-				if(unionGroup!=null){
+				if (unionGroup != null) {
 					union = getUnionFromGroup(unionGroup);
 				}
 			}
@@ -462,10 +466,8 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		correctGender(user, member);
 		correctSocialSecurityNumber(user, member);
 		correctEmails(member, user);
-		
 		member.setICUser(user);
 		member.store();
-		
 		return member;
 	}
 
@@ -497,7 +499,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		member.setFirstName(user.getFirstName());
 		member.setMiddleName(user.getMiddleName());
 		member.setLastName(user.getLastName());
-		
 		member.setFullName();
 	}
 
@@ -547,11 +548,10 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 			Member member = getMemberFromUser(user);
 			// try {
 			correctDateOfBirth(member);
-			correctName(user,member);
-			correctGender(user,member);
-			correctSocialSecurityNumber(user,member);
+			correctName(user, member);
+			correctGender(user, member);
+			correctSocialSecurityNumber(user, member);
 			member.store();
-			
 			synchronizeAddresses(user, member);
 			synchronizePhones(user, member);
 			synchronizeUnion(user, member);
@@ -562,35 +562,63 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		}
 	}
 
+	private void correctUser(User user, String name, String gender, String dateOfBirth, String main, String subs) {
+		if (name != null) {
+			user.setFullName(name);
+		}
+		if (dateOfBirth != null) {
+			Date birthDate = null;
+			try {
+				birthDate = java.sql.Date.valueOf(dateOfBirth);
+				user.setDateOfBirth(birthDate);
+			}
+			catch (IllegalArgumentException e) {
+				System.err.println("UserSynchronizationBusiness: date of birth format is invalid.Should be yyyy-MM-dd : "
+						+ dateOfBirth);
+			}
+		}
+		if (gender != null) {
+			Integer genderId;
+			try {
+				genderId = getUserBusiness().getGenderId(gender);
+				user.setGender(genderId);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		user.setMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY, main);
+		user.setMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY, subs);
+		user.store();
+	}
+
 	private void correctDateOfBirth(Member member) {
 		if (member.getDateOfBirth() == null && member.getSocialSecurityNumber() != null) {
 			try {
-				Date date = SocialSecurityNumber.getDateFromSocialSecurityNumber(member.getSocialSecurityNumber(), false);
+				Date date = SocialSecurityNumber.getDateFromSocialSecurityNumber(member.getSocialSecurityNumber(),
+						false);
 				member.setDateOfBirth(date);
-			} catch (Exception e) {
-				System.out.println("Cannot create DateOfBirth from ssn = "+member.getSocialSecurityNumber()+"  (member_id = "+member.getPrimaryKey().toString()+")");
 			}
-			
+			catch (Exception e) {
+				System.out.println("Cannot create DateOfBirth from ssn = " + member.getSocialSecurityNumber()
+						+ "  (member_id = " + member.getPrimaryKey().toString() + ")");
+			}
 		}
 	}
-	
+
 	public void syncUserFromRequest(IWContext iwc) {
 		try {
-
 			String subs = iwc.getParameter(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 			String main = iwc.getParameter(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 			String uuid = iwc.getParameter(GolfConstants.MEMBER_UUID);
 			String pin = iwc.getParameter(GolfConstants.MEMBER_PIN);
 			String name = iwc.getParameter(GolfConstants.MEMBER_NAME);
-			// do we need gender yet or can it just wait until the ldap
-			// replication...
+			String gender = iwc.getParameter(GolfConstants.MEMBER_GENDER);
+			String dateOfBirth = iwc.getParameter(GolfConstants.MEMBER_DATE_OF_BIRTH);
 			if (uuid != null && pin != null) {
 				init();
 				System.out.println("UserSync: trying to sync : pin:" + pin + " uuid:" + uuid + " name:" + name
 						+ " mainclub:" + main + " subclubs:" + subs);
-				
-				subs = ("".equals(subs)) ? null : subs;
-				main = ("".equals(main)) ? null : main;
 				User user = null;
 				try {
 					user = getUserBusiness().getUserByUniqueId(uuid);
@@ -606,19 +634,23 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				catch (FinderException e) {
 					e.printStackTrace();
 				}
-				
 				if (user == null) {
 					user = getUserBusiness().createUserByPersonalIDIfDoesNotExist(name, pin, null, null);
 					user.setUniqueId(uuid);
 					user.store();
 				}
+				
+				
 				if (user != null) {
-					Member member = getMemberFromUser(user);
-					synchronizeUnion(user, member, main, subs);
+					correctUser(user, name, gender, dateOfBirth, main, subs);
+					afterUserCreateOrUpdate(user);
 				}
 				else {
 					System.err.println(" UserSync: USER IS NULL " + uuid + " " + pin);
 				}
+			}
+			else {
+				System.err.println(" UserSync: USER CANNOT BE SYNCHRONIZED " + uuid + " " + pin);
 			}
 		}
 		catch (IBOLookupException e) {
