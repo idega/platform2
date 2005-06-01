@@ -73,6 +73,8 @@ public class SSLClient
       } 
       catch (Exception e) 
       {
+    	  System.err.println("Error getting SSLClient : keyStorePass = "+_strKeyStore+", keyStore ="+_strKeyStore);
+    	  e.printStackTrace(System.err);
         throw new IOException(e.getMessage());
       }
 
