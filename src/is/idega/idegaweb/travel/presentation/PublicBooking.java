@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.block.search.presentation.ProductDetailFrame;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -620,17 +619,6 @@ public class PublicBooking extends TravelBlock  {
 	  	}
 	}
 
-	protected ProductDetailFrame getProductDetailFrame(Product product, IWContext iwc, int columns) throws RemoteException {
-		ProductDetailFrame frame = (ProductDetailFrame) frames.get(new Integer(columns));
-		if (frame == null) { 
-			frame = new ProductDetailFrame(iwc, columns, product);
-			//frame.setPriceCategoryKey(getPriceCategoryKey());
-			//frame.setCount(this.getCount());
-			//frame.setProductInfoDetailed(getProductInfoDetailed(getProduct()));
-			frames.put(new Integer(columns), frame);
-		}
-		return frame;
-	}
  
   
 }
