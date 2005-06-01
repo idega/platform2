@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.9 2005/04/17 20:16:15 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.10 2005/06/01 17:08:49 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,6 +28,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
+import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
@@ -35,10 +36,10 @@ import com.idega.util.FileUtil;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2005/04/17 20:16:15 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/06/01 17:08:49 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -82,7 +83,24 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 				+"&"+GolfConstants.MAIN_CLUB_META_DATA_KEY+"="+URLEncoder.encode(mainClub,"ISO-8859-1")
 				+"&"+GolfConstants.MEMBER_UUID+"="+URLEncoder.encode(user.getUniqueId(),"ISO-8859-1")
 				+"&"+GolfConstants.MEMBER_PIN+"="+URLEncoder.encode(user.getPersonalID(),"ISO-8859-1")
-				+"&"+GolfConstants.MEMBER_NAME+"="+URLEncoder.encode(user.getName(),"ISO-8859-1");
+				+"&"+GolfConstants.MEMBER_NAME+"="+URLEncoder.encode(user.getName(),"ISO-8859-1")
+				+"&"+GolfConstants.MEMBER_DATE_OF_BIRTH+"="+URLEncoder.encode(user.getDateOfBirth().toString(),"ISO-8859-1");
+			
+			
+			Gender genderBean = user.getGender();
+			
+			if(genderBean!=null){
+				String gender = null;
+				if(genderBean.isMaleGender()){
+					gender="M";
+				}
+				else{
+					gender = "F";
+				}
+				
+				requestToGolf +="&"+GolfConstants.MEMBER_GENDER+"="+URLEncoder.encode(gender,"ISO-8859-1");
+				
+			}
 		}
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
