@@ -1,6 +1,6 @@
 /*
- * $Id: SupplierHome.java,v 1.7 2005/05/20 01:11:06 gimmi Exp $
- * Created on 20.5.2005
+ * $Id: SupplierHome.java,v 1.8 2005/06/01 09:28:33 gimmi Exp $
+ * Created on 1.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/20 01:11:06 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/01 09:28:33 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface SupplierHome extends IDOHome {
 

@@ -15,6 +15,7 @@ import com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean;
 import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.EntityFinder;
@@ -52,6 +53,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
 	private static String COLUMN_ORGANIZATION_ID = "ORGANIZATION_ID";
 	public static final String COLUMN_NAME_NAME_ALL_CAPS = "NAME_CAPS";
+	private static final String COLUMN_IC_FILE_ID = "IC_FILE_ID";
 
 	public SupplierBMPBean() {
 		super();
@@ -81,6 +83,8 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 		this.addManyToManyRelationShip(Reseller.class);
 		this.addManyToManyRelationShip(CreditCardInformation.class, "SR_SUPPLIER_CC_INFORMATION");
 
+		this.addManyToOneRelationship(COLUMN_IC_FILE_ID, ICFile.class);
+		
 		addIndex("IDX_SUPP_1", new String[]{getIDColumnName(), getColumnNameIsValid()});
 		addIndex("IDX_SUPP_2", new String[]{getColumnNameIsValid()});
 		addIndex("IDX_SUPP_4", new String[]{COLUMN_SUPPLIER_MANAGER_ID, getColumnNameIsValid()});
@@ -442,6 +446,18 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 
 	public void setOrganizationID(String organizationId) {
 		setColumn(COLUMN_ORGANIZATION_ID, organizationId);
+	}
+	
+	public ICFile getICFile() {
+		return (ICFile) getColumnValue(COLUMN_IC_FILE_ID);
+	}
+	
+	public void setICFile(int fileID) {
+		setColumn(COLUMN_IC_FILE_ID, fileID);
+	}
+	
+	public void setICFile(ICFile file) {
+		setColumn(COLUMN_IC_FILE_ID, file);
 	}
 }
 

@@ -1,6 +1,6 @@
 /*
- * $Id: Supplier.java,v 1.24 2005/05/20 01:11:06 gimmi Exp $
- * Created on 20.5.2005
+ * $Id: Supplier.java,v 1.25 2005/06/01 09:28:33 gimmi Exp $
+ * Created on 1.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.core.contact.data.Email;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLegacyEntity;
@@ -28,10 +29,10 @@ import com.idega.user.data.Group;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/20 01:11:06 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/01 09:28:33 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public interface Supplier extends IDOLegacyEntity {
 
@@ -190,4 +191,19 @@ public interface Supplier extends IDOLegacyEntity {
 	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#setOrganizationID
 	 */
 	public void setOrganizationID(String organizationId);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getICFile
+	 */
+	public ICFile getICFile();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#setICFile
+	 */
+	public void setICFile(int fileID);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#setICFile
+	 */
+	public void setICFile(ICFile file);
 }
