@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.10 2005/06/01 05:12:05 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.11 2005/06/01 05:23:38 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -54,10 +54,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/01 05:12:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/01 05:23:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -371,10 +371,10 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		
 		StringBuffer workAndMobilePhone = new StringBuffer();
 		infoTable.add(getSmallHeader(localize("work_mobile_phone", "Work/Mobile phone") + ":"), 1, 7);
-		if (workPhone != null) {
+		if (workPhone != null && workPhone.getNumber() != null) {
 			workAndMobilePhone.append(workPhone.getNumber());
 		}
-		if (mobilePhone != null) {
+		if (mobilePhone != null && mobilePhone.getNumber() != null) {
 			if (workAndMobilePhone.length() > 0) {
 				workAndMobilePhone.append(", ");
 			}
