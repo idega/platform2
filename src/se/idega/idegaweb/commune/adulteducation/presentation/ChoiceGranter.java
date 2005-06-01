@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.11 2005/06/01 05:23:38 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.12 2005/06/01 08:52:26 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,6 +27,7 @@ import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDORelationshipException;
@@ -54,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/01 05:23:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/01 08:52:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -291,7 +292,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		int row = 1;
 		
 		Table infoTable = new Table();
-		infoTable.setColumns(2);
+		infoTable.setColumns(4);
 		table.setCellpadding(1, row, 10);
 		table.setCellBorder(1, row, 1, "#999999", "solid");
 		table.add(infoTable, 1, row++);
@@ -306,7 +307,8 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		User user = choice.getUser();
 		Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 		Address address = getUserBusiness(iwc).getUsersMainAddress(user);
-		PostalCode code = address != null? address.getPostalCode() : null;
+		PostalCode code = address != null ? address.getPostalCode() : null;
+		Commune commune = code != null ? code.getCommune(): null;
 		Phone homePhone = null;
 		Phone workPhone = null;
 		Phone mobilePhone = null;
@@ -353,20 +355,30 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		String otherReason = choice.getOtherReason();
 
 		infoTable.add(getSmallHeader(localize("case_number", "Case number") + ":"), 1, 1);
+		infoTable.mergeCells(2, 1, 4, 1);
 		infoTable.add(getSmallText(choice.getPrimaryKey().toString()), 2, 1);
 		
 		infoTable.add(getSmallHeader(localize("school_type", "School type") + ":"), 1, 2);
+		infoTable.mergeCells(2, 2, 4, 2);
 		infoTable.add(getSmallText(localize(type.getLocalizationKey(), type.getSchoolTypeName())), 2, 2);
 		
 		infoTable.add(getSmallHeader(localize("student", "Student") + ":"), 1, 3);
+		infoTable.mergeCells(2, 3, 4, 3);
 		infoTable.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale()) + ", " + name.getLastName() + " " + name.getFirstName()), 2, 3);
 		
 		infoTable.add(getSmallHeader(localize("address", "Address") + ":"), 1, 4);
 		infoTable.add(getSmallText((address != null ? address.getStreetAddress() : "-") + ", " + (code != null ? code.getPostalAddress() : "-")), 2, 4);
 		
+		if (commune != null) {
+			infoTable.setCellpaddingLeft(3, 4, 12);
+			infoTable.add(getSmallHeader(localize("commune", "Commune") + ":"), 3, 4);
+			infoTable.add(getSmallText(commune.getCommuneName()), 4, 4);
+		}
+		
 		infoTable.setHeight(5, 16);
 		
 		infoTable.add(getSmallHeader(localize("home_phone", "Home phone") + ":"), 1, 6);
+		infoTable.mergeCells(2, 6, 4, 6);
 		infoTable.add(getSmallText((homePhone != null ? homePhone.getNumber() : "-")), 2, 6);
 		
 		StringBuffer workAndMobilePhone = new StringBuffer();
@@ -380,10 +392,19 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			}
 			workAndMobilePhone.append(mobilePhone.getNumber());
 		}
+		infoTable.mergeCells(2, 7, 4, 7);
 		infoTable.add(getSmallText(workAndMobilePhone.toString()), 2, 7);
 		
 		infoTable.add(getSmallHeader(localize("email", "E-mail") + ":"), 1, 8);
-		infoTable.add(getSmallText((mail != null ? mail.getEmailAddress() : "-")), 2, 8);
+		infoTable.mergeCells(2, 8, 4, 8);
+		if (mail != null && mail.getEmailAddress() != null) {
+			Link mailLink = getSmallLink(mail.getEmailAddress());
+			mailLink.setURL("mailto:" + mail.getEmailAddress());
+			infoTable.add(mailLink, 2, 8);
+		}
+		else {
+			infoTable.add(getSmallText("-"), 2, 8);
+		}
 		
 		Table pathTable = new Table(2, 1);
 		pathTable.setWidth(Table.HUNDRED_PERCENT);

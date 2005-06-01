@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceOverviewContext.java,v 1.6 2005/05/16 16:05:29 laddi Exp $ Created
+ * $Id: ChoiceOverviewContext.java,v 1.7 2005/06/01 08:52:26 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -51,10 +51,10 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 
 /**
- * Last modified: $Date: 2005/05/16 16:05:29 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/01 08:52:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ChoiceOverviewContext extends PrintingContextImpl {
 
@@ -119,13 +119,11 @@ public class ChoiceOverviewContext extends PrintingContextImpl {
 					reasonsString.append("\n");
 				}
 				reasonsString.append(otherReason);
-				if (iter.hasNext()) {
-					reasonsString.append("\n\n");
-				}
 			}
 
 			if (iter.hasNext()) {
 				courses.append("\n");
+				reasonsString.append("\n\n");
 			}
 		}
 		props.put("courses", courses.toString());
