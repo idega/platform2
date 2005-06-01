@@ -83,8 +83,8 @@ public class GeneralBookingBMPBean extends GenericEntity implements Booking , Ge
   }
   
   public String getItemName() { return null; }
-  public String getItemDescription() { return null; };
-  public Double getItemPrice() { return (Double)null; };
+  public String getItemDescription() { return null; }
+  public Double getItemPrice() { return (Double)null; }
   
   //----------------------------------------
 
