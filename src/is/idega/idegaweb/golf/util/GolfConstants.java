@@ -1,5 +1,5 @@
 /*
- * $Id: GolfConstants.java,v 1.5 2005/04/17 17:47:39 eiki Exp $
+ * $Id: GolfConstants.java,v 1.6 2005/06/01 16:09:03 eiki Exp $
  * Created on Sep 17, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import com.idega.user.data.MetadataConstants;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/17 17:47:39 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/06/01 16:09:03 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * 
  * 
  */
@@ -46,4 +46,12 @@ public interface GolfConstants {
 	
 	public static final String MEMBER_NAME = "member_name";
 	
+	public static final String MEMBER_GENDER = "member_gender";
+	
+	public static final String MEMBER_GENDER_MALE = "M";
+	public static final String MEMBER_GENDER_FEMALE = "F";
+	
+	public static final String MEMBER_DATE_OF_BIRTH = "member_dob";
+
+
 }
