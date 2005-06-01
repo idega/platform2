@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.15 2005/05/31 19:05:57 laddi Exp $
+ * $Id: Registration.java,v 1.16 2005/06/01 15:10:10 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/31 19:05:57 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/01 15:10:10 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class Registration extends RunBlock {
 	
@@ -961,6 +961,7 @@ public class Registration extends RunBlock {
 		agree.setToDisableWhenUnchecked(next);
 		
 		creditCardTable.setHeight(creditRow++, 12);
+		creditCardTable.mergeCells(1, creditRow, creditCardTable.getColumns(), creditRow);
 		creditCardTable.add(agree, 1, creditRow);
 		creditCardTable.add(Text.getNonBrakingSpace(), 1, creditRow);
 		creditCardTable.add(getHeader(localize("run_reg.agree_terms_and_conditions", "I agree to the terms and conditions")), 1, creditRow++);
