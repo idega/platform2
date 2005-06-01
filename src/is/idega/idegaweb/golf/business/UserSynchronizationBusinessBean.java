@@ -649,9 +649,10 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 					System.err.println(" UserSync: USER IS NULL " + uuid + " " + pin);
 				}
 			}
-			else {
-				System.err.println(" UserSync: USER CANNOT BE SYNCHRONIZED " + uuid + " " + pin);
-			}
+//			else {
+//			THIS WILL FILL THE LOG BECAUSE IT IS DONE WITH A SERVLET FILTER	
+//				System.err.println(" UserSync: USER CANNOT BE SYNCHRONIZED " + uuid + " " + pin);
+//			}
 		}
 		catch (IBOLookupException e) {
 			e.printStackTrace();
