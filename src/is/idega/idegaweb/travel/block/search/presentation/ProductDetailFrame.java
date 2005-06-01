@@ -66,16 +66,18 @@ public class ProductDetailFrame extends TravelBlock {
 	BookingForm bookingForm = null;
 	Table productInfoDetailed = null;
 	List leftAdd = new Vector();
+	boolean showContactInfo = true;
 
-	public ProductDetailFrame(IWContext iwc, Product product) throws RemoteException {
-		this(iwc, 3, product);
-	}
+//	public ProductDetailFrame(IWContext iwc, Product product) throws RemoteException {
+//		this(iwc, 3, product);
+//	}
 	
-	public ProductDetailFrame(IWContext iwc, int columns, Product product) throws RemoteException {
+	public ProductDetailFrame(IWContext iwc, int columns, Product product, boolean showContactInfo) throws RemoteException {
 		String sProductId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		if (sProductId == null) {
 			sProductId = iwc.getParameter(LinkGenerator.parameterProductId);
 		}
+		this.showContactInfo = showContactInfo;
 		iwrb = super.getResourceBundle(iwc);
 		localeID = iwc.getCurrentLocaleId();
 		currencyFormat = new DecimalFormat("0.00");
@@ -315,39 +317,42 @@ public class ProductDetailFrame extends TravelBlock {
 			supplier = product.getSupplier();
 			table.add(getText(iwrb.getLocalizedString("travel.search.address", "Address")), 1, row++);
 			table.add(getSmallText(supplier.getAddress().getStreetAddress()), 1, row++);
-			List phones = supplier.getPhones();
-			if (phones != null) {
-				Iterator iter = phones.iterator();
-				Phone phone;
-				while (iter.hasNext()) {
-					phone = (Phone) iter.next();
-					if (!"".equals(phone.getNumber())) {
-						switch (phone.getPhoneTypeId()) {
-							case PhoneType.FAX_NUMBER_ID :
-								table.add(getText(iwrb.getLocalizedString("travel.search.fax", "Fax")), 1, row++);
-								break;
-							case PhoneType.HOME_PHONE_ID :
-								table.add(getText(iwrb.getLocalizedString("travel.search.telephone", "Telephone number")), 1, row++);
-								break;
-							case PhoneType.MOBILE_PHONE_ID :
-								table.add(getText(iwrb.getLocalizedString("travel.search.mobile", "Mobile")), 1, row++);
-								break;
-							
-						} 
-						table.add(getSmallText(phone.getNumber()), 1, row++);
+			
+			if (showContactInfo) {
+				List phones = supplier.getPhones();
+				if (phones != null) {
+					Iterator iter = phones.iterator();
+					Phone phone;
+					while (iter.hasNext()) {
+						phone = (Phone) iter.next();
+						if (!"".equals(phone.getNumber())) {
+							switch (phone.getPhoneTypeId()) {
+								case PhoneType.FAX_NUMBER_ID :
+									table.add(getText(iwrb.getLocalizedString("travel.search.fax", "Fax")), 1, row++);
+									break;
+								case PhoneType.HOME_PHONE_ID :
+									table.add(getText(iwrb.getLocalizedString("travel.search.telephone", "Telephone number")), 1, row++);
+									break;
+								case PhoneType.MOBILE_PHONE_ID :
+									table.add(getText(iwrb.getLocalizedString("travel.search.mobile", "Mobile")), 1, row++);
+									break;
+								
+							} 
+							table.add(getSmallText(phone.getNumber()), 1, row++);
+						}
 					}
 				}
-			}
-			
-			List emails = supplier.getEmails();
-			if (emails != null) {
-				Iterator iter = emails.iterator();
-				Email email;
-				while (iter.hasNext()) {
-					email = (Email) iter.next();
-					if (!"".equals(email.getEmailAddress())) {
-						table.add(getText(iwrb.getLocalizedString("travel.search.email", "Email")), 1, row++);
-						table.add(getSmallText(email.getEmailAddress()), 1, row++);
+				
+				List emails = supplier.getEmails();
+				if (emails != null) {
+					Iterator iter = emails.iterator();
+					Email email;
+					while (iter.hasNext()) {
+						email = (Email) iter.next();
+						if (!"".equals(email.getEmailAddress())) {
+							table.add(getText(iwrb.getLocalizedString("travel.search.email", "Email")), 1, row++);
+							table.add(getSmallText(email.getEmailAddress()), 1, row++);
+						}
 					}
 				}
 			}

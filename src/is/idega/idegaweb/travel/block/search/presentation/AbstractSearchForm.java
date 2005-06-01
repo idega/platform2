@@ -183,6 +183,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected int localeID = -1;
 	private BookingForm bf;
 	protected boolean horizontal = false;
+	protected boolean showContactInformation = true;
 	
 	protected HashMap frames = new HashMap();
 	
@@ -2128,13 +2129,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	protected ProductDetailFrame getProductDetailFrame(Product product, int columns) throws RemoteException {
-		ProductDetailFrame frame = (ProductDetailFrame) frames.get(columns+""+product);
+		ProductDetailFrame frame = (ProductDetailFrame) frames.get(columns+""+product+""+showContactInformation);
 		if (frame == null) { 
-			frame = new ProductDetailFrame(iwc, product);
+			System.out.println("[AbstractSearchForm] Created a new productdefailframe... possibly caching is bogus (showContantInformation = "+showContactInformation+")");
+			frame = new ProductDetailFrame(iwc, columns, product, showContactInformation);
 			frame.setPriceCategoryKey(getPriceCategoryKey());
 			frame.setCount(this.getCount());
 			frame.setProductInfoDetailed(getProductInfoDetailed(product));
-			frames.put(columns+""+product, frame);
+			frames.put(columns+""+product+""+showContactInformation, frame);
+		} else {
+			System.out.println("[AbstractSearchForm] FOUND productdefailframe.");
 		}
 		return frame;
 	}
@@ -2168,7 +2172,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected boolean isHorizontal() {
 		return horizontal;
 	}
-	
+
+	public void setShowContactInformation(boolean show) {
+		this.showContactInformation = show;
+	}
+
 	protected boolean isVertical() {
 		return !isHorizontal();
 	}

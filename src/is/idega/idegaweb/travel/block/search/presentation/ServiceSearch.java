@@ -65,6 +65,7 @@ public class ServiceSearch extends TravelBlock {
 	private AbstractSearchForm currentSearchForm = null;
 	private ICPage targetPage = null;
 	private boolean horizontal = false;
+	private boolean showContactInformation = true;
 
 	public ServiceSearch() {
 		super();
@@ -153,6 +154,7 @@ public class ServiceSearch extends TravelBlock {
 				ss.setResultsPerPage(resultsPerPage);
 			}
 			ss.setHorizontal(horizontal);
+			ss.setShowContactInformation(showContactInformation);
 			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
 			return ss;
 		}catch (Exception e) {
@@ -255,6 +257,10 @@ public class ServiceSearch extends TravelBlock {
 	
 	public void setHorizontal(boolean horizontal) {
 		this.horizontal = horizontal;
+	}
+	
+	public void setShowContactInformation(boolean show) {
+		this.showContactInformation = show;
 	}
 
 	/**
