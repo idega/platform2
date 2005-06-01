@@ -1178,6 +1178,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public Collection decode(String[] pks) {
 				return null;
 			}
+
+			public String getDatasource() {
+				return null;
+			}
 		};
 	}
 
