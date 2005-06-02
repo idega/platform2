@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.block.search.presentation;
 
+import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineHome;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
@@ -21,6 +22,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -31,6 +34,7 @@ public class ServiceSearch extends TravelBlock {
 	public static final String IC_OBJECT_TYPE = "iw.travel.search";
 	
 	public static final String PARAMETER_SERVICE_SEARCH_FORM = "p_ssf";
+	private static final String PARAMETER_CLEAR_CACHE = "p_ss_cc";
 	
 	protected String textFontStyle;
 	protected String headerFontStyle;
@@ -77,6 +81,12 @@ public class ServiceSearch extends TravelBlock {
 			if (currentSearchForm == null) {
 				add("cannot get searchform instance");
 			} else {
+				if (hasEditPermission()) {
+					Form form = new Form();
+					form.add(new SubmitButton(iwrb.getLocalizedString("travel.clear_cache", "Clear Cache"), PARAMETER_CLEAR_CACHE, "true"));
+					add(form);
+				}
+				
 				add(currentSearchForm);
 			}
 		} else {
@@ -87,6 +97,11 @@ public class ServiceSearch extends TravelBlock {
 	protected void init(IWContext iwc) throws Exception {
 		iwrb = getTravelSessionManager(iwc).getIWResourceBundle();
 
+		String cc = iwc.getParameter(PARAMETER_CLEAR_CACHE);
+		if (cc != null) {
+			ServiceSearchBusiness bus = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
+			bus.clearAllEngineCache();
+		}
 		if (searchForms2 != null) {
 			currentSearchForm = setCurrentSearchForm(iwc, searchForms2);
 		} else {
