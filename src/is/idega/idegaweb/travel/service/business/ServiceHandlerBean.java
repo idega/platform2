@@ -47,6 +47,9 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   }
 
   public BookingForm getBookingForm(IWContext iwc, Product product) throws Exception{
+	  return getBookingForm(iwc, product, true);
+  }
+  public BookingForm getBookingForm(IWContext iwc, Product product, boolean initializeBookingForm) throws Exception{
 	  	if (product == null) {
 	  		return new DefaultBookingForm(iwc, product);
 	  	}
@@ -59,25 +62,18 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
       ProductCategory pCat = (ProductCategory) iter.next();
       String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
       if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-//        System.out.println("Returning bookingform for TOUR");
-        return new TourBookingForm(iwc, product);
+        return new TourBookingForm(iwc, product, initializeBookingForm);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-//        System.out.println("Returning bookingform for HOTEL");
-        return new HotelBookingForm(iwc, product);
+        return new HotelBookingForm(iwc, product, initializeBookingForm);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-//        System.out.println("Returning bookingform for FISHING");
-        return new FishingBookingForm(iwc, product);
+        return new FishingBookingForm(iwc, product, initializeBookingForm);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-//        System.out.println("Cannot find BookingForm for ProductCategory PRODUCT, returning form for TOUR");
-        return new TourBookingForm(iwc, product);
+        return new TourBookingForm(iwc, product, initializeBookingForm);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-//        System.out.println("Returning bookingform for CAR RENTAL");
-        return new CarRentalBookingForm(iwc, product);
+        return new CarRentalBookingForm(iwc, product,initializeBookingForm);
       }
-    }else {
-//      System.out.println("[ServiceHandlerBean] iter.hasNext() = false");
     }
-    return new DefaultBookingForm(iwc, product);
+    return new DefaultBookingForm(iwc, product, initializeBookingForm);
   }
 
   public DesignerForm getDesignerForm(IWContext iwc, ProductCategory productCategory) throws Exception{
