@@ -213,12 +213,17 @@ public class HotelSearch extends AbstractSearchForm {
 		}
 
 		DropdownMenu roomTypeDrop = new DropdownMenu(roomTypes, PARAMETER_TYPE);
+
+		
+		roomTypeDrop.setSelectedElement(super.getDefaultValue(PARAMETER_TYPE));
+		spHotelTypes.setSelectedElement(super.getDefaultValue(PARAMETER_HOTEL_TYPE));
+		
 		boolean vertical = !isHorizontal();
 
 		if (this.isHorizontal()) {
 			if (!defined) {
 				try {
-					bf.addAreaCodeInput(null, engine.getCountries(), vertical);
+					bf.addAreaCodeInput(null, engine.getCountries(), vertical, getDefaultValue(PARAMETER_POSTAL_CODE_NAME));
 					bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
 				}
 				catch (IDORelationshipException e1) {
@@ -243,7 +248,7 @@ public class HotelSearch extends AbstractSearchForm {
 		} else {
 			if (!defined) {
 				try {
-					bf.addAreaCodeInput(null, engine.getCountries(), vertical);
+					bf.addAreaCodeInput(null, engine.getCountries(), vertical,getDefaultValue(PARAMETER_POSTAL_CODE_NAME));
 				}
 				catch (IDORelationshipException e1) {
 					e1.printStackTrace();

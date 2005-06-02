@@ -2153,7 +2153,7 @@ public abstract class BookingForm extends TravelManager{
 		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")+Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.not_required", "Not required")+")"}, new PresentationObject[] {suppName}, vertical);
 	}
 
-	public void addAreaCodeInput(Product product, Collection countries, boolean vertical) {
+	public void addAreaCodeInput(Product product, Collection countries, boolean vertical, String defaultValue) {
 		try {
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 			boolean isIcelandOnly = false;
@@ -2167,15 +2167,21 @@ public abstract class BookingForm extends TravelManager{
 			InterfaceObject menu;
 			if (isIcelandOnly) {
 				menu = getPostalCodeDropdown(iwrb, pHome.getDatasource());
+				if (defaultValue != null) {
+					((DropdownMenu)menu).setSelectedElement(defaultValue);
+				}
 				try {
 					if (product != null) {
 						((DropdownMenu)menu).setSelectedElement(product.getSupplier().getAddress().getPostalCode().getPrimaryKey().toString());
-					}
+					} 
 				} catch (Exception e) {}
 			} else {
 				menu = new LocationInput(AbstractSearchForm.PARAMETER_COUNTRY_PC_D, AbstractSearchForm.PARAMETER_CITY_PC_D, AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
 				((LocationInput) menu).setAvailableCountries(countries);
 				((LocationInput) menu).setSeparator(Text.BREAK+Text.NON_BREAKING_SPACE+Text.BREAK);
+				if (defaultValue != null) {
+					((LocationInput) menu).setSelectedPostalCode(defaultValue);
+				}
 			}
 			
 			

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -184,6 +185,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	private BookingForm bf;
 	protected boolean horizontal = false;
 	protected boolean showContactInformation = true;
+	protected HashMap defaultValues = new HashMap();
 	
 	protected HashMap frames = new HashMap();
 	
@@ -239,7 +241,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		if (width != null) {
 			outTable.setWidth(width);
 		}
-		outTable.setBorder(1);
+//		outTable.setBorder(1);
 //		outTable.setBorderColor("GREEN");
 		outTable.setCellpaddingAndCellspacing(0);
 		
@@ -2157,6 +2159,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return bf;
 	}
 	
+	public String getDefaultValue(String parameterName) {
+		return (String) defaultValues.get(parameterName);
+	}
+	
 	public void setSearchImage(Image image) {
 		this.searchImage = image;
 	}
@@ -2179,6 +2185,21 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected boolean isVertical() {
 		return !isHorizontal();
+	}
+	
+	public void setDefaultValues(String defaultValues) {
+		if (defaultValues != null) {
+			StringTokenizer tok = new StringTokenizer(defaultValues, ",");
+			while (tok.hasMoreElements()) {
+				String token = tok.nextToken();
+				int index = token.indexOf("=");
+				if (index != -1) {
+					String par = token.substring(0, index);
+					String val = token.substring(index+1);
+					this.defaultValues.put(par, val);
+				}
+			}
+		}
 	}
 
 }

@@ -70,6 +70,7 @@ public class ServiceSearch extends TravelBlock {
 	private ICPage targetPage = null;
 	private boolean horizontal = false;
 	private boolean showContactInformation = true;
+	private String defaultValues = null;
 
 	public ServiceSearch() {
 		super();
@@ -170,6 +171,7 @@ public class ServiceSearch extends TravelBlock {
 			}
 			ss.setHorizontal(horizontal);
 			ss.setShowContactInformation(showContactInformation);
+			ss.setDefaultValues(defaultValues);
 			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
 			return ss;
 		}catch (Exception e) {
@@ -276,6 +278,15 @@ public class ServiceSearch extends TravelBlock {
 	
 	public void setShowContactInformation(boolean show) {
 		this.showContactInformation = show;
+	}
+	
+	/**
+	 * Should be comma delimited with =.
+	 * Example: prm1=23,prm2=11
+	 * @param defaultValues
+	 */
+	public void setDefaultValues(String defaultValues) {
+		this.defaultValues = defaultValues;
 	}
 
 	/**

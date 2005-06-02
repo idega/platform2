@@ -98,7 +98,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 
 		if (!defined) {
 			try {
-				bf.addAreaCodeInput(null, engine.getCountries(), isVertical());
+				bf.addAreaCodeInput(null, engine.getCountries(), isVertical(), getDefaultValue(PARAMETER_POSTAL_CODE_NAME));
 			}
 			catch (IDORelationshipException e1) {
 				e1.printStackTrace();

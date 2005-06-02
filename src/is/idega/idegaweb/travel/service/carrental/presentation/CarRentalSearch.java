@@ -52,16 +52,14 @@ public class CarRentalSearch extends AbstractSearchForm {
 	protected String getServiceName(IWResourceBundle iwrb) {
 		return iwrb.getLocalizedString("travel.search.car_rental","Car Rental");		
 	}
-
-	
-	
+		
 	protected void setupSearchForm() throws RemoteException {
 		BookingForm bf = getBookingForm();
 		boolean defined = hasDefinedProduct();
 		
 		if (!defined) {
 			try {
-				bf.addAreaCodeInput(null, engine.getCountries(), isVertical());
+				bf.addAreaCodeInput(null, engine.getCountries(), isVertical(), getDefaultValue(PARAMETER_POSTAL_CODE_NAME));
 			}
 			catch (IDORelationshipException e1) {
 				e1.printStackTrace();
