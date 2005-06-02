@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.1 2005/06/02 06:24:37 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.2 2005/06/02 07:50:05 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
+import se.idega.idegaweb.commune.school.business.SchoolClassWriter;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolStudyPath;
@@ -38,14 +39,14 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
-	private static final String PARAMETER_ACTION = "sp_action";
+	public static final String PARAMETER_ACTION = "sp_action";
 	
 	private static final String PARAMETER_STUDY_PATH_GROUP = "sp_study_path_group";
 	private static final String PARAMETER_COURSE = "sp_course";
@@ -53,8 +54,8 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 	private static final String PARAMETER_STUDENT = "sp_student";
 	private static final String PARAMETER_DATE = "sp_date";
 	
-	private static final int ACTION_VIEW_CHOICES = 1;
-	private static final int ACTION_VIEW_GROUP = 2;
+	public static final int ACTION_VIEW_CHOICES = 1;
+	public static final int ACTION_VIEW_GROUP = 2;
 	private static final int ACTION_PLACE_STUDENTS = 4;
 	private static final int ACTION_REJECT_STUDENTS = 5;
 	private static final int ACTION_REMOVE_STUDENT = 6;
@@ -96,7 +97,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 					break;
 
 				case ACTION_SET_PLACEMENT_DATE:
-					showDateSetter(iwc);
+					showDateSetter();
 					break;
 			}
 		}
@@ -155,7 +156,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		add(form);
 	}
 	
-	private void showDateSetter(IWContext iwc) throws RemoteException {
+	private void showDateSetter() throws RemoteException {
 		Form form = new Form();
 		form.setEventListener(StudentPlacer.class);
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PLACE_STUDENTS));
@@ -201,15 +202,25 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		form.add(getChoiceInfoTable());
 		form.add(new Break());
 		
+		Link pdfLink = getPDFLink(SchoolClassWriter.class, getBundle().getImage("shared/pdf.gif"));
+		Link excelLink = getXLSLink(SchoolClassWriter.class, getBundle().getImage("shared/xls.gif"));
+
+		Table headingTable = new Table(2, 1);
+		headingTable.setWidth(Table.HUNDRED_PERCENT);
+		headingTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		
 		StringBuffer heading = new StringBuffer();
 		heading.append(localize("placed_students", "Placed students"));
 		if (getSession().getCourse() != null) {
 			SchoolStudyPath path = getSession().getCourse().getStudyPath();
 			heading.append(" - ").append(path.getDescription());
 		}
+		headingTable.add(getHeader(heading.toString()), 1, 1);
+		headingTable.add(pdfLink, 2, 1);
+		headingTable.add(Text.getNonBrakingSpace(), 2, 1);
+		headingTable.add(excelLink, 2, 1);
 		
-		form.add(getHeader(heading.toString()));
-		form.add(new Break());
+		form.add(headingTable);
 		form.add(getStudents(iwc));
 		form.add(getSmallErrorText("* "));
 		form.add(getSmallText(localize("has_message", "Has message")));
@@ -426,6 +437,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 				Link edit = new Link(getEditIcon(localize("edit_student", "Edit student")));
 				link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 				edit.addParameter(PARAMETER_STUDENT, member.getPrimaryKey().toString());
+				link.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_CHANGE_GROUP);
 				link.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
 				edit.setWindowToOpen(StudentWindow.class);
 				table.add(edit, column++, row);

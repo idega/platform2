@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.1 2005/06/02 06:24:37 laddi Exp $
+ * $Id: StudentEditor.java,v 1.2 2005/06/02 07:50:05 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,8 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.process.data.CaseStatus;
+import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.builder.business.BuilderLogic;
@@ -39,25 +41,30 @@ import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.URLUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
 	public static final String PARAMETER_ACTION = "se_action";
 	public static final String PARAMETER_PAGE = "se_page";
 	private static final String PARAMETER_COURSE = "se_course";
+	public static final String PARAMETER_STUDENT = "se_student";
+	private static final String PARAMETER_SCHOOL_CLASS = "se_school_class";
 	
 	public static final int ACTION_SHOW_CHOICE = 1;
 	public static final int ACTION_SHOW_STUDENT = 2;
 	private static final int ACTION_REJECT_STUDENT = 3;
 	private static final int ACTION_CHANGE_COURSE = 4;
 	private static final int ACTION_STORE_COURSE = 5;
+	public static final int ACTION_CHANGE_GROUP = 6;
+	private static final int ACTION_STORE_GROUP = 7;
 	
 	private int iPageID;
 	
@@ -85,6 +92,14 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 
 				case ACTION_STORE_COURSE:
 					changeCourse(iwc);
+					break;
+
+				case ACTION_CHANGE_GROUP:
+					showChangeGroup();
+					break;
+
+				case ACTION_STORE_GROUP:
+					changeGroup(iwc);
 					break;
 			}
 		}
@@ -267,6 +282,63 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		add(form);
 	}
 	
+	private void showChangeGroup() throws RemoteException {
+		Form form = new Form();
+		form.addParameter(PARAMETER_ACTION, ACTION_CHANGE_GROUP);
+		form.maintainParameter(PARAMETER_PAGE);
+		
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setColumns(2);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		int row = 1;
+		
+		AdultEducationChoice choice = getSession().getChoice();
+		AdultEducationCourse course = choice.getCourse();
+		SchoolClassMember member = getSession().getSchoolClassMember();
+		SchoolClass group = member.getSchoolClass();
+		
+		CloseButton close = (CloseButton) getButton(new CloseButton(localize("close", "Close")));
+		SubmitButton changeGroup = (SubmitButton) getButton(new SubmitButton(localize("change_group", "Change group")));
+		changeGroup.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE_GROUP));
+		
+		DropdownMenu courses = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_COURSE));
+		Collection availableCourses = getBusiness().getCourses(getSession().getSchoolSeason().getPrimaryKey(), getSession().getSchool().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
+		Iterator iter = availableCourses.iterator();
+		while (iter.hasNext()) {
+			AdultEducationCourse element = (AdultEducationCourse) iter.next();
+			courses.addMenuElement(course.getPrimaryKey().toString(), element.getCode());
+		}
+		courses.setToSubmit();
+
+		DropdownMenu groups = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOL_CLASS));
+		if (getSession().getSchoolSeason() != null && getSession().getCourse() != null) {
+			Collection availableGroups = getBusiness().getGroups(getSession().getSchool(), getSession().getSchoolSeason(), getSession().getCourse().getCode());
+			iter = availableGroups.iterator();
+			while (iter.hasNext()) {
+				SchoolClass element = (SchoolClass) iter.next();
+				groups.addMenuElement(element.getPrimaryKey().toString(), element.getName());
+			}
+		}
+		if (group != null) {
+			groups.setSelectedElement(group.getPrimaryKey().toString());
+		}
+
+		table.add(getSmallHeader(localize("current_course", "Current course")), 1, row);
+		table.add(getSmallText(course.getCode()), 2, row++);
+		
+		table.add(getSmallHeader(localize("new_course", "New course")), 1, row);
+		table.add(courses, 2, row++);
+		
+		table.mergeCells(1, row, 2, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(close, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(changeGroup, 1, row);
+		
+		add(form);
+	}
+	
 	private void rejectStudent(IWContext iwc) throws RemoteException {
 		Object[] choices = { getSession().getChoice().getPrimaryKey().toString() };
 		getBusiness().rejectChoices(choices, iwc.getCurrentUser());
@@ -274,11 +346,21 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 	
 	private void changeCourse(IWContext iwc) throws RemoteException {
 		getBusiness().changeCourse(getSession().getChoice(), iwc.getParameter(PARAMETER_COURSE));
-		close(iwc);
+		close(iwc, StudentPlacer.ACTION_VIEW_CHOICES);
 	}
 	
-	private void close(IWContext iwc) {
-		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, iPageID));
+	private void changeGroup(IWContext iwc) throws RemoteException {
+		if (iwc.isParameterSet(PARAMETER_SCHOOL_CLASS)) {
+			getBusiness().changeCourse(getSession().getChoice(), iwc.getParameter(PARAMETER_COURSE));
+			getBusiness().changeGroup(getSession().getSchoolClassMember(), iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+		}
+		close(iwc, StudentPlacer.ACTION_VIEW_GROUP);
+	}
+	
+	private void close(IWContext iwc, int action) {
+		URLUtil URL = new URLUtil(BuilderLogic.getInstance().getIBPageURL(iwc, iPageID));
+		URL.addParameter(StudentPlacer.PARAMETER_ACTION, action);
+		getParentPage().setParentToRedirect(URL.toString());
 		getParentPage().close();
 	}
 
@@ -299,6 +381,16 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		if (iwc.isParameterSet(PARAMETER_CHOICE)) {
 			try {
 				getSession(iwc).setChoice(iwc.getParameter(PARAMETER_CHOICE));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		
+		if (iwc.isParameterSet(PARAMETER_STUDENT)) {
+			try {
+				getSession(iwc).setSchoolClassMember(iwc.getParameter(PARAMETER_STUDENT));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {

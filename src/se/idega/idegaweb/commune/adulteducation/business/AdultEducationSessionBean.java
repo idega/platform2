@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.6 2005/06/02 06:24:37 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.7 2005/06/02 07:50:05 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
@@ -31,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -62,6 +63,9 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	
 	private Object iSchoolClassPK = null;
 	private SchoolClass iSchoolClass = null;
+	
+	private Object iSchoolClassMemberPK = null;
+	private SchoolClassMember iSchoolClassMember = null;
 	
 	private Date iDate = null;
 	
@@ -169,6 +173,27 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	public void setSchoolClass(Object schoolClassPK) {
 		iSchoolClassPK = schoolClassPK;
 		iSchoolClass= null;
+	}
+	
+	public SchoolClassMember getSchoolClassMember() {
+		if (iSchoolClassMember == null && iSchoolClassMemberPK != null) {
+			try {
+				iSchoolClassMember = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(iSchoolClassMemberPK.toString()));
+			}
+			catch (RemoteException re) {
+				iSchoolClassMember = null;
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+				iSchoolClassMember = null;
+			}
+		}
+		return iSchoolClassMember;
+	}
+
+	public void setSchoolClassMember(Object schoolClassMemberPK) {
+		iSchoolClassMemberPK = schoolClassMemberPK;
+		iSchoolClassMember= null;
 	}
 	
 	public Date getDate() {

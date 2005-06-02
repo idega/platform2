@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBlock.java,v 1.5 2005/05/25 13:06:38 laddi Exp $
+ * $Id: AdultEducationBlock.java,v 1.6 2005/06/02 07:50:05 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,20 +12,25 @@ package se.idega.idegaweb.commune.adulteducation.presentation;
 import se.idega.idegaweb.commune.adulteducation.AdultEducationConstants;
 import se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusiness;
 import se.idega.idegaweb.commune.adulteducation.business.AdultEducationSession;
+import se.idega.idegaweb.commune.adulteducation.business.GroupFileWriter;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Window;
 
 /**
- * Last modified: $Date: 2005/05/25 13:06:38 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public abstract class AdultEducationBlock extends CommuneBlock {
 
@@ -51,6 +56,22 @@ public abstract class AdultEducationBlock extends CommuneBlock {
 		present(iwc);
 	}
 	
+	protected Link getPDFLink(Class classToUse, Image image) {
+		Link link = new Link(image);
+		link.setWindow(getFileWindow(localize("pdf", "PDF")));
+		link.addParameter(GroupFileWriter.prmPrintType, GroupFileWriter.PDF);
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
+		return link;
+	}
+
+	protected Link getXLSLink(Class classToUse, Image image) {
+		Link link = new Link(image);
+		link.setWindow(getFileWindow(localize("xls", "Excel")));
+		link.addParameter(GroupFileWriter.prmPrintType, GroupFileWriter.XLS);
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
+		return link;
+	}
+
 	protected AdultEducationBusiness getBusiness() {
 		return business;
 	}
@@ -77,8 +98,8 @@ public abstract class AdultEducationBlock extends CommuneBlock {
 		}
 	}
 
-	protected Window getFileWindow() {
-		Window w = new Window(localize("pdf", "PDF"), getIWApplicationContext().getIWMainApplication().getMediaServletURI());
+	protected Window getFileWindow(String title) {
+		Window w = new Window(title, getIWApplicationContext().getIWMainApplication().getMediaServletURI());
 		w.setResizable(true);
 		w.setMenubar(true);
 		w.setHeight(400);

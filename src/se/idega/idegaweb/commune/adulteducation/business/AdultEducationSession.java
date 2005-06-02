@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationSession.java,v 1.5 2005/06/02 06:24:37 laddi Exp $
- * Created on Jun 1, 2005
+ * $Id: AdultEducationSession.java,v 1.6 2005/06/02 07:50:05 laddi Exp $
+ * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
@@ -22,10 +23,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface AdultEducationSession extends IBOSession {
 
@@ -78,6 +79,16 @@ public interface AdultEducationSession extends IBOSession {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setSchoolClass
 	 */
 	public void setSchoolClass(Object schoolClassPK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#getSchoolClassMember
+	 */
+	public SchoolClassMember getSchoolClassMember() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#setSchoolClassMember
+	 */
+	public void setSchoolClassMember(Object schoolClassMemberPK) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationSessionBean#getDate

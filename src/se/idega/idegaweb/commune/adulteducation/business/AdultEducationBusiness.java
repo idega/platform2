@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.17 2005/06/02 06:24:37 laddi Exp $
+ * $Id: AdultEducationBusiness.java,v 1.18 2005/06/02 07:50:05 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,6 +27,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
@@ -37,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -299,6 +300,11 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#changeCourse
 	 */
 	public void changeCourse(AdultEducationChoice choice, Object coursePK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#changeGroup
+	 */
+	public void changeGroup(SchoolClassMember member, Object groupPK) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storePersonalInfo

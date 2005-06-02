@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.20 2005/06/02 06:24:37 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.21 2005/06/02 07:50:05 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -73,10 +73,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -961,6 +961,11 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	public void changeCourse(AdultEducationChoice choice, Object coursePK) {
 		choice.setCourse(coursePK);
 		choice.store();
+	}
+	
+	public void changeGroup(SchoolClassMember member, Object groupPK) {
+		member.setSchoolClassId(new Integer(groupPK.toString()).intValue());
+		member.store();
 	}
 	
 	public AdultEducationPersonalInfo storePersonalInfo(int icUserID, int nativecountryId, int languageID, int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA, boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF, String educationG, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) {
