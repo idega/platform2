@@ -13,6 +13,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
+import com.idega.util.Timer;
 
 
 /**
@@ -51,18 +52,32 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		BookingForm bf;
 		Collection prices;
 		boolean productIsValid	 = true;
+		Timer t = new Timer();
+		t.start();
 		//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
-		bf = getServiceHandler().getBookingForm(iwc, product);
+		bf = getServiceHandler().getBookingForm(iwc, product, false);
 		addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
+		t.stop();
+		System.out.println("[BookingBusiness] check 1b : "+t.getTimeString());
+		t.start();
 		addressId = -1;
 		timeframeId = -1;
 		timeframe = getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
+//		t.stop();
+//		System.out.println("[BookingBusiness] check 1c : "+t.getTimeString());
+//		t.start();
 		if (timeframe != null) {
 			timeframeId = timeframe.getID();
 		}
+//		t.stop();
+//		System.out.println("[BookingBusiness] check 1 : "+t.getTimeString());
+//		t.start();
 //		System.out.println("BookingBusinessBean checking product");
 		ProductPriceHome ppHome = (ProductPriceHome) IDOLookup.getHome(ProductPrice.class);
 		prices = ppHome.findProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+		t.stop();
+		System.out.println("[BookingBusiness] check 2 : "+t.getTimeString());
+//		t.start();
 		
 		if (prices != null && !prices.isEmpty()) { 
 //			System.out.println("BookingBusinessBean found prices : "+prices.length);
@@ -71,6 +86,9 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 			productIsValid = true;
 			while ( tmp.isEarlierThan(to) && productIsValid) {
 				/** Checking if day is available */
+//				t.stop();
+//				System.out.println("[BookingBusiness] check 3 ("+tmp.toSQLDateString()+") : "+t.getTimeString());
+//				t.start();
 				productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
 //				System.out.println("BookingBusinessBean productIsValid 1 = "+productIsValid);
 				
