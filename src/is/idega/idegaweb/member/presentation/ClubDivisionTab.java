@@ -335,7 +335,7 @@ public class ClubDivisionTab extends UserGroupTab{
             group.setMetaData(IWMemberConstants.META_DATA_DIVISION_FOUNDED, founded);
             //			group.setMetaData("CLUBDIV_CONN", connection);
             String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
-            if (oldConnection == null && connection != null) {
+            if ((oldConnection == null || oldConnection.trim().equals("")) && connection != null) {
                 String clubName = null;
                 Group club = getMemberUserBusiness(iwc).getClubForGroup(group);
                 if (club != null) {

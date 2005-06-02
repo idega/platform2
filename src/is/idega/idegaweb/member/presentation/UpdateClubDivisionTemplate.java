@@ -179,7 +179,7 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 
 	private boolean updateChildren(IWContext iwc) {
 		try {
-			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group);
+			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group, iwc);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
