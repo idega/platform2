@@ -26,7 +26,11 @@ public class FishingBookingForm extends BookingForm {
     super(iwc, product);
   }
   
-	public void saveServiceBooking(	IWContext iwc, int bookingId,		IWTimestamp stamp) throws RemoteException, IDOException {
+  public FishingBookingForm(IWContext iwc, Product product, boolean doInit) throws Exception{
+	  super(iwc, product, doInit);
+  }
+
+	  public void saveServiceBooking(	IWContext iwc, int bookingId,		IWTimestamp stamp) throws RemoteException, IDOException {
 	}
 
 	protected void setupSpecialFieldsForBookingForm(Table table, int row, List errorFields) {

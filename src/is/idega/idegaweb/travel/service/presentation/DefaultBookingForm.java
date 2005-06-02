@@ -18,6 +18,9 @@ public class DefaultBookingForm extends BookingForm {
   public DefaultBookingForm(IWContext iwc, Product product) throws Exception{
   		super(iwc ,product);
   }
+  public DefaultBookingForm(IWContext iwc, Product product, boolean doInit) throws Exception{
+		super(iwc ,product, doInit);
+}
 
 	protected void setupSpecialFieldsForBookingForm(Table table, int row, List errorFields) {
 	}

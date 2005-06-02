@@ -66,8 +66,14 @@ public class TourBookingForm extends BookingForm{
 
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
-    super(iwc, product);
-    setTour(iwc, product);
+	  this(iwc, product, true);
+  }
+  
+  public TourBookingForm(IWContext iwc, Product product, boolean doInit) throws Exception{
+    super(iwc, product, doInit);
+    if (doInit) {
+    	setTour(iwc, product);
+    }
   }
 
   private void setTour(IWContext iwc, Product product) throws RemoteException{

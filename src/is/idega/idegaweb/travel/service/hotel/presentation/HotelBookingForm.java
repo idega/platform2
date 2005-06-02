@@ -61,7 +61,10 @@ import com.idega.util.IWTimestamp;
 public class HotelBookingForm extends BookingForm {
 
   public HotelBookingForm(IWContext iwc, Product product) throws Exception{
-    super(iwc, product);
+    this(iwc, product, true);
+  }
+  public HotelBookingForm(IWContext iwc, Product product, boolean doInit) throws Exception{
+	  super(iwc, product, doInit);
   }
 
   public Form getBookingForm(IWContext iwc) throws RemoteException, FinderException {
@@ -1733,7 +1736,7 @@ public class HotelBookingForm extends BookingForm {
 		int max = 0;
 		
 		if (_reseller != null) {
-			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, product);
 			if (cont != null) {
 				max = cont.getAlotment();
 			}	

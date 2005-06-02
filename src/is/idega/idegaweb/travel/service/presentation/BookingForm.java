@@ -242,44 +242,49 @@ public abstract class BookingForm extends TravelManager{
 //	{
 //		return iwrb.getLocalizedString("travel.unit", "Unit");
 //	}
-
 	public BookingForm(IWContext iwc, Product product) throws Exception{
+		this(iwc, product, true);
+	}
+	
+	public BookingForm(IWContext iwc, Product product, boolean doInit) throws Exception{
 		this.iwc = iwc;
-		super.initializer(iwc);
-		setProduct(iwc, product);
-		iwrb = super.getResourceBundle();
-		bundle = super.getBundle();
-		supplier = super.getSupplier();
-		_reseller = super.getReseller();
-		if ((_reseller != null) && (product != null)){
-			_contract = getContractBusiness(iwc).getContract(_reseller, product);
-			_contractId = ((Integer) _contract.getPrimaryKey()).intValue();
-		}
-		String sBookingId = iwc.getParameter(this.parameterBookingId);
-		if (sBookingId != null) {
-			try {
-				int bookingId = Integer.parseInt(sBookingId);
-				_booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-				_multipleBookingNumber = getBooker(iwc).getMultipleBookingNumber((GeneralBooking)_booking);
-				if (_multipleBookingNumber[1] > 1 ) {
-					_multipleBookings = true;
-				}
-			}catch (FinderException fe) {
-				/** not handled */	
+		if (doInit) {
+			super.initializer(iwc);
+			setProduct(iwc, product);
+			iwrb = super.getResourceBundle();
+			bundle = super.getBundle();
+			supplier = super.getSupplier();
+			_reseller = super.getReseller();
+			if ((_reseller != null) && (product != null)){
+				_contract = getContractBusiness(iwc).getContract(_reseller, product);
+				_contractId = ((Integer) _contract.getPrimaryKey()).intValue();
 			}
-		}  
-		
-		formTable.setWidth("100%");
-		formTable.setCellpadding(0);
-		formTable.setCellspacing(0);
-		
-		if (product != null) {
-			Supplier supp = product.getSupplier();
-			ccMerchant = getCreditCardBusiness(iwc).getCreditCardMerchant(supp, IWTimestamp.RightNow());
-			useCVC = getCreditCardBusiness(iwc).getUseCVC(ccMerchant);
+			String sBookingId = iwc.getParameter(this.parameterBookingId);
+			if (sBookingId != null) {
+				try {
+					int bookingId = Integer.parseInt(sBookingId);
+					_booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+					_multipleBookingNumber = getBooker(iwc).getMultipleBookingNumber((GeneralBooking)_booking);
+					if (_multipleBookingNumber[1] > 1 ) {
+						_multipleBookings = true;
+					}
+				}catch (FinderException fe) {
+					/** not handled */	
+				}
+			}  
+			
+			formTable.setWidth("100%");
+			formTable.setCellpadding(0);
+			formTable.setCellspacing(0);
+			
+			if (product != null) {
+				Supplier supp = product.getSupplier();
+				ccMerchant = getCreditCardBusiness(iwc).getCreditCardMerchant(supp, IWTimestamp.RightNow());
+				useCVC = getCreditCardBusiness(iwc).getUseCVC(ccMerchant);
+			}
+			
+			setTimestamp(iwc);
 		}
-		
-		setTimestamp(iwc);
 	}
 	
 	public Map getStyleNames() {
@@ -4612,11 +4617,20 @@ public abstract class BookingForm extends TravelManager{
 		
 		return null;
 	}
-	
+	/**
+	 * @deprecated
+	 * @param iwc
+	 * @param product
+	 * @param stamp
+	 * @return
+	 * @throws RemoteException
+	 * @throws CreateException
+	 * @throws FinderException
+	 */
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 		int max = 0;
 		if (_reseller != null) {
-			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, product);
 			if (cont != null) {
 				max = cont.getAlotment();
 			}	
@@ -4642,7 +4656,16 @@ public abstract class BookingForm extends TravelManager{
 		
 		return false;
 	}
-	
+	/**
+	 * @deprecated
+	 * @param iwc
+	 * @param product
+	 * @param stamp
+	 * @return
+	 * @throws RemoteException
+	 * @throws CreateException
+	 * @throws FinderException
+	 */
 	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 
 		int min = getServiceHandler(iwc).getServiceBusiness(product).getMinBookings(product, stamp);
@@ -4857,7 +4880,10 @@ public abstract class BookingForm extends TravelManager{
 		return valid;
 	}
 	
-	
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public String getPriceCategorySearchKey() {
 		return null;
 	}

@@ -72,10 +72,14 @@ public class CarRentalBookingForm extends BookingForm {
 	public static String PARAMETER_DROPOFF_TIME = "crbf_pdt";
 
   public CarRentalBookingForm(IWContext iwc, Product product) throws Exception{
-    super(iwc, product);
-		setCarRental(iwc, product);
+    this(iwc, product, true);
   }
-
+  public CarRentalBookingForm(IWContext iwc, Product product, boolean doInit) throws Exception{
+	  super(iwc, product, doInit);
+	  if (doInit) {
+		setCarRental(iwc, product);
+	  }
+  }
   private void setCarRental(IWContext iwc, Product product) throws RemoteException{
 		try {
 		  _carRental = getCarRentalHome().findByPrimaryKey(product.getPrimaryKey());
