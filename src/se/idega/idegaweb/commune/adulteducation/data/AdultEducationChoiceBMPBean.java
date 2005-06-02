@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.8 2005/05/31 12:08:41 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.9 2005/06/02 06:24:37 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.query.InCriteria;
@@ -457,6 +458,7 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		query.addCriteria(new MatchCriteria(course, "sch_study_path_id", MatchCriteria.EQUALS, studyPathPK));
 		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, seasonPK));
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(table, CHOICE_ORDER, true);
 		
 		return idoFindPKsByQuery(query);
 	}
@@ -482,5 +484,44 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		query.addCriteria(new MatchCriteria(table, CHOICE_ORDER, MatchCriteria.EQUALS, choiceOrder));
 		
 		return idoFindOnePKByQuery(query);
+	}
+	
+	public Collection ejbFindAllBySeasonAndCourse(SchoolSeason season, AdultEducationCourse aeCourse, String[] statuses) throws FinderException {
+		Table table = new Table(this);
+		Table course = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, course);
+			query.addJoin(table, cases);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(table, COURSE, MatchCriteria.EQUALS, aeCourse));
+		query.addCriteria(new MatchCriteria(course, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		query.addOrder(table, PRIORITY, true);
+		query.addOrder(table, CHOICE_DATE, true);
+		
+		return idoFindPKsByQuery(query);
+	}
+	
+	public int ejbHomeGetCountOfChoicesByCourse(SchoolSeason season, AdultEducationCourse course, String[] statuses) throws IDOException {
+		Table table = new Table(this);
+		Table courseTable = new Table(AdultEducationCourse.class);
+		Table cases = new Table(Case.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addJoin(table, courseTable);
+		query.addJoin(table, cases);
+		query.addCriteria(new MatchCriteria(courseTable, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		query.addCriteria(new MatchCriteria(table, COURSE, MatchCriteria.EQUALS, course));
+		query.addCriteria(new InCriteria(cases, "case_status", statuses));
+		
+		return idoGetNumberOfRecords(query);
 	}
 }

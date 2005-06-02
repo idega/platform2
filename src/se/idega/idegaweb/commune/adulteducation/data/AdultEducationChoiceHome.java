@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHome.java,v 1.8 2005/05/31 12:08:40 laddi Exp $
- * Created on May 31, 2005
+ * $Id: AdultEducationChoiceHome.java,v 1.9 2005/06/02 06:24:37 laddi Exp $
+ * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -14,15 +14,16 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
+import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/31 12:08:40 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface AdultEducationChoiceHome extends IDOHome {
 
@@ -90,4 +91,16 @@ public interface AdultEducationChoiceHome extends IDOHome {
 	 */
 	public AdultEducationChoice findByUserAndSeasonAndStudyPathAndChoiceOrder(Object userPK, Object seasonPK,
 			Object studyPathPK, int choiceOrder, String[] statuses) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbFindAllBySeasonAndCourse
+	 */
+	public Collection findAllBySeasonAndCourse(SchoolSeason season, AdultEducationCourse aeCourse, String[] statuses)
+			throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceBMPBean#ejbHomeGetCountOfChoicesByCourse
+	 */
+	public int getCountOfChoicesByCourse(SchoolSeason season, AdultEducationCourse course, String[] statuses)
+			throws IDOException;
 }

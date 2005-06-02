@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.19 2005/05/31 12:08:41 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.20 2005/06/02 06:24:37 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -34,30 +34,38 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseHome;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import com.idega.block.pdf.business.PrintingContext;
 import com.idega.block.pdf.business.PrintingService;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseCode;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOCreateException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
@@ -65,10 +73,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/05/31 12:08:41 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -86,6 +94,46 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 
 		String desc = super.getLocalizedCaseDescription(theCase, locale);
 		return MessageFormat.format(desc, arguments);
+	}
+
+	public School getSchoolForUser(User user) throws FinderException {
+		Group primaryGroup = user.getPrimaryGroup();
+		SchoolBusiness schoolBuiz = getSchoolBusiness();
+		try {
+			if (primaryGroup.equals(schoolBuiz.getRootAdultEducationAdministratorGroup())) {
+				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
+				Collection schoolIds = sub.getSchools(user);
+				if (!schoolIds.isEmpty()) {
+					Iterator iter = schoolIds.iterator();
+					while (iter.hasNext()) {
+						School school = sub.getSchoolHome().findByPrimaryKey(iter.next());
+						return school;
+					}
+				}
+			}
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+		catch (FinderException e) {
+			Collection schools;
+			try {
+				schools = ((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
+			}
+			catch (RemoteException e1) {
+				throw new IBORuntimeException(e1.getMessage());
+			}
+			if (!schools.isEmpty()) {
+				Iterator iter = schools.iterator();
+				while (iter.hasNext()) {
+					return (School) iter.next();
+				}
+			}
+		}
+		throw new FinderException("No school found for user: "+user.getPrimaryKey().toString());
 	}
 
 	protected AdultEducationChoice getAdultEducationChoiceInstance(Case theCase) throws RuntimeException {
@@ -156,6 +204,15 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 
+	public CommuneUserBusiness getUserBusiness() {
+		try {
+			return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
 	private MessageBusiness getMessageBusiness() {
 		try {
 			return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
@@ -198,14 +255,82 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		return getCourseHome().findByPrimaryKey(coursePK);
 	}
 	
+	public Collection getCourses(Object season, Object school, Object group) {
+		return getCourses(season, null, school, group);
+	}
+	
 	public Collection getCourses(Object season, Object type, Object school, Object group) {
 		try {
 			return getCourseHome().findAllBySeasonAndTypeAndSchoolAndStudyPathGroup(season, type, school, group);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getGroups(School school, SchoolSeason season, String code) {
+		try {
+			return getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeasonAndCode(school, season, code);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public boolean hasActiveChoices(SchoolSeason season, AdultEducationCourse course) {
+		return getNumberOfActiveChoices(season, course) > 0;
+	}
+	
+	public int getNumberOfActiveChoices(SchoolSeason season, AdultEducationCourse course) {
+		try {
+			String[] statuses = { getCaseStatusGranted().toString() };
+			return getChoiceHome().getCountOfChoicesByCourse(season, course, statuses);
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return 0;
+		}
+	}
+	
+	public Collection getChoices(SchoolSeason season, AdultEducationCourse course) {
+		try {
+			String[] statuses = { getCaseStatusGranted().toString() };
+			return getChoiceHome().findAllBySeasonAndCourse(season, course, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public SchoolClass createDefaultGroup(SchoolSeason season, AdultEducationCourse course) {
+		try {
+			SchoolClass group = getSchoolBusiness().getSchoolClassHome().create();
+			group.setSchool(course.getSchool());
+			group.setSchoolSeason(season);
+			group.setCode(course.getCode());
+			group.setValid(true);
+			group.setSchoolClassName(course.getCode());
+			group.store();
+			
+			return group;
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
 			return null;
 		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+
+	public AdultEducationChoice getChoice(User user, AdultEducationCourse course) throws FinderException {
+		return getChoice(user, course.getPrimaryKey());
 	}
 	
 	private AdultEducationChoice getChoice(User user, Object coursePK) throws FinderException {
@@ -225,6 +350,17 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		try {
 			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus() };
 			return getChoiceHome().findAllByUserAndSeasonAndStatuses(user, season, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getChoices(User user, SchoolSeason season, SchoolStudyPath path) {
+		try {
+			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus(), getCaseStatusPlaced().getStatus() };
+			return getChoiceHome().findAllByUserAndSeasonAndStudyPath(user, season, path, statuses);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -566,7 +702,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		AdultEducationCourse course = choice.getCourse();
 		SchoolStudyPath path = course.getStudyPath();
 		
-		Object[] arguments = { getLocalizedString(path.getDescription(), path.getDescription()) };
+		Object[] arguments = { getLocalizedString(path.getDescription(), path.getDescription()), course.getCode(), course.getSchool().getSchoolName(), new IWTimestamp(course.getStartDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) };
 		sendMessage(choice, choice.getUser(), arguments, subject, body);
 	}
 	
@@ -711,6 +847,120 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		catch (FinderException fe) {
 			fe.printStackTrace();
 		}
+	}
+	
+	public void placeChoices(Object[] choicePKs, SchoolClass group, AdultEducationCourse course, Date date, User performer) {
+		try {
+			SchoolStudyPath path = course.getStudyPath();
+			SchoolType type = path.getSchoolType();
+			for (int i = 0; i < choicePKs.length; i++) {
+				try {
+					AdultEducationChoice choice = getChoice(choicePKs[i]);
+					User user = choice.getUser();
+					
+					SchoolClassMember member = getSchoolBusiness().storeSchoolClassMember(group, user);
+					member.setRegisterDate(new IWTimestamp(date).getTimestamp());
+					member.setNotes(choice.getComment());
+					member.setSchoolType(type);
+					member.setRegistrator(performer);
+					member.store();
+					
+					changeCaseStatus(choice, getCaseStatusPlaced().getStatus(), performer);
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+					continue;
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public void rejectChoices(Object[] choicePKs, User performer) {
+		String subject = getLocalizedString("choice_rejected_subject", "VUX - Rejected by provider");
+		String body = getLocalizedString("choice_rejected_body", "Your choice to course {0} with course code {1} has been rejected by {2}. If you have chosen more alternatives that provider will now handle your application.");
+		
+		for (int i = 0; i < choicePKs.length; i++) {
+			try {
+				AdultEducationChoice choice = getChoice(choicePKs[i]);
+				CaseCode code = choice.getCaseCode();
+				changeCaseStatus(choice, getCaseStatusDenied().getStatus(), performer);
+				sendMessage(choice, subject, body);
+				
+				if (choice.getChildCount() > 0) {
+					Iterator iter = choice.getChildrenIterator();
+					while (iter.hasNext()) {
+						Case element = (Case) iter.next();
+						if (element.getCaseCode().equals(code)) {
+							changeCaseStatus(element, getCaseStatusGranted().getStatus(), performer);
+							break;
+						}
+					}
+				}
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+				continue;
+			}
+		}
+	}
+	
+	public void removeStudent(Object schoolClassMemberPK, Object choicePK, User performer) {
+		try {
+			try {
+				AdultEducationChoice choice = getChoice(choicePK);
+				choice.setConfirmationMessageSent(false);
+				choice.setPlacementMessageSent(false);
+				changeCaseStatus(choice, getCaseStatusGranted().getStatus(), performer);
+				
+				SchoolClassMember member = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(schoolClassMemberPK.toString()));
+				member.remove();
+			}
+			catch (RemoveException re) {
+				re.printStackTrace();
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public void sendPlacementMessage(SchoolClass group, AdultEducationCourse course) {
+		try {
+			String subject = getLocalizedString("choice_placed_subject", "VUX - Placement in course");
+			String body = getLocalizedString("choice_placed_body", "You have been placed in course {0} with course code {1} at {2}. The course start date is {3}.");
+			
+			Collection students = getSchoolBusiness().findStudentsInClass(((Integer) group.getPrimaryKey()).intValue());
+			Iterator iter = students.iterator();
+			while (iter.hasNext()) {
+				SchoolClassMember member = (SchoolClassMember) iter.next();
+				try {
+					AdultEducationChoice choice = getChoice(member.getStudent(), course);
+					if (!choice.isPlacementMessageSent()) {
+						choice.setPlacementMessageSent(true);
+						choice.store();
+						
+						sendMessage(choice, subject, body);
+					}
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public void changeCourse(AdultEducationChoice choice, Object coursePK) {
+		choice.setCourse(coursePK);
+		choice.store();
 	}
 	
 	public AdultEducationPersonalInfo storePersonalInfo(int icUserID, int nativecountryId, int languageID, int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA, boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF, String educationG, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) {

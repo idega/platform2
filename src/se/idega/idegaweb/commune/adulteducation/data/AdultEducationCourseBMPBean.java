@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.2 2005/05/25 13:06:37 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.3 2005/06/02 06:24:37 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -226,7 +226,9 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		query.addCriteria(new MatchCriteria(table, SCHOOL_SEASON, MatchCriteria.EQUALS, season));
 		query.addCriteria(new MatchCriteria(table, SCHOOL, MatchCriteria.EQUALS, school));
 		query.addCriteria(new MatchCriteria(studyPath, "study_path_group_id", MatchCriteria.EQUALS, group));
-		query.addCriteria(new MatchCriteria(studyPath, "sch_school_type_id", MatchCriteria.EQUALS, type));
+		if (type != null) {
+			query.addCriteria(new MatchCriteria(studyPath, "sch_school_type_id", MatchCriteria.EQUALS, type));
+		}
 		
 		return idoFindPKsByQuery(query);
 	}

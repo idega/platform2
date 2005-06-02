@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.5 2005/05/30 11:07:02 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.6 2005/06/02 06:24:37 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,10 +12,15 @@ package se.idega.idegaweb.commune.adulteducation.business;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -26,12 +31,15 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/05/30 11:07:02 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
+	
+	private Object iAdministratorPK = null;
+	private School iSchool = null;
 	
 	private Object iSeasonPK = null;
 	private SchoolSeason iSeason = null;
@@ -45,6 +53,15 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	
 	private Object iSchoolTypePK = null;
 	private SchoolType iSchoolType = null;
+	
+	private Object iStudyPathGroupPK = null;
+	private SchoolStudyPathGroup iStudyPathGroup = null;
+	
+	private Object iCoursePK = null;
+	private AdultEducationCourse iCourse = null;
+	
+	private Object iSchoolClassPK = null;
+	private SchoolClass iSchoolClass = null;
 	
 	private Date iDate = null;
 	
@@ -93,6 +110,65 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	public void setSchoolType(Object schoolTypePK) {
 		iSchoolTypePK = schoolTypePK;
 		iSchoolType= null;
+	}
+	
+	public SchoolStudyPathGroup getStudyPathGroup() {
+		if (iStudyPathGroup == null && iStudyPathGroupPK != null) {
+			try {
+				iStudyPathGroup = getStudyPathBusiness().findStudyPathGroup(new Integer(iStudyPathGroupPK.toString()));
+			}
+			catch (RemoteException re) {
+				iStudyPathGroup = null;
+			}
+		}
+		return iStudyPathGroup;
+	}
+
+	public void setStudyPathGroup(Object studyPathGroupPK) {
+		iStudyPathGroupPK = studyPathGroupPK;
+		iStudyPathGroup= null;
+	}
+	
+	public AdultEducationCourse getCourse() {
+		if (iCourse == null && iCoursePK != null) {
+			try {
+				iCourse = getAdultEducationBusiness().getCourse(iCoursePK);
+			}
+			catch (RemoteException re) {
+				iCourse = null;
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+				iCourse = null;
+			}
+		}
+		return iCourse;
+	}
+
+	public void setCourse(Object coursePK) {
+		iCoursePK = coursePK;
+		iCourse= null;
+	}
+	
+	public SchoolClass getSchoolClass() {
+		if (iSchoolClass == null && iSchoolClassPK != null) {
+			try {
+				iSchoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(iSchoolClassPK.toString()));
+			}
+			catch (RemoteException re) {
+				iSchoolClass = null;
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+				iSchoolClass = null;
+			}
+		}
+		return iSchoolClass;
+	}
+
+	public void setSchoolClass(Object schoolClassPK) {
+		iSchoolClassPK = schoolClassPK;
+		iSchoolClass= null;
 	}
 	
 	public Date getDate() {
@@ -168,6 +244,58 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 			iUserPK = null;
 		}
 	}
+	
+	public School getSchool() {
+		if (getUserContext().isLoggedOn()) {
+			User user = getUserContext().getCurrentUser();
+			Object userPK = user.getPrimaryKey();
+			
+			if (iAdministratorPK != null && iAdministratorPK.equals(userPK)) {
+				if (iSchool != null) {
+					return iSchool;
+				}
+				else {
+					return getSchoolFromUser(user);
+				}
+			}
+			else {
+				iAdministratorPK = userPK;
+				return getSchoolFromUser(user);
+			}
+		}
+		else {
+			return iSchool;	
+		}
+	}
+
+	/**
+	 * Returns the schoolID.
+	 * @return int
+	 */
+	public Object getSchoolPK() {
+		if (iSchool != null) {
+			return iSchool.getPrimaryKey();
+		}
+		return null;
+	}
+	
+	private School getSchoolFromUser(User user) {
+		if (user != null) {
+			try {
+				School school = getAdultEducationBusiness().getSchoolForUser(user);
+				if (school != null) {
+					iSchool = school;
+				}
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		return iSchool;
+	}
 
 	private CommuneUserBusiness getUserBusiness() {
 		try {
@@ -181,6 +309,15 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	private SchoolBusiness getSchoolBusiness() {
 		try {
 			return (SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
+	private StudyPathBusiness getStudyPathBusiness() {
+		try {
+			return (StudyPathBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), StudyPathBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
