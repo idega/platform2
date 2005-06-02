@@ -411,7 +411,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 		List list = getDepartureAddresses(product, ordered);
 		List returner = new Vector();
 
-		Collection pPrices;
+//		Collection pPrices;
 		TravelAddress ta;
 		boolean add = false;
 		if (list != null) {
@@ -420,15 +420,27 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 				ta = (TravelAddress) iter.next();
 				add = false;
 				for (int i = 0; i < timeframes.length; i++) {
+//					Timer t2 = new Timer();
 					if (getStockroomBusiness().isInTimeframe(new IWTimestamp(timeframes[i].getFrom()), new IWTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getYearly())) {
-						if (key == null) {
-							pPrices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
-						} else {
-							pPrices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
+						try {
+//							t2.start();
+							boolean b = getProductPriceHome().hasProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
+//							t2.stop();
+//							System.out.println("[ProductBusinessBean] check B : " +t2.getTimeString());
+							if (b) {
+//						if (key == null) {
+//							pPrices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
+//						} else {
+//							pPrices = getProductPriceHome().findProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
+//						}
+//						
+//						if (pPrices != null && !pPrices.isEmpty()) {
+								add = true;
+								break;
+							}
 						}
-						if (pPrices != null && !pPrices.isEmpty()) {
-							add = true;
-							break;
+						catch (IDOException e) {
+							e.printStackTrace();
 						}
 					}
 				}
