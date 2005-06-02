@@ -13,6 +13,7 @@ import com.idega.block.trade.data.CurrencyHome;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityControl;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
@@ -258,15 +259,18 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
  * @throws FinderException 
    */
   public Collection ejbFindProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId, String key) throws FinderException {
-  	int[] visibility = new int[]{};
-  	if (netBookingOnly) {
-  		visibility = new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC};	
-  	}else {
-  		visibility = new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE};	
-  	}
-		return ejbFindProductPrices(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);	
+  	int[] visibility = getVisibility(netBookingOnly);
+	return ejbFindProductPrices(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);	
   }
 
+  private int[] getVisibility(boolean netBookingOnly) {
+	  	if (netBookingOnly) {
+	  		return new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC};	
+	  	}else {
+	  		return new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE};	
+	  	}
+  }
+  
   /**
    * @param productId Product id
    * @param timeframeId Timeframe id
@@ -343,6 +347,11 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
       e.printStackTrace(System.err);
     }
     return new int[]{};
+  }
+  public boolean ejbHomeHasProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key) throws FinderException, IDOException {
+	  int[] vis = getVisibility(netBookingOnly);
+	  String s = getSQLQuery(productId, timeframeId, addressId,  0, -1, vis, key, -1, null);
+	  return (this.idoGetNumberOfRecords(s) > 0);
   }
 
   private String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility) {

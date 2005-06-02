@@ -1,6 +1,6 @@
 /*
- * $Id: ProductPriceHomeImpl.java,v 1.4 2005/05/13 04:36:09 gimmi Exp $
- * Created on 13.5.2005
+ * $Id: ProductPriceHomeImpl.java,v 1.5 2005/06/02 16:15:14 gimmi Exp $
+ * Created on 2.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -12,16 +12,17 @@ package com.idega.block.trade.stockroom.data;
 import java.sql.Date;
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookupException;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/05/13 04:36:09 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/02 16:15:14 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome {
 
@@ -189,6 +190,15 @@ public class ProductPriceHomeImpl extends IDOFactory implements ProductPriceHome
 	public int[] getCurrenciesInUse(int productId, int[] visibility) {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		int[] theReturn = ((ProductPriceBMPBean) entity).ejbHomeGetCurrenciesInUse(productId, visibility);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
+
+	public boolean hasProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key)
+			throws FinderException, IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		boolean theReturn = ((ProductPriceBMPBean) entity).ejbHomeHasProductPrices(productId, timeframeId, addressId,
+				netBookingOnly, key);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
 	}

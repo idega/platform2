@@ -1,6 +1,6 @@
 /*
- * $Id: ProductPriceHome.java,v 1.4 2005/05/13 04:36:09 gimmi Exp $
- * Created on 13.5.2005
+ * $Id: ProductPriceHome.java,v 1.5 2005/06/02 16:15:14 gimmi Exp $
+ * Created on 2.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -12,16 +12,17 @@ package com.idega.block.trade.stockroom.data;
 import java.sql.Date;
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookupException;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/05/13 04:36:09 $ by $Author: gimmi $
+ *  Last modified: $Date: 2005/06/02 16:15:14 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ProductPriceHome extends IDOHome {
 
@@ -135,6 +136,12 @@ public interface ProductPriceHome extends IDOHome {
 	 * @see com.idega.block.trade.stockroom.data.ProductPriceBMPBean#ejbHomeGetCurrenciesInUse
 	 */
 	public int[] getCurrenciesInUse(int productId, int[] visibility);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductPriceBMPBean#ejbHomeHasProductPrices
+	 */
+	public boolean hasProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key)
+			throws FinderException, IDOException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductPriceBMPBean#ejbFindByData
