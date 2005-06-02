@@ -569,7 +569,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				Iterator iterator = runners.iterator();
 				while (iterator.hasNext()) {
 					Runner otherRunner = (Runner) iterator.next();
-					if (!runner.getUser().equals(otherRunner.getUser()) && runner.getDistance().isFamilyDiscount()) {
+					if (runner.getUser() != null && otherRunner.getUser() != null && !runner.getUser().equals(otherRunner.getUser()) && runner.getDistance().isFamilyDiscount()) {
 						if (getFamilyLogic().isSpouseOf(runner.getUser(), otherRunner.getUser()) && otherRunner.getDistance().isFamilyDiscount()) {
 							hasParents = true;
 							parent1 = runner;

@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.18 2005/06/02 14:21:02 laddi Exp $
+ * $Id: Registration.java,v 1.19 2005/06/02 14:49:05 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/02 14:21:02 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 14:49:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class Registration extends RunBlock {
 	
@@ -201,7 +201,9 @@ public class Registration extends RunBlock {
 
 	private void stepTwo(IWContext iwc) throws RemoteException {
 		Form form = new Form();
-		form.maintainParameter(PARAMETER_PERSONAL_ID);
+		if (isIcelandic) {
+			form.maintainParameter(PARAMETER_PERSONAL_ID);
+		}
 		form.addParameter(PARAMETER_ACTION, "-1");
 		form.addParameter(PARAMETER_FROM_ACTION, ACTION_STEP_TWO);
 		
