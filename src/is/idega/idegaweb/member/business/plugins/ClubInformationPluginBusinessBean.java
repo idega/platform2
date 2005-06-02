@@ -210,10 +210,11 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * club/division. And also creates aliases back to the league from these
 	 * groups.
 	 * 
-	 * @param parent The group to create the copies under. @param templateParent
-	 * The parent group of the template groups. These groups are copied. @param
-	 * special The group to store the aliases under. @param clubName The name of
-	 * the club. @param iwc The idegaWeb context object.
+	 * @param parent The group to create the copies under. 
+	 * @param templateParent The parent group of the template groups. These groups are copied. 
+	 * @param special The group to store the aliases under. 
+	 * @param clubName The name of the club. 
+	 * @param iwc The idegaWeb context object.
 	 */
 	private void insertCopyOfChild(Group parent, Group templateParent, Group special, String clubName, IWContext iwc) {
 		try {
@@ -363,8 +364,8 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 
 	 * @return True if all the groups are updated, false otherwise.
 	 */
-	public boolean updateConnectedToSpecial(Group special) {
-		Thread updateThread = new SpecialConnectionUpdateThread(special);
+	public boolean updateConnectedToSpecial(Group special, IWContext iwc) {
+		Thread updateThread = new SpecialConnectionUpdateThread(special, iwc.getApplicationContext());
 		updateThread.start();
 		
 		return true;

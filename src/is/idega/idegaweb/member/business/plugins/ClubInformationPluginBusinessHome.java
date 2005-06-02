@@ -1,6 +1,6 @@
 /*
  * $Id$
- * Created on Jan 4, 2005
+ * Created on Jan 18, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *

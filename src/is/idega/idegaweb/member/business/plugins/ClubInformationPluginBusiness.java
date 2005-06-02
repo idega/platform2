@@ -1,6 +1,6 @@
 /*
  * $Id$
- * Created on Jan 4, 2005
+ * Created on Jan 18, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -90,7 +90,7 @@ public interface ClubInformationPluginBusiness extends IBOService, UserGroupPlug
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#updateConnectedToSpecial
 	 */
-	public boolean updateConnectedToSpecial(Group special) throws java.rmi.RemoteException;
+	public boolean updateConnectedToSpecial(Group special, IWContext iwc) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#getMainToolbarElements
