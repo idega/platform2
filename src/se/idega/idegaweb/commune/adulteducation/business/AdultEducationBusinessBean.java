@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.21 2005/06/02 07:50:05 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.22 2005/06/02 08:29:51 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -73,10 +73,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 08:29:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -360,7 +360,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	public Collection getChoices(User user, SchoolSeason season, SchoolStudyPath path) {
 		try {
 			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusReview().getStatus(), getCaseStatusPlaced().getStatus() };
-			return getChoiceHome().findAllByUserAndSeasonAndStudyPath(user, season, path, statuses);
+			return getChoiceHome().findAllByUserAndSeasonAndStudyPath(user.getPrimaryKey(), season.getPrimaryKey(), path.getPrimaryKey(), statuses);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
