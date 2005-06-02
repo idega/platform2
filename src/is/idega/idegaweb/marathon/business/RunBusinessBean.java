@@ -1290,7 +1290,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					Group y = (Group) yearsIter.next();
 					if (y.getName().equals(year)) {
 						try {
-							distances = new ArrayList(getGroupBiz().getChildGroupsResultFiltered(y, year, type, true));
+							distances = new ArrayList(getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true));
 						}
 						catch (Exception e) {
 							distances = null;
