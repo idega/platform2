@@ -119,6 +119,10 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 		this.setColumn(SCHOOLTYPE, id);
 	}
 
+	public void setSchoolType(SchoolType type) {
+		this.setColumn(SCHOOLTYPE, type);
+	}
+
 	public void setSchoolSeasonId(int id) {
 		this.setColumn(SEASON, id);
 	}
@@ -393,7 +397,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 		return idoFindPKsByQuery(query);
 	}
 	
-	public Collection ejbFindBySchoolAndSeasonAndCode(School school, SchoolSeason season, String code) throws FinderException {
+	public Object ejbFindBySchoolAndSeasonAndCode(School school, SchoolSeason season, String code) throws FinderException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
@@ -402,7 +406,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 		query.addCriteria(new MatchCriteria(table, SEASON, MatchCriteria.EQUALS, season));
 		query.addCriteria(new MatchCriteria(table, COLUMN_CODE, MatchCriteria.EQUALS, code));
 		
-		return idoFindPKsByQuery(query);
+		return idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindBySeasonAndYear(SchoolSeason schoolSeason, SchoolYear schoolYear) throws FinderException {
