@@ -57,6 +57,8 @@ public class GolferTab extends UserTab {
 	private SelectOption noMainClub = null;
 	private LoginByUUIDLink loginByUUIDLink;
 	
+	private boolean changed = false;
+	
 	public GolferTab() {
 		super();
 		IWContext iwc = IWContext.getInstance();
@@ -279,6 +281,10 @@ public class GolferTab extends UserTab {
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
 			mainClubAbbrFromRequest = iwc.getParameter(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+			if(mainClubAbbrFromRequest!=null){
+				changed = true;
+			}
+			
 			if(NO_MAIN_CLUB_KEY.equals(mainClubAbbrFromRequest)){
 				mainClubAbbrFromRequest = null;
 			}
@@ -293,57 +299,60 @@ public class GolferTab extends UserTab {
 
 	
 	public boolean store(IWContext iwc) {
-		User user = getUser();
 		
-
-		String oldMain = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
-		boolean moveOldClubToSubClub = false;
-		
-		if(oldMain!=null && !oldMain.equals(mainClubAbbrFromRequest)){
-			//move the main club to a sub club
-			moveOldClubToSubClub = true;
-		}
-		//set the main club
-		user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubAbbrFromRequest);
-
-				
-		if(subClubsAbbrFromRequest!=null){
-			List abbrList = ListUtil.convertStringArrayToList(subClubsAbbrFromRequest);
+		if(changed){
+			User user = getUser();
 			
-			if(mainClubAbbrFromRequest!=null && abbrList.contains(mainClubAbbrFromRequest)){
-				abbrList.remove(mainClubAbbrFromRequest);
+			String oldMain = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+			boolean moveOldClubToSubClub = false;
+			
+			if(oldMain!=null && !oldMain.equals(mainClubAbbrFromRequest)){
+				//move the main club to a sub club
+				moveOldClubToSubClub = true;
+			}
+			//set the main club
+			user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubAbbrFromRequest);
+	
+					
+			if(subClubsAbbrFromRequest!=null){
+				List abbrList = ListUtil.convertStringArrayToList(subClubsAbbrFromRequest);
+				
+				if(mainClubAbbrFromRequest!=null && abbrList.contains(mainClubAbbrFromRequest)){
+					abbrList.remove(mainClubAbbrFromRequest);
+				}
+				
+				//we where changing main clubs, set the old as a subclub
+				if(moveOldClubToSubClub && mainClubAbbrFromRequest!=null && !abbrList.contains(oldMain)){
+					abbrList.add(oldMain);
+				}
+					
+				if(abbrList.isEmpty()){
+					//not to null because when we replicate this field it then removes the value on the other server if it is ""
+					user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, "");
+				}
+				else{
+					String commaSeparated = ListUtil.convertListOfStringsToCommaseparatedString(abbrList);
+					user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
+				}
+			}else{
+				//we where changing main clubs, set the old as a subclub
+				if(moveOldClubToSubClub && mainClubAbbrFromRequest!=null){
+					user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,oldMain);
+				}
+				else{
+	//			not to null because when we replicate this field it then removes the value on the other server if it is ""
+					user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,"");
+				}
 			}
 			
-			//we where changing main clubs, set the old as a subclub
-			if(moveOldClubToSubClub && mainClubAbbrFromRequest!=null && !abbrList.contains(oldMain)){
-				abbrList.add(oldMain);
-			}
-				
-			if(abbrList.isEmpty()){
-				//not to null because when we replicate this field it then removes the value on the other server if it is ""
-				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, "");
-			}
-			else{
-				String commaSeparated = ListUtil.convertListOfStringsToCommaseparatedString(abbrList);
-				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
-			}
-		}else{
-			//we where changing main clubs, set the old as a subclub
-			if(moveOldClubToSubClub && mainClubAbbrFromRequest!=null){
-				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,oldMain);
-			}
-			else{
-//			not to null because when we replicate this field it then removes the value on the other server if it is ""
-				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,"");
-			}
+			user.store();
+			
+			mainClubAbbrFromRequest = null;
+			subClubsAbbrFromRequest = null;
+			
+			this.updateFieldsDisplayStatus();
+		
 		}
-		
-		user.store();
-		
-		mainClubAbbrFromRequest = null;
-		subClubsAbbrFromRequest = null;
-		
-		this.updateFieldsDisplayStatus();
 
 		return true;
 	}
