@@ -1,5 +1,5 @@
 /*
- * $Id: Registration.java,v 1.16 2005/06/01 15:10:10 laddi Exp $
+ * $Id: Registration.java,v 1.17 2005/06/02 14:02:32 laddi Exp $
  * Created on May 16, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -56,10 +56,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/01 15:10:10 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 14:02:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class Registration extends RunBlock {
 	
@@ -740,6 +740,7 @@ public class Registration extends RunBlock {
 		previous.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STEP_FOUR));
 		SubmitButton registerOther = (SubmitButton) getButton(new SubmitButton(localize("run_reg.register_other", "Register other")));
 		registerOther.setValueOnClick(PARAMETER_ACTION, isIcelandic ? String.valueOf(ACTION_STEP_ONE) : String.valueOf(String.valueOf(ACTION_STEP_TWO)));
+		registerOther.setValueOnClick(PARAMETER_PERSONAL_ID, "");
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("run_reg.pay", "Pay")));
 		next.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STEP_SIX));
 

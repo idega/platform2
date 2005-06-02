@@ -1,5 +1,5 @@
 /*
- * $Id: DistanceBMPBean.java,v 1.2 2005/05/31 19:04:34 laddi Exp $
+ * $Id: DistanceBMPBean.java,v 1.3 2005/06/02 14:02:32 laddi Exp $
  * Created on May 22, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import com.idega.util.LocaleUtil;
 
 
 /**
- * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 14:02:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 
@@ -77,7 +77,9 @@ public class DistanceBMPBean extends GroupBMPBean  implements Distance{
 		if (price != null) {
 			return Float.parseFloat(price);
 		}
-		return 0;
+		else {
+			return getPrice(locale);
+		}
 	}
 	
 	public void setChildrenPriceInISK(float price) {
