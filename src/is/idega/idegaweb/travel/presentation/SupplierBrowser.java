@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.3 2005/05/31 19:13:06 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.4 2005/06/02 16:21:43 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -31,7 +31,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -43,7 +42,7 @@ public class SupplierBrowser extends TravelBlock {
 	private static final String ACTION_VIEW_SUPPLIERS = "sb_a_vs";
 	private static final String ACTION_VIEW_PRODUCTS = "sb_a_vp";
 	private static final String PARAMETER_SUPPLIER_MANAGER = "sb_sm";
-	private static final String PARAMETER_POSTAL_CODES = "sb_pc";
+	public static final String PARAMETER_POSTAL_CODES = "sb_pc";
 	private static final String PARAMETER_SUPPLIER_ID = "sb_sid";
 	private String[][] postalCodes = null;
 	private Group supplierManager = null;
@@ -53,10 +52,12 @@ public class SupplierBrowser extends TravelBlock {
 	private String pluginClassName = null;
 	
 	private String textStyleClass = null;
+	private String headerStyleClass = null;
 	private String linkStyleClass = null;
 	private String imageStyleClass = null;
 	private String interfaceObjectStyleClass = null;
 	private String width = null;
+	private String imageWidth = "70";
 	
 	public SupplierBrowser() {
 		
@@ -92,9 +93,13 @@ public class SupplierBrowser extends TravelBlock {
 				action = ACTION_VIEW_SUPPLIERS;
 			}
 			if (action.equals(ACTION_VIEW_SUPPLIERS)) {
-				form.add(listSuppliers(iwc));
+				if (plugin.displaySupplierResults()) {
+					listSuppliers(iwc, form);
+				} else {
+					listProducts(iwc, form);
+				}
 			} else if (action.equals(ACTION_VIEW_PRODUCTS)) {
-				form.add(listProducts(iwc));
+				listProducts(iwc, form);
 			}
 		}
 		
@@ -144,6 +149,7 @@ public class SupplierBrowser extends TravelBlock {
 				postalCodes[1][i] = second;
 				++i;
 			}
+			
 		}
 		
 		if (pluginClassName != null) {
@@ -156,20 +162,137 @@ public class SupplierBrowser extends TravelBlock {
 		}
 	}
 	
-	private Table listProducts(IWContext iwc) throws RemoteException {
+	private void listProducts(IWContext iwc, Form form) throws RemoteException {
 		Table table = new Table();
 		if (width != null) {
 			table.setWidth(width);
 		}
+		table.setColumnWidth(1, imageWidth);
+//		table.setBorder(1);
 		int row = 1;
 
 		Collection coll = getProducts(iwc);
 		
 		Collection[] inputs = plugin.getProductSearchInputs(iwc, super.getResourceBundle());
-		if (inputs != null && inputs[0] != null && inputs[1] != null) {
+		Table searchTable = getSearchFrom(inputs);
+		if (searchTable != null) {
+//			searchTable.setBorder(1);
+			form.add(searchTable);
+		}
+		
+		int localeID = iwc.getCurrentLocaleId();
+		if (coll != null) {
+			Iterator iter = coll.iterator();
+			Product product;
+			Image image = null;
+			while (iter.hasNext()) {
+				product = (Product) iter.next();
+				try {
+					ICFile file = product.getFile();
+					if (file != null) {
+						image = new Image(Integer.parseInt(file.getPrimaryKey().toString()));
+						if (imageStyleClass != null) {
+							image.setStyleClass(imageStyleClass);
+							image.setDatasource(product.getDatasource());
+						}
+					}
+				} catch (SQLException sql) {
+					sql.printStackTrace();
+				}
+				int startRow = row;
+				if (image != null) {
+					table.add(image, 1, row);
+				}
+				table.add(getText(product.getProductName(localeID), headerStyleClass), 2, row++);
+				table.add(getText(product.getProductDescription(localeID)), 2, row);
+				if (plugin.isProductSearchCompleted(iwc)) {
+					table.add(getText("(Book)"), 3, startRow);
+				}
+				table.mergeCells(1, startRow, 1, row);
+				++row;
+			}
+		} else {
+			table.add(getText(getResourceBundle().getLocalizedString("no_products", "No products")), 1, row++);
+		}
+	
+		
+		form.add(table);
+	}
+	
+	private void listSuppliers(IWContext iwc, Form form) throws RemoteException {
+		Table table = new Table();
+		if (width != null) {
+			table.setWidth(width);
+		}
+		table.setColumnWidth(1, imageWidth);
+		
+//		table.setBorder(1);
+		int row = 1;
+		
+		Collection coll = null;
+		try {
+			coll = getSuppliers(iwc);
+		}
+		catch (IDOCompositePrimaryKeyException e) {
+			e.printStackTrace();
+		}
+		
+		Collection[] inputs = plugin.getSupplierSearchInputs(iwc, super.getResourceBundle());
+		Table searchF = getSearchFrom(inputs);
+		if (searchF != null) {
+			form.add(searchF);
+		}
+		
+		if (coll != null) {
+			
+			Iterator iter = coll.iterator();
+			Supplier supplier;
+			ICFile file = null;
+			Image image = null;
+			while (iter.hasNext()) {
+				supplier = (Supplier) iter.next();
+				file = supplier.getICFile();
+				if (file != null) {
+					try {
+						image = new Image(((Integer) file.getPrimaryKey()).intValue());
+						image.setMaxImageWidth(Integer.parseInt(imageWidth));
+						image.setDatasource(supplier.getDatasource());
+						table.add(image, 1, row);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				table.add(getText(supplier.getName(), headerStyleClass), 2, row);
+				table.add(getText(Text.BREAK), 2, row);
+				table.add(getText(supplier.getDescription()), 2, row);
+				table.add(getDetailLink(supplier, iwc), 3, row);
+				
+				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+				table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+				table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
+//				table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_TOP);
+				row++;
+			}
+			
+		} else {
+			table.add("No suppliers found");
+		}
+		
+		form.add(table);
+	}
+
+	/**
+	 * @param inputs
+	 * @throws RemoteException
+	 */
+	private Table getSearchFrom(Collection[] inputs) throws RemoteException {
+		if (inputs != null && inputs[0] != null && inputs[1] != null && !inputs[0].isEmpty() && !inputs[1].isEmpty()) {
+			Table searchTable = new Table();
+			searchTable.setWidth(width);
+			int stRow = 1;
 			Collection strings = inputs[0];
 			Collection ios = inputs[1];
-			
 			int stringCount = strings.size();
 			int iosCount = ios.size();
 			if (stringCount == iosCount) {
@@ -182,116 +305,19 @@ public class SupplierBrowser extends TravelBlock {
 					if (interfaceObjectStyleClass != null) {
 						io.setStyleClass(interfaceObjectStyleClass);
 					}
-					table.add(getText(s), 1, row);
-					table.mergeCells(2, row, 3, row);
-					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-					table.add(io, 2, row++);
+					searchTable.add(getText(s), 1, stRow);
+					searchTable.setAlignment(2, stRow, Table.HORIZONTAL_ALIGN_RIGHT);
+					searchTable.add(io, 2, stRow++);
 				}
 				SubmitButton search = new SubmitButton(super.getResourceBundle().getLocalizedString("search", "Search"));
-				table.mergeCells(2, row, 3, row);
-				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.add(search, 2, row++);
+				searchTable.setAlignment(2, stRow, Table.HORIZONTAL_ALIGN_RIGHT);
+				searchTable.add(search, 2, stRow++);
 			} else {
 				System.out.println("IO stuff error yes (SupplierBrowser)");
 			}
+			return searchTable;
 		}
-		
-		int localeID = iwc.getCurrentLocaleId();
-		if (coll != null) {
-			Iterator iter = coll.iterator();
-			Product product;
-			Image image = null;
-			while (iter.hasNext()) {
-				product = (Product) iter.next();
-				try {
-					ICFile file = product.getFile();
-					image = new Image(Integer.parseInt(file.getPrimaryKey().toString()));
-					if (imageStyleClass != null) {
-						image.setStyleClass(imageStyleClass);
-					}
-				} catch (SQLException sql) {
-					sql.printStackTrace();
-				}
-				int startRow = row;
-				if (image != null) {
-					table.add(image, 1, row);
-				}
-				table.add(getText(product.getProductName(localeID)), 2, row++);
-				table.add(getText(product.getProductDescription(localeID)), 2, row);
-				if (plugin.isProductSearchCompleted(iwc)) {
-					table.add(getText("(Book)"), 3, startRow);
-				}
-				table.mergeCells(1, startRow, 1, row);
-//				table.mergeCells(3, startRow, 3, row);
-				++row;
-			}
-		} else {
-			table.add(getText(getResourceBundle().getLocalizedString("no_products", "No products")), 1, row++);
-		}
-	
-		
-		return table;
-	}
-	
-	private Table listSuppliers(IWContext iwc) throws RemoteException {
-		Table table = new Table();
-		if (width != null) {
-			table.setWidth(width);
-		}
-		int row = 1;
-		
-		Collection coll = null;
-		try {
-			coll = getSuppliers(iwc);
-		}
-		catch (IDOCompositePrimaryKeyException e) {
-			e.printStackTrace();
-		}
-		
-		Collection[] inputs = plugin.getSupplierSearchInputs(iwc, super.getResourceBundle());
-		if (inputs != null && inputs[0] != null && inputs[1] != null) {
-			Collection strings = inputs[0];
-			Collection ios = inputs[1];
-			
-			int stringCount = strings.size();
-			int iosCount = ios.size();
-			if (stringCount == iosCount) {
-				Iterator siter = strings.iterator();
-				Iterator iiter = ios.iterator();
-				InterfaceObject io;
-				for (int i = 0; i < iosCount; i++) {
-					String s = (String) siter.next();
-					io = (InterfaceObject) iiter.next();
-					if (interfaceObjectStyleClass != null) {
-						io.setStyleClass(interfaceObjectStyleClass);
-					}
-					table.add(getText(s), 1, row);
-					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-					table.add(io, 2, row++);
-				}
-				SubmitButton search = new SubmitButton(super.getResourceBundle().getLocalizedString("search", "Search"));
-				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.add(search, 2, row++);
-			} else {
-				System.out.println("IO stuff error yes (SupplierBrowser)");
-			}
-		}
-		
-		if (coll != null) {
-			
-			Iterator iter = coll.iterator();
-			while (iter.hasNext()) {
-				Supplier supplier = (Supplier) iter.next();
-				table.add(getText(supplier.getName()), 1, row);
-				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.add(getDetailLink(supplier, iwc), 2, row++);
-			}
-			
-		} else {
-			table.add("No suppliers found");
-		}
-		
-		return table;
+		return null;
 	}
 	
 	private Link getDetailLink(Supplier supplier, IWContext iwc) throws RemoteException {
@@ -321,6 +347,8 @@ public class SupplierBrowser extends TravelBlock {
 		return text;
 	}
 	
+	
+	
 	// Move to a better location later... when possible
 	private Collection getSuppliers(IWContext iwc) throws IDOCompositePrimaryKeyException {
 		try {
@@ -336,14 +364,12 @@ public class SupplierBrowser extends TravelBlock {
 	}
 	
 	private Collection getProducts(IWContext iwc) throws RemoteException {
-		Supplier supplier;
 		try {
-			supplier = getSupplierHome().findByPrimaryKey(Integer.parseInt(iwc.getParameter(PARAMETER_SUPPLIER_ID)));
-//			if (plugin.showBookButton() ) {
-//				gera eitthvad check her
-//			}
-			return plugin.getProducts(supplier, iwc);
-//			return getProductBusiness(iwc).getProducts(supplier.getID());
+			Supplier supplier = null;
+			if (iwc.isParameterSet(PARAMETER_SUPPLIER_ID)) {
+				supplier = getSupplierHome().findByPrimaryKey(Integer.parseInt(iwc.getParameter(PARAMETER_SUPPLIER_ID)));
+			}
+			return plugin.getProducts(supplier, iwc, postalCodes);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -359,6 +385,10 @@ public class SupplierBrowser extends TravelBlock {
 		this.textStyleClass = styleClass;
 	}
 	
+	public void setHeaderStyleClass(String styleClass) {
+		this.headerStyleClass = styleClass;
+	}
+		
 	public void setLinkStyleClass(String styleClass) {
 		this.linkStyleClass = styleClass;
 	}

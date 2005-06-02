@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.2 2005/05/31 19:13:06 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.3 2005/06/02 16:21:43 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -23,6 +23,11 @@ import com.idega.presentation.IWContext;
 public interface SupplierBrowserPlugin {
 
 	public static final String OBJECT_NAME = "travel.supplier_browser_plugin";
+
+	/**
+	 * Show supplier results or go directly to product list
+	 */
+	public boolean displaySupplierResults();
 
 	/**
 	 * Returns true if product search has been made.
@@ -67,8 +72,9 @@ public interface SupplierBrowserPlugin {
 	 * Returns a collection of the products to display in the SupplierBrower
 	 * @param iwc
 	 * @param iwrb
+	 * @param postalCodes postalCodes[0] contains FROM codes, and postalCodes[1] contains TO codes.
 	 * @return
 	 */
-	public Collection getProducts(Supplier supplier, IWContext iwc) throws IDOLookupException, FinderException;
+	public Collection getProducts(Supplier supplier, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException;
 	
 }

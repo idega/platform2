@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.2 2005/05/31 19:13:06 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.3 2005/06/02 16:21:43 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -50,7 +50,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	private static final String PARAMETER_MIN_RATING = "hb_mir";
 	
 	public boolean isProductSearchCompleted(IWContext iwc) {
-		return iwc.getParameter(PARAMETER_FROM_DATE) != null && iwc.getParameter(PARAMETER_TO_DATE) != null;
+		return iwc.isParameterSet(PARAMETER_FROM_DATE) && iwc.isParameterSet(PARAMETER_TO_DATE);
 	}
 
 	public Collection[] getProductSearchInputs(IWContext iwc, IWResourceBundle iwrb) {
@@ -191,10 +191,12 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 	}
 
 	public String[] getParameters() {
-		return new String[]{PARAMETER_ACCOMMODATION_TYPE, PARAMETER_ROOM_TYPE};
+		return new String[]{PARAMETER_ACCOMMODATION_TYPE, PARAMETER_ROOM_TYPE, 
+				PARAMETER_FROM_DATE, PARAMETER_TO_DATE, 
+				PARAMETER_MAX_RATING, PARAMETER_MIN_RATING};
 	}
 
-	public Collection getProducts(Supplier supplier, IWContext iwc) throws IDOLookupException, FinderException {
+	public Collection getProducts(Supplier supplier, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
 		String from = (String) iwc.getParameter(PARAMETER_FROM_DATE);
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
 		String roomType = (String) iwc.getParameter(PARAMETER_ROOM_TYPE);
@@ -264,6 +266,10 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 		
 		return hHome.find(fromStamp, toStamp, roomTypeId, hotelTypeId, postalCodes, supplierId, minRating, maxRating, supplierName);
+	}
+
+	public boolean displaySupplierResults() {
+		return true;
 	}
 
 }
