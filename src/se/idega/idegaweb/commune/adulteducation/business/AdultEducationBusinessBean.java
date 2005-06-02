@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.22 2005/06/02 08:29:51 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.23 2005/06/02 11:33:15 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,6 +32,8 @@ import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoiceReasonH
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseHome;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationGroup;
+import se.idega.idegaweb.commune.adulteducation.data.AdultEducationGroupHome;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfo;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationPersonalInfoHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -73,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/02 08:29:51 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 11:33:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -271,11 +273,86 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	
 	public Collection getGroups(School school, SchoolSeason season, String code) {
 		try {
-			return getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeasonAndCode(school, season, code);
+			Collection coll = new ArrayList();
+			coll.add(getGroup(school, season, code));
+			return coll;
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
 			return new ArrayList();
+		}
+	}
+	
+	public Collection getGroups(School school, SchoolSeason season, SchoolStudyPathGroup group) {
+		try {
+			AdultEducationGroupHome home = (AdultEducationGroupHome) IDOLookup.getHome(AdultEducationGroup.class);
+			return home.findBySchoolAndSeasonAndStudyPathGroup(school, season, group);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+	
+	private SchoolClass getGroup(School school, SchoolSeason season, String code) throws FinderException {
+		try {
+			return getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeasonAndCode(school, season, code);
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	public void storeGroup(String name, School school, SchoolSeason season, SchoolSeason oldSeason, SchoolType type, String code, String oldCode, User teacher, boolean update) throws CreateException, DuplicateValueException {
+		try {
+			SchoolClass group = null;
+			try {
+				group = getGroup(school, update ? oldSeason: season, update ? oldCode : code);
+				if (!update) {
+					throw new DuplicateValueException("Season=" + season.toString() + "/Code=" + code);
+				}
+				else {
+					if (!season.equals(oldSeason) || !code.equals(oldCode)) {
+						try {
+							getGroup(school, season, code);
+							throw new DuplicateValueException("Season=" + season.toString() + "/Code=" + code);
+						}
+						catch (FinderException fe) {
+							//Nothing found so we continue...
+						}
+					}
+				}
+			}
+			catch (FinderException fe) {
+				group = getSchoolBusiness().getSchoolClassHome().create();
+			}
+			group.setSchool(school);
+			group.setSchoolSeason(season);
+			group.setSchoolClassName(name);
+			group.setSchoolType(type);
+			group.setValid(true);
+			group.store();
+			
+			if (update) {
+				try {
+					group.removeFromUser();
+				}
+				catch (IDORemoveRelationshipException irre) {
+					irre.printStackTrace();
+				}
+			}
+
+			if (teacher != null) {
+				try {
+					group.addTeacher(teacher);
+				}
+				catch (IDOAddRelationshipException iare) {
+					iare.printStackTrace();
+				}
+			}
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
@@ -966,6 +1043,11 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	public void changeGroup(SchoolClassMember member, Object groupPK) {
 		member.setSchoolClassId(new Integer(groupPK.toString()).intValue());
 		member.store();
+	}
+	
+	public void removeGroup(SchoolClass group) {
+		group.setValid(false);
+		group.store();
 	}
 	
 	public AdultEducationPersonalInfo storePersonalInfo(int icUserID, int nativecountryId, int languageID, int educationCountryID, boolean nativeThisCountry, boolean citizenThisCountry, boolean educationA, boolean educationB, boolean educationC, boolean educationD, boolean educationE, String educationF, String educationG, int eduGCountryID, int eduYears, boolean eduHA, boolean eduHB, boolean eduHC, String eduHCommune, boolean fulltime, boolean langSfi, boolean langSas, boolean langOther, boolean studySupport, boolean workUnEmpl, boolean workEmpl, boolean workKicked, String workOther) {

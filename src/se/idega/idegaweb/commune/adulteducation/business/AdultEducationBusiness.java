@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.18 2005/06/02 07:50:05 laddi Exp $
+ * $Id: AdultEducationBusiness.java,v 1.19 2005/06/02 11:33:15 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 11:33:15 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -99,6 +99,19 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getGroups
 	 */
 	public Collection getGroups(School school, SchoolSeason season, String code) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getGroups
+	 */
+	public Collection getGroups(School school, SchoolSeason season, SchoolStudyPathGroup group)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storeGroup
+	 */
+	public void storeGroup(String name, School school, SchoolSeason season, SchoolSeason oldSeason, SchoolType type,
+			String code, String oldCode, User teacher, boolean update) throws CreateException, DuplicateValueException,
+			java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#hasActiveChoices
@@ -305,6 +318,11 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#changeGroup
 	 */
 	public void changeGroup(SchoolClassMember member, Object groupPK) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#removeGroup
+	 */
+	public void removeGroup(SchoolClass group) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#storePersonalInfo
