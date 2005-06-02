@@ -1224,12 +1224,16 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * @return Collection of the years for the specific run
 	 */
 	public Collection getYears(Group run) {
+	    return getYears(run, null);
+	}
+	
+	public Collection getYears(Group run, String yearFilter) {
 		IWContext iwc = IWContext.getInstance();
 		Collection years = null;
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
 		try {
-			years = getGroupBiz().getChildGroupsRecursiveResultFiltered(run, type, true);
+			years = getGroupBiz().getChildGroupsResultFiltered(run, yearFilter, type, true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1249,8 +1253,12 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * @return Map of the years for the specific run
 	 */
 	public Map getYearsMap(Group run) {
+	    return getYearsMap(run, null);
+	}
+	    
+	public Map getYearsMap(Group run, String groupNameFilter) {
 		Map yearsMap = new LinkedHashMap();
-		Iterator yearsIter = getYears(run).iterator();
+		Iterator yearsIter = getYears(run, groupNameFilter).iterator();
 		while (yearsIter.hasNext()) {
 			Group year = (Group) yearsIter.next();
 			yearsMap.put(year.getPrimaryKey().toString(), year.getName());
@@ -1275,14 +1283,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
 		if (run != null) {
-			Collection years = getYears(run);
+			Collection years = getYears(run, year);
 			if (years != null) {
 				Iterator yearsIter = years.iterator();
 				while (yearsIter.hasNext()) {
 					Group y = (Group) yearsIter.next();
 					if (y.getName().equals(year)) {
 						try {
-							distances = new ArrayList(getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true));
+							distances = new ArrayList(getGroupBiz().getChildGroupsResultFiltered(y, year, type, true));
 						}
 						catch (Exception e) {
 							distances = null;
