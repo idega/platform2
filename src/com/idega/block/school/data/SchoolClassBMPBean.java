@@ -9,6 +9,10 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
 
 /**
@@ -44,6 +48,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 	public final static String COLUMN_READY_DATE = "ready_date";
 	public final static String COLUMN_SUB_GROUP = "sub_group";
 	public final static String COLUMN_GROUP_STRING_ID = "group_string_id";
+	public final static String COLUMN_CODE = "code";
 	public final static String SCHOOL_CLASS_YEAR = "sch_school_class_year";
 	public final static String SCHOOL_CLASS_TEACHER = "sch_school_class_teacher";
 	public final static String VALID = "Y";
@@ -66,6 +71,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 		addManyToManyRelationShip(User.class, SCHOOL_CLASS_TEACHER);
 		addManyToManyRelationShip(SchoolClassMember.class, "sch_sub_group_placements");
 		addManyToManyRelationShip(SchoolStudyPath.class, "sch_group_study_path");
+		
+		addAttribute(COLUMN_CODE, "code", String.class, 20);
 	}
 
 	public String getEntityName() {
@@ -74,6 +81,14 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 
 	public String getName() {
 		return getSchoolClassName();
+	}
+	
+	public String getCode() {
+		return getStringColumnValue(COLUMN_CODE);
+	}
+	
+	public void setCode(String code) {
+		setColumn(COLUMN_CODE, code);
 	}
 
 	public int getSchoolId() {
@@ -375,6 +390,18 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass {
 					COLUMN_SUB_GROUP).appendIsNull().appendRightParenthesis();
 		}
 		query.appendOrderBy(NAME);
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindBySchoolAndSeasonAndCode(School school, SchoolSeason season, String code) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOL, MatchCriteria.EQUALS, school));
+		query.addCriteria(new MatchCriteria(table, SEASON, MatchCriteria.EQUALS, season));
+		query.addCriteria(new MatchCriteria(table, COLUMN_CODE, MatchCriteria.EQUALS, code));
+		
 		return idoFindPKsByQuery(query);
 	}
 

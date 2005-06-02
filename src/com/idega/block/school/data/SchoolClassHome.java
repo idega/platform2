@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassHome.java,v 1.30 2005/03/19 16:38:22 laddi Exp $
- * Created on 18.3.2005
+ * $Id: SchoolClassHome.java,v 1.31 2005/06/02 06:23:11 laddi Exp $
+ * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,13 +17,10 @@ import com.idega.user.data.User;
 
 
 /**
- * <p>
- * TODO laddi Describe Type SchoolClassHome
- * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 06:23:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public interface SchoolClassHome extends IDOHome {
 
@@ -119,6 +116,12 @@ public interface SchoolClassHome extends IDOHome {
 	 */
 	public Collection findBySchoolAndSeasonAndYears(int schoolID, int schoolSeasonID, String[] schoolYearIDs,
 			boolean showSubGroups) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#ejbFindBySchoolAndSeasonAndCode
+	 */
+	public Collection findBySchoolAndSeasonAndCode(School school, SchoolSeason season, String code)
+			throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#ejbFindBySeasonAndYear

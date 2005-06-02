@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClass.java,v 1.26 2005/03/19 16:38:22 laddi Exp $
- * Created on 18.3.2005
+ * $Id: SchoolClass.java,v 1.27 2005/06/02 06:23:11 laddi Exp $
+ * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -19,13 +19,10 @@ import com.idega.user.data.User;
 
 
 /**
- * <p>
- * TODO laddi Describe Type SchoolClass
- * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/02 06:23:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public interface SchoolClass extends IDOEntity {
 
@@ -33,6 +30,16 @@ public interface SchoolClass extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#getName
 	 */
 	public String getName();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getCode
+	 */
+	public String getCode();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setCode
+	 */
+	public void setCode(String code);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolId
