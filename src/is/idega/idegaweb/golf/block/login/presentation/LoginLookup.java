@@ -1,5 +1,5 @@
 /*
- * $Id: LoginLookup.java,v 1.1 2005/06/03 15:06:57 gimmi Exp $
+ * $Id: LoginLookup.java,v 1.2 2005/06/03 15:47:44 gimmi Exp $
  * Created on 3.6.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -59,7 +59,7 @@ public class LoginLookup extends GolfBlock {
 		add(form);
 		
 		table.mergeCells(1, row, 2, row);
-		table.add(getHeader(super.getResourceBundle().getLocalizedString("password_lookup","Password Lookup")), 1, row);
+		table.add(getSmallHeader(getResourceBundle().getLocalizedString("password_lookup","Password Lookup")), 1, row);
 		table.setRowColor(row++, getHeaderColor());
 		
 		table.add(getSmallText(getResourceBundle().getLocalizedString("social_security_number", "Social Security Number")), 1, row);
@@ -73,10 +73,10 @@ public class LoginLookup extends GolfBlock {
 
 		if (lookupDone) {
 			table.mergeCells(1, row, 2, row);
-			table.add(getHeader(super.getResourceBundle().getLocalizedString("results","Results")), 1, row);
-			table.setRowColor(row, getHeaderColor());
+			table.add(getSmallHeader(super.getResourceBundle().getLocalizedString("results","Results")), 1, row);
+			table.setRowColor(row++, getHeaderColor());
 			
-			if (member != null) {
+			if (member == null) {
 				table.add(getSmallText(getResourceBundle().getLocalizedString("user_not_found", "User not found")), 1, row);
 				table.mergeCells(1, row, 2, row);
 				table.setRowColor(row++, getZebraColor1());
