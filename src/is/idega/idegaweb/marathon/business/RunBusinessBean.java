@@ -332,7 +332,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			}
 			if (distanceType != null) {
 				try {
-					int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(distanceType), getMaxParticipantNumber(distanceType));
+					int participantNumber = runHome.getNextAvailableParticipantNumber(distance, getMinParticipantNumber(distanceType), getMaxParticipantNumber(distanceType));
 					if (participantNumber == 0) {
 						participantNumber = getMinParticipantNumber(distanceType);
 					}
@@ -408,7 +408,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					participant.setUserNationality(runner.getNationality().getName());
 					if (runner.getDistance() != null) {
 						try {
-							int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(runner.getDistance().getName()), getMaxParticipantNumber(runner.getDistance().getName()));
+							int participantNumber = runHome.getNextAvailableParticipantNumber(runner.getDistance().getPrimaryKey(), getMinParticipantNumber(runner.getDistance().getName()), getMaxParticipantNumber(runner.getDistance().getName()));
 							if (participantNumber == 0) {
 								participantNumber = getMinParticipantNumber(runner.getDistance().getName());
 							}
@@ -877,7 +877,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				e.printStackTrace();
 			}
 			if(group!=null) {
-				int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(group.getName()), getMaxParticipantNumber(group.getName()));
+				int participantNumber = runHome.getNextAvailableParticipantNumber(group.getPrimaryKey(), getMinParticipantNumber(group.getName()), getMaxParticipantNumber(group.getName()));
 				if (participantNumber == 0) {
 					participantNumber = getMinParticipantNumber(group.getName());
 				}

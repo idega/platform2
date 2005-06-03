@@ -1,6 +1,6 @@
 /*
- * $Id: Participant.java,v 1.3 2005/05/31 19:04:34 laddi Exp $
- * Created on May 30, 2005
+ * $Id: Participant.java,v 1.4 2005/06/03 07:16:42 laddi Exp $
+ * Created on Jun 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -15,10 +15,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/05/31 19:04:34 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 07:16:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface Participant extends IDOEntity {
 

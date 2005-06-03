@@ -347,11 +347,12 @@ public class ParticipantBMPBean extends GenericEntity implements Participant {
 		return idoFindPKsBySQL(query.toString());
 	}
 	
-	public int ejbHomeGetNextAvailableParticipantNumber(int min, int max) throws IDOException {
+	public int ejbHomeGetNextAvailableParticipantNumber(Object distancePK, int min, int max) throws IDOException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new MaxColumn(getColumnNameParticipantNumber()));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distancePK));
 		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.GREATEREQUAL, min));
 		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.LESSEQUAL, max));
 		
