@@ -1,5 +1,5 @@
 /*
- * $Id: TourBrowser.java,v 1.2 2005/06/02 16:21:43 gimmi Exp $
+ * $Id: TourBrowser.java,v 1.3 2005/06/03 00:38:47 gimmi Exp $
  * Created on 28.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,6 +25,7 @@ import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOCompositePrimaryKeyException;
@@ -40,6 +41,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 import com.idega.util.Timer;
 
@@ -178,7 +180,7 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		return coll;	
 	}
 
-	public Collection getProducts(Supplier supplier, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
 		String tourTypeId = iwc.getParameter(PARAMETER_TOUR_TYPE_ID);
 		String from = iwc.getParameter(PARAMETER_FROM_DATE);
 		String ftt = iwc.getParameter(PARAMETER_FORCED_TOUR_TYPE_ID);
@@ -209,7 +211,19 @@ public class TourBrowser extends TravelBlock implements SupplierBrowserPlugin {
 		if (supplier != null) {
 			sIds = new Object[]{supplier.getPrimaryKey()};
 		} else {
-			sIds = new Object[]{};
+			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			Collection coller = sHome.findAll(supplierManager);
+			if (coller != null && !coller.isEmpty()) {
+				sIds = new Object[coller.size()];
+				Iterator its = coller.iterator();
+				Supplier s;
+				int i = 0;
+				while (its.hasNext()) {
+					s = (Supplier) its.next();
+					sIds[i++] = s.getPrimaryKey();
+				}
+			}
+//			sIds = coller.toArray(new Object[]{});
 		}
 		
 		Collection coll =  getProducts(fromStamp, toStamp, tourTypeIds, pcoll, sIds, null);

@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowser.java,v 1.4 2005/06/02 16:21:43 gimmi Exp $
+ * $Id: SupplierBrowser.java,v 1.5 2005/06/03 00:38:47 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -369,7 +369,7 @@ public class SupplierBrowser extends TravelBlock {
 			if (iwc.isParameterSet(PARAMETER_SUPPLIER_ID)) {
 				supplier = getSupplierHome().findByPrimaryKey(Integer.parseInt(iwc.getParameter(PARAMETER_SUPPLIER_ID)));
 			}
-			return plugin.getProducts(supplier, iwc, postalCodes);
+			return plugin.getProducts(supplier, supplierManager, iwc, postalCodes);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();

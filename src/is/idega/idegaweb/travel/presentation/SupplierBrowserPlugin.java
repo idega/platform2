@@ -1,5 +1,5 @@
 /*
- * $Id: SupplierBrowserPlugin.java,v 1.3 2005/06/02 16:21:43 gimmi Exp $
+ * $Id: SupplierBrowserPlugin.java,v 1.4 2005/06/03 00:38:47 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.Group;
 
 
 public interface SupplierBrowserPlugin {
@@ -75,6 +76,6 @@ public interface SupplierBrowserPlugin {
 	 * @param postalCodes postalCodes[0] contains FROM codes, and postalCodes[1] contains TO codes.
 	 * @return
 	 */
-	public Collection getProducts(Supplier supplier, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException;
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException;
 	
 }

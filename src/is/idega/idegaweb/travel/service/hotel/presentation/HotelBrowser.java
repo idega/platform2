@@ -1,5 +1,5 @@
 /*
- * $Id: HotelBrowser.java,v 1.3 2005/06/02 16:21:43 gimmi Exp $
+ * $Id: HotelBrowser.java,v 1.4 2005/06/03 00:38:47 gimmi Exp $
  * Created on 19.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,6 +37,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 
@@ -196,7 +197,7 @@ public class HotelBrowser extends TravelBlock implements SupplierBrowserPlugin {
 				PARAMETER_MAX_RATING, PARAMETER_MIN_RATING};
 	}
 
-	public Collection getProducts(Supplier supplier, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
+	public Collection getProducts(Supplier supplier, Group supplierManager, IWContext iwc, String[][] postalCodes) throws IDOLookupException, FinderException {
 		String from = (String) iwc.getParameter(PARAMETER_FROM_DATE);
 		String to = (String) iwc.getParameter(PARAMETER_TO_DATE);
 		String roomType = (String) iwc.getParameter(PARAMETER_ROOM_TYPE);
