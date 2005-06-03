@@ -489,6 +489,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
+					createContract.setToDisableOnClick(createContract, true);
 					
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
 				  disabledCreateContract.setDisabled(true);
