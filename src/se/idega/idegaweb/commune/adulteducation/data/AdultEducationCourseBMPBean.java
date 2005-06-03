@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.5 2005/06/03 13:05:22 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.6 2005/06/03 13:39:16 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,8 @@ import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
-import com.idega.data.query.Column;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
@@ -238,20 +236,13 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 	}
 	
 	public Collection ejbFindAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices(Object school, Object season, Object group, Object[] statuses) throws FinderException {
-		Table table = new Table(this);
-		Table studyPath = new Table(SchoolStudyPath.class);
-		Table choices = new Table(AdultEducationChoice.class);
-		Table cases = new Table(Case.class);
+		Table table = new Table(this, "c");
+		Table studyPath = new Table(SchoolStudyPath.class, "s");
+		Table choices = new Table(AdultEducationChoice.class, "ch");
+		Table cases = new Table(Case.class, "p");
 		
 		SelectQuery query = new SelectQuery(table);
-		try {
-			Column column = new Column(table.getPrimaryKeyColumnName());
-			column.setAsDistinct();
-			query.addColumn(column);
-		}
-		catch (IDOCompositePrimaryKeyException icpke) {
-			throw new FinderException(icpke.getMessage());
-		}
+		query.addColumn(table, getIDColumnName(), true);
 		try {
 			query.addJoin(table, studyPath);
 			query.addJoin(choices, table);
