@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.4 2005/06/03 07:56:50 laddi Exp $
+ * $Id: GroupEditor.java,v 1.5 2005/06/03 08:01:17 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/03 07:56:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 08:01:17 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -383,10 +383,28 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 				throw new IBORuntimeException(re);
 			}
 		}
+		else {
+			try {
+				getSession(iwc).setSeason(null);
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
 		
 		if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
 			try {
 				getSession(iwc).setStudyPathGroup(iwc.getParameter(PARAMETER_STUDY_PATH_GROUP));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		else {
+			try {
+				getSession(iwc).setStudyPathGroup(null);
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
