@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationCourseHomeImpl.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
- * Created on May 10, 2005
+ * $Id: AdultEducationCourseHomeImpl.java,v 1.2 2005/06/03 06:51:18 laddi Exp $
+ * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdultEducationCourseHomeImpl extends IDOFactory implements AdultEducationCourseHome {
 
@@ -81,6 +81,15 @@ public class AdultEducationCourseHomeImpl extends IDOFactory implements AdultEdu
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllBySeasonAndTypeAndSchoolAndStudyPathGroup(
 				season, type, school, group);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices(Object school, Object season,
+			Object group, Object[] statuses) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AdultEducationCourseBMPBean) entity).ejbFindAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices(
+				school, season, group, statuses);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

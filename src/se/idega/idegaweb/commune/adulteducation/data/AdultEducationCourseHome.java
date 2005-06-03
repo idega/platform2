@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationCourseHome.java,v 1.1 2005/05/11 07:16:22 laddi Exp $
- * Created on May 10, 2005
+ * $Id: AdultEducationCourseHome.java,v 1.2 2005/06/03 06:51:18 laddi Exp $
+ * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: $Date: 2005/05/11 07:16:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface AdultEducationCourseHome extends IDOHome {
 
@@ -62,6 +62,12 @@ public interface AdultEducationCourseHome extends IDOHome {
 	 */
 	public Collection findAllBySeasonAndTypeAndSchoolAndStudyPathGroup(Object season, Object type, Object school,
 			Object group) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean#ejbFindAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices
+	 */
+	public Collection findAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices(Object school, Object season,
+			Object group, Object[] statuses) throws FinderException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourseBMPBean#ejbFindAllBySeasonAndSchoolAndStudyPath

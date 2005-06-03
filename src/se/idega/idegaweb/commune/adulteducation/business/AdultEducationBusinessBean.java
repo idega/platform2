@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.23 2005/06/02 11:33:15 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.24 2005/06/03 06:51:18 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/02 11:33:15 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -258,7 +258,14 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 	}
 	
 	public Collection getCourses(Object season, Object school, Object group) {
-		return getCourses(season, null, school, group);
+		try {
+			String[] statuses = { getCaseStatusGranted().getStatus(), getCaseStatusPlaced().getStatus() };
+			return getCourseHome().findAllBySchoolAndSeasonAndStudyPathGroupConnectedToChoices(school, season, group, statuses);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
 	}
 	
 	public Collection getCourses(Object season, Object type, Object school, Object group) {

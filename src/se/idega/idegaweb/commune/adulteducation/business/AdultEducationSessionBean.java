@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.7 2005/06/02 07:50:05 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.8 2005/06/03 06:51:18 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -95,6 +95,10 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	}
 
 	public void setSeason(Object seasonPK) {
+		if (!iSeasonPK.equals(seasonPK)) {
+			setSchoolClass(null);
+			setCourse(null);
+		}
 		iSeasonPK = seasonPK;
 		iSeason = null;
 	}
@@ -129,6 +133,10 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	}
 
 	public void setStudyPathGroup(Object studyPathGroupPK) {
+		if (!iStudyPathGroupPK.equals(studyPathGroupPK)) {
+			setSchoolClass(null);
+			setCourse(null);
+		}
 		iStudyPathGroupPK = studyPathGroupPK;
 		iStudyPathGroup= null;
 	}

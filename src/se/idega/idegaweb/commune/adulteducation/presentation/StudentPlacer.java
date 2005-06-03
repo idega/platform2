@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.2 2005/06/02 07:50:05 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.3 2005/06/03 06:51:18 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import se.idega.idegaweb.commune.school.business.SchoolClassWriter;
@@ -24,6 +25,7 @@ import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.remotescripting.RemoteScriptHandler;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -39,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -159,6 +161,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 	private void showDateSetter() throws RemoteException {
 		Form form = new Form();
 		form.setEventListener(StudentPlacer.class);
+		form.maintainParameter(PARAMETER_CHOICE);
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_PLACE_STUDENTS));
 		
 		DateInput date = (DateInput) getStyledInterface(new DateInput(PARAMETER_DATE));
@@ -166,6 +169,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		
 		form.add(getHeader(localize("placement_date", "Placement date") + ":"));
 		form.add(Text.getNonBrakingSpace());
+		form.add(date);
 		
 		SubmitButton placeStudents = (SubmitButton) getButton(new SubmitButton(localize("place_students", "Place students")));
 		form.add(new Break(2));
@@ -305,6 +309,18 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 			groups.setSelectedElement(getSession().getSchoolClass().getPrimaryKey().toString());
 		}
 
+		RemoteScriptHandler rsh = new RemoteScriptHandler(courses, groups);
+		try {
+			rsh.setRemoteScriptCollectionClass(GroupCollectionHandler.class);
+		}
+		catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		add(rsh);
+
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("search", "Search")));
 		
 		table.add(getSmallHeader(localize("season", "Season") + ":"), 1, 1);
@@ -340,7 +356,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		markAll.setToCheckWhenCheckedAndUncheckWhenUnchecked(PARAMETER_CHOICE);
 		table.add(markAll, column++, row++);
 
-		if (getSession().getSchoolSeason() != null && getSession().getCourse() != null) {
+		if (getSession().getSchoolClass() != null) {
 			int number = 0;
 			Collection choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getCourse());
 			Iterator iter = choices.iterator();
@@ -489,26 +505,6 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		boolean actionPerformed = false;
 		
-		if (iwc.isParameterSet(PARAMETER_SCHOOL_SEASON)) {
-			try {
-				getSession(iwc).setSeason(iwc.getParameter(PARAMETER_SCHOOL_SEASON));
-				actionPerformed = true;
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
-			}
-		}
-		
-		if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
-			try {
-				getSession(iwc).setStudyPathGroup(iwc.getParameter(PARAMETER_STUDY_PATH_GROUP));
-				actionPerformed = true;
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
-			}
-		}
-
 		if (iwc.isParameterSet(PARAMETER_COURSE)) {
 			try {
 				getSession(iwc).setCourse(iwc.getParameter(PARAMETER_COURSE));
@@ -522,6 +518,26 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		if (iwc.isParameterSet(PARAMETER_SCHOOL_CLASS)) {
 			try {
 				getSession(iwc).setSchoolClass(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+
+		if (iwc.isParameterSet(PARAMETER_SCHOOL_SEASON)) {
+			try {
+				getSession(iwc).setSeason(iwc.getParameter(PARAMETER_SCHOOL_SEASON));
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		
+		if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
+			try {
+				getSession(iwc).setStudyPathGroup(iwc.getParameter(PARAMETER_STUDY_PATH_GROUP));
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
