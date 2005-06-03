@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.4 2005/06/03 07:00:31 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.5 2005/06/03 13:12:50 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/03 07:00:31 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 13:12:50 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -253,7 +253,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 	}
 
 	private Table getNavigationTable() throws RemoteException {
-		Table table = new Table(7, 3);
+		Table table = new Table(6, 3);
 		table.setCellpadding(3);
 		table.setCellspacing(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -308,6 +308,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		if (getSession().getSchoolClass() != null) {
 			groups.setSelectedElement(getSession().getSchoolClass().getPrimaryKey().toString());
 		}
+		groups.setToSubmit();
 
 		RemoteScriptHandler rsh = new RemoteScriptHandler(courses, groups);
 		try {
@@ -321,15 +322,12 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 		}
 		add(rsh);
 
-		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("search", "Search")));
-		
 		table.add(getSmallHeader(localize("season", "Season") + ":"), 1, 1);
 		table.add(seasons, 2, 1);
 		table.add(getSmallHeader(localize("study_path_group", "Study path group") + ":"), 3, 1);
 		table.add(studyGroups, 4, 1);
 		table.add(getSmallHeader(localize("course", "Course") + ":"), 5, 1);
 		table.add(courses, 6, 1);
-		table.add(button, 7, 1);
 		table.add(getSmallHeader(localize("group", "Group")), 1, 3);
 		table.mergeCells(2, 3, 7, 3);
 		table.add(groups, 2, 3);

@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.2 2005/06/02 07:50:05 laddi Exp $
+ * $Id: StudentEditor.java,v 1.3 2005/06/03 13:14:56 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -45,10 +45,10 @@ import com.idega.util.URLUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/02 07:50:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 13:14:56 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
@@ -291,6 +291,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		table.setCellpadding(5);
 		table.setColumns(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
+		form.add(table);
 		int row = 1;
 		
 		AdultEducationChoice choice = getSession().getChoice();
