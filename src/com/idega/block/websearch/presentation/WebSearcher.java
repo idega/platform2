@@ -58,7 +58,9 @@ public class WebSearcher extends Block {
 
 	private String queryString = null;
 	private String direction = null;
-
+	private Image searchImage = null;
+	private String searchWidth = null;
+	
 	private Link titleLinkProto = new Link();
 	private Text contentTextProto = new Text();
 	private Text extraInfoTextProto = new Text();
@@ -173,6 +175,9 @@ public class WebSearcher extends Block {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
+		if (searchWidth != null) {
+			table.setWidth(searchWidth);
+		}
 		TextInput search = new TextInput(SEARCH_PARAM);
 		if (queryString != null) {
 			search.setContent(queryString);
@@ -199,7 +204,13 @@ public class WebSearcher extends Block {
 	
 			table.add(search, 1, 1);
 			if (!showButtonsAsLinks) {
-				SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search", "Search"));
+				SubmitButton button = null;
+				if (searchImage != null) {
+					button = new SubmitButton(searchImage);
+				}
+				else {
+					button = new SubmitButton(iwrb.getLocalizedString("search", "Search"));
+				}
 				table.add(button, 2, 1);
 			}
 			else {
@@ -524,5 +535,15 @@ public class WebSearcher extends Block {
 	
 	public void setShowButtonsAsLinks(boolean showButtonsAsLinks) {
 		this.showButtonsAsLinks = showButtonsAsLinks;
+	}
+
+	
+	public void setSearchImage(Image searchImage) {
+		this.searchImage = searchImage;
+	}
+
+	
+	public void setSearchWidth(String searchWidth) {
+		this.searchWidth = searchWidth;
 	}
 }
