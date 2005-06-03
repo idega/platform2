@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.3 2005/06/03 06:51:18 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.4 2005/06/03 07:00:31 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 07:00:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -139,7 +139,7 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 			IWTimestamp courseStart = new IWTimestamp(getSession().getCourse().getStartDate());
 			
 			SubmitButton placeStudents = (SubmitButton) getButton(new SubmitButton(localize("place_students", "Place students")));
-			if (courseStart.isLaterThan(stamp)) {
+			if (courseStart.isEarlierThan(stamp)) {
 				placeStudents.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SET_PLACEMENT_DATE));
 			}
 			else {
