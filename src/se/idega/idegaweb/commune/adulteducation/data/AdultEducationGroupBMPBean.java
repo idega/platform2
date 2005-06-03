@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationGroupBMPBean.java,v 1.1 2005/06/02 11:33:15 laddi Exp $
+ * $Id: AdultEducationGroupBMPBean.java,v 1.2 2005/06/03 07:36:19 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.data.query.WildCardColumn;
 
 
 /**
- * Last modified: $Date: 2005/06/02 11:33:15 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 07:36:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdultEducationGroupBMPBean extends SchoolClassBMPBean  implements AdultEducationGroup{
 
@@ -53,7 +53,7 @@ public class AdultEducationGroupBMPBean extends SchoolClassBMPBean  implements A
 			}
 			query.addCriteria(new MatchCriteria(path, "STUDY_PATH_GROUP_ID", MatchCriteria.EQUALS, group));
 		}
-		query.addCriteria(new OR(new MatchCriteria(table, VALID, MatchCriteria.EQUALS, true), new MatchCriteria(table.getColumn(VALID), true)));
+		query.addCriteria(new OR(new MatchCriteria(table, COLUMN_VALID, MatchCriteria.EQUALS, true), new MatchCriteria(table.getColumn(COLUMN_VALID), true)));
 		query.addOrder(table, NAME, true);
 		
 		return idoFindPKsByQuery(query);

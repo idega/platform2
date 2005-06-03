@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.2 2005/06/03 07:37:47 laddi Exp $
+ * $Id: GroupEditor.java,v 1.3 2005/06/03 07:39:36 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/03 07:37:47 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 07:39:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -136,7 +136,7 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		
 		table.add(getSmallHeader(localize("group_name", "Group name") + ":"), 1, row);
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME));
-		name.setAsNotEmpty(localize("must_supply_group_name", "You must enter a group name."));
+		//name.setAsNotEmpty(localize("must_supply_group_name", "You must enter a group name."));
 		if (update) {
 			name.setContent(getSession().getSchoolClass().getSchoolClassName());
 		}
@@ -255,7 +255,6 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		table.add(seasons, 2, 1);
 		table.add(getSmallHeader(localize("study_path_group", "Study path group") + ":"), 3, 1);
 		table.add(studyGroups, 4, 1);
-		table.add(getSmallHeader(localize("course", "Course") + ":"), 5, 1);
 		table.add(button, 5, 1);
 		
 		return table;
