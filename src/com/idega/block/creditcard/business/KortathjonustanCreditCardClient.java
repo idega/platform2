@@ -549,6 +549,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		System.out.println("[Korta] post_data = "+strPostData.toString());
 		return strPostData.toString();
 	}
 	
@@ -651,6 +652,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 
 			//System.out.println("Request [" + strPostData.toString() + "]");
 			try {
+				System.out.println("[Korta] PostData = "+strPostData.toString());
 				strResponse = client.sendRequest(REQUEST_TYPE_AUTHORIZATION, strPostData.toString());
 			}
 			catch (Exception e) {
