@@ -54,6 +54,7 @@ public class WebSearcher extends Block {
 	private boolean detailed = false;
 	private boolean canEdit = false;
 	private boolean showOnlySearch = false;
+	private boolean showButtonsAsLinks = false;
 
 	private String queryString = null;
 	private String direction = null;
@@ -176,6 +177,10 @@ public class WebSearcher extends Block {
 		if (queryString != null) {
 			search.setContent(queryString);
 		}
+		else {
+			search.setContent(iwrb.getLocalizedString("search_entire_site", "Search entire site"));
+			search.setOnFocus("this.value=''");
+		}
 		if (inputStyle != null) {
 			search.setStyleAttribute(inputStyle);
 		}
@@ -191,12 +196,23 @@ public class WebSearcher extends Block {
 
 		if (layout == HORIZONTAL_LAYOUT) {
 			table.setCellpadding(3);
-			SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search", "Search"));
 	
 			table.add(search, 1, 1);
-			table.add(button, 2, 1);
+			if (!showButtonsAsLinks) {
+				SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search", "Search"));
+				table.add(button, 2, 1);
+			}
+			else {
+				Link link = new Link(iwrb.getLocalizedString("search", "Search"));
+				link.setToFormSubmit(searchForm);
+				if (searchStyleClass != null) {
+					link.setStyle(searchStyleClass);
+				}
+				table.add(link, 2, 1);
+			}
 			if (crawl != null) {
-				table.add(crawl, 3, 1);
+				table.mergeCells(1, 2, 2, 2);
+				table.add(crawl, 2, 2);
 			}
 		}
 		else if (layout == VERTICAL_LAYOUT) {
@@ -503,5 +519,10 @@ public class WebSearcher extends Block {
 			ignoreParameters = new ArrayList();
 		}
 		ignoreParameters.add(parameter);
+	}
+
+	
+	public void setShowButtonsAsLinks(boolean showButtonsAsLinks) {
+		this.showButtonsAsLinks = showButtonsAsLinks;
 	}
 }
