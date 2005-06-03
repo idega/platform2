@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.1 2005/06/02 11:33:15 laddi Exp $
+ * $Id: GroupEditor.java,v 1.2 2005/06/03 07:37:47 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 11:33:15 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 07:37:47 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -175,7 +175,7 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		if (getSession().getStudyPathGroup() != null) {
 			studyGroups.setSelectedElement(getSession().getStudyPathGroup().getPrimaryKey().toString());
 		}
-		seasons.setToSubmit();
+		studyGroups.setToSubmit();
 		table.add(studyGroups, 2, row++);
 		
 		table.add(getSmallHeader(localize("code", "Code") + ":"), 1, row);
