@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationCourseBMPBean.java,v 1.4 2005/06/03 06:51:18 laddi Exp $
+ * $Id: AdultEducationCourseBMPBean.java,v 1.5 2005/06/03 13:05:22 laddi Exp $
  * Created on 27.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,8 +19,10 @@ import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathGroup;
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.query.Column;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
@@ -242,7 +244,14 @@ public class AdultEducationCourseBMPBean extends GenericEntity  implements Adult
 		Table cases = new Table(Case.class);
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn(table));
+		try {
+			Column column = new Column(table.getPrimaryKeyColumnName());
+			column.setAsDistinct();
+			query.addColumn(column);
+		}
+		catch (IDOCompositePrimaryKeyException icpke) {
+			throw new FinderException(icpke.getMessage());
+		}
 		try {
 			query.addJoin(table, studyPath);
 			query.addJoin(choices, table);

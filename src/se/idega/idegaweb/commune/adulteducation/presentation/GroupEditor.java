@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.5 2005/06/03 08:01:17 laddi Exp $
+ * $Id: GroupEditor.java,v 1.6 2005/06/03 13:05:22 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/03 08:01:17 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 13:05:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -102,6 +102,7 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		Form form = new Form();
 		form.setEventListener(GroupEditor.class);
 		form.addParameter(PARAMETER_ACTION, String.valueOf(ACTION_VIEW));
+		form.addParameter(PARAMETER_SCHOOL_CLASS, "");
 		
 		form.add(getNavigationTable());
 		form.add(new Break());
@@ -136,7 +137,6 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		
 		table.add(getSmallHeader(localize("group_name", "Group name") + ":"), 1, row);
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME));
-		//name.setAsNotEmpty(localize("must_supply_group_name", "You must enter a group name."));
 		if (update) {
 			name.setContent(getSession().getSchoolClass().getSchoolClassName());
 		}
@@ -319,7 +319,8 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 			edit.setEventListener(GroupEditor.class);
 			table.add(edit, column++, row);
 			
-			SubmitButton remove = (SubmitButton) getButton(new SubmitButton(getDeleteIcon(localize("remove_group", "Remove group")), PARAMETER_SCHOOL_CLASS, group.getPrimaryKey().toString()));
+			SubmitButton remove = (SubmitButton) getButton(new SubmitButton(getDeleteIcon(localize("remove_group", "Remove group"))));
+			remove.setValueOnClick(PARAMETER_SCHOOL_CLASS, group.getPrimaryKey().toString());
 			remove.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
 			table.add(remove, column++, row++);
 		}
