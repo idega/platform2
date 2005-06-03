@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.9 2005/06/02 06:24:37 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.10 2005/06/03 14:40:58 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,6 +22,7 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.JoinCriteria;
 import com.idega.data.query.MatchCriteria;
@@ -515,11 +516,11 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		Table cases = new Table(Case.class);
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn(table));
+		query.addColumn(new CountColumn(table, getIDColumnName()));
 		query.addJoin(table, courseTable);
 		query.addJoin(table, cases);
 		query.addCriteria(new MatchCriteria(courseTable, "sch_school_season_id", MatchCriteria.EQUALS, season));
-		query.addCriteria(new MatchCriteria(table, COURSE, MatchCriteria.EQUALS, course));
+		query.addCriteria(new MatchCriteria(courseTable, COURSE, MatchCriteria.EQUALS, course));
 		query.addCriteria(new InCriteria(cases, "case_status", statuses));
 		
 		return idoGetNumberOfRecords(query);
