@@ -82,6 +82,7 @@ public class GolferTab extends UserTab {
 			loginByUUIDLink.clearParameters();
 			
 			loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
+			loginByUUIDLink.addParameter("ib_page","36");
 			//hack, this parameter is in GolfLoginBusiness
 			loginByUUIDLink.addParameter("golf_login_state","login");
 			
@@ -251,7 +252,7 @@ public class GolferTab extends UserTab {
 		loginByUUIDLink.setToUseCurrentUsersUUID(true);
 		//hardcoded URL hack
 		loginByUUIDLink.setText(iwrb.getLocalizedString(TAB_NAME+".handicapinfo_on_golf.is","Open handicap info on golf.is"));
-		loginByUUIDLink.setURL("http://www.golf.is/index.jsp?ib_page=36");
+		loginByUUIDLink.setURL("http://www.golf.is/index.jsp");
 		loginByUUIDLink.setTarget(Link.TARGET_NEW_WINDOW);
 		
 		table.add(loginByUUIDLink,1,row);
