@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.24 2005/06/03 06:51:18 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.25 2005/06/03 07:56:50 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/03 06:51:18 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/03 07:56:50 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -400,6 +400,7 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 			group.setCode(course.getCode());
 			group.setValid(true);
 			group.setSchoolClassName(course.getCode());
+			group.setSchoolType(course.getStudyPath().getSchoolType());
 			group.store();
 			
 			return group;
