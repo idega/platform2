@@ -1,5 +1,5 @@
 /*
- * $Id: StudentPlacer.java,v 1.5 2005/06/03 13:12:50 laddi Exp $
+ * $Id: StudentPlacer.java,v 1.6 2005/06/06 16:08:17 laddi Exp $
  * Created on Jun 1, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.PersonalIDFormatter;
 
 
 /**
- * Last modified: $Date: 2005/06/03 13:12:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/06 16:08:17 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class StudentPlacer extends AdultEducationBlock implements IWPageEventListener {
 
@@ -449,11 +449,12 @@ public class StudentPlacer extends AdultEducationBlock implements IWPageEventLis
 				table.add(getSmallText(date.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 				
 				Link edit = new Link(getEditIcon(localize("edit_student", "Edit student")));
-				link.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
+				edit.addParameter(PARAMETER_CHOICE, choice.getPrimaryKey().toString());
 				edit.addParameter(PARAMETER_STUDENT, member.getPrimaryKey().toString());
-				link.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_CHANGE_GROUP);
-				link.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
+				edit.addParameter(StudentEditor.PARAMETER_ACTION, StudentEditor.ACTION_CHANGE_GROUP);
+				edit.addParameter(StudentEditor.PARAMETER_PAGE, getParentPageID());
 				edit.setWindowToOpen(StudentWindow.class);
+				edit.setEventListener(StudentEditor.class);
 				table.add(edit, column++, row);
 				
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize("remove_student", "Remove student from group")));

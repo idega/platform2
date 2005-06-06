@@ -1,5 +1,5 @@
 /*
- * $Id: StudentEditor.java,v 1.3 2005/06/03 13:14:56 laddi Exp $
+ * $Id: StudentEditor.java,v 1.4 2005/06/06 16:08:17 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,7 @@ package se.idega.idegaweb.commune.adulteducation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import se.idega.idegaweb.commune.adulteducation.business.GroupCollectionHandler;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationChoice;
 import se.idega.idegaweb.commune.adulteducation.data.AdultEducationCourse;
 import com.idega.block.process.data.CaseStatus;
@@ -29,6 +30,7 @@ import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.remotescripting.RemoteScriptHandler;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -45,17 +47,17 @@ import com.idega.util.URLUtil;
 
 
 /**
- * Last modified: $Date: 2005/06/03 13:14:56 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/06 16:08:17 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class StudentEditor extends AdultEducationBlock implements IWPageEventListener {
 	
 	public static final String PARAMETER_ACTION = "se_action";
 	public static final String PARAMETER_PAGE = "se_page";
 	private static final String PARAMETER_COURSE = "se_course";
-	public static final String PARAMETER_STUDENT = "se_student";
+	public static final String PARAMETER_STUDENT = "sp_student";
 	private static final String PARAMETER_SCHOOL_CLASS = "se_school_class";
 	
 	public static final int ACTION_SHOW_CHOICE = 1;
@@ -212,8 +214,9 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 
 		table.add(getSmallHeader(localize("message", "Message")), 1, row);
 		if (choice.getComment() != null) {
-			table.add(getSmallText(choice.getComment()), 2, row++);
+			table.add(getSmallText(choice.getComment()), 2, row);
 		}
+		row++;
 		
 		table.add(getSmallHeader(localize("choice_date", "Choice date")), 1, row);
 		table.add(getSmallText(new IWTimestamp(choice.getChoiceDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 2, row++);
@@ -247,6 +250,7 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		table.setCellpadding(5);
 		table.setColumns(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
+		form.add(table);
 		int row = 1;
 		
 		AdultEducationChoice choice = getSession().getChoice();
@@ -304,13 +308,13 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 		changeGroup.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_STORE_GROUP));
 		
 		DropdownMenu courses = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_COURSE));
-		Collection availableCourses = getBusiness().getCourses(getSession().getSchoolSeason().getPrimaryKey(), getSession().getSchool().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
+		Collection availableCourses = getBusiness().getCourses(getSession().getSchoolSeason().getPrimaryKey(), null, getSession().getSchool().getPrimaryKey(), getSession().getStudyPathGroup().getPrimaryKey());
 		Iterator iter = availableCourses.iterator();
 		while (iter.hasNext()) {
 			AdultEducationCourse element = (AdultEducationCourse) iter.next();
 			courses.addMenuElement(course.getPrimaryKey().toString(), element.getCode());
 		}
-		courses.setToSubmit();
+		courses.setSelectedElement(course.getPrimaryKey().toString());
 
 		DropdownMenu groups = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOL_CLASS));
 		if (getSession().getSchoolSeason() != null && getSession().getCourse() != null) {
@@ -325,11 +329,23 @@ public class StudentEditor extends AdultEducationBlock implements IWPageEventLis
 			groups.setSelectedElement(group.getPrimaryKey().toString());
 		}
 
-		table.add(getSmallHeader(localize("current_course", "Current course")), 1, row);
-		table.add(getSmallText(course.getCode()), 2, row++);
-		
-		table.add(getSmallHeader(localize("new_course", "New course")), 1, row);
+		RemoteScriptHandler rsh = new RemoteScriptHandler(courses, groups);
+		try {
+			rsh.setRemoteScriptCollectionClass(GroupCollectionHandler.class);
+		}
+		catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		add(rsh);
+
+		table.add(getSmallHeader(localize("course", "Course")), 1, row);
 		table.add(courses, 2, row++);
+		
+		table.add(getSmallHeader(localize("group", "Group")), 1, row);
+		table.add(groups, 2, row++);
 		
 		table.mergeCells(1, row, 2, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
