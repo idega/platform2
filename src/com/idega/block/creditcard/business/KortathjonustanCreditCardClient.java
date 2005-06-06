@@ -549,7 +549,6 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		System.out.println("[Korta] post_data = "+strPostData.toString());
 		return strPostData.toString();
 	}
 	
@@ -652,7 +651,6 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 
 			//System.out.println("Request [" + strPostData.toString() + "]");
 			try {
-				System.out.println("[Korta] PostData = "+strPostData.toString());
 				strResponse = client.sendRequest(REQUEST_TYPE_AUTHORIZATION, strPostData.toString());
 			}
 			catch (Exception e) {
@@ -788,7 +786,8 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 
 	private void appendProperty(StringBuffer buffer, String propertyName, String propertyValue) throws UnsupportedEncodingException {
 		if (propertyValue != null) {
-			buffer.append("&").append(propertyName).append("=").append(URLEncoder.encode(propertyValue, "UTF-8"));
+			buffer.append("&").append(propertyName).append("=").append(URLEncoder.encode(propertyValue, "ISO-8859-1"));
+//			buffer.append("&").append(propertyName).append("=").append(URLEncoder.encode(propertyValue, "UTF-8"));
 		}
 	}
 
