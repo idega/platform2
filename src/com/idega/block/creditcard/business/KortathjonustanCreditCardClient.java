@@ -532,7 +532,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	private String propertiesToString(Hashtable properties) {
 		StringBuffer strPostData = new StringBuffer();
 		try {
-			addProperties(strPostData, properties);
+			addProperties(strPostData, properties, false);
 		}
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -544,7 +544,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		StringBuffer strPostData = new StringBuffer();
 		try {
 			appendProperty(strPostData, PROPERTY_PASSWORD, PASSWORD);
-			addProperties(strPostData, properties);
+			addProperties(strPostData, properties, true);
 		}
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -773,21 +773,28 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		return responseElements;
 	}
 
-	private void addProperties(StringBuffer buffer, Hashtable properties) throws UnsupportedEncodingException {
+	private void addProperties(StringBuffer buffer, Hashtable properties, boolean urlEncode) throws UnsupportedEncodingException {
 		Set keys = properties.keySet();
 		Iterator iter = keys.iterator();
 		if (iter != null) {
 			String key;
 			while (iter.hasNext()) {
 				key = iter.next().toString();
-				appendProperty(buffer, key, properties.get(key).toString());
+				appendProperty(buffer, key, properties.get(key).toString(), urlEncode);
 			}
 		}
 	}
 
 	private void appendProperty(StringBuffer buffer, String propertyName, String propertyValue) throws UnsupportedEncodingException {
+		appendProperty(buffer, propertyName, propertyValue, true);
+	}	
+	private void appendProperty(StringBuffer buffer, String propertyName, String propertyValue, boolean urlEncode) throws UnsupportedEncodingException {
 		if (propertyValue != null) {
-			buffer.append("&").append(propertyName).append("=").append(URLEncoder.encode(propertyValue, "ISO-8859-1"));
+			if (urlEncode) {
+				buffer.append("&").append(propertyName).append("=").append(URLEncoder.encode(propertyValue, "ISO-8859-1"));
+			} else {
+				buffer.append("&").append(propertyName).append("=").append(propertyValue);
+			}
 //			buffer.append("&").append(propertyName).append("=").append(URLEncoder.encode(propertyValue, "UTF-8"));
 		}
 	}
