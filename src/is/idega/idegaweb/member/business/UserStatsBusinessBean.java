@@ -145,7 +145,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		    }
 			if (group != null) {
 			    if (groupsRecursiveFilter != null && groupsRecursiveFilter.equals("checked")) {
-				    groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(group, groupTypesFilter, true);
+				    groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(group, groupTypesFilter, true, true);
 				} else {
 				    groups = new ArrayList();
 				    groups.add(group);
@@ -301,6 +301,8 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 		     if (!parentGroupCollection.isEmpty()) {
 		         parentGroup = (Group)parentGroupCollection.iterator().next();
 		         parentGroupPath = parentGroup.getName()+"/"+parentGroupPath;
+		     } else {
+		         break;
 		     }
 	    }
     return parentGroupPath;
