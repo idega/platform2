@@ -57,7 +57,6 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -808,8 +807,8 @@ public class ReportGenerator extends Block {
 	 *  
 	 */
 	private void lineUpElements(IWResourceBundle iwrb, IWContext iwc) {
-		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
-		IWBundle coreBundle = iwma.getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		//IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+		//IWBundle coreBundle = iwma.getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
 		_fieldTable = new Table();
 		//_fieldTable.setBorder(1);
