@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.24 2004/03/22 20:55:50 tryggvil Exp $
+ * $Id: RegulationListEditor.java,v 1.25 2005/06/06 12:18:58 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import com.idega.user.data.User;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ExceptionWrapper;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.util.IWTimestamp;
 //import com.idega.block.school.business.SchoolBusiness;
 
@@ -45,10 +46,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.24 2004/03/22 20:55:50 tryggvil Exp $
+ * $Id: RegulationListEditor.java,v 1.25 2005/06/06 12:18:58 thomas Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -712,7 +713,7 @@ public class RegulationListEditor extends AccountingBlock {
 				args = null;
 			}
 			Method myMethod;
-			Class cls = Class.forName(condition.getBusinessClassName());
+			Class cls = RefactorClassRegistry.forName(condition.getBusinessClassName());
 			Object business = com.idega.business.IBOLookup.getServiceInstance(iwc, cls);
 			myMethod = cls.getMethod(condition.getCollectDataMethod(), partypes);
 			Collection data = (Collection) myMethod.invoke(business, args);
