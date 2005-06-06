@@ -652,6 +652,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 			//System.out.println("Request [" + strPostData.toString() + "]");
 			try {
 				strResponse = client.sendRequest(REQUEST_TYPE_AUTHORIZATION, strPostData.toString());
+				System.out.println("[Korta] strResponse = "+strResponse);
 			}
 			catch (Exception e) {
 				KortathjonustanAuthorizationException cce = new KortathjonustanAuthorizationException();
