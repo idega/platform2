@@ -166,8 +166,8 @@ public class SSLClient
     Protocol.registerProtocol("https", new Protocol("https", m_oSSLSocketFactory, m_iPort));
     // Configure the URI
     String strURI = "https://" + m_strHost + ":" + m_iPort + _strProcedure;
-    System.out.println("[SSLClient] strURI  : "+strURI);
-    System.out.println("[SSLClient] strData : "+_strData);
+//    System.out.println("[SSLClient] strURI  : "+strURI);
+//    System.out.println("[SSLClient] strData : "+_strData);
     // Finally prepare the parameters to post
     PostMethod oPost = new PostMethod(strURI);
     oPost.setDoAuthentication( true );
