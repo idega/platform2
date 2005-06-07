@@ -474,6 +474,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.contact_person", "Contact person", Integer.toString(USER_TYPE_CONTACT_PERSON) });
 				userTypes.add(new String[] {"school.expedition", "Expedition", Integer.toString(USER_TYPE_EXPEDITION) });
 				userTypes.add(new String[] {"school.project_manager", "Project manager", Integer.toString(USER_TYPE_PROJECT_MANAGER) });
+				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
+				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 			}
 			
 		}

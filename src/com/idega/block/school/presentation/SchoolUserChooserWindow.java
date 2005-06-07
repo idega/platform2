@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolUserChooserWindow.java,v 1.2 2005/03/07 13:17:20 anna Exp $ Created on
+ * $Id: SchoolUserChooserWindow.java,v 1.3 2005/06/07 12:35:28 laddi Exp $ Created on
  * 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,7 +26,7 @@ import com.idega.user.presentation.UserChooserWindow;
  * Last modified: 24.2.2005 15:06:52 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SchoolUserChooserWindow extends UserChooserWindow {
 
@@ -79,6 +79,10 @@ public class SchoolUserChooserWindow extends UserChooserWindow {
 			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_STUDY_AND_WORK_COUNCEL));
 			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_TEACHER));
 			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_SCHOOL_MASTER));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_CONTACT_PERSON));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_EXPEDITION));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_PROJECT_MANAGER));
 		}
 		catch (FinderException ex) {
 			ex.printStackTrace();
