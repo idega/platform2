@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.14 2005/06/07 12:49:03 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.15 2005/06/07 13:32:43 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 13:32:43 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -169,7 +169,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			sort.setSelectedElement(getSession().getSort());
 		}
 		
-		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
+		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
 		fromDate.setDate(getSession().getFromDate());
 		
 		DateInput toDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
@@ -184,9 +184,11 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.add(getSmallHeader(localize("sort", "Sort") + ":"), 5, 1);
 		table.add(sort, 6, 1);
 		table.add(button, 7, 1);
-		table.add(getSmallHeader(localize("date", "Date") + ":"), 1, 3);
+		table.add(getSmallHeader(localize("from_date", "From Date") + ":"), 1, 3);
 		table.mergeCells(2, 3, 7, 3);
 		table.add(fromDate, 2, 3);
+		table.add(Text.getNonBrakingSpace(), 2, 3);
+		table.add(getSmallHeader(localize("to_date", "To date") + ":"), 2, 3);
 		table.add(Text.getNonBrakingSpace(), 2, 3);
 		table.add(toDate, 2, 3);
 		
