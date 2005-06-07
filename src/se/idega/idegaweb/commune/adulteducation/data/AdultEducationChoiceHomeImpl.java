@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoiceHomeImpl.java,v 1.9 2005/06/02 06:24:37 laddi Exp $
- * Created on Jun 1, 2005
+ * $Id: AdultEducationChoiceHomeImpl.java,v 1.10 2005/06/07 12:49:03 laddi Exp $
+ * Created on Jun 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEducationChoiceHome {
 
@@ -55,20 +55,20 @@ public class AdultEducationChoiceHomeImpl extends IDOFactory implements AdultEdu
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllBySeasonAndTypeAndDateAndStatuses(SchoolSeason season, SchoolType type, Date date,
-			String[] statuses, int choiceOrder) throws FinderException {
+	public Collection findAllBySeasonAndTypeAndDateAndStatuses(SchoolSeason season, SchoolType type, Date fromDate,
+			Date toDate, String[] statuses, int choiceOrder) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllBySeasonAndTypeAndDateAndStatuses(
-				season, type, date, statuses, choiceOrder);
+				season, type, fromDate, toDate, statuses, choiceOrder);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(SchoolSeason season, SchoolType type, Date date,
-			User handler, String[] statuses, int choiceOrder) throws FinderException {
+	public Collection findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(SchoolSeason season, SchoolType type,
+			Date fromDate, Date toDate, User handler, String[] statuses, int choiceOrder) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((AdultEducationChoiceBMPBean) entity).ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(
-				season, type, date, handler, statuses, choiceOrder);
+				season, type, fromDate, toDate, handler, statuses, choiceOrder);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationSessionBean.java,v 1.9 2005/06/03 07:33:36 laddi Exp $
+ * $Id: AdultEducationSessionBean.java,v 1.10 2005/06/07 12:49:03 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2005/06/03 07:33:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AdultEducationSessionBean extends IBOSessionBean  implements AdultEducationSession{
 	
@@ -67,7 +67,8 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 	private Object iSchoolClassMemberPK = null;
 	private SchoolClassMember iSchoolClassMember = null;
 	
-	private Date iDate = null;
+	private Date iFromDate = null;
+	private Date iToDate = null;
 	
 	private int iSort = -1;
 
@@ -204,15 +205,26 @@ public class AdultEducationSessionBean extends IBOSessionBean  implements AdultE
 		iSchoolClassMember= null;
 	}
 	
-	public Date getDate() {
-		if (iDate == null) {
-			iDate = new IWTimestamp().getDate();
+	public Date getFromDate() {
+		if (iFromDate == null) {
+			iFromDate = new IWTimestamp().getDate();
 		}
-		return iDate;
+		return iFromDate;
 	}
 	
-	public void setDate(Date date) {
-		iDate = date;
+	public void setFromDate(Date date) {
+		iFromDate = date;
+	}
+	
+	public Date getToDate() {
+		if (iToDate == null) {
+			iToDate = new IWTimestamp().getDate();
+		}
+		return iToDate;
+	}
+	
+	public void setToDate(Date date) {
+		iToDate = date;
 	}
 	
 	public int getSort() {

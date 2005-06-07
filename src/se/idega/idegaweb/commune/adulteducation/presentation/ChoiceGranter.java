@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.13 2005/06/07 12:35:58 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.14 2005/06/07 12:49:03 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/07 12:35:58 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -67,7 +67,8 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 	private static final String PARAMETER_USER = "prm_user";
 	private static final String PARAMETER_UNIQUE_ID = "prm_unique_id";
 	private static final String PARAMETER_SCHOOL_TYPE = "rm_school_type";
-	private static final String PARAMETER_DATE = "prm_date";
+	private static final String PARAMETER_FROM_DATE = "prm_from_date";
+	private static final String PARAMETER_TO_DATE = "prm_from_date";
 	private static final String PARAMETER_SORT = "prm_sort";
 	
 	private static final String PARAMETER_REQUIREMENT_1 = "prm_requirement_1";
@@ -168,8 +169,11 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 			sort.setSelectedElement(getSession().getSort());
 		}
 		
-		DateInput date = (DateInput) getStyledInterface(new DateInput(PARAMETER_DATE));
-		date.setDate(getSession().getDate());
+		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
+		fromDate.setDate(getSession().getFromDate());
+		
+		DateInput toDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
+		toDate.setDate(getSession().getToDate());
 		
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("search", "Search")));
 		
@@ -182,7 +186,9 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.add(button, 7, 1);
 		table.add(getSmallHeader(localize("date", "Date") + ":"), 1, 3);
 		table.mergeCells(2, 3, 7, 3);
-		table.add(date, 2, 3);
+		table.add(fromDate, 2, 3);
+		table.add(Text.getNonBrakingSpace(), 2, 3);
+		table.add(toDate, 2, 3);
 		
 		return table;
 	}
@@ -206,23 +212,23 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		Collection choices = null;
 		switch (getSession().getSort()) {
 			case AdultEducationConstants.SORT_UNHANDLED:
-				choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
+				choices = getBusiness().getUnhandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
 				break;
 				
 			case AdultEducationConstants.SORT_HANDLED:
-				choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
+				choices = getBusiness().getHandledChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
 				break;
 				
 			case AdultEducationConstants.SORT_HANDLER:
-				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), iwc.getCurrentUser());
+				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), iwc.getCurrentUser());
 				break;
 
 			case AdultEducationConstants.SORT_ALL:
-				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
+				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
 				break;
 
 			default:
-				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getDate(), null);
+				choices = getBusiness().getChoices(getSession().getSchoolSeason(), getSession().getSchoolType(), getSession().getFromDate(), getSession().getToDate(), null);
 				break;
 		}
 		Iterator iter = choices.iterator();
@@ -849,9 +855,18 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 				throw new IBORuntimeException(re);
 			}
 		}
-		if (iwc.isParameterSet(PARAMETER_DATE)) {
+		if (iwc.isParameterSet(PARAMETER_FROM_DATE)) {
 			try {
-				getSession(iwc).setDate(new IWTimestamp(iwc.getParameter(PARAMETER_DATE)).getDate());
+				getSession(iwc).setFromDate(new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE)).getDate());
+				actionPerformed = true;
+			}
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_TO_DATE)) {
+			try {
+				getSession(iwc).setToDate(new IWTimestamp(iwc.getParameter(PARAMETER_TO_DATE)).getDate());
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {

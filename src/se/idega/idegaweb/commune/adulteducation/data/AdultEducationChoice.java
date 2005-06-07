@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationChoice.java,v 1.9 2005/06/02 06:24:37 laddi Exp $
- * Created on Jun 1, 2005
+ * $Id: AdultEducationChoice.java,v 1.10 2005/06/07 12:49:03 laddi Exp $
+ * Created on Jun 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 06:24:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface AdultEducationChoice extends IDOEntity, Case {
 

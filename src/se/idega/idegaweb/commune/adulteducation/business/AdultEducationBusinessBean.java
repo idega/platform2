@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationBusinessBean.java,v 1.25 2005/06/03 07:56:50 laddi Exp $ Created on
+ * $Id: AdultEducationBusinessBean.java,v 1.26 2005/06/07 12:49:03 laddi Exp $ Created on
  * 27.4.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -75,10 +75,10 @@ import com.idega.util.IWTimestamp;
 /**
  * A collection of business methods associated with the Adult education block.
  * 
- * Last modified: $Date: 2005/06/03 07:56:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class AdultEducationBusinessBean extends CaseBusinessBean implements AdultEducationBusiness {
 
@@ -464,12 +464,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public Collection getChoices(SchoolSeason season, SchoolType type, Date date, User handler) {
+	public Collection getChoices(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler) {
 		try {
-			IWTimestamp stamp = new IWTimestamp(date);
-			stamp.addDays(1);
 			String[] statuses = { getCaseStatusOpen().getStatus(), getCaseStatusReview().getStatus() };
-			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, stamp.getDate(), handler, statuses, 1);
+			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, fromDate, toDate, handler, statuses, 1);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -477,12 +475,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public Collection getUnhandledChoices(SchoolSeason season, SchoolType type, Date date, User handler) {
+	public Collection getUnhandledChoices(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler) {
 		try {
-			IWTimestamp stamp = new IWTimestamp(date);
-			stamp.addDays(1);
 			String[] statuses = { getCaseStatusOpen().getStatus() };
-			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, stamp.getDate(), handler, statuses, 1);
+			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, fromDate, toDate, handler, statuses, 1);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();
@@ -490,12 +486,10 @@ public class AdultEducationBusinessBean extends CaseBusinessBean implements Adul
 		}
 	}
 	
-	public Collection getHandledChoices(SchoolSeason season, SchoolType type, Date date, User handler) {
+	public Collection getHandledChoices(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler) {
 		try {
-			IWTimestamp stamp = new IWTimestamp(date);
-			stamp.addDays(1);
 			String[] statuses = { getCaseStatusReview().getStatus() };
-			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, stamp.getDate(), handler, statuses, 1);
+			return getChoiceHome().findAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, fromDate, toDate, handler, statuses, 1);
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace();

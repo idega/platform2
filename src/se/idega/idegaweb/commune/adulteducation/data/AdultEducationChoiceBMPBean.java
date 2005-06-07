@@ -1,5 +1,5 @@
 /*
- * $Id: AdultEducationChoiceBMPBean.java,v 1.10 2005/06/03 14:40:58 laddi Exp $
+ * $Id: AdultEducationChoiceBMPBean.java,v 1.11 2005/06/07 12:49:03 laddi Exp $
  * Created on May 3, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -317,11 +317,11 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		return idoFindPKsByQuery(query);
 	}
 	
-	public Collection ejbFindAllBySeasonAndTypeAndDateAndStatuses(SchoolSeason season, SchoolType type, Date date, String[] statuses, int choiceOrder) throws FinderException {
-		return ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, date, null, statuses, choiceOrder);
+	public Collection ejbFindAllBySeasonAndTypeAndDateAndStatuses(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, String[] statuses, int choiceOrder) throws FinderException {
+		return ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(season, type, fromDate, toDate, null, statuses, choiceOrder);
 	}
 	
-	public Collection ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(SchoolSeason season, SchoolType type, Date date, User handler, String[] statuses, int choiceOrder) throws FinderException {
+	public Collection ejbFindAllBySeasonAndTypeAndDateAndHandlerAndStatuses(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler, String[] statuses, int choiceOrder) throws FinderException {
 		Table table = new Table(this);
 		Table course = new Table(AdultEducationCourse.class);
 		Table cases = new Table(Case.class);
@@ -346,7 +346,8 @@ public class AdultEducationChoiceBMPBean extends AbstractCaseBMPBean  implements
 		if (type != null) {
 			query.addCriteria(new MatchCriteria(studyPath, "sch_school_type_id", MatchCriteria.EQUALS, type));
 		}
-		query.addCriteria(new MatchCriteria(table, CHOICE_DATE, MatchCriteria.LESS, date));
+		query.addCriteria(new MatchCriteria(table, CHOICE_DATE, MatchCriteria.GREATEREQUAL, fromDate));
+		query.addCriteria(new MatchCriteria(table, CHOICE_DATE, MatchCriteria.LESSEQUAL, toDate));
 		if (handler != null) {
 			OR or1 = new OR(new MatchCriteria(cases.getColumn("HANDLER_GROUP_ID"), false), new JoinCriteria(table.getColumn(USER), cases.getColumn("HANDLER_GROUP_ID")));
 			query.addCriteria(new OR(new MatchCriteria(cases, "HANDLER_GROUP_ID", MatchCriteria.EQUALS, handler), or1));

@@ -1,6 +1,6 @@
 /*
- * $Id: AdultEducationBusiness.java,v 1.19 2005/06/02 11:33:15 laddi Exp $
- * Created on Jun 2, 2005
+ * $Id: AdultEducationBusiness.java,v 1.20 2005/06/07 12:49:03 laddi Exp $
+ * Created on Jun 7, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/02 11:33:15 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:49:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 
@@ -169,19 +169,19 @@ public interface AdultEducationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getChoices
 	 */
-	public Collection getChoices(SchoolSeason season, SchoolType type, Date date, User handler)
+	public Collection getChoices(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler)
 			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getUnhandledChoices
 	 */
-	public Collection getUnhandledChoices(SchoolSeason season, SchoolType type, Date date, User handler)
+	public Collection getUnhandledChoices(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler)
 			throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.adulteducation.business.AdultEducationBusinessBean#getHandledChoices
 	 */
-	public Collection getHandledChoices(SchoolSeason season, SchoolType type, Date date, User handler)
+	public Collection getHandledChoices(SchoolSeason season, SchoolType type, Date fromDate, Date toDate, User handler)
 			throws java.rmi.RemoteException;
 
 	/**
