@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.6 2005/06/03 13:05:22 laddi Exp $
+ * $Id: GroupEditor.java,v 1.7 2005/06/07 12:35:58 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/03 13:05:22 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:35:58 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -319,7 +319,7 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 			edit.setEventListener(GroupEditor.class);
 			table.add(edit, column++, row);
 			
-			SubmitButton remove = (SubmitButton) getButton(new SubmitButton(getDeleteIcon(localize("remove_group", "Remove group"))));
+			SubmitButton remove = new SubmitButton(getDeleteIcon(localize("remove_group", "Remove group")));
 			remove.setValueOnClick(PARAMETER_SCHOOL_CLASS, group.getPrimaryKey().toString());
 			remove.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_REMOVE));
 			table.add(remove, column++, row++);

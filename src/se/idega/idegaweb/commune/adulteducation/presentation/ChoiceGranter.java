@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.12 2005/06/01 08:52:26 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.13 2005/06/07 12:35:58 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/01 08:52:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 12:35:58 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -154,7 +154,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 
 		DropdownMenu types = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_TYPE), getBusiness().getSchoolTypes(), "getLocalizationKey", getResourceBundle()));
-		types.addMenuElementFirst("", localize("show_all", "All"));
+		types.addMenuElementFirst("-1", localize("show_all", "All"));
 		if (getSession().getSchoolType() != null) {
 			types.setSelectedElement(getSession().getSchoolType().getPrimaryKey().toString());
 		}
@@ -837,16 +837,13 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		}
 		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPE)) {
 			try {
-				getSession(iwc).setSchoolType(iwc.getParameter(PARAMETER_SCHOOL_TYPE));
+				if (iwc.getParameter(PARAMETER_SCHOOL_TYPE).equals("-1")) {
+					getSession(iwc).setSchoolType(null);
+				}
+				else {
+					getSession(iwc).setSchoolType(iwc.getParameter(PARAMETER_SCHOOL_TYPE));
+				}
 				actionPerformed = true;
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
-			}
-		}
-		else {
-			try {
-				getSession(iwc).setSchoolType(null);
 			}
 			catch (RemoteException re) {
 				throw new IBORuntimeException(re);
