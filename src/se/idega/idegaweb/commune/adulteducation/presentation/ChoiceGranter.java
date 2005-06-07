@@ -1,5 +1,5 @@
 /*
- * $Id: ChoiceGranter.java,v 1.15 2005/06/07 13:32:43 laddi Exp $
+ * $Id: ChoiceGranter.java,v 1.16 2005/06/07 13:55:38 laddi Exp $
  * Created on May 24, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -55,10 +55,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/06/07 13:32:43 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/07 13:55:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ChoiceGranter extends AdultEducationBlock implements IWPageEventListener {
 
@@ -66,9 +66,9 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 	private static final String PARAMETER_SEASON = "prm_season";
 	private static final String PARAMETER_USER = "prm_user";
 	private static final String PARAMETER_UNIQUE_ID = "prm_unique_id";
-	private static final String PARAMETER_SCHOOL_TYPE = "rm_school_type";
+	private static final String PARAMETER_SCHOOL_TYPE = "prm_school_type";
 	private static final String PARAMETER_FROM_DATE = "prm_from_date";
-	private static final String PARAMETER_TO_DATE = "prm_from_date";
+	private static final String PARAMETER_TO_DATE = "prm_to_date";
 	private static final String PARAMETER_SORT = "prm_sort";
 	
 	private static final String PARAMETER_REQUIREMENT_1 = "prm_requirement_1";
@@ -185,6 +185,7 @@ public class ChoiceGranter extends AdultEducationBlock implements IWPageEventLis
 		table.add(sort, 6, 1);
 		table.add(button, 7, 1);
 		table.add(getSmallHeader(localize("from_date", "From Date") + ":"), 1, 3);
+		table.setNoWrap(1, 3);
 		table.mergeCells(2, 3, 7, 3);
 		table.add(fromDate, 2, 3);
 		table.add(Text.getNonBrakingSpace(), 2, 3);
