@@ -570,7 +570,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					else {
 						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
 						if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID()) && !getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate())){
-							placeInGroup.setDisabled(true);	
+							//placeInGroup.setDisabled(true);	changed june 2005 - ac
+							placeInGroup.setToDisableOnClick(placeInGroup, true);
 							dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 						}
 						
