@@ -8,6 +8,7 @@ package is.idega.idegaweb.member.business.plugins;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.NoAbbreviationException;
+import is.idega.idegaweb.member.business.NoClubFoundException;
 import is.idega.idegaweb.member.business.NoLeagueClubCollectionGroup;
 import is.idega.idegaweb.member.presentation.ClubInformationTab;
 import is.idega.idegaweb.member.util.IWMemberConstants;
@@ -498,10 +499,18 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 					if (divisions != null && !divisions.isEmpty()) {
 						for (Iterator divs = divisions.iterator(); divs.hasNext();) {
 							Group division = (Group) divs.next();
-							addLeagueRoleAccessToDivision(role, division);
-							// ADD SHORTCUT TO CLUB
-							Group theClub = getMemberUserBusiness().getClubForGroup(division);
-							createAliasToClubUnderClubCollectionGroup(clubCollectionGroup,theClub);
+							try{
+								Group theClub = getMemberUserBusiness().getClubForGroup(division);
+								
+								addLeagueRoleAccessToDivision(role, division);
+								// ADD SHORTCUT TO CLUB
+								createAliasToClubUnderClubCollectionGroup(clubCollectionGroup,theClub);
+							}
+							catch(NoClubFoundException clubEx){
+								//clubEx.printStackTrace();
+								log("No club for division "+division.getName()+" "+division.getPrimaryKey()+" it's probably from a deleted club.");
+							}
+							
 						}
 					}
 				}
