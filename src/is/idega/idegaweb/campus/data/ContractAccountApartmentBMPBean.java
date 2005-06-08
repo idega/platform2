@@ -16,6 +16,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.building.data.Building;
 import com.idega.data.GenericView;
 import com.idega.data.IDOQuery;
 /**
@@ -170,6 +171,10 @@ public class ContractAccountApartmentBMPBean extends GenericView implements Cont
 	public int getBuildingId() {
 		return getIntColumnValue(getBuildingIdColumnName());
 	}
+	public Building getBuilding() {
+		return (Building) getColumnValue(getBuildingIdColumnName());
+	}
+	
 	public int getComplexId() {
 		return getIntColumnValue(getComplexIdColumnName());
 	}

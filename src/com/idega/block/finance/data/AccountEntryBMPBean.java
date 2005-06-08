@@ -53,6 +53,7 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
     addAttribute(getCashierIdColumnName(),"Cashier",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
     addAttribute(getRoundIdColumnName(),"Round",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AssessmentRound.class);
     addAttribute(getColumnNameStatus(),"status",true,true,String.class);
+    addAttribute(getColumnNameDivisionForAccounting(), "accounting division", true, true, String.class);
     /*added 6/12/2004 - birna*/
     addAttribute(getColumnNameAccountBook(), "account book", true, true, Integer.class);
     addAttribute(getColumnNameInvoiceNumber(), "invoice number", true, true, Integer.class);
@@ -86,6 +87,9 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   public static String getPaymentDateColumnName(){ return "PAYMENT_DATE"; }
   public static String getLastUpdatedColumnName(){ return "LAST_UPDATED"; }
   public static String getColumnNameStatus(){ return "STATUS"; }
+  public static String getColumnNameDivisionForAccounting() {
+	  return "DIVISION";
+  }
   /*added 6/12/2004 - birna */
   public static String getColumnNameAccountBook() { return "ACCOUNT_BOOK"; }
   public static String getColumnNameInvoiceNumber() { return "INVOICE_NUMBER"; }
@@ -212,6 +216,14 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
 
   public String getStatus(){
     return getStringColumnValue( getColumnNameStatus());
+  }
+
+  public void setDivisionForAccounting(String division) {
+	  setColumn(getColumnNameDivisionForAccounting(), division);
+  }
+  
+  public String getDivisionForAccounting() {
+	  return getStringColumnValue(getColumnNameDivisionForAccounting());
   }
   
   /*added 6/12/2004 - birna*/
@@ -428,7 +440,7 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   }
   
   public Collection ejbFindByEntryGroup(Integer groupID)throws FinderException{
-  		return super.idoFindPKsByQuery(super.idoQueryGetSelectCount().appendWhereEquals(getEntryGroupIdColumnName(),groupID));
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getEntryGroupIdColumnName(),groupID));
   }
   
   public Date ejbHomeGetMaxDateByAccount(Integer accountID)throws IDOException{

@@ -25,6 +25,7 @@ public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.f
  public float getTotal();
  public java.lang.String getType();
  public float getVAT();
+ public java.lang.String getDivisionForAccounting();
  public void setAccountId(java.lang.Integer p0);
  public void setAccountId(int p0);
  public void setAccountKeyId(java.lang.Integer p0);
@@ -47,6 +48,7 @@ public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.f
  public void setTotal(float p0);
  public void setVAT(java.lang.Float p0);
  public void setVAT(float p0);
+ public void setDivisionForAccounting(java.lang.String p0);
  
  /*added 6/12/2004 - birna*/
  public int getAccountBook();

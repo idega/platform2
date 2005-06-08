@@ -1,5 +1,5 @@
 /*
- * $Id: AccountKey.java,v 1.10 2004/11/17 22:50:55 aron Exp $
+ * $Id: AccountKey.java,v 1.11 2005/06/08 11:42:20 palli Exp $
  * Created on 17.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,10 +16,10 @@ import com.idega.data.IDOEntity;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/17 22:50:55 $ by $Author: aron $
+ *  Last modified: $Date: 2005/06/08 11:42:20 $ by $Author: palli $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface AccountKey extends IDOEntity, CategoryEntity {
     /**
@@ -67,4 +67,7 @@ public interface AccountKey extends IDOEntity, CategoryEntity {
      */
     public void setOrdinal(int ordinal);
 
+    public String getDivision();
+    
+    public void setDivision(String division);
 }

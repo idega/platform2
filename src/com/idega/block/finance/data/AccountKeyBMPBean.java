@@ -34,6 +34,7 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
     addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String",4000);
     addAttribute(getTariffKeyIdColumnName(),"Tariff key",true,true,"java.lang.Integer");
     addAttribute(getOrdinalColumnName(),"Ordinal",true,true,"java.lang.Integer");
+    addAttribute(getDivisionColumnName(),"Division",true,true,"java.lang.String");
   }
 
   public static String getAccountKeyEntityName(){return "FIN_ACC_KEY"; }
@@ -41,6 +42,7 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
   public static String getNameColumnName(){ return "NAME"; }
   public static String getInfoColumnName(){return "INFO";}
   public static String getOrdinalColumnName(){return "ORDINAL";}
+  public static String getDivisionColumnName(){return "DIVISION";}
 
 
   public String getEntityName() {
@@ -75,6 +77,14 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
   
   public void setOrdinal(int ordinal){
       setColumn(getOrdinalColumnName(),ordinal);
+  }
+  
+  public String getDivision() {
+	  return getStringColumnValue(getDivisionColumnName());
+  }
+  
+  public void setDivision(String division) {
+	  setColumn(getDivisionColumnName(), division);
   }
   
   public Collection ejbFindAll()throws FinderException{

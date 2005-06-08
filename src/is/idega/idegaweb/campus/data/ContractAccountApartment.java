@@ -1,5 +1,7 @@
 package is.idega.idegaweb.campus.data;
 
+import com.idega.block.building.data.Building;
+
 
 public interface ContractAccountApartment extends com.idega.data.IDOLegacyEntity
 {
@@ -12,6 +14,7 @@ public interface ContractAccountApartment extends com.idega.data.IDOLegacyEntity
  public int getApartmentTypeId();
  public int getBalance();
  public int getBuildingId();
+ public Building getBuilding();
  public int getComplexId();
  public int getContractId();
  public java.sql.Timestamp getDeliverTime();
