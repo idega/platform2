@@ -1,5 +1,5 @@
 /*
- * $Id: GroupEditor.java,v 1.8 2005/06/09 07:14:26 laddi Exp $
+ * $Id: GroupEditor.java,v 1.9 2005/06/09 07:18:39 laddi Exp $
  * Created on Jun 2, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -38,10 +38,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/06/09 07:14:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/06/09 07:18:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class GroupEditor extends AdultEducationBlock implements IWPageEventListener {
 
@@ -238,13 +238,13 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		SelectorUtility util = new SelectorUtility();
 		
 		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_SEASON), getBusiness().getSeasons(), "getSeasonName"));
-		seasons.addMenuElementFirst("", localize("select_season", "Select season"));
+		seasons.addMenuElementFirst("-1", localize("select_season", "Select season"));
 		if (getSession().getSchoolSeason() != null) {
 			seasons.setSelectedElement(getSession().getSchoolSeason().getPrimaryKey().toString());
 		}
 		
 		DropdownMenu studyGroups = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_STUDY_PATH_GROUP), getBusiness().getStudyPathsGroups(), "getLocalizationKey", getResourceBundle()));
-		studyGroups.addMenuElementFirst("", localize("select_study_path_group", "Select group"));
+		studyGroups.addMenuElementFirst("-1", localize("select_study_path_group", "Select group"));
 		if (getSession().getStudyPathGroup() != null) {
 			studyGroups.setSelectedElement(getSession().getStudyPathGroup().getPrimaryKey().toString());
 		}
@@ -377,16 +377,13 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		
 		if (iwc.isParameterSet(PARAMETER_SCHOOL_SEASON)) {
 			try {
-				getSession(iwc).setSeason(iwc.getParameter(PARAMETER_SCHOOL_SEASON));
-				actionPerformed = true;
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
-			}
-		}
-		else {
-			try {
-				getSession(iwc).setSeason(null);
+				String seasonPK = iwc.getParameter(PARAMETER_SCHOOL_SEASON);
+				if (seasonPK.equals("-1")) {
+					getSession(iwc).setSeason(null);
+				}
+				else {
+					getSession(iwc).setSeason(seasonPK);
+				}
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
@@ -396,16 +393,13 @@ public class GroupEditor extends AdultEducationBlock implements IWPageEventListe
 		
 		if (iwc.isParameterSet(PARAMETER_STUDY_PATH_GROUP)) {
 			try {
-				getSession(iwc).setStudyPathGroup(iwc.getParameter(PARAMETER_STUDY_PATH_GROUP));
-				actionPerformed = true;
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
-			}
-		}
-		else {
-			try {
-				getSession(iwc).setStudyPathGroup(null);
+				String studyPathGroupPK = iwc.getParameter(PARAMETER_STUDY_PATH_GROUP);
+				if (studyPathGroupPK.equals("-1")) {
+					getSession(iwc).setStudyPathGroup(null);
+				}
+				else {
+					getSession(iwc).setStudyPathGroup(studyPathGroupPK);
+				}
 				actionPerformed = true;
 			}
 			catch (RemoteException re) {
