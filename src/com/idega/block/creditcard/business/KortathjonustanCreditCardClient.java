@@ -360,21 +360,21 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		KortathjonustanAuthorisationEntriesHome authHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
 		KortathjonustanAuthorisationEntries auth = authHome.create();
 
-		if (properties.contains(PROPERTY_AMOUNT))
+		if (properties.containsKey(PROPERTY_AMOUNT))
 			auth.setAmount(Double.parseDouble(properties.get(PROPERTY_AMOUNT).toString()));//Double.parseDouble(strAmount));
-		if (properties.contains(PROPERTY_APPROVAL_CODE))
+		if (properties.containsKey(PROPERTY_APPROVAL_CODE))
 			auth.setAuthorizationCode(properties.get(PROPERTY_APPROVAL_CODE).toString());//authCode);
-		if (properties.contains(PROPERTY_CARD_BRAND_NAME))
-			auth.setBrandName(null);
-		if (properties.contains(PROPERTY_CC_EXPIRE))
+		if (properties.containsKey(PROPERTY_CARD_BRAND_NAME))
+			auth.setBrandName(properties.get(PROPERTY_CARD_BRAND_NAME).toString());
+		if (properties.containsKey(PROPERTY_CC_EXPIRE))
 			auth.setCardExpires(properties.get(PROPERTY_CC_EXPIRE).toString());//monthExpires+yearExpires);
-		if (properties.contains(PROPERTY_CURRENCY_CODE))
+		if (properties.containsKey(PROPERTY_CURRENCY_CODE))
 			auth.setCurrency(properties.get(PROPERTY_CURRENCY_CODE).toString());//currency);
-		if (properties.contains(PROPERTY_ERROR_CODE))
+		if (properties.containsKey(PROPERTY_ERROR_CODE))
 			auth.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
-		if (properties.contains(PROPERTY_ERROR_TEXT))
+		if (properties.containsKey(PROPERTY_ERROR_TEXT))
 			auth.setErrorText(properties.get(PROPERTY_ERROR_TEXT).toString());
-		if (properties.contains(PROPERTY_TOTAL_RESPONSE))
+		if (properties.containsKey(PROPERTY_TOTAL_RESPONSE))
 			auth.setServerResponse(properties.get(PROPERTY_TOTAL_RESPONSE).toString());
 
 		auth.setTransactionType(authorizationType);
@@ -685,9 +685,15 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 				}
 				else {
 					KortathjonustanAuthorizationException cce = new KortathjonustanAuthorizationException();
-					cce.setDisplayError(properties.get(PROPERTY_ACTION_CODE_TEXT).toString());
-					cce.setErrorMessage(properties.get(PROPERTY_ERROR_TEXT).toString());
-					cce.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
+					try {
+						cce.setDisplayError(properties.get(PROPERTY_ACTION_CODE_TEXT).toString());
+					} catch (NullPointerException n) {}
+					try {
+						cce.setErrorMessage(properties.get(PROPERTY_ERROR_TEXT).toString());
+					} catch (NullPointerException n) {}
+					try {
+						cce.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
+					} catch (NullPointerException n) {}
 					throw cce;
 				}
 			}
