@@ -472,7 +472,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT_FOR_BANKID);
 					createContract.setToDisableOnClick(createContract, true);
-					createContract.setOnClick("this.style.display=none;");
+					createContract.setOnClick("this.style.display='none';");
 							
 					disabledCreateContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					disabledCreateContract.setDisabled(true);
@@ -491,7 +491,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
 					createContract.setToDisableOnClick(createContract, true);
-					createContract.setOnClick("this.style.display=none;");
+					createContract.setOnClick("this.style.display='none';");
 					
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
 				  disabledCreateContract.setDisabled(true);
@@ -576,7 +576,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 							placeInGroup.setToDisableOnClick(placeInGroup, true);
 							dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 						}
-						placeInGroup.setOnClick("this.style.display=none;");
+						placeInGroup.setOnClick("this.style.display='none';");
 						
 						table.add(placeInGroup, column, 1);
 						
@@ -589,7 +589,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						placeInGroup.setDisabled(true);	
 						dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 					}
-					placeInGroup.setOnClick("this.style.display=none;");
+					placeInGroup.setOnClick("this.style.display='none';");
 					
 					table.add(placeInGroup, column, 1);
 				}
