@@ -56,8 +56,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/05/26 06:26:57 $ by $Author: laddi $
- * @version $Revision: 1.142 $
+ *         Last modified: $Date: 2005/06/09 09:28:10 $ by $Author: sigtryggur $
+ * @version $Revision: 1.143 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -111,6 +111,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		addManyToManyRelationShip(SchoolClass.class, "sch_sub_group_placements");
 		addManyToManyRelationShip(SchoolStudyPath.class, "sch_member_study_path");
+
+		addIndex("IDX_SCH_CLASS_MEMBER_1", new String[]{ MEMBER, SCHOOL_TYPE});
 	}
 
 	public String getEntityName() {
