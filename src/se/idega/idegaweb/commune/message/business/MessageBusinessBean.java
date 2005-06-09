@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.69 2005/01/20 09:27:20 anders Exp $
+ * $Id: MessageBusinessBean.java,v 1.70 2005/06/09 07:14:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -336,6 +336,9 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 			//By default: copies in-parameter value:
 //			boolean doSendLetter=msgValue.sendLetterIfNoEmail.booleanValue();
 			boolean doSendLetter=msgValue.alwaysSendLetter.booleanValue() | sendLetterEvenWhenHavingEmail;
+			if (!canSendEmail) {
+				doSendLetter |= msgValue.sendLetterIfNoEmail.booleanValue();
+			}
 			
 			if (sendToBox) {
 			    msgValue.messageType = getTypeUserMessage();
