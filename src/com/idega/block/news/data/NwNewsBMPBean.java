@@ -17,11 +17,11 @@ import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.AND;
+import com.idega.data.query.Column;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
-import com.idega.data.query.WildCardColumn;
 import com.idega.util.IWTimestamp;
 
 
@@ -196,8 +196,7 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements  NwNe
       Table middle = new Table(middleTable, "m");
       
       SelectQuery query = new SelectQuery(news);
-      query.addColumn(new WildCardColumn(news));
-      query.addColumn(new WildCardColumn(content));
+      query.addColumn(new Column(news, getIDColumnName()));
       
       query.addJoin(news, NwNewsBMPBean.getColumnNameContentId(), content, ContentBMPBean.getEntityTableName()+"_ID");
       query.addJoin(content, ContentBMPBean.getEntityTableName()+"_ID", middle, ContentBMPBean.getEntityTableName()+"_ID");
@@ -221,8 +220,7 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements  NwNe
       Table content = new Table(com.idega.block.text.data.ContentBMPBean.getEntityTableName(), "c");
       
       SelectQuery query = new SelectQuery(news);
-      query.addColumn(new WildCardColumn(news));
-      query.addColumn(new WildCardColumn(content));
+      query.addColumn(new Column(news, getIDColumnName()));
       
       query.addJoin(news, NwNewsBMPBean.getColumnNameContentId(), content, ContentBMPBean.getEntityTableName()+"_ID");
       query.addCriteria(new MatchCriteria(news, NwNewsBMPBean.getColumnNameNewsCategoryId(), MatchCriteria.EQUALS, newsCategoryId));
