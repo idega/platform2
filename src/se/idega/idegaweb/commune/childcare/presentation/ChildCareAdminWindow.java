@@ -970,7 +970,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dropdownTable, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.place_in_group", "Place in group"), PARAMETER_ACTION, String.valueOf(ACTION_PLACE_IN_GROUP)));
-		form.setToDisableOnSubmit(placeInGroup, true);
 		_submitButton = placeInGroup;
 		_child = application.getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
@@ -981,6 +980,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+		form.setToDisableOnSubmit(placeInGroup, true);
 
 		return table;
 	}
