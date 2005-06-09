@@ -544,7 +544,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		
 		for (Iterator aliasesToClubs = clubAliases.iterator(); aliasesToClubs.hasNext() && needToCreateAlias; ) {
 			Group clubAlias = (Group) aliasesToClubs.next();
-			if(clubAlias.getAlias().equals(clubCollectionGroup)){
+			if(clubAlias.getAlias().equals(club)){
 				needToCreateAlias = false;
 			}
 		}
