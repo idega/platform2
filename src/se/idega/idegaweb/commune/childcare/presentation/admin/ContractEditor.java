@@ -293,7 +293,7 @@ public class ContractEditor extends ChildCareBlock {
 
 			ChildCareContract latestTerminatedContract = null;
 			ChildCareContract nextContract = null;
-			ChildCareContract previousContract = null;
+			//ChildCareContract previousContract = null;
 			try {
 				latestTerminatedContract = contractHome.findLatestTerminatedContractByChild(contract.getChildID(), null);
 			}
@@ -306,22 +306,22 @@ public class ContractEditor extends ChildCareBlock {
 			catch (FinderException e2) {
 				// e2.printStackTrace();
 			}
-			try {
+			/*try {
 				previousContract = contractHome.findPreviousTerminatedContractByChild(contract);
 			}
 			catch (FinderException e3) {
 				// e3.printStackTrace();
-			}
-			if (previousContract != null) {
+			}*/
+			/*if (previousContract != null) {
 				IWTimestamp previous = new IWTimestamp(previousContract.getTerminatedDate());
 				previous.addDays(1);
 				from.setEarliestPossibleDate(previous.getDate(), localize("child_care.date_warning.start_earlier_than_previous_termination", "You can not choose a start date earlier than previous termination date."));
-			}
-			if (nextContract != null) {
+			}*/
+			/*if (nextContract != null) {
 				IWTimestamp next = new IWTimestamp(nextContract.getValidFromDate());
 				next.addDays(-1);
 				cancelled.setLatestPossibleDate(next.getDate(), localize("child_care.date_warning.termination_later_than_nex_startdate", "You can not choose a termination date later than next start date"));
-			}
+			}*/
 
 			InterfaceObject careTime = null;
 			if (isUsePredefinedCareTimeValues()) {
