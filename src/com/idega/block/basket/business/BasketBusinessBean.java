@@ -147,6 +147,9 @@ public class BasketBusinessBean extends IBOSessionBean
 	 * @uml.property name="basket"
 	 */
 	public Map getBasket() {
+		if (basket == null) {
+			basket = new LinkedHashMap();
+		}
 		return basket;
 	}
 
